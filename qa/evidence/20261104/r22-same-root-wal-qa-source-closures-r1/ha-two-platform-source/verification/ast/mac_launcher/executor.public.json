@@ -1,0 +1,7 @@
+{
+  "chunk_id": "48fb4f",
+  "wall_time_seconds": 0.008276148,
+  "exit_code": 0,
+  "original_token_count": 109,
+  "output": "{\"added_definitions\": [], \"bytes\": 24018, \"changed_definitions\": [], \"host_operations\": 0, \"name\": \"mac_launcher\", \"removed_definitions\": [], \"rust_executed\": false, \"sha256\": \"f02a982a9ec9afeb26eebd20f007b261aa042daa46f005336a48fce00348df93\", \"source_module_executed\": false, \"status\": \"AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"identity\", \"read_bound\", \"freeze\", \"public\", \"preserve_r9\", \"preserve_r10\", \"holders\", \"git\"]}\n"
+}

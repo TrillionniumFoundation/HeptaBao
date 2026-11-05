@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-custody-r2-478b-authority-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aaced08e-fc05-478b"
+    }
+  }
+}

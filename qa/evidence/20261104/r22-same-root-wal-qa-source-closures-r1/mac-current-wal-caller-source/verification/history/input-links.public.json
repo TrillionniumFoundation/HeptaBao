@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.mac-current-wal-static-input-history.r1",
+  "firstStatic": {
+    "reconstruction": "verification/history/first-static.input.public.json.reconstruction.public.json",
+    "bytes": 1830758,
+    "sha256": "4a30efb4576e882cba06e183467bfb6d1b99a0ce7d15d74d1f72137753ba88ad",
+    "git_blob": "da215f5b7bbe973bc8eb86ceaac6a7a8dff92881"
+  },
+  "secondAndFinalStatic": {
+    "reconstruction": "verification/complete-static.input.public.json.reconstruction.public.json",
+    "bytes": 1830793,
+    "sha256": "0736335b193d56123fab44d03003e793afcccac304f179d1d876c6bd25292f72",
+    "git_blob": "f6f819c81f509fdb95e537352290c907ee4bde72"
+  },
+  "secondInputByteExactFinal": true
+}

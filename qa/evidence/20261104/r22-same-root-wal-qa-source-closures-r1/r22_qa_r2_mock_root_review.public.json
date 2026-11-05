@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.qa-r2-mock-addendum.root-source-and-transcript-review.v1",
+  "status": "PASS_REVIEWED_ADDITIONAL_FAILURE_BOUNDARIES",
+  "packet": "56feaaf12c2db0ec46bf852ef7f4addd548b0ec4",
+  "files": 8,
+  "bytes": 139121,
+  "merkle": 5,
+  "actual_author_in_memory_cases": 7,
+  "root_reexecuted": false,
+  "reference_source_unchanged": true,
+  "source_sha256": "e19b44e5e8a54f83fc69ff5a0c54095e41cf7506f0a69eaf997c9258c9ceabb1",
+  "actual_output": "3c098d2b3e2fa45ecb76bc7e908c6e22e2fee166",
+  "reviewed_boundaries": [
+    "wait OSError cannot consume terminal successfully",
+    "cleanup error remains unknown and stop_once never renews budget",
+    "wait plus cleanup exceptions retained",
+    "unregistered stream fails before Popen",
+    "unchanged actual nested command closes two streams after wait error",
+    "second stream open failure closes first",
+    "timeout plus cleanup failure closes streams without another stop allowance"
+  ],
+  "limits": [
+    "in-memory injection; no real kernel negative-case claim",
+    "the separate real Linux three-case proof is required",
+    "original18 mock cases remain separately counted",
+    "no Cargo or product qualification"
+  ]
+}

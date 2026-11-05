@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.same-root-publication.repair-format.root-review.v1",
+  "status": "GO_EXACT_FORMATTER_ONCE_SOURCE_NOT_QUALIFIED",
+  "repair_packet": {
+    "tree": "0bd410fc046ff89dcbf953efe5a16f262c41de52",
+    "files": 26,
+    "bytes": 1726771,
+    "merkle": 7
+  },
+  "formatter_packet": {
+    "tree": "bdbebf9a6c8f8850077e6c198f1c8b1201520a4a",
+    "files": 26,
+    "bytes": 1001222,
+    "merkle": 6
+  },
+  "parent_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "checks": [
+    "read_strict_forward",
+    "read_hunk_count",
+    "install_strict_forward",
+    "install_hunk_count",
+    "tests_strict_forward",
+    "tests_hunk_count",
+    "formatter_exact_inline_source",
+    "formatter_exact_stdin",
+    "formatter_host",
+    "formatter_timeout60",
+    "formatter_key",
+    "input_carrier_originalcap",
+    "input_whole_service_native_v6_ha_read.rs",
+    "input_whole_service_native_v6_ha_install.rs",
+    "input_whole_service_native_v6_ha_install_tests.rs",
+    "input_whole_service_native_v6_ha_same_root_republication_tests.rs",
+    "formatter_helper_exact_remain",
+    "formatter_helper_exact_sha",
+    "formatter_helper_exact_read_pin",
+    "formatter_helper_exact_write_new",
+    "formatter_helper_exact_sync_dir",
+    "original_full_child_loop_exact",
+    "parent_tree_exact",
+    "no_parent_rustfmt_config",
+    "exact_base_leaf_service_native_v6_ha_read.rs",
+    "exact_base_leaf_service_native_v6_ha_install.rs",
+    "exact_base_leaf_service_native_v6_ha_install_tests.rs",
+    "new_test_path_absent"
+  ],
+  "source_review": {
+    "same_content_not_publication_identity": true,
+    "cold_and_warm_use_original_full_installer": true,
+    "strict_matches_current_retained": true,
+    "continuation_requires_exact_current_original_cursor": true,
+    "original_owner_readindex_deadline_CAS_graph_and_uncertainty_preserved": true,
+    "real_ABA_regression_independent_count": 1,
+    "old60_and_LAN98plus12_unchanged": true
+  },
+  "request": {
+    "blob": "52fe787d5b68896d16156740f719c74118a12a0b",
+    "bytes": 194996,
+    "sha256": "bbc87b30ce08277a35129dd987b310bced6dbb1a422b2b75de558ecc86addaad",
+    "host": "rog",
+    "key": "heptabao-same-root-publication-rustfmt-20261105-r1-c3b33a6a",
+    "whole_seconds": 50,
+    "child_seconds": 10,
+    "outer_seconds": 60
+  },
+  "acceptance": [
+    "original authority exit0 full durable and streams complete",
+    "all four direct children reaped; shared supervisor group not a separate group-empty assertion",
+    "before and after tool/config identity+whole hash unchanged",
+    "all18 fixed public output independent metadata/version-pinned readback",
+    "formatted bytes root-reviewed before source commit/PR"
+  ],
+  "limitations": [
+    "no Rust compile/test or host qualification yet",
+    "historical CI154 failures remain independently unresolved",
+    "df026 LAN91/98+0/12 unchanged",
+    "actual34MiB same-root repair must still fit original deadline",
+    "no production cutover or cleanup"
+  ]
+}

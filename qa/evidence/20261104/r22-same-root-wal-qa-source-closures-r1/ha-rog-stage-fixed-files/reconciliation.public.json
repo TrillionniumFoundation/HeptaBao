@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.source-stage.fixed-receipt-reconciliation.v1",
+  "status": "FILES_READ_COMPLETE_JOB_AUTHORITY_UNKNOWN",
+  "original_launch_ack_unknown": true,
+  "original_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957",
+  "job_id": null,
+  "independent_whole_reads": [
+    {
+      "bytes": 26990,
+      "sha256": "dceff3b57921b26a0096ce59a56456643061383439adb1dc2a4913a1c1840be0",
+      "blob": "abd998cc5f171ef7f4871b8e27338e33fbf60cb5"
+    },
+    {
+      "bytes": 1720,
+      "sha256": "a3f5869a848c328664eb3e183c5bb0aab17220a6ce97d404512e2048803f5765",
+      "blob": "da763ee9bd6d8b1c005766261aec57a6940f44d8"
+    }
+  ],
+  "observed_result_status": "prepared",
+  "observed_elapsed_seconds_after_cleanup": 18.073729682015255,
+  "observed_owned_children": 55,
+  "observed_children_reaped_and_empty": true,
+  "source": "1c66541993662f92cf717154e33717abedb2ea74",
+  "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "history": 3762,
+  "full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc",
+    "index_matches_tree": true,
+    "tracked_bytes": 62224861,
+    "tracked_leaf_count": 3914
+  },
+  "bundle": {
+    "bytes": 28172,
+    "header": {
+      "header_sha256": "88dc360f8985629d3aebc0999075160ae15a760bbd1b4538b9e986769216183d",
+      "heads": [
+        [
+          "1c66541993662f92cf717154e33717abedb2ea74",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      28229829,
+      1000,
+      1000,
+      33152,
+      1,
+      28172,
+      "1793868557318302068",
+      "1793868557318302068"
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/control/canonical-same-root-publication-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15"
+  },
+  "authority_exit_code": null,
+  "stdout_publication_and_durability_verified": false,
+  "build_or_Mac_source_admission": false,
+  "no_resubmission": true
+}

@@ -1,0 +1,184 @@
+--- builder_before.py
++++ builder_r2.py
+@@ -24,8 +24,8 @@
+ COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+ TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+ SOURCE = Path("/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source")
+-CONTROL = Path("/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1")
+-ROOT = Path("/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1")
++CONTROL = Path("/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2")
++ROOT = Path("/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2")
+ TOOL_ROOT = Path("/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin")
+ CARGO_HOME = Path("/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home")
+ NORMAL_RUNNER_SHA = "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
+@@ -291,6 +291,143 @@
+          and value.st_uid == os.getuid() and not stat.S_IMODE(value.st_mode) & 0o002,
+          "existing_owned_target_directory")
+     return {key: identity(value)[key] for key in ("device", "inode", "uid", "gid", "mode")}
++
++
++def qa_command_owner_class(owner_reference, cli):
++    """Own only this builder's direct, single-threaded Popen commands.
++
++    The retained CLI helper still requires visible executable/argv. These short
++    QA commands instead bind the exact Popen invocation to an unreaped kernel
++    child, then require an actual WNOWAIT exit event before Popen.wait consumes
++    it. Empty /proc cmdline is neither read nor accepted as evidence.
++    """
++    class QaCommands(owner_reference.owner_class(cli)):
++        def __init__(self, root):
++            super().__init__(root)
++            self.command_custody = {}
++
++        def child_stat(self, process, until):
++            remaining(until)
++            fd = open_fd(Path("/proc") / str(process.pid) / "stat",
++                         os.O_RDONLY | os.O_NOFOLLOW)
++            try:
++                raw = os.read(fd, 8193)
++                need(len(raw) <= 8192 and os.read(fd, 1) == b"", "owned_stat_complete_bounded")
++            finally:
++                close_fd(fd)
++            remaining(until)
++            end = raw.rfind(b") ")
++            need(raw.startswith((str(process.pid) + " (").encode()) and end > 0,
++                 "owned_stat_pid")
++            fields = raw[end + 2:].split()
++            need(len(fields) >= 20 and fields[0] in
++                 (b"R", b"S", b"D", b"T", b"t", b"Z", b"X", b"x", b"I", b"P", b"W"),
++                 "owned_stat_shape")
++            captured = {"pid": process.pid, "state": fields[0].decode("ascii"),
++                        "ppid": int(fields[1]), "pgid": int(fields[2]),
++                        "start_ticks": int(fields[19])}
++            need(captured["ppid"] == os.getpid() and captured["pgid"] == process.pid
++                 and 0 < captured["start_ticks"] < 2**64, "owned_unreaped_start_identity")
++            return captured
++
++        def peek_child_exit(self, process, until):
++            remaining(until)
++            need(process.returncode is None and signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
++                 "owned_child_not_previously_reaped")
++            # P_PID selects this actual direct child; ECHILD is a failure.
++            # WNOWAIT never consumes the exit event or releases the PID.
++            event = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
++            remaining(until)
++            if event is None:
++                return None
++            need(event.si_pid == process.pid and event.si_uid == os.getuid()
++                 and event.si_code in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED),
++                 "owned_waitid_terminal_identity")
++            if event.si_code == os.CLD_EXITED:
++                need(0 <= event.si_status <= 255, "owned_waitid_exit_status")
++                code = event.si_status
++            else:
++                need(0 < event.si_status < signal.NSIG, "owned_waitid_signal_status")
++                code = -event.si_status
++            return {"pid": event.si_pid, "uid": event.si_uid,
++                    "si_code": event.si_code, "si_status": event.si_status,
++                    "expected_returncode": code, "not_reaped": True}
++
++        def start_child(self, argv, *, until, **options):
++            need(not self.creating_child and signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
++                 "qa_direct_child_creation_contract")
++            need(type(argv) is list and bool(argv)
++                 and all(type(arg) is str and "\0" not in arg for arg in argv)
++                 and argv[0] in ("/usr/bin/git", str(TOOL_ROOT / "rustc"),
++                                 str(TOOL_ROOT / "cargo"),
++                                 str(ROOT / "artifacts" / "heptabao-native-h2-qa-tests")),
++                 "qa_fixed_command_executable")
++            need(set(options) == {"cwd", "stdin", "stdout", "stderr", "env", "start_new_session"}
++                 and options["start_new_session"] is True
++                 and options["stdin"] == subprocess.DEVNULL
++                 and options["stdout"] in OPEN_FDS and options["stderr"] in OPEN_FDS
++                 and options["cwd"] in (ROOT, ROOT / "project"), "qa_direct_command_options")
++            exact_argv = tuple(argv)
++            self.creating_child = True
++            try:
++                remaining(until)
++                process = subprocess.Popen(exact_argv, shell=False, close_fds=True, **options)
++                index = len(self.children)
++                self.children.append((process, None))
++            finally:
++                self.creating_child = False
++                pending, self.pending_signal = self.pending_signal, None
++                if pending is not None:
++                    raise cli.Refused("owner_signal_" + str(pending))
++            proof = {"pid": process.pid, "mechanism": "direct_popen_unreaped_waitid_v1",
++                     "requested_argv_sha256": sha(b"\0".join(os.fsencode(x) for x in exact_argv) + b"\0"),
++                     "popen_returned": True, "provisionally_registered_before_observation": True,
++                     "custody_verified": False, "live_proc_argv_observed": False,
++                     "waitid_calls": 0, "terminal_event": None, "terminal_consumed": False}
++            self.child_provenance.append(proof)
++            self.command_custody[id(process)] = proof
++            need(process.args == exact_argv and process.returncode is None, "qa_exact_popen_object")
++            before = self.child_stat(process, until)
++            event = self.peek_child_exit(process, until)
++            proof["waitid_calls"] += 1
++            after = self.child_stat(process, until)
++            need(all(before[key] == after[key] for key in ("pid", "ppid", "pgid", "start_ticks")),
++                 "owned_unreaped_identity_changed")
++            need(self.children[index] == (process, None), "qa_original_provisional_registration")
++            self.children[index] = (process, after)
++            proof.update({"identity_before": before, "identity_after": after,
++                          "terminal_event": event, "custody_verified": True})
++            return process
++
++        def wait_child(self, process, until):
++            proof = self.command_custody[id(process)]
++            captured = next(saved for child, saved in self.children if child is process)
++            need(proof["custody_verified"] and captured is not None,
++                 "qa_custody_required_before_wait")
++            wait_budget = remaining(until)
++            delay = 0.0005
++            while True:
++                if time.monotonic_ns() >= until:
++                    raise subprocess.TimeoutExpired(process.args, wait_budget)
++                event = self.peek_child_exit(process, until)
++                proof["waitid_calls"] += 1
++                previous = proof["terminal_event"]
++                need(previous is None or event == previous, "owned_terminal_event_changed")
++                if event is not None:
++                    current = self.child_stat(process, until)
++                    need(all(current[key] == captured[key]
++                             for key in ("pid", "ppid", "pgid", "start_ticks")),
++                         "owned_terminal_start_identity_changed")
++                    proof["terminal_event"] = event
++                    code = process.wait(timeout=remaining(until))
++                    need(code == event["expected_returncode"] and process.returncode == code,
++                         "owned_waitid_and_popen_status_disagree")
++                    proof["terminal_consumed"] = True
++                    proof["wait_returncode"] = code
++                    return code
++                time.sleep(min(delay, remaining(until)))
++                delay = min(delay * 2, 0.05)
++    return QaCommands
+ 
+ 
+ def main() -> int:
+@@ -393,7 +530,7 @@
+     (ROOT / "project").mkdir(mode=0o700)
+     (ROOT / "artifacts").mkdir(mode=0o700)
+     project = ROOT / "project"
+-    result = {"schema": "heptabao.native-h2-qa.build.v1", "status": "failed",
++    result = {"schema": "heptabao.native-h2-qa.build.v2", "status": "failed",
+               "candidate_commit": COMMIT, "candidate_tree": TREE,
+               "controller_sha256": self_file["sha256"], "binding_sha256": args.binding_sha256,
+               "normal_product_result_sha256": normal_observed["sha256"],
+@@ -420,7 +557,7 @@
+             modules[role] = module
+         cli = modules["cli_reference"]
+         cli.ROOT = ROOT
+-        owner = modules["owner_reference"].owner_class(cli)(ROOT)
++        owner = qa_command_owner_class(modules["owner_reference"], cli)(ROOT)
+         signal.signal(signal.SIGTERM, owner.interrupted)
+         signal.signal(signal.SIGINT, owner.interrupted)
+         environment = {
+@@ -457,7 +594,7 @@
+                     argv, until=child_until, cwd=cwd, stdin=subprocess.DEVNULL,
+                     stdout=out, stderr=err, env=environment, start_new_session=True)
+                 try:
+-                    process.wait(timeout=remaining(child_until))
++                    owner.wait_child(process, child_until)
+                 except subprocess.TimeoutExpired:
+                     timed_out = True
+                     captured = next(saved for child, saved in owner.children if child is process)

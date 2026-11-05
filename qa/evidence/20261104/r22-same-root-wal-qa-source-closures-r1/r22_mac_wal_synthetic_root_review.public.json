@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.mac-wal-synthetic.actual-root-review.v1",
+  "status": "PASS_TEN_OWNED_PUBLIC_SCENARIOS_ONLY",
+  "packet": {
+    "tree": "b575a8af93c99b7736dfa3f1b57356d3c3ddc3e6",
+    "files": 122,
+    "bytes": 940940,
+    "merkle": {
+      "root_sha": "b575a8af93c99b7736dfa3f1b57356d3c3ddc3e6",
+      "trees_verified": 13
+    }
+  },
+  "authority": {
+    "blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e",
+    "job": "1a1aaaaa6cd-fc05-45dd",
+    "exit_code": 0,
+    "full": true,
+    "durable": true
+  },
+  "stdout": {
+    "blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540",
+    "bytes": 62662,
+    "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82"
+  },
+  "independent_root_checks": 300,
+  "independent_child_stdout_bytes": 102793,
+  "checks_pin": {
+    "name": "r22_mac_wal_synthetic_root_result",
+    "blob": "0cba65b6f4cb99050b77af120fe0c4ebd4f8906b",
+    "bytes": 10765,
+    "sha256": "64dee0d8c6d2ee69ee9dcadeec95893140172d5a5deb166ea6c73260680893ff"
+  },
+  "actual_scope": [
+    "W01 sentinel from actual WAL and six kernel EPERM controls",
+    "W02 absent SHM and W04 journal refused before registry connect",
+    "W03 actual CANTOPEN14 under fresh isolated VFS instance and SHM read denial",
+    "W05–W08 actual controlled drift rejected",
+    "W09 SCAN rejected before fixed data SELECT",
+    "W10 returned1048805B row counted in1049669B aggregate before1MiB refusal",
+    "all10 readers +1 diskutil native-owned/reaped/groups-empty/streamsclosed; all10 writers and70 parent FDs closed",
+    "original27 T5 anchor strings unchanged and exact source/runtime pins"
+  ],
+  "qualification": {
+    "library_sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+    "reader_sha256": "6bc5939de4b2b64ea771b2003efb20e9bbf5f2c56be49a1b0c227919c8f39833",
+    "native_parent_sha256": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc",
+    "shared_seconds": 45,
+    "query_seconds": 3,
+    "outer_seconds": 60,
+    "actual_elapsed_seconds": 1.1247387081384659
+  },
+  "limits": [
+    "W03 alone is not URI parameter-recognition proof",
+    "no whole database backup, cross-agent atomicity, all-ABA, SQLite page I/O or internal-FD enumeration claim",
+    "no private current capture has been admitted by this review",
+    "current caller requires separate whole source/diff/failure-ledger and fixed before/after proof binding review",
+    "original failed capture and UNKNOWN records remain unchanged",
+    "full OpenBao2.7.1 replacement false"
+  ]
+}

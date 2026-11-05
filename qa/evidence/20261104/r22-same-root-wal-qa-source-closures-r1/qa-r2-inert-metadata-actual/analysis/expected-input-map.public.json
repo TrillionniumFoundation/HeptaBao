@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.qa-r2-inert-expected-public-inputs.v1",
+  "request_blob": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/build_native_h2_client_r1.py",
+      "bytes": 42820,
+      "sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/native_h2_client.rs",
+      "bytes": 19382,
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/native_h2_client_tests.rs",
+      "bytes": 8942,
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/Cargo.toml",
+      "bytes": 957,
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/canonical.Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/owned_reference_phaseb_r3.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/official_cli_reference_r4.py",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/build-binding.private.json",
+      "bytes": 4039,
+      "sha256": "d995e45f61507ba9b99500daf736fa2e179839e95babe4d8db25c3cb11536693",
+      "expected_uid": 1000,
+      "expected_gid": 1000,
+      "expected_mode": 384,
+      "expected_nlink": 1,
+      "content_source": "admitted_carrier_not_new_body_readback"
+    }
+  ],
+  "receipt": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inert-stage.result.public.json"
+}

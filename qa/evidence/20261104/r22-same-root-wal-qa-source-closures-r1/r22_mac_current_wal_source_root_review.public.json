@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.root.mac-current-registry-wal-caller-source-assessment.v1",
+  "asof": "2026-11-05 08:49:00 UTC",
+  "status": "SOURCE_REVIEW_CLOSED_WAIT_NEW_1c665_MAC_ACTUAL_BINDINGS",
+  "packet": "ab729106132c035c353979285aa70a302318b3c2",
+  "root_checks": {
+    "name": "r22_mac_current_wal_source_root_result",
+    "blob": "737d0bc129db6535957bb5ce3df2b2e4a585a33e",
+    "bytes": 11630,
+    "sha256": "007be8dea6a11e3e79dd46e9906fefa185e6d876b1077f01e02e5e6edbd6598a"
+  },
+  "root_verifier": {
+    "name": "r22_mac_current_wal_source_root_verifier",
+    "blob": "0fdba74a2764e736376fcb0005fc8bd4a8d5b267",
+    "bytes": 5855,
+    "sha256": "1fce65a8688b57c4c8da0ab9fdc4ca2f753228c4581e442865d1c5b531ce464a"
+  },
+  "reviewed_changes": [
+    "Entry 9 strict hunks and outer 14 strict hunks were read in full. Added admission binds the original whole public WAL synthetic stdout and authoritative job, exact ten cases, one volume command and ten owned readers; native lifecycle and T5 closure are required.",
+    "CaptureAttemptFailure retains its bounded public library ledger. Missing or malformed library ownership/connection/cursor ledger propagates observationUnknown instead of being inferred closed from outer process cleanup.",
+    "Outer registers capture attempt before command launch, retains public record before success exit-code gate, and conjoins public immutable-proof closure and each capture attempt's entry/library/command/T5 closure in final state.",
+    "Original five-agent reader library is byte-exact. The added WAL library is exactly the separately root-qualified actual source c97d95b. Original capture profile permissions, before/after private capsule equality, and old native ownership helpers remain unchanged.",
+    "Nine other sources only alter fixed root or label literals; ten source files are byte-exact; all22 candidate source pins, eight public documents, inert carrier and proposed runtime arguments are whole-bound.",
+    "The complete and original failed static-input files were reconstructed from seven exact UTF-8 parts each, preserving both original whole Git OIDs. Author82 static and8 memory-only admission checks match exact complete executor outputs; root did not rerun them."
+  ],
+  "limits": {
+    "capture_seconds": 45,
+    "query_seconds": 3,
+    "wal_max_bytes": 5969912,
+    "row_max_bytes": 1048576,
+    "aggregate_max_bytes": 8388608,
+    "private_capsule_max_bytes": 4194304,
+    "outer_controller_seconds": 900,
+    "manager_seconds": 600,
+    "phase_seconds": 120,
+    "outer_request_seconds": 1080
+  },
+  "go": {
+    "df026_inert": false,
+    "df026_runtime": false,
+    "new_version_runtime": false
+  },
+  "next_binding": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "required": "Actual Mac normal build, retained server whole hash/size/identity, raw normal/native/combined receipts and authoritative/root closure. Rebind four product-bound sources and seven ROOT-only sources with new carrier/pins; do not assign hypothetical hashes.",
+    "template": "55f3fb8c159f6e284fa904663fc930134b4d8f17"
+  },
+  "limitations": [
+    "No current or private input capture executed by this source review; no production credential qualification, credential renewal/revocation, cutover or cleanup is proved.",
+    "Library declared read/returned bytes do not measure SQLite internal/page reads, internal descriptor identities, every ABA, or an atomic snapshot across agents.",
+    "Synthetic W03 observed SQLITE_CANTOPEN14; this is not SQLITE_CANTINIT and not independent proof of readonly_shm URI recognition.",
+    "Old current-capture UNKNOWN and PID11754 UNKNOWN remain unchanged."
+  ]
+}

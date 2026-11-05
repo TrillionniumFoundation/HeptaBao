@@ -1,0 +1,13 @@
+# Same-root publication ROG source-only core
+
+This packet binds the new canonical commit `1c66541993662f92cf717154e33717abedb2ea74` and tree `94ced21a63ff9aaca4538c0d4796efea2150e632`. No request in this packet has been submitted. The only executable request proposed here stages an independent source checkout, public controls and one incremental bundle in `/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1`. It does not touch the reusable Cargo target or start a compiler, server, provider or consumer.
+
+The stager derives from the actual `fc3786c199c07435cb3f9e2072768a8282750448`; its original lifecycle definitions are byte-identical, with only canonical worktree count binding changed in `verify_full_worktree`. It requires 3762 actual reachable commits, the full strict fsck, 3914 tracked leaves, the exact whole-worktree index, independence, and old-source/evidence fences. Expected source facts are admission targets, not execution evidence.
+
+The runner retains the original 44 + 7 + 9 execution span and adds one separately counted real A-to-B-to-A regression after all sixty pass. Its NEW 600-second group is clipped to the original 12000-second same-PID outer deadline. The original release 1800, libtest 3600, list 30, and existing group 600 limits remain unchanged. The actual test name must first appear in the retained binary's exact listing. This source packet is neither Rust compilation nor runtime qualification.
+
+The launcher derives from the actually executed fresh-cache launcher `8e2f73cf6a286077522268c8c1857ca4004cf258`. It reuses the already observed fixed df026 target and retains the original missing-target failure fences. It does not recreate a missing target. Its lock is the original admission-only flock probe. H2 QA uses the same Cargo target and lock path, so root schedules QA's complete 600/660 window first and gives a separate normal-build GO later.
+
+Six immutable df026 retained files outside the cache are whole-hashed before Cargo and again after owned-child cleanup. The new one-FD-at-a-time helper keeps the open/read/close transition protected, checks pending cancellation before each bounded read, and records each once-only close. The original sixty test/ownership helpers remain unchanged. AST-only verification passed; selected-function negative checks for this newly added helper are not yet included in this core packet.
+
+The accompanying Mac source draft remains unbound to a future actual ROG-exported bundle and has no executable Mac request. Both old df026 qualifications, all historical failures and UNKNOWN outcomes remain under their original identities. No claim is made that this repair covers the two independent CI154 runtime failures.

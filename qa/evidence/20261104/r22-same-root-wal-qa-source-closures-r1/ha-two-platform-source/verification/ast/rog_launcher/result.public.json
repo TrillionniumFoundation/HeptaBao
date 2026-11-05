@@ -1,0 +1,30 @@
+{
+  "added_definitions": [],
+  "bytes": 35592,
+  "changed_definitions": [
+    "preserve_current_early_failure"
+  ],
+  "host_operations": 0,
+  "name": "rog_launcher",
+  "removed_definitions": [
+    "create_fresh_target",
+    "budget",
+    "register"
+  ],
+  "rust_executed": false,
+  "sha256": "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02",
+  "source_module_executed": false,
+  "status": "AST_COMPILE_ONLY_PASS",
+  "unchanged_definitions": [
+    "identity",
+    "read_bound",
+    "freeze",
+    "public",
+    "preserve_r9",
+    "preserve_r10",
+    "preserve_successful_observer",
+    "preserve_failed_observer",
+    "holders",
+    "git"
+  ]
+}

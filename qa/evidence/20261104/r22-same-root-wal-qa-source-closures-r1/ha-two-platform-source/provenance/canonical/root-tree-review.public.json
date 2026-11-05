@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.same-root-publication.exact-tree.root-review.v1",
+  "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "candidate_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "merkle": {
+    "root_sha": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "trees_verified": 358
+  },
+  "actual_nonrecursive_root_entries": 26,
+  "files": 3914,
+  "unchanged_parent_files": 3910,
+  "changed_parent_files": 3,
+  "new_files": 1,
+  "deleted_files": 0,
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "size": 31855
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "size": 87473
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "size": 46885
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "size": 9147
+    }
+  ],
+  "formatted_source_root_review": {
+    "name": "r22_ha_formatted_source_root_review",
+    "blob": "65bb4bd0a2dab04290d026db87dc3e209247c4b3",
+    "bytes": 2013,
+    "sha256": "5eb4b74d7a5d1fddbcf9eb0152732777501985ab9c22fc54be8ba73ab729544d"
+  },
+  "no_qualified_tests_transfer": true,
+  "ready_for_exact_source_commit_and_draft_PR": true
+}

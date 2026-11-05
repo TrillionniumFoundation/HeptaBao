@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.fixed-runtime-request-digest-source-proof.v1",
+  "runtime_source": {
+    "repo": "TrillionniumFoundation/hepta-runtime",
+    "blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+    "bytes": 171794,
+    "sha256": "98344ab61981793fa8b6cda92d777c62639dd6d61b4e3b6db0e94bb96f011fe5"
+  },
+  "positive_control": {
+    "request_blob": "c17964a28812bbe989aa364e84cf9f000b9e3959",
+    "request_sha256": "8f9ee602f59733731ee7a5ce2ded716ad0f3e53c90c270a7a58b63bb7fbedd7b",
+    "ack_blob": "9c310662aad04df8295348e158c58cb02db891ea",
+    "job_id": "1a1aaa6db3e-fc05-45a6",
+    "created_unix_ms": 1793864424254,
+    "computed_request_digest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+    "actual_ack_request_digest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+    "exact": true,
+    "serialized_binding_bytes": 11059
+  },
+  "target": {
+    "request_blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+    "source_bytes": 21479,
+    "source_sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+    "computed_request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+    "serialized_binding_bytes": 22861,
+    "idempotency_key": "heptabao-x230-original-relay-effect-fence-r2-8c930805"
+  },
+  "scope": [
+    "Reference public source only; no proof that actual deployment bytes equal this source.",
+    "Positive control confirms this exact canonical binding for this observed request.",
+    "Remote request JSON omits host/idempotency_key; stdin is removed into stdin.bin; no assumptions from absent fields.",
+    "Target digest is a derived candidate locator, not evidence a job exists or executed."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.mac-same-root-publication-stage-go.v1",
+  "status": "GO_ONE_EXACT_MAC_SOURCE_STAGE",
+  "asof": "2026-11-05 09:02:33 UTC",
+  "packet": "e5050e7a977cd5f9e47e878cdca11866af4993bc",
+  "request": {
+    "blob": "e455bac514894112c694cc518e93e3b4c8799591",
+    "bytes": 133944,
+    "sha256": "a0aee696750e0e79c97965cdbc3024da14032320e1f64d96ab058d90928b88b5",
+    "idempotency_key": "heptabao-same-root-publication-1c665-mac-source-20261105-r1-e8649ca6"
+  },
+  "source": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "parent": "6d02ceca629163e1c07480fa1f21520434407143"
+  },
+  "root_reviews": {
+    "bindings": {
+      "name": "r22_ha_mac_source_root_binding_review",
+      "blob": "a06647c58b06b3af7470ab5dd61df6c64e9e290b",
+      "bytes": 3310,
+      "sha256": "f79791854ca0012b37af56210f13f791e900c36ebd79b2dcef68c4e532329291"
+    },
+    "ast": {
+      "name": "r22_ha_mac_source_root_ast",
+      "blob": "9211469fea32b50f8775c385c9a2a1f72da39ac0",
+      "bytes": 4335,
+      "sha256": "18c06d5093b218ead5371e06a02852d172bfa05463f8de616b45712962a794d0"
+    }
+  },
+  "artifact_admission": "The independent native bundle metadata and complete returned-version binary payload agree on 28172 bytes/SHA6536aadd; exact prereq495033/HEAD1c665/PACK and the Mac carrier match. This is sufficient as a public input for an independent exact Git fsck/worktree import. It does not close the original ROG job's missing ACK/authority.",
+  "scope": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1",
+    "bundle": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-same-root-publication-1c665-from495.bundle",
+    "original_T5_prewrite_uuid_guard": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "create_only_bundle_source_controls": true,
+    "compiler_or_server_or_provider": false,
+    "no_shared_Cargo_target_access": true,
+    "no_network_fetch_on_Mac": true
+  },
+  "limits": {
+    "stage_seconds": 300,
+    "git_seconds": 90,
+    "clone_seconds": 180,
+    "diskutil_seconds": 30,
+    "outer_seconds": 360,
+    "stdin_max_bytes": 262144,
+    "actual_stdin_bytes": 104966
+  },
+  "required_actual": "Original authoritative job/streams, full stage result, owned diskutil/Git closure, unchanged old source, full history3762/strict fsck/3914 leaf index29e37 and controls/bundle identities. Missing original ACK stays UNKNOWN and is reconciled read-only.",
+  "normal_build": {
+    "go": false,
+    "mac_independent_of_linux_QA": true,
+    "condition": "Separate exact binding/GO after Mac actual source admission; original8280 outer and1800 release/libtest remain."
+  },
+  "dispatch_rule": "Persist external intent in a completed call; submit exact request once, preserve original ACK. No substitute key or replay on uncertain launch."
+}

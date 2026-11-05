@@ -1,0 +1,62 @@
+[
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+    "before": {
+      "bytes": 31470,
+      "sha256": "b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf",
+      "blob": "8c67a106e6a9628ad77214e09656cf73b050dcbe"
+    },
+    "after": {
+      "bytes": 31870,
+      "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "blob": "510081c3383b8bfeb1edff282e7f089156b9e282"
+    },
+    "diff": {
+      "bytes": 901,
+      "sha256": "bf15fb74f791af0f9839fb746dc998ecaf15175f0b8fa93059e4b5a66f09ef68",
+      "blob": "2ac22e6af8923532ae009a12ced508006ec1e5b6"
+    },
+    "hunks": 1,
+    "forward_and_reverse_exact": true
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+    "before": {
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    "after": {
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db"
+    },
+    "diff": {
+      "bytes": 2664,
+      "sha256": "ef313d5e4dd6bf1cc34dfebb7dcc15f51d0d5149f4b166a213ba786e6caf51ba",
+      "blob": "0da5c7fea1f4109156fd1355094acbc2fddac11c"
+    },
+    "hunks": 3,
+    "forward_and_reverse_exact": true
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+    "before": {
+      "bytes": 46783,
+      "sha256": "4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c",
+      "blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+    },
+    "after": {
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b"
+    },
+    "diff": {
+      "bytes": 471,
+      "sha256": "fb4f229aec96a639a29dd0bebc151a0ed8b531fc1406686461ecb6b4f510a3ee",
+      "blob": "6bb67f8c74dc9382411ab9a091fb4feedd1414b0"
+    },
+    "hunks": 1,
+    "forward_and_reverse_exact": true
+  }
+]

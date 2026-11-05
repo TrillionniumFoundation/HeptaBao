@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.root.xr01-public-report-read-go.v1",
+  "as_of_utc": "2026-11-05T09:06:41Z",
+  "status": "GO_ONE_FIXED_PUBLIC_REPORT_READ_SEQUENCE",
+  "source_contract": "ceb39e45b71a0d971da3f18e0834bc09a62e6fab",
+  "host": "x230",
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+  "expected_sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+  "max_file_bytes": 2097152,
+  "sequence": "Independent file_info of the exact fixed public report, require regular/no symlink/present version/expected SHA/size cap; only then whole binary reads of that same observed version within each native API limit.",
+  "new_controller_or_child": false,
+  "private_bodies_or_SQL_or_directory_scan": false,
+  "alternate_path_on_mismatch": false,
+  "production_mutation_or_J3160": false,
+  "actual_observation_in_this_snapshot": false
+}

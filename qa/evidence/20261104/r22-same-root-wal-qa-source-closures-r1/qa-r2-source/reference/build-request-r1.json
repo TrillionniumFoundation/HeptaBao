@@ -1,0 +1,19 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3.12",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build_native_h2_client_r1.py",
+    "--binding",
+    "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build-binding.private.json",
+    "--binding-sha256",
+    "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d",
+    "--self-sha256",
+    "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+  ],
+  "cwd": "/home/qian-qi",
+  "timeout_seconds": 660,
+  "idempotency_key": "heptabao-df026-native-h2-qa-build-2e2ea6ed-8807a514-20261105-r1"
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "selected": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c67a106e6a9628ad77214e09656cf73b050dcbe",
+      "size": 31470,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/8c67a106e6a9628ad77214e09656cf73b050dcbe"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+      "size": 86397,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+      "size": 46783,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+    }
+  ],
+  "new_file_absent": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+  "merkle_trees": 358
+}

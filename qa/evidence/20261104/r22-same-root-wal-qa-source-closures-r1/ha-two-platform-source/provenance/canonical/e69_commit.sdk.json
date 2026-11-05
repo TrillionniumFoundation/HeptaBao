@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"node_id\":\"C_kwDOUGncwNoAKGU2OWU1MmYyOGM2NTNkMjhjNWFlMzZkYmJmNmViNTFiODQ0NTM2YmM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T05:07:02Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T05:07:02Z\"},\"tree\":{\"sha\":\"132ec30c42775568ee7e531183e8adcb65c54ca3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/132ec30c42775568ee7e531183e8adcb65c54ca3\"},\"message\":\"test(ha): observe silent-donor tail priority at task dispatch\",\"parents\":[{\"sha\":\"c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "display_title": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "structuredContent": {
+      "title": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "content": "{\"sha\":\"e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"node_id\":\"C_kwDOUGncwNoAKGU2OWU1MmYyOGM2NTNkMjhjNWFlMzZkYmJmNmViNTFiODQ0NTM2YmM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/e69e52f28c653d28c5ae36dbbf6eb51b844536bc\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T05:07:02Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T05:07:02Z\"},\"tree\":{\"sha\":\"132ec30c42775568ee7e531183e8adcb65c54ca3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/132ec30c42775568ee7e531183e8adcb65c54ca3\"},\"message\":\"test(ha): observe silent-donor tail priority at task dispatch\",\"parents\":[{\"sha\":\"c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/e69e52f28c653d28c5ae36dbbf6eb51b844536bc"
+    }
+  },
+  "isError": false
+}

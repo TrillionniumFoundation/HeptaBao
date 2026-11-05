@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "files": [
+    {
+      "path": "requests/prior-cursor.json",
+      "bytes": 140,
+      "sha256": "5e98513d66672585da201898d8e74eac6ef2171092900a6708aec4c71b54d838",
+      "blob": "c413efa28674d56682f9a24725a3f201ad3cfea9"
+    },
+    {
+      "path": "sdk/prior-cursor.json",
+      "bytes": 167,
+      "sha256": "acdf53e128411e0ea41e7e74792a834b75d380982bdc0096ba4f0cbdf936687c",
+      "blob": "2642a1f51dbbd6b4f25149d9261479010a9df738"
+    },
+    {
+      "path": "native/prior-cursor.json",
+      "bytes": 58,
+      "sha256": "f9e339f8d48e69ae0ef84dc07187edf2fa2a6afa62a52fdc19963f5ff8a15f64",
+      "blob": "5db7e9ae4435fba2056a8919cb20a08acffa385e"
+    },
+    {
+      "path": "requests/fresh16-page1.json",
+      "bytes": 39,
+      "sha256": "007a2a8c3f931ba330c22f66fd5467e27f45a1624d1763c0ce2a845cfa638993",
+      "blob": "6822c1c7b11de3b89820710313c6b830c767bfcd"
+    },
+    {
+      "path": "sdk/fresh16-page1.json",
+      "bytes": 2834,
+      "sha256": "406f0924c0a63cf8419b92d59c2b6b8320164f4ffdd2c9f0da92026788cf7fa3",
+      "blob": "e8179917213f3b178c851be5e4d8b669acaf63ab"
+    },
+    {
+      "path": "native/fresh16-page1.json",
+      "bytes": 2443,
+      "sha256": "d1b6b8c865defd2f65af07842b6f400d539023218b3dfb896fb09735126f2040",
+      "blob": "eb0674a10db145012b10805d64538c4c89d6dc37"
+    },
+    {
+      "path": "requests/fresh16-page2.json",
+      "bytes": 140,
+      "sha256": "8bcb376648554be409202fb38f66427bc490b9afc2b02f4dc5bfeaa02fcad21d",
+      "blob": "2dbba4ebb7546f99199d0ef37845b349d9d83f2f"
+    },
+    {
+      "path": "sdk/fresh16-page2.json",
+      "bytes": 167,
+      "sha256": "acdf53e128411e0ea41e7e74792a834b75d380982bdc0096ba4f0cbdf936687c",
+      "blob": "2642a1f51dbbd6b4f25149d9261479010a9df738"
+    },
+    {
+      "path": "native/fresh16-page2.json",
+      "bytes": 58,
+      "sha256": "f9e339f8d48e69ae0ef84dc07187edf2fa2a6afa62a52fdc19963f5ff8a15f64",
+      "blob": "5db7e9ae4435fba2056a8919cb20a08acffa385e"
+    },
+    {
+      "path": "requests/fresh128-page1.json",
+      "bytes": 40,
+      "sha256": "461a2dd27b40a901ea5bc393e1de726e98857c69e1801b1041959637df78d65c",
+      "blob": "d7f0b876183894022728d46ed27483b338c9d595"
+    },
+    {
+      "path": "sdk/fresh128-page1.json",
+      "bytes": 19660,
+      "sha256": "50acc1b4a6dfa422bdbe8664adff23ff32907e89592d98ee27fcf98628e395f1",
+      "blob": "0c94073fbfa79ca1a10a71d0d19b70237f9296bc"
+    },
+    {
+      "path": "native/fresh128-page1.json",
+      "bytes": 17253,
+      "sha256": "abe9a4c2c05448592abc0ea165023377b9461eacda39b9db7403d31defb836d6",
+      "blob": "b3bc354836b494ed48b7afc486e73aa7f57005f1"
+    },
+    {
+      "path": "requests/fresh128-page2.json",
+      "bytes": 141,
+      "sha256": "f483f4956d4faa1ad3aba6c3d9b5661ce93b82ca22b71a0fc030cf06ff84c25f",
+      "blob": "a22b293922924b92fd4e6251165b670346070fe7"
+    },
+    {
+      "path": "sdk/fresh128-page2.json",
+      "bytes": 19781,
+      "sha256": "824103f25aa326afb80749f88787de4f25de5c4e62cb2d430d05a3534d312f86",
+      "blob": "52bb5a4968029cb1580701372c1c3f47a66d5c1f"
+    },
+    {
+      "path": "native/fresh128-page2.json",
+      "bytes": 17374,
+      "sha256": "7536597327dd7197e9121c2d975a9bf6460f57bbd9ee06b4ba4eca43c91270cd",
+      "blob": "6ca649c5c4c93e6428d96d34b1bdd1a6ac57361f"
+    },
+    {
+      "path": "requests/fresh128-page3.json",
+      "bytes": 141,
+      "sha256": "5d6477260f34089b1c6124d3420b9620a5e216dd14127cec604e69c516345c49",
+      "blob": "eb08730b7d070fb8d8862a80ad7b42f27a43f8eb"
+    },
+    {
+      "path": "sdk/fresh128-page3.json",
+      "bytes": 167,
+      "sha256": "acdf53e128411e0ea41e7e74792a834b75d380982bdc0096ba4f0cbdf936687c",
+      "blob": "2642a1f51dbbd6b4f25149d9261479010a9df738"
+    },
+    {
+      "path": "native/fresh128-page3.json",
+      "bytes": 58,
+      "sha256": "f9e339f8d48e69ae0ef84dc07187edf2fa2a6afa62a52fdc19963f5ff8a15f64",
+      "blob": "5db7e9ae4435fba2056a8919cb20a08acffa385e"
+    },
+    {
+      "path": "analysis/incomplete-readonly-observation.public.json",
+      "bytes": 1308,
+      "sha256": "4b2f62048671198129e8c9cf62623b283fb4afe9f0b3ac5a241db7c18b96e00f",
+      "blob": "33b9a1eeee4e3888559fc8c111dcc04f5b15ced9"
+    }
+  ]
+}

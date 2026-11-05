@@ -1,0 +1,32 @@
+[
+  {
+    "repository": "python/cpython",
+    "ref": "v3.12.3",
+    "path": "Lib/subprocess.py",
+    "bytes": 88725,
+    "blob": "1d17ae3608a51aaf7de5629f69d1f7ee42cdd3d1",
+    "sha256": "baa9f9138d8d20df6284f67e7d2e790f847f65e2c5370de322d54cccd737f2d9",
+    "url": "https://github.com/python/cpython/blob/v3.12.3/Lib/subprocess.py",
+    "scope": "documented implementation reference; not a claim that the pinned ROG Python was built from this exact tag"
+  },
+  {
+    "repository": "python/cpython",
+    "ref": "v3.12.3",
+    "path": "Modules/posixmodule.c",
+    "bytes": 457007,
+    "blob": "8fce40bb6867830ad0af8a7b0ab7c77f548b2d2f",
+    "sha256": "8e55414e8f48d56180a4024f1ce659ebefefbeee7e5ce7a56b7cfa25108c225c",
+    "url": "https://github.com/python/cpython/blob/v3.12.3/Modules/posixmodule.c",
+    "scope": "documented implementation reference; not a claim that the pinned ROG Python was built from this exact tag"
+  },
+  {
+    "repository": "python/cpython",
+    "ref": "v3.12.3",
+    "path": "Modules/_posixsubprocess.c",
+    "bytes": 42634,
+    "blob": "35ea2ac306a3e6614cad3dc59dda99d36dfa41c5",
+    "sha256": "eb1074585ce62af638d15680bd13ba99aab25c9b6cbed7ac88ae21b60f060f3b",
+    "url": "https://github.com/python/cpython/blob/v3.12.3/Modules/_posixsubprocess.c",
+    "scope": "documented implementation reference; not a claim that the pinned ROG Python was built from this exact tag"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "#!/usr/bin/env python3\n\"\"\"Create-only publication of seven reviewed H2 QA sources and one actual-bound build binding.\"\"\"\nfrom pathlib import Path\nimport base64, hashlib, json, os, stat, sys, time\n\nACTUAL_INPUTS_READY = True\nif not ACTUAL_INPUTS_READY:\n    raise RuntimeError('actual_qa_build_binding_unresolved')\nos.umask(0o077)\nPARENT = Path('/home/qian-qi')\nBASE = PARENT / 'heptabao-native-h2-qa-controls-df026-20261105-r2'\ncreated_base = False\nRECEIPT = BASE / 'inert-stage.result.public.json'\nPINS = {\n    \"build_native_h2_client_r1.py\": [\n        42820,\n        \"c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8\"\n    ],\n    \"inputs/native_h2_client.rs\": [\n        19382,\n        \"41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd\"\n    ],\n    \"inputs/native_h2_client_tests.rs\": [\n        8942,\n        \"7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2\"\n    ],\n    \"inputs/Cargo.toml\": [\n        957,\n        \"960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5\"\n    ],\n    \"inputs/canonical.Cargo.lock\": [\n        101193,\n        \"d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5\"\n    ],\n    \"inputs/owned_reference_phaseb_r3.py\": [\n        61210,\n        \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n    ],\n    \"inputs/official_cli_reference_r4.py\": [\n        46586,\n        \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n    ],\n    \"build-binding.private.json\": [\n        4039,\n        \"d995e45f61507ba9b99500daf736fa2e179839e95babe4d8db25c3cb11536693\"\n    ]\n}\ndef sha(raw):\n    return hashlib.sha256(raw).hexdigest()\ndef ident(s):\n    return (s.st_dev, s.st_ino, s.st_uid, s.st_gid, s.st_mode, s.st_nlink,\n            s.st_size, s.st_mtime_ns, s.st_ctime_ns)\ndef sync_dir(path=BASE):\n    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    try:\n        os.fsync(fd)\n    finally:\n        os.close(fd)\ndef exact(path, raw):\n    assert path.resolve(strict=True) == path\n    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)\n    try:\n        before = os.fstat(fd)\n        assert stat.S_ISREG(before.st_mode) and before.st_uid == 1000\n        assert before.st_nlink == 1 and stat.S_IMODE(before.st_mode) == 0o600\n        assert before.st_size == len(raw)\n        parts, count = [], 0\n        while True:\n            block = os.read(fd, 65536)\n            if not block:\n                break\n            count += len(block)\n            assert count <= len(raw)\n            parts.append(block)\n        assert b''.join(parts) == raw\n        assert ident(before) == ident(os.fstat(fd)) == ident(path.lstat())\n        return {'bytes': count, 'sha256': sha(raw), 'mode': '0600', 'identity': list(ident(before))}\n    finally:\n        os.close(fd)\ndef publish(name, raw):\n    destination = BASE / name\n    assert name in PINS or name == RECEIPT.name\n    assert destination.parent in (BASE, BASE / 'inputs')\n    if os.path.lexists(destination):\n        return {'path': str(destination), 'publication': 'existing_exact', **exact(destination, raw)}\n    temporary = destination.with_name('.' + destination.name + '.hepta-h2-qa-inert-r1.tmp')\n    fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)\n    with os.fdopen(fd, 'wb') as stream:\n        stream.write(raw)\n        stream.flush()\n        os.fchmod(stream.fileno(), 0o600)\n        os.fsync(stream.fileno())\n        made = os.fstat(stream.fileno())\n    assert stat.S_ISREG(made.st_mode) and made.st_uid == 1000 and made.st_nlink == 1\n    assert ident(made) == ident(temporary.lstat())\n    publication = 'created'\n    try:\n        os.link(temporary, destination, follow_symlinks=False)\n    except FileExistsError:\n        publication = 'existing_after_race'\n    # Only unlink the temporary inode that this attempt exclusively created.\n    current = temporary.lstat()\n    assert (current.st_dev, current.st_ino) == (made.st_dev, made.st_ino)\n    os.unlink(temporary)\n    sync_dir(destination.parent)\n    return {'path': str(destination), 'publication': publication, **exact(destination, raw)}\n\nassert (os.uname().sysname, os.uname().machine) == ('Linux', 'x86_64')\nassert os.getuid() == 1000 and PARENT.resolve(strict=True) == PARENT and PARENT.stat().st_uid == 1000\nassert not os.path.lexists(BASE)\nassert not os.path.lexists(RECEIPT)\nresult = {'schema': 'heptabao.native-h2-qa-build-inert.v1', 'status': 'failed',\n          'started_ns': time.time_ns(), 'files': [], 'source_executed': False,\n          'git_started': False, 'compiler_started': False, 'service_started': False,\n          'python_compile_only': True, 'artifact_transfer_started': False}\ntry:\n    incoming = sys.stdin.buffer.read(524289)\n    assert 0 < len(incoming) <= 524288\n    payload = json.loads(incoming)\n    assert set(payload) == {'schema', 'files'} and payload['schema'] == 'heptabao.native-h2-qa-build-inputs.v1'\n    assert set(payload['files']) == set(PINS)\n    decoded = {}\n    for name, (length, digest) in PINS.items():\n        raw = base64.b64decode(payload['files'][name], validate=True)\n        assert len(raw) == length and sha(raw) == digest\n        if name.endswith('.py'):\n            compile(raw, name, 'exec')\n        decoded[name] = raw\n    BASE.mkdir(mode=0o700)\n    created_base = True\n    (BASE / 'inputs').mkdir(mode=0o700)\n    sync_dir()\n    parent_fd = os.open(PARENT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    try:\n        os.fsync(parent_fd)\n    finally:\n        os.close(parent_fd)\n    result['stdin_bytes'] = len(incoming)\n    result['stdin_sha256'] = sha(incoming)\n    for name, raw in decoded.items():\n        result['files'].append(publish(name, raw))\n    result['status'] = 'prepared'\nexcept BaseException as error:\n    result['error_type'] = type(error).__name__\nfinally:\n    result['terminal_ns'] = time.time_ns()\n    raw = (json.dumps(result, sort_keys=True, indent=2) + '\\n').encode()\n    if created_base:\n        publish(RECEIPT.name, raw)\n    print(json.dumps(result, sort_keys=True), flush=True)\nsys.exit(0 if result['status'] == 'prepared' else 1)\n"
+    ],
+    "created_unix_ms": 1793867551169,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1aad691c1-fc05-47e5",
+    "idempotency_key": "heptabao-df026-native-h2-qa-inert-21685ed8-20261105-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1aad691c1-fc05-47e5",
+    "request_digest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+    "request_fingerprint": 5869642320651798354,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1aad691c1-fc05-47e5"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1aad691c1-fc05-47e5"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

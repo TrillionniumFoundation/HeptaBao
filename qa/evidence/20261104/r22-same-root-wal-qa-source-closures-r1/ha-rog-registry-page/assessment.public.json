@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.source-stage.registry-bounded-observation.v1",
+  "original_request_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957",
+  "original_request_blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+  "pages_read": 1,
+  "max_authorized_pages": 4,
+  "returned_jobs": 128,
+  "total_reported": 1866,
+  "inventory_complete": false,
+  "returned_fields": [
+    "created_unix_ms",
+    "execution_mode",
+    "host",
+    "id",
+    "launch_state"
+  ],
+  "exact_key_not_exposed": true,
+  "original_job_identified": false,
+  "absence_claimed": false,
+  "further_pages_not_used_because_no_key_and_only_old_sorted_records": true,
+  "started_replacement_locator": false,
+  "launch_ack_unknown_retained": true
+}

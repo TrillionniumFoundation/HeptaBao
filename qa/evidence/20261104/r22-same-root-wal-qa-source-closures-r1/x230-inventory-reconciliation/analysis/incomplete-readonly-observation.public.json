@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.desktop-job-inventory-reconciliation-incomplete.v1",
+  "status": "INCOMPLETE_SNAPSHOT_INVALIDATED",
+  "read_only": true,
+  "process_start_calls": 0,
+  "process_signal_calls": 0,
+  "initial_parent_cursor_snapshot": "4263af3e125c3502d688a408c6dbaf4b190f3ddd6a41771c265ab6cd4ae259e6",
+  "attempts": [
+    {
+      "snapshot": "4263af3e125c3502d688a408c6dbaf4b190f3ddd6a41771c265ab6cd4ae259e6",
+      "result": "continuation_refused"
+    },
+    {
+      "snapshot": "66ab385ff51ef1789986199f0ea0dbace5fd9b9163df427b79f307f4ca150e04",
+      "rows_observed": 16,
+      "total": 7646,
+      "result": "second_page_refused"
+    },
+    {
+      "snapshot": "70ed3ce74ed6e903231f7b886c641b02428ebd5d6b2f5cb383a152aee2b9ea33",
+      "rows_observed": 256,
+      "total": 7647,
+      "result": "third_page_refused"
+    }
+  ],
+  "filter_created_unix_ms_minimum": 1793864424254,
+  "requested_candidate_source_bytes": 21479,
+  "requested_candidate_source_sha256_prefix": "8c930805",
+  "candidate_presence": "UNRESOLVED",
+  "limits": [
+    "No complete registry inventory.",
+    "No inference that fence started, failed, or never started.",
+    "Returned SDK envelopes persisted with native text exact; not raw transport packet capture.",
+    "No retries of the underlying fence business request."
+  ]
+}

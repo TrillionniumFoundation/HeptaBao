@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.qa-inert-fixed-read-reconciliation-intent.v1",
+  "fixed_requests": [
+    {
+      "path": "operations/body-references/request.public.json",
+      "blob": "66962cbf88cd7d750ddbe3f2d15251b9df2dd622",
+      "sha256": "16b669bc6b3b7030b05e43a576398c014f0f503d852762d873e81c5068850703",
+      "bytes": 486
+    },
+    {
+      "path": "operations/lock-part-0/request.public.json",
+      "blob": "186f82a0b285e916761d34bbc4adff4701e063ad",
+      "sha256": "6acc4276893e461de3e158889abc829540976eb38b14a6f6497684226ae01aee",
+      "bytes": 402
+    }
+  ],
+  "reason": "Recover originally keyed read operation identities after local exec termination; outcome unavailable; no inference from missing local store.",
+  "business_replay": false,
+  "parameters_unchanged": true
+}

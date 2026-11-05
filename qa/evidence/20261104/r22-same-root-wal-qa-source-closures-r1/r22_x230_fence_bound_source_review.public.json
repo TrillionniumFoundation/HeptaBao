@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root.x230-fence-r2-bound-source-review.v1",
+  "status": "SOURCE_REVIEW_COMPLETE_WAITING_INDEPENDENT_PEER",
+  "candidate": {
+    "name": "r22_x230_fence_candidate_source",
+    "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21",
+    "bytes": 21479,
+    "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9"
+  },
+  "parent": {
+    "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896",
+    "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89"
+  },
+  "new_metadata": {
+    "name": "r22_x230_fresh_metadata_core",
+    "blob": "62403647a790e255006068666fb71c95965420ba",
+    "bytes": 5656,
+    "sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed"
+  },
+  "new_metadata_root": {
+    "name": "r22_x230_fresh_metadata_root_review",
+    "blob": "9d1853d6e37a5772a3a66aa3ff6a8e58c43877e3",
+    "bytes": 2038,
+    "sha256": "5f7732548d361efcec8f8c6b8fe4425fb13e77e42a328a17aefa081d81eeb68c"
+  },
+  "request": {
+    "name": "r22_x230_fence_exact_request",
+    "blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+    "bytes": 22911,
+    "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554"
+  },
+  "delta": "Only two directory full-nine tuples and the metadata-evidence SHA changed. All functions and class definitions, three control source full-nine identities and whole hashes, create-only mkdir/fsync/tombstone actions, original caps and no-delete/no-child/no-network logic remain byte-identical.",
+  "known_previous_attempt": {
+    "job": "1a1aa8a6fb0-fc05-4428",
+    "exit_code": 1,
+    "phase": "bind_fixed_directory",
+    "mkdir_attempted": false,
+    "all_descriptors_closed": true
+  },
+  "original_relay_job": "1a1aa57458d-fc05-4156",
+  "original_relay_state": "UNKNOWN",
+  "would_not_replay_original": true,
+  "would_not_prove_old_terminal": true,
+  "fence_not_yet_executed": true,
+  "peer_requested": true
+}

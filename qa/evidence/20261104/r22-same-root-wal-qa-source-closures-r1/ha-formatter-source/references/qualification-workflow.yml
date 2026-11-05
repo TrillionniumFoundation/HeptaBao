@@ -1,0 +1,389 @@
+name: HeptaBao V2.5 multi-platform repository qualification
+
+on:
+  # Current cross-platform coverage is distinct from the Linux PR gate.
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  repository-linux-x86-64:
+    name: repository / ubuntu-24.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf 'runner=ubuntu-24.04\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install pinned Python plan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Install exact Rust 1.98 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 --version
+          rustc +1.98.0 --version
+
+      - name: Validate repository and V2.5 admission boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Execute all workspace targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+
+      - name: Run strict Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Build documentation and server
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Verify final clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  release-candidate-reproducibility:
+    name: release candidate / reproducible binary + SPDX SBOM
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install exact Rust 1.98 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal
+          rustc +1.98.0 --version
+          cargo +1.98.0 --version
+
+      - name: Build the exact release candidate twice in isolated target roots
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-a" cargo +1.98.0 build --locked --release -p heptabao-server
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-b" cargo +1.98.0 build --locked --release -p heptabao-server
+          binary_a="$RUNNER_TEMP/release-a/release/heptabao-server"
+          binary_b="$RUNNER_TEMP/release-b/release/heptabao-server"
+          test -x "$binary_a" && test -x "$binary_b"
+          sha_a="$(sha256sum "$binary_a" | cut -d ' ' -f1)"
+          sha_b="$(sha256sum "$binary_b" | cut -d ' ' -f1)"
+          printf 'release_binary_sha256_first=%s\nrelease_binary_sha256_second=%s\n' "$sha_a" "$sha_b"
+          test "$sha_a" = "$sha_b"
+          cmp "$binary_a" "$binary_b"
+          cp "$binary_a" "$RUNNER_TEMP/heptabao-server-release-candidate"
+
+      - name: Generate and revalidate deterministic SPDX 2.3 candidate SBOM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/release_candidate_sbom.py             --lock Cargo.lock             --binary "$RUNNER_TEMP/heptabao-server-release-candidate"             --source-sha "$GITHUB_SHA"             --output "$RUNNER_TEMP/heptabao.spdx.json"
+          python scripts/release_candidate_sbom.py             --validate             --lock Cargo.lock             --binary "$RUNNER_TEMP/heptabao-server-release-candidate"             --source-sha "$GITHUB_SHA"             --output "$RUNNER_TEMP/heptabao.spdx.json"
+          printf 'candidate_sbom_sha256=%s\n' "$(sha256sum "$RUNNER_TEMP/heptabao.spdx.json" | cut -d ' ' -f1)"
+
+      - name: Verify release evidence does not mutate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  repository-linux-arm64:
+    name: repository / ubuntu-24.04-arm
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 150
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf 'runner=ubuntu-24.04-arm\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install pinned Python plan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+
+      - name: Install exact Rust 1.98 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          # ARM hosted runners can arrive with an interrupted/preinstalled 1.98
+          # manifestation whose clippy binary conflicts with rustup recovery.
+          # This is an ephemeral runner: remove only that exact toolchain before
+          # installing the pinned complete component set. Product gates stay
+          # unchanged.
+          rustup toolchain uninstall 1.98.0-aarch64-unknown-linux-gnu || true
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 --version
+          rustc +1.98.0 --version
+
+      - name: Validate repository and V2.5 admission boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Execute all workspace targets with target ABI flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          print({
+              "machine": os.uname().machine,
+              "O_DIRECTORY": os.O_DIRECTORY,
+              "O_NOFOLLOW": os.O_NOFOLLOW,
+              "O_CLOEXEC": os.O_CLOEXEC,
+          })
+          PY
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+
+      - name: Run strict Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Build documentation and server
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Verify final clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  repository-macos-portable:
+    name: portable contracts / macos-15; storage fail-closed
+    runs-on: macos-15
+    timeout-minutes: 150
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf 'runner=macos-15\nprofile=portable-contracts-storage-fail-closed\ncommit=%s\ntree=%s\n' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse 'HEAD^{tree}')"
+
+      - name: Install pinned repository dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          # Hosted macOS images can also arrive with a partial/preinstalled 1.98
+          # toolchain whose cargo-clippy conflicts with rustup recovery. The
+          # runner is ephemeral; remove only the exact pinned toolchain before
+          # installing the complete component set, matching the ARM lane.
+          rustup toolchain uninstall 1.98.0-aarch64-apple-darwin || true
+          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.98.0 --version
+          rustc +1.98.0 --version
+
+      - name: Validate repository and V2.5 admission boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_v2.py
+          python scripts/validate_compatibility_corpus.py
+          python -m unittest discover -s tests/repository -p 'test_*.py'
+
+      - name: Compile every workspace target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 fmt --all -- --check
+          cargo +1.98.0 test --workspace --all-targets --locked --no-run
+
+      - name: Execute packages outside the Linux storage closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_tmp_root="$RUNNER_TEMP/heptabao-canonical-tmp"
+          rm -rf "$test_tmp_root"
+          mkdir -p "$test_tmp_root"
+          export TMPDIR="$(cd "$test_tmp_root" && pwd -P)/"
+          test -d "$TMPDIR"
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          temp_root = pathlib.Path(os.environ["TMPDIR"])
+          if temp_root.is_symlink() or not temp_root.is_absolute():
+              raise SystemExit("TMPDIR must be an absolute non-symlink directory")
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "+1.98.0", "metadata", "--format-version", "1", "--locked"
+          ]))
+          workspace = set(metadata["workspace_members"])
+          packages = {
+              package["id"]: package
+              for package in metadata["packages"]
+              if package["id"] in workspace
+          }
+          dependency_ids = {
+              node["id"]: {dependency["pkg"] for dependency in node.get("deps", [])}
+              for node in metadata["resolve"]["nodes"]
+              if node["id"] in workspace
+          }
+          guard = next(
+              package_id
+              for package_id, package in packages.items()
+              if package["name"] == "heptabao-filesystem-guard"
+          )
+          storage_closure = {guard}
+          changed = True
+          while changed:
+              changed = False
+              for package_id in workspace - storage_closure:
+                  if dependency_ids.get(package_id, set()) & storage_closure:
+                      storage_closure.add(package_id)
+                      changed = True
+          runnable = sorted(
+              package["name"]
+              for package_id, package in packages.items()
+              if package_id not in storage_closure
+          )
+          blocked = sorted(packages[package_id]["name"] for package_id in storage_closure)
+          print(json.dumps({
+              "test_tmp_root": str(temp_root),
+              "executed_packages": runnable,
+              "compiled_but_storage_blocked_packages": blocked,
+          }, sort_keys=True))
+          command = ["cargo", "+1.98.0", "test", "--locked", "--all-targets"]
+          for name in runnable:
+              command.extend(["-p", name])
+          command.extend(["--", "--test-threads=1"])
+          subprocess.run(command, check=True)
+          PY
+
+      - name: Prove unsupported storage profile fails closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="$RUNNER_TEMP/heptabao-storage-profile-probe"
+          rm -rf "$probe"
+          mkdir -p "$probe/src"
+          cat > "$probe/Cargo.toml" <<EOF
+          [package]
+          name = "heptabao-storage-profile-probe"
+          version = "0.0.0"
+          edition = "2024"
+
+          [dependencies]
+          heptabao-filesystem-guard = { path = "$GITHUB_WORKSPACE/crates/heptabao-filesystem-guard" }
+          EOF
+          cat > "$probe/src/main.rs" <<'EOF'
+          use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+
+          fn main() {
+              let root = std::env::current_dir().expect("absolute current directory");
+              match ExclusiveDirectory::open(root) {
+                  Err(DirectoryGuardError::UnsupportedPlatform) => {}
+                  other => panic!("macOS storage profile must fail closed, got {other:?}"),
+              }
+          }
+          EOF
+          cargo +1.98.0 run --offline --manifest-path "$probe/Cargo.toml"
+
+      - name: Run strict Clippy and build portable artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 doc --workspace --no-deps --locked
+          cargo +1.98.0 build --locked -p heptabao-server
+
+      - name: Verify final clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

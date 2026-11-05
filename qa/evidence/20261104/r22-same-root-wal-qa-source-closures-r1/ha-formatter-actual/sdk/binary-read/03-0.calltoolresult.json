@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"chunk_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"data_base64\":\"\",\"eof\":true,\"next_offset\":0,\"offset\":0,\"path\":\"/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_read.rs.rustfmt.stderr\",\"size\":0,\"version\":\"66306:34381176:0:1793866684601310943:1793866684601310943\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

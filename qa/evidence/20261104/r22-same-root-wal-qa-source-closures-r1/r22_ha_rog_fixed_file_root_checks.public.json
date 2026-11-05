@@ -1,0 +1,16 @@
+{
+  "checks_passed": 9,
+  "checks": [
+    "stage-result exact SDK file-info",
+    "stage-result exact SDK binary-read",
+    "stage-result whole returned bytes and independent native SHA/size/version exact",
+    "stage-result owned0600 nlink1",
+    "stage-intent exact SDK file-info",
+    "stage-intent exact SDK binary-read",
+    "stage-intent whole returned bytes and independent native SHA/size/version exact",
+    "stage-intent owned0600 nlink1",
+    "reported source/carrier/canonical exact"
+  ],
+  "source_qualification_from_job_authority": false,
+  "original_job_unknown_preserved": true
+}

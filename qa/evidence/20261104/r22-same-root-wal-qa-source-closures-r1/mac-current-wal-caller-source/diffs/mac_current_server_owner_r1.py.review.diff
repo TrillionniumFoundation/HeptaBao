@@ -1,0 +1,12 @@
+diff --git a/mac_current_server_owner_r1.py b/mac_current_server_owner_r1.py
+--- a/mac_current_server_owner_r1.py
++++ b/mac_current_server_owner_r1.py
+@@ -10,7 +10,7 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
+ QA=ROOT/'qa'
+ BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server')
+ BINARY_SHA='ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0'

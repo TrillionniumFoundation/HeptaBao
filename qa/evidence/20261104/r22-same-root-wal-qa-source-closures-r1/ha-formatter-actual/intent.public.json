@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.same-root-publication.format.intent.v1",
+  "status": "EXACT_ONCE_AUTHORIZED_NOT_SUBMITTED",
+  "created_utc": "2026-11-05 08:17:47 UTC",
+  "go": {
+    "bytes": 2977,
+    "sha256": "975f3f2e8ca3a4d3189957155694105696a4e926def02b7d9ccab206f7fbb42d",
+    "blob": "c39e03ab7aa41e76ec3c3e816a3aad3fbcdb602a"
+  },
+  "request": {
+    "bytes": 194996,
+    "sha256": "bbc87b30ce08277a35129dd987b310bced6dbb1a422b2b75de558ecc86addaad",
+    "blob": "52fe787d5b68896d16156740f719c74118a12a0b"
+  },
+  "source_packet": "0bd410fc046ff89dcbf953efe5a16f262c41de52",
+  "format_packet": "bdbebf9a6c8f8850077e6c198f1c8b1201520a4a",
+  "host": "rog",
+  "idempotency_key": "heptabao-same-root-publication-rustfmt-20261105-r1-c3b33a6a",
+  "cwd": "/home/qian-qi",
+  "executable": "/usr/bin/python3",
+  "args_prefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "controller_sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695",
+  "stdin_bytes": 180531,
+  "whole_seconds": 50,
+  "child_seconds": 10,
+  "outer_seconds": 60,
+  "no_replay_on_unknown": true,
+  "scope": "Only exact four public Rust inputs in new isolated formatter root; no repository edits, Cargo, tests, product services, source commit or PR."
+}

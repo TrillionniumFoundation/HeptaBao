@@ -1,0 +1,39 @@
+{
+  "schema": "qa-builder-custody-source-invariance-v1",
+  "before_sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35",
+  "after_sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8",
+  "inverse_whole_equal": true,
+  "new_helper": "qa_command_owner_class",
+  "unchanged_original_definitions": [
+    "BindingError",
+    "open_fd",
+    "close_fd",
+    "need",
+    "remaining",
+    "sha",
+    "identity",
+    "exact_path",
+    "no_symlink_ancestors",
+    "duplicate_free",
+    "parse",
+    "read_file",
+    "pin_file",
+    "load_verified_module",
+    "lock_subset",
+    "write_new",
+    "write_json",
+    "fixed_error",
+    "target_identity"
+  ],
+  "only_changed_original_definition": "main",
+  "control_root_literals_changed": 2,
+  "result_schema_change": "v1 to v2",
+  "main_function_changes": [
+    "owner factory",
+    "wait helper",
+    "result schema"
+  ],
+  "original_caps_source_equal": true,
+  "target_main_executed": false,
+  "ast_compile_only": true
+}

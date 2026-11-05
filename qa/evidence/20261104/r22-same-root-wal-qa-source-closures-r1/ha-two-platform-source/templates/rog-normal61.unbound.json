@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.future-exact-normal-build-template.v1",
+  "ready": false,
+  "reason": "Requires actual source-stage result SHA256 and separate root runtime admission; ROG also requires the shared QA Cargo window to close",
+  "actual_stage_sha256": null,
+  "candidate_request": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/control/launch_normal_same_root_publication.py",
+      "--host",
+      "rog",
+      "--commit",
+      "1c66541993662f92cf717154e33717abedb2ea74",
+      "--tree",
+      "94ced21a63ff9aaca4538c0d4796efea2150e632",
+      "--stage-sha256",
+      "UNBOUND_ACTUAL_STAGE_RESULT_SHA256",
+      "--runner-sha256",
+      "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+      "--groups-sha256",
+      "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    ],
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 12000,
+    "idempotency_key": "heptabao-same-root-publication-1c665-rog-normal61-20261105-r1-4100395f-8b02c5f8"
+  }
+}

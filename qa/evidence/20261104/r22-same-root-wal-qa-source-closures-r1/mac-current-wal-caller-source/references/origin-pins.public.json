@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.mac-current-wal-original-reference-pins.r1",
+  "oldInertRequest": {
+    "bytes": 641503,
+    "sha256": "67851222dd58558144d0570209423b0c2c4f1f7e0f03ba79475cd1f84bd36fff",
+    "git_blob": "37c26582c54ffc186b527083f470fe0e3373c9b3"
+  },
+  "oldRuntimeRequest": {
+    "bytes": 5135,
+    "sha256": "f7b968aeed09a21b57ca18336ebe575a07199e0456026c300e3678a6b123d6ab",
+    "git_blob": "5c79feea035cab451eb734174d6497a0237c84e9"
+  },
+  "oldCurrentRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1",
+  "oldNegativeHistoryRetained": true,
+  "oldCaptureUnknownNotReclassified": true
+}

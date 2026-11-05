@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.root.same-root-publication.rog-stage-go.v1",
+  "status": "GO_ONE_EXACT_SOURCE_STAGE_ONLY",
+  "asof": "2026-11-05 08:46:03 UTC",
+  "source_packet": "cd6ff4842444908d68226151d7b480244505bff4",
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "request": {
+    "git_blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+    "bytes": 111195,
+    "sha256": "ee97cca39ecea1910db9cb2f4cb829bf012ed71f386882b096a737dcdfe453e2",
+    "idempotency_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957"
+  },
+  "source_review": {
+    "name": "r22_ha_1c665_rog_core_root_ast",
+    "blob": "dc71e970bcca20b17e8183f323d4a3a8c953e767",
+    "bytes": 4878,
+    "sha256": "3c9482ebc8a063d6ec18f4f085f2c6a8e0d1219fdb91c37e42787891b3a39946"
+  },
+  "reviewed": {
+    "all_packet_leaves": 16,
+    "whole_bytes": 439449,
+    "merkle_trees": 7,
+    "strict_diffs_hunks": [
+      9,
+      7,
+      11
+    ],
+    "stager_lifecycle_definitions_unchanged": 19,
+    "stager_only_changed_definition": "verify_full_worktree count 3913 to 3914",
+    "original_60_execution_body_exact": true,
+    "canonical_index": {
+      "count": 3914,
+      "bytes": 62224861,
+      "sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc"
+    },
+    "carrier_controls_whole_exact": 4,
+    "request_source_and_stdin_exact": true,
+    "old_source_and_failed_observer_fences_preserved": true
+  },
+  "scope": {
+    "new_root": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1",
+    "new_source_and_public_controls_only": true,
+    "public_git_fetch_and_incremental_bundle": true,
+    "shared_cargo_target_touched": false,
+    "compiler_server_provider_consumer_started": false,
+    "stage_seconds": 300,
+    "clone_seconds": 180,
+    "git_leaf_seconds": 90,
+    "outer_seconds": 360
+  },
+  "limitations": [
+    "Actual history count 3762, independent object store, strict fsck and materialized worktree are runtime admission targets, not precredited evidence.",
+    "Normal build has no GO; it must wait for full QA 600/660 terminal and a separate exact request review.",
+    "Retained-df026 helper source and supplied mock component are not promoted to host qualification.",
+    "No transfer of df026 qualification or resolution of prior UNKNOWN/CI154 failures."
+  ],
+  "dispatch_rule": "One original exact request once; save intent and original ACK. If launch/result unknown, preserve and reconcile read-only without replacement dispatch.",
+  "required_evidence": "Authoritative original job, complete original stdout/stderr and result, every owned child once cleanup, exact full source/control/bundle pins and immutable prior-source/evidence comparison."
+}

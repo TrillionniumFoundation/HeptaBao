@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.qa-r2-inert-readonly-reconciliation-addendum.v1",
+  "prior_actual_tree": "ed84eb1da89500fa4033bffca27fe70ad36cdcf7",
+  "rows": [
+    {
+      "label": "body-small",
+      "key": "qa-r2-inert-47e5-body-small-20261105-r1",
+      "operation_id": "36e7cf0a384f70b087e2034897e8ebe5aa28bf2f1910325e3813c0fddb318377",
+      "same_key_reused": true,
+      "admission_async_state": "unknown",
+      "payload_availability": "not established",
+      "status_observation": "MCP -32603 timeout"
+    },
+    {
+      "label": "body-references",
+      "key": "qa-r2-inert-47e5-body-references-20261105-r1",
+      "operation_id": "68439e8b3b7339802cb31dd58f9fc06360e44680e1634892ae9405a29b251cf0",
+      "same_key_reused": true,
+      "admission_async_state": "unknown",
+      "payload_availability": "not established",
+      "status_observation": "not additionally requested"
+    },
+    {
+      "label": "lock-part-0",
+      "key": "qa-r2-inert-47e5-lock-part-0-20261105-r1",
+      "operation_id": "352918c9b3f1b4f3fbbc3c0481bc5aaabf96b93c2b110b99ae2296e00d599aac",
+      "same_key_reused": true,
+      "admission_async_state": "unknown",
+      "payload_availability": "not established",
+      "status_observation": "not additionally requested"
+    }
+  ],
+  "no_business_replay": true,
+  "no_reading_success_inferred": true,
+  "no_active_local_call": true,
+  "cargo_started": false,
+  "cause_of_original_unknown_not_established": true
+}

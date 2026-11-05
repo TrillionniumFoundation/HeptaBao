@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.immutable-source-packet-manifest.v1",
+  "status": "SOURCE_ONLY",
+  "entries": [
+    {
+      "path": "candidate/stage_source_same_root_publication.py",
+      "bytes": 28230,
+      "sha256": "cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9",
+      "blob": "74c0b34005911a169c34ef65a73dfcd885e36574"
+    },
+    {
+      "path": "before/stage_source_same_root_publication.py",
+      "bytes": 27544,
+      "sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+      "blob": "fc3786c199c07435cb3f9e2072768a8282750448"
+    },
+    {
+      "path": "diffs/stage_source_same_root_publication.py.diff",
+      "bytes": 8154,
+      "sha256": "4c79eeb305aa8692509d8d77690402b573d0f489cba05725179657b345b1ccd3",
+      "blob": "146a5237dd56920dd346a983dc8b62b436e29f85"
+    },
+    {
+      "path": "candidate/normal_same_root_publication_build.py",
+      "bytes": 35452,
+      "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+      "blob": "9b318f4acf589e0410263723695f421d0bb224ea"
+    },
+    {
+      "path": "before/normal_same_root_publication_build.py",
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+    },
+    {
+      "path": "diffs/normal_same_root_publication_build.py.diff",
+      "bytes": 13471,
+      "sha256": "03bd0953dba81c68d57da3a558b11248358b4ceae3b5351aa4f1f5689d42d7cd",
+      "blob": "9abf6d2e5a8eb84cc3fc89f8601aab93c5b0e1f1"
+    },
+    {
+      "path": "candidate/launch_normal_same_root_publication.py",
+      "bytes": 35592,
+      "sha256": "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02",
+      "blob": "66728acfe52cede473b0dcae21213a2cb87e48ee"
+    },
+    {
+      "path": "before/launch_normal_same_root_publication.py",
+      "bytes": 39664,
+      "sha256": "98b7838cd4550467b76bc3c9fd3b4925b806075536b7e22dc1cba1c79063bde3",
+      "blob": "8e2f73cf6a286077522268c8c1857ca4004cf258"
+    },
+    {
+      "path": "diffs/launch_normal_same_root_publication.py.diff",
+      "bytes": 12087,
+      "sha256": "19e8cc024563b27865b1c5b4aa8d26520c7f513b37c8cfe5c450a30cefed3d11",
+      "blob": "30cc8e9670f55b7b133da83a12697014d553bcad"
+    },
+    {
+      "path": "dispatch/rog-source.request.json",
+      "bytes": 111195,
+      "sha256": "ee97cca39ecea1910db9cb2f4cb829bf012ed71f386882b096a737dcdfe453e2",
+      "blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d"
+    },
+    {
+      "path": "dispatch/rog-source.stdin.json",
+      "bytes": 79915,
+      "sha256": "3bf6aa94e80601da1bf0c413f0c4f46e620ddc785145b6307c9436df69236331",
+      "blob": "0bcb296c0ef4b3b31eb7a9f7c69395e20c4f01c7"
+    },
+    {
+      "path": "controls/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    {
+      "path": "controls/prior-observer-build-authority.public.json",
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "blob": "971f9ee47142e65ce39b05834e7bc647b08e655b"
+    },
+    {
+      "path": "verification/core-binding.public.json",
+      "bytes": 8165,
+      "sha256": "663c523b0953f99fc6c5ad664691b12d32905ef621132427f6040792f50769c6",
+      "blob": "9a53ec17fc71ac90c9d58152e26e486583157efc"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2714,
+      "sha256": "8eef6c1e67bc0cbbcd2cd441ebbd43b487eeaa6d65d6d2872d1ca2446faa16f6",
+      "blob": "46594f972d9e18aafec8fdcfe4215c77356e4e72"
+    }
+  ]
+}

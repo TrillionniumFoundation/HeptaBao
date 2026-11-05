@@ -1,0 +1,142 @@
+--- a/stage_mac_same_root_publication.py
++++ b/stage_mac_same_root_publication.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create one independent exact cold/H2 MAC checkout; no Cargo or product."""
++"""Create one independent exact same-root publication MAC checkout; no Cargo or product."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import base64
+@@ -23,16 +23,21 @@
+ parser.add_argument('--canonical-bundle-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'mac'
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1')
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-PARENT = '6304a898192bfdf7eabec3c4ea40f7166e59a137'
++COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
++TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
++PARENT = '6d02ceca629163e1c07480fa1f21520434407143'
+ ANCESTRY = (
++    ('1c66541993662f92cf717154e33717abedb2ea74', '6d02ceca629163e1c07480fa1f21520434407143'),
++    ('6d02ceca629163e1c07480fa1f21520434407143', '19ba09ab5c494f25a3531749b0b99fc5c651d56c'),
++    ('19ba09ab5c494f25a3531749b0b99fc5c651d56c', 'e69e52f28c653d28c5ae36dbbf6eb51b844536bc'),
++    ('e69e52f28c653d28c5ae36dbbf6eb51b844536bc', 'c133d7e7b8a1df5f0be8f4337893f234c6ccede2'),
++    ('c133d7e7b8a1df5f0be8f4337893f234c6ccede2', 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'),
+     ('df026fe323dd7cf0f0ec57d7d2d9c5a79897053c', '6304a898192bfdf7eabec3c4ea40f7166e59a137'),
+     ('6304a898192bfdf7eabec3c4ea40f7166e59a137', 'e5de554f5dfe99f0de30012122fe3e248fb60532'),
+     ('e5de554f5dfe99f0de30012122fe3e248fb60532', 'fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd'),
+@@ -42,8 +47,8 @@
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "mac_normal_cold_h2_build.py": (26542, "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862"),
+-    "launch_normal_cold_h2.py": (23774, "5af8319e841f659a7123057baeed270d474b011332ade303b4c2cb5b942d02ff"),
++    "mac_normal_same_root_publication_build.py": (35525, "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02"),
++    "launch_normal_same_root_publication.py": (24018, "f02a982a9ec9afeb26eebd20f007b261aa042daa46f005336a48fce00348df93"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }
+ 
+@@ -288,7 +293,7 @@
+         assert kind == 'blob' and mode in ('100644', '100755')
+         assert not p.is_absolute() and '..' not in p.parts and str(p) == relative
+         entries.append((relative, mode, object_id))
+-    assert len(entries) == 3913 and len({x[0] for x in entries}) == 3913
++    assert len(entries) == 3914 and len({x[0] for x in entries}) == 3914
+     indexed = []
+     for item in git(SOURCE, 'ls-files', '--stage', '-z').split(b'\0'):
+         if not item:
+@@ -394,7 +399,7 @@
+ assert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256
+ data = json.loads(carrier)
+ assert set(data) == {'schema', 'controls', 'canonical_bundle_base64'}
+-assert data['schema'] == 'heptabao.cold-h2-mac-inert-controls.v1'
++assert data['schema'] == 'heptabao.same-root-publication-mac-inert-controls.v1'
+ assert set(data['controls']) == set(EXPECTED_CONTROLS)
+ for name, (size, expected_sha) in EXPECTED_CONTROLS.items():
+     raw = data['controls'][name].encode()
+@@ -407,27 +412,31 @@
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert isinstance(data['canonical_bundle_base64'], str)
+ canonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)
+-assert args.canonical_bundle_bytes == 24337
+-assert args.canonical_bundle_sha256 == '5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2'
++CANONICAL_BUNDLE_BYTES = 28172
++CANONICAL_BUNDLE_SHA256 = '6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15'
++assert isinstance(CANONICAL_BUNDLE_BYTES, int), 'actual ROG bundle binding unresolved'
++assert isinstance(CANONICAL_BUNDLE_SHA256, str), 'actual ROG bundle binding unresolved'
++assert args.canonical_bundle_bytes == CANONICAL_BUNDLE_BYTES
++assert args.canonical_bundle_sha256 == CANONICAL_BUNDLE_SHA256
+ assert len(canonical_raw) == args.canonical_bundle_bytes
+ assert digest(canonical_raw) == args.canonical_bundle_sha256
+ canonical_header = canonical_bundle_header(canonical_raw)
+ assert not os.path.lexists(ROOT)
+-result = {'schema': 'heptabao.cold-h2-independent-source-stage.v1', 'status': 'failed',
++result = {'schema': 'heptabao.same-root-publication-independent-source-stage.v1', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+           'root': str(ROOT), 'source': str(SOURCE), 'host': 'mac',
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+           'server_started': False, 'compiler_started': False, 'production_changed': False,
+-          'source_ref': 'refs/heads/codex/heptabao-cold-h2-normal-20261105-r1',
+-          'canonical_history_count': 3757, 'actual_build_qualification': False,
++          'source_ref': 'refs/heads/codex/heptabao-same-root-publication-94ced21a-20261105-r1',
++          'canonical_history_count': 3762, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+     stage_remaining()
+     result['external_volume_uuid'] = prewrite_volume_guard()
+-    canonical_path = ROOT.parent / 'canonical-cold-h2-df026-from495.bundle'
++    canonical_path = ROOT.parent / 'canonical-same-root-publication-1c665-from495.bundle'
+     stage_remaining()
+     assert not os.path.lexists(canonical_path)
+     create(canonical_path, canonical_raw)
+@@ -443,7 +452,7 @@
+     created_control = True
+     (CONTROL / 'empty-hooks').mkdir(mode=0o700)
+     (CONTROL / 'empty-template').mkdir(mode=0o700)
+-    create(CONTROL / 'stage_source_cold_h2.py', self_source.encode())
++    create(CONTROL / 'stage_source_same_root_publication.py', self_source.encode())
+     for name in EXPECTED_CONTROLS:
+         create(CONTROL / name, data['controls'][name].encode())
+         result['controls'][name] = {'sha256': EXPECTED_CONTROLS[name][1],
+@@ -486,18 +495,18 @@
+     for child_commit, parent_commit in ANCESTRY:
+         assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
+     added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
+-    assert len(added) == 5 and set(added) == {row[0] for row in ANCESTRY}
++    assert len(added) == 10 and set(added) == {row[0] for row in ANCESTRY}
+     result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3757'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3762'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62212769
+-    assert result['full_worktree']['full_leaf_index_sha256'] == 'e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54'
++    assert result['full_worktree']['tracked_bytes'] == 62224861
++    assert result['full_worktree']['full_leaf_index_sha256'] == '29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before
+@@ -506,6 +515,7 @@
+                   exact_test_count=44,
+                   exact_groups=[[g['label'], len(g['tests'])] for g in groups],
+                   additional_existing_tests=7, additional_cold_h2_tests=9,
++                  additional_same_root_publication_tests=1, original_60_test_count=60,
+                   public_network_fetch_used=False, full_strict_fsck_passed=True)
+ except BaseException as error:
+     result['error_type'] = type(error).__name__

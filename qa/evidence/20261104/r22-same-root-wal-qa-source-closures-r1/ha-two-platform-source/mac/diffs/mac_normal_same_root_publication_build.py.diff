@@ -1,0 +1,248 @@
+--- a/mac_normal_same_root_publication_build.py
++++ b/mac_normal_same_root_publication_build.py
+@@ -1,11 +1,12 @@
+ #!/usr/bin/env python3
+-"""Build the exact cold/H2 canonical source; qualify original 44, existing 7, then new 9."""
++"""Build exact same-root publication source; retain 44/7/9 and add one real A-B-A regression."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+ import json
+ import os
+ import signal
++import stat
+ import shutil
+ import subprocess
+ import time
+@@ -23,8 +24,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-DIAGNOSTIC_TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++DIAGNOSTIC_COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
++DIAGNOSTIC_TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+@@ -45,6 +46,9 @@
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+ )
++SAME_ROOT_PUBLICATION_TESTS = (
++    "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
++)
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -65,6 +69,107 @@
+     with Path(path).open('rb') as f:
+         return hashlib.file_digest(f, 'sha256').hexdigest()
+ 
++PRIOR_DF026_FILES = {
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json": [
++        3331,
++        "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98",
++        384
++    ],
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json": [
++        800,
++        "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e",
++        384
++    ],
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json": [
++        49069,
++        "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4",
++        384
++    ],
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed": [
++        86751008,
++        "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced",
++        320
++    ],
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server": [
++        92408592,
++        "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0",
++        320
++    ],
++    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest": [
++        153800944,
++        "5a714ff2bc79561fb812272e325fb90c1941916f0d28f9ffb9c618710667bf69",
++        320
++    ]
++}
++
++
++def preserve_prior_df026(evidence):
++    global protected
++    evidence.update(status='failed', files=[], all_opened_descriptors_closed=False,
++                    purpose='Immutable retained qualification files outside the reusable Cargo target')
++    try:
++        for name, (size, expected_sha, expected_mode) in PRIOR_DF026_FILES.items():
++            bounded_remaining(OUTER_UNTIL)
++            path = Path(name)
++            assert path.resolve(strict=True) == path and not path.is_relative_to(Path(args.target))
++            row = {'path': name, 'opened': False, 'close_attempted': False, 'closed': False}
++            evidence['files'].append(row)
++            fd = None
++            protected += 1
++            try:
++                try:
++                    if pending_signal is not None:
++                        raise Cancelled()
++                    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++                    row['opened'] = True
++                    if pending_signal is not None:
++                        raise Cancelled()
++                    before = os.fstat(fd)
++                    fields = lambda info: (info.st_dev, info.st_ino, info.st_uid, info.st_gid,
++                                           info.st_mode, info.st_nlink, info.st_size,
++                                           info.st_mtime_ns, info.st_ctime_ns)
++                    assert stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
++                    assert before.st_nlink == 1 and before.st_size == size
++                    assert stat.S_IMODE(before.st_mode) == expected_mode
++                    assert fields(before) == fields(path.lstat())
++                    count, digest = 0, hashlib.sha256()
++                    while True:
++                        if pending_signal is not None:
++                            raise Cancelled()
++                        bounded_remaining(OUTER_UNTIL)
++                        part = os.read(fd, min(1024 * 1024, size + 1 - count))
++                        if not part:
++                            break
++                        count += len(part)
++                        assert count <= size
++                        digest.update(part)
++                    assert count == size and digest.hexdigest() == expected_sha
++                    assert fields(before) == fields(os.fstat(fd)) == fields(path.lstat())
++                    assert path.resolve(strict=True) == path
++                    row.update(bytes=count, sha256=expected_sha, identity=list(fields(before)))
++                    bounded_remaining(OUTER_UNTIL)
++                    if pending_signal is not None:
++                        raise Cancelled()
++                finally:
++                    if fd is not None:
++                        row['close_attempted'] = True
++                        try:
++                            os.close(fd)
++                            row['closed'] = True
++                        except BaseException as error:
++                            row['close_error_type'] = type(error).__name__
++                            raise
++            finally:
++                protected -= 1
++        bounded_remaining(OUTER_UNTIL)
++        if pending_signal is not None:
++            raise Cancelled()
++        evidence['status'] = 'unchanged'
++    finally:
++        evidence['all_opened_descriptors_closed'] = all(
++            not row['opened'] or row['closed'] for row in evidence['files'])
++
++
+ def write(name, value):
+     path = output / name
+     with path.open('x') as f:
+@@ -201,25 +306,32 @@
+ assert len(INGRESS_OBSERVER_TESTS) == len(set(INGRESS_OBSERVER_TESTS)) == 7
+ assert len(COLD_H2_TESTS) == len(set(COLD_H2_TESTS)) == 9
+ assert len(set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS)) == 60
++assert len(SAME_ROOT_PUBLICATION_TESTS) == len(set(SAME_ROOT_PUBLICATION_TESTS)) == 1
++assert len(set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS) | set(SAME_ROOT_PUBLICATION_TESTS)) == 61
+ assert not output.exists() and not output.is_symlink()
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.mac-normal-cold-h2-exact-tests.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.mac-normal-same-root-publication-exact-tests.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+           'production_changed': False, 'started_ns': time.time_ns(),
+-          'selected_test_total': 60, 'additional_test_counts': {'ingress_observer': 7, 'cold_h2': 9},
++          'selected_test_total': 61, 'original_60_test_total': 60,
++          'additional_test_counts': {'ingress_observer': 7, 'cold_h2': 9, 'same_root_publication': 1},
+           'original_outer_seconds': ORIGINAL_OUTER_SECONDS,
+           'launcher_started_monotonic': args.outer_started_monotonic,
+           'same_pid_launcher': args.launcher_pid,
+-          'additional_group_caps_seconds': {'ingress_observer': 600, 'cold_h2': 600},
++          'additional_group_caps_seconds': {'ingress_observer': 600, 'cold_h2': 600, 'same_root_publication': 600},
+           'outer_phase_caps_seconds': {'normal_release_build': 1800, 'normal_libtest_build': 1800,
+                                        'each_listing': 30, 'each_runtime_group': 600}}
+ write('intent.public.json', intent)
+ result = {**intent, 'status': 'failed', 'runtime_tests_started': False, 'group_results': []}
+ try:
++    result['retained_df026_before'] = {}
++    preserve_prior_df026(result['retained_df026_before'])
++    assert result['retained_df026_before']['status'] == 'unchanged'
++    assert result['retained_df026_before']['all_opened_descriptors_closed']
+     rustc = subprocess.check_output([str(Path(args.toolchain) / 'rustc'), '-vV'], text=True, timeout=30)
+     assert 'release: 1.98.0' in rustc and 'host: aarch64-apple-darwin' in rustc
+     result['rustc_vv'] = rustc
+@@ -430,6 +542,49 @@
+         increment['elapsed_seconds'] = increment_completed - increment_started
+         increment['status'] = 'passed'
+         result['status'] = 'passed'
++    if result['status'] == 'passed':
++        # Keep all sixty prior results distinct; this regression is additional.
++        result['original_60_status'] = 'passed'
++        result['status'] = 'failed'
++        publication_started = time.monotonic()
++        publication_until = min(publication_started + 600.0, OUTER_UNTIL)
++        publication = {'schema': 'heptabao.normal-same-root-publication-regression.v1',
++                       'status': 'failed', 'test_count': 1,
++                       'original_44_7_9_denominators_unchanged': True,
++                       'new_total_group_cap_seconds': 600,
++                       'clamped_to_original_outer_deadline': True,
++                       'actual_test_names': [], 'tests': []}
++        result['same_root_publication_regression'] = publication
++        def publication_remaining():
++            value = publication_until - time.monotonic()
++            assert value > 0, 'same-root publication regression deadline'
++            return value
++        name = SAME_ROOT_PUBLICATION_TESTS[0]
++        label = 'same-root-publication-1'
++        listing = owned(label + '-list', [str(binary), name, '--exact', '--list'],
++                        min(30.0, publication_remaining()), deadline=publication_until)
++        assert listing['exit_code'] == 0 and not listing['timed_out']
++        selected = [line[:-6] for line in (output / (label + '-list.stdout')).read_text().splitlines()
++                    if line.endswith(': test')]
++        assert selected == [name], 'exact same-root publication testcase missing'
++        publication_remaining()
++        tests = owned(label, [str(binary), name, '--exact', '--nocapture', '--test-threads=1'],
++                      publication_remaining(), deadline=publication_until)
++        publication['actual_test_names'].append(name)
++        publication['tests'].append({'name': name, 'tests': tests})
++        assert tests['exit_code'] == 0 and not tests['timed_out']
++        summary = (output / (label + '.stdout')).read_text()
++        assert 'test result: ok. 1 passed; 0 failed; 0 ignored;' in summary, 'actual testcase not executed'
++        publication_remaining()
++        result['binary_unchanged'] = sha(binary) == binary_sha
++        result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
++        result['source_unchanged'] = freeze() == before
++        assert result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
++        publication_completed = time.monotonic()
++        assert publication_completed < publication_until, 'same-root publication regression deadline'
++        publication['elapsed_seconds'] = publication_completed - publication_started
++        publication['status'] = 'passed'
++        result['status'] = 'passed'
+ except BaseException as error:
+     result['failure_type'] = type(error).__name__
+     result['failure'] = str(error)
+@@ -450,6 +605,16 @@
+     result['cleanup'] = cleanup
+     if pending_signal is not None or any(x.get('cleanup_error_type') or x['remaining'] or not x['direct_child_reaped'] for x in cleanup):
+         result['status'] = 'failed'
++    if result.get('retained_df026_before', {}).get('status') == 'unchanged':
++        result['retained_df026_after'] = {}
++        try:
++            preserve_prior_df026(result['retained_df026_after'])
++            assert result['retained_df026_after'] == result['retained_df026_before']
++        except BaseException as error:
++            result['status'] = 'failed'
++            result['retained_df026_fence_error_type'] = type(error).__name__
++    else:
++        result['status'] = 'failed'
+     result['terminal_ns'] = time.time_ns()
+     result['within_original_outer_before_receipt'] = time.monotonic() < OUTER_UNTIL
+     if not result['within_original_outer_before_receipt']:

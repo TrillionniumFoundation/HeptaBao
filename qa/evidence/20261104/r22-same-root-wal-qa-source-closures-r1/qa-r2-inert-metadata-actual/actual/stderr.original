@@ -1,0 +1,2 @@
+inputs/owned_reference_phaseb_r3.py:1088: SyntaxWarning: 'return' in a 'finally' block
+inputs/official_cli_reference_r4.py:915: SyntaxWarning: 'return' in a 'finally' block

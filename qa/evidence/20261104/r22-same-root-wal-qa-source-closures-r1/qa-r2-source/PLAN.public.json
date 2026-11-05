@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao-h2-qa-custody-r2-source-plan-v1",
+  "status": "SOURCE_ONLY_PENDING_ROOT_REVIEW",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "old_failure_tree": "fa98f537f52e0eb75c8d26a53084a79a87564878",
+  "old_failure_preserved": true,
+  "original_cli_reference_unchanged": true,
+  "original_owner_reference_unchanged": true,
+  "builder_caps_unchanged": true,
+  "product_or_http_requests_authorized_by_this_packet": 0,
+  "steps": [
+    {
+      "step": "actual_custody_components",
+      "request": "requests/owned-components.proposed.exact.json",
+      "original_tool_sized_shared_seconds": 15,
+      "cleanup_seconds": [
+        5,
+        5
+      ],
+      "new_outer_seconds": 45,
+      "submitted": false
+    },
+    {
+      "step": "inert_control_publication",
+      "request": "requests/inert.proposed.exact.json",
+      "outer_seconds": 60,
+      "submitted": false
+    },
+    {
+      "step": "offline_qa_build",
+      "request": "requests/build.proposed.exact.json",
+      "inner_seconds": 600,
+      "outer_seconds": 660,
+      "submitted": false
+    }
+  ],
+  "required_terminal_guards": [
+    "actual direct-child custody components accepted by root",
+    "new inert all-eight-input whole readback accepted by root",
+    "one build request only after exact root GO",
+    "any failure or unknown retains originals and stops; no new-key replay"
+  ]
+}

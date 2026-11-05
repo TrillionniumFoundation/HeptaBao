@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.exact-utf8-concatenation.r1",
+  "whole": {
+    "bytes": 1830758,
+    "sha256": "4a30efb4576e882cba06e183467bfb6d1b99a0ce7d15d74d1f72137753ba88ad",
+    "git_blob": "da215f5b7bbe973bc8eb86ceaac6a7a8dff92881"
+  },
+  "orderedParts": [
+    {
+      "path": "verification/history/first-static.input.public.json.parts/000.utf8",
+      "byteOffset": 0,
+      "bytes": 262144,
+      "sha256": "6c7b6fff0a4ad066595a7bae5986423fcdcbee928bf3db2e4865ab54aba6cb92",
+      "git_blob": "220693e54d6098a38ca82ed2913e548611d12ff3"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/001.utf8",
+      "byteOffset": 262144,
+      "bytes": 262144,
+      "sha256": "61b40d870e90ad3e219b490e7f3f5754bd29d3cccc6b6a716098313909636394",
+      "git_blob": "953d0cd343a8f00518f4c58bf0f6b635755cd44a"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/002.utf8",
+      "byteOffset": 524288,
+      "bytes": 262144,
+      "sha256": "892e68617cdb39dbe27ccbe1eb3d58072fc40046488b105a25479ee268a05556",
+      "git_blob": "56e594078438410ec6b951794ae3ad7587253426"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/003.utf8",
+      "byteOffset": 786432,
+      "bytes": 262144,
+      "sha256": "18e42d058854b052e9583a4777bcf424e178269236d5557bb0e22dbfaeaf5d7e",
+      "git_blob": "59b769198be5f80319462e7c310cd61af4709be4"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/004.utf8",
+      "byteOffset": 1048576,
+      "bytes": 262144,
+      "sha256": "d37b759d7371835648fab8718376eccc462110376fedeb0c783fe21f6a7e16b3",
+      "git_blob": "8d9ed568d191ba183c0fa108e929e30ab64f75e6"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/005.utf8",
+      "byteOffset": 1310720,
+      "bytes": 262144,
+      "sha256": "8647e89711947bd17580aee1447d6a5f0002af970a4c3f532ce94f949e213b64",
+      "git_blob": "28425078e846aea40bccc43ff5057587c1e2fc44"
+    },
+    {
+      "path": "verification/history/first-static.input.public.json.parts/006.utf8",
+      "byteOffset": 1572864,
+      "bytes": 257894,
+      "sha256": "7f8fdcd08a2d79af5615e9a09b2523ea5a3ec88c2c9abff9b083fc51111f13bc",
+      "git_blob": "2d96469e21840f775d3a633e24ebb2073fbbb731"
+    }
+  ],
+  "operation": "Concatenate each part's raw UTF-8 bytes in listed order; no separator, normalization or added newline."
+}

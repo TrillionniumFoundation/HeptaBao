@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.qa-short-child-r2.root-component-go.v1",
+  "status": "GO_EXACT_OWNED_COMPONENTS_ONCE_ONLY",
+  "source_packet": {
+    "tree": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+    "files": 39,
+    "bytes": 1606687,
+    "merkle": 11
+  },
+  "checks": [
+    "builder_strict_forward_diff",
+    "component_exact_c_source",
+    "component_exact_stdin",
+    "host_and_interpreter",
+    "component_outer45",
+    "whole_carried_source_builder",
+    "whole_carried_source_owner_reference",
+    "whole_carried_source_cli_reference",
+    "original_helper_open_fd",
+    "original_helper_close_fd",
+    "original_helper_need",
+    "original_helper_remaining",
+    "original_helper_sha",
+    "original_helper_identity",
+    "original_helper_exact_path",
+    "original_helper_no_symlink_ancestors",
+    "original_helper_duplicate_free",
+    "original_helper_parse",
+    "original_helper_read_file",
+    "original_helper_pin_file",
+    "original_helper_load_verified_module",
+    "original_helper_lock_subset",
+    "original_helper_write_new",
+    "original_helper_write_json",
+    "original_helper_fixed_error",
+    "original_helper_target_identity"
+  ],
+  "request": {
+    "blob": "927c2bafbb5a2fbdac6d69d88b016bf883b76b51",
+    "bytes": 179540,
+    "sha256": "71b34e3caeb1a443684735cf3680e965b2f834fcb2cee9888cb2567b5092abdf",
+    "key": "heptabao-df026-h2-qa-custody-components-c961a54d-20261105-r2",
+    "host": "rog",
+    "outer_seconds": 45,
+    "shared_action_seconds": 15,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "review": [
+    "Successful fixed Popen, registered before observation, no shell/preexec or arbitrary FD inheritance",
+    "same direct unreaped child required by WNOWAIT, original PID/PPID/PGID/start ticks before and after",
+    "terminal event must precede Popen.wait and match exact returncode; no auto-reap fake-zero accepted",
+    "three public git commands only; no repository/Cargo/product/network; anonymous bounded outputs",
+    "original owner cleanup unchanged; unknown or missing ledger cannot become PASS",
+    "all tools whole pinned before and after; actual forced zombie observation required"
+  ],
+  "acceptance": [
+    "authoritative original exit0 full durable bounded streams",
+    "all three cases: ordinary0, forced terminal0, forced terminal nonzero",
+    "actual WNOWAIT identities and returncode crosscheck",
+    "all three once-cleanups reaped and empty groups, all memfds/proc inputs closed",
+    "whole result plus SDK readback"
+  ],
+  "limits": [
+    "not a new QA build or service test GO",
+    "old R1 failure/command_unknown retained",
+    "mock18 does not cover all wait/cleanup/stream exceptions; separate addendum pending",
+    "no product qualification or production cutover"
+  ]
+}

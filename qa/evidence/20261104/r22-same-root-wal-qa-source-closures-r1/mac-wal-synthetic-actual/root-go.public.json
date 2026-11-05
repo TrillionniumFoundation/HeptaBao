@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.mac-wal-public-synthetic-once-go.v1",
+  "status": "GO_ORIGINAL_REVIEWED_TEN_PUBLIC_CASES_ONCE",
+  "request": {
+    "blob": "fde9563b74028639ab9ee003a0e4251d21eb4364",
+    "bytes": 490,
+    "sha256": "3410345186bfebe177939bba765b67d4978dbad887d5fe5267d8c8d5f401c0c7"
+  },
+  "exact_request": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1/qa/mac_wal_owned_synthetic_r1.py",
+      "--candidate-sha256",
+      "4db3624e3c6ca6ffeaefcfa03ae15e6aecb6f7cb7287b3ed34ce3bd110f2c33c"
+    ],
+    "cwd": "/Users/qianqi",
+    "stdin": "",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-registry-readonly-wal-owned-88a6abdc-20261105-r1"
+  },
+  "actual_inert_qualification": {
+    "name": "r21_mac_wal_full_root_review",
+    "blob": "b53535b1bf773792587dfbbcd8ea37bbff052027",
+    "bytes": 1133,
+    "sha256": "ca69425eb448ff5002d1e1b1630acab3ae275646c620705f820a821c34442182"
+  },
+  "source_tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+  "source_root_review": "8616e294014af403b0d9cbb47ad3af8f85791152",
+  "pure_ledger_replay_root_review": "55dbb4724319a5098aa7f762fb39ae63de2eda78",
+  "native_actual_r2_job": "1a1aa0eabee-fc05-3c36",
+  "caps": {
+    "whole_seconds": 45,
+    "query_seconds": 3,
+    "outer_seconds": 60,
+    "query_record_bytes": 1048576,
+    "explicit_read_and_returned_bytes": 8388608
+  },
+  "new_root_scope": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1",
+  "original_t5_anchor_strings_preserved": true,
+  "production_private_sqlite": false,
+  "service_or_consumer_execution": false,
+  "replay_on_unknown": false,
+  "private_capture_go": false
+}

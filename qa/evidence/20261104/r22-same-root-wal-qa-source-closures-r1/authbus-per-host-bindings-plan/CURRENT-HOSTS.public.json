@@ -1,0 +1,2237 @@
+{
+  "schema": "heptabao.full-replacement.per-host-existing-bindings.r1",
+  "status": "SOURCE_PLAN_EXISTING_PUBLIC_EVIDENCE_ONLY",
+  "targetProduct": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "normalTestsRequired": 61,
+    "actualPerPlatformArtifacts": null
+  },
+  "readOnlyHostCallsPerformedForThisPacket": 0,
+  "productionMutationAuthorized": false,
+  "secretValuesIncluded": false,
+  "unsafeIntegerPolicy": "All archived raw reference bytes are retained. No parsed identity9 or nanosecond numeric value is reserialized as an original. Pointer plus whole SHA identifies exact source tokens.",
+  "references": {
+    "mac_finite_inventory": {
+      "name": "mac_finite_inventory",
+      "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c",
+      "bytes": 46277,
+      "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+      "packetPath": "references/mac_finite_inventory.public.json"
+    },
+    "rog_finite_inventory": {
+      "name": "rog_finite_inventory",
+      "blob": "f44ea5f57b3db01bbe04a4bf24629997ae480bb7",
+      "bytes": 46630,
+      "sha256": "aee43560000aa4878be8c2175a3ab13e056ce0442e2bba1a9606ae0ffadd5531",
+      "packetPath": "references/rog_finite_inventory.public.json"
+    },
+    "x230_finite_inventory": {
+      "name": "x230_finite_inventory",
+      "blob": "197ff767f16fbda8eb20aac80418a02915291925",
+      "bytes": 23439,
+      "sha256": "63f198cd17e100f9ce8e9e7329d2c1e711a46afe223878afd6cd74900e80feb5",
+      "packetPath": "references/x230_finite_inventory.public.json"
+    },
+    "pocket_r10_actual_core": {
+      "name": "pocket_r10_actual_core",
+      "blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4",
+      "bytes": 58853,
+      "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+      "packetPath": "references/pocket_r10_actual_core.public.json"
+    },
+    "finite_registration": {
+      "name": "finite_registration",
+      "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "packetPath": "references/finite_registration.public.json"
+    },
+    "cleanup_matrix": {
+      "name": "cleanup_matrix",
+      "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "packetPath": "references/cleanup_matrix.public.json"
+    },
+    "mac_canonical_crontab": {
+      "name": "mac_canonical_crontab",
+      "blob": "62350066cecf7a534c5a7370a7e9ac59a5f02545",
+      "bytes": 1274,
+      "sha256": "8e4397c745b22bf834e52fd352f3fdb98985c792b1506f34c1c024da3f303ab1",
+      "packetPath": "references/mac_canonical_crontab.public.json"
+    },
+    "mac_latest_metadata_root_review": {
+      "name": "mac_latest_metadata_root_review",
+      "blob": "49a0bfa8265d634b393670a908e26116df438a52",
+      "bytes": 9772,
+      "sha256": "a682a637939aca90838118c52836644d85251a2b04d1762b5031b50f9c52a3fd",
+      "packetPath": "references/mac_latest_metadata_root_review.public.json"
+    },
+    "current_wal_root_review": {
+      "name": "current_wal_root_review",
+      "blob": "4b4c7a065ce953d2ff4b0471d47e87c2c0a4e59b",
+      "bytes": 3719,
+      "sha256": "de3184dae606f010387d14ad89d93e237b8223bc5b21c214907f634d411f3daa",
+      "packetPath": "references/current_wal_root_review.public.json"
+    },
+    "public_wal_root_review": {
+      "name": "public_wal_root_review",
+      "blob": "a9ec2253fa07df8853114ab3bcb803a994ec5daa",
+      "bytes": 2525,
+      "sha256": "699afbc38da81f80af862fa4ddac1eaa17a8d782d4b2f1171dc80c0a72c3d7ad",
+      "packetPath": "references/public_wal_root_review.public.json"
+    }
+  },
+  "hosts": [
+    {
+      "host": "mac",
+      "role": "five existing selected OpenClaw agents",
+      "agentIds": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "latestFinite": {
+        "sourceStatus": "incomplete",
+        "sourceFailure": null,
+        "startedUnixNsOriginalToken": "1793829009769535000",
+        "entries": [
+          {
+            "id": "f001",
+            "path": "/Users/qianqi/.openclaw/openclaw.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/0/entries/0",
+            "bytes": 34851,
+            "sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+            "expected_prior_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/0/entries/0/identity",
+            "config": {
+              "agentIds": [
+                "main",
+                "trnm",
+                "hepta-ui",
+                "hepta",
+                "hepta-backend"
+              ],
+              "models": [
+                {
+                  "id": "main",
+                  "model_primary": "openai/gpt-5.6-sol"
+                },
+                {
+                  "id": "trnm",
+                  "model_primary": "openai/gpt-5.6-sol"
+                },
+                {
+                  "id": "hepta-ui",
+                  "model_primary": "openai/gpt-5.6-sol"
+                },
+                {
+                  "id": "hepta",
+                  "model_primary": "openai/gpt-5.6-sol"
+                },
+                {
+                  "id": "hepta-backend",
+                  "model_primary": "openai/gpt-5.6-sol"
+                }
+              ],
+              "enabled": true,
+              "hostId": "mac",
+              "address": {
+                "complete_value_sha256": "100c967e663c3872ee856e55c6b00a78b88fba3028faa931bd12fcf14e4041e0",
+                "configured": true,
+                "host": "100.66.117.33",
+                "path_query_fragment_omitted": true,
+                "port": 8200,
+                "references_j3160": true,
+                "scheme": "https",
+                "userinfo_omitted": true
+              },
+              "connectionPaths": {
+                "caFile": {
+                  "path": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+                  "present": true
+                },
+                "roleIdFile": {
+                  "path": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+                  "present": true
+                },
+                "secretIdFile": {
+                  "path": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+                  "present": true
+                }
+              },
+              "flags": {
+                "enforceRefreshLeases": {
+                  "present": false,
+                  "value": null
+                },
+                "leader": {
+                  "present": true,
+                  "value": false
+                },
+                "manageOrder": {
+                  "present": true,
+                  "value": true
+                },
+                "maxRefreshesPerCycle": {
+                  "present": true,
+                  "value": 1
+                },
+                "pollIntervalMs": {
+                  "present": true,
+                  "value": 15000
+                },
+                "publishNew": {
+                  "present": true,
+                  "value": true
+                },
+                "refreshMarginMs": {
+                  "present": true,
+                  "value": 900000
+                },
+                "releaseGeneration": {
+                  "present": true,
+                  "value": 200
+                },
+                "schedulerReportIntervalMs": {
+                  "present": false,
+                  "value": null
+                }
+              },
+              "orderExcludedAgents": null,
+              "effectiveSdkResolutionExecuted": false
+            }
+          },
+          {
+            "id": "f002",
+            "path": "/Users/qianqi/.codex/auth.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/0",
+            "bytes": 4164,
+            "sha256": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/0/identity"
+          },
+          {
+            "id": "f003",
+            "path": "/Users/qianqi/.codex/config.toml",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/1",
+            "bytes": 10702,
+            "sha256": "b55d969856dd02008b58b8d0b136ac88ff34deb37a6129bfad686fb2b3767e80",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/1/identity"
+          },
+          {
+            "id": "f004",
+            "path": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/0",
+            "bytes": 1834,
+            "sha256": "bb27eda0fb984db738c5e46483550609359e112bd5361a49bfb8e7383e75ac24",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/0/identity"
+          },
+          {
+            "id": "f005",
+            "path": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/1",
+            "bytes": 36,
+            "sha256": "7abe56bb1d586b681aab57da71a1370a5509113df8185c3aea0e3ae6b39bb7c4",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/1/identity"
+          },
+          {
+            "id": "f006",
+            "path": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/2",
+            "bytes": 36,
+            "sha256": "ac46a5d3b1cb56a0f5576c894d2abbd3559a2838f039076ee231bbe99f52887c",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/2/identity"
+          },
+          {
+            "id": "f007",
+            "path": "/Users/qianqi/.openclaw/authbus/applied-profiles.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/0",
+            "bytes": 372,
+            "sha256": "ef35a9164d569ebd57e5c34debd1ba549e3b32995a71a261d7130a407650e13c",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/0/identity"
+          },
+          {
+            "id": "f008",
+            "path": "/Users/qianqi/.openclaw/authbus/publish-baseline.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/1",
+            "bytes": 278,
+            "sha256": "f13dfa1a44764f5767d5a9afc625a832562b448b5aa4d4f3c2215c1724f9564b",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/1/identity"
+          },
+          {
+            "id": "f009",
+            "path": "/Users/qianqi/.openclaw/authbus/bad-refresh-quarantine.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/2",
+            "bytes": 73,
+            "sha256": "2ed277d7cbf7389dc039ba1a52cfc6578650cd23485f65f464e814b0e51b18b1",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/2/identity"
+          },
+          {
+            "id": "f010",
+            "path": "/Users/qianqi/.openclaw/authbus/refresh-backoff.json",
+            "status": "absent",
+            "sourcePointer": "/passes/3/entries/3",
+            "absence_stable": true
+          },
+          {
+            "id": "f011",
+            "path": "/Users/qianqi/.openclaw/authbus/lease-epochs.json",
+            "status": "absent",
+            "sourcePointer": "/passes/4/entries/0",
+            "absence_stable": true
+          },
+          {
+            "id": "f012",
+            "path": "/Users/qianqi/.openclaw/authbus/status.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/4/entries/1",
+            "bytes": 150,
+            "sha256": "a623348cd1293d6021982627e521a95ea382b6d75e89a5b44c5625d2bc359de7",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/4/entries/1/identity"
+          },
+          {
+            "id": "f013",
+            "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+            "status": "read_verified",
+            "sourcePointer": "/passes/5/entries/0",
+            "bytes": 1420,
+            "sha256": "e176c41f40b462b288177c20ced94c0e645b3a58f6bda024e53366f1592e8d08",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/5/entries/0/identity",
+            "service": {
+              "label": "ai.openclaw.gateway",
+              "KeepAlive": true,
+              "RunAtLoad": true,
+              "program": {
+                "argument_dependencies_resolved": false,
+                "count": 8,
+                "executable": {
+                  "path": "/bin/sh"
+                },
+                "inline_code_present": false,
+                "non_executable_argument_count": 7,
+                "non_executable_arguments_sha256": "b24faec3a4d31d985466d030c1108902d358d4ca206ddded4063628724bbfd47",
+                "sha256": "05f0fd5617766804d71e3c09eb958e86a77b78af69d4a3c4c1539ff61af345dd"
+              },
+              "workingDirectory": {
+                "path": "/Users/qianqi/.openclaw"
+              }
+            }
+          },
+          {
+            "id": "f014",
+            "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/6/entries/0",
+            "identityPointer": "/passes/6/entries/0/identity"
+          },
+          {
+            "id": "f015",
+            "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal",
+            "status": "absent",
+            "sourcePointer": "/passes/6/entries/1",
+            "absence_stable": true
+          },
+          {
+            "id": "f016",
+            "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm",
+            "status": "absent",
+            "sourcePointer": "/passes/6/entries/2",
+            "absence_stable": true
+          },
+          {
+            "id": "f017",
+            "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/0",
+            "identityPointer": "/passes/7/entries/0/identity"
+          },
+          {
+            "id": "f018",
+            "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/1",
+            "identityPointer": "/passes/7/entries/1/identity"
+          },
+          {
+            "id": "f019",
+            "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/2",
+            "identityPointer": "/passes/7/entries/2/identity"
+          },
+          {
+            "id": "f020",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/0",
+            "identityPointer": "/passes/8/entries/0/identity"
+          },
+          {
+            "id": "f021",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/1",
+            "identityPointer": "/passes/8/entries/1/identity"
+          },
+          {
+            "id": "f022",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/2",
+            "identityPointer": "/passes/8/entries/2/identity"
+          },
+          {
+            "id": "f023",
+            "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/0",
+            "identityPointer": "/passes/9/entries/0/identity"
+          },
+          {
+            "id": "f024",
+            "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/1",
+            "identityPointer": "/passes/9/entries/1/identity"
+          },
+          {
+            "id": "f025",
+            "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/2",
+            "identityPointer": "/passes/9/entries/2/identity"
+          },
+          {
+            "id": "f026",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/0",
+            "identityPointer": "/passes/10/entries/0/identity"
+          },
+          {
+            "id": "f027",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/1",
+            "identityPointer": "/passes/10/entries/1/identity"
+          },
+          {
+            "id": "f028",
+            "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/2",
+            "identityPointer": "/passes/10/entries/2/identity"
+          },
+          {
+            "id": "f029",
+            "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.bridge.plist",
+            "status": "read_verified",
+            "sourcePointer": "/passes/11/entries/0",
+            "bytes": 1044,
+            "sha256": "fa1a74cc6e522bc00d5f64bb48a068d4668549a5800535570eab00b2d6d45630",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/11/entries/0/identity",
+            "service": {
+              "label": "ai.openclaw.authbus-relay.bridge",
+              "KeepAlive": true,
+              "RunAtLoad": true,
+              "program": {
+                "argument_dependencies_resolved": false,
+                "count": 5,
+                "executable": {
+                  "path": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge"
+                },
+                "inline_code_present": false,
+                "non_executable_argument_count": 4,
+                "non_executable_arguments_sha256": "5ee6e090873b5d261064deb2ef034f0e4a6b388ca93e7d76b87f176166f04858",
+                "sha256": "5d439f93db97d8c0b388bd29d2eeac5fb815a5b40d348712e24817b70fc0a27e"
+              },
+              "workingDirectory": {
+                "path": "/Users/qianqi/.openclaw/authbus-relay"
+              }
+            }
+          },
+          {
+            "id": "f030",
+            "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.egressguard.plist",
+            "status": "read_verified",
+            "sourcePointer": "/passes/11/entries/1",
+            "bytes": 1240,
+            "sha256": "05df9e3ac02899a9ae37b0bc88784b7df7084cb3d7d1cc89198eff72717775b6",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/11/entries/1/identity",
+            "service": {
+              "label": "ai.openclaw.authbus-relay.egressguard",
+              "KeepAlive": true,
+              "RunAtLoad": true,
+              "program": {
+                "argument_dependencies_resolved": false,
+                "count": 11,
+                "executable": {
+                  "path": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard"
+                },
+                "inline_code_present": false,
+                "non_executable_argument_count": 10,
+                "non_executable_arguments_sha256": "00939beceb625cd4b744a41e61d49dc5bb3da4c5033fa5f35ad82a141ff31d1e",
+                "sha256": "39f841db213c60b495f8313d6dafebd04a862ffd370916039dac8390c541890b"
+              },
+              "workingDirectory": {
+                "path": "/Users/qianqi/.openclaw/authbus-relay"
+              }
+            }
+          },
+          {
+            "id": "f031",
+            "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist",
+            "status": "read_verified",
+            "sourcePointer": "/passes/11/entries/2",
+            "bytes": 1507,
+            "sha256": "4a7f95604ff9576fbd274152616be02842c4b90355dfe379b3c9198d0534fc00",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/11/entries/2/identity",
+            "service": {
+              "label": "ai.openclaw.authbus-relay.front",
+              "KeepAlive": true,
+              "RunAtLoad": true,
+              "program": {
+                "argument_dependencies_resolved": false,
+                "count": 15,
+                "executable": {
+                  "path": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront"
+                },
+                "inline_code_present": false,
+                "non_executable_argument_count": 14,
+                "non_executable_arguments_sha256": "7fe1d7f9a758557333583aaf3219e3eb64e59adee4a15b7d1759328738359256",
+                "sha256": "4eb86bd573ead9e2733b53fce79161b21bf1ce06891fd8752a01eccf78ce9bba"
+              },
+              "workingDirectory": {
+                "path": "/Users/qianqi/.openclaw/authbus-relay"
+              }
+            }
+          },
+          {
+            "id": "f032",
+            "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist",
+            "status": "read_verified",
+            "sourcePointer": "/passes/11/entries/3",
+            "bytes": 1480,
+            "sha256": "2dcae5db0be14995b5e66b11be9cde1c82114c0417e788222d21dc29ed578a6b",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/11/entries/3/identity",
+            "service": {
+              "label": "ai.openclaw.authbus-relay.proxy",
+              "KeepAlive": true,
+              "RunAtLoad": true,
+              "program": {
+                "argument_dependencies_resolved": false,
+                "count": 4,
+                "executable": {
+                  "path": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api"
+                },
+                "inline_code_present": false,
+                "non_executable_argument_count": 3,
+                "non_executable_arguments_sha256": "a4ee3290bc8b34cff0b61e2615e09fc125eb157220dd62150a5d29cb7ec85b7a",
+                "sha256": "a2409b0e6b752010965e6ea2a68b9fb577813382590e733c144f8ad9b4dd5278"
+              },
+              "workingDirectory": {
+                "path": "/Users/qianqi/.openclaw/authbus-relay"
+              }
+            }
+          },
+          {
+            "id": "f033",
+            "path": "/Volumes/T5",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/12/entries/0",
+            "identityPointer": "/passes/12/entries/0/identity"
+          },
+          {
+            "id": "f034",
+            "path": "/Users/qianqi/.openclaw/service-env/ai.openclaw.gateway.env",
+            "status": "read_verified",
+            "sourcePointer": "/passes/13/entries/0",
+            "bytes": 722,
+            "sha256": "58a4e773de84c023f9fb57147b5a4a6e5a46582ea16746c0b832dbad87f44df8",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/13/entries/0/identity",
+            "projectionKind": "environment_projection"
+          },
+          {
+            "id": "f035",
+            "path": "/etc/crontab",
+            "status": "blocked_by_ancestor",
+            "sourcePointer": "/passes/13/entries/1"
+          },
+          {
+            "id": "f036",
+            "path": "/Users/qianqi/.openclaw/backups",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/14/entries/0",
+            "identityPointer": "/passes/14/entries/0/identity"
+          },
+          {
+            "id": "f037",
+            "path": "/Users/qianqi/.openclaw-backups",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/14/entries/1",
+            "identityPointer": "/passes/14/entries/1/identity"
+          },
+          {
+            "id": "f038",
+            "path": "/Users/qianqi/heptabao-backup-reference-projection-chat-20261025-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/14/entries/2",
+            "identityPointer": "/passes/14/entries/2/identity"
+          }
+        ],
+        "queries": [
+          {
+            "label": "launchd-ai.openclaw.authbus-relay.bridge",
+            "kind": "launchctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "unit": "ai.openclaw.authbus-relay.bridge",
+              "fields": [
+                {
+                  "key": "path",
+                  "value": {
+                    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.bridge.plist"
+                  }
+                },
+                {
+                  "key": "state",
+                  "value": "running"
+                },
+                {
+                  "key": "program",
+                  "value": {
+                    "path": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge"
+                  }
+                },
+                {
+                  "key": "pid",
+                  "value": 983
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            },
+            "sourcePointer": "/queries/0"
+          },
+          {
+            "label": "launchd-ai.openclaw.authbus-relay.egressguard",
+            "kind": "launchctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "unit": "ai.openclaw.authbus-relay.egressguard",
+              "fields": [
+                {
+                  "key": "path",
+                  "value": {
+                    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.egressguard.plist"
+                  }
+                },
+                {
+                  "key": "state",
+                  "value": "running"
+                },
+                {
+                  "key": "program",
+                  "value": {
+                    "path": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard"
+                  }
+                },
+                {
+                  "key": "pid",
+                  "value": 987
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            },
+            "sourcePointer": "/queries/1"
+          },
+          {
+            "label": "launchd-ai.openclaw.authbus-relay.front",
+            "kind": "launchctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "unit": "ai.openclaw.authbus-relay.front",
+              "fields": [
+                {
+                  "key": "path",
+                  "value": {
+                    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist"
+                  }
+                },
+                {
+                  "key": "state",
+                  "value": "running"
+                },
+                {
+                  "key": "program",
+                  "value": {
+                    "path": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront"
+                  }
+                },
+                {
+                  "key": "pid",
+                  "value": 989
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            },
+            "sourcePointer": "/queries/2"
+          },
+          {
+            "label": "launchd-ai.openclaw.authbus-relay.proxy",
+            "kind": "launchctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "unit": "ai.openclaw.authbus-relay.proxy",
+              "fields": [
+                {
+                  "key": "path",
+                  "value": {
+                    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist"
+                  }
+                },
+                {
+                  "key": "state",
+                  "value": "running"
+                },
+                {
+                  "key": "program",
+                  "value": {
+                    "path": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api"
+                  }
+                },
+                {
+                  "key": "pid",
+                  "value": 964
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            },
+            "sourcePointer": "/queries/3"
+          },
+          {
+            "label": "launchd-ai.openclaw.gateway",
+            "kind": "launchctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "unit": "ai.openclaw.gateway",
+              "fields": [
+                {
+                  "key": "path",
+                  "value": {
+                    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist"
+                  }
+                },
+                {
+                  "key": "state",
+                  "value": "running"
+                },
+                {
+                  "key": "program",
+                  "value": {
+                    "path": "/bin/sh"
+                  }
+                },
+                {
+                  "key": "pid",
+                  "value": 18437
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                },
+                {
+                  "key": "state",
+                  "value": "active"
+                }
+              ]
+            },
+            "sourcePointer": "/queries/4"
+          },
+          {
+            "label": "t5-volume",
+            "kind": "diskutil",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "device_identifier": "disk7s1",
+              "filesystem": "apfs",
+              "mount_point": {
+                "path": "/Volumes/T5"
+              },
+              "mounted": null,
+              "volume_read_only": null,
+              "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+            },
+            "sourcePointer": "/queries/5"
+          },
+          {
+            "label": "owner-crontab",
+            "kind": "crontab",
+            "exitCode": 1,
+            "projectionComplete": true,
+            "projection": {
+              "known_no_crontab_diagnostic": true,
+              "owner_crontab_absent": true
+            },
+            "sourcePointer": "/queries/6"
+          }
+        ],
+        "scopeAtomicAcrossEntries": false,
+        "currentConsumerRuntimeQualified": false,
+        "noNewObservationPerformed": true,
+        "reference": "mac_finite_inventory"
+      },
+      "temporalNotes": [
+        "Source finite38 status remains incomplete; /etc alias was later closed by a separate canonical /private/etc/crontab absence observation. These are not one atomic 38-item pass.",
+        "Latest bounded metadata observed registry WAL 5969912 bytes. It does not prove which path caused the earlier failed capture.",
+        "Mac current-WAL caller source is reviewed, but no current five-agent runtime success is transferred from Pocket or public synthetic."
+      ],
+      "canonicalCronEvidence": {
+        "reference": "mac_canonical_crontab",
+        "blob": "62350066cecf7a534c5a7370a7e9ac59a5f02545",
+        "sha256": "8e4397c745b22bf834e52fd352f3fdb98985c792b1506f34c1c024da3f303ab1",
+        "jsonPointer": ""
+      },
+      "latestDatabaseMetadataEvidence": {
+        "reference": "mac_latest_metadata_root_review",
+        "blob": "49a0bfa8265d634b393670a908e26116df438a52",
+        "sha256": "a682a637939aca90838118c52836644d85251a2b04d1762b5031b50f9c52a3fd",
+        "jsonPointer": "/actual"
+      },
+      "registration": {
+        "evidence": {
+          "reference": "finite_registration",
+          "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+          "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+          "jsonPointer": "/host_rows/0"
+        },
+        "startupEntries": [
+          "ai.openclaw.gateway",
+          "ai.openclaw.authbus-relay.proxy",
+          "ai.openclaw.authbus-relay.bridge",
+          "ai.openclaw.authbus-relay.egressguard",
+          "ai.openclaw.authbus-relay.front",
+          "ai.openclaw.mlx-openai-server",
+          "com.openclaw.ssh-controller-x230"
+        ],
+        "backupStatement": "No confirmed Bao/AuthBus backup/restore registration among the selected local launchd entries or owner crontab. All seven selected local plists have no StartInterval/StartCalendarInterval/WatchPaths/QueueDirectories; RunAtLoad is true. Loaded Apple SecureBackupDaemon is recorded as a system label outside the local registration scope, not classified as Bao."
+      },
+      "retainedSource": {
+        "tree": "ab729106132c035c353979285aa70a302318b3c2",
+        "manifestBlob": "e88aeca3064f501e1f211fcfbd6b7c188b20ddbb",
+        "rootReview": {
+          "reference": "current_wal_root_review",
+          "blob": "4b4c7a065ce953d2ff4b0471d47e87c2c0a4e59b",
+          "sha256": "de3184dae606f010387d14ad89d93e237b8223bc5b21c214907f634d411f3daa",
+          "jsonPointer": ""
+        },
+        "oldProduct": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "hostSubmissionAllowed": false
+      },
+      "missing": [
+        "Accepted Mac normal61 actual server/source/normal/native/combined/authority pins for 1c665.",
+        "Derived new candidate and fresh exact inert/runtime request, with root-only and product-only differences reviewed.",
+        "Actual five-agent initial/cold/inverse outcomes and complete library+entry+outer closure on new product.",
+        "Production tuple, exact live manager executable/arguments dependency closure, controlled per-host switch/restart/rollback receipts."
+      ]
+    },
+    {
+      "host": "rog",
+      "role": "six existing selected OpenClaw agents",
+      "agentIds": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "latestFinite": {
+        "sourceStatus": "incomplete",
+        "sourceFailure": null,
+        "startedUnixNsOriginalToken": "1793840061638179395",
+        "entries": [
+          {
+            "id": "f001",
+            "path": "/home/qian-qi/.openclaw/openclaw.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/0/entries/0",
+            "bytes": 21229,
+            "sha256": "6e3659907327039243c60a10b2925edb51e83e4c73f0925c60279ae6a8169819",
+            "expected_prior_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+            "prior_sha_matches": false,
+            "identityPointer": "/passes/0/entries/0/identity",
+            "config": {
+              "agentIds": [
+                "main",
+                "azi2",
+                "azi3",
+                "azi4",
+                "azi5",
+                "zbj-llm-runtime"
+              ],
+              "models": [
+                {
+                  "id": "main",
+                  "model_primary": "codex/gpt-6.1-sol"
+                },
+                {
+                  "id": "azi2",
+                  "model_primary": "codex/gpt-6.1-sol"
+                },
+                {
+                  "id": "azi3",
+                  "model_primary": "codex/gpt-6.1-sol"
+                },
+                {
+                  "id": "azi4",
+                  "model_primary": "codex/gpt-6.1-sol"
+                },
+                {
+                  "id": "azi5",
+                  "model_primary": "codex/gpt-6.1-sol"
+                },
+                {
+                  "id": "zbj-llm-runtime",
+                  "model_primary": "codex/gpt-6.1-sol"
+                }
+              ],
+              "enabled": false,
+              "hostId": "rog",
+              "address": {
+                "complete_value_sha256": "100c967e663c3872ee856e55c6b00a78b88fba3028faa931bd12fcf14e4041e0",
+                "configured": true,
+                "host": "100.66.117.33",
+                "path_query_fragment_omitted": true,
+                "port": 8200,
+                "references_j3160": true,
+                "scheme": "https",
+                "userinfo_omitted": true
+              },
+              "connectionPaths": {
+                "caFile": {
+                  "path": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+                  "present": true
+                },
+                "roleIdFile": {
+                  "path": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+                  "present": true
+                },
+                "secretIdFile": {
+                  "path": "/home/qian-qi/.openclaw/credentials/authbus/secret_id",
+                  "present": true
+                }
+              },
+              "flags": {
+                "enforceRefreshLeases": {
+                  "present": false,
+                  "value": null
+                },
+                "leader": {
+                  "present": true,
+                  "value": false
+                },
+                "manageOrder": {
+                  "present": true,
+                  "value": true
+                },
+                "maxRefreshesPerCycle": {
+                  "present": true,
+                  "value": 1
+                },
+                "pollIntervalMs": {
+                  "present": true,
+                  "value": 15000
+                },
+                "publishNew": {
+                  "present": true,
+                  "value": true
+                },
+                "refreshMarginMs": {
+                  "present": true,
+                  "value": 900000
+                },
+                "releaseGeneration": {
+                  "present": true,
+                  "value": 203
+                },
+                "schedulerReportIntervalMs": {
+                  "present": false,
+                  "value": null
+                }
+              },
+              "orderExcludedAgents": [
+                "main"
+              ],
+              "effectiveSdkResolutionExecuted": false
+            }
+          },
+          {
+            "id": "f002",
+            "path": "/home/qian-qi/.codex/auth.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/0",
+            "bytes": 4188,
+            "sha256": "f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/0/identity"
+          },
+          {
+            "id": "f003",
+            "path": "/home/qian-qi/.codex/config.toml",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/1",
+            "bytes": 2747,
+            "sha256": "57c13259d009c266c37d1c4578596c0a6236dae3862eccedb3eb74a99084c350",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/1/identity"
+          },
+          {
+            "id": "f004",
+            "path": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/0",
+            "bytes": 1834,
+            "sha256": "bb27eda0fb984db738c5e46483550609359e112bd5361a49bfb8e7383e75ac24",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/0/identity"
+          },
+          {
+            "id": "f005",
+            "path": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/1",
+            "bytes": 36,
+            "sha256": "6f7f1426ef1d7ed758afc74d65097d4dc67306989a5d5faa823bbd5b0966c850",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/1/identity"
+          },
+          {
+            "id": "f006",
+            "path": "/home/qian-qi/.openclaw/credentials/authbus/secret_id",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/2",
+            "bytes": 36,
+            "sha256": "62d6908d4c7a6cd377f0e9717d1901bd9918715f92a537ae3a8a172a7d208776",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/2/identity"
+          },
+          {
+            "id": "f007",
+            "path": "/home/qian-qi/.openclaw/authbus/applied-profiles.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/0",
+            "bytes": 372,
+            "sha256": "4cd15fc32d71112f03741b98aa34b2ab46debda5913dbc8d275e3315fd54df33",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/0/identity"
+          },
+          {
+            "id": "f008",
+            "path": "/home/qian-qi/.openclaw/authbus/publish-baseline.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/1",
+            "bytes": 174,
+            "sha256": "bd16ad374bc8d7a13585013be2ca22614b78fee1874d8dcbe71d8ff664e4ad6d",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/1/identity"
+          },
+          {
+            "id": "f009",
+            "path": "/home/qian-qi/.openclaw/authbus/bad-refresh-quarantine.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/3/entries/2",
+            "bytes": 73,
+            "sha256": "4ccd0291fbc28966fd13c4269679daa77b5f14d75f857ca13052fadca9f4fa7d",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/3/entries/2/identity"
+          },
+          {
+            "id": "f010",
+            "path": "/home/qian-qi/.openclaw/authbus/refresh-backoff.json",
+            "status": "absent",
+            "sourcePointer": "/passes/3/entries/3",
+            "absence_stable": true
+          },
+          {
+            "id": "f011",
+            "path": "/home/qian-qi/.openclaw/authbus/lease-epochs.json",
+            "status": "absent",
+            "sourcePointer": "/passes/4/entries/0",
+            "absence_stable": true
+          },
+          {
+            "id": "f012",
+            "path": "/home/qian-qi/.openclaw/authbus/status.json",
+            "status": "read_verified",
+            "sourcePointer": "/passes/4/entries/1",
+            "bytes": 150,
+            "sha256": "ffe856acb92cd8581a76b9e582bae73c4540643f717e4f88916cb50fdcbbb2a4",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/4/entries/1/identity"
+          },
+          {
+            "id": "f013",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/5/entries/0",
+            "bytes": 1082,
+            "sha256": "987e55191a1a607ce3b56a79d115d58c8071e7e708ed5ee18208e60a45450f88",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/5/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f014",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+            "status": "read_verified",
+            "sourcePointer": "/passes/5/entries/1",
+            "bytes": 179,
+            "sha256": "c28f7d2c30ad9ee1ccafe10be981f7b1de391eafab3592188809251ce45f7f3b",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/5/entries/1/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f015",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+            "status": "read_verified",
+            "sourcePointer": "/passes/6/entries/0",
+            "bytes": 180,
+            "sha256": "8e8a6132204886a1ac652627f590fc47c319dea3b6813a990744edac6dadf1cc",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/6/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f016",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+            "status": "read_verified",
+            "sourcePointer": "/passes/6/entries/1",
+            "bytes": 75,
+            "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/6/entries/1/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f017",
+            "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/0",
+            "identityPointer": "/passes/7/entries/0/identity"
+          },
+          {
+            "id": "f018",
+            "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/1",
+            "identityPointer": "/passes/7/entries/1/identity"
+          },
+          {
+            "id": "f019",
+            "path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/7/entries/2",
+            "identityPointer": "/passes/7/entries/2/identity"
+          },
+          {
+            "id": "f020",
+            "path": "/home/qian-qi/.openclaw/agents/azi2/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/0",
+            "identityPointer": "/passes/8/entries/0/identity"
+          },
+          {
+            "id": "f021",
+            "path": "/home/qian-qi/.openclaw/agents/azi2/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/1",
+            "identityPointer": "/passes/8/entries/1/identity"
+          },
+          {
+            "id": "f022",
+            "path": "/home/qian-qi/.openclaw/agents/azi2/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/8/entries/2",
+            "identityPointer": "/passes/8/entries/2/identity"
+          },
+          {
+            "id": "f023",
+            "path": "/home/qian-qi/.openclaw/agents/azi3/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/0",
+            "identityPointer": "/passes/9/entries/0/identity"
+          },
+          {
+            "id": "f024",
+            "path": "/home/qian-qi/.openclaw/agents/azi3/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/1",
+            "identityPointer": "/passes/9/entries/1/identity"
+          },
+          {
+            "id": "f025",
+            "path": "/home/qian-qi/.openclaw/agents/azi3/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/9/entries/2",
+            "identityPointer": "/passes/9/entries/2/identity"
+          },
+          {
+            "id": "f026",
+            "path": "/home/qian-qi/.openclaw/agents/azi4/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/0",
+            "identityPointer": "/passes/10/entries/0/identity"
+          },
+          {
+            "id": "f027",
+            "path": "/home/qian-qi/.openclaw/agents/azi4/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/1",
+            "identityPointer": "/passes/10/entries/1/identity"
+          },
+          {
+            "id": "f028",
+            "path": "/home/qian-qi/.openclaw/agents/azi4/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/10/entries/2",
+            "identityPointer": "/passes/10/entries/2/identity"
+          },
+          {
+            "id": "f029",
+            "path": "/home/qian-qi/.openclaw/agents/azi5/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/11/entries/0",
+            "identityPointer": "/passes/11/entries/0/identity"
+          },
+          {
+            "id": "f030",
+            "path": "/home/qian-qi/.openclaw/agents/azi5/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/11/entries/1",
+            "identityPointer": "/passes/11/entries/1/identity"
+          },
+          {
+            "id": "f031",
+            "path": "/home/qian-qi/.openclaw/agents/azi5/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/11/entries/2",
+            "identityPointer": "/passes/11/entries/2/identity"
+          },
+          {
+            "id": "f032",
+            "path": "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent/openclaw-agent.sqlite",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/12/entries/0",
+            "identityPointer": "/passes/12/entries/0/identity"
+          },
+          {
+            "id": "f033",
+            "path": "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent/openclaw-agent.sqlite-wal",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/12/entries/1",
+            "identityPointer": "/passes/12/entries/1/identity"
+          },
+          {
+            "id": "f034",
+            "path": "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent/openclaw-agent.sqlite-shm",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/12/entries/2",
+            "identityPointer": "/passes/12/entries/2/identity"
+          },
+          {
+            "id": "f035",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/13/entries/0",
+            "bytes": 198,
+            "sha256": "822b44dd4657e91ede788069acb352251369117b90bde6124e150c9442e5e65a",
+            "expected_prior_sha256": "822b44dd4657e91ede788069acb352251369117b90bde6124e150c9442e5e65a",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/13/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f036",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "status": "read_verified",
+            "sourcePointer": "/passes/13/entries/1",
+            "bytes": 221,
+            "sha256": "1f5435149ad6bccd48ee9bb6a6a26f1dbe8652d6634fa3da8b2494839257e8f9",
+            "expected_prior_sha256": "1f5435149ad6bccd48ee9bb6a6a26f1dbe8652d6634fa3da8b2494839257e8f9",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/13/entries/1/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f037",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/14/entries/0",
+            "bytes": 213,
+            "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+            "expected_prior_sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/14/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f038",
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "status": "read_verified",
+            "sourcePointer": "/passes/14/entries/1",
+            "bytes": 221,
+            "sha256": "13b0f19464a97726db94b95a8ec48b1465d972f958b21f87b77a185c0b5d088f",
+            "expected_prior_sha256": "13b0f19464a97726db94b95a8ec48b1465d972f958b21f87b77a185c0b5d088f",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/14/entries/1/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f039",
+            "path": "/etc/crontab",
+            "status": "read_verified",
+            "sourcePointer": "/passes/15/entries/0",
+            "bytes": 1136,
+            "sha256": "ffb48ad57868ed639fad049d11ef4b9bcdd3d2d3e556754ce69b4d6b016969a3",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/15/entries/0/identity",
+            "projectionKind": "cron_projection"
+          },
+          {
+            "id": "f040",
+            "path": "/home/qian-qi/.openclaw/backups",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/0",
+            "identityPointer": "/passes/16/entries/0/identity"
+          },
+          {
+            "id": "f041",
+            "path": "/home/qian-qi/heptabao-client-backup-routes-20261024-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/1",
+            "identityPointer": "/passes/16/entries/1/identity"
+          },
+          {
+            "id": "f042",
+            "path": "/home/qian-qi/heptabao-client-startup-backup-20261024-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/2",
+            "identityPointer": "/passes/16/entries/2/identity"
+          },
+          {
+            "id": "f043",
+            "path": "/home/qian-qi/heptabao-git-recovery-20261013",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/3",
+            "identityPointer": "/passes/16/entries/3/identity"
+          },
+          {
+            "id": "f044",
+            "path": "/home/qian-qi/heptabao-legacy-consumer-backup-20261024-r2",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/4",
+            "identityPointer": "/passes/16/entries/4/identity"
+          },
+          {
+            "id": "f045",
+            "path": "/home/qian-qi/heptabao-authbus-backup_restore_owned_r2.py",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/5",
+            "identityPointer": "/passes/16/entries/5/identity"
+          },
+          {
+            "id": "f046",
+            "path": "/home/qian-qi/heptabao-authbus-sdk-rog-snapshot-20261021-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/16/entries/6",
+            "identityPointer": "/passes/16/entries/6/identity"
+          }
+        ],
+        "queries": [
+          {
+            "label": "systemd-openclaw-gateway.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "openclaw-gateway.service",
+              "LoadState": "loaded",
+              "ActiveState": "inactive",
+              "SubState": "dead",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "enabled",
+              "ConditionResult": "yes",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "6min",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/0"
+          },
+          {
+            "label": "systemd-openclaw-authbus-accept-after-restart.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "openclaw-authbus-accept-after-restart.service",
+              "LoadState": "loaded",
+              "ActiveState": "inactive",
+              "SubState": "dead",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "static",
+              "ConditionResult": "no",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "1min 30s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/1"
+          },
+          {
+            "label": "systemd-openclaw-authbus-restart-when-idle.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "openclaw-authbus-restart-when-idle.service",
+              "LoadState": "loaded",
+              "ActiveState": "inactive",
+              "SubState": "dead",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "static",
+              "ConditionResult": "no",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "1min 30s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/2"
+          },
+          {
+            "label": "owner-crontab",
+            "kind": "crontab",
+            "exitCode": 1,
+            "projectionComplete": true,
+            "projection": {
+              "known_no_crontab_diagnostic": true,
+              "owner_crontab_absent": true
+            },
+            "sourcePointer": "/queries/3"
+          }
+        ],
+        "scopeAtomicAcrossEntries": false,
+        "currentConsumerRuntimeQualified": false,
+        "noNewObservationPerformed": true,
+        "reference": "rog_finite_inventory"
+      },
+      "temporalNotes": [
+        "Latest config SHA6e365990... enabled=false / generation203 / excluded main supersedes older f458 and aa23 enabled/active descriptions.",
+        "Finite46 original exit1 due prior config hash drift is retained; completed observations are usable as current-source facts, not an upgraded PASS.",
+        "The original SDK41/42 and rollback39/39 are historical and do not qualify six current native consumers or new1c665."
+      ],
+      "registration": {
+        "evidence": {
+          "reference": "finite_registration",
+          "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+          "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+          "jsonPointer": "/host_rows/1"
+        },
+        "dormantEntries": [
+          "openclaw-authbus-accept-after-restart.service (static inactive, persistent hold drop-in)",
+          "openclaw-authbus-restart-when-idle.service (static inactive, persistent hold drop-in)",
+          "openclaw-telegram-curl-proxy.service (disabled inactive)",
+          "openclaw-telegram-ipv6-proxy.service (disabled inactive)"
+        ],
+        "backupStatement": "No confirmed Bao/AuthBus backup/restore timer or owner/system crontab entry in the finite registration scope. Generic OS font/audio restore and dpkg backup labels are recorded separately; uninstantiated PostgreSQL templates have no observed instance."
+      },
+      "missing": [
+        "Linux six-agent typed runtime/registry/current credential capture and source pin contract based on this latest disabled config.",
+        "Explicit reviewed owned-fixture enable delta if functional AuthBus is to be exercised; production enabled=false remains unchanged.",
+        "Accepted new Linux normal61 artifact/source/receipts plus fresh native/controller namespace.",
+        "Exact current helper/hold identities, production tuple and later controlled manager transaction."
+      ]
+    },
+    {
+      "host": "pocket4",
+      "role": "host named Pocket4; two proven selected OpenClaw agents, not four agents",
+      "agentIds": [
+        "main",
+        "tg8687951891"
+      ],
+      "historicalConfig": {
+        "authbus": {
+          "binding_paths": {
+            "caFile": "/home/alex/.openclaw/credentials/authbus/ca.crt",
+            "roleIdFile": "/home/alex/.openclaw/credentials/authbus/role_id",
+            "secretIdFile": "/home/alex/.openclaw/credentials/authbus/secret_id"
+          },
+          "enabled": true,
+          "endpoint": {
+            "host": "100.66.117.33",
+            "path_query_fragment_omitted": false,
+            "port": 8200,
+            "references_j3160": true,
+            "scheme": "https",
+            "userinfo_omitted": false
+          },
+          "host_id": "pocket4"
+        },
+        "config_path": "/home/alex/.openclaw/openclaw.json",
+        "config_sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+        "configured_agents": [
+          {
+            "effective_default_agent_dir": "/home/alex/.openclaw/agents/main/agent",
+            "id": "main",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/alex/.openclaw/agents/tg8687951891/agent",
+            "id": "tg8687951891",
+            "model_primary": "openai/gpt-5.6-sol"
+          }
+        ],
+        "live_request_consumption_proven": false,
+        "local_provider_endpoints": [],
+        "evidence": {
+          "reference": "cleanup_matrix",
+          "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+          "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+          "jsonPointer": "/hosts/2/configured_authbus_client"
+        }
+      },
+      "exactStartupEntrypoints": [
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/home/alex/.local/bin/openclaw-authbus-restart-when-idle",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "d9d6ef9c576e9a8de9311bc87d3521b887c59b7726523f5942b0e1675491b0a9"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/usr/bin/node",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "6fda457a5c62fe4a8d9665602bf288b377eddf17af9d2426f4efbea10a2be457"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "3e46cac521594bbc6bab2133f55ce9cdaf26d8f30f8b6a0e60ba0a41214db1f0"
+        }
+      ],
+      "heldRegistration": {
+        "dropins": [
+          {
+            "bytes": 218,
+            "comment_path_references": [],
+            "directives": [
+              {
+                "key": "ConditionPathExists",
+                "line": 3,
+                "section": "Unit",
+                "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json"
+              }
+            ],
+            "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "sha256": "3e46cac521594bbc6bab2133f55ce9cdaf26d8f30f8b6a0e60ba0a41214db1f0"
+          },
+          {
+            "bytes": 218,
+            "comment_path_references": [],
+            "directives": [
+              {
+                "key": "ConditionPathExists",
+                "line": 3,
+                "section": "Unit",
+                "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json"
+              }
+            ],
+            "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "sha256": "d9d6ef9c576e9a8de9311bc87d3521b887c59b7726523f5942b0e1675491b0a9"
+          }
+        ],
+        "markers": [
+          {
+            "automatic_release_permitted": false,
+            "dropin_path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "marker_exists": true,
+            "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json",
+            "marker_sha256": "0fccbd0c976d259d01b359c3fd7e82552d182a656eb0af44faac89a863ceef9d",
+            "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+            "provider_grant_admitted": false,
+            "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+            "unit_sha256": "0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5"
+          },
+          {
+            "automatic_release_permitted": false,
+            "dropin_path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "marker_exists": true,
+            "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json",
+            "marker_sha256": "370fc76cad249542b4b73763909fb546624071a4febd437501aa3a3b543cabc4",
+            "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+            "provider_grant_admitted": false,
+            "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+            "unit_sha256": "89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1"
+          }
+        ],
+        "evidence": {
+          "reference": "finite_registration",
+          "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+          "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+          "jsonPointer": "/host_rows/2/hold"
+        }
+      },
+      "latestQualifiedIsolatedConsumer": {
+        "evidence": {
+          "reference": "pocket_r10_actual_core",
+          "blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4",
+          "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+          "jsonPointer": ""
+        },
+        "productCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "productTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+        "checks": 66,
+        "phaseRecords": [
+          {
+            "phase": "initial",
+            "mode": "initial",
+            "records": 128,
+            "ok": true
+          },
+          {
+            "phase": "cold-new-process",
+            "mode": "initial",
+            "records": 128,
+            "ok": true
+          },
+          {
+            "phase": "initial.rollback",
+            "mode": "rollback",
+            "records": 95,
+            "ok": true
+          },
+          {
+            "phase": "cold-new-process.rollback",
+            "mode": "rollback",
+            "records": 95,
+            "ok": true
+          }
+        ],
+        "selectedLocalOrdinal": 5,
+        "independentNativeMatchesLocalOrdinal4": true,
+        "realServiceManagerExercised": false,
+        "allAccountsQualified": false,
+        "productionTrafficCutover": false,
+        "providerAvailabilityQualified": false,
+        "retainedBudgets": {
+          "http": 10,
+          "consumer": 70,
+          "rollback": 35,
+          "controller": 440,
+          "outer": 600
+        },
+        "preciseHistoricalTokenLifecycle": [
+          {
+            "dispatchEntered": true,
+            "method": "GET",
+            "mutationRequest": false,
+            "name": "policy_denies_unassigned",
+            "responseReturned": true,
+            "route": "openclaw-auth/data/profiles/unassigned",
+            "status": 403
+          },
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "real_token_renew",
+            "responseReturned": true,
+            "route": "auth/token/renew-self",
+            "status": 200
+          },
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "real_token_revoke",
+            "responseReturned": true,
+            "route": "auth/token/revoke-self",
+            "status": 204
+          },
+          {
+            "dispatchEntered": true,
+            "method": "GET",
+            "mutationRequest": false,
+            "name": "revoked_token_rejected",
+            "responseReturned": true,
+            "route": "openclaw-auth/data/manifest",
+            "status": 403
+          }
+        ],
+        "checkLabelsNotClaimedUnique": true
+      },
+      "registration": {
+        "evidence": {
+          "reference": "finite_registration",
+          "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+          "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+          "jsonPointer": "/host_rows/2"
+        },
+        "dormantEntries": [
+          "openclaw-gateway.service (enabled inactive, exact negative ConditionPathExists hold)",
+          "openclaw-authbus-restart-when-idle.service (static inactive, exact negative ConditionPathExists hold)",
+          "openclaw-ollama-desktop-tunnel.service (disabled inactive)"
+        ],
+        "backupStatement": "No confirmed Bao/AuthBus backup/restore registration in selected systemd/cron scope; generic OS font/audio/dpkg entries are kept outside Bao cleanup."
+      },
+      "missing": [
+        "Fresh exact old source/cache/registry/native/hold preflight and accepted1c665 Linux artifact; stop on changed inputs instead of inheriting old495 eligibility.",
+        "New-product two-agent initial/cold/strict inverse with original budgets and current selector results.",
+        "Production tuple and separately reviewed real held-systemd lifecycle; old two-agent QA does not release hold markers."
+      ]
+    },
+    {
+      "host": "x230",
+      "role": "installed proxy/oracle and historical restore destination; current installed application consumer denominator unresolved",
+      "agentIds": null,
+      "latestFinite": {
+        "sourceStatus": "completed_finite_observation_only",
+        "sourceFailure": null,
+        "startedUnixNsOriginalToken": "1793832600633506507",
+        "entries": [
+          {
+            "id": "f001",
+            "path": "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/0/entries/0",
+            "bytes": 2068,
+            "sha256": "328d66721c695abe23d24a1165c6c3b96ad54936ce853cdac1bde1aaf1e9be8b",
+            "expected_prior_sha256": "328d66721c695abe23d24a1165c6c3b96ad54936ce853cdac1bde1aaf1e9be8b",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/0/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f002",
+            "path": "/run/user/1000/systemd/transient/hepta-native-history-restore-v58-a2.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/0",
+            "bytes": 978,
+            "sha256": "79ac1b323cd885fa78036cb5b1371c6bcb59cae94d1a1286120b47e52e105e8e",
+            "expected_prior_sha256": "79ac1b323cd885fa78036cb5b1371c6bcb59cae94d1a1286120b47e52e105e8e",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/0/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f003",
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-20261020.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/1",
+            "bytes": 651,
+            "sha256": "a357418fd8cab8a2d955886194934277ce45d9942d965a172348d3e225841dbe",
+            "expected_prior_sha256": "a357418fd8cab8a2d955886194934277ce45d9942d965a172348d3e225841dbe",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/1/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f004",
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-a2-20261020.service",
+            "status": "read_verified",
+            "sourcePointer": "/passes/1/entries/2",
+            "bytes": 661,
+            "sha256": "bdac8af9a578082b3fef4f581df145da0945f323c38dba8416fcf21ad6f274ff",
+            "expected_prior_sha256": "bdac8af9a578082b3fef4f581df145da0945f323c38dba8416fcf21ad6f274ff",
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/1/entries/2/identity",
+            "projectionKind": "systemd_unit"
+          },
+          {
+            "id": "f005",
+            "path": "/etc/crontab",
+            "status": "read_verified",
+            "sourcePointer": "/passes/2/entries/0",
+            "bytes": 1136,
+            "sha256": "ffb48ad57868ed639fad049d11ef4b9bcdd3d2d3e556754ce69b4d6b016969a3",
+            "expected_prior_sha256": null,
+            "prior_sha_matches": true,
+            "identityPointer": "/passes/2/entries/0/identity",
+            "projectionKind": "cron_projection"
+          },
+          {
+            "id": "f006",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/0",
+            "identityPointer": "/passes/3/entries/0/identity"
+          },
+          {
+            "id": "f007",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/1",
+            "identityPointer": "/passes/3/entries/1/identity"
+          },
+          {
+            "id": "f008",
+            "path": "/home/qian/heptabao-r28-archive-recovery-20261022-r1",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/2",
+            "identityPointer": "/passes/3/entries/2/identity"
+          },
+          {
+            "id": "f009",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/3",
+            "identityPointer": "/passes/3/entries/3/identity"
+          },
+          {
+            "id": "f010",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/4",
+            "identityPointer": "/passes/3/entries/4/identity"
+          },
+          {
+            "id": "f011",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/5",
+            "identityPointer": "/passes/3/entries/5/identity"
+          },
+          {
+            "id": "f012",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/6",
+            "identityPointer": "/passes/3/entries/6/identity"
+          },
+          {
+            "id": "f013",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/7",
+            "identityPointer": "/passes/3/entries/7/identity"
+          },
+          {
+            "id": "f014",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/8",
+            "identityPointer": "/passes/3/entries/8/identity"
+          },
+          {
+            "id": "f015",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/3/entries/9",
+            "identityPointer": "/passes/3/entries/9/identity"
+          },
+          {
+            "id": "f016",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/4/entries/0",
+            "identityPointer": "/passes/4/entries/0/identity"
+          },
+          {
+            "id": "f017",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/4/entries/1",
+            "identityPointer": "/passes/4/entries/1/identity"
+          },
+          {
+            "id": "f018",
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+            "status": "metadata_observed",
+            "sourcePointer": "/passes/4/entries/2",
+            "identityPointer": "/passes/4/entries/2/identity"
+          }
+        ],
+        "queries": [
+          {
+            "label": "x230-proxy",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "openclaw-authbus-x230-openbao-proxy.service",
+              "LoadState": "loaded",
+              "ActiveState": "inactive",
+              "SubState": "dead",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "disabled",
+              "ConditionResult": "no",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "1min 30s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/0"
+          },
+          {
+            "label": "transient-hepta-native-history-restore-v58-a2.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "hepta-native-history-restore-v58-a2.service",
+              "LoadState": "loaded",
+              "ActiveState": "failed",
+              "SubState": "failed",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "transient",
+              "ConditionResult": "yes",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "5s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/1"
+          },
+          {
+            "label": "transient-hepta-native-restore-compiler-v45-20261020.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "hepta-native-restore-compiler-v45-20261020.service",
+              "LoadState": "loaded",
+              "ActiveState": "failed",
+              "SubState": "failed",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "transient",
+              "ConditionResult": "yes",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "1min 30s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/2"
+          },
+          {
+            "label": "transient-hepta-native-restore-compiler-v45-a2-20261020.service",
+            "kind": "systemctl",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "Id": "hepta-native-restore-compiler-v45-a2-20261020.service",
+              "LoadState": "loaded",
+              "ActiveState": "failed",
+              "SubState": "failed",
+              "MainPID": 0,
+              "ControlPID": 0,
+              "UnitFileState": "transient",
+              "ConditionResult": "yes",
+              "KillMode": "control-group",
+              "TimeoutStopUSec": "1min 30s",
+              "Triggers": "",
+              "TriggeredBy": ""
+            },
+            "sourcePointer": "/queries/3"
+          },
+          {
+            "label": "x230-exact-oracle",
+            "kind": "docker",
+            "exitCode": 0,
+            "projectionComplete": true,
+            "projection": {
+              "ExitCode": 0,
+              "FinishedAt": "0001-01-01T00:00:00Z",
+              "Id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+              "Image": "ghcr.io/openbao/openbao:2.7.1",
+              "Name": "/heptabao-openbao271-oracle-r46",
+              "NetworkMode": "none",
+              "Paused": false,
+              "Pid": 2031520,
+              "Restarting": false,
+              "Running": true,
+              "StartedAt": "2026-10-10T17:14:55.727875418Z",
+              "StateStatus": "running",
+              "mounts": [],
+              "no_disposable_or_deletion_inference": true,
+              "port_bindings": {},
+              "restart_policy_sha256": "d404b4000ecf4446757d677fdda5761dbf5875035c3c79c9f1851044156d6510"
+            },
+            "sourcePointer": "/queries/4"
+          },
+          {
+            "label": "owner-crontab",
+            "kind": "crontab",
+            "exitCode": 1,
+            "projectionComplete": true,
+            "projection": {
+              "known_no_crontab_diagnostic": true,
+              "owner_crontab_absent": true
+            },
+            "sourcePointer": "/queries/5"
+          }
+        ],
+        "scopeAtomicAcrossEntries": false,
+        "currentConsumerRuntimeQualified": false,
+        "noNewObservationPerformed": true,
+        "reference": "x230_finite_inventory"
+      },
+      "historicalStandardConfigAbsent": {
+        "value": true,
+        "meaning": "Only original exact standard-path scope. Recover its explicit readset from archived source before proposing fresh absence reads.",
+        "evidence": {
+          "reference": "cleanup_matrix",
+          "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+          "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+          "jsonPointer": "/hosts/3/standard_openclaw_config_absent"
+        }
+      },
+      "registration": {
+        "evidence": {
+          "reference": "finite_registration",
+          "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+          "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+          "jsonPointer": "/host_rows/3"
+        },
+        "standardEntry": "Absent in exact standard application paths; per-host isolated real credential proof remains separate.",
+        "backupStatement": "No confirmed Bao/AuthBus producer or scheduled restore in selected systemd/cron scope. Three failed transient hepta-runtime-native-dev restore/history/compiler-cache units have MainPID 0, no Triggers/TriggeredBy and explicit separate source scripts; not current Bao backup services.",
+        "failedTransientSources": [
+          {
+            "active_state": "failed",
+            "inline_program_and_arguments_not_published": true,
+            "main_pid": "0",
+            "openbao_heptabao_authbus_openclaw_literal_present": false,
+            "path": "/run/user/1000/systemd/transient/hepta-native-history-restore-v58-a2.service",
+            "selected_interpreter_or_project_paths": [
+              "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_history_v58_a2.py"
+            ],
+            "sha256": "79ac1b323cd885fa78036cb5b1371c6bcb59cae94d1a1286120b47e52e105e8e",
+            "triggered_by": "",
+            "triggers": "",
+            "unit": "hepta-native-history-restore-v58-a2.service",
+            "unit_file_state": "transient",
+            "working_directory": "/home/qian/.local/state/hepta-runtime-native-dev-20261018"
+          },
+          {
+            "active_state": "failed",
+            "inline_program_and_arguments_not_published": true,
+            "main_pid": "0",
+            "openbao_heptabao_authbus_openclaw_literal_present": false,
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-20261020.service",
+            "selected_interpreter_or_project_paths": [
+              "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_compiler_cache_v45.py"
+            ],
+            "sha256": "a357418fd8cab8a2d955886194934277ce45d9942d965a172348d3e225841dbe",
+            "triggered_by": "",
+            "triggers": "",
+            "unit": "hepta-native-restore-compiler-v45-20261020.service",
+            "unit_file_state": "transient",
+            "working_directory": null
+          },
+          {
+            "active_state": "failed",
+            "inline_program_and_arguments_not_published": true,
+            "main_pid": "0",
+            "openbao_heptabao_authbus_openclaw_literal_present": false,
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-a2-20261020.service",
+            "selected_interpreter_or_project_paths": [
+              "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_compiler_cache_v45a2.py"
+            ],
+            "sha256": "bdac8af9a578082b3fef4f581df145da0945f323c38dba8416fcf21ad6f274ff",
+            "triggered_by": "",
+            "triggers": "",
+            "unit": "hepta-native-restore-compiler-v45-a2-20261020.service",
+            "unit_file_state": "transient",
+            "working_directory": null
+          }
+        ]
+      },
+      "missing": [
+        "Exact historical standard application readset and a finite current confirmation if needed; do not invent an installed consumer or install one to satisfy a count.",
+        "Per-entry proxy/oracle role and target consumer dependency decision; network none / mounts[] is not disposal authority.",
+        "If a real active restore entry is introduced or found, bind it explicitly to new product/endpoint/credential/startup destination and run an owned exact restore/rollback.",
+        "Any current credential route here remains unqualified; X230 loopback comparison/storage tests are not application-client consumption."
+      ]
+    }
+  ],
+  "sharedRestrictions": {
+    "normalBuildDoesNotQualifyConsumer": true,
+    "lanFixtureDoesNotBindProduction": true,
+    "noJ3160Contact": true,
+    "noProviderRefreshOrModelCalls": true,
+    "noProductionServiceChanges": true,
+    "noDeletionAuthorization": true
+  },
+  "finiteScopeRule": {
+    "arbitrary_unregistered_manual_paths_are_not_an_added_gate": true,
+    "backup_payloads_opened": false,
+    "client_configs": "Previously pinned OpenClaw source files, installed startup units and exact standard Codex config addendum; actual credentials and runtime qualification remain separately scoped.",
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "mac_main_same_physical_host": true,
+    "paperraid_payloads_or_source_definitions_opened": false,
+    "real_backup_restore_executed": false,
+    "registration_scope": "Mac owner/local-system launchd direct registrations selected by application or backup names; Linux system and owner-user systemd registered names and metadata; owner crontabs and /etc/crontab application command matches; /etc/cron.* immediate application-named registration files.",
+    "scope_reopen_trigger": "A newly observed active command/configuration or restore entry referencing Bao/AuthBus outside this finite list, not a hypothetical possibility."
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.full-replacement.action-units.r1",
+  "hostCallsAuthorized": false,
+  "atomicityDefinition": "Each action has one bounded reviewed intent, exact predecessor state and independently retained terminal evidence. This does not assert a filesystem-wide transaction or atomic ownership of a service label.",
+  "evidenceUnitRequired": [
+    "immutable intent/controller/candidate pins",
+    "exact host/product and prior original source pointers",
+    "expected after state and exclusive write custody if mutating",
+    "one stable action key and original absolute deadline",
+    "actual request/response or manager observation, with secrets projected or hashed",
+    "authoritative exit/complete stdout+stderr hashes and full original SDK",
+    "all owned child/FD/connection closure, original before-after fences",
+    "known/unknown classification; no automatic replay",
+    "independent readback of any published immutable evidence"
+  ],
+  "immediateSequence": [
+    {
+      "id": "M01",
+      "host": "mac",
+      "action": "Bind accepted1c665 Mac normal61 artifacts into existing reviewed current-WAL source.",
+      "inputs": [
+        "future-product-binding-template.public.json",
+        "current source tree ab729106132c035c353979285aa70a302318b3c2",
+        "root current source review4b4c7a065ce953d2ff4b0471d47e87c2c0a4e59b",
+        "future actual Mac server/source/normal/native/combined61/authority"
+      ],
+      "changes": "Four product-bearing source files plus seven ROOT-only files and derived pins/labels/payload/request. Exact retained libraries, capture limits, native/synthetic proofs and all business/cleanup deadlines unchanged.",
+      "pass": "Independent whole diff/reconstruction and literal-only binding review; all actual product slots non-null and accepted.",
+      "onMissing": "Source template remains unbound; no host submission."
+    },
+    {
+      "id": "M02",
+      "host": "mac",
+      "action": "Once approved, create-only publish fresh exact inert package and independently read back every declared source/document/candidate.",
+      "pass": "Exact files/modes/owner/full9/whole SHA and T5 guard; deadline+FD/child closure+authority0, original runtime paths absent.",
+      "authorization": "Separate exact inert GO required; none issued by this plan."
+    },
+    {
+      "id": "M03",
+      "host": "mac",
+      "action": "Once admitted, run one five-agent owned current fixture with exact current capture, initial and cold phases, two independent inverses.",
+      "unchangedBudgets": {
+        "controller": 900,
+        "outer": 1080,
+        "manager": 600,
+        "managerCleanup": 60,
+        "phase": 120,
+        "capture": 45,
+        "registryQuery": 3,
+        "native": [
+          15,
+          8,
+          3
+        ]
+      },
+      "bounds": {
+        "registryWalBytes": 5969912,
+        "rowBytes": 1048576,
+        "aggregateBytes": 8388608
+      },
+      "pass": "Five agents retain real declared model/selector/order/flags, actual native local credential RPCs; raw/local rows and six caches restore exactly, effective only recomputed; outer+entry+library close fully within original limits.",
+      "onError": "Preserve exact failure envelope and unknown; no replay, cap growth, or source-state repair."
+    },
+    {
+      "id": "R01",
+      "host": "rog",
+      "action": "Freeze Linux six-agent current/native capture and fixture source from latest disabled/gen203/current codex sources.",
+      "changes": "Explicitly reviewed owned-only functional-enable choice if needed; current production enabled=false and main exclusion untouched.",
+      "inputs": [
+        "rog latest finite46 raw",
+        "accepted1c665 Linux normal61 artifact",
+        "exact known installed SDK/native source and current registry mapping"
+      ],
+      "pass": "All six real agent models/current raw/effective/native bindings and original flags represented; missing native lineage must be observed through an exact finite source plan before execution."
+    },
+    {
+      "id": "R02",
+      "host": "rog",
+      "action": "After exact source/preflight GO, execute one Linux six-agent initial/cold/strict rollback owned fixture.",
+      "pass": "Actual product and six-agent evidence; all held service markers/config preserved; no provider or production start.",
+      "deadline": "Retain documented original deadlines of the chosen source; any new outer must be explicit, not inferred from service TimeoutStopUSec."
+    },
+    {
+      "id": "P01",
+      "host": "pocket4",
+      "action": "Rebind historical two-agent R10 controller minimally to accepted1c665 Linux artifact and fresh roots; retain current source guards and original helpers.",
+      "retainedBudgets": {
+        "controller": 440,
+        "http": 10,
+        "consumer": 70,
+        "rollback": 35,
+        "outer": 600
+      },
+      "pass": "New exact preflight guards current source/registry/cache/native/holds, followed by one two-agent initial/cold/strict inverse on new product.",
+      "onChangedRegistry": "Refuse under original capture contract; no size-cap increase or substitution with Mac WAL qualification."
+    },
+    {
+      "id": "X01",
+      "host": "x230",
+      "action": "Resolve exact standard-application absence readset from archived public source; propose only that finite current confirmation plus already registered proxy/oracle metadata.",
+      "pass": "Installed consumer denominator supported by real paths/registration; absent scope yields explicit no-installed-consumer result, not synthetic client installation or asset deletion.",
+      "noRequestsFromThisAgent": true
+    }
+  ],
+  "productionSequence": [
+    {
+      "id": "B01",
+      "action": "Bind actual deployed endpoint/clusterId/member set/CA and leaf certificates, namespace/mounts, product identities.",
+      "pass": "Actual accepted public source and cryptographic pin/readback tuple; no fixture-to-production inference.",
+      "actualValues": null
+    },
+    {
+      "id": "B02",
+      "action": "Compile least-privilege per-host policy from exact installed plugin operations and preserved flags; create or verify host-specific AppRole/SecretID in the actual target cluster.",
+      "pass": "Policy full hash+actual readback, issuer/cluster binding, private generation full identity and one actual AppRole login. Canonical publication authority is separate from a consumer inbox proposal.",
+      "noOldServerContact": true
+    },
+    {
+      "id": "B03",
+      "action": "Exercise actual issued-token renew/revoke and denied unassigned access against the owned/explicitly approved target.",
+      "pass": "Renew returns known success, revoke returns known success, revoked follow-up and unassigned profile reject as expected. Token values remain private; unknown stops.",
+      "existingHistoricalExample": "Pocket old495 HTTP24 is retained as an example only, not new production evidence."
+    },
+    {
+      "id": "H01",
+      "action": "For one host at a time, capture exact config/service/credential-generation predecessor and establish reviewed service/other-writer custody; stage all new credential files privately before switching configuration.",
+      "allowedConfigKeys": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "noImplicitChanges": [
+        "enabled",
+        "models",
+        "order",
+        "publishNew",
+        "lease flags",
+        "generation",
+        "service hold markers"
+      ],
+      "pass": "New private credential generation whole verified, predecessor config full identity/hash unchanged, controlled one-file publication plus manager lifecycle receipts.",
+      "refusal": "No claimed atomic CAS against an uncooperative external writer; no automatic overwrite on drift."
+    },
+    {
+      "id": "H02",
+      "action": "Using actual installed manager entry, start/cold-restart the one admitted host and bind new process birth, executable, exact arguments and target cluster to current credential effects.",
+      "pass": "Known manager stop before next generation; real client writes and persistence after cold; all required selected agents, caches/native and token lifecycle proved on the exact new product.",
+      "caveat": "A QA launchd wrapper pass does not qualify production KeepAlive. label registration/path/args/PID observations are sequential, not atomic PID custody."
+    },
+    {
+      "id": "H03",
+      "action": "Demonstrate strict one-attempt inverse of the actual approved changes and independently verify original state.",
+      "pass": "Persisted local/raw rows restored before effective recomputation and cache restoration; config/credential pointer and service/hold predecessor restored under exact expected-after guard; all old sources unchanged.",
+      "partialInverse": "attempted && !completed is unknown. Never retry inverse with a refreshed budget or restore derived effective profiles into an empty raw store."
+    },
+    {
+      "id": "K01",
+      "action": "Bind each observed active backup/restore entry, or mark no active registration in the accepted finite scope. If new deployment introduces a producer, add that exact entry with owner/path/schedule/payload/key-custody/restore-target contract.",
+      "pass": "One source-bound encrypted capture/transport/restore/current-product validation for each applicable active entry; no artificial nine-scope expansion.",
+      "noInheritedFreshness": true
+    },
+    {
+      "id": "C01",
+      "action": "Only after per-host current consumer and applicable production/backup transitions are accepted, review each legacy relay/proxy/dev oracle/old asset separately.",
+      "pass": "Actual role/dependency and retained data accounted for, exact cleanup change and rollback specified.",
+      "authorizedNow": false
+    }
+  ],
+  "onUnknown": "Freeze originals and stop chain. Read same original job/evidence only as authorized; no action-key changes or business replay.",
+  "fullReplacementQualified": false
+}

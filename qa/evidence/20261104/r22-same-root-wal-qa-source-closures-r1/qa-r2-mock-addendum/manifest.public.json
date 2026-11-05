@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "files": [
+    {
+      "path": "source/mock_failure_addendum_r1.py",
+      "bytes": 11640,
+      "sha256": "e19b44e5e8a54f83fc69ff5a0c54095e41cf7506f0a69eaf997c9258c9ceabb1",
+      "blob": "4908538d0eca88dc41d97ec2824149981072c165"
+    },
+    {
+      "path": "actual/result.public.json",
+      "bytes": 3709,
+      "sha256": "9eba713f40878bd5b4f962b017826ec8065c44cbbe45c488d4af1faa18c8965b",
+      "blob": "3c098d2b3e2fa45ecb76bc7e908c6e22e2fee166"
+    },
+    {
+      "path": "actual/execution.original.json",
+      "bytes": 4189,
+      "sha256": "f6969b68fd814b1ab0fe5bb63bf086cef273c2f3b41562e6ea2e8433b0214c47",
+      "blob": "a5868e27889db28226f58b217ed4bf5c0bd745cf"
+    },
+    {
+      "path": "analysis/coverage.public.json",
+      "bytes": 1612,
+      "sha256": "ed16d19aa7bd6abc11ff986a8aada6589f134f6189b420d7b5bc6827c918f3df",
+      "blob": "985b5c7466dcc7dcb011e5ba48098e4635828189"
+    },
+    {
+      "path": "references/original_mock18.py",
+      "bytes": 12321,
+      "sha256": "d2fa4b8c3c8d37c4dcb0102b92e9b9df9b172f2cb7648bb720b7e95f8f4a903c",
+      "blob": "6787082a5439524aadf19c747421ce5f90c572fb"
+    },
+    {
+      "path": "references/builder_r2.py",
+      "bytes": 42820,
+      "sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8",
+      "blob": "015f59e0f2212e4a683ad2b4511088b406a32e61"
+    },
+    {
+      "path": "references/owner_reference.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+    }
+  ]
+}

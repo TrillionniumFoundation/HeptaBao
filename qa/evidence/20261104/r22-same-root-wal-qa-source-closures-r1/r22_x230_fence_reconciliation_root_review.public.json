@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root.x230-fence-reconciliation-boundary.v1",
+  "as_of_utc": "2026-11-05T09:06:41Z",
+  "original_relay": {
+    "job": "1a1aa57458d-fc05-4156",
+    "state": "LAUNCH_UNKNOWN_UNCHANGED",
+    "replayed": false
+  },
+  "r1_fence": {
+    "job": "1a1aa8a6fb0-fc05-4428",
+    "state": "KNOWN_FIXED_IDENTITY_MISMATCH_BEFORE_ROOT_NO_WRITES",
+    "old_tuple_mismatch_field_not_inferred": true
+  },
+  "fresh_metadata": {
+    "job": "1a1aaa6db3e-fc05-45a6",
+    "authority": "3850cd3c452068e119c38d2749314452d031445d",
+    "stdout": "62403647a790e255006068666fb71c95965420ba",
+    "root_review": "9d1853d6e37a5772a3a66aa3ff6a8e58c43877e3",
+    "metadata_calls": 42,
+    "closed_descriptors": 8,
+    "point_time_root_absence_not_reservation": true
+  },
+  "r2_fence": {
+    "request": "fb197792ced7efbd7c60da559514b9209e1affd4",
+    "key": "heptabao-x230-original-relay-effect-fence-r2-8c930805",
+    "source": "fa0b8eabe31d1666377d73052ddb5025bff3df21",
+    "state": "UNRESOLVED_MISSING_ORIGINAL_SUBMISSION_EVIDENCE",
+    "reason": "The preceding continuity summary described one submit, while no original root GO/dispatch intent/ACK/job survived in available state. Missing local cache is not proof of no dispatch. No replacement process_start was issued.",
+    "source_review": "632d29831f394f99e4a143575657f32c17939ef7"
+  },
+  "read_only_reconciliation": {
+    "full_process_list": "explicit 1MiB capacity refusal",
+    "paged_inventory": "incomplete and repeated durable-membership-change errors; no absence conclusion",
+    "packet": "3bb552ff4554453bd5b5238609426b33e0992bda",
+    "fixed_marker_info": "explicit ENOENT for original root at one observation; not original job terminal or permanent fence proof"
+  },
+  "next": {
+    "kind": "bounded exact typed-request digest locator SOURCE_ONLY",
+    "positive_control": "8b3f3c6426056e5873014365ef14a4bded4063a6",
+    "derived_fence_request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+    "digest_is_not_launch_or_execution_proof": true
+  },
+  "full34_and_new69_qualification": false,
+  "new_source_artifact_relay_replayed": false,
+  "production_cutover_or_deletion": false
+}

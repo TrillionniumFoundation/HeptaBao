@@ -1,0 +1,166 @@
+--- a/service_native_v6_ha_same_root_republication_tests.rs
++++ b/service_native_v6_ha_same_root_republication_tests.rs
+@@ -13,20 +13,17 @@
+     let _scope = scope();
+     let read = fresh(ha)?;
+     assert_eq!(read.published(), current);
+-    let selected = LocalSelection::read(
+-        service.durable.as_mut().ok_or("old local durable")?,
+-        &read,
+-    )
+-    .map_err(|_| "old local cursor must be authenticated and covered")?;
++    let selected =
++        LocalSelection::read(service.durable.as_mut().ok_or("old local durable")?, &read)
++            .map_err(|_| "old local cursor must be authenticated and covered")?;
+     let root = selected.native.as_ref().ok_or("old native root")?;
+     assert_eq!(
+         root.identity().map_err(|_| "old root identity")?.digest(),
+         current.root_digest(),
+     );
+-    let cursor = NativeHaCursor::decode(
+-        selected.ha_bytes.as_ref().ok_or("old HA cursor")?.expose(),
+-    )
+-    .map_err(|_| "old canonical HA cursor")?;
++    let cursor =
++        NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or("old HA cursor")?.expose())
++            .map_err(|_| "old canonical HA cursor")?;
+     cursor
+         .covered_by(&read)
+         .map_err(|_| "old publication must remain covered")?;
+@@ -54,15 +51,17 @@
+     let _scope = scope();
+     let read = fresh(ha)?;
+     assert_eq!(read.published(), published);
+-    let selected = LocalSelection::read(
+-        service.durable.as_mut().ok_or("installed durable")?,
+-        &read,
+-    )
+-    .map_err(|_| "installed local selection")?;
++    let selected =
++        LocalSelection::read(service.durable.as_mut().ok_or("installed durable")?, &read)
++            .map_err(|_| "installed local selection")?;
+     assert_eq!(selected.root_bytes.expose(), old.root_bytes.expose());
+     assert!(selected.initial_generation > old.initial_generation);
+     let cursor = NativeHaCursor::decode(
+-        selected.ha_bytes.as_ref().ok_or("installed HA cursor")?.expose(),
++        selected
++            .ha_bytes
++            .as_ref()
++            .ok_or("installed HA cursor")?
++            .expose(),
+     )
+     .map_err(|_| "installed canonical HA cursor")?;
+     cursor
+@@ -118,14 +117,26 @@
+         ),
+     ] {
+         assert_eq!(
+-            durable.get("system", name)?.ok_or("reopened resource")?.expose(),
++            durable
++                .get("system", name)?
++                .ok_or("reopened resource")?
++                .expose(),
+             bytes.expose(),
+         );
+     }
+     assert_eq!(
+-        loaded.root.identity().map_err(|_| "reopened identity")?.digest(),
+-        expected.native.as_ref().ok_or("expected native root")?
+-            .identity().map_err(|_| "expected identity")?.digest(),
++        loaded
++            .root
++            .identity()
++            .map_err(|_| "reopened identity")?
++            .digest(),
++        expected
++            .native
++            .as_ref()
++            .ok_or("expected native root")?
++            .identity()
++            .map_err(|_| "expected identity")?
++            .digest(),
+     );
+     Ok(())
+ }
+@@ -141,11 +152,21 @@
+     let (cold_files, mut cold_target, _cold_key, _cold_token) = initialized()?;
+     seed_different_local_barrier(&source_a, &mut cold_target)?;
+     let source_digest = source_a
+-        .current_state_identity().map_err(|_| "source identity")?.digest();
+-    let (cluster, enrollment, index) =
+-        cluster(&source_a, &source_files.path.join("same-root-republication-raft"))?;
+-    let (first, count) =
+-        publish(&mut source_a, &cluster, &enrollment, source_digest, 0, index)?;
++        .current_state_identity()
++        .map_err(|_| "source identity")?
++        .digest();
++    let (cluster, enrollment, index) = cluster(
++        &source_a,
++        &source_files.path.join("same-root-republication-raft"),
++    )?;
++    let (first, count) = publish(
++        &mut source_a,
++        &cluster,
++        &enrollment,
++        source_digest,
++        0,
++        index,
++    )?;
+     assert!(count > heptabao_durable_service::MAX_ATOMIC_MUTATIONS);
+     let warm_ha = cluster.processes[1].clone();
+     let cold_ha = cluster.processes[2].clone();
+@@ -163,17 +184,26 @@
+             "secret/data/same-root-intermediate",
+             &token,
+             json!({"options":{"cas":0},"data":{"value":"intermediate-B"}}),
+-        ).status,
++        )
++        .status,
+         200,
+     );
+     let (second, _) = publish(
+-        &mut source_b, &cluster, &enrollment, first.root_digest(),
+-        first.generation(), first.publication_log_id().index,
++        &mut source_b,
++        &cluster,
++        &enrollment,
++        first.root_digest(),
++        first.generation(),
++        first.publication_log_id().index,
+     )?;
+     assert_ne!(second.root_digest(), first.root_digest());
+     let (third, _) = publish(
+-        &mut source_a, &cluster, &enrollment, second.root_digest(),
+-        second.generation(), second.publication_log_id().index,
++        &mut source_a,
++        &cluster,
++        &enrollment,
++        second.root_digest(),
++        second.generation(),
++        second.publication_log_id().index,
+     )?;
+     assert_eq!(third.root_digest(), first.root_digest());
+     assert_eq!(third.generation(), first.generation() + 2);
+@@ -190,7 +220,10 @@
+     assert_history_with_real_proof(&mut warm, &token, 4)?;
+ 
+     let cold_barrier = Zeroizing::new(
+-        **cold_target.barrier_key.as_ref().ok_or("cold target barrier")?,
++        **cold_target
++            .barrier_key
++            .as_ref()
++            .ok_or("cold target barrier")?,
+     );
+     drop(cold_target);
+     let cold_started = Instant::now();
+@@ -202,7 +235,9 @@
+     assert_history_with_real_proof(&mut cold_target, &token, 4)?;
+     eprintln!(
+         "same-root-republication warm_ms={} cold_ms={} per_request_budget_ms={}",
+-        warm_elapsed.as_millis(), cold_elapsed.as_millis(), REQUEST_BUDGET.as_millis(),
++        warm_elapsed.as_millis(),
++        cold_elapsed.as_millis(),
++        REQUEST_BUDGET.as_millis(),
+     );
+ 
+     let warm_barrier = Zeroizing::new(**warm.barrier_key.as_ref().ok_or("warm barrier")?);

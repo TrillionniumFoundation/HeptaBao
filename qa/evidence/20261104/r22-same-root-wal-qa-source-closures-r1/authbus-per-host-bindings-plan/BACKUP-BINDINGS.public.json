@@ -1,0 +1,145 @@
+{
+  "schema": "heptabao.full-replacement.backup-bindings.r1",
+  "status": "SOURCE_PLAN",
+  "controllingRegistrationReference": "finite_registration",
+  "scopeClosedForPlanning": true,
+  "reopenOnly": "A newly observed active command/configuration or restore entry referencing Bao/AuthBus outside this finite list, not a hypothetical possibility.",
+  "artificialUnregisteredManualPathGate": false,
+  "perHost": [
+    {
+      "host": "mac",
+      "registrationPointer": "/host_rows/0/backup_registration",
+      "observedClassification": "No confirmed Bao/AuthBus backup/restore registration among the selected local launchd entries or owner crontab. All seven selected local plists have no StartInterval/StartCalendarInterval/WatchPaths/QueueDirectories; RunAtLoad is true. Loaded Apple SecureBackupDaemon is recorded as a system label outside the local registration scope, not classified as Bao.",
+      "currentBaoProducerOrScheduledRestoreConfirmed": false,
+      "applicability": "No additional active backup migration is inferred from historical path existence. A newly observed active command/configuration/restore entry reopens exactly that named scope.",
+      "historicalMaterialPointers": {
+        "reference": "cleanup_matrix",
+        "pointer": "/hosts/0/historical_backup_material_inventory"
+      },
+      "currentMigrationQualified": false
+    },
+    {
+      "host": "rog",
+      "registrationPointer": "/host_rows/1/backup_registration",
+      "observedClassification": "No confirmed Bao/AuthBus backup/restore timer or owner/system crontab entry in the finite registration scope. Generic OS font/audio restore and dpkg backup labels are recorded separately; uninstantiated PostgreSQL templates have no observed instance.",
+      "currentBaoProducerOrScheduledRestoreConfirmed": false,
+      "applicability": "No additional active backup migration is inferred from historical path existence. A newly observed active command/configuration/restore entry reopens exactly that named scope.",
+      "historicalMaterialPointers": {
+        "reference": "cleanup_matrix",
+        "pointer": "/hosts/1/historical_backup_material_inventory"
+      },
+      "currentMigrationQualified": false
+    },
+    {
+      "host": "pocket4",
+      "registrationPointer": "/host_rows/2/backup_registration",
+      "observedClassification": "No confirmed Bao/AuthBus backup/restore registration in selected systemd/cron scope; generic OS font/audio/dpkg entries are kept outside Bao cleanup.",
+      "currentBaoProducerOrScheduledRestoreConfirmed": false,
+      "applicability": "No additional active backup migration is inferred from historical path existence. A newly observed active command/configuration/restore entry reopens exactly that named scope.",
+      "historicalMaterialPointers": {
+        "reference": "cleanup_matrix",
+        "pointer": "/hosts/2/historical_backup_material_inventory"
+      },
+      "currentMigrationQualified": false
+    },
+    {
+      "host": "x230",
+      "registrationPointer": "/host_rows/3/backup_registration",
+      "observedClassification": "No confirmed Bao/AuthBus producer or scheduled restore in selected systemd/cron scope. Three failed transient hepta-runtime-native-dev restore/history/compiler-cache units have MainPID 0, no Triggers/TriggeredBy and explicit separate source scripts; not current Bao backup services.",
+      "currentBaoProducerOrScheduledRestoreConfirmed": false,
+      "applicability": "No additional active backup migration is inferred from historical path existence. A newly observed active command/configuration/restore entry reopens exactly that named scope.",
+      "historicalMaterialPointers": {
+        "reference": "cleanup_matrix",
+        "pointer": "/hosts/3/historical_backup_material_inventory"
+      },
+      "currentMigrationQualified": false
+    }
+  ],
+  "historicalOffhostChain": {
+    "destination": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture",
+    "reference": "cleanup_matrix",
+    "pointer": "/hosts/3/backup_recovery_assessment",
+    "captureDate": "2026-11-02",
+    "transportAndRestoreDate": "2026-11-03",
+    "dateAndOriginalReconstructionProvenance": "Parent independently read all9 original receipts (34-file packet) and published checkpoint943f62a646ead859f118a6dab4c7c12387b58488; this plan does not reread host/archive.",
+    "originalSourceScope": "Historical Linux UID1000 /home/qian-qi, logical source main. Do not map that old capture automatically to current Mac or current ROG.",
+    "denominator": {
+      "chains": 1,
+      "receiptRoles": 9,
+      "files": 23,
+      "nonemptyDatabases": 7,
+      "authStores": 6
+    },
+    "receiptPins": [
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+        "sha256": "1ec6333a77536cee407da153416e255cab8a1cfe756aa3983ffd3800f6a1539f",
+        "schema": "heptabao.offhost-cipher-input-binding.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+        "sha256": "c2ab6efe5962279688f648feb04e27fec1f7e34bc45efd3fcae734467c6f912f",
+        "schema": "heptabao.offhost-captured-backup-recovery.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+        "sha256": "a87a41066552903662051ecb4353ce72cfdb25324ed753b8fb627c7e4a2177cc",
+        "schema": "heptabao.offhost-recovery-bound-execution.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+        "sha256": "419113ce5eb7b7b9d911aac54ae31c212b62f9e422fbfdff41e0e281e502bade",
+        "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+        "sha256": "c54fb129905794e3edc9d11283c9d40a060d1138118534994a0cd6a36fbefaba",
+        "schema": "heptabao.offhost-cipher-transport-copy.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+        "sha256": "043dd7b7b381c0f7336ed9e0fbb249235145ed2c267e68f6b9ef0c92e61254c2",
+        "schema": "heptabao.offhost-recovery-bound-execution.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+        "sha256": "fa98ca05b0dda7b81887c7a5e56b8fddd6069d76892a6ccecaa0c8ab01cab88d",
+        "schema": "heptabao.offhost-captured-cipher-transport-verification.v1"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+        "sha256": "013168479eca30d070821806a5c3e415bdbbcb5eb56cb1774ae912951a08cbc7",
+        "schema": "heptabao.full-current-db-private-snapshot.r3"
+      },
+      {
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+        "sha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500",
+        "schema": "heptabao.current-encrypted-only-transport-source-map.r1"
+      }
+    ],
+    "qualified": "Exact declared captured encrypted recovery only; original restore300s.",
+    "preservedDistinctions": {
+      "securityStateCoherenceQualified": true,
+      "rawSecurityMetadataCohortStable": false,
+      "crossAgentTransactionSnapshotProven": false,
+      "currentCredentialValidityQualified": false,
+      "currentSdkRecoveryQualified": false,
+      "productionCutoverQualified": false
+    },
+    "noKeyTransfer": true,
+    "noNewPayloadAccess": true,
+    "noWholeDbCopyForCurrentCapture": true
+  },
+  "newDeploymentBackupFields": [
+    "explicit producer/restore registration and exact command source",
+    "source product/cluster ID/config binding",
+    "payload/manifest/schema/source capture time",
+    "encrypted destination and exact private ownership",
+    "recovery key custody reference, never key bytes in public evidence",
+    "source-bound offhost restore under original declared budget",
+    "new-product mounted data/auth semantics and current client validation",
+    "any deliberate endpoint/credential/startup remapping and strict rollback"
+  ],
+  "retainedArtifactsAreNotDisposable": true,
+  "wholeHostAbsenceClaimed": false
+}

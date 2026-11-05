@@ -1,0 +1,7 @@
+{
+  "chunk_id": "28d42b",
+  "wall_time_seconds": 0.02175457,
+  "exit_code": 0,
+  "original_token_count": 157,
+  "output": "{\"added_definitions\": [], \"bytes\": 28230, \"changed_definitions\": [\"verify_full_worktree\"], \"host_operations\": 0, \"name\": \"rog_stager\", \"removed_definitions\": [], \"rust_executed\": false, \"sha256\": \"cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9\", \"source_module_executed\": false, \"status\": \"AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"Cancelled\", \"on_signal\", \"digest\", \"blob\", \"identity\", \"stable_read\", \"fsync_dir\", \"create\", \"public\", \"group_members\", \"stop_owned\", \"owned\", \"git\", \"stage_remaining\", \"freeze\", \"preserve_failed_observer\", \"walk_error\", \"independent_git\", \"canonical_bundle_header\"]}\n"
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "qa-custody-r2-478b-streams-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aaced08e-fc05-478b",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

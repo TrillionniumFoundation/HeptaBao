@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-r2-inert-47e5-info-0-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/build_native_h2_client_r1.py"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+--- a/launch_normal_same_root_publication.py
++++ b/launch_normal_same_root_publication.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Preserve prior evidence and admit one exact cold/H2 canonical normal build."""
++"""Preserve prior evidence and admit one exact same-root publication normal build."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+@@ -22,8 +22,8 @@
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-assert args.tree == '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++assert args.commit == '1c66541993662f92cf717154e33717abedb2ea74'
++assert args.tree == '94ced21a63ff9aaca4538c0d4796efea2150e632'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+@@ -37,7 +37,7 @@
+ 
+ if args.host == 'mac':
+     BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-    ROOT = BASE / 'continuation-20261105-cold-h2-normal-r1'
++    ROOT = BASE / 'continuation-20261105-same-root-publication-normal-r1'
+     R9 = BASE / 'continuation-20261104-native-http-r9'
+     OLD = BASE / 'continuation-20261104-native-ssh-http-r8'
+     OLD_SOURCE = OLD / 'source'
+@@ -56,7 +56,7 @@
+     TOOLCHAIN = '/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin'
+     CARGO_HOME = str(BASE / 'r13-full-native-cargo-home-r1')
+     PYTHON = '/opt/homebrew/bin/python3'
+-    RUNNER_NAME = 'mac_normal_cold_h2_build.py'
++    RUNNER_NAME = 'mac_normal_same_root_publication_build.py'
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+@@ -301,11 +301,12 @@
+ assert (os.uname().sysname, os.uname().machine) == expected_system
+ assert os.getuid() == expected_uid == ROOT.stat().st_uid
+ assert ROOT.resolve(strict=True) == ROOT and TARGET.resolve(strict=True) == TARGET
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_same_root_publication.py'
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+ stage = json.loads(stage_raw)
+-assert stage['schema'] == 'heptabao.cold-h2-independent-source-stage.v1'
++assert stage['schema'] == 'heptabao.same-root-publication-independent-source-stage.v1'
+ assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+ assert stage['source_clean'] and stage['independent_git_directory'] and stage['old_source_unchanged']
+ assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+@@ -319,7 +320,7 @@
+ assert sum(len(g['tests']) for g in groups) == stage['exact_test_count']
+ assert all(g['runtime_seconds'] == 600 for g in groups)
+ ADMISSION.mkdir(mode=0o700)
+-result = {'schema': 'heptabao.cold-h2-normal-target-admission.v1', 'status': 'failed',
++result = {'schema': 'heptabao.same-root-publication-normal-target-admission.v1', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+@@ -382,6 +383,7 @@
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+                   exact_test_count=stage['exact_test_count'],
+                   additional_existing_ingress_tests=7, additional_cold_h2_tests=9,
++                  additional_same_root_publication_tests=1, original_60_test_count=60,
+                   each_additional_group_total_cap_seconds=600,
+                   original_supervisor_seconds=ORIGINAL_OUTER_SECONDS,
+                   outer_started_monotonic=OUTER_STARTED, outer_until_monotonic=OUTER_UNTIL)

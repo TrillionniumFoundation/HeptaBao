@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.retained-helper.same-body.v1",
+  "rog": {
+    "bytes": 35452,
+    "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+    "blob": "9b318f4acf589e0410263723695f421d0bb224ea"
+  },
+  "mac": {
+    "bytes": 35525,
+    "sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
+    "blob": "bc3196add200ef7f03fb8321560f274f7ea867db"
+  },
+  "exact_body_present_in_both": true,
+  "helper": {
+    "bytes": 3397,
+    "sha256": "d07718ef918260afce03885ac17afec9250cb17e00354f12a900818aca493b93",
+    "blob": "960ccb759fdd1431823abf8fd114433f64034dad"
+  },
+  "source_only": true
+}

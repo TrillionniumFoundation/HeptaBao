@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.qa-r2-inert-partial-observation.v1",
+  "status": "ACTUAL_INERT_COMPLETE_FULL_BODY_READBACK_PENDING",
+  "job_id": "1a1aad691c1-fc05-47e5",
+  "authority_exit_code": 0,
+  "authority_full_durable": true,
+  "independent_file_info_count": 9,
+  "compiled_input_files": 8,
+  "new_whole_body_readback_complete": false,
+  "cargo_started": false,
+  "product_started": false,
+  "closed_read_operations": 11,
+  "unfinished_body_reads": [
+    {
+      "label": "body-small",
+      "key": "qa-r2-inert-47e5-body-small-20261105-r1",
+      "operation_id": "36e7cf0a384f70b087e2034897e8ebe5aa28bf2f1910325e3813c0fddb318377",
+      "same_key_reconciliation": "reused:true, async_state:unknown",
+      "status_observation": "MCP -32603 timeout"
+    },
+    {
+      "label": "body-references",
+      "key": "qa-r2-inert-47e5-body-references-20261105-r1",
+      "state": "same-key admission reconciliation pending"
+    },
+    {
+      "label": "lock-part-0",
+      "key": "qa-r2-inert-47e5-lock-part-0-20261105-r1",
+      "state": "same-key admission reconciliation pending"
+    }
+  ],
+  "corrections": [
+    "The locally terminated aggregation cell did not commit its store updates.",
+    "Missing local admission cache was initially described as no dispatch; that inference was explicitly withdrawn.",
+    "The first read's reused:true admission proves its original operation was retained.",
+    "All three fixed parameters and keys are preserved; no inert or Cargo replay."
+  ],
+  "stderr_classification": {
+    "bytes": 173,
+    "syntaxwarning_count": 2,
+    "existing_reference_lines": [
+      1088,
+      915
+    ],
+    "status": "preserved_exactly"
+  },
+  "qualification": "Publication/metadata facts only; not QA build, TLS, product or production qualification."
+}

@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"1c66541993662f92cf717154e33717abedb2ea74\",\"node_id\":\"C_kwDOUGncwNoAKDFjNjY1NDE5OTM2NjJmOTJjZjcxNzE1NGUzMzcxN2FiZWRiMmVhNzQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1c66541993662f92cf717154e33717abedb2ea74\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/1c66541993662f92cf717154e33717abedb2ea74\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T08:25:34Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T08:25:34Z\"},\"tree\":{\"sha\":\"94ced21a63ff9aaca4538c0d4796efea2150e632\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/94ced21a63ff9aaca4538c0d4796efea2150e632\"},\"message\":\"Fix HA catch-up for same-content later publications\\n\\nRequire exact current HA cursors before warm/cold read fast paths and read-only continuation. Route a covered older publication through the existing full replica installer. Add an independent real A-to-B-to-A warm/cold regression without changing the original request budgets or validation denominators.\",\"parents\":[{\"sha\":\"6d02ceca629163e1c07480fa1f21520434407143\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/6d02ceca629163e1c07480fa1f21520434407143\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "1c66541993662f92cf717154e33717abedb2ea74",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1c66541993662f92cf717154e33717abedb2ea74",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1c66541993662f92cf717154e33717abedb2ea74",
+    "display_title": "1c66541993662f92cf717154e33717abedb2ea74",
+    "structuredContent": {
+      "title": "1c66541993662f92cf717154e33717abedb2ea74",
+      "content": "{\"sha\":\"1c66541993662f92cf717154e33717abedb2ea74\",\"node_id\":\"C_kwDOUGncwNoAKDFjNjY1NDE5OTM2NjJmOTJjZjcxNzE1NGUzMzcxN2FiZWRiMmVhNzQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1c66541993662f92cf717154e33717abedb2ea74\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/1c66541993662f92cf717154e33717abedb2ea74\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T08:25:34Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T08:25:34Z\"},\"tree\":{\"sha\":\"94ced21a63ff9aaca4538c0d4796efea2150e632\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/94ced21a63ff9aaca4538c0d4796efea2150e632\"},\"message\":\"Fix HA catch-up for same-content later publications\\n\\nRequire exact current HA cursors before warm/cold read fast paths and read-only continuation. Route a covered older publication through the existing full replica installer. Add an independent real A-to-B-to-A warm/cold regression without changing the original request budgets or validation denominators.\",\"parents\":[{\"sha\":\"6d02ceca629163e1c07480fa1f21520434407143\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/6d02ceca629163e1c07480fa1f21520434407143\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/1c66541993662f92cf717154e33717abedb2ea74"
+    }
+  },
+  "isError": false
+}

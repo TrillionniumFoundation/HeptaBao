@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.fixed-runtime-rog-request-digest-source-proof.v1",
+  "runtime_reference": {
+    "repo": "TrillionniumFoundation/hepta-runtime",
+    "blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+    "bytes": 171794,
+    "sha256": "98344ab61981793fa8b6cda92d777c62639dd6d61b4e3b6db0e94bb96f011fe5"
+  },
+  "positive_control": {
+    "request_blob": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+    "request_bytes": 387182,
+    "request_sha256": "d09dffcf758c9b0b3200a1abb886e06c36e46cc52d0792c96c0aae5997e28377",
+    "ack_blob": "c81aa0effff4d1e26d83380186bbae06fb739b99",
+    "job_id": "1a1aad691c1-fc05-47e5",
+    "host": "rog",
+    "computed_request_digest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+    "actual_ack_request_digest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+    "serialized_binding_bytes": 387119,
+    "exact": true
+  },
+  "target": {
+    "request_blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+    "request_bytes": 111195,
+    "host": "rog",
+    "idempotency_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957",
+    "computed_request_digest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+    "serialized_binding_bytes": 111098,
+    "stdin_sha256": "3bf6aa94e80601da1bf0c413f0c4f46e620ddc785145b6307c9436df69236331",
+    "stdin_bytes": 79915
+  },
+  "scope": [
+    "Reference public source only; no proof that actual deployment bytes equal this source.",
+    "Positive control confirms this exact canonical binding for this observed request.",
+    "Remote request JSON omits host/idempotency_key; stdin is removed into stdin.bin; no assumptions from absent fields.",
+    "Target digest is a derived candidate locator, not evidence a job exists or executed."
+  ]
+}

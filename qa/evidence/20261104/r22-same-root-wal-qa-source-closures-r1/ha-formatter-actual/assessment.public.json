@@ -1,0 +1,482 @@
+{
+  "schema": "heptabao.same-root-publication.actual-format.v1",
+  "status": "PASS_FORMAT_ONLY_PENDING_ROOT_REVIEW",
+  "job_id": "1a1aac9543c-fc05-4743",
+  "request": {
+    "bytes": 194996,
+    "sha256": "bbc87b30ce08277a35129dd987b310bced6dbb1a422b2b75de558ecc86addaad",
+    "blob": "52fe787d5b68896d16156740f719c74118a12a0b"
+  },
+  "go": {
+    "bytes": 2977,
+    "sha256": "975f3f2e8ca3a4d3189957155694105696a4e926def02b7d9ccab206f7fbb42d",
+    "blob": "c39e03ab7aa41e76ec3c3e816a3aad3fbcdb602a"
+  },
+  "result": {
+    "bytes": 7383,
+    "sha256": "434390d3fa5fba8b0e92445dcc4464f591c95f3954d1d1d68072889812d875b2",
+    "blob": "1934d0b158576d9da76d392824729d06e094998f"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "6ef7eeac6f645e6932c4bc66b613819c7a14afeb8fc69400b0bfd1d27dd6cdc6",
+    "blob": "297e523058d8f19ac6ad44be80a2164a5a8c3c89"
+  },
+  "stdout": {
+    "bytes": 1686,
+    "sha256": "00191a9d27269840a040e632fa4b45c4cf1a7c49a43087dc5a769082abf06448",
+    "blob": "a6ffe441765ef6b619a893ee753d74b57da0fd0a"
+  },
+  "outputs": [
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/candidate/service_native_v6_ha_read.rs",
+      "packet_output": "outputs/candidate/service_native_v6_ha_read.rs",
+      "bytes": 31870,
+      "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "blob": "510081c3383b8bfeb1edff282e7f089156b9e282",
+      "version": "66306:34381175:31870:1793866684584310933:1793866684584310933",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 31870,
+          "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/formatted/service_native_v6_ha_read.rs",
+      "packet_output": "outputs/formatted/service_native_v6_ha_read.rs",
+      "bytes": 31855,
+      "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+      "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "version": "66306:34381178:31855:1793866684603310944:1793866684603310944",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 31855,
+          "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_read.rs.rustfmt.stdout",
+      "packet_output": "outputs/service_native_v6_ha_read.rs.rustfmt.stdout",
+      "bytes": 31855,
+      "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+      "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "version": "66306:34381177:31855:1793866684602310943:1793866684602310943",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 31855,
+          "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_read.rs.rustfmt.stderr",
+      "packet_output": "outputs/service_native_v6_ha_read.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "version": "66306:34381176:0:1793866684601310943:1793866684601310943",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/candidate/service_native_v6_ha_install.rs",
+      "packet_output": "outputs/candidate/service_native_v6_ha_install.rs",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "version": "66306:34381179:87473:1793866684605310945:1793866684605310945",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "347635ec1989da3c21bdb58b7143297ae5e4796478befd305a73be5e09202067",
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 21937,
+          "sha256": "3bb1a16843c6c3efe09670d4da00afa55ef7c958f07330f222d5d5e37609ae93",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/formatted/service_native_v6_ha_install.rs",
+      "packet_output": "outputs/formatted/service_native_v6_ha_install.rs",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "version": "66306:34381182:87473:1793866684645310968:1793866684645310968",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "347635ec1989da3c21bdb58b7143297ae5e4796478befd305a73be5e09202067",
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 21937,
+          "sha256": "3bb1a16843c6c3efe09670d4da00afa55ef7c958f07330f222d5d5e37609ae93",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_install.rs.rustfmt.stdout",
+      "packet_output": "outputs/service_native_v6_ha_install.rs.rustfmt.stdout",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "version": "66306:34381181:87473:1793866684644310967:1793866684644310967",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "347635ec1989da3c21bdb58b7143297ae5e4796478befd305a73be5e09202067",
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 21937,
+          "sha256": "3bb1a16843c6c3efe09670d4da00afa55ef7c958f07330f222d5d5e37609ae93",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_install.rs.rustfmt.stderr",
+      "packet_output": "outputs/service_native_v6_ha_install.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "version": "66306:34381180:0:1793866684642310966:1793866684642310966",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/candidate/service_native_v6_ha_install_tests.rs",
+      "packet_output": "outputs/candidate/service_native_v6_ha_install_tests.rs",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "version": "66306:34381183:46885:1793866684646310969:1793866684646310969",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 46885,
+          "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/formatted/service_native_v6_ha_install_tests.rs",
+      "packet_output": "outputs/formatted/service_native_v6_ha_install_tests.rs",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "version": "66306:34381186:46885:1793866684667310981:1793866684667310981",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 46885,
+          "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_install_tests.rs.rustfmt.stdout",
+      "packet_output": "outputs/service_native_v6_ha_install_tests.rs.rustfmt.stdout",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "version": "66306:34381185:46885:1793866684666310980:1793866684666310980",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 46885,
+          "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_install_tests.rs.rustfmt.stderr",
+      "packet_output": "outputs/service_native_v6_ha_install_tests.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "version": "66306:34381184:0:1793866684665310980:1793866684665310980",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "packet_output": "outputs/candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 8732,
+      "sha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+      "blob": "3ca0e6bad5105b6bc7ceac5beb257230e4023ae8",
+      "version": "66306:34381187:8732:1793866684668310981:1793866684668310981",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 8732,
+          "sha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/formatted/service_native_v6_ha_same_root_republication_tests.rs",
+      "packet_output": "outputs/formatted/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "version": "66306:34381190:9147:1793866684679310988:1793866684679310988",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 9147,
+          "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+      "packet_output": "outputs/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "version": "66306:34381189:9147:1793866684678310987:1793866684678310987",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 9147,
+          "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr",
+      "packet_output": "outputs/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "version": "66306:34381188:0:1793866684677310986:1793866684677310986",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+      "packet_output": "outputs/rustfmt.toml",
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "blob": "f216078d96fdb19df0b120685e346b3197a47e89",
+      "version": "66306:34381174:17:1793866684583310932:1793866684583310932",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 17,
+          "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/result.public.json",
+      "packet_output": "outputs/result.public.json",
+      "bytes": 7383,
+      "sha256": "434390d3fa5fba8b0e92445dcc4464f591c95f3954d1d1d68072889812d875b2",
+      "blob": "1934d0b158576d9da76d392824729d06e094998f",
+      "version": "66306:34381191:7383:1793866684687310992:1793866684687310992",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 7383,
+          "sha256": "434390d3fa5fba8b0e92445dcc4464f591c95f3954d1d1d68072889812d875b2",
+          "eof": true
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "known_authority_exit0_full_durable",
+    "result_passed_publication_and_outer_exit",
+    "exact_four_owned_direct_children",
+    "tool_before_after_identity_and_pin",
+    "config_before_after_identity_and_pin",
+    "config_actual_independent_version",
+    "file_table_equal_terminal",
+    "original_50_60_and_no_product_compile",
+    "base_identity_not_candidate_qualification",
+    "output_0_full_info_and_whole",
+    "output_1_full_info_and_whole",
+    "output_2_full_info_and_whole",
+    "output_3_full_info_and_whole",
+    "output_4_full_info_and_whole",
+    "output_5_full_info_and_whole",
+    "output_6_full_info_and_whole",
+    "output_7_full_info_and_whole",
+    "output_8_full_info_and_whole",
+    "output_9_full_info_and_whole",
+    "output_10_full_info_and_whole",
+    "output_11_full_info_and_whole",
+    "output_12_full_info_and_whole",
+    "output_13_full_info_and_whole",
+    "output_14_full_info_and_whole",
+    "output_15_full_info_and_whole",
+    "output_16_full_info_and_whole",
+    "output_17_full_info_and_whole",
+    "candidate_exact_stdin_0",
+    "formatted_equal_child_stdout_0",
+    "child_stderr_empty_0",
+    "candidate_exact_stdin_4",
+    "formatted_equal_child_stdout_4",
+    "child_stderr_empty_4",
+    "candidate_exact_stdin_8",
+    "formatted_equal_child_stdout_8",
+    "child_stderr_empty_8",
+    "candidate_exact_stdin_12",
+    "formatted_equal_child_stdout_12",
+    "child_stderr_empty_12",
+    "format_strict_forward_service_native_v6_ha_read.rs",
+    "format_strict_reverse_service_native_v6_ha_read.rs",
+    "format_strict_forward_service_native_v6_ha_same_root_republication_tests.rs",
+    "format_strict_reverse_service_native_v6_ha_same_root_republication_tests.rs",
+    "install_output_unchanged",
+    "original_tests_module_output_unchanged"
+  ],
+  "checks_passed": 45,
+  "readback": {
+    "fixed_files": 18,
+    "independent_file_infos": 18,
+    "version_pinned_binary_chunks": 21,
+    "whole_bytes": 533080,
+    "all_returned": true
+  },
+  "runtime": {
+    "four_direct_children_reaped": true,
+    "shared_supervisor_group": true,
+    "independent_group_empty_not_claimed": true,
+    "elapsed_before_publication_seconds": 0.11893526100902818,
+    "elapsed_stdout_seconds": 0.1201196140027605,
+    "terminal_exit_after_flush": 0
+  },
+  "qualification": {
+    "rust_format_only": true,
+    "rust_compiled": false,
+    "tests_executed": false,
+    "product_executed": false,
+    "source_commit_or_ref_created": false,
+    "df026_previous_failures_unchanged": true,
+    "ci154_two_failures_independently_unresolved": true
+  }
+}

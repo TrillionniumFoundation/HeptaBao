@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.same-root-publication.formatted-root-review.v1",
+  "status": "PASS_FORMATTED_SOURCE_READY_FOR_EXACT_COMMIT_REVIEW",
+  "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "source_packet": "0bd410fc046ff89dcbf953efe5a16f262c41de52",
+  "formatter_actual_packet": "92fe1fa16ceb87d1741c95ba43e77a82dce3d7c6",
+  "actual_root_checks": {
+    "name": "r22_ha_formatter_actual_root_result",
+    "blob": "a268d6f0495932391365202436b1f9b2ac2847d6",
+    "bytes": 5560,
+    "sha256": "f57d7e67a12994b04f411e3137ad4ee21b53f9d56238638430edc8d6357f472b"
+  },
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "size": 31855
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "size": 87473
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "size": 46885
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "size": 9147
+    }
+  ],
+  "independent_file_count": 18,
+  "version_consistent_chunks": 21,
+  "whole_file_bytes": 533080,
+  "child_direct_reaped": 4,
+  "strict_formatter_hunks": {
+    "cold": 1,
+    "new_test": 7
+  },
+  "installer_and_existing_test_format_bytes_unchanged": true,
+  "qualification": {
+    "format": true,
+    "Rust_compile": false,
+    "Mac61": false,
+    "ROG61": false,
+    "X230": false,
+    "LAN98plus12": false,
+    "full_OpenBao271_replacement": false
+  },
+  "prior_failures_unchanged": true
+}

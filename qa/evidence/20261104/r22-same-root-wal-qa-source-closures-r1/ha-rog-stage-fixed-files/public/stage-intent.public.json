@@ -1,0 +1,41 @@
+{
+  "actual_build_qualification": false,
+  "canonical_history_count": 3762,
+  "carrier_sha256": "3bf6aa94e80601da1bf0c413f0c4f46e620ddc785145b6307c9436df69236331",
+  "compiler_started": false,
+  "controls": {
+    "launch_normal_same_root_publication.py": {
+      "bytes": 35592,
+      "sha256": "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02"
+    },
+    "normal-test-groups.public.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "normal_same_root_publication_build.py": {
+      "bytes": 35452,
+      "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a"
+    },
+    "prior-observer-build-authority.public.json": {
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"
+    }
+  },
+  "host": "rog",
+  "new_stage_total_seconds": 300,
+  "new_supervisor_seconds": 360,
+  "original_clone_cap_seconds": 180,
+  "original_git_leaf_cap_seconds": 90,
+  "production_changed": false,
+  "root": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1",
+  "schema": "heptabao.same-root-publication-independent-source-stage.v1",
+  "server_started": false,
+  "sole_parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "source": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/source",
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_ref": "refs/heads/codex/heptabao-same-root-publication-94ced21a-20261105-r1",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "stager_sha256": "cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9",
+  "started_ns": 1793868540515576577,
+  "status": "failed"
+}

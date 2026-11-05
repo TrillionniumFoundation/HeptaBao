@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"node_id\":\"C_kwDOUGncwNoAKGMxMzNkN2U3YjhhMWRmNWYwYmU4ZjQzMzc4OTNmMjM0YzZjY2VkZTI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T04:37:25Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T04:37:25Z\"},\"tree\":{\"sha\":\"23999765c64b7f5d6afa8c58e97a99aa4233e2d7\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/23999765c64b7f5d6afa8c58e97a99aa4233e2d7\"},\"message\":\"test(durable): preserve abandoned-reader checks under strict Clippy\",\"parents\":[{\"sha\":\"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "display_title": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "structuredContent": {
+      "title": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "content": "{\"sha\":\"c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"node_id\":\"C_kwDOUGncwNoAKGMxMzNkN2U3YjhhMWRmNWYwYmU4ZjQzMzc4OTNmMjM0YzZjY2VkZTI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/c133d7e7b8a1df5f0be8f4337893f234c6ccede2\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T04:37:25Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T04:37:25Z\"},\"tree\":{\"sha\":\"23999765c64b7f5d6afa8c58e97a99aa4233e2d7\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/23999765c64b7f5d6afa8c58e97a99aa4233e2d7\"},\"message\":\"test(durable): preserve abandoned-reader checks under strict Clippy\",\"parents\":[{\"sha\":\"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/c133d7e7b8a1df5f0be8f4337893f234c6ccede2"
+    }
+  },
+  "isError": false
+}

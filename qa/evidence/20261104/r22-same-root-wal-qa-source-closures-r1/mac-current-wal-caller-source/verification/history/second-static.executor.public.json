@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8f1e5f",
+  "wall_time_seconds": 0.348821093,
+  "exit_code": 1,
+  "original_token_count": 253,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac_current_registry_wal_complete_source_static_r2.py\", line 46, in <module>\n    check(\"outer_budgets_unchanged\",all(outer[k]==literals(old_outer)[k] for k in (\"NEW_OUTER_SECONDS\",\"NEW_OUTER_FAILURE_CLEANUP_SECONDS\",\"NEW_LISTENER_READY_SECONDS\",\"HTTP_SECONDS\",\"CAPTURE_SECONDS\",\"MAX_HTTP_BODY\",\"MAX_PUBLIC_REPORT\")))\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/mac_current_registry_wal_complete_source_static_r2.py\", line 46, in <genexpr>\n    check(\"outer_budgets_unchanged\",all(outer[k]==literals(old_outer)[k] for k in (\"NEW_OUTER_SECONDS\",\"NEW_OUTER_FAILURE_CLEANUP_SECONDS\",\"NEW_LISTENER_READY_SECONDS\",\"HTTP_SECONDS\",\"CAPTURE_SECONDS\",\"MAX_HTTP_BODY\",\"MAX_PUBLIC_REPORT\")))\n                                        ~~~~~^^^\nKeyError: 'MAX_HTTP_BODY'\n"
+}

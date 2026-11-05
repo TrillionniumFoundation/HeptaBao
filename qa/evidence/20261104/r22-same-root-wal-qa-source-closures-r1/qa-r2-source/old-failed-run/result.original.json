@@ -1,0 +1,291 @@
+{
+  "all_input_fds_closed": true,
+  "all_owned_stopped": true,
+  "binding_sha256": "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "caps": {
+    "build_seconds": 180,
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "components_build_seconds": 180,
+    "components_seconds": 30,
+    "git_seconds": 15,
+    "list_seconds": 15,
+    "lock_seconds": 20,
+    "tool_seconds": 15,
+    "total_seconds": 600
+  },
+  "child_exec_visibility": [
+    {
+      "additional_reads": 0,
+      "elapsed_ms": 1.136565,
+      "empty_reads": 1,
+      "failure_type": "owned_child_identity_changed_while_cmdline_pending",
+      "initial_cmdline_bytes": 0,
+      "nonempty_observed": false,
+      "original_deadline_monotonic_ns": 194181559235102,
+      "pgid": 2025040,
+      "pid": 2025040,
+      "start_ticks": 19416656,
+      "state_counts": {
+        "R": 1
+      }
+    }
+  ],
+  "child_provenance": [
+    {
+      "actual_argc": 9,
+      "actual_cmdline_bytes": 140,
+      "actual_cmdline_sha256": "a33cb16dd5172a262c82434db1adfc5ae03e1afed8f44684ef416c9f8ffdd34c",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 12,
+          "equal": true,
+          "expected_bytes": 12,
+          "expected_sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363",
+          "index": 0,
+          "sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 1,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 20,
+          "equal": true,
+          "expected_bytes": 20,
+          "expected_sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87",
+          "index": 2,
+          "sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 3,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 24,
+          "equal": true,
+          "expected_bytes": 24,
+          "expected_sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8",
+          "index": 4,
+          "sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73",
+          "index": 5,
+          "sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73"
+        },
+        {
+          "bytes": 56,
+          "equal": true,
+          "expected_bytes": 56,
+          "expected_sha256": "f9dda66526b8882e72488027b061fa906d47f1969ff654960206353a33e0c5bc",
+          "index": 6,
+          "sha256": "f9dda66526b8882e72488027b061fa906d47f1969ff654960206353a33e0c5bc"
+        },
+        {
+          "bytes": 9,
+          "equal": true,
+          "expected_bytes": 9,
+          "expected_sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472",
+          "index": 7,
+          "sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "b5180223165af3583fd0724209986caf2a62692654b74c525027dda592404330",
+          "index": 8,
+          "sha256": "b5180223165af3583fd0724209986caf2a62692654b74c525027dda592404330"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 9,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/git",
+        "pgid": 2025039,
+        "pid": 2025039,
+        "ppid": 2025027,
+        "start_ticks": 19416654,
+        "state": "R"
+      },
+      "pid": 2025039,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 1,
+      "actual_cmdline_bytes": 0,
+      "actual_cmdline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 0,
+          "equal": false,
+          "expected_bytes": 12,
+          "expected_sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363",
+          "index": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 9,
+      "extra_args_omitted": 0,
+      "guard_accepted": false,
+      "identity": {
+        "exe": "/usr/bin/git",
+        "pgid": 2025040,
+        "pid": 2025040,
+        "ppid": 2025027,
+        "start_ticks": 19416656,
+        "state": "R"
+      },
+      "pid": 2025040,
+      "stage": "empty_cmdline_pending"
+    }
+  ],
+  "command_intents": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+      "deadline_monotonic_ns": 194181542407947,
+      "label": "source-before-commit",
+      "outer_cap_seconds": 15,
+      "started_monotonic_ns": 194166542407947
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+      "deadline_monotonic_ns": 194181559235102,
+      "label": "source-before-tree",
+      "outer_cap_seconds": 15,
+      "started_monotonic_ns": 194166559235102
+    }
+  ],
+  "command_outcome_unknown": true,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "completed_monotonic_ns": 194166546512444,
+      "completed_within_deadline": true,
+      "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+      "deadline_monotonic_ns": 194181542407947,
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.004104497,
+      "exit_code": 0,
+      "label": "source-before-commit",
+      "outer_cap_seconds": 15,
+      "owned_pgid": 2025039,
+      "remaining": [],
+      "started_monotonic_ns": 194166542407947,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e9b96b7f6bbedaf9cd3370a345472f36b285d02796266cd14f1a37fbcbd077aa",
+      "timed_out": false
+    }
+  ],
+  "completed_monotonic_ns": 194166580300725,
+  "completed_within_original_build_deadline": true,
+  "component_names": [
+    "component_tests::native_h2_client_accepts_complete_data_eos",
+    "component_tests::native_h2_client_accepts_complete_empty_trailers_eos",
+    "component_tests::native_h2_client_rejects_rst_no_error_after_exact_body_before_eos",
+    "component_tests::native_h2_client_rejects_eof_after_exact_body_before_eos",
+    "component_tests::native_h2_client_rejects_short_eos_and_duplicate_content_length",
+    "component_tests::native_h2_client_refuses_expired_or_extended_original_deadline"
+  ],
+  "controller_sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35",
+  "deadline_monotonic_ns": 194766460994743,
+  "failure_code": "owned_child_identity_changed_while_cmdline_pending",
+  "failure_stage": "canonical_before",
+  "incomplete_command_labels": [
+    "source-before-tree"
+  ],
+  "new_qa_components_not_added_to_product_44_7_9": true,
+  "normal_product_result_sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+  "normal_product_runner_sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+  "offline_only": true,
+  "owned_cleanup": [
+    {
+      "direct_child_reaped": true,
+      "owned_stopped": true,
+      "pid": 2025040,
+      "remaining": [],
+      "start_ticks": 19416656,
+      "stop_terminal_captured": true,
+      "wait_returncode": 0
+    },
+    {
+      "direct_child_reaped": true,
+      "owned_stopped": true,
+      "pid": 2025039,
+      "remaining": [],
+      "start_ticks": 19416654,
+      "stop_terminal_captured": true,
+      "wait_returncode": 0
+    }
+  ],
+  "product_modified": false,
+  "product_or_http_requests": 0,
+  "reviewed_sources": {
+    "cargo_manifest": {
+      "bytes": 957,
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5"
+    },
+    "rust_source": {
+      "bytes": 19382,
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd"
+    },
+    "test_source": {
+      "bytes": 8942,
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2"
+    }
+  },
+  "schema": "heptabao.native-h2-qa.build.v1",
+  "started_monotonic_ns": 194166460994743,
+  "status": "failed"
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.same-root-republication-source-packet.v1",
+  "status": "source-only-unformatted-uncompiled",
+  "parent_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "new_host_actions": 0,
+  "files": [
+    {
+      "path": "before/service_native_v6_ha_read.rs",
+      "bytes": 31470,
+      "sha256": "b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf",
+      "blob": "8c67a106e6a9628ad77214e09656cf73b050dcbe"
+    },
+    {
+      "path": "candidate/service_native_v6_ha_read.rs",
+      "bytes": 31870,
+      "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "blob": "510081c3383b8bfeb1edff282e7f089156b9e282"
+    },
+    {
+      "path": "diffs/service_native_v6_ha_read.rs.diff",
+      "bytes": 901,
+      "sha256": "bf15fb74f791af0f9839fb746dc998ecaf15175f0b8fa93059e4b5a66f09ef68",
+      "blob": "2ac22e6af8923532ae009a12ced508006ec1e5b6"
+    },
+    {
+      "path": "before/service_native_v6_ha_install.rs",
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "candidate/service_native_v6_ha_install.rs",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db"
+    },
+    {
+      "path": "diffs/service_native_v6_ha_install.rs.diff",
+      "bytes": 2664,
+      "sha256": "ef313d5e4dd6bf1cc34dfebb7dcc15f51d0d5149f4b166a213ba786e6caf51ba",
+      "blob": "0da5c7fea1f4109156fd1355094acbc2fddac11c"
+    },
+    {
+      "path": "before/service_native_v6_ha_install_tests.rs",
+      "bytes": 46783,
+      "sha256": "4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c",
+      "blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+    },
+    {
+      "path": "candidate/service_native_v6_ha_install_tests.rs",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b"
+    },
+    {
+      "path": "diffs/service_native_v6_ha_install_tests.rs.diff",
+      "bytes": 471,
+      "sha256": "fb4f229aec96a639a29dd0bebc151a0ed8b531fc1406686461ecb6b4f510a3ee",
+      "blob": "6bb67f8c74dc9382411ab9a091fb4feedd1414b0"
+    },
+    {
+      "path": "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 8732,
+      "sha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+      "blob": "3ca0e6bad5105b6bc7ceac5beb257230e4023ae8"
+    },
+    {
+      "path": "diffs/service_native_v6_ha_same_root_republication_tests.rs.diff",
+      "bytes": 9065,
+      "sha256": "252a88b5f21deab87b15da398edc79a87a764b15ff576ff59e39b047c5346881",
+      "blob": "0f0e83f9c1d924c4f70c4f7bad0bb7ac13490fc9"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 12039,
+      "sha256": "715bc6c5c3f0efc97c1bb160cffd56c0416f46ee3b36d907469e9a97a31e2c6a",
+      "blob": "ef67a8dc078de71d87440c260f5c4c9bfe359449"
+    },
+    {
+      "path": "TEST_PLAN.json",
+      "bytes": 2592,
+      "sha256": "b0b6f09c4d7aea8c7862685348c9bb5ca80810e572178bd0799b0b1dc491c2a6",
+      "blob": "e0aab59106498cd84763ccb15d4a39af56d9babb"
+    },
+    {
+      "path": "verification/strict-diffs.json",
+      "bytes": 2077,
+      "sha256": "c9545bd43e172db04ba267217f168cc8ecd9a811acc3f65e5c82557123fbbdde",
+      "blob": "730106037ab48ea746c853399f08b327e3dcb1ad"
+    },
+    {
+      "path": "verification/static-checks.json",
+      "bytes": 3601,
+      "sha256": "af45bd33d039a612e9de75fd08f4d06997817615f2e68fe9794b814c503d7d8a",
+      "blob": "b2357265f0ea1f6ce546dce39dd998d310adf7d5"
+    },
+    {
+      "path": "verification/initial-harness-failure.json",
+      "bytes": 289,
+      "sha256": "1b45b2c7b2e1ea5bd44722dccbaaca2c55d480e194d7a9b45df6b9c2209381f6",
+      "blob": "3b28f087490d833a7c5df66e6b0a085e4f389350"
+    },
+    {
+      "path": "provenance/parent-commit.original.json",
+      "bytes": 1257,
+      "sha256": "02575fdd12f1f09799971c0d2b868703f19b8dd1fc6ed3e0f51b2065c5888aa7",
+      "blob": "0dc675eadd38032809b94cad08b0f05a95f56f16"
+    },
+    {
+      "path": "provenance/parent-tree.original.json",
+      "bytes": 1203297,
+      "sha256": "402e24027f1c355563984aae2eadbbb3c8a91244259b35f71b1eee3fd9d26a69",
+      "blob": "04626fde36cd180ac119a4ad2cb27cb5da7d0efa"
+    },
+    {
+      "path": "provenance/selected-parent-members.json",
+      "bytes": 1284,
+      "sha256": "4b1f9a3133a96f52ae31df958b2b05eee63cc100f7cc2dc4e1c8886e02b4f027",
+      "blob": "66f0a8afa85863092ef50d418376f839b13a4b2b"
+    },
+    {
+      "path": "references/df026-service_native_v6_ha_read.rs",
+      "bytes": 31475,
+      "sha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+      "blob": "b09e57362d53ce207b255d713d7aa7c126215691"
+    },
+    {
+      "path": "references/service_native_v6_reader.rs",
+      "bytes": 52675,
+      "sha256": "ddda11678db6ead0f271bea21bc0c821fe791487aa8a7a72853ced1ee633edfd",
+      "blob": "1f0af883085ad781069d08793063ebfda1df908a"
+    },
+    {
+      "path": "references/v6_commit_intent.rs",
+      "bytes": 10350,
+      "sha256": "3e244d343596c5757bdc7113d3ef78e2a2ec57afaf6aadd5380a9055353ee063",
+      "blob": "3568d548cb69d0cfb6ff4d52216cc87c9b35a917"
+    },
+    {
+      "path": "references/v6_root_publication.rs",
+      "bytes": 28849,
+      "sha256": "a91a94dfb2e51a1d708435c26c97abcae3d86cb5bde1ef5fe156bdbaf0af66f9",
+      "blob": "0f341b1260303a721ca2432a9cf7631c1fb86f78"
+    },
+    {
+      "path": "references/ha_native_v6_install_test_support.rs",
+      "bytes": 8734,
+      "sha256": "2e9f7048c79a01918adfebb2e2be4d3ac568d9b2074623614fb68f63fde5d74c",
+      "blob": "a8aa35b0c077ae874dff089b9fbf98a4205efbce"
+    },
+    {
+      "path": "references/actual-projection-assessment.json",
+      "bytes": 9447,
+      "sha256": "c54864c04024426e07549c6aa7389c10a97b155f28fcb3080000645c41d97c8f",
+      "blob": "201c88f57121b6849e0a27ae12db0e822d208ac5"
+    }
+  ]
+}

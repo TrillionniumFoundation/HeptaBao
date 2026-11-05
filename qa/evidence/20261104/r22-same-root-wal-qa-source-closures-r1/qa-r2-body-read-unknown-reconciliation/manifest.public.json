@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "files": [
+    {
+      "path": "operations/body-references/admission-reconcile.original.json",
+      "bytes": 672,
+      "sha256": "e8e01ff3ccd0aa28791bc751575674d6c6940a0bb8ca0f090f4e53cb6f212d22",
+      "blob": "1d0d7b51522b8d2bec8e682d97517d7414d16f23"
+    },
+    {
+      "path": "operations/lock-part-0/admission-reconcile.original.json",
+      "bytes": 664,
+      "sha256": "9e69ddceeb25c21666fcd4c346eeb2e522516c303011af59e086de20f16d5b30",
+      "blob": "1ba931b457825758bfd6f6b10cc3b53670d621a3"
+    },
+    {
+      "path": "analysis/read-reconciliation.public.json",
+      "bytes": 1443,
+      "sha256": "15204a262b4da43ed72f6fdfa63a0504917adfdf3faee7add35a3dc1aaef0a0b",
+      "blob": "3ab6104bbaef227b4af89bf1d0d0b1ca779b438f"
+    }
+  ]
+}

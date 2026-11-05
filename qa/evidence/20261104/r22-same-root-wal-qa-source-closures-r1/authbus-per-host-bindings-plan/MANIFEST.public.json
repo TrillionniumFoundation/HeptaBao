@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.full-replacement.per-host-plan.manifest.r1",
+  "status": "SOURCE_ONLY_NO_HOST_DISPATCH",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "files": [
+    {
+      "path": "ACTION-UNITS.public.json",
+      "bytes": 10174,
+      "sha256": "4360a426b9fc08e35176f68330786f262e0dd570440eb94ecb1e53ddc2d33dfc",
+      "git_blob": "385b0e4bded54a1a7ef830600922624774f2eaf1"
+    },
+    {
+      "path": "BACKUP-BINDINGS.public.json",
+      "bytes": 8326,
+      "sha256": "b91d700c50bf8a6d9e118828c324e5ca3a13e296bc8274dc2d8c3f1a8d9290f6",
+      "git_blob": "77c5a66799fc3bc1196cdd2769573e0ed1fc4295"
+    },
+    {
+      "path": "CURRENT-HOSTS.public.json",
+      "bytes": 92412,
+      "sha256": "a31f87bdea7fadc316ea5abdd772c811ab8cd53a564608a0c708946a17280748",
+      "git_blob": "a775ef232ed905c3ee0dab0ee5a94baef1cdadd0"
+    },
+    {
+      "path": "FINITE-NEXT-READS.public.json",
+      "bytes": 6018,
+      "sha256": "df9caa4f1ab24cdf86e69ff6159c9487733080ceaf4dca7ed162c701c7046dc0",
+      "git_blob": "ceb39e45b71a0d971da3f18e0834bc09a62e6fab"
+    },
+    {
+      "path": "future-product-binding-template.public.json",
+      "bytes": 3655,
+      "sha256": "094a0eeb130c138feb588ab220be2b6ea00190216ad0dabaf798f31193b3abf2",
+      "git_blob": "55f3fb8c159f6e284fa904663fc930134b4d8f17"
+    },
+    {
+      "path": "PLAN.zh-CN.md",
+      "bytes": 20888,
+      "sha256": "aa6dff57dd8299ac09e67f3328df9814e59584bcfcca38dcf86376d4644df59b",
+      "git_blob": "12c6006f7b60e16169cc76ca7ee5481358a9cd80"
+    },
+    {
+      "path": "PRODUCTION-BINDING.template.public.json",
+      "bytes": 20653,
+      "sha256": "800fe45aa56a9ba7f77c34324995de99e98aa0e96a82a9aacc2b90eeceddea40",
+      "git_blob": "19a7eae6094d78edc3ac051c16c75c915478183e"
+    },
+    {
+      "path": "references/cleanup_matrix.public.json",
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "git_blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca"
+    },
+    {
+      "path": "references/current_wal_root_review.public.json",
+      "bytes": 3719,
+      "sha256": "de3184dae606f010387d14ad89d93e237b8223bc5b21c214907f634d411f3daa",
+      "git_blob": "4b4c7a065ce953d2ff4b0471d47e87c2c0a4e59b"
+    },
+    {
+      "path": "references/finite_registration.public.json",
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "git_blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924"
+    },
+    {
+      "path": "references/mac_canonical_crontab.public.json",
+      "bytes": 1274,
+      "sha256": "8e4397c745b22bf834e52fd352f3fdb98985c792b1506f34c1c024da3f303ab1",
+      "git_blob": "62350066cecf7a534c5a7370a7e9ac59a5f02545"
+    },
+    {
+      "path": "references/mac_finite_inventory.public.json",
+      "bytes": 46277,
+      "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+      "git_blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c"
+    },
+    {
+      "path": "references/mac_latest_metadata_root_review.public.json",
+      "bytes": 9772,
+      "sha256": "a682a637939aca90838118c52836644d85251a2b04d1762b5031b50f9c52a3fd",
+      "git_blob": "49a0bfa8265d634b393670a908e26116df438a52"
+    },
+    {
+      "path": "references/pocket_r10_actual_core.public.json",
+      "bytes": 58853,
+      "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+      "git_blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4"
+    },
+    {
+      "path": "references/public_wal_root_review.public.json",
+      "bytes": 2525,
+      "sha256": "699afbc38da81f80af862fa4ddac1eaa17a8d782d4b2f1171dc80c0a72c3d7ad",
+      "git_blob": "a9ec2253fa07df8853114ab3bcb803a994ec5daa"
+    },
+    {
+      "path": "references/rog_finite_inventory.public.json",
+      "bytes": 46630,
+      "sha256": "aee43560000aa4878be8c2175a3ab13e056ce0442e2bba1a9606ae0ffadd5531",
+      "git_blob": "f44ea5f57b3db01bbe04a4bf24629997ae480bb7"
+    },
+    {
+      "path": "references/x230_finite_inventory.public.json",
+      "bytes": 23439,
+      "sha256": "63f198cd17e100f9ce8e9e7329d2c1e711a46afe223878afd6cd74900e80feb5",
+      "git_blob": "197ff767f16fbda8eb20aac80418a02915291925"
+    }
+  ],
+  "bodyFiles": 17,
+  "bodyBytes": 469642,
+  "targetProduct": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632"
+  },
+  "sourceOnly": {
+    "newHostCalls": 0,
+    "newPrivateDataReads": 0,
+    "newSqlite": 0,
+    "newChildProcesses": 0,
+    "productionWrites": 0,
+    "providerCalls": 0,
+    "j3160Calls": 0,
+    "hostRequestsSubmitted": 0
+  },
+  "reuse": {
+    "currentCallerTree": "ab729106132c035c353979285aa70a302318b3c2",
+    "rootSourceReview": "4b4c7a065ce953d2ff4b0471d47e87c2c0a4e59b",
+    "qualifiedPublicWalReview": "a9ec2253fa07df8853114ab3bcb803a994ec5daa"
+  },
+  "limitations": [
+    "Planning evidence is time-ordered finite observation, not a simultaneous current snapshot.",
+    "Identity/nanosecond original numeric tokens remain only in exact archived raw reference bytes.",
+    "No new normal61 artifact, current consumer or production qualification inferred.",
+    "Production template and future requests remain unbound, not executable."
+  ]
+}

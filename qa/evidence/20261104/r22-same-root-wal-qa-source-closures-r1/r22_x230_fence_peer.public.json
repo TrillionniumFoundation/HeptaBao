@@ -1,0 +1,202 @@
+{
+  "schema": "heptabao.x230-fence-r2-new-metadata.independent-source-peer.v1",
+  "status": "PASS_SOURCE_ONLY_NO_NEW_BLOCKER",
+  "scope": "Exact fresh metadata binding of an already reviewed effect-fence source; no host request, fence execution or old-relay replay.",
+  "inputs": {
+    "candidate": {
+      "bytes": 21479,
+      "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+      "git_blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+    },
+    "before": {
+      "bytes": 21479,
+      "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89",
+      "git_blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896"
+    },
+    "metadata": {
+      "bytes": 5656,
+      "sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed",
+      "git_blob": "62403647a790e255006068666fb71c95965420ba"
+    },
+    "authority": {
+      "bytes": 731,
+      "sha256": "db2d32d93d13547bbfde97a03412df56b1b3fe044a50f320f1f594ba768f8f8a",
+      "git_blob": "3850cd3c452068e119c38d2749314452d031445d"
+    },
+    "metadata_sdk": {
+      "bytes": 954,
+      "sha256": "17aa5fe94f333d32525d2e91b66bd8efde6a745e653c9172c075996b836eede4",
+      "git_blob": "b5cebe61586ff2045c9d742197bc71fa670193b8"
+    },
+    "bound_review": {
+      "bytes": 1919,
+      "sha256": "3b22a141def2ff7e91b82e897ac32898cb934223ca05a642f4d66f9f9bb0b451",
+      "git_blob": "632d29831f394f99e4a143575657f32c17939ef7"
+    },
+    "request": {
+      "bytes": 22911,
+      "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554",
+      "git_blob": "fb197792ced7efbd7c60da559514b9209e1affd4"
+    },
+    "metadata_root_review": {
+      "bytes": 2038,
+      "sha256": "5f7732548d361efcec8f8c6b8fe4425fb13e77e42a328a17aefa081d81eeb68c",
+      "git_blob": "9d1853d6e37a5772a3a66aa3ff6a8e58c43877e3"
+    }
+  },
+  "findings": [
+    "The complete candidate is exactly the parent after three unique literal substitutions: metadata evidence SHA and two directory nine-field tuples. One strict whole-file diff hunk reconstructs it; reversing those literals recovers every parent byte.",
+    "All three control identities, sizes, whole hashes and blob pins remain byte-identical. Every function/class and the complete executable tail remains byte-identical; no repeat of their earlier semantic audit is claimed.",
+    "All five directory tuples and all three control tuples equal the fresh native metadata before/after arrays. Unsafe nanosecond integers were compared as lexical decimal strings, without JavaScript Number conversion.",
+    "Fresh metadata reports exactly 42 metadata calls, eight once-closed registered descriptors, zero body bytes, zero writes, zero children/network/listing, and 744947 ns within the original five seconds. Its authority is exit0/full/durable with 5656 stdout bytes and zero stderr. The provided original SDK blob is the authority wrapper and matches the exact native authority text.",
+    "The new exact request embeds the complete reviewed source and its SHA as argv, uses desktop /usr/bin/python3 -I -S -B -c, the fixed new R2 key and outer60. Source limits and create-only behavior are unchanged.",
+    "The original relay remains UNKNOWN. The fresh double-absence observation is not an atomic reservation. This peer does not infer the old job ended, refresh its failed receipt, replay it, or grant runtime permission."
+  ],
+  "checks": [
+    {
+      "name": "candidate_whole_pin",
+      "passed": true
+    },
+    {
+      "name": "one_hunk_whole_strict_apply",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_0",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_1",
+      "passed": true
+    },
+    {
+      "name": "unique_literal_2",
+      "passed": true
+    },
+    {
+      "name": "three_literal_inverse_exact_parent",
+      "passed": true
+    },
+    {
+      "name": "all_controls_functions_and_tail_exact",
+      "passed": true
+    },
+    {
+      "name": "five_exact_directory_entries",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_/",
+      "passed": true
+    },
+    {
+      "name": "directory_raw_integer_binding_/",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_home",
+      "passed": true
+    },
+    {
+      "name": "directory_raw_integer_binding_home",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_qian-qi",
+      "passed": true
+    },
+    {
+      "name": "directory_raw_integer_binding_qian-qi",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_heptabao-ha-closure-20261103-r1",
+      "passed": true
+    },
+    {
+      "name": "directory_raw_integer_binding_heptabao-ha-closure-20261103-r1",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_normal-cold-h2-x230-transfer-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "directory_raw_integer_binding_normal-cold-h2-x230-transfer-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_sender.py",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_receiver.py",
+      "passed": true
+    },
+    {
+      "name": "metadata_before_after_relay.py",
+      "passed": true
+    },
+    {
+      "name": "control_identity_found_sender.py",
+      "passed": true
+    },
+    {
+      "name": "control_full9_sender.py",
+      "passed": true
+    },
+    {
+      "name": "control_identity_found_receiver.py",
+      "passed": true
+    },
+    {
+      "name": "control_full9_receiver.py",
+      "passed": true
+    },
+    {
+      "name": "control_identity_found_relay.py",
+      "passed": true
+    },
+    {
+      "name": "control_full9_relay.py",
+      "passed": true
+    },
+    {
+      "name": "metadata_known_observation_only",
+      "passed": true
+    },
+    {
+      "name": "metadata_exact_counts_and_closure",
+      "passed": true
+    },
+    {
+      "name": "metadata_original5_second_closure",
+      "passed": true
+    },
+    {
+      "name": "metadata_authority_and_sdk",
+      "passed": true
+    },
+    {
+      "name": "exact_new_request",
+      "passed": true
+    },
+    {
+      "name": "original_unknown_retained",
+      "passed": true
+    },
+    {
+      "name": "absence_not_reservation",
+      "passed": true
+    }
+  ],
+  "no_host_actions": true,
+  "no_source_execution": true,
+  "no_new_component_tests": true,
+  "prior_known_premutation_failure": {
+    "job": "1a1aa8a6fb0-fc05-4428",
+    "source": "root bound review; not independently re-read old runtime in this narrow review",
+    "preserved": true
+  },
+  "raw_originals_preserved": true
+}

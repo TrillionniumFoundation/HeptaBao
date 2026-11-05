@@ -1,0 +1,7 @@
+{
+  "chunk_id": "ca5958",
+  "wall_time_seconds": 0.027866778,
+  "exit_code": 0,
+  "original_token_count": 140,
+  "output": "{\"added_definitions\": [\"preserve_prior_df026\", \"publication_remaining\"], \"bytes\": 35525, \"changed_definitions\": [], \"host_operations\": 0, \"name\": \"mac_runner\", \"removed_definitions\": [], \"rust_executed\": false, \"sha256\": \"61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02\", \"source_module_executed\": false, \"status\": \"AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"Cancelled\", \"signal_received\", \"sha\", \"write\", \"git\", \"freeze\", \"group_members\", \"terminate_owned\", \"bounded_remaining\", \"owned\", \"extra_remaining\", \"increment_remaining\"]}\n"
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.same-root-republication-validation-plan.v1",
+  "status": "SOURCE_ONLY_NOT_EXECUTABLE_ADMISSION",
+  "parent_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "changed_product_files": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "bytes": 31870,
+      "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "blob": "510081c3383b8bfeb1edff282e7f089156b9e282"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db"
+    }
+  ],
+  "test_module": {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+    "bytes": 8732,
+    "sha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+    "blob": "3ca0e6bad5105b6bc7ceac5beb257230e4023ae8"
+  },
+  "existing_fixed_denominators": {
+    "normal": [
+      44,
+      7,
+      9
+    ],
+    "normal_total": 60,
+    "lan_original": 98,
+    "postcold_extra": 12,
+    "unchanged": true
+  },
+  "additional_tests": 1,
+  "anticipated_exact_name": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+  "actual_listing_required": true,
+  "original_request_budget_seconds": 15,
+  "original_test_helper_scope_unchanged": true,
+  "observed_per_mode_elapsed_required": true,
+  "new_host_go": false,
+  "formatting": {
+    "required": true,
+    "tool_path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "tool_bytes": 5255144,
+    "tool_sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+    "suggested_existing_pure_controller": "a895672dc3624b4e6dd3c8fc8db45b5638dcf818",
+    "new_exact_request_not_yet_prepared": true,
+    "original_caps": {
+      "whole": 50,
+      "each_child": 10,
+      "outer": 60
+    }
+  },
+  "regression_execution": "After independent source/format/normal build admission, list the additional test using the actual libtest and execute it separately. Preserve the existing 44/7/9 commands; do not silently replace their entries.",
+  "physical_followup": "Only after new normal artifacts and root review, bind a fresh physical fixture using unchanged 98+12 contracts and original 15/8/60/300/2400/3000 caps. No physical pass is inferred from this source or the small fixture."
+}

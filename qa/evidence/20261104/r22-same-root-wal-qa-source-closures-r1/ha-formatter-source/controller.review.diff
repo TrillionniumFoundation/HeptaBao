@@ -1,0 +1,65 @@
+--- a/pureformat_same_root_publication_r1.py
++++ b/pureformat_same_root_publication_r1.py
+@@ -1,11 +1,13 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic(); LIMIT=50.0
+-ROOT=Path('/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1')
++ROOT=Path('/home/qian-qi/heptabao-same-root-publication-format-20261105-r1')
+ SRC=ROOT
+ FMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')
+ FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'
+-EXPECTED={"service_native_v6_ha_read.rs":["b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9","b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d"],"service_native_v6_ha_cold_timing_tests.rs":[None,"ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9"],"http_h2.rs":["f24ccfc27aabf1b938eb34b8fa07e8a41f1f243b7d47eab9c9a452c3fac7262f","4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"],"http_h2_sync_worker_tests.rs":[None,"34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0"]}
++EXPECTED={"service_native_v6_ha_read.rs":["b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf","186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477"],"service_native_v6_ha_install.rs":["ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426","7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607"],"service_native_v6_ha_install_tests.rs":["4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c","32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929"],"service_native_v6_ha_same_root_republication_tests.rs":[None,"7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca"]}
++FORMAT_CONFIG=b'edition = "2024"\n'
++FORMAT_CONFIG_SHA='f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584'
+ os.umask(0o077)
+ def remain():
+  r=LIMIT-(time.monotonic()-START)
+@@ -41,12 +43,12 @@
+  fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try: os.fsync(fd)
+  finally: os.close(fd)
+-report={'schema':'heptabao.cold-h2-normal-input-rustfmt.v1','status':'failed','productExecuted':False,
+- 'compileExecuted':False,'productionChanged':False,'sourceCommit':'3cb873919170cc77101b27f6a3ab9e98f41f8d93',
+- 'sourceTree':'7f4d48a647a81ca96e8a24a0a057c2c829459060','sourceIdentityIsBaseOnly':True,
++report={'schema':'heptabao.same-root-publication-input-rustfmt.v1','status':'failed','productExecuted':False,
++ 'compileExecuted':False,'productionChanged':False,'sourceCommit':'6d02ceca629163e1c07480fa1f21520434407143',
++ 'sourceTree':'09aa45b9439741780961c2af76680c27e0773d08','sourceIdentityIsBaseOnly':True,
+  'uncommittedCandidateInputs':True,'edition':'2024',
+  'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}
+-created=False;tool_before=None
++created=False;tool_before=None;config_before=None
+ try:
+  raw=sys.stdin.buffer.read(262145)
+  if len(raw)>262144: raise RuntimeError('input_size')
+@@ -63,9 +65,15 @@
+  report['inputOriginalAndCandidatePins']=EXPECTED
+  ROOT.mkdir(mode=0o700);created=True
+  (ROOT/'candidate').mkdir(mode=0o700);(ROOT/'formatted').mkdir(mode=0o700)
++ write_new(ROOT/'rustfmt.toml',FORMAT_CONFIG)
++ config_bytes,config_before=read_pin(ROOT/'rustfmt.toml')
++ if config_bytes!=FORMAT_CONFIG or sha(config_bytes)!=FORMAT_CONFIG_SHA: raise RuntimeError('format_config_pin')
++ report['formatConfigurationBefore']=config_before
++ report['repositoryRustfmtConfigPresent']=False
++ report['ownedConfiguration']='Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration'
+  for name in EXPECTED:
+   text=data[name];write_new(ROOT/'candidate'/name,text.encode())
+-  argv=[str(FMT),'--edition','2024','--emit','stdout']
++  argv=[str(FMT),'--config-path',str(ROOT/'rustfmt.toml'),'--edition','2024','--emit','stdout']
+   p=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+       cwd=str(SRC),env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8'},start_new_session=False)
+   child={'pid':p.pid,'argv':argv,'cwd':str(SRC),'timeoutSeconds':10,'stopped':False,'newProcessGroupCreated':False}
+@@ -102,6 +110,12 @@
+    if report['rustfmtAfter']!=tool_before: raise RuntimeError('rustfmt_changed')
+   except BaseException as e:
+    report['fenceError']=type(e).__name__+':'+str(e);report['status']='failed'
++ if config_before is not None:
++  try:
++   config_bytes,report['formatConfigurationAfter']=read_pin(ROOT/'rustfmt.toml')
++   if config_bytes!=FORMAT_CONFIG or report['formatConfigurationAfter']!=config_before: raise RuntimeError('format_config_changed')
++  except BaseException as e:
++   report['configFenceError']=type(e).__name__+':'+str(e);report['status']='failed'
+  report['elapsedSeconds']=time.monotonic()-START
+  report['withinDeadline']=report['elapsedSeconds']<LIMIT
+  report['allOwnedStopped']=all(x.get('stopped') is True for x in report['children'])

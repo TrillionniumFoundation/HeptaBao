@@ -1,0 +1,7 @@
+{
+  "chunk_id": "9cd171",
+  "wall_time_seconds": 0.000023445,
+  "exit_code": 0,
+  "original_token_count": 243,
+  "output": "{\"candidate_file_io\": 0, \"checks\": [{\"name\": \"actual_public_stdout_authority_exact_admitted\", \"passed\": true}, {\"name\": \"actual_closed_library_record_accepted\", \"passed\": true}, {\"name\": \"missing_connection_ledger_refused\", \"passed\": true}, {\"name\": \"one_unclosed_connection_refused_even_if_aggregate_flag_true\", \"passed\": true}, {\"name\": \"one_unclosed_public_code_fd_refused_even_if_aggregate_flag_true\", \"passed\": true}, {\"name\": \"well_typed_success_envelope_accepted\", \"passed\": true}, {\"name\": \"success_unknown_contradiction_refused\", \"passed\": true}, {\"name\": \"failure_envelope_retained_without_reclassifying_success\", \"passed\": true}], \"children\": 0, \"current_or_private_inputs_read\": false, \"library_four_ledger_tests_repeated\": false, \"network\": 0, \"passed\": 8, \"schema\": \"heptabao.mac-current-wal-selected-admission-components.r1\", \"scope\": \"AST-selected functions, public actual proof and memory guards only\", \"sqlite_calls\": 0, \"whole_module_imported\": false}\n"
+}

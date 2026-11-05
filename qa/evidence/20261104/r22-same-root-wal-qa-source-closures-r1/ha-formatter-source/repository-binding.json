@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.same-root-rustfmt-repository-binding.v1",
+  "parent_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "parent_complete_tree_blob": "04626fde36cd180ac119a4ad2cb27cb5da7d0efa",
+  "full_parent_merkle_trees_checked": 358,
+  "no_rustfmt_toml_or_dot_rustfmt_toml_in_parent_tree": true,
+  "workspace_edition": "2024",
+  "server_edition": "workspace",
+  "toolchain_channel": "1.98.0",
+  "source_members": [
+    {
+      "path": "Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1de55c16cf48599eef6fe30ef28aeb0fcdc59ea",
+      "size": 615,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/f1de55c16cf48599eef6fe30ef28aeb0fcdc59ea"
+    },
+    {
+      "path": "crates/heptabao-server/Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+      "size": 4796,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/666dc6d056a8f653bb86ca5ba7ed89b229dfe228"
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1ad785747eb8330d0e6226ee0d781d82336aca0",
+      "size": 86,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d1ad785747eb8330d0e6226ee0d781d82336aca0"
+    },
+    {
+      "path": ".github/workflows/v2-5-multiplatform-repository-qualification.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bca8e1181b012c7026f58e01a21c29b686deeabc",
+      "size": 15089,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/bca8e1181b012c7026f58e01a21c29b686deeabc"
+    }
+  ],
+  "owned_configuration": {
+    "bytes": 17,
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+    "blob": "f216078d96fdb19df0b120685e346b3197a47e89"
+  },
+  "owned_config_content": "edition = \"2024\"\n",
+  "reason": "The parent repository has no rustfmt config. An explicit private-to-this-public-task config sets only the proven edition, preserving rustfmt defaults while excluding ambient host parent configuration.",
+  "tool": {
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "bytes": 5255144,
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "input_source_tree": "0bd410fc046ff89dcbf953efe5a16f262c41de52",
+  "inputs": [
+    {
+      "name": "service_native_v6_ha_read.rs",
+      "bytes": 31870,
+      "sha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "blob": "510081c3383b8bfeb1edff282e7f089156b9e282"
+    },
+    {
+      "name": "service_native_v6_ha_install.rs",
+      "bytes": 87473,
+      "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db"
+    },
+    {
+      "name": "service_native_v6_ha_install_tests.rs",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b"
+    },
+    {
+      "name": "service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 8732,
+      "sha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+      "blob": "3ca0e6bad5105b6bc7ceac5beb257230e4023ae8"
+    }
+  ]
+}

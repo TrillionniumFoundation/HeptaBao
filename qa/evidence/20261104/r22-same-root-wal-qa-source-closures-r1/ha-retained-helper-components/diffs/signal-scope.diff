@@ -1,0 +1,98 @@
+--- a/rog_runner.py
++++ b/rog_runner.py
+@@ -117,48 +117,53 @@
+             fd = None
+             protected += 1
+             try:
+-                fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+-                row['opened'] = True
+-            finally:
+-                protected -= 1
+-            try:
+-                if pending_signal is not None:
+-                    raise Cancelled()
+-                before = os.fstat(fd)
+-                fields = lambda info: (info.st_dev, info.st_ino, info.st_uid, info.st_gid,
+-                                       info.st_mode, info.st_nlink, info.st_size,
+-                                       info.st_mtime_ns, info.st_ctime_ns)
+-                assert stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
+-                assert before.st_nlink == 1 and before.st_size == size
+-                assert stat.S_IMODE(before.st_mode) == expected_mode
+-                assert fields(before) == fields(path.lstat())
+-                count, digest = 0, hashlib.sha256()
+-                while True:
+-                    bounded_remaining(OUTER_UNTIL)
+-                    part = os.read(fd, min(1024 * 1024, size + 1 - count))
+-                    if not part:
+-                        break
+-                    count += len(part)
+-                    assert count <= size
+-                    digest.update(part)
+-                assert count == size and digest.hexdigest() == expected_sha
+-                assert fields(before) == fields(os.fstat(fd)) == fields(path.lstat())
+-                assert path.resolve(strict=True) == path
+-                row.update(bytes=count, sha256=expected_sha, identity=list(fields(before)))
+-                bounded_remaining(OUTER_UNTIL)
+-            finally:
+-                protected += 1
+-                try:
+-                    row['close_attempted'] = True
+-                    try:
+-                        os.close(fd)
+-                        row['closed'] = True
+-                    except BaseException as error:
+-                        row['close_error_type'] = type(error).__name__
+-                        raise
+-                finally:
+-                    protected -= 1
+-        bounded_remaining(OUTER_UNTIL)
++                try:
++                    if pending_signal is not None:
++                        raise Cancelled()
++                    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++                    row['opened'] = True
++                    if pending_signal is not None:
++                        raise Cancelled()
++                    before = os.fstat(fd)
++                    fields = lambda info: (info.st_dev, info.st_ino, info.st_uid, info.st_gid,
++                                           info.st_mode, info.st_nlink, info.st_size,
++                                           info.st_mtime_ns, info.st_ctime_ns)
++                    assert stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
++                    assert before.st_nlink == 1 and before.st_size == size
++                    assert stat.S_IMODE(before.st_mode) == expected_mode
++                    assert fields(before) == fields(path.lstat())
++                    count, digest = 0, hashlib.sha256()
++                    while True:
++                        if pending_signal is not None:
++                            raise Cancelled()
++                        bounded_remaining(OUTER_UNTIL)
++                        part = os.read(fd, min(1024 * 1024, size + 1 - count))
++                        if not part:
++                            break
++                        count += len(part)
++                        assert count <= size
++                        digest.update(part)
++                    assert count == size and digest.hexdigest() == expected_sha
++                    assert fields(before) == fields(os.fstat(fd)) == fields(path.lstat())
++                    assert path.resolve(strict=True) == path
++                    row.update(bytes=count, sha256=expected_sha, identity=list(fields(before)))
++                    bounded_remaining(OUTER_UNTIL)
++                    if pending_signal is not None:
++                        raise Cancelled()
++                finally:
++                    if fd is not None:
++                        row['close_attempted'] = True
++                        try:
++                            os.close(fd)
++                            row['closed'] = True
++                        except BaseException as error:
++                            row['close_error_type'] = type(error).__name__
++                            raise
++            finally:
++                protected -= 1
++        bounded_remaining(OUTER_UNTIL)
++        if pending_signal is not None:
++            raise Cancelled()
+         evidence['status'] = 'unchanged'
+     finally:
+         evidence['all_opened_descriptors_closed'] = all(

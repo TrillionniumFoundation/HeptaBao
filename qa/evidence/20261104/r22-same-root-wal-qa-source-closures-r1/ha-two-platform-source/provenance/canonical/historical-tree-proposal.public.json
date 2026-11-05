@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.same-root-publication.exact-product-tree-proposal.v1",
+  "status": "UNREFERENCED_TREE_ONLY_NO_COMMIT_OR_REF",
+  "parent_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "parent_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "proposed_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "actual_formatter_packet": "92fe1fa16ceb87d1741c95ba43e77a82dce3d7c6",
+  "parent_leaves": 3913,
+  "proposed_leaves": 3914,
+  "unchanged_existing_leaves": 3910,
+  "changed": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+        "size": 86397,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+      },
+      "after": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+        "size": 87473,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/a8213e4c9a9c907040c60f8c90f7260b933903db"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+        "size": 46783,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+      },
+      "after": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fa80cf84e67edbc0e7979313799a79362a52322b",
+        "size": 46885,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/fa80cf84e67edbc0e7979313799a79362a52322b"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8c67a106e6a9628ad77214e09656cf73b050dcbe",
+        "size": 31470,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/8c67a106e6a9628ad77214e09656cf73b050dcbe"
+      },
+      "after": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+        "size": 31855,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/2632c4fde7f21ad31efb6cb88ed8c1b6e5538137"
+      }
+    }
+  ],
+  "added": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "after": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6b01df5c21492e28b94619cff01a05eb777360e2",
+        "size": 9147,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/6b01df5c21492e28b94619cff01a05eb777360e2"
+      }
+    }
+  ],
+  "removed": [],
+  "parent_merkle": 358,
+  "proposed_merkle": 358,
+  "exact_formatted_inputs": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "pin": {
+        "bytes": 31855,
+        "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+        "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8213e4c9a9c907040c60f8c90f7260b933903db",
+      "pin": {
+        "bytes": 87473,
+        "sha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+        "blob": "a8213e4c9a9c907040c60f8c90f7260b933903db"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "pin": {
+        "bytes": 46885,
+        "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+        "blob": "fa80cf84e67edbc0e7979313799a79362a52322b"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "pin": {
+        "bytes": 9147,
+        "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+        "blob": "6b01df5c21492e28b94619cff01a05eb777360e2"
+      }
+    }
+  ],
+  "host_qualification_transferred": false,
+  "ci154_coverage_claimed": false
+}

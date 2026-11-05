@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.qa-short-child-r2.dispatch-intent.v1",
+  "request_blob": "927c2bafbb5a2fbdac6d69d88b016bf883b76b51",
+  "request_sha256": "71b34e3caeb1a443684735cf3680e965b2f834fcb2cee9888cb2567b5092abdf",
+  "root_go_blob": "19a2cae46f42e3919f16738f2a2d42c8b18c4f67",
+  "host": "rog",
+  "key": "heptabao-df026-h2-qa-custody-components-c961a54d-20261105-r2",
+  "stage": "three_public_git_owned_components_only",
+  "no_cargo_or_product": true,
+  "original_action_seconds": 15,
+  "cleanup_term_seconds": 5,
+  "cleanup_kill_seconds": 5,
+  "outer_seconds": 45
+}

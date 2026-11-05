@@ -1,0 +1,212 @@
+--- a/launch_normal_same_root_publication.py
++++ b/launch_normal_same_root_publication.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Preserve prior evidence and admit one exact cold/H2 canonical normal build."""
++"""Preserve prior evidence and admit one exact same-root publication normal build."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+@@ -22,8 +22,8 @@
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-assert args.tree == '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++assert args.commit == '1c66541993662f92cf717154e33717abedb2ea74'
++assert args.tree == '94ced21a63ff9aaca4538c0d4796efea2150e632'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+@@ -60,7 +60,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1')
++    ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+@@ -75,18 +75,19 @@
+     OLD_LIBTEST_SHA = '9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a'
+     OLD_LIBTEST_BYTES = 188077176
+     OLD_STATUS = 'passed'
+-    TARGET = ROOT / 'target-normal-r3'
++    TARGET = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3')
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+-    RUNNER_NAME = 'normal_cold_h2_build.py'
++    RUNNER_NAME = 'normal_same_root_publication_build.py'
+     expected_system, expected_uid = ('Linux', 'x86_64'), 1000
+ 
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+-REVISION_CONTROL = ROOT / 'control-r3'
+-ADMISSION = ROOT / 'build-control-r3'
+-OUTPUT = ROOT / 'normal-release-tests-r3'
++PRIOR_DF026_ROOT = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1')
++REVISION_CONTROL = PRIOR_DF026_ROOT / 'control-r3'
++ADMISSION = ROOT / 'build-control-r1'
++OUTPUT = ROOT / 'normal-release-tests-r1'
+ OLD_TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+ R9_SOURCE = R9 / 'source'
+ R9_COMMIT = '1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+@@ -419,7 +420,7 @@
+     assert metadata['children_started'] == 0 and metadata['files_written'] == 0
+     assert metadata['all_opened_descriptors_closed']
+     _, facts['original_rejected_launcher'] = read_bound(
+-        CONTROL / 'launch_normal_cold_h2.py',
++        PRIOR_DF026_ROOT / 'control/launch_normal_cold_h2.py',
+         '7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98', 31963)
+     assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired after early-failure fences'
+     return {'files': facts, 'original_job_replayed': False,
+@@ -427,89 +428,6 @@
+             'target_removal_cause_known': False}
+ 
+ 
+-def create_fresh_target(proof):
+-    proof.update(status='preparing', target=str(TARGET), created=[], descriptors=[],
+-                 all_opened_descriptors_closed=False, fresh_cache=True,
+-                 inherits_prior_cache_performance=False)
+-    descriptors = []
+-
+-    def budget():
+-        assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired during fresh-target preparation'
+-
+-    def register(name, fd):
+-        entry = {'name': name, 'fd': fd, 'close_attempted': False, 'closed': False}
+-        descriptors.append((fd, entry))
+-        proof['descriptors'].append(entry)
+-        return fd
+-
+-    try:
+-        budget()
+-        root_fd = register('root', os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW))
+-        root_before = os.fstat(root_fd)
+-        assert identity(root_before) == identity(ROOT.lstat())
+-        assert stat.S_ISDIR(root_before.st_mode) and root_before.st_uid == expected_uid
+-        assert stat.S_IMODE(root_before.st_mode) == 0o700
+-        assert TARGET.parent == ROOT and TARGET.name == 'target-normal-r3'
+-        budget()
+-        os.mkdir(TARGET.name, 0o700, dir_fd=root_fd)
+-        proof['created'].append(str(TARGET))
+-        target_fd = register('target', os.open(TARGET.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd))
+-        target_before = os.fstat(target_fd)
+-        assert identity(target_before) == identity(os.stat(TARGET.name, dir_fd=root_fd, follow_symlinks=False))
+-        assert stat.S_ISDIR(target_before.st_mode) and target_before.st_uid == expected_uid
+-        assert stat.S_IMODE(target_before.st_mode) == 0o700
+-        budget()
+-        os.mkdir('release', 0o700, dir_fd=target_fd)
+-        proof['created'].append(str(TARGET / 'release'))
+-        release_fd = register('release', os.open('release', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=target_fd))
+-        release_before = os.fstat(release_fd)
+-        assert identity(release_before) == identity(os.stat('release', dir_fd=target_fd, follow_symlinks=False))
+-        assert stat.S_ISDIR(release_before.st_mode) and release_before.st_uid == expected_uid
+-        assert stat.S_IMODE(release_before.st_mode) == 0o700
+-        budget()
+-        lock_fd = register('lock', os.open('.cargo-lock', os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600, dir_fd=release_fd))
+-        proof['created'].append(str(TARGET / 'release/.cargo-lock'))
+-        lock_before = os.fstat(lock_fd)
+-        assert stat.S_ISREG(lock_before.st_mode) and lock_before.st_uid == expected_uid
+-        assert stat.S_IMODE(lock_before.st_mode) == 0o600 and lock_before.st_nlink == 1 and lock_before.st_size == 0
+-        for fd in (lock_fd, release_fd, target_fd, root_fd):
+-            budget()
+-            os.fsync(fd)
+-            budget()
+-        assert identity(lock_before) == identity(os.fstat(lock_fd)) == identity(os.stat('.cargo-lock', dir_fd=release_fd, follow_symlinks=False))
+-        for fd, before, parent_fd, name in (
+-                (release_fd, release_before, target_fd, 'release'),
+-                (target_fd, target_before, root_fd, TARGET.name)):
+-            held = os.fstat(fd)
+-            assert identity(held)[:5] == identity(before)[:5]
+-            assert identity(held) == identity(os.stat(name, dir_fd=parent_fd, follow_symlinks=False))
+-        root_after = os.fstat(root_fd)
+-        assert identity(root_after)[:5] == identity(root_before)[:5]
+-        assert identity(root_after) == identity(ROOT.lstat())
+-        assert TARGET.resolve(strict=True) == TARGET
+-        proof.update(root_identity_after=list(identity(root_after)),
+-                     target_identity_after=list(identity(os.fstat(target_fd))),
+-                     release_identity_after=list(identity(os.fstat(release_fd))),
+-                     lock_identity=list(identity(lock_before)))
+-        budget()
+-    finally:
+-        close_errors = []
+-        for fd, entry in reversed(descriptors):
+-            entry['close_attempted'] = True
+-            try:
+-                os.close(fd)
+-                entry['closed'] = True
+-            except BaseException as error:
+-                entry['close_error_type'] = type(error).__name__
+-                close_errors.append(type(error).__name__)
+-        proof['all_opened_descriptors_closed'] = all(entry['closed'] for _, entry in descriptors)
+-        if close_errors:
+-            proof['status'] = 'descriptor_close_failed'
+-            raise RuntimeError('fresh_target_descriptor_close_failed')
+-    budget()
+-    assert proof['all_opened_descriptors_closed']
+-    proof.update(status='prepared', completed_before_original_outer_deadline=True)
+-
+ 
+ def holders():
+     if args.host == 'mac':
+@@ -541,13 +459,14 @@
+ assert (os.uname().sysname, os.uname().machine) == expected_system
+ assert os.getuid() == expected_uid == ROOT.stat().st_uid
+ assert ROOT.resolve(strict=True) == ROOT
+-assert Path(__file__).resolve(strict=True) == REVISION_CONTROL / 'launch_normal_cold_h2.py'
+-assert not TARGET.exists() and not TARGET.is_symlink()
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_same_root_publication.py'
++assert TARGET.resolve(strict=True) == TARGET
++assert identity(TARGET.stat())[:5] == (66306, 31606588, 1000, 1000, 16832)
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+ stage = json.loads(stage_raw)
+-assert stage['schema'] == 'heptabao.cold-h2-independent-source-stage.v1'
++assert stage['schema'] == 'heptabao.same-root-publication-independent-source-stage.v1'
+ assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+ assert stage['source_clean'] and stage['independent_git_directory'] and stage['old_source_unchanged']
+ assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+@@ -563,12 +482,12 @@
+ assert sum(len(g['tests']) for g in groups) == stage['exact_test_count']
+ assert all(g['runtime_seconds'] == 600 for g in groups)
+ ADMISSION.mkdir(mode=0o700)
+-result = {'schema': 'heptabao.cold-h2-normal-target-admission.v1', 'status': 'failed',
++result = {'schema': 'heptabao.same-root-publication-normal-target-admission.v1', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+-          'fresh_cache': True, 'inherits_prior_cache_performance': False,
+-          'fresh_target_preparation': {},
++          'fresh_cache': False, 'inherits_prior_cache_performance': False,
++          'reuses_existing_df026_target': True, 'target_identity_before': list(identity(TARGET.stat())),
+           'started_ns': time.time_ns()}
+ public(ADMISSION / 'launch-intent.public.json', result)
+ lock_fd = None
+@@ -605,7 +524,7 @@
+     assert result['retained_failed_observer'] == stage['failed_observer_after']
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     result['retained_current_early_failure'] = preserve_current_early_failure()
+-    create_fresh_target(result['fresh_target_preparation'])
++    assert identity(TARGET.stat())[:5] == tuple(result['target_identity_before'][:5])
+     result['compiler_holders_before_lock'] = holders()
+     assert not result['compiler_holders_before_lock']
+     lock_fd = os.open(TARGET / 'release/.cargo-lock', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+@@ -620,6 +539,7 @@
+         assert not result['compiler_holders_under_lock']
+     result['target_lock'] = {'identity': list(identity(info)), 'nonblocking_exclusive_probe': True}
+     assert preserve_current_early_failure() == result['retained_current_early_failure']
++    assert identity(TARGET.stat())[:5] == tuple(result['target_identity_before'][:5])
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     argv = [PYTHON, '-I', '-S', '-B', str(runner), '--source', str(SOURCE),
+             '--output', str(OUTPUT), '--commit', args.commit, '--tree', args.tree,
+@@ -635,6 +555,7 @@
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+                   exact_test_count=stage['exact_test_count'],
+                   additional_existing_ingress_tests=7, additional_cold_h2_tests=9,
++                  additional_same_root_publication_tests=1, original_60_test_count=60,
+                   each_additional_group_total_cap_seconds=600,
+                   original_supervisor_seconds=ORIGINAL_OUTER_SECONDS,
+                   outer_started_monotonic=OUTER_STARTED, outer_until_monotonic=OUTER_UNTIL)

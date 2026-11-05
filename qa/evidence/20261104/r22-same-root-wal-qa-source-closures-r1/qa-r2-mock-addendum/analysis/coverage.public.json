@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.qa-custody-r2-failure-coverage.v1",
+  "frozen_source_tree": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+  "new_actual_linux_tree": "8a753787c47ac4f203526d7fea434c208162075f",
+  "original_mock18_unchanged": true,
+  "independent_new_mock_count": 7,
+  "rows": [
+    {
+      "boundary": "waitid no terminal",
+      "original18": "no_terminal_event_cannot_succeed; TimeoutExpired, wait_count0",
+      "new_addendum": "not repeated"
+    },
+    {
+      "boundary": "identity drift",
+      "original18": "wrong parent/start identity/waitid terminal change/wait disagreement refuse",
+      "new_addendum": "not repeated"
+    },
+    {
+      "boundary": "wait exception",
+      "original18": "not covered; disagreement only",
+      "new_addendum": "actual wait throws OSError; terminal_consumed not set; original error propagates"
+    },
+    {
+      "boundary": "stdio closure",
+      "original18": "proc FD close/read only",
+      "new_addendum": "actual nested command selected unchanged: wait error closes both; second-open error closes first; no completed command record"
+    },
+    {
+      "boundary": "cleanup unknown",
+      "original18": "normal stopper only",
+      "new_addendum": "stop exception retained false; repeated collection never retries; timeout+stop error closes streams and preserves unknown"
+    },
+    {
+      "boundary": "unregistered stdout",
+      "original18": "not covered",
+      "new_addendum": "refused before Popen"
+    }
+  ],
+  "scope": "In-memory injected-failure addendum only. Does not expand the three real Linux cases or claim every actual OS failure mode."
+}

@@ -1,0 +1,586 @@
+{
+  "schema": "heptabao.full-replacement.production-binding-template.r1",
+  "ready": false,
+  "executable": false,
+  "scope": "Missing production bindings only. Does not block finishing separately authorized owned current-consumer qualification.",
+  "productionDestination": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "normal61RootReview": null,
+    "endpoint": null,
+    "namespace": null,
+    "clusterId": null,
+    "apiMounts": null,
+    "memberSet": null,
+    "clusterPublicReadbackReceipt": null,
+    "actualColdPersistenceReceipt": null
+  },
+  "tls": {
+    "caPublicPemSha256": null,
+    "caFilePrivateGenerationPath": null,
+    "expectedServerName": null,
+    "leafCertificates": null,
+    "leafSanAndValidityReadback": null,
+    "privateSigningKeysNeverIncluded": true
+  },
+  "policy": {
+    "installedPluginSourcePins": null,
+    "routeOperationMatrix": null,
+    "namespaceAndMountBindings": null,
+    "consumerPolicyNames": null,
+    "consumerPolicyCanonicalSha256": null,
+    "readbackSha256": null,
+    "explicitDenyCases": null,
+    "issuerPolicySeparatedFromConsumerPolicy": true,
+    "broadUnboundedWildcardGrantAllowed": false
+  },
+  "hostBindings": [
+    {
+      "host": "mac",
+      "selectedAgentIds": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "priorDestination": "https://100.66.117.33:8200",
+      "priorDestinationMayBeContacted": false,
+      "priorCredentialReferences": [
+        {
+          "path": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+          "bytes": 1834,
+          "sha256": "bb27eda0fb984db738c5e46483550609359e112bd5361a49bfb8e7383e75ac24",
+          "sourceReference": "mac_finite_inventory",
+          "sourcePointer": "/passes/2/entries/0",
+          "identityPointer": "/passes/2/entries/0/identity"
+        },
+        {
+          "path": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+          "bytes": 36,
+          "sha256": "7abe56bb1d586b681aab57da71a1370a5509113df8185c3aea0e3ae6b39bb7c4",
+          "sourceReference": "mac_finite_inventory",
+          "sourcePointer": "/passes/2/entries/1",
+          "identityPointer": "/passes/2/entries/1/identity"
+        },
+        {
+          "path": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+          "bytes": 36,
+          "sha256": "ac46a5d3b1cb56a0f5576c894d2abbd3559a2838f039076ee231bbe99f52887c",
+          "sourceReference": "mac_finite_inventory",
+          "sourcePointer": "/passes/2/entries/2",
+          "identityPointer": "/passes/2/entries/2/identity"
+        }
+      ],
+      "installedConsumerConfirmed": true,
+      "newCredentialGeneration": {
+        "privateDirectory": null,
+        "caPath": null,
+        "roleIdPath": null,
+        "secretIdPath": null,
+        "roleName": null,
+        "roleIdSha256": null,
+        "secretIdSha256": null,
+        "creationOrVerifiedRestoreAuthorityReceipt": null,
+        "issuingClusterId": null,
+        "issuingNamespace": null,
+        "policyReadbackSha256": null,
+        "secretIdAccessorPublicProjection": null,
+        "actualTtlAndUsesReadback": null,
+        "sourceFullIdentityBeforeAfter": null
+      },
+      "runtimeBinding": {
+        "newBinaryPath": null,
+        "newBinarySha256": null,
+        "newBinaryFileInfo": null,
+        "newNormalReceipt": null,
+        "newNativeReceipt": null,
+        "newCombined61Receipt": null,
+        "qualifiedCurrentConsumerReceipt": null,
+        "finalIdentityFence": null
+      },
+      "writeCustody": {
+        "configBeforeRawHash": null,
+        "configBeforeIdentity9RawPointer": null,
+        "expectedAfterRawHash": null,
+        "exclusiveWriterContract": null,
+        "knownStopReceipt": null,
+        "transactionIntent": null,
+        "configAtomicRenameIsNotMultiFileOrConcurrentWriterCas": true
+      },
+      "serviceTransition": {
+        "unitOrLabel": null,
+        "originalStateReceipt": null,
+        "exactExecutableAndArgumentsPins": null,
+        "allDropinsAndHeldMarkers": null,
+        "newInvocationIdentity": null,
+        "startReceipt": null,
+        "coldRestartReceipt": null,
+        "rollbackReceipt": null,
+        "holdReleaseAuthorized": false
+      },
+      "publicTokenLifecycle": {
+        "loginReceipt": null,
+        "lookupReceiptIfRequiredByActualContract": null,
+        "renewReceipt": null,
+        "revokeReceipt": null,
+        "revokedRequest403Receipt": null,
+        "unassignedProfile403Receipt": null,
+        "actualTtlMetadata": null,
+        "unknownReplayAllowed": false
+      },
+      "sourceAndRollback": {
+        "independentBaselines": null,
+        "rawAuthRowsAndCachesRestoredReceipt": null,
+        "derivedEffectiveRecomputedReceipt": null,
+        "nativeUserFilesUnchangedReceipt": null,
+        "inverseAttemptedOnce": null,
+        "inverseCompleted": null,
+        "outcomeUnknown": null
+      },
+      "backupBinding": {
+        "registrationScopeReceipt": "finite_registration",
+        "activeProducerOrRestoreEntry": null,
+        "newDeploymentProducerIfIntroduced": null,
+        "exactPayloadAndProducerVersion": null,
+        "sourceClusterId": null,
+        "encryptedDestination": null,
+        "recoveryKeyCustodyReference": null,
+        "offhostRestoreAndNewProductReadbackReceipt": null,
+        "endpointRewriteReceiptIfRequired": null,
+        "rollbackReceipt": null
+      },
+      "ready": false
+    },
+    {
+      "host": "rog",
+      "selectedAgentIds": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "priorDestination": "https://100.66.117.33:8200",
+      "priorDestinationMayBeContacted": false,
+      "priorCredentialReferences": [
+        {
+          "path": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+          "bytes": 1834,
+          "sha256": "bb27eda0fb984db738c5e46483550609359e112bd5361a49bfb8e7383e75ac24",
+          "sourceReference": "rog_finite_inventory",
+          "sourcePointer": "/passes/2/entries/0",
+          "identityPointer": "/passes/2/entries/0/identity"
+        },
+        {
+          "path": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+          "bytes": 36,
+          "sha256": "6f7f1426ef1d7ed758afc74d65097d4dc67306989a5d5faa823bbd5b0966c850",
+          "sourceReference": "rog_finite_inventory",
+          "sourcePointer": "/passes/2/entries/1",
+          "identityPointer": "/passes/2/entries/1/identity"
+        },
+        {
+          "path": "/home/qian-qi/.openclaw/credentials/authbus/secret_id",
+          "bytes": 36,
+          "sha256": "62d6908d4c7a6cd377f0e9717d1901bd9918715f92a537ae3a8a172a7d208776",
+          "sourceReference": "rog_finite_inventory",
+          "sourcePointer": "/passes/2/entries/2",
+          "identityPointer": "/passes/2/entries/2/identity"
+        }
+      ],
+      "installedConsumerConfirmed": true,
+      "newCredentialGeneration": {
+        "privateDirectory": null,
+        "caPath": null,
+        "roleIdPath": null,
+        "secretIdPath": null,
+        "roleName": null,
+        "roleIdSha256": null,
+        "secretIdSha256": null,
+        "creationOrVerifiedRestoreAuthorityReceipt": null,
+        "issuingClusterId": null,
+        "issuingNamespace": null,
+        "policyReadbackSha256": null,
+        "secretIdAccessorPublicProjection": null,
+        "actualTtlAndUsesReadback": null,
+        "sourceFullIdentityBeforeAfter": null
+      },
+      "runtimeBinding": {
+        "newBinaryPath": null,
+        "newBinarySha256": null,
+        "newBinaryFileInfo": null,
+        "newNormalReceipt": null,
+        "newNativeReceipt": null,
+        "newCombined61Receipt": null,
+        "qualifiedCurrentConsumerReceipt": null,
+        "finalIdentityFence": null
+      },
+      "writeCustody": {
+        "configBeforeRawHash": null,
+        "configBeforeIdentity9RawPointer": null,
+        "expectedAfterRawHash": null,
+        "exclusiveWriterContract": null,
+        "knownStopReceipt": null,
+        "transactionIntent": null,
+        "configAtomicRenameIsNotMultiFileOrConcurrentWriterCas": true
+      },
+      "serviceTransition": {
+        "unitOrLabel": null,
+        "originalStateReceipt": null,
+        "exactExecutableAndArgumentsPins": null,
+        "allDropinsAndHeldMarkers": null,
+        "newInvocationIdentity": null,
+        "startReceipt": null,
+        "coldRestartReceipt": null,
+        "rollbackReceipt": null,
+        "holdReleaseAuthorized": false
+      },
+      "publicTokenLifecycle": {
+        "loginReceipt": null,
+        "lookupReceiptIfRequiredByActualContract": null,
+        "renewReceipt": null,
+        "revokeReceipt": null,
+        "revokedRequest403Receipt": null,
+        "unassignedProfile403Receipt": null,
+        "actualTtlMetadata": null,
+        "unknownReplayAllowed": false
+      },
+      "sourceAndRollback": {
+        "independentBaselines": null,
+        "rawAuthRowsAndCachesRestoredReceipt": null,
+        "derivedEffectiveRecomputedReceipt": null,
+        "nativeUserFilesUnchangedReceipt": null,
+        "inverseAttemptedOnce": null,
+        "inverseCompleted": null,
+        "outcomeUnknown": null
+      },
+      "backupBinding": {
+        "registrationScopeReceipt": "finite_registration",
+        "activeProducerOrRestoreEntry": null,
+        "newDeploymentProducerIfIntroduced": null,
+        "exactPayloadAndProducerVersion": null,
+        "sourceClusterId": null,
+        "encryptedDestination": null,
+        "recoveryKeyCustodyReference": null,
+        "offhostRestoreAndNewProductReadbackReceipt": null,
+        "endpointRewriteReceiptIfRequired": null,
+        "rollbackReceipt": null
+      },
+      "ready": false
+    },
+    {
+      "host": "pocket4",
+      "selectedAgentIds": [
+        "main",
+        "tg8687951891"
+      ],
+      "priorDestination": "https://100.66.117.33:8200",
+      "priorDestinationMayBeContacted": false,
+      "priorCredentialReferences": {
+        "paths": {
+          "caFile": "/home/alex/.openclaw/credentials/authbus/ca.crt",
+          "roleIdFile": "/home/alex/.openclaw/credentials/authbus/role_id",
+          "secretIdFile": "/home/alex/.openclaw/credentials/authbus/secret_id"
+        },
+        "originalReference": "cleanup_matrix",
+        "freshIdentityAndWholeShaRequired": true
+      },
+      "installedConsumerConfirmed": true,
+      "newCredentialGeneration": {
+        "privateDirectory": null,
+        "caPath": null,
+        "roleIdPath": null,
+        "secretIdPath": null,
+        "roleName": null,
+        "roleIdSha256": null,
+        "secretIdSha256": null,
+        "creationOrVerifiedRestoreAuthorityReceipt": null,
+        "issuingClusterId": null,
+        "issuingNamespace": null,
+        "policyReadbackSha256": null,
+        "secretIdAccessorPublicProjection": null,
+        "actualTtlAndUsesReadback": null,
+        "sourceFullIdentityBeforeAfter": null
+      },
+      "runtimeBinding": {
+        "newBinaryPath": null,
+        "newBinarySha256": null,
+        "newBinaryFileInfo": null,
+        "newNormalReceipt": null,
+        "newNativeReceipt": null,
+        "newCombined61Receipt": null,
+        "qualifiedCurrentConsumerReceipt": null,
+        "finalIdentityFence": null
+      },
+      "writeCustody": {
+        "configBeforeRawHash": null,
+        "configBeforeIdentity9RawPointer": null,
+        "expectedAfterRawHash": null,
+        "exclusiveWriterContract": null,
+        "knownStopReceipt": null,
+        "transactionIntent": null,
+        "configAtomicRenameIsNotMultiFileOrConcurrentWriterCas": true
+      },
+      "serviceTransition": {
+        "unitOrLabel": null,
+        "originalStateReceipt": null,
+        "exactExecutableAndArgumentsPins": null,
+        "allDropinsAndHeldMarkers": null,
+        "newInvocationIdentity": null,
+        "startReceipt": null,
+        "coldRestartReceipt": null,
+        "rollbackReceipt": null,
+        "holdReleaseAuthorized": false
+      },
+      "publicTokenLifecycle": {
+        "loginReceipt": null,
+        "lookupReceiptIfRequiredByActualContract": null,
+        "renewReceipt": null,
+        "revokeReceipt": null,
+        "revokedRequest403Receipt": null,
+        "unassignedProfile403Receipt": null,
+        "actualTtlMetadata": null,
+        "unknownReplayAllowed": false
+      },
+      "sourceAndRollback": {
+        "independentBaselines": null,
+        "rawAuthRowsAndCachesRestoredReceipt": null,
+        "derivedEffectiveRecomputedReceipt": null,
+        "nativeUserFilesUnchangedReceipt": null,
+        "inverseAttemptedOnce": null,
+        "inverseCompleted": null,
+        "outcomeUnknown": null
+      },
+      "backupBinding": {
+        "registrationScopeReceipt": "finite_registration",
+        "activeProducerOrRestoreEntry": null,
+        "newDeploymentProducerIfIntroduced": null,
+        "exactPayloadAndProducerVersion": null,
+        "sourceClusterId": null,
+        "encryptedDestination": null,
+        "recoveryKeyCustodyReference": null,
+        "offhostRestoreAndNewProductReadbackReceipt": null,
+        "endpointRewriteReceiptIfRequired": null,
+        "rollbackReceipt": null
+      },
+      "ready": false
+    },
+    {
+      "host": "x230",
+      "selectedAgentIds": null,
+      "priorDestination": null,
+      "priorDestinationMayBeContacted": false,
+      "priorCredentialReferences": null,
+      "installedConsumerConfirmed": null,
+      "newCredentialGeneration": {
+        "privateDirectory": null,
+        "caPath": null,
+        "roleIdPath": null,
+        "secretIdPath": null,
+        "roleName": null,
+        "roleIdSha256": null,
+        "secretIdSha256": null,
+        "creationOrVerifiedRestoreAuthorityReceipt": null,
+        "issuingClusterId": null,
+        "issuingNamespace": null,
+        "policyReadbackSha256": null,
+        "secretIdAccessorPublicProjection": null,
+        "actualTtlAndUsesReadback": null,
+        "sourceFullIdentityBeforeAfter": null
+      },
+      "runtimeBinding": {
+        "newBinaryPath": null,
+        "newBinarySha256": null,
+        "newBinaryFileInfo": null,
+        "newNormalReceipt": null,
+        "newNativeReceipt": null,
+        "newCombined61Receipt": null,
+        "qualifiedCurrentConsumerReceipt": null,
+        "finalIdentityFence": null
+      },
+      "writeCustody": {
+        "configBeforeRawHash": null,
+        "configBeforeIdentity9RawPointer": null,
+        "expectedAfterRawHash": null,
+        "exclusiveWriterContract": null,
+        "knownStopReceipt": null,
+        "transactionIntent": null,
+        "configAtomicRenameIsNotMultiFileOrConcurrentWriterCas": true
+      },
+      "serviceTransition": {
+        "unitOrLabel": null,
+        "originalStateReceipt": null,
+        "exactExecutableAndArgumentsPins": null,
+        "allDropinsAndHeldMarkers": null,
+        "newInvocationIdentity": null,
+        "startReceipt": null,
+        "coldRestartReceipt": null,
+        "rollbackReceipt": null,
+        "holdReleaseAuthorized": false
+      },
+      "publicTokenLifecycle": {
+        "loginReceipt": null,
+        "lookupReceiptIfRequiredByActualContract": null,
+        "renewReceipt": null,
+        "revokeReceipt": null,
+        "revokedRequest403Receipt": null,
+        "unassignedProfile403Receipt": null,
+        "actualTtlMetadata": null,
+        "unknownReplayAllowed": false
+      },
+      "sourceAndRollback": {
+        "independentBaselines": null,
+        "rawAuthRowsAndCachesRestoredReceipt": null,
+        "derivedEffectiveRecomputedReceipt": null,
+        "nativeUserFilesUnchangedReceipt": null,
+        "inverseAttemptedOnce": null,
+        "inverseCompleted": null,
+        "outcomeUnknown": null
+      },
+      "backupBinding": {
+        "registrationScopeReceipt": "finite_registration",
+        "activeProducerOrRestoreEntry": null,
+        "newDeploymentProducerIfIntroduced": null,
+        "exactPayloadAndProducerVersion": null,
+        "sourceClusterId": null,
+        "encryptedDestination": null,
+        "recoveryKeyCustodyReference": null,
+        "offhostRestoreAndNewProductReadbackReceipt": null,
+        "endpointRewriteReceiptIfRequired": null,
+        "rollbackReceipt": null
+      },
+      "ready": false
+    }
+  ],
+  "oldLanFixtureIsProductionSource": false,
+  "oldJ3160CredentialValidityOnNewClusterAssumed": false,
+  "productionValuesMayBeFilledOnlyFromAcceptedExactEvidence": true,
+  "credentialValuesPublished": false,
+  "inheritedMacSource": {
+    "schema": "heptabao.mac-current-wal-future-product-binding-template.r1",
+    "status": "SOURCE_TEMPLATE_NOT_EXECUTABLE_NOT_ADMITTED",
+    "oldProduct": {
+      "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "serverBytes": 92408592,
+      "serverSha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+    },
+    "requestedSuccessor": {
+      "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+      "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+      "normalTestCount": 61
+    },
+    "futureActual": {
+      "macNormalRoot": null,
+      "serverPath": null,
+      "serverBytes": null,
+      "serverSha256": null,
+      "serverFileInfoOriginalBlob": null,
+      "normalReceiptPath": null,
+      "normalReceiptRawBlob": null,
+      "normalReceiptSha256": null,
+      "nativeReceiptPath": null,
+      "nativeReceiptRawBlob": null,
+      "nativeReceiptSha256": null,
+      "combinedResultRawBlob": null,
+      "combinedResultSha256": null,
+      "combinedAuthorityRawBlob": null,
+      "rootQualificationReviewBlob": null
+    },
+    "proposedFreshFixtureRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-1c665-current-registry-wal-r1",
+    "actualFixtureAbsenceObserved": false,
+    "requiredSourceChanges": [
+      {
+        "file": "mac_current_outer_inputs_r2.py",
+        "names": [
+          "ROOT",
+          "NORMAL_ROOT",
+          "BINARY_SHA",
+          "BINARY_BYTES",
+          "COMMIT",
+          "TREE",
+          "PUBLIC_INPUTS.normal",
+          "PUBLIC_INPUTS.native_build"
+        ],
+        "condition": "Fill only from accepted new actual Mac normal/source/binary receipts; no guessed target path or inherited binary hash."
+      },
+      {
+        "file": "mac_current_outer_wal_r1.py",
+        "names": [
+          "ROOT",
+          "COMMIT",
+          "TREE",
+          "BINARY",
+          "BINARY_SHA",
+          "BINARY_BYTES",
+          "sourceGeneration"
+        ]
+      },
+      {
+        "file": "mac_owned_launchd_r3.py",
+        "names": [
+          "ROOT",
+          "LABELS",
+          "SERVER",
+          "SERVER_SHA"
+        ]
+      },
+      {
+        "file": "mac_current_server_owner_r1.py",
+        "names": [
+          "ROOT",
+          "BINARY",
+          "BINARY_SHA",
+          "BINARY_BYTES"
+        ]
+      },
+      {
+        "files": [
+          "mac_current_fixture_materializer_r1.py",
+          "mac_current_capture_entry_wal_r1.py",
+          "mac_current_phase_owner_r2.py",
+          "mac_t5_volume_guard_r1.py",
+          "mac_current_cycle_r2.mjs",
+          "mac_single_native_r2.mjs",
+          "mac_auth_rows_cas_r1.mjs"
+        ],
+        "change": "Only the fixed new absolute fixture ROOT; no consumer/capture/CAS/deadline logic changes."
+      }
+    ],
+    "derivedArtifacts": [
+      "22 source hashes",
+      "candidate product and source pins",
+      "inert source/document tuples and payload hash",
+      "fresh inert request key and exact stdin",
+      "fresh runtime source/candidate hashes and key",
+      "source diffs and invariant proof"
+    ],
+    "retainedExact": [
+      "mac_guarded_current_capture_r3.py",
+      "mac_registry_readonly_wal_r1.py",
+      "all immutable/native/WAL public actual proof bytes",
+      "four frozen credential-source admission pins",
+      "current config and installed-code closed set",
+      "all original budget constants",
+      "registry WAL maximum5969912 bytes",
+      "row1048576 and aggregate8388608 bytes",
+      "before/after whole capsule equality",
+      "five-agent independent initial/cold/inverse and raw-only CAS semantics"
+    ],
+    "authority": {
+      "oldDf026ConsumerResultNotTransferred": true,
+      "newNormal61IsNotConsumerQualification": true,
+      "macCurrentHostSubmissionAuthorized": false,
+      "inertSubmissionAuthorized": false
+    }
+  },
+  "readiness": {
+    "requireAllApplicableExactBindings": true,
+    "absenceWithinClosedFiniteScopeCanBeRecordedAsNotApplicable": true,
+    "introduceNoHypotheticalManualBackupGate": true,
+    "explicitlyUnresolvedX230ConsumerDenominator": true,
+    "readyMustRemainFalseUntilActualBindingsAndScopeDecisionComplete": true
+  }
+}

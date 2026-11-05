@@ -1,0 +1,28 @@
+--- publisher-r1-to-r2-before
++++ publisher-r1-to-r2-after
+@@ -8,13 +8,13 @@
+     raise RuntimeError('actual_qa_build_binding_unresolved')
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi')
+-BASE = PARENT / 'heptabao-native-h2-qa-controls-df026-20261105-r1'
++BASE = PARENT / 'heptabao-native-h2-qa-controls-df026-20261105-r2'
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "build_native_h2_client_r1.py": [
+-        35155,
+-        "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
++        42820,
++        "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8"
+     ],
+     "inputs/native_h2_client.rs": [
+         19382,
+@@ -42,7 +42,7 @@
+     ],
+     "build-binding.private.json": [
+         4039,
+-        "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d"
++        "d995e45f61507ba9b99500daf736fa2e179839e95babe4d8db25c3cb11536693"
+     ]
+ }
+ def sha(raw):

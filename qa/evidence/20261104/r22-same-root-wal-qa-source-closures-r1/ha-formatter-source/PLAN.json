@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.same-root-four-file-format-plan.v1",
+  "scope": "PUBLIC_SOURCE_FORMAT_ONLY_NOT_SUBMITTED",
+  "request": {
+    "bytes": 194996,
+    "sha256": "bbc87b30ce08277a35129dd987b310bced6dbb1a422b2b75de558ecc86addaad",
+    "blob": "52fe787d5b68896d16156740f719c74118a12a0b"
+  },
+  "controller": {
+    "bytes": 7587,
+    "sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695",
+    "blob": "81211c8129b8d219672f88e5d7a2f9a0e7c3dea2"
+  },
+  "key": "heptabao-same-root-publication-rustfmt-20261105-r1-c3b33a6a",
+  "host": "rog",
+  "cwd": "/home/qian-qi",
+  "root": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1",
+  "source_parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "input_bytes": 180531,
+  "limits": {
+    "whole_seconds": 50,
+    "child_seconds": 10,
+    "supervisor_seconds": 60,
+    "input_bytes": 262144,
+    "formatted_file_bytes": 262144
+  },
+  "fixed_output_paths": [
+    "rustfmt.toml",
+    "result.public.json",
+    "candidate/service_native_v6_ha_read.rs",
+    "formatted/service_native_v6_ha_read.rs",
+    "service_native_v6_ha_read.rs.rustfmt.stdout",
+    "service_native_v6_ha_read.rs.rustfmt.stderr",
+    "candidate/service_native_v6_ha_install.rs",
+    "formatted/service_native_v6_ha_install.rs",
+    "service_native_v6_ha_install.rs.rustfmt.stdout",
+    "service_native_v6_ha_install.rs.rustfmt.stderr",
+    "candidate/service_native_v6_ha_install_tests.rs",
+    "formatted/service_native_v6_ha_install_tests.rs",
+    "service_native_v6_ha_install_tests.rs.rustfmt.stdout",
+    "service_native_v6_ha_install_tests.rs.rustfmt.stderr",
+    "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+    "formatted/service_native_v6_ha_same_root_republication_tests.rs",
+    "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+    "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr"
+  ],
+  "expected_direct_children": 4,
+  "no_original_checkout_or_target_access": true,
+  "requires_new_root_go": true,
+  "actual_submit_marker": false
+}

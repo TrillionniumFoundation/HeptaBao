@@ -1,0 +1,7 @@
+{
+  "chunk_id": "c6e168",
+  "wall_time_seconds": 0.223776763,
+  "exit_code": 1,
+  "original_token_count": 135,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac_current_registry_wal_complete_source_static_r1.py\", line 44, in <module>\n    if name not in (\"Context\",\"capture_once\",\"main\"):check(\"original_outer_definition_exact.\"+name,o1[name]==raw)\n                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/mac_current_registry_wal_complete_source_static_r1.py\", line 4, in check\n    assert value,name\n           ^^^^^\nAssertionError: original_outer_definition_exact.bootstrap_api\n"
+}

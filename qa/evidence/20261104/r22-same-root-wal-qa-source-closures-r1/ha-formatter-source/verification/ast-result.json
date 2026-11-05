@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "candidate_ast_compile_only",
+    "unfrozen_json_null_draft_rejected",
+    "helper_remain_exact_source",
+    "helper_sha_exact_source",
+    "helper_read_pin_exact_source",
+    "helper_write_new_exact_source",
+    "helper_sync_dir_exact_source",
+    "FORMAT_CONFIG_exact",
+    "FORMAT_CONFIG_SHA_exact",
+    "four_fixed_input_names",
+    "candidate_admitted_sha_service_native_v6_ha_read.rs",
+    "candidate_admitted_sha_service_native_v6_ha_install.rs",
+    "candidate_admitted_sha_service_native_v6_ha_install_tests.rs",
+    "candidate_admitted_sha_service_native_v6_ha_same_root_republication_tests.rs",
+    "stdin_original_262144_cap",
+    "whole50",
+    "tool_same",
+    "new_argv_only_owned_config",
+    "all_child_custody_and_caps_exact_except_config_argv"
+  ],
+  "count": 19,
+  "host_operations": 0,
+  "modules_executed": 0,
+  "passed": true,
+  "rust_invocations": 0,
+  "schema": "heptabao.same-root-formatter-ast-checks.v1",
+  "source_sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695"
+}

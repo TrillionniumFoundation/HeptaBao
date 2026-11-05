@@ -1,0 +1,236 @@
+{
+  "schema": "heptabao.same-root-publication.rog-source-controls-review-core.v1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "source": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "parent": "6d02ceca629163e1c07480fa1f21520434407143",
+    "ref": "refs/heads/codex/heptabao-same-root-publication-94ced21a-20261105-r1"
+  },
+  "expected_worktree": {
+    "leaves": 3914,
+    "tracked_bytes": 62224861,
+    "full_leaf_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc"
+  },
+  "expected_history_count": 3762,
+  "proofs": [
+    {
+      "name": "rog_stager",
+      "base": {
+        "bytes": 27544,
+        "sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+        "blob": "fc3786c199c07435cb3f9e2072768a8282750448"
+      },
+      "candidate": {
+        "bytes": 28230,
+        "sha256": "cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9",
+        "blob": "74c0b34005911a169c34ef65a73dfcd885e36574"
+      },
+      "diff": {
+        "bytes": 8154,
+        "sha256": "4c79eeb305aa8692509d8d77690402b573d0f489cba05725179657b345b1ccd3",
+        "blob": "146a5237dd56920dd346a983dc8b62b436e29f85"
+      },
+      "strict_hunks": 9,
+      "actual_ast_only": {
+        "added_definitions": [],
+        "bytes": 28230,
+        "changed_definitions": [
+          "verify_full_worktree"
+        ],
+        "host_operations": 0,
+        "name": "rog_stager",
+        "removed_definitions": [],
+        "rust_executed": false,
+        "sha256": "cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9",
+        "source_module_executed": false,
+        "status": "AST_COMPILE_ONLY_PASS",
+        "unchanged_definitions": [
+          "Cancelled",
+          "on_signal",
+          "digest",
+          "blob",
+          "identity",
+          "stable_read",
+          "fsync_dir",
+          "create",
+          "public",
+          "group_members",
+          "stop_owned",
+          "owned",
+          "git",
+          "stage_remaining",
+          "freeze",
+          "preserve_failed_observer",
+          "walk_error",
+          "independent_git",
+          "canonical_bundle_header"
+        ]
+      }
+    },
+    {
+      "name": "rog_runner",
+      "base": {
+        "bytes": 26659,
+        "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+        "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+      },
+      "candidate": {
+        "bytes": 35452,
+        "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+        "blob": "9b318f4acf589e0410263723695f421d0bb224ea"
+      },
+      "diff": {
+        "bytes": 13471,
+        "sha256": "03bd0953dba81c68d57da3a558b11248358b4ceae3b5351aa4f1f5689d42d7cd",
+        "blob": "9abf6d2e5a8eb84cc3fc89f8601aab93c5b0e1f1"
+      },
+      "strict_hunks": 7,
+      "actual_ast_only": {
+        "added_definitions": [
+          "preserve_prior_df026",
+          "publication_remaining"
+        ],
+        "bytes": 35452,
+        "changed_definitions": [],
+        "host_operations": 0,
+        "name": "rog_runner",
+        "removed_definitions": [],
+        "rust_executed": false,
+        "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+        "source_module_executed": false,
+        "status": "AST_COMPILE_ONLY_PASS",
+        "unchanged_definitions": [
+          "Cancelled",
+          "signal_received",
+          "sha",
+          "write",
+          "git",
+          "freeze",
+          "group_members",
+          "terminate_owned",
+          "bounded_remaining",
+          "owned",
+          "extra_remaining",
+          "increment_remaining"
+        ]
+      }
+    },
+    {
+      "name": "rog_launcher",
+      "base": {
+        "bytes": 39664,
+        "sha256": "98b7838cd4550467b76bc3c9fd3b4925b806075536b7e22dc1cba1c79063bde3",
+        "blob": "8e2f73cf6a286077522268c8c1857ca4004cf258"
+      },
+      "candidate": {
+        "bytes": 35592,
+        "sha256": "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02",
+        "blob": "66728acfe52cede473b0dcae21213a2cb87e48ee"
+      },
+      "diff": {
+        "bytes": 12087,
+        "sha256": "19e8cc024563b27865b1c5b4aa8d26520c7f513b37c8cfe5c450a30cefed3d11",
+        "blob": "30cc8e9670f55b7b133da83a12697014d553bcad"
+      },
+      "strict_hunks": 11,
+      "actual_ast_only": {
+        "added_definitions": [],
+        "bytes": 35592,
+        "changed_definitions": [
+          "preserve_current_early_failure"
+        ],
+        "host_operations": 0,
+        "name": "rog_launcher",
+        "removed_definitions": [
+          "create_fresh_target",
+          "budget",
+          "register"
+        ],
+        "rust_executed": false,
+        "sha256": "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02",
+        "source_module_executed": false,
+        "status": "AST_COMPILE_ONLY_PASS",
+        "unchanged_definitions": [
+          "identity",
+          "read_bound",
+          "freeze",
+          "public",
+          "preserve_r9",
+          "preserve_r10",
+          "preserve_successful_observer",
+          "preserve_failed_observer",
+          "holders",
+          "git"
+        ]
+      }
+    }
+  ],
+  "request": {
+    "bytes": 111195,
+    "sha256": "ee97cca39ecea1910db9cb2f4cb829bf012ed71f386882b096a737dcdfe453e2",
+    "blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d"
+  },
+  "stdin": {
+    "bytes": 79915,
+    "sha256": "3bf6aa94e80601da1bf0c413f0c4f46e620ddc785145b6307c9436df69236331",
+    "blob": "0bcb296c0ef4b3b31eb7a9f7c69395e20c4f01c7"
+  },
+  "dispatch_effect": "New independent source and public controls plus one incremental public Git bundle; no Cargo or product execution",
+  "stage_caps": {
+    "whole": 300,
+    "git": 90,
+    "clone": 180,
+    "outer": 360
+  },
+  "normal_build_not_authorized": true,
+  "new_regression_group": {
+    "count": 1,
+    "cap_seconds": 600,
+    "clamped_to_original_outer": true
+  },
+  "original_normal_groups_unchanged": "44+7+9",
+  "original_normal_outer_seconds": 12000,
+  "retained_df026_fence": {
+    "files": {
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json": {
+        "bytes": 3137,
+        "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+        "mode": 384
+      },
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json": {
+        "bytes": 772,
+        "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+        "mode": 384
+      },
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json": {
+        "bytes": 48188,
+        "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+        "mode": 384
+      },
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-seed": {
+        "bytes": 102260520,
+        "sha256": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f",
+        "mode": 320
+      },
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server": {
+        "bytes": 110339520,
+        "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+        "mode": 320
+      },
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest": {
+        "bytes": 189730456,
+        "sha256": "640fdb602cf264c29eb816a85c2a0e2763d66438b97e1c8e75564ad0a01d91e2",
+        "mode": 320
+      }
+    },
+    "new_helper_only": true,
+    "not_component_tested_yet": true
+  },
+  "old_missing_target_refusal_retained": true,
+  "shared_target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "cargo_window": "Root schedules H2 QA 600/660 first; normal61 requires separate GO after complete cleanup",
+  "immutable_artifacts_outside_target": true,
+  "flock_scope": "Original launch admission probe; no claim that launcher holds its fd throughout the exec'd runner",
+  "ci154_failures_not_claimed_fixed": true
+}

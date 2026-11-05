@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.root.x230-fresh-finite-metadata-r2-go.v1",
+  "as_of_utc": "2026-11-05 07:40:18 UTC",
+  "status": "GO_FIXED_PUBLIC_METADATA_ONLY",
+  "source_blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80",
+  "source_bytes": 10224,
+  "source_sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+  "request": {
+    "name": "r22_x230_fresh_metadata_exact_request",
+    "blob": "c17964a28812bbe989aa364e84cf9f000b9e3959",
+    "bytes": 11117,
+    "sha256": "8f9ee602f59733731ee7a5ce2ded716ad0f3e53c90c270a7a58b63bb7fbedd7b"
+  },
+  "only_request_delta_from_original": "Fresh read-only observation idempotency key r2; exact code, argv, paths, original source identity pins and bounds are unchanged.",
+  "previous_known_fence_failure": {
+    "name": "r21_x230_fence_failure_root_review",
+    "blob": "2d36c337939f6b57fd402902c38a851104d01208",
+    "bytes": 2419,
+    "sha256": "1f67dba89ce0ea1d150109593cd520c18cd12ea2f57a56b994d00a8e10494ffe"
+  },
+  "purpose": "Observe current fixed directory identities after a conclusively closed, zero-mutation fence failure. This is not a relay submission or automatic replay and does not refresh the prior failed record.",
+  "limits": {
+    "soft_seconds": 5,
+    "outer_seconds": 60,
+    "metadata_calls": 42,
+    "owned_fds": 8,
+    "stdout_bytes": 32768,
+    "body_reads": 0,
+    "children": 0,
+    "network": 0,
+    "writes": 0,
+    "signals_to_others": 0
+  },
+  "original_relay_state": "UNKNOWN",
+  "future_fence_requires_separate_exact_source_review": true,
+  "new_transport_authorized": false
+}

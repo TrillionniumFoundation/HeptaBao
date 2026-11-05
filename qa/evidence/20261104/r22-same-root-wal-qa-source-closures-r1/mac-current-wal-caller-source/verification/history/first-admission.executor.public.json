@@ -1,0 +1,7 @@
+{
+  "chunk_id": "bf1f9f",
+  "wall_time_seconds": 0.000023876,
+  "exit_code": 1,
+  "original_token_count": 103,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac_current_wal_source_c223ceb3_r1.py\", line 27, in <module>\n    raw,proof=scope[\"admitted_wal\"](guard,scope[\"WAL_BINDING\"])\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"selected-current-wal-admission\", line 401, in admitted_wal\n  File \"selected-current-wal-admission\", line 110, in need\nRefused: public_registry_wal_owned_command_set\n"
+}

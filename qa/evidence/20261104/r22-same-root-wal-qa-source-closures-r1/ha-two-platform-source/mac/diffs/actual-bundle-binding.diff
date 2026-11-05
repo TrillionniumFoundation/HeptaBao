@@ -1,0 +1,13 @@
+--- a/stage_mac_same_root_publication.py
++++ b/stage_mac_same_root_publication.py
+@@ -412,8 +412,8 @@
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert isinstance(data['canonical_bundle_base64'], str)
+ canonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)
+-CANONICAL_BUNDLE_BYTES = None
+-CANONICAL_BUNDLE_SHA256 = None
++CANONICAL_BUNDLE_BYTES = 28172
++CANONICAL_BUNDLE_SHA256 = '6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15'
+ assert isinstance(CANONICAL_BUNDLE_BYTES, int), 'actual ROG bundle binding unresolved'
+ assert isinstance(CANONICAL_BUNDLE_SHA256, str), 'actual ROG bundle binding unresolved'
+ assert args.canonical_bundle_bytes == CANONICAL_BUNDLE_BYTES

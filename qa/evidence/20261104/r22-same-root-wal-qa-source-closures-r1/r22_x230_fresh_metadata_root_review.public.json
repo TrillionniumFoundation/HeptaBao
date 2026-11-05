@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.root.x230-fresh-finite-metadata-r2-actual.v1",
+  "status": "PASS_METADATA_ONLY_NO_FENCE",
+  "job_id": "1a1aaa6db3e-fc05-45a6",
+  "checks_passed": 21,
+  "core": {
+    "name": "r22_x230_fresh_metadata_core",
+    "blob": "62403647a790e255006068666fb71c95965420ba",
+    "bytes": 5656,
+    "sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed"
+  },
+  "exit_code": 0,
+  "stdout_bytes": 5656,
+  "stderr_bytes": 0,
+  "metadata_calls": 42,
+  "owned_fds_closed": 8,
+  "elapsed_ns": 744947,
+  "old_public_source_full9_identities_unchanged": true,
+  "changed_directory_identities": [
+    {
+      "path": "/home/qian-qi",
+      "old": [
+        2050,
+        49938433,
+        1000,
+        1000,
+        16872,
+        605,
+        147456,
+        {
+          "$exactInteger": "1793857598066648108"
+        },
+        {
+          "$exactInteger": "1793857598066648108"
+        }
+      ],
+      "current": [
+        2050,
+        49938433,
+        1000,
+        1000,
+        16872,
+        607,
+        147456,
+        {
+          "$exactInteger": "1793862453712255117"
+        },
+        {
+          "$exactInteger": "1793862453712255117"
+        }
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "old": [
+        2050,
+        52559902,
+        1000,
+        1000,
+        16832,
+        194,
+        20480,
+        {
+          "$exactInteger": "1793858713862347110"
+        },
+        {
+          "$exactInteger": "1793858713862347110"
+        }
+      ],
+      "current": [
+        2050,
+        52559902,
+        1000,
+        1000,
+        16832,
+        195,
+        20480,
+        {
+          "$exactInteger": "1793863012520353264"
+        },
+        {
+          "$exactInteger": "1793863012520353264"
+        }
+      ]
+    }
+  ],
+  "original_relay_unknown_preserved": true,
+  "original_fence_known_failure_unchanged": true,
+  "current_absence_is_not_atomic_reservation": true,
+  "readonly_observation_only": true,
+  "new_fence_request_required": true
+}

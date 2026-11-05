@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.rog-retained-df026-helper-independent-peer.r1",
+  "verdict": "PASS_SOURCE_REVIEW_SCOPE_NO_NEW_BLOCKER",
+  "sourceTree": "cd6ff4842444908d68226151d7b480244505bff4",
+  "sources": {
+    "before": {
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555",
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
+    },
+    "runner": {
+      "blob": "9b318f4acf589e0410263723695f421d0bb224ea",
+      "bytes": 35452,
+      "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a"
+    },
+    "diff": {
+      "blob": "9abf6d2e5a8eb84cc3fc89f8601aab93c5b0e1f1",
+      "bytes": 13471,
+      "sha256": "03bd0953dba81c68d57da3a558b11248358b4ceae3b5351aa4f1f5689d42d7cd"
+    }
+  },
+  "exactDelta": {
+    "hunks": 7,
+    "wholeExact": true
+  },
+  "reviewedScope": [
+    "Complete new preserve_prior_df026 definition, its before-Cargo and final-after-cleanup call sites, actual global signal handler and original OUTER_UNTIL",
+    "All changed runner diff hunks and complete raw source hash, not independent new Rust/build/runtime qualification"
+  ],
+  "findings": [
+    {
+      "name": "registered_open_custody",
+      "result": "closed",
+      "detail": "Row exists before open. protected increments before os.open and remains positive through row.opened, reads, named/held identity checks and the nested finally close. It decrements only after the close attempt and ledger update, so a SIGINT/SIGTERM received after open is deferred, then observed through pending_signal without skipping closure."
+    },
+    {
+      "name": "bounded_read_and_cancellation",
+      "result": "closed",
+      "detail": "Pending cancellation and bounded_remaining(OUTER_UNTIL) are checked before every at-most-1MiB os.read. Declared size is checked before reading, count never admits more than size, SHA covers the complete file, and a further deadline/cancellation check occurs after complete full9/name verification. The shared outer deadline is not reset."
+    },
+    {
+      "name": "completion_and_final_close",
+      "result": "closed",
+      "detail": "The per-file finally marks close_attempted before one os.close and sets closed only after return. BaseException preserves close_error_type and propagates. The outer finally calculates all_opened_descriptors_closed over every registered row; no unopened row is claimed opened, and an unconfirmed opened row is false. No blind repeated close exists."
+    },
+    {
+      "name": "post_close_deadline",
+      "result": "closed",
+      "detail": "After all file closures, bounded_remaining and pending_signal are checked before setting status=unchanged. Late final close cannot produce successful helper status. Synchronous metadata/read/close calls are late-rejected, not individually preempted."
+    },
+    {
+      "name": "retained_files_separate_from_cache",
+      "result": "closed_with_fixed_caller_scope",
+      "detail": "The six constant receipt/artifact/libtest paths require resolve(strict=True)==literal, not-relative-to the fixed args.target, regular owner file, expected exact size/mode, nlink1, before/after named+FD full9 equality and whole SHA. The helper only opens readonly and contains no write/mkdir/copy/rename/unlink. Future correctness continues to require the separately reviewed fixed launcher target/output bindings."
+    },
+    {
+      "name": "before_and_after_cargo",
+      "result": "closed",
+      "detail": "The before record must be unchanged and all opened descriptors closed before rustc/Cargo. The after record is allocated after the existing owned-child cleanup and must equal the entire before record. Any failure, cancellation, closure error or expired original outer deadline preserves failed terminal status; no new target reconstruction branch is introduced by this helper."
+    }
+  ],
+  "retainedLimits": {
+    "outerSeconds": 12000,
+    "normalReleaseSeconds": 1800,
+    "normalLibtestSeconds": 3600,
+    "listingSeconds": 30,
+    "existingRuntimeGroupsSeconds": 600,
+    "newOneRegressionGroupSeconds": 600,
+    "originalTestGroups": [
+      44,
+      7,
+      9
+    ],
+    "newSeparateRegressionCount": 1
+  },
+  "limitations": [
+    "Sequential full9/hash/name fences do not provide a global filesystem transaction or exclusion of all possible concurrent ABA races.",
+    "Review does not transfer df026 test qualification to 1c665 or infer future retained hashes from a cache rebuild.",
+    "This peer did not repeat the author's13 selected fake-FD components or execute any candidate module/host job; that evidence remains independently identified.",
+    "The original generic owned child helper and launcher/source staging are outside this narrow new-FD review; parent independently reviews their fixed bindings."
+  ],
+  "actualWork": {
+    "gitReadsOnly": true,
+    "hostRequests": 0,
+    "cargoRuns": 0,
+    "componentsRepeated": 0,
+    "modulesExecuted": 0
+  }
+}

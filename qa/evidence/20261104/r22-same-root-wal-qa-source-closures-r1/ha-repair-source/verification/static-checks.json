@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.same-root-republication-source-checks.v1",
+  "status": "passed-source-only",
+  "checks": [
+    {
+      "name": "NativeHaCursor_full_type_and_impl",
+      "pass": true,
+      "bytes": 6966,
+      "sha256": "f24f4bf576d21a17f2458fa92f1ce30bf318597f7993a0fe7b3709c1d8fb2ae0"
+    },
+    {
+      "name": "LocalSelection_complete",
+      "pass": true,
+      "bytes": 5341,
+      "sha256": "79f9660aea119c2c3062dc8efd5e14b436aef16ba306a69a923cd7230813ab7d"
+    },
+    {
+      "name": "LocalHaEnvironment_complete",
+      "pass": true,
+      "bytes": 3822,
+      "sha256": "1460fdec501e78d542d218b98f8c35466c08762a9911576aa18c5132154dfbe8"
+    },
+    {
+      "name": "full_replica_installer_tail",
+      "pass": true,
+      "bytes": 18063,
+      "sha256": "2cda67f384935a32e7b371012a1d3cff575ed1257e10c19c465581cbcd42f038"
+    },
+    {
+      "name": "cold_current_cursor_and_complete_remaining_tail",
+      "pass": true,
+      "bytes": 17586,
+      "sha256": "9bd34e2afa50659a67f30e831b24abcc06f18209a90ff3eba371f46576447787"
+    },
+    {
+      "name": "cold_original_gate_complete",
+      "pass": true,
+      "bytes": 751,
+      "sha256": "86076ff2a3d77590bc7c85fea9145181a42f5a2d0306f37ed7110757eadb2c0a"
+    },
+    {
+      "name": "warm_current_body_original_strict_match_and_finish",
+      "pass": true,
+      "bytes": 2110,
+      "sha256": "c3907f95d424641bb82e71675e9b49e39b34f111327760ad2151084c3285d337"
+    },
+    {
+      "name": "warm_install_dispatch_and_recovery_tail",
+      "pass": true,
+      "bytes": 3429,
+      "sha256": "80959d9846b534bb1876d12da5392e8e632b5e15ff72a42fc0e283b553ea68b9"
+    },
+    {
+      "name": "warm_continuation_after_admission_body",
+      "pass": true,
+      "bytes": 2023,
+      "sha256": "c73deb1db4189831530d4e2ba681dcc7d0c9890cc0001a2732718b3d4e60f863"
+    },
+    {
+      "name": "all_original_install_tests_unchanged_after_removing_new_module_declaration",
+      "pass": true,
+      "bytes": 46783,
+      "sha256": "4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c"
+    },
+    {
+      "name": "one_new_independent_test",
+      "pass": true
+    },
+    {
+      "name": "no_test_unwrap_expect_or_allow",
+      "pass": true
+    },
+    {
+      "name": "old_continuation_negative_assertion",
+      "pass": true
+    },
+    {
+      "name": "old_covered_and_strict_current_rejection_are_both_asserted",
+      "pass": true
+    },
+    {
+      "name": "A_B_A_uses_three_real_publish_calls",
+      "pass": true
+    },
+    {
+      "name": "both_modes_assert_original_15s_budget",
+      "pass": true
+    },
+    {
+      "name": "real_current_history_proof_both_modes",
+      "pass": true
+    },
+    {
+      "name": "same_root_reopens_do_not_republish",
+      "pass": true
+    },
+    {
+      "name": "no_injected_cursor_or_manual_raft_in_test",
+      "pass": true
+    },
+    {
+      "name": "parent_full_recursive_tree_all_Merkle",
+      "pass": true
+    },
+    {
+      "name": "new_test_path_absent_in_parent",
+      "pass": true
+    },
+    {
+      "name": "parent_blob_crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "pass": true
+    },
+    {
+      "name": "parent_blob_crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "pass": true
+    },
+    {
+      "name": "parent_blob_crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "pass": true
+    }
+  ],
+  "count": 24,
+  "parent_merkle_trees": 358,
+  "parent_leaves": 3913,
+  "scope": "V8 whole-string, strict-diff and Git-tree checks; no Rust compile or execution, OS/filesystem/host calls",
+  "initial_harness_failure_retained": true
+}

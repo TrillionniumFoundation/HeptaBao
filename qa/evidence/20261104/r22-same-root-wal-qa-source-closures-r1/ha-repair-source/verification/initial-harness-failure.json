@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.source-static-checker-failure.v1",
+  "status": "failed",
+  "reason": "nonexistent end anchor // No caller-owned in string-slice checker",
+  "code_execution_scope": "V8 string comparisons only; no Rust compile, no OS/filesystem/host",
+  "candidate_changed": false
+}

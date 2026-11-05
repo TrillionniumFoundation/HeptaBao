@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1/outputs/W04.stdout.public.json\",\"sha256\":\"0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa\",\"size\":8078,\"version\":\"16777244:72596326:8078:1793864673779701043:1793864673779710918\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

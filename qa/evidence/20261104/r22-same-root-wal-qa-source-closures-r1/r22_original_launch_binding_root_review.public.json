@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root.original-unique-launch-bindings.v1",
+  "qa": {
+    "job": "1a1aaf3772d-fc05-48f5",
+    "original_request_key": "heptabao-df026-native-h2-qa-build-c961a54d-d995e45f-20261105-r2",
+    "ack_blob": "aaf55d23fa73624160377756a36c7a78ac094236",
+    "launched": true,
+    "reused": false,
+    "all_executable_args_cwd_host_exact": true,
+    "terminal_qualification": false
+  },
+  "mac": {
+    "job": "1a1aaf3c0b0-fc05-48f8",
+    "original_request_key": "heptabao-same-root-publication-1c665-mac-source-20261105-r1-e8649ca6",
+    "ack_blob": "c53c59a7b8c0fa28930678e4038580be9800601d",
+    "launched": true,
+    "reused": false,
+    "all_executable_args_cwd_host_exact": true,
+    "terminal_qualification": false
+  },
+  "no_unknown_request_replayed": true
+}

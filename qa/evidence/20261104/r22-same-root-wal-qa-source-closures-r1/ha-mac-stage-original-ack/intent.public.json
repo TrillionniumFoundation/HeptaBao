@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.single-exact-process-intent.v1",
+  "asof": "2026-11-05 09:03:19 UTC",
+  "host": "mac",
+  "idempotency_key": "heptabao-same-root-publication-1c665-mac-source-20261105-r1-e8649ca6",
+  "request_blob": "e455bac514894112c694cc518e93e3b4c8799591",
+  "request_bytes": 133944,
+  "request_sha256": "a0aee696750e0e79c97965cdbc3024da14032320e1f64d96ab058d90928b88b5",
+  "root_go_blob": "313bce48926e8975369696c88f95908a52307d47",
+  "source": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "parent": "6d02ceca629163e1c07480fa1f21520434407143"
+  },
+  "limits": {
+    "stage_seconds": 300,
+    "git_seconds": 90,
+    "clone_seconds": 180,
+    "diskutil_seconds": 30,
+    "outer_seconds": 360,
+    "stdin_max_bytes": 262144,
+    "actual_stdin_bytes": 104966
+  },
+  "action": "source_stage_only",
+  "submitted": false,
+  "normal_or_product_authorized": false,
+  "original_ROG_authority_remains_unknown": true
+}

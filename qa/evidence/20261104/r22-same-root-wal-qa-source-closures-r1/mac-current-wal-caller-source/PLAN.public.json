@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-source-plan.r1",
+  "status": "FROZEN_SOURCE_REVIEW_BASELINE_NO_HOST_DISPATCH",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1",
+  "sourceCount": 22,
+  "pythonSources": 18,
+  "javascriptSources": 4,
+  "publicDocuments": 8,
+  "substantiveCallers": [
+    "mac_current_capture_entry_wal_r1.py",
+    "mac_current_outer_wal_r1.py"
+  ],
+  "sourceInvariance": {
+    "oldCaptureEntireBytesUnchanged": true,
+    "oldFiveAgentDatabaseAndImmutableQueryUnchanged": true,
+    "rootOrLabelOnlySources": 9,
+    "fullyUnchangedSources": 10,
+    "addedLibraryExactPublicQualified": true,
+    "entryDefinitionsUnchanged": 14,
+    "outerDefinitionsUnchanged": 22
+  },
+  "publicProof": {
+    "actualTree": "b575a8af93c99b7736dfa3f1b57356d3c3ddc3e6",
+    "rootReview": {
+      "blob": "a9ec2253fa07df8853114ab3bcb803a994ec5daa",
+      "bytes": 2525,
+      "sha256": "699afbc38da81f80af862fa4ddac1eaa17a8d782d4b2f1171dc80c0a72c3d7ad"
+    },
+    "binding": {
+      "schema": "heptabao.mac-registry-readonly-wal-input-binding.r1",
+      "jobId": "1a1aaaaa6cd-fc05-45dd",
+      "stdoutBytes": 62662,
+      "stdoutSha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+      "authorityBytes": 733,
+      "authoritySha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+      "controllerSha256": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc",
+      "librarySha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "cases": {
+        "W01": {
+          "stdoutBytes": 11923,
+          "stdoutSha256": "65c7881d113e1922f47d514eeb2260d3fd5c29c26fb67f654219ff5d373a1961"
+        },
+        "W02": {
+          "stdoutBytes": 7222,
+          "stdoutSha256": "15e3a834a5b283f5d1bf229e9c927cbc93b9b75ce0cad5d7a1a9964a1fde69f6"
+        },
+        "W03": {
+          "stdoutBytes": 8025,
+          "stdoutSha256": "ec2ced80293abcb4e5bd6d28fa6155076565cd5fb8e3dddfb5425695e4689293"
+        },
+        "W04": {
+          "stdoutBytes": 8078,
+          "stdoutSha256": "0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa"
+        },
+        "W05": {
+          "stdoutBytes": 11300,
+          "stdoutSha256": "39476829ff2ec1610894721f3f29bed8801e49833df1e0988e1e112a82111fb7"
+        },
+        "W06": {
+          "stdoutBytes": 11300,
+          "stdoutSha256": "f7c5e84d6fe464b285bec0a5418e757aa87c2d3755f6af0ef6411b53acf026bc"
+        },
+        "W07": {
+          "stdoutBytes": 11296,
+          "stdoutSha256": "aeca9311147e86b45ff3f70ff5227b1318b12aefa464fb78fa6734a41e4da62f"
+        },
+        "W08": {
+          "stdoutBytes": 11298,
+          "stdoutSha256": "d24ae166653df4c8ad209a3998afb6924d9287877321fc2046e4f125c6a36cb6"
+        },
+        "W09": {
+          "stdoutBytes": 11049,
+          "stdoutSha256": "a47c06c90261e1d8a2e1d7d1075a06ab33b577f27056ef66c28e3815c97ae9c0"
+        },
+        "W10": {
+          "stdoutBytes": 11302,
+          "stdoutSha256": "dad92e8055161be45c826bc1178a0b545250493e8d436edfe84753fa33d07a88"
+        }
+      }
+    }
+  },
+  "exactProposals": {
+    "inert": {
+      "path": "requests/inert-start.proposed.public.json",
+      "bytes": 796239,
+      "sha256": "76e0ed23387a9a0887a1aa778b8cc04238159b15135dbc982aae09066079ba85",
+      "git_blob": "47543124f7890d5a65bb523f8dfa49cf96441c6f",
+      "key": "heptabao-mac-current-registry-wal-df026-inert-4e100269-20261105-r1",
+      "timeoutSeconds": 60,
+      "submitted": false
+    },
+    "runtime": {
+      "path": "requests/runtime-start.proposed.public.json",
+      "bytes": 5267,
+      "sha256": "a8fdb478286456a64d141f766ac034d8350323d4828341d0c4179fee646ce9c8",
+      "git_blob": "c8b3545c8bffac95bf1c0746f7678f28133d6368",
+      "key": "heptabao-mac-current-five-agent-registry-wal-df026-515b9338-20261105-r1",
+      "timeoutSeconds": 1080,
+      "submitted": false,
+      "heldForNewProductBinding": true
+    }
+  },
+  "budgets": {
+    "inertSeconds": 45,
+    "inertVolumeSeconds": 30,
+    "inertSupervisorSeconds": 60,
+    "controllerSeconds": 900,
+    "supervisorSeconds": 1080,
+    "managerSeconds": 600,
+    "managerFailureCleanupSeconds": 60,
+    "phaseSeconds": 120,
+    "captureSeconds": 45,
+    "registryQueryThroughClosureSeconds": 3,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ],
+    "httpSeconds": 10,
+    "readySeconds": 30,
+    "tlsCommandSeconds": 30
+  },
+  "bounds": {
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateReadAndReturnedBytes": 8388608,
+    "privateCapsuleBytes": 4194304,
+    "entryPublicReportBytes": 262144,
+    "captureLibraryEnvelopeBytes": 196608
+  },
+  "mandatoryActualSequence": [
+    "Root source review and exact inert GO",
+    "One create-only inert plus original ACK/authority/fullstreams",
+    "All actual 30 source/doc whole readbacks and receipt binding, all T5/FD/child closure",
+    "Complete accepted new 1c665 Mac normal61 source/binary/receipts before future product binding",
+    "Separate exact future runtime GO, with fresh key and root and no prior unknown replay",
+    "One before capture, independent initial/cold+inverse fixture, one after capture with entire capsule equality, final authoritative exit/closure"
+  ],
+  "currentAuthority": {
+    "newInert": false,
+    "newRuntime": false,
+    "productionServiceChanges": false,
+    "provider": false,
+    "j3160": false,
+    "cutover": false,
+    "deletion": false
+  },
+  "historicalLimits": [
+    "old capture UNKNOWN retained",
+    "old internal-library failure ledger unavailable remains unavailable historically",
+    "PID11754 historical unknown not rewritten",
+    "no current success or production qualification asserted",
+    "current historical metadata is not an atomic snapshot or retrospective failure-path proof"
+  ]
+}

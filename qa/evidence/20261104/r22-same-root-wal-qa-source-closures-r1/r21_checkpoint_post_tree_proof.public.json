@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.root.r21-prepublication-tree-proof.v1",
+  "base_commit": "fb6f3cba5384e6687eace2d2ac2071b20247e69b",
+  "base_tree": "eee3302e2e1921f42858cea20cf5311f4b12bb3d",
+  "candidate_tree": "7b30d785654ee7365a8a70be6772e3e26499ed08",
+  "candidate_blobs": 12970,
+  "merkle_trees": 1737,
+  "prior_blobs": 11994,
+  "prior_non_document_blobs_unchanged": 11992,
+  "updated_document_paths": [
+    "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+    "qa/evidence/20261104/36076-checkpoint.public.json"
+  ],
+  "new_files": 976,
+  "deleted_files": 0,
+  "tree_elements": 80,
+  "all_new_section_relative_links_resolve": true,
+  "raw_old_index_tokens_preserved": true,
+  "old_document_body_preserved": true,
+  "scope": "Evidence branch only; product code, active services and previous evidence unchanged.",
+  "commit": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+  "sole_parent": "fb6f3cba5384e6687eace2d2ac2071b20247e69b",
+  "actual_created_tree_equal": true,
+  "actual_nonrecursive_root_entries": 26,
+  "actual_commit_parent_and_tree_verified": true,
+  "ref_cas_expected": "fb6f3cba5384e6687eace2d2ac2071b20247e69b",
+  "ref_reread": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+  "force": false,
+  "document": {
+    "name": "r21_checkpoint_document",
+    "blob": "50571734bc78b5a8cc3aa225e5a0981c27d2eb73",
+    "bytes": 222171,
+    "sha256": "31f7e5633f25f264785d212ba5de7c7821b8acec65b497781fbcd561049d1437"
+  },
+  "index": {
+    "name": "r21_checkpoint_index",
+    "blob": "30e2d55899f85f3c9b353ee70ef2d99d2546ffab",
+    "bytes": 350194,
+    "sha256": "8725be469ba12f777d131d3f93771f88c617f490ec492cc4e5f476682b6b0c73"
+  },
+  "state": {
+    "name": "r21_checkpoint_state",
+    "blob": "c1d857542c4bd9f14e0781907fb530b22e33a840",
+    "bytes": 20263,
+    "sha256": "a9e5d70bc821a5d7c7552a44737fe8d0e943c7a8edd9d2882aa5ebbb3a1f5045"
+  },
+  "manifest": {
+    "name": "r21_checkpoint_manifest",
+    "blob": "6e02b4a223cd3a118221d1ac2ccc5fcbf61c85f8",
+    "bytes": 20696,
+    "sha256": "e042297fa2c6bdee274ad929a0d3a3e240805b2f1a702bace2f1466fb1365d5e"
+  },
+  "production_changed": false,
+  "old_assets_deleted": false
+}

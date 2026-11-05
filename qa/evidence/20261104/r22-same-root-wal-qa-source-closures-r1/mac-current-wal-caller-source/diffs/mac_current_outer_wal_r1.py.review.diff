@@ -1,0 +1,380 @@
+diff --git a/mac_current_outer_wal_r1.py b/mac_current_outer_wal_r1.py
+--- a/mac_current_outer_wal_r1.py
++++ b/mac_current_outer_wal_r1.py
+@@ -12,7 +12,7 @@
+ import socket, ssl, stat, sys, time, traceback
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
+ QA=ROOT/'qa'
+ COMMIT='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+ TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+@@ -23,13 +23,15 @@
+  'mac_capture_sqlite_synthetic_r2.py','mac_owned_commands_r1.py','mac_t5_volume_guard_r1.py',
+  'mac_owned_unreaped_r1.py','mac_native_process_observer_r1.py','mac_current_phase_owner_r2.py',
+  'mac_current_server_owner_r1.py','mac_owned_launchd_r3.py','mac_current_fixture_materializer_r1.py',
+- 'mac_current_capture_entry_native_r1.py','mac_current_outer_inputs_r2.py','mac_current_outer_native_r1.py',
++ 'mac_current_capture_entry_wal_r1.py','mac_current_outer_inputs_r2.py','mac_current_outer_wal_r1.py',
+  'mac_current_cycle_r2.mjs','mac_single_native_r2.mjs','mac_auth_rows_cas_r1.mjs',
+  'mac_authbus_cache_cas_r1.mjs','mac_darwin_owned_projection_r1.py',
+- 'mac_native_owned_unreaped_r1.py','mac_native_owned_commands_r1.py')
+-ENTRY_NAMES=('mac_current_capture_entry_native_r1.py','mac_guarded_current_capture_r3.py',
++ 'mac_native_owned_unreaped_r1.py','mac_native_owned_commands_r1.py',
++ 'mac_registry_readonly_wal_r1.py')
++ENTRY_NAMES=('mac_current_capture_entry_wal_r1.py','mac_guarded_current_capture_r3.py',
+  'mac_t5_volume_guard_r1.py','mac_darwin_owned_projection_r1.py',
+- 'mac_native_owned_commands_r1.py','mac_native_owned_unreaped_r1.py')
++ 'mac_native_owned_commands_r1.py','mac_native_owned_unreaped_r1.py',
++ 'mac_registry_readonly_wal_r1.py')
+ SYNTHETIC={
+  'schema':'heptabao.mac-capture-synthetic-input-binding.r1',
+  'jobId':'1a1a918c6cf-fc05-3143',
+@@ -58,6 +60,58 @@
+   "additionalReadOnlyDirectoryLiteral": "/Volumes/T5/hepta-vnext-recovery-20261013",
+   "additionalReadRuleSha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef"
+ }
++WAL_BINDING={
++  "schema": "heptabao.mac-registry-readonly-wal-input-binding.r1",
++  "jobId": "1a1aaaaa6cd-fc05-45dd",
++  "stdoutBytes": 62662,
++  "stdoutSha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
++  "authorityBytes": 733,
++  "authoritySha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
++  "controllerSha256": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc",
++  "librarySha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
++  "cases": {
++    "W01": {
++      "stdoutBytes": 11923,
++      "stdoutSha256": "65c7881d113e1922f47d514eeb2260d3fd5c29c26fb67f654219ff5d373a1961"
++    },
++    "W02": {
++      "stdoutBytes": 7222,
++      "stdoutSha256": "15e3a834a5b283f5d1bf229e9c927cbc93b9b75ce0cad5d7a1a9964a1fde69f6"
++    },
++    "W03": {
++      "stdoutBytes": 8025,
++      "stdoutSha256": "ec2ced80293abcb4e5bd6d28fa6155076565cd5fb8e3dddfb5425695e4689293"
++    },
++    "W04": {
++      "stdoutBytes": 8078,
++      "stdoutSha256": "0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa"
++    },
++    "W05": {
++      "stdoutBytes": 11300,
++      "stdoutSha256": "39476829ff2ec1610894721f3f29bed8801e49833df1e0988e1e112a82111fb7"
++    },
++    "W06": {
++      "stdoutBytes": 11300,
++      "stdoutSha256": "f7c5e84d6fe464b285bec0a5418e757aa87c2d3755f6af0ef6411b53acf026bc"
++    },
++    "W07": {
++      "stdoutBytes": 11296,
++      "stdoutSha256": "aeca9311147e86b45ff3f70ff5227b1318b12aefa464fb78fa6734a41e4da62f"
++    },
++    "W08": {
++      "stdoutBytes": 11298,
++      "stdoutSha256": "d24ae166653df4c8ad209a3998afb6924d9287877321fc2046e4f125c6a36cb6"
++    },
++    "W09": {
++      "stdoutBytes": 11049,
++      "stdoutSha256": "a47c06c90261e1d8a2e1d7d1075a06ab33b577f27056ef66c28e3815c97ae9c0"
++    },
++    "W10": {
++      "stdoutBytes": 11302,
++      "stdoutSha256": "dad92e8055161be45c826bc1178a0b545250493e8d436edfe84753fa33d07a88"
++    }
++  }
++}
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ NEW_OUTER_SECONDS=900.0
+ NEW_OUTER_FAILURE_CLEANUP_SECONDS=60.0
+@@ -187,6 +241,7 @@
+         self.signals=None;self.cleanup_mode=False;self.cleanup_until=None
+         self.rows=[];self.close_errors=[];self.unknown=False
+         self.port_reservation=None
++        self.capture_attempts=[]
+     def remaining(self,until=None):
+         if self.cleanup_mode:
+             bound=self.cleanup_until
+@@ -556,61 +611,92 @@
+     return ca,peer,{name:sha(value) for name,value in files.items()}
+ 
+ def capture_once(ctx,guard,commands,stage,pins,anchor_raw,anchor_sha):
+-    from mac_current_capture_entry_native_r1 import capture_profile
+-    need(stage in ('before','after'),'two_named_capture_stages')
++    from mac_current_capture_entry_wal_r1 import (
++        capture_profile,capture_envelope,library_resources_closed)
++    need(stage in ('before','after')
++         and not any(x['stage']==stage for x in ctx.capture_attempts),
++         'two_named_capture_stages_once')
+     base=ROOT/'captures'/stage
+     for path in (base,base/'probe',base/'output'):guard.mkdir_new(path)
+     guard.write_new(base/'probe/writable-owned-main',b'owned capture kernel-write fence r1\n')
+     policy=capture_profile(stage);guard.write_new(base/'capture.sb',policy)
+     source_raw=encoded({name:pins[name] for name in ENTRY_NAMES})
+-    synthetic_raw=encoded(SYNTHETIC)
+-    native_raw=encoded(NATIVE_BINDING)
++    synthetic_raw=encoded(SYNTHETIC);native_raw=encoded(NATIVE_BINDING);wal_raw=encoded(WAL_BINDING)
+     deadline=min(ctx.until,time.monotonic()+CAPTURE_SECONDS)
+     argv=['/usr/bin/sandbox-exec','-f',str(base/'capture.sb'),'/opt/homebrew/bin/python3','-I','-S','-B',
+-        str(QA/'mac_current_capture_entry_native_r1.py'),'--stage',stage,'--absolute-until',repr(deadline),
++        str(QA/'mac_current_capture_entry_wal_r1.py'),'--stage',stage,'--absolute-until',repr(deadline),
+         '--public-volume-anchor-base64',base64.b64encode(anchor_raw).decode(),
+         '--public-volume-anchor-sha256',anchor_sha,'--source-pins-base64',base64.b64encode(source_raw).decode(),
+         '--source-pins-sha256',sha(source_raw),'--synthetic-binding-base64',base64.b64encode(synthetic_raw).decode(),
+         '--synthetic-binding-sha256',sha(synthetic_raw),
+         '--native-binding-base64',base64.b64encode(native_raw).decode(),
+-        '--native-binding-sha256',sha(native_raw),'--sandbox-profile-sha256',sha(policy)]
+-    row,out,err=commands.run('current-capture-'+stage,argv,until=deadline,maximum=262144)
+-    guard.write_new(base/'stdout.public.json',out);guard.write_new(base/'stderr.private',err)
++        '--native-binding-sha256',sha(native_raw),
++        '--wal-binding-base64',base64.b64encode(wal_raw).decode(),
++        '--wal-binding-sha256',sha(wal_raw),'--sandbox-profile-sha256',sha(policy)]
++    attempt={'stage':stage,'commandAttempted':True,'terminalKnown':False,
++        'typedReportAvailable':False,'captureLibraryResourcesClosed':False,
++        'entryDescriptorsClosed':False,'child':None,'report':None}
++    ctx.capture_attempts.append(attempt)
+     try:
++        row,out,err=commands.run('current-capture-'+stage,argv,until=deadline,maximum=262144)
++        attempt.update(child=row,stdoutSha256=sha(out),stdoutBytes=len(out),
++                       stderrSha256=sha(err),stderrBytes=len(err))
++        guard.write_new(base/'stdout.public.json',out);guard.write_new(base/'stderr.private',err)
+         value=exact_json(out)
+-        need(isinstance(value,dict) and type(value.get('ok')) is bool
+-             and type(value.get('outcomeUnknown')) is bool,'typed_capture_terminal_report')
++        need(type(value) is dict and value.get('schema')=='heptabao.mac-guarded-current-capture-entry.wal-r1'
++             and value.get('stage')==stage and all(type(value.get(key)) is bool for key in
++                 ('ok','outcomeUnknown','captureLibraryAttempted','captureLibraryLedgerAvailable',
++                  'allCaptureLibraryResourcesClosed','entryOwnedDescriptorsClosed')),
++             'typed_capture_terminal_report')
++        attempt['report']=value;attempt['typedReportAvailable']=True
++        if value['outcomeUnknown']:ctx.unknown=True
++        if value['captureLibraryAttempted']:
++            observation=capture_envelope(value.get('observation'))
++            attempt['captureLibraryResourcesClosed']=bool(
++                value['captureLibraryLedgerAvailable'] and library_resources_closed(observation)
++                and value['allCaptureLibraryResourcesClosed'])
++        else:
++            attempt['captureLibraryResourcesClosed']=value['allCaptureLibraryResourcesClosed']
++        attempt['entryDescriptorsClosed']=bool(value['entryOwnedDescriptorsClosed']
++                                               and value.get('allOwnedDescriptorsClosed') is True)
++        attempt['terminalKnown']=bool(type(row.get('exitCode')) is int
++            and row.get('completeBeforeDeadline') is True and row.get('outcomeUnknown') is False
++            and row.get('streamsClosed') is True and row.get('cleanup',{}).get('ok') is True)
++        need(row['exitCode']==0 and row['completeBeforeDeadline'] and not row['outcomeUnknown']
++             and not err,'actual_sandbox_capture_child_terminal')
++        need(value.get('ok') is True and value.get('outcomeUnknown') is False
++             and value.get('productionWriteAttempted') is False
++             and value.get('captureLibraryReturned') is True
++             and value.get('captureLibraryLedgerAvailable') is True
++             and attempt['captureLibraryResourcesClosed'] and attempt['entryDescriptorsClosed']
++             and value.get('originalDeadlineMetAfterPrivatePublicationAndClosure') is True
++             and value.get('originalAbsoluteDeadlineMonotonic')==deadline
++             and value.get('syntheticProofSha256')==SYNTHETIC['stdoutSha256']
++             and value.get('walSyntheticProofSha256')==WAL_BINDING['stdoutSha256']
++             and value.get('walSyntheticAuthoritySha256')==WAL_BINDING['authoritySha256']
++             and value.get('nativePublicProofSha256')==NATIVE_BINDING['stdoutSha256']
++             and value.get('nativePublicAuthoritySha256')==NATIVE_BINDING['authoritySha256']
++             and value.get('nativePublicChildSha256')==NATIVE_BINDING['childStdoutSha256']
++             and value.get('actualNativeRuntimeCompatible') is True
++             and value.get('nativeProjection',{}).get('selfQualified') is True,
++             'whole_successful_sandbox_capture_report')
++        held=value.get('heldT5Final',{});owned=value.get('ownedCommands',{})
++        need(held.get('allDescriptorsClosed') is True and held.get('closeErrors')==[]
++             and held.get('lastAnchorCheckPassed') is True and owned.get('allOwnedCommandsStopped') is True
++             and owned.get('unknownCommandCount')==0 and value.get('kernelSandboxProof',{}).get('allFourDenied') is True,
++             'capture_held_volume_kernel_and_command_closure')
++        capsule=guard.read(base/'output/capsule.private.json',4*1024*1024)
++        need(value.get('capsule',{}).get('path')==str(base/'output/capsule.private.json')
++             and value['capsule'].get('bytes')==len(capsule) and value['capsule'].get('sha256')==sha(capsule),
++             'whole_private_capture_capsule')
++        attempt.update(privateCapsuleSha256=sha(capsule),privateCapsuleBytes=len(capsule))
++        ctx.remaining(deadline)
++        return exact_json(capsule),attempt
+     except BaseException:
+-        ctx.unknown=True
++        if (not attempt['terminalKnown'] or not attempt['typedReportAvailable']
++            or not attempt['captureLibraryResourcesClosed'] or not attempt['entryDescriptorsClosed']):
++            ctx.unknown=True
+         raise
+-    if value['outcomeUnknown']:ctx.unknown=True
+-    need(row['exitCode']==0 and row['completeBeforeDeadline'] and not row['outcomeUnknown']
+-         and not err,'actual_sandbox_capture_child_terminal')
+-    need(isinstance(value,dict) and value.get('schema')=='heptabao.mac-guarded-current-capture-entry.native-r1'
+-         and value.get('stage')==stage and value.get('ok') is True
+-         and value.get('outcomeUnknown') is False and value.get('productionWriteAttempted') is False
+-         and value.get('captureLibraryReturned') is True and value.get('allOwnedDescriptorsClosed') is True
+-         and value.get('originalDeadlineMetAfterPrivatePublicationAndClosure') is True
+-         and value.get('originalAbsoluteDeadlineMonotonic')==deadline
+-         and value.get('syntheticProofSha256')==SYNTHETIC['stdoutSha256']
+-         and value.get('nativePublicProofSha256')==NATIVE_BINDING['stdoutSha256']
+-         and value.get('nativePublicAuthoritySha256')==NATIVE_BINDING['authoritySha256']
+-         and value.get('nativePublicChildSha256')==NATIVE_BINDING['childStdoutSha256']
+-         and value.get('actualNativeRuntimeCompatible') is True
+-         and value.get('nativeProjection',{}).get('selfQualified') is True,
+-         'whole_successful_sandbox_capture_report')
+-    held=value.get('heldT5Final',{});owned=value.get('ownedCommands',{})
+-    need(held.get('allDescriptorsClosed') is True and held.get('closeErrors')==[]
+-         and held.get('lastAnchorCheckPassed') is True and owned.get('allOwnedCommandsStopped') is True
+-         and owned.get('unknownCommandCount')==0 and value.get('kernelSandboxProof',{}).get('allFourDenied') is True,
+-         'capture_held_volume_kernel_and_command_closure')
+-    capsule=guard.read(base/'output/capsule.private.json',4*1024*1024)
+-    need(value.get('capsule',{}).get('path')==str(base/'output/capsule.private.json')
+-         and value['capsule'].get('bytes')==len(capsule) and value['capsule'].get('sha256')==sha(capsule),
+-         'whole_private_capture_capsule')
+-    ctx.remaining(deadline)
+-    return exact_json(capsule),{'stage':stage,'stdoutSha256':sha(out),'stdoutBytes':len(out),
+-        'privateCapsuleSha256':sha(capsule),'privateCapsuleBytes':len(capsule),'child':row,'report':value}
+ 
+ def seed_documents(packet):
+     ids=packet['targetProfileIds'];credentials=packet['credentials'];profiles={};entries=[];managed=[]
+@@ -761,16 +847,17 @@
+     parser.add_argument('--public-volume-anchor-sha256',required=True)
+     args=parser.parse_args()
+     guard=None;commands=None;inputs=None;materializer=None;manager=None;client=None
++    public_proof_inputs=None
+     manager_terminal=None;candidate_result=None;completed=False;capsule_before=None;output_created=False
+-    secrets=set();qa_identities={};proof=None;packet=None;capture_reports=[];phase_results=[]
+-    report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.native-r1','ok':False,
++    secrets=set();qa_identities={};proof=None;packet=None;capture_reports=ctx.capture_attempts;phase_results=[]
++    report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.wal-r1','ok':False,
+         'outcomeUnknown':False,'sourceCommit':COMMIT,'sourceTree':TREE,'checks':[],
+         'productionCaptureAttempted':False,'productionChangedByController':False,
+         'productionServiceOperationDispatched':False,'providerRequested':False,'j3160Contacted':False,
+         'currentProviderAvailabilityQualified':False,'allAccountsQualified':False,
+         'productionManagerQualification':False,'fullReplacementQualified':False,
+         'automaticBusinessRetry':False,'credentialValuesPublished':False,
+-        'sourceGeneration':'new_native_custody_df026_successor',
++        'sourceGeneration':'new_registry_readonly_wal_df026_successor',
+         'newOuterSeconds':900,'newManagerSeconds':600,'newManagerCleanupSeconds':60,
+         'originalPhaseSeconds':120,'originalNativeSeconds':[15,8,3],
+         'originalHttpSeconds':10,'originalCaptureSeconds':45}
+@@ -788,8 +875,9 @@
+         sys.path.insert(0,str(QA))
+         from mac_owned_commands_r1 import Signals,Commands
+         from mac_t5_volume_guard_r1 import HeldT5
+-        from mac_guarded_current_capture_r3 import validate_synthetic_proof
+-        from mac_current_capture_entry_native_r1 import admitted_synthetic,admitted_native
++        from mac_registry_readonly_wal_r1 import WalInputs,validate_original_immutable_proof
++        from mac_current_capture_entry_wal_r1 import (
++            admitted_synthetic,admitted_native,admitted_wal,library_resources_closed)
+         from mac_current_outer_inputs_r2 import Inputs,PLUGIN_FILES
+         from mac_current_fixture_materializer_r1 import Materializer
+         from mac_owned_launchd_r3 import OwnedLaunchd
+@@ -801,16 +889,16 @@
+             until=min(ctx.until,time.monotonic()+30),maximum=262144)
+         need(row['exitCode']==0 and row['completeBeforeDeadline'] and not row['outcomeUnknown'],
+              'actual_t5_before_private_outer_io');guard.accept_diskutil(out)
+-        need(args.candidate==ROOT/'candidate-current-manager-native-r1.public.json' and valid_pin(args.candidate_sha256),
++        need(args.candidate==ROOT/'candidate-current-manager-wal-r1.public.json' and valid_pin(args.candidate_sha256),
+              'fixed_public_manager_candidate')
+         candidate_raw=guard.read(args.candidate,65536);need(sha(candidate_raw)==args.candidate_sha256,'whole_public_candidate')
+         candidate=exact_json(candidate_raw)
+         need(isinstance(candidate,dict) and set(candidate)=={'schema','sourceCommit','sourceTree','sourcePins',
+-            'syntheticBinding','nativeBinding','publicVolumeAnchorSha256','utilityPins','budgets'}
+-            and candidate['schema']=='heptabao.mac-current-manager-candidate.native-r1'
++            'syntheticBinding','nativeBinding','walBinding','publicVolumeAnchorSha256','utilityPins','budgets'}
++            and candidate['schema']=='heptabao.mac-current-manager-candidate.wal-r1'
+             and candidate['sourceCommit']==COMMIT and candidate['sourceTree']==TREE
+             and candidate['sourcePins']==pins and candidate['syntheticBinding']==SYNTHETIC
+-            and candidate['nativeBinding']==NATIVE_BINDING
++            and candidate['nativeBinding']==NATIVE_BINDING and candidate['walBinding']==WAL_BINDING
+             and candidate['utilityPins']=={path:value['sha256'] for path,value in FIXED_UTILITIES.items()}
+             and candidate['publicVolumeAnchorSha256']==args.public_volume_anchor_sha256
+             and candidate['budgets']=={'outer':900,'manager':600,'managerFailureCleanup':60,
+@@ -825,7 +913,20 @@
+             'actualRuntimeIdentity':native_proof['nativeProjection']['identity']}
+         ctx.remaining()
+         proof_raw,proof=admitted_synthetic(guard,SYNTHETIC)
+-        validate_synthetic_proof(proof_raw,SYNTHETIC['stdoutSha256'],remaining=ctx.remaining,critical=ctx.critical)
++        wal_proof_raw,wal_proof=admitted_wal(guard,WAL_BINDING)
++        need(wal_proof.get('runtime',{}).get('runtime')==proof['runtime'],
++             'same_original_immutable_and_registry_wal_public_runtime')
++        report['walPublicProof']={'jobId':WAL_BINDING['jobId'],
++            'stdoutSha256':sha(wal_proof_raw),'authoritySha256':WAL_BINDING['authoritySha256'],
++            'librarySha256':WAL_BINDING['librarySha256'],'tenPublicCasesQualified':True}
++        public_proof_inputs=WalInputs(until=ctx.until,critical=ctx.critical,
++                                     cancelled=lambda:ctx.signals.pending is not None)
++        try:
++            validate_original_immutable_proof(public_proof_inputs,proof_raw,SYNTHETIC['stdoutSha256'])
++        finally:public_proof_inputs.close()
++        report['publicProofClosure']=public_proof_inputs.public()
++        need(library_resources_closed(report['publicProofClosure']),'tracked_public_proof_code_closure')
++        ctx.remaining()
+         inputs=Inputs(guard,ctx.signals,ctx.until)
+         report['utilityPins']=inputs.admit_utilities(candidate['utilityPins'])
+         runtime,report['normalSourceBinding']=inputs.normal_and_base_sources()
+@@ -838,13 +939,13 @@
+             guard.mkdir_new(path)
+         guard.write_new(ROOT/'outer-native-r1/intent.public.json',encoded({
+             'schema':report['schema'],'candidateSha256':args.candidate_sha256,'sourcePins':pins,
+-            'syntheticBinding':SYNTHETIC,'nativeBinding':NATIVE_BINDING,
++            'syntheticBinding':SYNTHETIC,'nativeBinding':NATIVE_BINDING,'walBinding':WAL_BINDING,
+             'budgets':candidate['budgets'],'twoOwnedLaunchdLabelsOnly':True,
+             'productionWriteAuthorized':False,'providerAuthorized':False,'businessReplaysAuthorized':False}))
+         guard.write_new(ROOT/'outer-native-r1/managed12.private.json',encoded(packet))
+         report['productionCaptureAttempted']=True
+         capsule_before,before_public=capture_once(ctx,guard,commands,'before',pins,
+-            anchor_raw,args.public_volume_anchor_sha256);capture_reports.append(before_public)
++            anchor_raw,args.public_volume_anchor_sha256)
+         for document in capsule_before['authDocuments']:
+             for values in document['rows'].values():
+                 for raw_row in values:
+@@ -919,7 +1020,7 @@
+                   for i in (2,3)))
+         report['ownedDiskPlaintextScan']=scan_owned_plaintext(ctx,guard,packet)
+         after,after_public=capture_once(ctx,guard,commands,'after',pins,
+-            anchor_raw,args.public_volume_anchor_sha256);capture_reports.append(after_public)
++            anchor_raw,args.public_volume_anchor_sha256)
+         check('two_complete_bounded_current_observations_exact',canonical(after)==canonical(capsule_before))
+         check('all_frozen_and_selected_public_sources_after',inputs.verify())
+         check('six_actual_system_tools_whole_identity_after',all(
+@@ -956,6 +1057,8 @@
+         if client is not None:client.close_all();report['controlHttp']=client.public()
+         if materializer is not None:materializer.close();report['materializerClosure']=materializer.public()
+         if inputs is not None:inputs.close();report['finiteInputClosure']=inputs.public()
++        if public_proof_inputs is not None:
++            public_proof_inputs.close();report['publicProofClosure']=public_proof_inputs.public()
+         if manager_terminal is not None:report['manager']=manager_terminal
+         report['captureReports']=capture_reports
+         if not report.get('ownedPhases'):report['ownedPhases']=phase_results
+@@ -970,15 +1073,21 @@
+                        and not report['finiteInputClosure']['closeErrors']))
+         materializer_closed=(materializer is None or (report['materializerClosure']['allOwnedDescriptorsClosed']
+                              and not report['materializerClosure']['closeErrors']))
++        public_proof_closed=(public_proof_inputs is None or
++            library_resources_closed(report.get('publicProofClosure')))
++        captures_closed=all(x['terminalKnown'] and x['typedReportAvailable']
++            and x['captureLibraryResourcesClosed'] and x['entryDescriptorsClosed']
++            for x in capture_reports)
++        report['allPublicProofAndCaptureLibraryClosuresKnown']=bool(public_proof_closed and captures_closed)
+         socket_closed=(ctx.public()['allEphemeralPortReservationSocketsClosed']
+             and (client is None or report['controlHttp']['allOwnedSocketsClosed']))
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or ctx.unknown
+             or not manager_closed or not helpers_closed or not input_closed
+-            or not materializer_closed or not socket_closed
++            or not materializer_closed or not socket_closed or not public_proof_closed or not captures_closed
+             or (client is not None and client.unknown)
+             or (manager_terminal is not None and manager_terminal.get('outcomeUnknown') is True))
+         report['allOwnedRegistrationsLineagesHelpersClosed']=bool(
+-            manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed)
++            manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed)
+         report['ok']=bool(completed and not report['outcomeUnknown'] and time.monotonic()<ctx.until)
+         try:
+             raw=encoded(report)
+@@ -987,12 +1096,12 @@
+             if guard is not None and output_created and time.monotonic()<ctx.until and not ctx.signals.pending:
+                 candidate_result=guard.write_new(ROOT/'outer-native-r1/result.public.json',raw)
+         except BaseException as error:
+-            report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.native-r1','ok':False,
++            report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.wal-r1','ok':False,
+                 'outcomeUnknown':True,'errorType':type(error).__name__,
+                 'errorCode':'public_report_or_candidate_publication_refused',
+                 'productionManagerQualification':False,'automaticBusinessRetry':False,
+                 'allOwnedRegistrationsLineagesHelpersClosed':bool(
+-                    manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed)}
++                    manager_closed and helpers_closed and input_closed and materializer_closed and socket_closed and public_proof_closed and captures_closed)}
+         ctx.close_all()
+         if guard is not None:guard.close();report['heldT5Final']=guard.public_state()
+         report['outerDescriptorClosure']=ctx.public()

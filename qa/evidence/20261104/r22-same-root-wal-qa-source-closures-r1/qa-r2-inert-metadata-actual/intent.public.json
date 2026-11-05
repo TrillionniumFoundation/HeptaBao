@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.qa-r2-inert-dispatch-intent.v1",
+  "request": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+  "request_sha256": "d09dffcf758c9b0b3200a1abb886e06c36e46cc52d0792c96c0aae5997e28377",
+  "root_go": "f7f52c0501c745d27762c82c94969112169205c2",
+  "host": "rog",
+  "key": "heptabao-df026-native-h2-qa-inert-21685ed8-20261105-r2",
+  "outer_seconds": 60,
+  "scope": "inert publication and compile-only; no Cargo/product"
+}

@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1/outputs/W02.stdout.public.json",
+  "expected_version": "16777244:72596293:7222:1793864673581611675:1793864673581621217",
+  "offset": 0,
+  "limit": 65536
+}

@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-05T07:40:18Z",
+  "as_of_utc": "2026-11-05T09:06:41Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -8299,6 +8299,515 @@
       "original_failures_unknowns_and_attempts_preserved": true,
       "previous_checkpoint_files_unchanged_except_two_append_updated_documents": true,
       "raw_historical_index_integer_tokens_preserved": true
+    }
+  },
+  "r22": {
+    "schema": "heptabao.full-replacement.r22-checkpoint.v1",
+    "as_of_utc": "2026-11-05T09:06:41Z",
+    "previous_checkpoint": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+    "evidence_prefix": "qa/evidence/20261104/r22-same-root-wal-qa-source-closures-r1",
+    "overall": {
+      "full_OpenBao_2_7_1_replacement": false,
+      "production_cutover": false,
+      "old_assets_deleted": false,
+      "latest_source_is_not_latest_host_qualification": true
+    },
+    "evidence": {
+      "packets": [
+        {
+          "name": "ha-repair-source",
+          "tree": "0bd410fc046ff89dcbf953efe5a16f262c41de52",
+          "files": 26,
+          "bytes": 1726771,
+          "merkle_trees": 7
+        },
+        {
+          "name": "ha-formatter-source",
+          "tree": "bdbebf9a6c8f8850077e6c198f1c8b1201520a4a",
+          "files": 26,
+          "bytes": 1001222,
+          "merkle_trees": 6
+        },
+        {
+          "name": "ha-formatter-actual",
+          "tree": "92fe1fa16ceb87d1741c95ba43e77a82dce3d7c6",
+          "files": 113,
+          "bytes": 2370499,
+          "merkle_trees": 29
+        },
+        {
+          "name": "mac-wal-synthetic-actual",
+          "tree": "b575a8af93c99b7736dfa3f1b57356d3c3ddc3e6",
+          "files": 122,
+          "bytes": 940940,
+          "merkle_trees": 13
+        },
+        {
+          "name": "mac-current-wal-caller-source",
+          "tree": "ab729106132c035c353979285aa70a302318b3c2",
+          "files": 112,
+          "bytes": 6720222,
+          "merkle_trees": 16
+        },
+        {
+          "name": "qa-r2-source",
+          "tree": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+          "files": 39,
+          "bytes": 1606687,
+          "merkle_trees": 11
+        },
+        {
+          "name": "qa-r2-components-actual",
+          "tree": "8a753787c47ac4f203526d7fea434c208162075f",
+          "files": 25,
+          "bytes": 310785,
+          "merkle_trees": 9
+        },
+        {
+          "name": "qa-r2-mock-addendum",
+          "tree": "56feaaf12c2db0ec46bf852ef7f4addd548b0ec4",
+          "files": 8,
+          "bytes": 139121,
+          "merkle_trees": 5
+        },
+        {
+          "name": "x230-inventory-reconciliation",
+          "tree": "3bb552ff4554453bd5b5238609426b33e0992bda",
+          "files": 20,
+          "bytes": 86190,
+          "merkle_trees": 5
+        },
+        {
+          "name": "ha-rog-source-core",
+          "tree": "cd6ff4842444908d68226151d7b480244505bff4",
+          "files": 16,
+          "bytes": 439449,
+          "merkle_trees": 7
+        },
+        {
+          "name": "ha-retained-helper-components",
+          "tree": "66aaf95df71488290d233594b6781f29b2d744cd",
+          "files": 9,
+          "bytes": 167520,
+          "merkle_trees": 5
+        },
+        {
+          "name": "ha-rog-stage-dispatch-intent",
+          "tree": "3d1f1b24b6c8dfebaf67ef4f31531f69006c9276",
+          "files": 3,
+          "bytes": 115066,
+          "merkle_trees": 1
+        },
+        {
+          "name": "ha-rog-stage-unknown",
+          "tree": "c9f204bbc4e7082f5f81d14a46a0889cce21baea",
+          "files": 6,
+          "bytes": 115668,
+          "merkle_trees": 2
+        },
+        {
+          "name": "ha-rog-stage-fixed-files",
+          "tree": "9173774ee10ccf6d98e7e3ebcee94c2a9b4a68b1",
+          "files": 17,
+          "bytes": 227038,
+          "merkle_trees": 3
+        },
+        {
+          "name": "qa-r2-inert-metadata-actual",
+          "tree": "ed84eb1da89500fa4033bffca27fe70ad36cdcf7",
+          "files": 84,
+          "bytes": 522767,
+          "merkle_trees": 21
+        },
+        {
+          "name": "qa-r2-body-read-unknown-reconciliation",
+          "tree": "370816fd4ede3ff4dfe3705c6a2fdae2d9c1d4b9",
+          "files": 4,
+          "bytes": 3577,
+          "merkle_trees": 5
+        },
+        {
+          "name": "ha-rog-registry-page",
+          "tree": "3b56cfb37a8fef581746ceaaa6b6fd9363ca32c2",
+          "files": 6,
+          "bytes": 65482,
+          "merkle_trees": 2
+        },
+        {
+          "name": "ha-two-platform-source",
+          "tree": "e5050e7a977cd5f9e47e878cdca11866af4993bc",
+          "files": 93,
+          "bytes": 1870837,
+          "merkle_trees": 34
+        },
+        {
+          "name": "authbus-per-host-bindings-plan",
+          "tree": "92f6c57e253f22a4a0682a36a47d60ecb44466ab",
+          "files": 18,
+          "bytes": 474854,
+          "merkle_trees": 2
+        },
+        {
+          "name": "ha-mac-stage-original-ack",
+          "tree": "d4a52224bc61900647dcfa886df28829c6c1e738",
+          "files": 5,
+          "bytes": 195075,
+          "merkle_trees": 1
+        }
+      ],
+      "files": 752,
+      "bytes": 19099770,
+      "merkle_trees": 184,
+      "root_artifacts_before_state_manifest": 76,
+      "root_files_including_state_and_manifest": 78,
+      "all_packet_blobs_whole_verified": true,
+      "all_packet_git_Merkle_verified": true
+    },
+    "candidate": {
+      "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+      "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+      "sole_parent": "6d02ceca629163e1c07480fa1f21520434407143",
+      "pull_request": 158,
+      "pull_request_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/158",
+      "pull_request_draft": true,
+      "files": 3914,
+      "tracked_bytes": 62224861,
+      "full_leaf_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc",
+      "parent_unchanged_files": 3910,
+      "modified_files": 3,
+      "added_files": 1,
+      "deleted_files": 0,
+      "root_tree_review": "03009091e2883254ebee374a0659ced2ccada37a",
+      "change": "Same content root alone is insufficient to reuse an older HA publication. Cold/warm reuse and readonly continuation now require strictly current canonical HA cursor; otherwise the original full installer performs existing paired publication. Real A-to-B-to-A regression is additional to the original60.",
+      "guards_preserved": [
+        "strict matches_current and LocalSelection",
+        "four-resource CAS and full graph verification",
+        "original real-owner/ReadIndex and uncertainty barriers",
+        "original request/phase/outer deadlines",
+        "no cursor-only publication and no covered_by substitution"
+      ]
+    },
+    "formatter": {
+      "job": "1a1aac9543c-fc05-4743",
+      "exit_code": 0,
+      "complete": true,
+      "durable": true,
+      "source_files": 4,
+      "child_commands": 4,
+      "all_children_reaped": true,
+      "shared_supervisor_group": true,
+      "separately_empty_groups_claimed": false,
+      "independent_file_infos": 18,
+      "returned_version_consistent_binary_chunks": 21,
+      "binary_bytes": 533080,
+      "root_checks": 169,
+      "source_qualification_only": true,
+      "actual_packet": "92fe1fa16ceb87d1741c95ba43e77a82dce3d7c6"
+    },
+    "latest_accepted_product_hosts": {
+      "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "mac_normal_tests": 60,
+      "rog_normal_tests": 60,
+      "no_transfer_to_1c665": true
+    },
+    "normal61_preparation": {
+      "original_denominators": [
+        44,
+        7,
+        9
+      ],
+      "additional_A_B_A_test": 1,
+      "rog_outer_seconds": 12000,
+      "mac_outer_seconds": 8280,
+      "release_seconds": 1800,
+      "libtest_seconds": {
+        "rog": 3600,
+        "mac": 1800
+      },
+      "new_test_group_seconds": 600,
+      "new_group_clipped_to_original_outer": true,
+      "retained_df026_files_per_host": 6,
+      "retained_files_outside_reused_cache": true,
+      "original60_source_span_exact": true,
+      "retained_helper_mock_cases": 13,
+      "retained_helper_real_file_or_host_calls": 0,
+      "source_packet": "e5050e7a977cd5f9e47e878cdca11866af4993bc",
+      "rog_stage": {
+        "original_request": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+        "state": "ORIGINAL_START_TIMEOUT_ACK_AND_AUTHORITY_UNKNOWN",
+        "fixed_receipt_reports": "prepared",
+        "fixed_receipt_bytes": 26990,
+        "reported_elapsed_seconds": 18.073729682015255,
+        "reported_children_reaped_empty": 55,
+        "reported_history": 3762,
+        "reported_leaves": 3914,
+        "original_job_replayed": false,
+        "independently_observed_bundle_bytes": 28172,
+        "bundle_sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+        "job_qualification_claimed": false
+      },
+      "mac_stage": {
+        "job": "1a1aaf3c0b0-fc05-48f8",
+        "state": "UNIQUE_LAUNCH_ACK_ROOT_VERIFIED_TERMINAL_NOT_YET_IN_SNAPSHOT",
+        "reused": false,
+        "source_import_only": true,
+        "independent_from_rog_job_qualification": true
+      },
+      "normal_builds_at_snapshot": {
+        "rog": "NOT_SUBMITTED_WAIT_ORIGINAL_QA_TERMINAL_AND_EXACT_STAGE_ADMISSION",
+        "mac": "NOT_SUBMITTED_WAIT_OWN_STAGE_ACTUAL_AND_EXACT_BINDING"
+      },
+      "cargo_schedule": "Linux QA owns its600/660 window before Linux normal61; Mac cache is independent and can proceed after its own actual admission."
+    },
+    "qa_client": {
+      "source_packet": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+      "linux_real_process_components": {
+        "job": "1a1aaced08e-fc05-478b",
+        "cases": 3,
+        "exit_codes": [
+          0,
+          0,
+          129
+        ],
+        "terminal_unreaped_cases": 2,
+        "elapsed_ns": 145391479,
+        "root_checks": 44,
+        "all_owned_once_cleanup": true,
+        "packet": "8a753787c47ac4f203526d7fea434c208162075f"
+      },
+      "mock_addendum": {
+        "cases": 7,
+        "packet": "56feaaf12c2db0ec46bf852ef7f4addd548b0ec4"
+      },
+      "inert": {
+        "job": "1a1aad691c1-fc05-47e5",
+        "exit_code": 0,
+        "complete": true,
+        "durable": true,
+        "stdout_bytes": 3168,
+        "stderr_bytes": 173,
+        "existing_compile_warnings": [
+          1088,
+          915
+        ],
+        "elapsed_ns": "47320642",
+        "closed_immutable_read_operations": 11,
+        "native_whole_hash_input_bindings": 8,
+        "independent_metadata_files": 9,
+        "root_checks": 105,
+        "receipt_reconstructed_bytes": 4208,
+        "receipt_sha256": "a2851f48e3d72b4a9b2dd9c56a19a95c642ac8f9e94df6a46fe8e88afbc7cbd4",
+        "receipt_reconstruction_matches_native_whole_SHA": true,
+        "extra_file_body_reads_success_claimed": false,
+        "three_extra_read_operations_state": "UNKNOWN_PRESERVED",
+        "packet": "ed84eb1da89500fa4033bffca27fe70ad36cdcf7"
+      },
+      "build": {
+        "job": "1a1aaf3772d-fc05-48f5",
+        "request": "fc04df3ae645fd745c0414fe1b4fff5eb42c9c8f",
+        "state": "UNIQUE_LAUNCH_ACK_ROOT_VERIFIED_TERMINAL_NOT_YET_IN_SNAPSHOT",
+        "reused": false,
+        "total_seconds": 600,
+        "outer_seconds": 660,
+        "release_seconds": 180,
+        "component_build_seconds": 180,
+        "six_components_seconds": 30,
+        "no_product_qualification_from_QA_alone": true
+      },
+      "R1_command_unknown_preserved": true
+    },
+    "mac_registry_WAL": {
+      "synthetic_actual": {
+        "job": "1a1aaaaa6cd-fc05-45dd",
+        "exit_code": 0,
+        "complete": true,
+        "durable": true,
+        "cases": 10,
+        "elapsed_seconds": 1.1247387081384659,
+        "original_capture_seconds": 45,
+        "owned_volume_commands": 1,
+        "owned_readers": 10,
+        "closed_parent_FDs": 70,
+        "closed_writer_and_cursor_sets": 10,
+        "T5_anchor_fields": 27,
+        "root_checks": 300,
+        "packet": "b575a8af93c99b7736dfa3f1b57356d3c3ddc3e6"
+      },
+      "case_boundaries": {
+        "W01": "actual WAL sentinel; four original kernel refusals plus existing WAL and SHM refusals; rolled back, main file unchanged",
+        "W02": "required SHM refusal before registry connect",
+        "W03": "actual SQLITE_CANTOPEN14; not CANTINIT and not standalone URI recognition proof",
+        "W04": "journal refusal",
+        "W05_W08": "controlled WAL/main/SHM/parent drift, each refused",
+        "W09": "SCAN refused before data SELECT",
+        "W10": "1048805 returned row bytes and1049669 aggregate bytes accounted before1MiB refusal"
+      },
+      "formal_current_caller": {
+        "packet": "ab729106132c035c353979285aa70a302318b3c2",
+        "source_files": 22,
+        "unchanged_files": 10,
+        "root_or_label_only_changes": 9,
+        "entry_hunks": 9,
+        "outer_hunks": 14,
+        "root_binding_checks": 206,
+        "author_static_checks": 82,
+        "author_memory_admission_cases": 8,
+        "new_current_private_capture_executed": false,
+        "df026_inert_or_runtime_submitted": false,
+        "requires": "Actual new1c665 Mac server and normal/native/combined/authority pins, then exact minimal four-product/seven-ROOT rebind"
+      },
+      "bounds": {
+        "WAL_bytes": 5969912,
+        "row_bytes": 1048576,
+        "aggregate_bytes": 8388608,
+        "query_seconds": 3,
+        "capture_seconds": 45
+      },
+      "not_proved": [
+        "whole-database backup",
+        "atomic cross-agent snapshot",
+        "all possible ABA races",
+        "all SQLite internal descriptors/page I/O",
+        "real production credential migration"
+      ],
+      "prior_current_capture_UNKNOWNs_preserved": true
+    },
+    "x230": {
+      "schema": "heptabao.root.x230-fence-reconciliation-boundary.v1",
+      "as_of_utc": "2026-11-05T09:06:41Z",
+      "original_relay": {
+        "job": "1a1aa57458d-fc05-4156",
+        "state": "LAUNCH_UNKNOWN_UNCHANGED",
+        "replayed": false
+      },
+      "r1_fence": {
+        "job": "1a1aa8a6fb0-fc05-4428",
+        "state": "KNOWN_FIXED_IDENTITY_MISMATCH_BEFORE_ROOT_NO_WRITES",
+        "old_tuple_mismatch_field_not_inferred": true
+      },
+      "fresh_metadata": {
+        "job": "1a1aaa6db3e-fc05-45a6",
+        "authority": "3850cd3c452068e119c38d2749314452d031445d",
+        "stdout": "62403647a790e255006068666fb71c95965420ba",
+        "root_review": "9d1853d6e37a5772a3a66aa3ff6a8e58c43877e3",
+        "metadata_calls": 42,
+        "closed_descriptors": 8,
+        "point_time_root_absence_not_reservation": true
+      },
+      "r2_fence": {
+        "request": "fb197792ced7efbd7c60da559514b9209e1affd4",
+        "key": "heptabao-x230-original-relay-effect-fence-r2-8c930805",
+        "source": "fa0b8eabe31d1666377d73052ddb5025bff3df21",
+        "state": "UNRESOLVED_MISSING_ORIGINAL_SUBMISSION_EVIDENCE",
+        "reason": "The preceding continuity summary described one submit, while no original root GO/dispatch intent/ACK/job survived in available state. Missing local cache is not proof of no dispatch. No replacement process_start was issued.",
+        "source_review": "632d29831f394f99e4a143575657f32c17939ef7"
+      },
+      "read_only_reconciliation": {
+        "full_process_list": "explicit 1MiB capacity refusal",
+        "paged_inventory": "incomplete and repeated durable-membership-change errors; no absence conclusion",
+        "packet": "3bb552ff4554453bd5b5238609426b33e0992bda",
+        "fixed_marker_info": "explicit ENOENT for original root at one observation; not original job terminal or permanent fence proof"
+      },
+      "next": {
+        "kind": "bounded exact typed-request digest locator SOURCE_ONLY",
+        "positive_control": "8b3f3c6426056e5873014365ef14a4bded4063a6",
+        "derived_fence_request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+        "digest_is_not_launch_or_execution_proof": true
+      },
+      "full34_and_new69_qualification": false,
+      "new_source_artifact_relay_replayed": false,
+      "production_cutover_or_deletion": false
+    },
+    "per_host_plan": {
+      "packet": "92f6c57e253f22a4a0682a36a47d60ecb44466ab",
+      "scope": "PREPARED_SOURCE_AND_ACTION_PLAN_NOT_PRODUCTION_QUALIFICATION",
+      "Mac_agent_ids": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "ROG_agent_ids": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "ROG_latest": "disabled/generation203/gateway inactive PID0; historical active state not restored",
+      "Pocket4_is_hostname": true,
+      "Pocket4_actual_agent_ids": [
+        "main",
+        "tg8687951891"
+      ],
+      "X230_client_denominator": "UNCONFIRMED",
+      "production_endpoint_cluster_CA_leaf_AppRole_issuance_policy_and_service_proofs": "UNBOUND_NULL",
+      "J3160_contacted": false,
+      "backup_scope": "One Nov2 capture/Nov3 transport-restore chain: nine receipts,23 files,7 databases,6 auth stores; not nine current backups or cross-host atomicity.",
+      "XR01": "Only fixed known public report read authorized; no new observation in this snapshot."
+    },
+    "physical_LAN_latest": {
+      "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "job": "1a1aa914172-fc05-4473",
+      "exit_code": 1,
+      "complete": true,
+      "durable": true,
+      "original_required": 98,
+      "passed": 91,
+      "missing": 7,
+      "postcold_required": 12,
+      "postcold_passed": 0,
+      "postcold_entered": false,
+      "large_value_bytes": 35651584,
+      "Mac_recovered_active": 17,
+      "history_entries": 19,
+      "ROG_cold_unseal": 503,
+      "source_locator": "strict current cursor refused older same-content publication after prior stages advanced",
+      "new_1c665_physical_LAN_qualification": false,
+      "original98_plus12_denominators_preserved": true
+    },
+    "CI": {
+      "PR158": {
+        "head": "1c66541993662f92cf717154e33717abedb2ea74",
+        "prospective_merge": "a3c0b9bc1aa6798e4b190424bfee8487a52c221d",
+        "full_run": 41994455466,
+        "trust_run": 41994455390,
+        "latest_observed_jobs": "all four queued",
+        "success_claimed": false
+      },
+      "CI154_two_runtime_failures_resolved_by_this_change": false,
+      "CI155_workspace_pass_Clippy_failure_and_CI156_fmt_failure_preserved": true
+    },
+    "full_271_denominator": {
+      "status": "OPEN",
+      "official_version": "2.7.1",
+      "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "security_dimensions": 15,
+      "correctness_dimensions": 11,
+      "required_gates": 11,
+      "all_required_gates_closed": false,
+      "structural_manifest": "planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+      "old69_case_and2_6_2_corpus_not_full_2_7_1_proof": true,
+      "lexical_route_count_not_complete_behavior_denominator": true
+    },
+    "next_required": [
+      "Collect original QA build terminal, all six exact components and full owned cleanup; only then admit Linux normal61.",
+      "Close Mac independent source import, bind and run normal61 with original limits; preserve old artifacts.",
+      "Resolve original ROG source and X230 fence identities by bounded read-only exact digest lookup; no replay.",
+      "Use exact new product artifacts for original physical LAN98 plus postcold12 and X230 formal34MiB/compatibility work.",
+      "Bind new Mac current WAL caller to actual1c665 and qualify real local credentials without J3160.",
+      "For each production host, complete trusted endpoint/CA/AppRole/policy, real read/write/renew/revoke, restart and rollback, then traffic cutover.",
+      "Close complete OpenBao2.7.1 coverage and all actual client/backup references before old assets are removed."
+    ],
+    "history": {
+      "all_previous_failures_unknowns_preserved": true,
+      "raw_historical_index_integer_tokens_preserved": true,
+      "two_documents_append_updated_only": true,
+      "product_code_and_active_services_unchanged_by_checkpoint": true,
+      "post_freeze_results_not_retrofilled": true
     }
   }
 }

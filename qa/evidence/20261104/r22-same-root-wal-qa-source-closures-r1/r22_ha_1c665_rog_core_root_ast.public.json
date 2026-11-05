@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.root.same-root-publication.source-ast.v1",
+  "script": "import ast,hashlib,json,sys\nx=json.loads(sys.argv[1])\nb=x['before'];a=x['after'];n=x['name']\ncompile(a,n,'exec')\ndef defs(s):\n t=ast.parse(s);return {d.name:ast.get_source_segment(s,d) for d in ast.walk(t) if isinstance(d,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef))}\nu,v=defs(b),defs(a)\nchanged=sorted(k for k in u.keys()&v.keys() if u[k]!=v[k]);same=sorted(k for k in u.keys()&v.keys() if u[k]==v[k]);added=sorted(v.keys()-u.keys());removed=sorted(u.keys()-v.keys())\nassert changed==x['changed'],(n,changed)\nassert added==x['added'],(n,added)\nassert removed==x['removed'],(n,removed)\nif n.startswith('stage'):\n assert u['verify_full_worktree'].replace('3913','3914')==v['verify_full_worktree']\nif n.startswith('normal'):\n start=\"    rustc = subprocess.check_output\"\n end=\"except BaseException as error:\\n    result['failure_type']\"\n old=b[b.index(start):b.index(end,b.index(start))]\n new=a[a.index(start):a.index(end,a.index(start))]\n assert new.startswith(old),'original60bodychanged'\n assert 'original_60_status' in new[len(old):]\nprint(json.dumps({'name':n,'status':'ROOT_AST_COMPILE_ONLY_PASS','source_module_executed':False,'host_operations':0,'bytes':len(a.encode()),'sha256':hashlib.sha256(a.encode()).hexdigest(),'unchanged_definitions':same,'changed_definitions':changed,'added_definitions':added,'removed_definitions':removed,'original_60_body_exact':True if n.startswith('normal') else None},sort_keys=True))\n",
+  "results": [
+    {
+      "chunk_id": "8e274a",
+      "wall_time_seconds": 0.003715023,
+      "exit_code": 0,
+      "original_token_count": 167,
+      "output": "{\"added_definitions\": [], \"bytes\": 28230, \"changed_definitions\": [\"verify_full_worktree\"], \"host_operations\": 0, \"name\": \"stage_source_same_root_publication.py\", \"original_60_body_exact\": null, \"removed_definitions\": [], \"sha256\": \"cb09c957956cde832838c44b3ecb0072f7a859ff84f06b1c7437cf32ffa8e1e9\", \"source_module_executed\": false, \"status\": \"ROOT_AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"Cancelled\", \"blob\", \"canonical_bundle_header\", \"create\", \"digest\", \"freeze\", \"fsync_dir\", \"git\", \"group_members\", \"identity\", \"independent_git\", \"on_signal\", \"owned\", \"preserve_failed_observer\", \"public\", \"stable_read\", \"stage_remaining\", \"stop_owned\", \"walk_error\"]}\n"
+    },
+    {
+      "chunk_id": "71b300",
+      "wall_time_seconds": 0.000036475,
+      "exit_code": 0,
+      "original_token_count": 150,
+      "output": "{\"added_definitions\": [\"preserve_prior_df026\", \"publication_remaining\"], \"bytes\": 35452, \"changed_definitions\": [], \"host_operations\": 0, \"name\": \"normal_same_root_publication_build.py\", \"original_60_body_exact\": true, \"removed_definitions\": [], \"sha256\": \"8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a\", \"source_module_executed\": false, \"status\": \"ROOT_AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"Cancelled\", \"bounded_remaining\", \"extra_remaining\", \"freeze\", \"git\", \"group_members\", \"increment_remaining\", \"owned\", \"sha\", \"signal_received\", \"terminate_owned\", \"write\"]}\n"
+    },
+    {
+      "chunk_id": "341cdc",
+      "wall_time_seconds": 0.008472933,
+      "exit_code": 0,
+      "original_token_count": 152,
+      "output": "{\"added_definitions\": [], \"bytes\": 35592, \"changed_definitions\": [\"preserve_current_early_failure\"], \"host_operations\": 0, \"name\": \"launch_normal_same_root_publication.py\", \"original_60_body_exact\": null, \"removed_definitions\": [\"budget\", \"create_fresh_target\", \"register\"], \"sha256\": \"4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02\", \"source_module_executed\": false, \"status\": \"ROOT_AST_COMPILE_ONLY_PASS\", \"unchanged_definitions\": [\"freeze\", \"git\", \"holders\", \"identity\", \"preserve_failed_observer\", \"preserve_r10\", \"preserve_r9\", \"preserve_successful_observer\", \"public\", \"read_bound\"]}\n"
+    }
+  ],
+  "strict": {
+    "checks": [
+      {
+        "name": "stage_source_same_root_publication.py",
+        "hunks": 9,
+        "strict_forward_exact": true
+      },
+      {
+        "name": "normal_same_root_publication_build.py",
+        "hunks": 7,
+        "strict_forward_exact": true
+      },
+      {
+        "name": "launch_normal_same_root_publication.py",
+        "hunks": 11,
+        "strict_forward_exact": true
+      }
+    ],
+    "request_source_exact": true,
+    "request_carrier_exact": true,
+    "control_files_exact": 4,
+    "request_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957",
+    "timeout": 360
+  },
+  "source_index": {
+    "count": 3914,
+    "bytes": 62224861,
+    "sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc"
+  }
+}

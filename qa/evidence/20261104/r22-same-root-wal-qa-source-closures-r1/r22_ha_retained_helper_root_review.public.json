@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.root.retained-df026-helper-review.v1",
+  "packet": {
+    "tree": "66aaf95df71488290d233594b6781f29b2d744cd",
+    "files": 9,
+    "bytes": 167520,
+    "merkle": 5
+  },
+  "candidate": {
+    "blob": "9b318f4acf589e0410263723695f421d0bb224ea",
+    "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a"
+  },
+  "strict_diff_hunks": 1,
+  "actual_agent_local_selected_mock_cases": 13,
+  "exact_executor_stdout": true,
+  "old_gap_observed_opened_one_closed_zero": true,
+  "new_gap_cancelled_once_closed": true,
+  "root_component_reexecution": false,
+  "scope": "Root read full helper diff, selected component harness, original complete executor/STDOUT, and independent source peer. No whole module import, remote host calls, actual file descriptors or Rust execution.",
+  "peer": {
+    "blob": "3668fedbf498a6abb948ffcc167b3bdf9c22d83c",
+    "bytes": 4933,
+    "sha256": "455d0c9217173034770c3d5cd8ed8f2a06a33d8fb2b1f2cf4ab6c42f4be53079"
+  },
+  "limitations": [
+    "One FD at a time and cancellation checks do not hard-preempt a blocking synchronous syscall.",
+    "Before/after sequential files do not form an atomic cross-file snapshot.",
+    "Target admission and runtime retained-byte/identity results remain separate actual gates."
+  ]
+}

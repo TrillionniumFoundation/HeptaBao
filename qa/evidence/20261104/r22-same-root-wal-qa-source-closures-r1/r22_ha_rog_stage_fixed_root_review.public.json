@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.rog-source-fixed-receipt-boundary.v1",
+  "as_of_utc": "2026-11-05T09:06:41Z",
+  "status": "POSITIVE_FIXED_FILE_OBSERVATIONS_ORIGINAL_JOB_AUTHORITY_UNKNOWN",
+  "request": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+  "original_timeout_packet": "c9f204bbc4e7082f5f81d14a46a0889cce21baea",
+  "fixed_file_packet": "9173774ee10ccf6d98e7e3ebcee94c2a9b4a68b1",
+  "file": "abd998cc5f171ef7f4871b8e27338e33fbf60cb5",
+  "reported": {
+    "status": "prepared",
+    "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "history_count": 3762,
+    "full_worktree": {
+      "all_tracked_worktree_blobs_and_modes_match": true,
+      "full_leaf_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc",
+      "index_matches_tree": true,
+      "tracked_bytes": 62224861,
+      "tracked_leaf_count": 3914
+    },
+    "full_strict_fsck": true,
+    "independent_git": true,
+    "no_alternates": true,
+    "no_shared_object_links": true,
+    "old_source_unchanged": true,
+    "failed_observer_unchanged": true,
+    "cleanup_count": 55,
+    "all_cleanup_reaped_empty": true,
+    "elapsed_seconds": 18.073729682015255,
+    "within_original300": true
+  },
+  "independent_bundle": {
+    "bytes": 28172,
+    "sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+    "root_review": "a06647c58b06b3af7470ab5dd61df6c64e9e290b",
+    "Mac_independent_source_import_authorized": true
+  },
+  "registry_page": {
+    "packet": "3b56cfb37a8fef581746ceaaa6b6fd9363ca32c2",
+    "observed": 128,
+    "total": 1866,
+    "complete": false,
+    "contains_request_keys": false,
+    "absence_inferred": false
+  },
+  "no_request_replay": true,
+  "no_Rust_qualification": true,
+  "original_job_identity_authority_and_full_streams_not_recovered": true
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.local-source-check-launch-failure.v1",
+  "error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): Argument list too long (os error 7)\\\")\" }",
+  "process_started": false,
+  "host_operations": 0,
+  "candidate_unchanged": true,
+  "reason": "The initial offline AST checker unnecessarily embedded all four Rust strings in its command argument; narrowed to public admitted input pins and stdin byte count."
+}

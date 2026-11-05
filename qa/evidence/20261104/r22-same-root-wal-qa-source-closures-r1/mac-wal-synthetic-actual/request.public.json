@@ -1,0 +1,16 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1/qa/mac_wal_owned_synthetic_r1.py",
+    "--candidate-sha256",
+    "4db3624e3c6ca6ffeaefcfa03ae15e6aecb6f7cb7287b3ed34ce3bd110f2c33c"
+  ],
+  "cwd": "/Users/qianqi",
+  "stdin": "",
+  "timeout_seconds": 60,
+  "idempotency_key": "heptabao-mac-registry-readonly-wal-owned-88a6abdc-20261105-r1"
+}

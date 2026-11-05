@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "qa-r2-inert-47e5-lock-part-0-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2/inputs/canonical.Cargo.lock",
+      "offset": 0,
+      "limit": 65536,
+      "expected_version": "66306:34887277:101193:1793867552450521553:1793867552451778859"
+    }
+  }
+}

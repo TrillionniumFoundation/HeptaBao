@@ -1,0 +1,10 @@
+{
+  "bytes": 28172,
+  "sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+  "header_sha256": "88dc360f8985629d3aebc0999075160ae15a760bbd1b4538b9e986769216183d",
+  "header": "# v2 git bundle\n-49503322c7f446e5eb41e7744f1fdbd7f1192ecc test: witness authenticated native state in NoForward HA regressions\n1c66541993662f92cf717154e33717abedb2ea74 HEAD\n\n",
+  "version": "66306:28229829:28172:1793868557318302068:1793868557318302068",
+  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/control/canonical-same-root-publication-from495.bundle",
+  "mode": 384,
+  "observed_original_job_authority": false
+}

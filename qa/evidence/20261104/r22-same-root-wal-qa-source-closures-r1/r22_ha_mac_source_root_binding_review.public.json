@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.root.mac-source-bundle-and-retained-bindings.v1",
+  "checks_passed": 28,
+  "checks": [
+    "bundle SDK file-info",
+    "bundle SDK binary-read",
+    "bundle complete same returned version",
+    "bundle original named identity",
+    "bundle artifact base64 exact",
+    "bundle v2 PACK exact",
+    "bundle exact prereq and head",
+    "Mac exact request source and carrier",
+    "Mac exact bundle arguments",
+    "Mac original stdin cap",
+    "Mac carrier exact mac_normal_same_root_publication_build.py",
+    "Mac carrier exact launch_normal_same_root_publication.py",
+    "Mac carrier exact normal-test-groups.public.json",
+    "Mac carrier exact set",
+    "mac retained receipt /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json",
+    "mac retained receipt /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json",
+    "mac retained receipt /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json",
+    "mac retained artifact /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+    "mac retained artifact /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+    "mac retained artifact /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "rog retained receipt /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+    "rog retained receipt /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+    "rog retained receipt /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+    "rog retained artifact /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-seed",
+    "rog retained artifact /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+    "rog retained artifact /home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+    "ROG actual prior target full lossless9",
+    "Mac retained helper byte exact reviewed ROG source (mock components only)"
+  ],
+  "packet": "e5050e7a977cd5f9e47e878cdca11866af4993bc",
+  "bundle_bytes": 28172,
+  "bundle_sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+  "bundle_returned_version_matches_independent_metadata": true,
+  "bundle_header_exact": true,
+  "original_ROG_job_authority_missing": true,
+  "qualification_transferred": false,
+  "mac_request_is_proposed_only": true,
+  "source_ast_and_strict": [
+    {
+      "name": "stage_mac_same_root_publication.py",
+      "hunks": 9,
+      "whole_exact": true
+    },
+    {
+      "name": "mac_normal_same_root_publication_build.py",
+      "hunks": 7,
+      "whole_exact": true
+    },
+    {
+      "name": "launch_normal_same_root_publication.py",
+      "hunks": 7,
+      "whole_exact": true
+    }
+  ]
+}

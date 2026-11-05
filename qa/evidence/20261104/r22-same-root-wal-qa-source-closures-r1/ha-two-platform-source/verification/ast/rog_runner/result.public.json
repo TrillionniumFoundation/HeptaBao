@@ -1,0 +1,29 @@
+{
+  "added_definitions": [
+    "preserve_prior_df026",
+    "publication_remaining"
+  ],
+  "bytes": 35452,
+  "changed_definitions": [],
+  "host_operations": 0,
+  "name": "rog_runner",
+  "removed_definitions": [],
+  "rust_executed": false,
+  "sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+  "source_module_executed": false,
+  "status": "AST_COMPILE_ONLY_PASS",
+  "unchanged_definitions": [
+    "Cancelled",
+    "signal_received",
+    "sha",
+    "write",
+    "git",
+    "freeze",
+    "group_members",
+    "terminate_owned",
+    "bounded_remaining",
+    "owned",
+    "extra_remaining",
+    "increment_remaining"
+  ]
+}

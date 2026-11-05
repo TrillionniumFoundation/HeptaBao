@@ -1,0 +1,12 @@
+diff --git a/mac_current_outer_inputs_r2.py b/mac_current_outer_inputs_r2.py
+--- a/mac_current_outer_inputs_r2.py
++++ b/mac_current_outer_inputs_r2.py
+@@ -13,7 +13,7 @@
+ from contextlib import contextmanager
+ 
+ BASE=Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-ROOT=BASE/'mac-authbus-r10-current-native-custody-r1'
++ROOT=BASE/'mac-authbus-df026-current-registry-wal-r1'
+ LIVE=Path('/Users/qianqi/.openclaw')
+ PLUGIN=LIVE/'extensions/openclaw-authbus'
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')

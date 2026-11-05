@@ -1,0 +1,163 @@
+{
+  "actual_children": 0,
+  "checks": [
+    {
+      "name": "compile_only_source/build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only_source/publish_h2_qa_inputs_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only_components/linux_owned_components.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only_components/mock_components.py",
+      "passed": true
+    },
+    {
+      "name": "original_caps_equal",
+      "passed": true
+    },
+    {
+      "name": "all_publisher_functions_same",
+      "passed": true
+    },
+    {
+      "name": "binding_inverse_exact",
+      "passed": true
+    },
+    {
+      "name": "target_identity_unchanged",
+      "passed": true
+    },
+    {
+      "name": "tools_normal_source_caps_unchanged",
+      "passed": true
+    },
+    {
+      "name": "fixed_eight_inputs",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "retained_input_exact_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "inert_source_argv_exact",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier_exact",
+      "passed": true
+    },
+    {
+      "name": "inert_original_outer",
+      "passed": true
+    },
+    {
+      "name": "build_fixed_args",
+      "passed": true
+    },
+    {
+      "name": "build_same_host_executable_cwd_caps",
+      "passed": true
+    },
+    {
+      "name": "component_exact_argv",
+      "passed": true
+    },
+    {
+      "name": "component_exact_stdin",
+      "passed": true
+    },
+    {
+      "name": "component_tools_exact",
+      "passed": true
+    },
+    {
+      "name": "component_source_pin_builder",
+      "passed": true
+    },
+    {
+      "name": "component_source_pin_owner_reference",
+      "passed": true
+    },
+    {
+      "name": "component_source_pin_cli_reference",
+      "passed": true
+    },
+    {
+      "name": "component_builder_exact",
+      "passed": true
+    },
+    {
+      "name": "memory_components_actual_18",
+      "passed": true
+    },
+    {
+      "name": "selected_classes_construct_without_phasea_init",
+      "passed": true
+    }
+  ],
+  "new_host_operations": 0,
+  "owned_linux_components_executed": false,
+  "passed": 38,
+  "schema": "qa-custody-r2-full-source-validation-v1",
+  "source_class_definitions_constructed": true,
+  "target_main_executed": false
+}

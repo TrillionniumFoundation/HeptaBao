@@ -1,0 +1,223 @@
+{
+  "allOwnedStopped": true,
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 2153575,
+      "pid": 2153580,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 2153575,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 2153575,
+      "pid": 2153581,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 2153575,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 2153575,
+      "pid": 2153582,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 2153575,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--config-path",
+        "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 2153575,
+      "pid": 2153583,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 2153575,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.11893526100902818,
+  "files": [
+    {
+      "afterBytes": 31855,
+      "afterSha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+      "beforeBytes": 31870,
+      "beforeSha256": "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477",
+      "name": "service_native_v6_ha_read.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 87473,
+      "afterSha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "beforeBytes": 87473,
+      "beforeSha256": "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607",
+      "name": "service_native_v6_ha_install.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 46885,
+      "afterSha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "beforeBytes": 46885,
+      "beforeSha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "name": "service_native_v6_ha_install_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 9147,
+      "afterSha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+      "beforeBytes": 8732,
+      "beforeSha256": "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca",
+      "name": "service_native_v6_ha_same_root_republication_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "formatConfigurationAfter": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      34381174,
+      17,
+      1793866684583310932,
+      1793866684583310932,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "formatConfigurationBefore": {
+    "bytes": 17,
+    "identity": [
+      66306,
+      34381174,
+      17,
+      1793866684583310932,
+      1793866684583310932,
+      33152,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-format-20261105-r1/rustfmt.toml",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "inputCarrierSha256": "10ecb4533fa36bad286360cb942a6c3b70426c76f4643bd2224928693d115220",
+  "inputOriginalAndCandidatePins": {
+    "service_native_v6_ha_install.rs": [
+      "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607"
+    ],
+    "service_native_v6_ha_install_tests.rs": [
+      "4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c",
+      "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929"
+    ],
+    "service_native_v6_ha_read.rs": [
+      "b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf",
+      "186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477"
+    ],
+    "service_native_v6_ha_same_root_republication_tests.rs": [
+      null,
+      "7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca"
+    ]
+  },
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "originalSourceProvenance": "Immutable Git blobs supplied by the root; original host repository is not read or written",
+  "ownedConfiguration": "Edition 2024 only; all other rustfmt defaults; explicit config path excludes ambient parent configuration",
+  "productExecuted": false,
+  "productionChanged": false,
+  "repositoryRustfmtConfigPresent": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.same-root-publication-input-rustfmt.v1",
+  "sourceCommit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "sourceIdentityIsBaseOnly": true,
+  "sourceTree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "status": "passed",
+  "uncommittedCandidateInputs": true,
+  "withinDeadline": true
+}

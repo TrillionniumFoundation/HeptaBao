@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.qa-h2-r2.inert-root-go.v1",
+  "status": "GO_EXACT_INERT_PUBLICATION_ONCE",
+  "request": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+  "request_bytes": 387182,
+  "request_sha256": "d09dffcf758c9b0b3200a1abb886e06c36e46cc52d0792c96c0aae5997e28377",
+  "key": "heptabao-df026-native-h2-qa-inert-21685ed8-20261105-r2",
+  "host": "rog",
+  "outer_seconds": 60,
+  "source_tree": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+  "checks": [
+    "publisher_strict_diff",
+    "binding_strict_diff",
+    "exact_inline_publisher",
+    "host_caps_key",
+    "eight_fixed_files",
+    "carrier_whole_build_native_h2_client_r1.py",
+    "carrier_whole_inputs/native_h2_client.rs",
+    "carrier_whole_inputs/native_h2_client_tests.rs",
+    "carrier_whole_inputs/Cargo.toml",
+    "carrier_whole_inputs/canonical.Cargo.lock",
+    "carrier_whole_inputs/owned_reference_phaseb_r3.py",
+    "carrier_whole_inputs/official_cli_reference_r4.py",
+    "carrier_whole_build-binding.private.json",
+    "original_carrier_cap"
+  ],
+  "carried_files": 8,
+  "carried_bytes": 285129,
+  "actual_component_gate": {
+    "name": "r22_qa_r2_component_root_result",
+    "blob": "26af3ceaf8b9e5d1897e48c75ed70f523cf708eb",
+    "bytes": 2072,
+    "sha256": "bc7638d6c864892149036e1f1151fe53d349da36abfe42438f1a17984854f289"
+  },
+  "scope": "fresh R2 control root, eight exact reviewed files plus receipt, compile-only Python; no target module execution, Git, Cargo, service or artifact transfer",
+  "acceptance": [
+    "original unique ACK and authoritative exit0 full durable",
+    "receipt and stdout prepared, all8 files whole equal admitted carrier",
+    "9 independent metadata and complete version-consistent bodies",
+    "stderr preserved and classified against the two preexisting compile-only SyntaxWarnings",
+    "no product or original qualification upgrade"
+  ],
+  "build_go": false,
+  "existing_target_not_touched": true,
+  "prior_R1_failure_preserved": true
+}

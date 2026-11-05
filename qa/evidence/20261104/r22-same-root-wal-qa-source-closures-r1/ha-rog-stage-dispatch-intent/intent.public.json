@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.single-exact-process-intent.v1",
+  "asof": "2026-11-05 08:46:53 UTC",
+  "action": "source_stage_only",
+  "host": "rog",
+  "idempotency_key": "heptabao-same-root-publication-1c665-rog-source-20261105-r1-cb09c957",
+  "request_git_blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+  "request_bytes": 111195,
+  "request_sha256": "ee97cca39ecea1910db9cb2f4cb829bf012ed71f386882b096a737dcdfe453e2",
+  "root_go_blob": "58ffd4f6cbf1bba3150054cd7076d56a5a8f6377",
+  "submitted": false,
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "budget": {
+    "new_root": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1",
+    "new_source_and_public_controls_only": true,
+    "public_git_fetch_and_incremental_bundle": true,
+    "shared_cargo_target_touched": false,
+    "compiler_server_provider_consumer_started": false,
+    "stage_seconds": 300,
+    "clone_seconds": 180,
+    "git_leaf_seconds": 90,
+    "outer_seconds": 360
+  },
+  "no_Cargo": true,
+  "unknown_requires_readonly_reconciliation": true
+}

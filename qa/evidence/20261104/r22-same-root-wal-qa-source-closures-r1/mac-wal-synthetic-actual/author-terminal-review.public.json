@@ -1,0 +1,647 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal-synthetic.author-terminal-review.v1",
+  "result": "PASS_PUBLIC_SYNTHETIC_ONLY",
+  "job_id": "1a1aaaaa6cd-fc05-45dd",
+  "source_tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+  "inert_actual_tree": "53314426bb134ede7f031545d5d4646a26d6d9e9",
+  "core": {
+    "request": {
+      "bytes": 490,
+      "sha256": "3410345186bfebe177939bba765b67d4978dbad887d5fe5267d8c8d5f401c0c7",
+      "git_blob": "fde9563b74028639ab9ee003a0e4251d21eb4364"
+    },
+    "authority": {
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+      "git_blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e"
+    },
+    "stdout": {
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+      "git_blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540"
+    }
+  },
+  "actual_elapsed_seconds": 1.1247387081384659,
+  "expected_cases": [
+    "W01",
+    "W02",
+    "W03",
+    "W04",
+    "W05",
+    "W06",
+    "W07",
+    "W08",
+    "W09",
+    "W10"
+  ],
+  "core_checks": [
+    {
+      "name": "terminal",
+      "passed": true
+    },
+    {
+      "name": "ten_cases_exact",
+      "passed": true
+    },
+    {
+      "name": "source_pins",
+      "passed": true
+    },
+    {
+      "name": "native_identity",
+      "passed": true
+    },
+    {
+      "name": "native_self",
+      "passed": true
+    },
+    {
+      "name": "runtime",
+      "passed": true
+    },
+    {
+      "name": "limits",
+      "passed": true
+    },
+    {
+      "name": "eleven_commands",
+      "passed": true
+    },
+    {
+      "name": "command_closure.0",
+      "passed": true
+    },
+    {
+      "name": "command_closure.1",
+      "passed": true
+    },
+    {
+      "name": "command_closure.2",
+      "passed": true
+    },
+    {
+      "name": "command_closure.3",
+      "passed": true
+    },
+    {
+      "name": "command_closure.4",
+      "passed": true
+    },
+    {
+      "name": "command_closure.5",
+      "passed": true
+    },
+    {
+      "name": "command_closure.6",
+      "passed": true
+    },
+    {
+      "name": "command_closure.7",
+      "passed": true
+    },
+    {
+      "name": "command_closure.8",
+      "passed": true
+    },
+    {
+      "name": "command_closure.9",
+      "passed": true
+    },
+    {
+      "name": "command_closure.10",
+      "passed": true
+    },
+    {
+      "name": "case.W01",
+      "passed": true
+    },
+    {
+      "name": "case.W02",
+      "passed": true
+    },
+    {
+      "name": "case.W03",
+      "passed": true
+    },
+    {
+      "name": "case.W04",
+      "passed": true
+    },
+    {
+      "name": "case.W05",
+      "passed": true
+    },
+    {
+      "name": "case.W06",
+      "passed": true
+    },
+    {
+      "name": "case.W07",
+      "passed": true
+    },
+    {
+      "name": "case.W08",
+      "passed": true
+    },
+    {
+      "name": "case.W09",
+      "passed": true
+    },
+    {
+      "name": "case.W10",
+      "passed": true
+    },
+    {
+      "name": "parent_fd_closure",
+      "passed": true
+    },
+    {
+      "name": "t5",
+      "passed": true
+    },
+    {
+      "name": "no_business",
+      "passed": true
+    }
+  ],
+  "cases": [
+    {
+      "case": "W01",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "read_success",
+      "error": null,
+      "returned_result_bytes": 898,
+      "result_sha256": "1fff2b2d4e0f91c8daf713cabe62629bb9c943b265b02a0fcd1aada46a91c2c3",
+      "aggregate_returned_read_bytes": 1114,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11923,
+        "sha256": "65c7881d113e1922f47d514eeb2260d3fd5c29c26fb67f654219ff5d373a1961",
+        "git_blob": "3efe88b44d22033fca9b275cc5e133241d9e5801"
+      },
+      "reader_version": "16777244:72596277:11923:1793864673486400369:1793864673486410244",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "65c7881d113e1922f47d514eeb2260d3fd5c29c26fb67f654219ff5d373a1961"
+    },
+    {
+      "case": "W02",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_required_shm",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 89,
+      "returned_connections": 1,
+      "closed_connections": 1,
+      "query_count": 0,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 7222,
+        "sha256": "15e3a834a5b283f5d1bf229e9c927cbc93b9b75ce0cad5d7a1a9964a1fde69f6",
+        "git_blob": "0a5177fd70697b47574f9e5360933e6050d6a2b1"
+      },
+      "reader_version": "16777244:72596293:7222:1793864673581611675:1793864673581621217",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "15e3a834a5b283f5d1bf229e9c927cbc93b9b75ce0cad5d7a1a9964a1fde69f6"
+    },
+    {
+      "case": "W03",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_public_engine_CANTOPEN",
+      "error": {
+        "code": null,
+        "errno": null,
+        "errorType": "OperationalError",
+        "sqliteCode": 14,
+        "sqliteName": "SQLITE_CANTOPEN"
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 93,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 0,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 8025,
+        "sha256": "ec2ced80293abcb4e5bd6d28fa6155076565cd5fb8e3dddfb5425695e4689293",
+        "git_blob": "e8cf6d0478d56d96463e71b5a28a987a5a69c747"
+      },
+      "reader_version": "16777244:72596309:8025:1793864673682829495:1793864673682837745",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "ec2ced80293abcb4e5bd6d28fa6155076565cd5fb8e3dddfb5425695e4689293"
+    },
+    {
+      "case": "W04",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_journal_refused",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 89,
+      "returned_connections": 1,
+      "closed_connections": 1,
+      "query_count": 0,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 8078,
+        "sha256": "0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa",
+        "git_blob": "1da3b315a88427cefb2e360de1b29dec5accee1f"
+      },
+      "reader_version": "16777244:72596326:8078:1793864673779701043:1793864673779710918",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "0fe9136fa7e654e841b63fd377b17abe11fafef7bbb1b9ae24af4d31701be4fa"
+    },
+    {
+      "case": "W05",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_full_leaf_changed",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 1114,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11300,
+        "sha256": "39476829ff2ec1610894721f3f29bed8801e49833df1e0988e1e112a82111fb7",
+        "git_blob": "d6aac2687781588646b9e6b96e7afea05257f99a"
+      },
+      "reader_version": "16777244:72596343:11300:1793864673877085589:1793864673877094047",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "39476829ff2ec1610894721f3f29bed8801e49833df1e0988e1e112a82111fb7"
+    },
+    {
+      "case": "W06",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_full_leaf_changed",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 1114,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11300,
+        "sha256": "f7c5e84d6fe464b285bec0a5418e757aa87c2d3755f6af0ef6411b53acf026bc",
+        "git_blob": "cb639573c2a950aeed73d217cbff0549c65a3867"
+      },
+      "reader_version": "16777244:72596360:11300:1793864673973923304:1793864673973931054",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "f7c5e84d6fe464b285bec0a5418e757aa87c2d3755f6af0ef6411b53acf026bc"
+    },
+    {
+      "case": "W07",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_full_leaf_changed",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 1114,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11296,
+        "sha256": "aeca9311147e86b45ff3f70ff5227b1318b12aefa464fb78fa6734a41e4da62f",
+        "git_blob": "71279b0b5ba584f9a66b5c43738c4011a12e8292"
+      },
+      "reader_version": "16777244:72596376:11296:1793864674040842908:1793864674040851158",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "aeca9311147e86b45ff3f70ff5227b1318b12aefa464fb78fa6734a41e4da62f"
+    },
+    {
+      "case": "W08",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_wal_full_parent_changed",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 1114,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11298,
+        "sha256": "d24ae166653df4c8ad209a3998afb6924d9287877321fc2046e4f125c6a36cb6",
+        "git_blob": "d671034ed98c1b1665dfd9a354ae3380c4e40b06"
+      },
+      "reader_version": "16777244:72596393:11298:1793864674137984497:1793864674137993122",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "d24ae166653df4c8ad209a3998afb6924d9287877321fc2046e4f125c6a36cb6"
+    },
+    {
+      "case": "W09",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "fixed_key_search_required_no_data_scan",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 783,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11049,
+        "sha256": "a47c06c90261e1d8a2e1d7d1075a06ab33b577f27056ef66c28e3815c97ae9c0",
+        "git_blob": "de037c572a5307f1d79e999493169e1db3d0a449"
+      },
+      "reader_version": "16777244:72596410:11049:1793864674235267377:1793864674235277043",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "a47c06c90261e1d8a2e1d7d1075a06ab33b577f27056ef66c28e3815c97ae9c0"
+    },
+    {
+      "case": "W10",
+      "known_reader_exit": 0,
+      "expected_result_matched": true,
+      "operation_result": "expected_guarded_refusal",
+      "error": {
+        "code": "registry_returned_byte_cap",
+        "errno": null,
+        "errorType": "CaptureRefused",
+        "sqliteCode": null,
+        "sqliteName": null
+      },
+      "returned_result_bytes": 0,
+      "result_sha256": null,
+      "aggregate_returned_read_bytes": 1049669,
+      "returned_connections": 2,
+      "closed_connections": 2,
+      "query_count": 1,
+      "query_completed_within_original3s": true,
+      "all_library_resources_closed": true,
+      "reader_stdout": {
+        "bytes": 11302,
+        "sha256": "dad92e8055161be45c826bc1178a0b545250493e8d436edfe84753fa33d07a88",
+        "git_blob": "0ea7a72675c4bbab2862b8221841162494c1b827"
+      },
+      "reader_version": "16777244:72596426:11302:1793864674340430511:1793864674340441761",
+      "stderr_file_bytes": 0,
+      "stderr_original_tool_evidence": "file_info size=0 and whole empty SHA; no separate binary call needed",
+      "parent_source_hash_binding": "dad92e8055161be45c826bc1178a0b545250493e8d436edfe84753fa33d07a88"
+    }
+  ],
+  "fixture_full_identity_and_whole_hash_checks": [
+    {
+      "case": "W01",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    },
+    {
+      "case": "W02",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    },
+    {
+      "case": "W03",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    },
+    {
+      "case": "W04",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    },
+    {
+      "case": "W05",
+      "unchanged_across_reader": false,
+      "expected_unchanged": false
+    },
+    {
+      "case": "W06",
+      "unchanged_across_reader": false,
+      "expected_unchanged": false
+    },
+    {
+      "case": "W07",
+      "unchanged_across_reader": false,
+      "expected_unchanged": false
+    },
+    {
+      "case": "W08",
+      "unchanged_across_reader": false,
+      "expected_unchanged": false
+    },
+    {
+      "case": "W09",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    },
+    {
+      "case": "W10",
+      "unchanged_across_reader": true,
+      "expected_unchanged": true
+    }
+  ],
+  "kernel_write_network_refusals": {
+    "allFourDenied": true,
+    "checks": [
+      {
+        "case": "main_write_open",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main"
+      },
+      {
+        "case": "sidecar_create",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main-wal"
+      },
+      {
+        "case": "sidecar_create",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main-shm"
+      },
+      {
+        "case": "loopback_connect",
+        "denied": true,
+        "endpoint": "127.0.0.1:9",
+        "errno": 1
+      }
+    ],
+    "externalAddressAttempted": false,
+    "onlyOwnedWriteProbes": true,
+    "profileWriteScope": "fresh_capture_output_only"
+  },
+  "existing_wal_shm_write_refusals": [
+    {
+      "denied": true,
+      "errno": 1,
+      "suffix": "-wal"
+    },
+    {
+      "denied": true,
+      "errno": 1,
+      "suffix": "-shm"
+    }
+  ],
+  "closure": {
+    "owned_commands": 11,
+    "readers": 10,
+    "writers": 10,
+    "parent_fd_entries": 70,
+    "all_owned_closed": true,
+    "outcome_unknown": false,
+    "all_writers_closed": true,
+    "all_parent_fd_closed": true
+  },
+  "deadlines": {
+    "shared_seconds": 45,
+    "query_seconds": 3,
+    "supervisor_seconds": 60,
+    "late_success_rejected": true,
+    "query_duration_includes_close": true
+  },
+  "scope": {
+    "current_private_capture_executed": false,
+    "production_inputs_read": false,
+    "credentials_or_consumers_or_services_executed": false,
+    "provider_or_j3160_accessed": false,
+    "whole_database_copy_or_backup_qualified": false,
+    "sqlite_internal_page_read_bytes_measured": false,
+    "cross_agent_atomic_snapshot_claimed": false,
+    "same_runtime_qualified_only": "Observed Python executable, _sqlite3 extension, version, SQLite source-id and explicit unix-posix URI; not a dylib closure.",
+    "aggregate_accounting": "Returned rows are counted before shape/count/row-cap refusal. W10 refuses after counting the returned oversized row; no cap was raised.",
+    "w03": "Fresh independent reader, explicit unix-posix and no reused SHM node; actual SHM O_RDONLY denial yielded SQLITE_CANTOPEN(14). This case alone does not prove readonly_shm recognition.",
+    "readonly_shm": "No claim of zero O_RDWR attempts. Actual W01 write probes were denied by the kernel; W01 sentinel + exact source-id + explicit VFS form the supported engine control.",
+    "negative_cases": "Expected refusal is a successful public test, not successful private capture. Raw negative observation flags and rollback=false states are preserved.",
+    "zero_stderr_evidence": "Each child stderr has independent file_info size 0 and empty SHA; no separate binary_read for an empty file.",
+    "historical_unknown": "Previous current capture UNKNOWN, missing historical library failure ledger, and PID11754 UNKNOWN remain unchanged.",
+    "publication": "Public parent proof was written to stdout only. No parent result file was asserted or fabricated."
+  },
+  "page_binding": [
+    {
+      "offset": 0,
+      "native": {
+        "bytes": 51469,
+        "sha256": "210e8f171c60961dae00afb0b0490a74ff2283c037f8e3fbd2be9d0be8b749e7",
+        "git_blob": "a3e51d2cb8a6120af1680a719f0a1e55673e5e12"
+      },
+      "sdk": {
+        "bytes": 55635,
+        "sha256": "3dfaeecedc429b895627b8ccdc5d8f5552007596ac7cd3883b5003e8e5e310c6",
+        "git_blob": "46f6f9f005b24926e035a18abbce91d73b635564"
+      }
+    },
+    {
+      "offset": 16384,
+      "native": {
+        "bytes": 51370,
+        "sha256": "90e063ae171bc0116e7a34173b8a3650a338ef0fa0664f7850ffa690ffc18b56",
+        "git_blob": "39359f16719ac3c6bc841f7c7e6eaa3e6e7219e1"
+      },
+      "sdk": {
+        "bytes": 55330,
+        "sha256": "635d33fbc5584594dc6c8849922efd99838b3e89cacd6d8311593d0b1191f7ac",
+        "git_blob": "40bcce7de35746d7fa7772e8d8766e26f0cf447a"
+      }
+    },
+    {
+      "offset": 32768,
+      "native": {
+        "bytes": 51100,
+        "sha256": "96773fd1e4e00b27ebe264269a713d8e2da3720a69b8a39ffad4d698fe628f98",
+        "git_blob": "71e5953f621470a6ec4f387934fe92afb544c122"
+      },
+      "sdk": {
+        "bytes": 54520,
+        "sha256": "db9365ac8db5e06ff233c2dfe038c8830e0222d09b2857b9cc568be9eda49ff1",
+        "git_blob": "a06493a8471019efc57a5c9681d84adbcec6d3ca"
+      }
+    },
+    {
+      "offset": 49152,
+      "native": {
+        "bytes": 42181,
+        "sha256": "ecc8ecace970c1b9326e30f0be2b7dbd69a1aa8e1cc885473424ef392bd2a959",
+        "git_blob": "6c923121400fad46c8e5f3ede3894bd19d340dc3"
+      },
+      "sdk": {
+        "bytes": 45008,
+        "sha256": "d428fb3aa1e4b0fd4f9ee4ec9f3c585bf504e2b21888c1366e85ea3bc9f1c908",
+        "git_blob": "4074d4c329630554929e3763e15afbdf789e0af3"
+      }
+    }
+  ]
+}

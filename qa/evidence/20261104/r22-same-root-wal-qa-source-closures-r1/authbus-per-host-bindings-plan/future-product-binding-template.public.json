@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.mac-current-wal-future-product-binding-template.r1",
+  "status": "SOURCE_TEMPLATE_NOT_EXECUTABLE_NOT_ADMITTED",
+  "oldProduct": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "serverBytes": 92408592,
+    "serverSha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+  },
+  "requestedSuccessor": {
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "normalTestCount": 61
+  },
+  "futureActual": {
+    "macNormalRoot": null,
+    "serverPath": null,
+    "serverBytes": null,
+    "serverSha256": null,
+    "serverFileInfoOriginalBlob": null,
+    "normalReceiptPath": null,
+    "normalReceiptRawBlob": null,
+    "normalReceiptSha256": null,
+    "nativeReceiptPath": null,
+    "nativeReceiptRawBlob": null,
+    "nativeReceiptSha256": null,
+    "combinedResultRawBlob": null,
+    "combinedResultSha256": null,
+    "combinedAuthorityRawBlob": null,
+    "rootQualificationReviewBlob": null
+  },
+  "proposedFreshFixtureRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-1c665-current-registry-wal-r1",
+  "actualFixtureAbsenceObserved": false,
+  "requiredSourceChanges": [
+    {
+      "file": "mac_current_outer_inputs_r2.py",
+      "names": [
+        "ROOT",
+        "NORMAL_ROOT",
+        "BINARY_SHA",
+        "BINARY_BYTES",
+        "COMMIT",
+        "TREE",
+        "PUBLIC_INPUTS.normal",
+        "PUBLIC_INPUTS.native_build"
+      ],
+      "condition": "Fill only from accepted new actual Mac normal/source/binary receipts; no guessed target path or inherited binary hash."
+    },
+    {
+      "file": "mac_current_outer_wal_r1.py",
+      "names": [
+        "ROOT",
+        "COMMIT",
+        "TREE",
+        "BINARY",
+        "BINARY_SHA",
+        "BINARY_BYTES",
+        "sourceGeneration"
+      ]
+    },
+    {
+      "file": "mac_owned_launchd_r3.py",
+      "names": [
+        "ROOT",
+        "LABELS",
+        "SERVER",
+        "SERVER_SHA"
+      ]
+    },
+    {
+      "file": "mac_current_server_owner_r1.py",
+      "names": [
+        "ROOT",
+        "BINARY",
+        "BINARY_SHA",
+        "BINARY_BYTES"
+      ]
+    },
+    {
+      "files": [
+        "mac_current_fixture_materializer_r1.py",
+        "mac_current_capture_entry_wal_r1.py",
+        "mac_current_phase_owner_r2.py",
+        "mac_t5_volume_guard_r1.py",
+        "mac_current_cycle_r2.mjs",
+        "mac_single_native_r2.mjs",
+        "mac_auth_rows_cas_r1.mjs"
+      ],
+      "change": "Only the fixed new absolute fixture ROOT; no consumer/capture/CAS/deadline logic changes."
+    }
+  ],
+  "derivedArtifacts": [
+    "22 source hashes",
+    "candidate product and source pins",
+    "inert source/document tuples and payload hash",
+    "fresh inert request key and exact stdin",
+    "fresh runtime source/candidate hashes and key",
+    "source diffs and invariant proof"
+  ],
+  "retainedExact": [
+    "mac_guarded_current_capture_r3.py",
+    "mac_registry_readonly_wal_r1.py",
+    "all immutable/native/WAL public actual proof bytes",
+    "four frozen credential-source admission pins",
+    "current config and installed-code closed set",
+    "all original budget constants",
+    "registry WAL maximum5969912 bytes",
+    "row1048576 and aggregate8388608 bytes",
+    "before/after whole capsule equality",
+    "five-agent independent initial/cold/inverse and raw-only CAS semantics"
+  ],
+  "authority": {
+    "oldDf026ConsumerResultNotTransferred": true,
+    "newNormal61IsNotConsumerQualification": true,
+    "macCurrentHostSubmissionAuthorized": false,
+    "inertSubmissionAuthorized": false
+  }
+}

@@ -1,0 +1,2333 @@
+{
+  "all_clients_and_backups_migrated": false,
+  "assessment_date_utc": "2026-11-04",
+  "collector": {
+    "credential_payloads_not_opened_by_scanner": true,
+    "exceptional_additional_projection": "Only the confirmed Mac gateway startup env file and confirmed proxy LaunchAgent HTTP_PROXY/HTTPS_PROXY/ALL_PROXY fields, case variants, and NO_PROXY loopback booleans; no source/exec, interpolation, raw values, or unrelated env values.",
+    "path": "/home/qian/heptabao-current-dependency-inventory-20261029-r1/current_dependency_inventory.py",
+    "process_arguments_and_environments_not_read": true,
+    "second_stage_scope": "Only exact gateway/AuthBus FragmentPath and DropInPaths from fixed systemd results; no unit-directory content scan.",
+    "sha256": "caf556db5a8bd1becd03bfa718e23b07d521372b9e17913e7a62d4f1ca954e2c",
+    "unchanged_on_all_hosts": true
+  },
+  "distinctions": [
+    "An installed or running service is not itself proof that current model traffic consumes it.",
+    "A historical backup or recovery directory is not itself an active producer or restore-consumer registration.",
+    "No matching process, port, or standard config in this bounded view does not prove all applications or backups absent.",
+    "This inventory does not start, stop, restart, reconfigure, initialize, unseal, migrate, or delete any application/service.",
+    "Current-session owned HA and AuthBus fixtures and their passed receipts are not installed production deployments.",
+    "Apple filevaultd matched the broad family-name filter; it is unrelated to OpenBao/HeptaBao and excluded from the matrix.",
+    "X230 active Bao container is separate from the inactive SSH proxy; its declared oracle name and network isolation do not alone establish disposability or ownership."
+  ],
+  "full_inventory_qualified": false,
+  "full_replacement_qualified": false,
+  "hosts": [
+    {
+      "backup_recovery_assessment": {
+        "active_backup_producer_or_restore_consumer_proven": false,
+        "current_relay_cold_restore_fixture": {
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-relay-recovery-20261104-a1/startup-cold-restore-r3/result.public.json",
+          "positive_credential_selection_qualified": false,
+          "production_migration_proven": false,
+          "scope": "Six resident roles, two cold phases: fail-closed startup evidence only.",
+          "sha256": "98ba3654909af2377bce9550086161af2d6e1f85097c5be7a37da905a43e1e68"
+        },
+        "historical_materials": "The .openclaw/backups mac-trnm auth-fallback files and .openclaw-backups metadata are historical material; their contents were not opened. The heptabao-backup-reference-projection-chat directory contains inspection artifacts.",
+        "remaining": "Exact active backup/restore registration and production consumer migration completeness remain unproven; no historical path is promoted to active dependency."
+      },
+      "cleanup_qualified": false,
+      "configured_authbus_client": {
+        "authbus": {
+          "binding_paths": {
+            "caFile": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+            "roleIdFile": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+            "secretIdFile": "/Users/qianqi/.openclaw/credentials/authbus/secret_id"
+          },
+          "enabled": true,
+          "endpoint": {
+            "host": "100.66.117.33",
+            "path_query_fragment_omitted": false,
+            "port": 8200,
+            "references_j3160": true,
+            "scheme": "https",
+            "userinfo_omitted": false
+          },
+          "host_id": "mac"
+        },
+        "config_path": "/Users/qianqi/.openclaw/openclaw.json",
+        "config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+        "configured_agents": [
+          {
+            "effective_default_agent_dir": "/Users/qianqi/.openclaw/agents/main/agent",
+            "id": "main",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/Users/qianqi/.openclaw/agents/trnm/agent",
+            "id": "trnm",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/Users/qianqi/.openclaw/agents/hepta-ui/agent",
+            "id": "hepta-ui",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/Users/qianqi/.openclaw/agents/hepta/agent",
+            "id": "hepta",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/Users/qianqi/.openclaw/agents/hepta-backend/agent",
+            "id": "hepta-backend",
+            "model_primary": "openai/gpt-5.6-sol"
+          }
+        ],
+        "live_request_consumption_proven": false,
+        "local_provider_endpoints": [
+          {
+            "endpoint": {
+              "host": "127.0.0.1",
+              "path_query_fragment_omitted": true,
+              "port": 11434,
+              "references_j3160": false,
+              "scheme": "http",
+              "userinfo_omitted": false
+            },
+            "provider": "ollama"
+          },
+          {
+            "endpoint": {
+              "host": "127.0.0.1",
+              "path_query_fragment_omitted": true,
+              "port": 11436,
+              "references_j3160": false,
+              "scheme": "http",
+              "userinfo_omitted": false
+            },
+            "provider": "mlx-local"
+          }
+        ]
+      },
+      "current_full_client_or_backup_inventory_proven": false,
+      "evidence_root": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1",
+      "exact_current_service_entrypoints": [],
+      "historical_backup_material_inventory": [
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/Users/qianqi/.openclaw/backups",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 3
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/Users/qianqi/.openclaw-backups",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 0
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/Users/qianqi/heptabao-backup-reference-projection-chat-20261025-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 9
+        }
+      ],
+      "historical_dependency_receipt": {
+        "captured_at_utc": "2026-11-03T17:44:37.697737+00:00",
+        "path": "/Users/qianqi/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+        "sha256": "0305f24cb33769873efa0277159a2da49cb449b1698d2a4477cb85c43584878e",
+        "source_files_read_exactly": 24,
+        "unresolved_literal_path_count": 56
+      },
+      "historical_service_refs_reusable_by_current_identical_sha": [],
+      "host": "mac",
+      "installed_service_states": [
+        {
+          "domain": "current_bootstrap",
+          "last_exit_status": 0,
+          "loaded": true,
+          "manager": "launchd",
+          "pid": 964,
+          "unit": "ai.openclaw.authbus-relay.proxy"
+        },
+        {
+          "domain": "current_bootstrap",
+          "last_exit_status": 0,
+          "loaded": true,
+          "manager": "launchd",
+          "pid": 983,
+          "unit": "ai.openclaw.authbus-relay.bridge"
+        },
+        {
+          "domain": "current_bootstrap",
+          "last_exit_status": 0,
+          "loaded": true,
+          "manager": "launchd",
+          "pid": 987,
+          "unit": "ai.openclaw.authbus-relay.egressguard"
+        },
+        {
+          "domain": "current_bootstrap",
+          "last_exit_status": 0,
+          "loaded": true,
+          "manager": "launchd",
+          "pid": 989,
+          "unit": "ai.openclaw.authbus-relay.front"
+        },
+        {
+          "domain": "current_bootstrap",
+          "last_exit_status": -15,
+          "loaded": true,
+          "manager": "launchd",
+          "pid": 18437,
+          "unit": "ai.openclaw.gateway"
+        },
+        {
+          "domain": "gui/501",
+          "loaded": true,
+          "manager": "launchd",
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.bridge.plist",
+          "pid": 983,
+          "program": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge",
+          "state": "running",
+          "unit": "ai.openclaw.authbus-relay.bridge"
+        },
+        {
+          "domain": "gui/501",
+          "loaded": true,
+          "manager": "launchd",
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.egressguard.plist",
+          "pid": 987,
+          "program": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard",
+          "state": "running",
+          "unit": "ai.openclaw.authbus-relay.egressguard"
+        },
+        {
+          "domain": "gui/501",
+          "loaded": true,
+          "manager": "launchd",
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist",
+          "pid": 989,
+          "program": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront",
+          "state": "running",
+          "unit": "ai.openclaw.authbus-relay.front"
+        },
+        {
+          "domain": "gui/501",
+          "loaded": true,
+          "manager": "launchd",
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist",
+          "pid": 964,
+          "program": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api",
+          "state": "running",
+          "unit": "ai.openclaw.authbus-relay.proxy"
+        },
+        {
+          "domain": "gui/501",
+          "loaded": true,
+          "manager": "launchd",
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+          "pid": 18437,
+          "program": "/bin/sh",
+          "state": "running",
+          "unit": "ai.openclaw.gateway"
+        }
+      ],
+      "legacy_relay_consumption": {
+        "all_relay_consumers_absent_proven": false,
+        "business_gateway_uses_relay_proven": false,
+        "configured_agent_models_are": "openai/gpt-5.6-sol",
+        "current_gateway_proxy_relation": "No standard HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/no_proxy-family assignment was found in the confirmed gateway env file by this allowlisted parser; ambient process environment and actual request routes were not read.",
+        "default_model_transport_qualification_not_in_this_inventory": true,
+        "exact_front_bridge_state_binding": {
+          "binding_classification": "relayfront internal launch binding; not a gateway or default-model consumer witness",
+          "credential_or_env_values_emitted": false,
+          "exact_state_path_bindings": [
+            {
+              "argument_index": 10,
+              "key": "ProgramArguments",
+              "path": "/Users/qianqi/.openclaw/authbus-relay/state/bridge.json",
+              "preceding_flag": null
+            }
+          ],
+          "observed_at": "2026-11-04T05:06:51.939240+00:00",
+          "read_only": true,
+          "receipt_path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/mac-relay-internal-state-binding-r1.public.json",
+          "receipt_sha256": "b44dac5bd8eda6b31e1cea310f4ca41821d92a598143b968e2ce445ee0c06e9d",
+          "schema": "heptabao.mac-relay-internal-state-binding.v1",
+          "source_identical_to_nov3": true,
+          "source_key": "ProgramArguments",
+          "source_path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist",
+          "source_sha256": "4a7f95604ff9576fbd274152616be02842c4b90355dfe379b3c9198d0534fc00",
+          "state_payload_opened": false
+        },
+        "historical_materials_and_logs": "Nov3 literal references to relay logs, PROVENANCE.md, auth files, and historical backups are classified as startup paths or history; their existence is not current model-consumer evidence.",
+        "internal_relation": "Installed cli-proxy-api HTTP_PROXY and HTTPS_PROXY point to the running egressguard listener at http://127.0.0.1:8819. relayfront ProgramArguments[10] refers to authbus-relay/state/bridge.json. These are relay-internal startup relationships.",
+        "observed_local_provider_endpoint_projection_has_relay_ports_8317_8320_8819": false,
+        "running_installed_services": [
+          "ai.openclaw.authbus-relay.proxy",
+          "ai.openclaw.authbus-relay.bridge",
+          "ai.openclaw.authbus-relay.egressguard",
+          "ai.openclaw.authbus-relay.front"
+        ],
+        "running_only_does_not_prove_business_use": true,
+        "static_env_proxy_projection": {
+          "gateway": {
+            "no_proxy_fields": {},
+            "proxy_fields": {},
+            "source_key_binding": "gateway.plist ProgramArguments[2] -> wrapper $1 -> . \"$env_file\"",
+            "source_metadata": {
+              "bytes": 722,
+              "inode": 312351798,
+              "mode": "0o600",
+              "mtime_ns": 1789439865009181000,
+              "path": "/Users/qianqi/.openclaw/service-env/ai.openclaw.gateway.env",
+              "stable_during_projection": true
+            },
+            "static_guard_kind": "regular_file_exists",
+            "wrapper_env_source_proven": true,
+            "wrapper_source_sha256": "08abc38cdc39727ed8580697adac8004bbac7ee7647c9d3d3c96a7fe403cf75a"
+          },
+          "live_effective_transport_route_proven": false,
+          "observed_at": "2026-11-04T05:10:22.753598+00:00",
+          "process_environment_read": false,
+          "raw_lines_or_raw_values_emitted": false,
+          "read_only": true,
+          "receipt_path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/mac-installed-proxy-env-r1.public.json",
+          "receipt_sha256": "3dbcf43e560ef771c965eee0793d5e02e0b67b3e2ce19f6ea50909ec4930df74",
+          "relay_proxy": {
+            "no_proxy_fields": {
+              "NO_PROXY": {
+                "covers_ipv4_relay_loopback": true,
+                "covers_ipv6_loopback": false,
+                "covers_localhost": true,
+                "unresolved": false
+              }
+            },
+            "proxy_fields": {
+              "HTTPS_PROXY": {
+                "configured": true,
+                "hostname": "127.0.0.1",
+                "port": 8819,
+                "scheme": "http",
+                "unresolved": false
+              },
+              "HTTP_PROXY": {
+                "configured": true,
+                "hostname": "127.0.0.1",
+                "port": 8819,
+                "scheme": "http",
+                "unresolved": false
+              }
+            },
+            "source_key": "EnvironmentVariables",
+            "source_metadata": {
+              "bytes": 1480,
+              "inode": 528719746,
+              "mode": "0o600",
+              "mtime_ns": 1786804633573214000,
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist",
+              "stable_during_projection": true
+            }
+          },
+          "schema": "heptabao.mac-installed-static-proxy-env-projection.v1",
+          "scope_note": "Static installed startup bindings only; current process environment and actual request route were not inspected.",
+          "source_or_exec_invoked": false,
+          "unrelated_environment_field_values_emitted_or_validated": false,
+          "userinfo_path_query_fragment_emitted": false
+        }
+      },
+      "named_processes": [
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api",
+          "inventory_process_itself": false,
+          "pid": 964,
+          "ppid": 1,
+          "uid": 501
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge",
+          "inventory_process_itself": false,
+          "pid": 983,
+          "ppid": 1,
+          "uid": 501
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard",
+          "inventory_process_itself": false,
+          "pid": 987,
+          "ppid": 1,
+          "uid": 501
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront",
+          "inventory_process_itself": false,
+          "pid": 989,
+          "ppid": 1,
+          "uid": 501
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+          "inventory_process_itself": false,
+          "pid": 18437,
+          "ppid": 1,
+          "uid": 501
+        }
+      ],
+      "observation_gaps": {
+        "failed_or_unavailable_queries": 8,
+        "metadata_scan_errors": 0,
+        "missing_scoped_paths": 0,
+        "process_executable_unavailable": 0,
+        "uncompleted_candidate_hashes": 0,
+        "unresolved_owner_runtimes_without_argv": 3
+      },
+      "observed_at": "2026-11-04T04:56:23.345880+00:00",
+      "observed_selected_listeners": [
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 8317,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            964
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 8819,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            987
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 8320,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            989
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 18789,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            18437
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "::1",
+            "path_query_fragment_omitted": false,
+            "port": 18789,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            18437
+          ],
+          "process_visible": true,
+          "selected_process": true
+        }
+      ],
+      "production_cutover_qualified": false,
+      "query_failures": [
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.004,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.005,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.005,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.005,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.005,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.004,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.004,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        },
+        {
+          "arguments_exported": false,
+          "elapsed_seconds": 0.003,
+          "executable": "/bin/launchctl",
+          "kind": "launchd_known_unit_print",
+          "owned_query_process_reaped": true,
+          "raw_stdout_exported": false,
+          "returncode": 113,
+          "stderr_captured": false,
+          "stdout_bytes": 0
+        }
+      ],
+      "runtime_receipt": {
+        "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+        "sha256": "a3b28d8d5ef760f81d269a4d6b1b664846dd0f373c1c8b214da5bf572238892f"
+      }
+    },
+    {
+      "backup_recovery_assessment": {
+        "all_clients_and_backups_migrated": false,
+        "archived_payloads_opened": false,
+        "backup_or_restore_executed": false,
+        "conditions": [
+          "Keep these historical inspection/recovery materials until external or manual restore consumers are classified.",
+          "A missing literal in seven current sources does not qualify all clients or all dynamic restore paths.",
+          "Before activating a restore consumer, bind exact archived configuration, current endpoint/namespace/credential/startup destination and demonstrate an isolated restore and rollback on the normal candidate."
+        ],
+        "current_source_count": 7,
+        "current_source_scope": [
+          "plugin entry",
+          "current configuration",
+          "three current service definitions",
+          "two current service helper programs"
+        ],
+        "exact_root_matches": 0,
+        "full_inventory_qualified": false,
+        "full_replacement_qualified": false,
+        "historical_backup_plaintext_credentials_read": false,
+        "host": "rog",
+        "live_restore_producer_for_these_roots_observed": false,
+        "observed_inactive_helper_units": 2,
+        "observed_live_gateway_units": 1,
+        "old_assets_deleted": false,
+        "out_of_scope_or_manual_restore_dependency_excluded": false,
+        "private_current_reference_sha256": "c98d15278d3d1be22c35b72932b0fdf84fc192a5b1249a6e238b8b6ad7251fbd",
+        "private_inventory_sha256": "149b3927cbd60293e7f9c4f5ce34c603070f48ac3d270cb8ffb8adba9bc9d036",
+        "production_changed": false,
+        "provider_called": false,
+        "receipt_path": "/home/qian-qi/heptabao-exact-backup-entry-audit-20261104-r1/public-review-r1/public/assessment.public.json",
+        "receipt_sha256": "4dc0121326f43f8560b7a747889418a932c381227159d5a0e65c675a9683d5b0",
+        "root_basename_matches": 0,
+        "roots": [
+          {
+            "label": "client-backup-routes-20261024-r1",
+            "observed_role": "route projection source and prior public report",
+            "query_wrapper_line": 143,
+            "report_output_open_line": 530,
+            "source_read_lines": [
+              98,
+              123
+            ],
+            "source_sha256": "1fa5d45f9331e8b05801b115f776970a927bbb31ca086301864e35282619e5c6"
+          },
+          {
+            "label": "client-startup-backup-20261024-r1",
+            "observed_role": "startup/backup inventory source and prior public report",
+            "query_wrapper_line": 90,
+            "report_output_open_line": 376,
+            "source_read_line": 72,
+            "source_sha256": "2e8d1a3bb4990590afb7977fb96e504c6f8b815964916c8726396a498996679e"
+          },
+          {
+            "base_read_line": 53,
+            "label": "legacy-consumer-backup-20261024-r2",
+            "nested_source_files_read": 3,
+            "observed_role": "reference projection source/report plus archived and extracted XDG origin inspection helpers/tests",
+            "report_output_open_line": 353,
+            "source_sha256": "e09bfddb478e910afa46746a1825adb6f6986f8da04c2805fb0d6ac4c640c803",
+            "unit_query_line": 237
+          }
+        ],
+        "schema": "heptabao.exact-backup-dependency-assessment.v1"
+      },
+      "cleanup_qualified": false,
+      "configured_authbus_client": {
+        "authbus": {
+          "binding_paths": {
+            "caFile": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+            "roleIdFile": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+            "secretIdFile": "/home/qian-qi/.openclaw/credentials/authbus/secret_id"
+          },
+          "enabled": true,
+          "endpoint": {
+            "host": "100.66.117.33",
+            "path_query_fragment_omitted": false,
+            "port": 8200,
+            "references_j3160": true,
+            "scheme": "https",
+            "userinfo_omitted": false
+          },
+          "host_id": "rog"
+        },
+        "config_path": "/home/qian-qi/.openclaw/openclaw.json",
+        "config_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+        "configured_agents": [
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/main/agent",
+            "id": "main",
+            "model_primary": "codex/gpt-6.1-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/azi2/agent",
+            "id": "azi2",
+            "model_primary": "codex/gpt-6.1-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/azi3/agent",
+            "id": "azi3",
+            "model_primary": "codex/gpt-6.1-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/azi4/agent",
+            "id": "azi4",
+            "model_primary": "codex/gpt-6.1-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/azi5/agent",
+            "id": "azi5",
+            "model_primary": "codex/gpt-6.1-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent",
+            "id": "zbj-llm-runtime",
+            "model_primary": "codex/gpt-6.1-sol"
+          }
+        ],
+        "live_request_consumption_proven": false,
+        "local_provider_endpoints": []
+      },
+      "current_full_client_or_backup_inventory_proven": false,
+      "evidence_root": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1",
+      "exact_current_service_entrypoints": [
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/home/qian-qi/.local/bin/openclaw-authbus-accept-after-restart",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "822b44dd4657e91ede788069acb352251369117b90bde6124e150c9442e5e65a"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "1f5435149ad6bccd48ee9bb6a6a26f1dbe8652d6634fa3da8b2494839257e8f9"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/home/qian-qi/.local/bin/openclaw-authbus-restart-when-idle",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "13b0f19464a97726db94b95a8ec48b1465d972f958b21f87b77a185c0b5d088f"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/usr/bin/node",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "987e55191a1a607ce3b56a79d115d58c8071e7e708ed5ee18208e60a45450f88"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "c28f7d2c30ad9ee1ccafe10be981f7b1de391eafab3592188809251ce45f7f3b"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "8e8a6132204886a1ac652627f590fc47c319dea3b6813a990744edac6dadf1cc"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a"
+        }
+      ],
+      "historical_backup_material_inventory": [
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/.openclaw/backups",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 0
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/heptabao-client-backup-routes-20261024-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 2
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/heptabao-client-startup-backup-20261024-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 2
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/heptabao-git-recovery-20261013",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 5
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/heptabao-legacy-consumer-backup-20261024-r2",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 11
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian-qi/heptabao-authbus-backup_restore_owned_r2.py",
+          "scope": "exact named source file",
+          "selected_file_count": 1
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": false,
+          "existed_at_historical_capture": true,
+          "limit_hit": true,
+          "root": "/home/qian-qi/heptabao-authbus-sdk-rog-snapshot-20261021-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 139
+        }
+      ],
+      "historical_dependency_receipt": {
+        "captured_at_utc": "2026-11-03T17:45:00.394723+00:00",
+        "path": "/home/qian-qi/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+        "sha256": "73ca4340975c1b0794a8ad391d1fedee77e13e1557c9fc13fa5c48634e12f1b0",
+        "source_files_read_exactly": 186,
+        "unresolved_literal_path_count": 204
+      },
+      "historical_service_refs_reusable_by_current_identical_sha": [
+        {
+          "literal_path_references": [],
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service",
+          "sha256": "822b44dd4657e91ede788069acb352251369117b90bde6124e150c9442e5e65a",
+          "systemd_static_fields": {
+            "After": [
+              "openclaw-gateway.service"
+            ],
+            "Type": [
+              "simple"
+            ]
+          }
+        },
+        {
+          "literal_path_references": [],
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+          "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+          "systemd_static_fields": {
+            "After": [
+              "openclaw-gateway.service"
+            ],
+            "Type": [
+              "simple"
+            ]
+          }
+        },
+        {
+          "literal_path_references": [
+            "/home/qian-qi",
+            "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/index.js",
+            "/usr/bin/node",
+            "/usr/bin:/home/qian-qi/.npm-global/bin:/usr/local/bin:/bin:/home/qian-qi/.local/bin:/home/qian-qi/bin:/home/qian-qi/.nix-profile/bin:/home/qian-qi/.local/share/pnpm/bin:/home/qian-qi/.local/share/pnpm"
+          ],
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+          "sha256": "987e55191a1a607ce3b56a79d115d58c8071e7e708ed5ee18208e60a45450f88",
+          "systemd_static_fields": {
+            "After": [
+              "network-online.target"
+            ],
+            "WantedBy": [
+              "default.target"
+            ],
+            "Wants": [
+              "network-online.target"
+            ]
+          }
+        }
+      ],
+      "host": "rog",
+      "installed_dormant_entries": [
+        "openclaw-authbus-accept-after-restart.service",
+        "openclaw-authbus-restart-when-idle.service"
+      ],
+      "installed_service_states": [
+        {
+          "ActiveState": "inactive",
+          "ControlPID": 0,
+          "DropInPaths": [
+            "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          ],
+          "FragmentPath": [
+            "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 0,
+          "SubState": "dead",
+          "UnitFileState": "static",
+          "domain": "user",
+          "manager": "systemd",
+          "unit": "openclaw-authbus-accept-after-restart.service"
+        },
+        {
+          "ActiveState": "inactive",
+          "ControlPID": 0,
+          "DropInPaths": [
+            "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          ],
+          "FragmentPath": [
+            "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 0,
+          "SubState": "dead",
+          "UnitFileState": "static",
+          "domain": "user",
+          "manager": "systemd",
+          "unit": "openclaw-authbus-restart-when-idle.service"
+        },
+        {
+          "ActiveState": "active",
+          "ControlPID": 0,
+          "DropInPaths": [
+            "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+            "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+            "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf"
+          ],
+          "FragmentPath": [
+            "/home/qian-qi/.config/systemd/user/openclaw-gateway.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 2436,
+          "SubState": "running",
+          "UnitFileState": "enabled",
+          "domain": "user",
+          "manager": "systemd",
+          "unit": "openclaw-gateway.service"
+        }
+      ],
+      "named_processes": [
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/usr/bin/node",
+          "inventory_process_itself": false,
+          "pid": 2436,
+          "ppid": 2217,
+          "uid": 1000
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": false,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/home/qian-qi/.openclaw/runtime/openai-codex-0.159.2/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex",
+          "inventory_process_itself": false,
+          "pid": 18212,
+          "ppid": 18205,
+          "uid": 1000
+        },
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": false,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/home/qian-qi/.openclaw/runtime/openai-codex-0.159.2/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host",
+          "inventory_process_itself": false,
+          "pid": 18739,
+          "ppid": 18212,
+          "uid": 1000
+        }
+      ],
+      "observation_gaps": {
+        "failed_or_unavailable_queries": 0,
+        "metadata_scan_errors": 0,
+        "missing_scoped_paths": 0,
+        "process_executable_unavailable": 0,
+        "uncompleted_candidate_hashes": 0,
+        "unresolved_owner_runtimes_without_argv": 14
+      },
+      "observed_at": "2026-11-04T04:56:27.534936+00:00",
+      "observed_selected_listeners": [
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 18789,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            2436
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 41417,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            2436
+          ],
+          "process_visible": true,
+          "selected_process": true
+        },
+        {
+          "local_endpoint": {
+            "host": "::1",
+            "path_query_fragment_omitted": false,
+            "port": 18789,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            2436
+          ],
+          "process_visible": true,
+          "selected_process": true
+        }
+      ],
+      "production_cutover_qualified": false,
+      "query_failures": [],
+      "remaining": "Gateway is currently active and installed AuthBus source still points to J3160. The two restart/accept helper units are inactive with held-cohort drop-ins. Nov4 seven-source audit did not establish the three historical backup roots as current restore producers; manual/out-of-scope consumers remain unexcluded.",
+      "runtime_receipt": {
+        "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+        "sha256": "038846d7c3059cc938cddf3a622a95e03047cee38ea27e8b3bf70f6bb69be278"
+      }
+    },
+    {
+      "backup_recovery_assessment": {
+        "active_backup_producer_or_restore_consumer_proven": false,
+        "historical_backup_source": "Nov3 dependency receipt lists original-plugin and SDK snapshots and the named backup_restore_owned test controller. Presence alone does not establish an active startup or restore consumer.",
+        "no_real_backup_payload_opened": true,
+        "restore_on_current_installed_service_proven": false
+      },
+      "cleanup_qualified": false,
+      "configured_authbus_client": {
+        "authbus": {
+          "binding_paths": {
+            "caFile": "/home/alex/.openclaw/credentials/authbus/ca.crt",
+            "roleIdFile": "/home/alex/.openclaw/credentials/authbus/role_id",
+            "secretIdFile": "/home/alex/.openclaw/credentials/authbus/secret_id"
+          },
+          "enabled": true,
+          "endpoint": {
+            "host": "100.66.117.33",
+            "path_query_fragment_omitted": false,
+            "port": 8200,
+            "references_j3160": true,
+            "scheme": "https",
+            "userinfo_omitted": false
+          },
+          "host_id": "pocket4"
+        },
+        "config_path": "/home/alex/.openclaw/openclaw.json",
+        "config_sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+        "configured_agents": [
+          {
+            "effective_default_agent_dir": "/home/alex/.openclaw/agents/main/agent",
+            "id": "main",
+            "model_primary": "openai/gpt-5.6-sol"
+          },
+          {
+            "effective_default_agent_dir": "/home/alex/.openclaw/agents/tg8687951891/agent",
+            "id": "tg8687951891",
+            "model_primary": "openai/gpt-5.6-sol"
+          }
+        ],
+        "live_request_consumption_proven": false,
+        "local_provider_endpoints": []
+      },
+      "current_full_client_or_backup_inventory_proven": false,
+      "evidence_root": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1",
+      "exact_current_service_entrypoints": [
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/home/alex/.local/bin/openclaw-authbus-restart-when-idle",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "d9d6ef9c576e9a8de9311bc87d3521b887c59b7726523f5942b0e1675491b0a9"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/usr/bin/node",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "6fda457a5c62fe4a8d9665602bf288b377eddf17af9d2426f4efbea10a2be457"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a"
+        },
+        {
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "projection": {
+            "command_entrypoints": [],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "3e46cac521594bbc6bab2133f55ce9cdaf26d8f30f8b6a0e60ba0a41214db1f0"
+        }
+      ],
+      "historical_backup_material_inventory": [
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/alex/.openclaw/backups",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 0
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/alex/heptabao-authbus-backup_restore_owned_r2.py",
+          "scope": "exact named source file",
+          "selected_file_count": 1
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/alex/heptabao-authbus-original-plugin-pocket4-snapshot-20261021-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 10
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": false,
+          "existed_at_historical_capture": true,
+          "limit_hit": true,
+          "root": "/home/alex/heptabao-authbus-sdk-pocket4-snapshot-20261021-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 149
+        }
+      ],
+      "historical_dependency_receipt": {
+        "captured_at_utc": "2026-11-03T17:45:08.661707+00:00",
+        "path": "/home/alex/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+        "sha256": "0a9fa106f634b202cd0635dce9e7980f98d200f0104553fccf250d06f4887f53",
+        "source_files_read_exactly": 177,
+        "unresolved_literal_path_count": 41
+      },
+      "historical_service_refs_reusable_by_current_identical_sha": [
+        {
+          "literal_path_references": [],
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+          "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+          "systemd_static_fields": {
+            "After": [
+              "openclaw-gateway.service"
+            ],
+            "Type": [
+              "simple"
+            ]
+          }
+        },
+        {
+          "literal_path_references": [
+            "/home/alex",
+            "/home/alex/.npm-global/lib/node_modules/openclaw/dist/index.js",
+            "/home/alex/.openclaw/gateway.systemd.env",
+            "/usr/bin/node",
+            "/usr/bin:/home/alex/.npm-global/bin:/usr/local/bin:/bin:/home/alex/.local/bin:/home/alex/bin:/home/alex/.nix-profile/bin"
+          ],
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service",
+          "sha256": "6fda457a5c62fe4a8d9665602bf288b377eddf17af9d2426f4efbea10a2be457",
+          "systemd_static_fields": {
+            "After": [
+              "network-online.target"
+            ],
+            "EnvironmentFile": [
+              "-/home/alex/.openclaw/gateway.systemd.env"
+            ],
+            "WantedBy": [
+              "default.target"
+            ],
+            "Wants": [
+              "network-online.target"
+            ]
+          }
+        }
+      ],
+      "host": "pocket4",
+      "installed_service_states": [
+        {
+          "ActiveState": "inactive",
+          "ControlPID": 0,
+          "DropInPaths": [
+            "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          ],
+          "FragmentPath": [
+            "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 0,
+          "SubState": "dead",
+          "UnitFileState": "static",
+          "domain": "user",
+          "manager": "systemd",
+          "unit": "openclaw-authbus-restart-when-idle.service"
+        },
+        {
+          "ActiveState": "inactive",
+          "ControlPID": 0,
+          "DropInPaths": [
+            "/home/alex/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+            "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          ],
+          "FragmentPath": [
+            "/home/alex/.config/systemd/user/openclaw-gateway.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 0,
+          "SubState": "dead",
+          "UnitFileState": "enabled",
+          "domain": "user",
+          "manager": "systemd",
+          "unit": "openclaw-gateway.service"
+        }
+      ],
+      "named_processes": [
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": true,
+          "classification": "selected_service_or_named_executable",
+          "executable": "/home/alex/.local/bin/ollama",
+          "inventory_process_itself": false,
+          "pid": 2792,
+          "ppid": 2472,
+          "uid": 1000
+        }
+      ],
+      "observation_gaps": {
+        "failed_or_unavailable_queries": 0,
+        "metadata_scan_errors": 0,
+        "missing_scoped_paths": 0,
+        "process_executable_unavailable": 0,
+        "uncompleted_candidate_hashes": 0,
+        "unresolved_owner_runtimes_without_argv": 30
+      },
+      "observed_at": "2026-11-04T04:56:31.003729+00:00",
+      "observed_selected_listeners": [
+        {
+          "local_endpoint": {
+            "host": "127.0.0.1",
+            "path_query_fragment_omitted": false,
+            "port": 11434,
+            "references_j3160": false,
+            "scheme": "tcp",
+            "userinfo_omitted": false
+          },
+          "pids": [
+            2792
+          ],
+          "process_visible": true,
+          "selected_process": true
+        }
+      ],
+      "production_cutover_qualified": false,
+      "query_failures": [],
+      "remaining": "Gateway is enabled but inactive and retains its held-cohort drop-in; installed AuthBus configuration still targets J3160. Current installed plugin/SDK/default-model positive credential lifecycle qualification is the next isolated task. Original plugin and SDK snapshot directories are historical recovery inputs, not proven active registrations; the bounded SDK snapshot inventory hit its limit.",
+      "runtime_receipt": {
+        "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+        "sha256": "159670081c74b6d9ecde63cefa2d685129858a578f9a18a8391ede7b860bf299"
+      }
+    },
+    {
+      "active_bao_container": {
+        "container": {
+          "configured_image": "ghcr.io/openbao/openbao:2.7.1",
+          "id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+          "image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "mounts": [],
+          "name": "/heptabao-openbao271-oracle-r46",
+          "network_mode": "none",
+          "pid": 2031520,
+          "port_bindings": {},
+          "ports": {},
+          "restart_policy": "no",
+          "started_at": "2026-10-10T17:14:55.727875418Z",
+          "status": "running"
+        },
+        "credential_payloads_opened": false,
+        "docker_executable": "/usr/bin/docker",
+        "env_or_command_arguments_requested": false,
+        "host": "x230",
+        "observed_at": "2026-11-04T05:05:19.255006+00:00",
+        "read_only": true,
+        "receipt_path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/x230-bao-container-r1.public.json",
+        "receipt_sha256": "79702c966e5c081e7e01b342a56d0f52bdc1b26b63073d1efe4d12676558443d",
+        "returncode": 0,
+        "schema": "heptabao.exact-bao-container-metadata.v1",
+        "selected_container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+        "selection_evidence": "exact cgroup of observed comm=bao pid2031533; no other container inventory",
+        "state_changed": false
+      },
+      "active_bao_image_identity": {
+        "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+        "credential_values_read_or_emitted": false,
+        "env_or_command_arguments_requested": false,
+        "exact_selected_image_id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+        "host": "x230",
+        "image": {
+          "architecture": "amd64",
+          "created": "2026-10-01T13:32:54Z",
+          "id": "sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf",
+          "os": "linux",
+          "repo_digests": [
+            "ghcr.io/openbao/openbao@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
+          ],
+          "repo_tags": [
+            "ghcr.io/openbao/openbao:2.7.1"
+          ],
+          "revision_label": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+          "source_label": "https://github.com/openbao/openbao",
+          "version_label": "v2.7.1"
+        },
+        "init_unseal_or_data_api_called": false,
+        "observed_at": "2026-11-04T05:06:03.528585+00:00",
+        "read_only": true,
+        "receipt_path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/x230-bao-image-identity-r1.public.json",
+        "receipt_sha256": "513cb2a7a54ad21bf5a0d8270641f5b02a023f281f2dd09dc38289bf1353960c",
+        "returncode": 0,
+        "schema": "heptabao.exact-bao-container-image-identity.v1"
+      },
+      "backup_recovery_assessment": {
+        "destination": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture",
+        "offhost_captured_backup_recovery_qualified": true,
+        "positive_current_credential_or_sdk_recovery_qualified": false,
+        "production_cutover_qualified": false,
+        "receipts": [
+          {
+            "fields": {
+              "captureDate": {
+                "type": "str"
+              },
+              "captureSha256": {
+                "type": "str"
+              },
+              "copyElapsedSeconds": 681.12,
+              "credentialValuesPublished": false,
+              "currentCredentialValidityQualified": false,
+              "currentSdkRecoveryQualified": false,
+              "elapsedSeconds": 33.205,
+              "fullCurrentInventoryQualified": false,
+              "host": {
+                "type": "str"
+              },
+              "keyTransferred": false,
+              "lanCopyComplete": true,
+              "liveSourceDatabaseOpened": false,
+              "onlyDeclaredCapturedBackup": true,
+              "productionChanged": false,
+              "productionCutoverQualified": false,
+              "providerCalled": false,
+              "restoreStarted": false,
+              "schema": "heptabao.offhost-cipher-input-binding.v1",
+              "sdkCalled": false,
+              "sourceMapSha256": {
+                "type": "str"
+              },
+              "stage": {
+                "type": "str"
+              },
+              "status": "passed",
+              "tarBytes": 6986526720,
+              "tarSha256": {
+                "type": "str"
+              }
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+            "schema": "heptabao.offhost-cipher-input-binding.v1",
+            "sha256": "1ec6333a77536cee407da153416e255cab8a1cfe756aa3983ffd3800f6a1539f"
+          },
+          {
+            "fields": {
+              "captureDate": {
+                "type": "str"
+              },
+              "captureHelperModuleSha256": {
+                "type": "str"
+              },
+              "captureSha256": {
+                "type": "str"
+              },
+              "coldNonemptyDatabases": 7,
+              "credentialValuesPublished": false,
+              "currentCredentialValidityQualified": false,
+              "currentSdkRecoveryQualified": false,
+              "databaseChecks": {
+                "count": 7,
+                "item_keys": [
+                  "authRowsSha256",
+                  "bytes",
+                  "capturedTransactionAuthRowsExact",
+                  "fileIdentity9Unchanged",
+                  "immutableReadOnly",
+                  "kind",
+                  "originalCaptureSchemaExact",
+                  "quickCheckPassed",
+                  "schemaSha256",
+                  "targetRelativePath"
+                ]
+              },
+              "declaredAbsentDatabaseFamilies": 5,
+              "elapsedSeconds": 289.068,
+              "exactCapturedAuthStores": 6,
+              "fullCurrentInventoryQualified": false,
+              "host": {
+                "type": "str"
+              },
+              "keyIdentity9Unchanged": true,
+              "keyTransferred": false,
+              "liveSourceDatabaseOpened": false,
+              "moduleRestore": {
+                "booleans_and_counts": {
+                  "allDeclaredCapturePathPresenceDigestSizeBindingsVerified": true,
+                  "allRestoredFileBytesAndAbsenceExact": true,
+                  "authenticatedAllCiphertextBeforeDestinationCreation": true,
+                  "chunks": 1260,
+                  "files": 23,
+                  "fullHostSafetyInventoryQualified": false,
+                  "historicalRecoveryClaimed": false,
+                  "ok": true,
+                  "plaintextBytes": 5239055378,
+                  "productionChanged": false,
+                  "sdkRecoveryQualified": false
+                },
+                "keys": [
+                  "allDeclaredCapturePathPresenceDigestSizeBindingsVerified",
+                  "allRestoredFileBytesAndAbsenceExact",
+                  "authenticatedAllCiphertextBeforeDestinationCreation",
+                  "captureSha256",
+                  "chunks",
+                  "files",
+                  "fullHostSafetyInventoryQualified",
+                  "historicalRecoveryClaimed",
+                  "ok",
+                  "plaintextBytes",
+                  "productionChanged",
+                  "schema",
+                  "scope",
+                  "sdkRecoveryQualified"
+                ]
+              },
+              "noSidecarsCreated": true,
+              "offhostCapturedBackupRecoveryQualified": true,
+              "onlyDeclaredCapturedBackup": true,
+              "originalRestoreBudgetSeconds": 300,
+              "originalRestoreDeadlinePreserved": true,
+              "privateRestoreRetained": true,
+              "productionChanged": false,
+              "productionCutoverQualified": false,
+              "providerCalled": false,
+              "restoreElapsedSeconds": 189.6,
+              "restoreModuleSha256": {
+                "type": "str"
+              },
+              "schema": "heptabao.offhost-captured-backup-recovery.v1",
+              "sdkCalled": false,
+              "stage": {
+                "type": "str"
+              },
+              "status": "passed"
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+            "schema": "heptabao.offhost-captured-backup-recovery.v1",
+            "sha256": "c2ab6efe5962279688f648feb04e27fec1f7e34bc45efd3fcae734467c6f912f"
+          },
+          {
+            "fields": {
+              "argv": {
+                "count": 5,
+                "item_keys": []
+              },
+              "controllerTimedOut": false,
+              "elapsedSeconds": 289.174,
+              "exitCode": 0,
+              "host": {
+                "type": "str"
+              },
+              "liveSourceOrProviderAccess": false,
+              "originalRestoreBudgetSeconds": 300,
+              "phase": "restore",
+              "pythonVersion": {
+                "type": "str"
+              },
+              "schema": "heptabao.offhost-recovery-bound-execution.v1",
+              "sourceSha256After": {
+                "booleans_and_counts": {},
+                "keys": [
+                  "current_db_snapshot_capture_main_applied_coherent_r5.py",
+                  "current_snapshot_recovery_r4.py",
+                  "offhost_recovery_driver.py"
+                ]
+              },
+              "sourceSha256Before": {
+                "booleans_and_counts": {},
+                "keys": [
+                  "current_db_snapshot_capture_main_applied_coherent_r5.py",
+                  "current_snapshot_recovery_r4.py",
+                  "offhost_recovery_driver.py"
+                ]
+              },
+              "sourceUnchanged": true,
+              "status": "passed"
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+            "schema": "heptabao.offhost-recovery-bound-execution.v1",
+            "sha256": "a87a41066552903662051ecb4353ce72cfdb25324ed753b8fb627c7e4a2177cc"
+          },
+          {
+            "fields": {
+              "allDeclaredCapturePathPresenceDigestSizeBindingsVerified": true,
+              "allRestoredFileBytesAndAbsenceExact": true,
+              "authenticatedAllCiphertextBeforeDestinationCreation": true,
+              "budgetSeconds": 300,
+              "captureDate": {
+                "type": "str"
+              },
+              "captureSha256": {
+                "type": "str"
+              },
+              "chunks": 1260,
+              "credentialValuesPublished": false,
+              "currentCredentialValidityQualified": false,
+              "currentSdkRecoveryQualified": false,
+              "elapsedSeconds": 189.6,
+              "files": 23,
+              "fullCurrentInventoryQualified": false,
+              "fullHostSafetyInventoryQualified": false,
+              "historicalRecoveryClaimed": false,
+              "keyTransferred": false,
+              "liveSourceDatabaseOpened": false,
+              "moduleSha256": {
+                "type": "str"
+              },
+              "ok": true,
+              "onlyDeclaredCapturedBackup": true,
+              "plaintextBytes": 5239055378,
+              "productionChanged": false,
+              "productionCutoverQualified": false,
+              "providerCalled": false,
+              "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1",
+              "scope": "exact declared closed capture only",
+              "sdkCalled": false,
+              "sdkRecoveryQualified": false,
+              "stage": {
+                "type": "str"
+              },
+              "status": "passed"
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+            "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1",
+            "sha256": "419113ce5eb7b7b9d911aac54ae31c212b62f9e422fbfdff41e0e281e502bade"
+          },
+          {
+            "fields": {
+              "destination": {
+                "type": "str"
+              },
+              "elapsedSeconds": 681.12,
+              "exitCode": 0,
+              "hostKeyAlias": {
+                "type": "str"
+              },
+              "lan": {
+                "type": "str"
+              },
+              "observedUnixMs": 1793683615337,
+              "originalRestoreBudgetSeconds": 300,
+              "plaintextCopied": false,
+              "schema": "heptabao.offhost-cipher-transport-copy.v1",
+              "secretKeyCopied": false,
+              "sourceIdentity9Unchanged": true,
+              "sourceMapSha256": {
+                "type": "str"
+              },
+              "sourceTarExpectedBytes": 6986526720,
+              "sourceTarExpectedSha256": {
+                "type": "str"
+              },
+              "stage": {
+                "type": "str"
+              },
+              "strictHostKeyChecking": true
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+            "schema": "heptabao.offhost-cipher-transport-copy.v1",
+            "sha256": "c54fb129905794e3edc9d11283c9d40a060d1138118534994a0cd6a36fbefaba"
+          },
+          {
+            "fields": {
+              "argv": {
+                "count": 5,
+                "item_keys": []
+              },
+              "controllerTimedOut": false,
+              "elapsedSeconds": 134.622,
+              "exitCode": 0,
+              "host": {
+                "type": "str"
+              },
+              "liveSourceOrProviderAccess": false,
+              "originalRestoreBudgetSeconds": 300,
+              "phase": "transport",
+              "pythonVersion": {
+                "type": "str"
+              },
+              "schema": "heptabao.offhost-recovery-bound-execution.v1",
+              "sourceSha256After": {
+                "booleans_and_counts": {},
+                "keys": [
+                  "current_db_snapshot_capture_main_applied_coherent_r5.py",
+                  "current_snapshot_recovery_r4.py",
+                  "offhost_recovery_driver.py"
+                ]
+              },
+              "sourceSha256Before": {
+                "booleans_and_counts": {},
+                "keys": [
+                  "current_db_snapshot_capture_main_applied_coherent_r5.py",
+                  "current_snapshot_recovery_r4.py",
+                  "offhost_recovery_driver.py"
+                ]
+              },
+              "sourceUnchanged": true,
+              "status": "passed"
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+            "schema": "heptabao.offhost-recovery-bound-execution.v1",
+            "sha256": "043dd7b7b381c0f7336ed9e0fbb249235145ed2c267e68f6b9ef0c92e61254c2"
+          },
+          {
+            "fields": {
+              "allExtractedFilesFsynced": true,
+              "allMemberSizesAndHashesExact": true,
+              "allMembersRegular": true,
+              "archiveRoot": {
+                "type": "str"
+              },
+              "captureDate": {
+                "type": "str"
+              },
+              "captureSha256": {
+                "type": "str"
+              },
+              "ciphertextBytes": 6985778296,
+              "credentialValuesPublished": false,
+              "currentCredentialValidityQualified": false,
+              "currentSdkRecoveryQualified": false,
+              "elapsedSeconds": 134.541,
+              "exclusiveCreateAndPrivateModes": true,
+              "extractedCipherFiles": 1261,
+              "fullCurrentInventoryQualified": false,
+              "keyTransferred": false,
+              "liveSourceDatabaseOpened": false,
+              "noExtraOrDuplicateMembers": true,
+              "onlyDeclaredCapturedBackup": true,
+              "productionChanged": false,
+              "productionCutoverQualified": false,
+              "providerCalled": false,
+              "restoreStarted": false,
+              "schema": "heptabao.offhost-captured-cipher-transport-verification.v1",
+              "sdkCalled": false,
+              "sourceMapSha256": {
+                "type": "str"
+              },
+              "stage": {
+                "type": "str"
+              },
+              "status": "passed",
+              "tarBytes": 6986526720,
+              "tarSha256": {
+                "type": "str"
+              }
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+            "schema": "heptabao.offhost-captured-cipher-transport-verification.v1",
+            "sha256": "fa98ca05b0dda7b81887c7a5e56b8fddd6069d76892a6ccecaa0c8ab01cab88d"
+          },
+          {
+            "fields": {
+              "allCurrentProfilesQualified": false,
+              "allOriginalSourceConnectionsAndFdsClosed": true,
+              "allSevenRawSourceObservationsUsedTwoHeldReads": true,
+              "appliedAtomicIdentityDifference": true,
+              "appliedObservationEndEvidence": {
+                "booleans_and_counts": {
+                  "bytes": 372,
+                  "present": true
+                },
+                "keys": [
+                  "bytes",
+                  "present",
+                  "relativePath",
+                  "sha256"
+                ]
+              },
+              "captureScope": {
+                "type": "str"
+              },
+              "coherencePolicy": {
+                "type": "str"
+              },
+              "coherencePolicyModuleSha256": {
+                "type": "str"
+              },
+              "configuredAgentDirectoryCount": 8,
+              "credentialValuesPublished": false,
+              "crossAgentTransactionSnapshotProven": false,
+              "databases": {
+                "count": 12,
+                "item_keys": [
+                  "agentId",
+                  "baselineAndCandidateByteIdentical",
+                  "bytes",
+                  "fullSqliteBackupSnapshot",
+                  "identity",
+                  "inlineMaterialProfiles",
+                  "kind",
+                  "localProfileCount",
+                  "nativeSidecarChangesObserved",
+                  "nativeSidecarsAfter",
+                  "nativeSidecarsBefore",
+                  "present",
+                  "profileDigests",
+                  "regular",
+                  "schemaSha256",
+                  "snapshotBytes",
+                  "snapshotJournalNormalizedToDelete",
+                  "snapshotSha256",
+                  "sourceAuthRowsAtTransactionSnapshotSha256",
+                  "sourceFamilyMetadataAfter",
+                  "sourceFamilyMetadataBefore",
+                  "sourceMainFileMetadataAfter",
+                  "sourceMainFileMetadataBefore",
+                  "sourceMainFileMetadataChangesObserved",
+                  "sourceObservedAtUnixMs",
+                  "sourcePath",
+                  "symlink",
+                  "targetRelativePath",
+                  "unresolvedReferenceProfiles"
+                ]
+              },
+              "elapsedSeconds": 127.08619436598383,
+              "externalWriterFenceClaimed": false,
+              "fixedProducerAfter": {
+                "booleans_and_counts": {
+                  "bytes": 54455
+                },
+                "keys": [
+                  "bytes",
+                  "metadata9",
+                  "sha256"
+                ]
+              },
+              "fixedProducerBefore": {
+                "booleans_and_counts": {
+                  "bytes": 54455
+                },
+                "keys": [
+                  "bytes",
+                  "metadata9",
+                  "sha256"
+                ]
+              },
+              "fixedSafetyCoherence": {
+                "booleans_and_counts": {
+                  "allSevenPresenceExact": true,
+                  "crossDatabaseTransactionClaimed": false,
+                  "externalWriterFenceClaimed": false,
+                  "oldFailedCaptureRequalified": false,
+                  "sixOtherSafetyRowsByteAndMetadataExact": true
+                },
+                "keys": [
+                  "allSevenPresenceExact",
+                  "appliedObservation",
+                  "crossDatabaseTransactionClaimed",
+                  "externalWriterFenceClaimed",
+                  "oldFailedCaptureRequalified",
+                  "policy",
+                  "sixOtherSafetyRowsByteAndMetadataExact"
+                ]
+              },
+              "freeBytesAtAdmission": 146944303104,
+              "fullHostSafetyInventoryQualified": false,
+              "host": {
+                "type": "str"
+              },
+              "largestAdmittedSnapshotBytes": 2606194688,
+              "nativeSqliteSidecarWritesExcluded": false,
+              "ok": true,
+              "onlyDeclaredAgentDirectoriesReboundInPrivateConfig": true,
+              "privateSnapshotsRetainedForExactSdkReadWriteColdRollback": true,
+              "productionChanged": false,
+              "providerCalled": false,
+              "rawSecurityMetadataCohortStable": false,
+              "rawStampDifference": true,
+              "requiredFreeBytes": 13765140480,
+              "rollbackExtraCopySpaceIncluded": true,
+              "runtimeBindingProven": false,
+              "schema": "heptabao.full-current-db-private-snapshot.r3",
+              "securityMetadata": {
+                "count": 7,
+                "item_keys": [
+                  "present",
+                  "relativePath",
+                  "sourceMetadataAfter",
+                  "sourceMetadataBefore",
+                  "sourceRawBytesAfter",
+                  "sourceRawSha256After"
+                ]
+              },
+              "securityMetadataCohortStable": false,
+              "securityStateCoherenceQualified": true,
+              "snapshotCompletedAtUnixMs": 1793603659039,
+              "sourceConfigBytesUnchanged": true,
+              "sourceConfigSha256": {
+                "type": "str"
+              },
+              "sourceCredentialDataWritesInvoked": false,
+              "sourceOwnerUid": 1000,
+              "sourcePhysicalByteEqualityClaimed": false,
+              "sourceSqliteMode": {
+                "type": "str"
+              },
+              "sqliteFamilySuffixes": {
+                "count": 4,
+                "item_keys": []
+              },
+              "totalLogicalSnapshotBytes": 5238976512,
+              "transportConfigured": false,
+              "transportMetadata": {
+                "count": 2,
+                "item_keys": [
+                  "configured",
+                  "family",
+                  "relativePath"
+                ]
+              },
+              "transportPendingOutcomesInterpreted": false,
+              "unknownTransportMutationsReplayed": false
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+            "schema": "heptabao.full-current-db-private-snapshot.r3",
+            "sha256": "013168479eca30d070821806a5c3e415bdbbcb5eb56cb1774ae912951a08cbc7"
+          },
+          {
+            "fields": {
+              "captureSha256": {
+                "type": "str"
+              },
+              "ciphertextFiles": {
+                "count": 1261,
+                "item_keys": [
+                  "bytes",
+                  "metadata10",
+                  "path",
+                  "sha256"
+                ]
+              },
+              "encryptedTar": {
+                "booleans_and_counts": {
+                  "bytes": 6986526720
+                },
+                "keys": [
+                  "bytes",
+                  "name",
+                  "sha256"
+                ]
+              },
+              "historicalCipherQualified": false,
+              "keyOrPlaintextIncluded": false,
+              "onlyMetadataManifestDecrypted": true,
+              "qualifiedManifestPlaintextSha256": {
+                "type": "str"
+              },
+              "schema": "heptabao.current-encrypted-only-transport-source-map.r1",
+              "separateRecoveryKeySha256": {
+                "type": "str"
+              },
+              "sourceCipherFilesHeldNoAtimeDoubleHashMetadata10Exact": true,
+              "sourceDirectoryMetadata9Exact": true,
+              "sourceFreshnessOnlyAtCapture": true,
+              "tarFullHashAndIndependentParseHashExact": true
+            },
+            "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+            "schema": "heptabao.current-encrypted-only-transport-source-map.r1",
+            "sha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500"
+          }
+        ],
+        "scope": "Nov3 report proves exact restore of 23 files, seven nonempty databases and six captured auth stores, with original 300-second restore deadline. It does not qualify current credential validity, current SDK consumption or all backup paths.",
+        "source": "Exactly declared closed captured encrypted backup, as pinned by the November 3 input/source-map receipts; no new source database or archive was opened."
+      },
+      "cleanup_qualified": false,
+      "configured_authbus_client": null,
+      "container_role_assessment": {
+        "configured_restart_policy": "no",
+        "created_by_current_task": false,
+        "disposable_or_empty_writable_layer_proven": false,
+        "formal_production_role": "unproven",
+        "host_port_bindings_observed": false,
+        "mounts_observed": false,
+        "must_not_be_conflated_with_inactive_proxy": true,
+        "network_mode": "none",
+        "observed_designation": "heptabao-openbao271-oracle-r46",
+        "volume_correspondence": "No mounted volume is exposed by the exact inspected container metadata. No assertion is made that its writable layer is empty or recoverable."
+      },
+      "current_full_client_or_backup_inventory_proven": false,
+      "evidence_root": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1",
+      "exact_current_service_entrypoints": [
+        {
+          "path": "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service",
+          "projection": {
+            "command_entrypoints": [
+              {
+                "command_executed": false,
+                "executable": "/usr/local/libexec/openclaw-authbus-relay/x230-openbao-proxy-generations/e40ddbe052e2060d87e4bd2bbb506ed6b13110df82f790ae70fa102d27e917d/preflight",
+                "field": "ExecStartPre",
+                "inline_code_present": false,
+                "path_references": []
+              },
+              {
+                "command_executed": false,
+                "executable": "/usr/bin/ssh",
+                "field": "ExecStart",
+                "inline_code_present": false,
+                "path_references": []
+              }
+            ],
+            "endpoints": [],
+            "mentions_j3160": false,
+            "path_references": [],
+            "projection_bound_hit": false,
+            "runtime_consumption_verified": false
+          },
+          "sha256": "328d66721c695abe23d24a1165c6c3b96ad54936ce853cdac1bde1aaf1e9be8b"
+        }
+      ],
+      "historical_backup_material_inventory": [
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian/heptabao-offhost-current-recovery-20261103-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 4
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian/heptabao-offhost-current-recovery-20261103-r2",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 18
+        },
+        {
+          "active_dependency_proven": false,
+          "complete_within_declared_discovery": true,
+          "existed_at_historical_capture": true,
+          "limit_hit": false,
+          "root": "/home/qian/heptabao-r28-archive-recovery-20261022-r1",
+          "scope": "depth<=3 selected source/manifest/archive names; excludes node_modules/.git/target/runtime.noindex; not full backup enumeration",
+          "selected_file_count": 108
+        }
+      ],
+      "historical_dependency_receipt": {
+        "captured_at_utc": "2026-11-03T17:37:27.565153+00:00",
+        "path": "/home/qian/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+        "sha256": "9f14f402af97052e582be1cda70338d3fde3697d20be412599cb14974d0ca7cb",
+        "source_files_read_exactly": 136,
+        "unresolved_literal_path_count": 59
+      },
+      "historical_service_refs_reusable_by_current_identical_sha": [
+        {
+          "literal_path_references": [
+            "/home/qian-qi/.ssh/id_ed25519",
+            "/home/qian-qi/.ssh/known_hosts.openclaw-mac",
+            "/usr/bin/ssh",
+            "/usr/local/libexec/openclaw-authbus-relay/x230-openbao-proxy-generations/e40ddbe052e2060d87e4bd2bbb506ed6b13110df82f790ae70fa102d27e917d/preflight"
+          ],
+          "path": "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service",
+          "sha256": "328d66721c695abe23d24a1165c6c3b96ad54936ce853cdac1bde1aaf1e9be8b",
+          "systemd_static_fields": {
+            "After": [
+              "network-online.target tailscaled.service"
+            ],
+            "Group": [
+              "qian"
+            ],
+            "Type": [
+              "simple"
+            ],
+            "User": [
+              "qian"
+            ],
+            "WantedBy": [
+              "multi-user.target"
+            ],
+            "Wants": [
+              "network-online.target tailscaled.service"
+            ]
+          }
+        }
+      ],
+      "host": "x230",
+      "installed_service_states": [
+        {
+          "ActiveState": "inactive",
+          "ControlPID": 0,
+          "DropInPaths": [],
+          "FragmentPath": [
+            "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service"
+          ],
+          "LoadState": "loaded",
+          "MainPID": 0,
+          "SubState": "dead",
+          "UnitFileState": "disabled",
+          "domain": "system",
+          "manager": "systemd",
+          "unit": "openclaw-authbus-x230-openbao-proxy.service"
+        }
+      ],
+      "named_processes": [
+        {
+          "arguments_or_environment_read": false,
+          "associated_selected_unit": false,
+          "classification": "selected_service_or_named_executable",
+          "executable": null,
+          "executable_error_class": "PermissionError",
+          "inventory_process_itself": false,
+          "pid": 2031533,
+          "ppid": 2031520,
+          "uid": 100
+        }
+      ],
+      "observation_gaps": {
+        "failed_or_unavailable_queries": 0,
+        "metadata_scan_errors": 1,
+        "missing_scoped_paths": 1,
+        "process_executable_unavailable": 1,
+        "uncompleted_candidate_hashes": 0,
+        "unresolved_owner_runtimes_without_argv": 4
+      },
+      "observed_at": "2026-11-04T04:56:35.468832+00:00",
+      "observed_selected_listeners": [],
+      "production_cutover_qualified": false,
+      "proxy_entrypoint": {
+        "command_arguments_emitted": false,
+        "credential_values_read_or_emitted": false,
+        "host": "x230",
+        "proxy_static_entrypoint": [
+          {
+            "executable": "/usr/bin/ssh",
+            "forwarding_mappings": [
+              {
+                "endpoint_mapping": "100.97.179.109:8200:127.0.0.1:8200",
+                "ssh_option": "-L"
+              }
+            ],
+            "ssh_destination_host": "100.77.61.24"
+          }
+        ],
+        "proxy_unit_sha256": "328d66721c695abe23d24a1165c6c3b96ad54936ce853cdac1bde1aaf1e9be8b",
+        "read_only": true,
+        "schema": "heptabao.x230-exact-proxy-and-selected-process.v1",
+        "selected_process_cgroup_metadata": [
+          "0::/system.slice/docker-f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9.scope"
+        ],
+        "selected_process_comm_only": [
+          {
+            "comm": "bao",
+            "pid": 2031533,
+            "ppid": 2031520,
+            "uid": 100
+          }
+        ],
+        "selected_process_query_returncode": 0
+      },
+      "query_failures": [],
+      "remaining": "The standard OpenClaw config is absent; the disabled SSH proxy is a dormant installed entry. An active network-isolated, oracle-named OpenBao 2.7.1 container remains an existing asset with production role/retention ownership unproven. No mounted data volume or published port was observed. Do not delete based solely on this metadata or qualified isolated candidate tests.",
+      "runtime_receipt": {
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+        "sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff"
+      },
+      "standard_openclaw_config_absent": true
+    }
+  ],
+  "known_excluded_unrelated_backup": {
+    "assessment_path": "/home/qian/heptabao-exact-backup-entry-audit-20261104-r1/public-review-r1/public/assessment.public.json",
+    "classification": "Prior exact PaperRAID source-ownership audit found no Bao/AuthBus/J3160 dependency in its four selected scripts. No PaperRAID payload, config, unit, or backup was newly read or changed in this assessment.",
+    "host": "x230",
+    "sha256": "0b1a02d8a97a94f83bbb0deab1c020e1949bc84ca87a9791e0b37e3d21f77843"
+  },
+  "legacy_cleanup_qualified": false,
+  "mac_and_main_are_one_physical_host": true,
+  "next_gates": [
+    {
+      "gate": 4,
+      "known_blocker": "Installed AuthBus configurations on Mac, ROG and Pocket4 still target J3160; production startup/client traffic has not been rebound to the qualified candidate by this work.",
+      "required_evidence": "Bind each exact installed consumer and credential source to the current candidate, then demonstrate its actual credential read/write, cold start and strict rollback before changing production traffic."
+    },
+    {
+      "gate": 4,
+      "known_blocker": "Pocket4 gateway is installed/enabled but inactive; held cohort drop-in remains installed.",
+      "required_evidence": "Classify the exact installed plugin/SDK/default model chain and its hold policy, then complete isolated positive credential lifecycle qualification. Do not remove the hold or infer why the unit is inactive solely from its file name."
+    },
+    {
+      "gate": 5,
+      "known_blocker": "All-client/all-backup migration completeness remains false; observed historical materials have not been established as safe to delete.",
+      "required_evidence": "Reconcile exact active consumers, installed dormant restart entries, and any actual backup/restore registrations; retain historical recovery evidence and old oracle assets until retention/ownership dependencies are resolved."
+    }
+  ],
+  "old_assets_deleted": false,
+  "physical_hosts": [
+    "mac",
+    "rog",
+    "pocket4",
+    "x230"
+  ],
+  "production_cutover_qualified": false,
+  "production_services_changed": false,
+  "provider_or_bao_data_api_called": false,
+  "publication": {
+    "cross_host_evidence_binding": "Mac/ROG/Pocket4 public hashes were returned by their exact runtime capture jobs; no credential or archive transfer is included.",
+    "local_x230_public_evidence_hashes_verified": [
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-client-dependency-audit-20261103-r1/dependencies.public.json",
+        "sha256": "9f14f402af97052e582be1cda70338d3fde3697d20be412599cb14974d0ca7cb"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+        "sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/x230-bao-container-r1.public.json",
+        "sha256": "79702c966e5c081e7e01b342a56d0f52bdc1b26b63073d1efe4d12676558443d"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/x230-bao-image-identity-r1.public.json",
+        "sha256": "513cb2a7a54ad21bf5a0d8270641f5b02a023f281f2dd09dc38289bf1353960c"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+        "sha256": "1ec6333a77536cee407da153416e255cab8a1cfe756aa3983ffd3800f6a1539f"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+        "sha256": "c2ab6efe5962279688f648feb04e27fec1f7e34bc45efd3fcae734467c6f912f"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+        "sha256": "a87a41066552903662051ecb4353ce72cfdb25324ed753b8fb627c7e4a2177cc"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+        "sha256": "419113ce5eb7b7b9d911aac54ae31c212b62f9e422fbfdff41e0e281e502bade"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+        "sha256": "013168479eca30d070821806a5c3e415bdbbcb5eb56cb1774ae912951a08cbc7"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+        "sha256": "c54fb129905794e3edc9d11283c9d40a060d1138118534994a0cd6a36fbefaba"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+        "sha256": "043dd7b7b381c0f7336ed9e0fbb249235145ed2c267e68f6b9ef0c92e61254c2"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+        "sha256": "fa98ca05b0dda7b81887c7a5e56b8fddd6069d76892a6ccecaa0c8ab01cab88d"
+      },
+      {
+        "exact": true,
+        "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+        "sha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500"
+      }
+    ],
+    "written_at": "2026-11-04T05:13:33.440994+00:00"
+  },
+  "read_only_operational_observation": true,
+  "real_backup_payloads_opened_or_extracted": false,
+  "schema": "heptabao.four-host-cutover-cleanup-assessment.v1",
+  "scope": "Current fixed service/process/listener queries, exact installed configuration and unit files, plus named November 3/4 public dependency and recovery receipts."
+}

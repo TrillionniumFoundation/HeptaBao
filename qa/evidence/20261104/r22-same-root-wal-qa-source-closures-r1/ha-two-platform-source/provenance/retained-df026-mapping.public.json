@@ -1,0 +1,148 @@
+{
+  "rog": {
+    "actual_normal_packet": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+    "root_full_review": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+    "mode_scope": "The guard requires the old immutable-output creation contract (0600 receipts, 0500 retained executables) and must observe it again. These artifact record pointers alone are not independent current metadata observations.",
+    "rows": [
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+        "bytes": 48188,
+        "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "json_pointer": null
+      },
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+        "bytes": 3137,
+        "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "60ee91f8996765b8a0ec42f8cb10e55a863d970c",
+        "json_pointer": null
+      },
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+        "bytes": 772,
+        "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "17f42f7984a5b335ba7b4bb3cd1d9a1d4dc59846",
+        "json_pointer": null
+      },
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-seed",
+        "bytes": 102260520,
+        "sha256": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "json_pointer": "/release_artifacts/heptabao-seed"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+        "bytes": 110339520,
+        "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "json_pointer": "/release_artifacts/heptabao-server"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+        "bytes": 189730456,
+        "sha256": "640fdb602cf264c29eb816a85c2a0e2763d66438b97e1c8e75564ad0a01d91e2",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "json_pointer": "/binary"
+      }
+    ]
+  },
+  "mac": {
+    "actual_normal_packet": "80c21ef4cf857c1f927da5daf6665662bbd05104",
+    "root_full_review": "1d9d9d72e687c68a7424af786d9ed0d960e3c697",
+    "mode_scope": "The guard requires the old immutable-output creation contract (0600 receipts, 0500 retained executables) and must observe it again. These artifact record pointers alone are not independent current metadata observations.",
+    "rows": [
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json",
+        "bytes": 49069,
+        "sha256": "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a",
+        "json_pointer": null
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json",
+        "bytes": 3331,
+        "sha256": "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "c0363a3e83861e3d09d877f710f1631563d0d446",
+        "json_pointer": null
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json",
+        "bytes": 800,
+        "sha256": "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e",
+        "mode_required": 384,
+        "source_kind": "complete actual public file bytes",
+        "source_blob": "ba9c52bd8f17f5ff7dbbf459acbcae04a13fe5f2",
+        "json_pointer": null
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+        "bytes": 86751008,
+        "sha256": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a",
+        "json_pointer": "/release_artifacts/heptabao-seed"
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "bytes": 92408592,
+        "sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a",
+        "json_pointer": "/release_artifacts/heptabao-server"
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "bytes": 153800944,
+        "sha256": "5a714ff2bc79561fb812272e325fb90c1941916f0d28f9ffb9c618710667bf69",
+        "mode_required": 320,
+        "source_kind": "actual combined result artifact path/bytes/SHA record; separately root-closed full normal qualification",
+        "source_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a",
+        "json_pointer": "/binary"
+      }
+    ]
+  },
+  "rog_target": {
+    "source_blob": "2a78cef6be77ea3d2efe31f425f168109d2e35b8",
+    "json_pointer": "/fresh_target_preparation/target_identity_after",
+    "full_identity_lossless": [
+      66306,
+      31606588,
+      1000,
+      1000,
+      16832,
+      3,
+      4096,
+      "1793852862522711011",
+      "1793852862522711011"
+    ],
+    "pinned_prefix": [
+      66306,
+      31606588,
+      1000,
+      1000,
+      16832
+    ],
+    "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "statement": "Historical actual create-only identity; current strict existence/resolve/stat/holders/flock remains mandatory. No claim that cache ctime/mtime/content is immutable."
+  }
+}

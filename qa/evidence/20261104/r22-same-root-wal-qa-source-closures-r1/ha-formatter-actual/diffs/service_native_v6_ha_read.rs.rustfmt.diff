@@ -1,0 +1,17 @@
+--- a/service_native_v6_ha_read.rs
++++ b/service_native_v6_ha_read.rs
+@@ -305,11 +305,9 @@
+     .map_err(|_| unavailable())?
+     .digest()
+         != committed.published().root_digest()
+-        || NativeHaCursor::decode(
+-            selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose(),
+-        )?
+-        .matches_current(&committed)
+-        .is_err()
++        || NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
++            .matches_current(&committed)
++            .is_err()
+     {
+         // Equal root content can recur after intervening publications. The
+         // authenticated covered cursor still needs the actual current
