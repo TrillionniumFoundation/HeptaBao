@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.r12.checkpoint-prepublication-review.v1",
+  "as_of_utc": "2026-11-05T00:24:38Z",
+  "parent": "88375c6b93ed498449d1e8cd350d7136aecc7ab4",
+  "base_tree": "b7dfa950a8615a1c1293aebef796258d6f8288c0",
+  "new_tree": "98aa17f42714b3a72471f65e6a50b45eae812fa4",
+  "prefix_tree": "f8377a6d46755414e7285bb10bf08b33403e8c7f",
+  "root_merkle": {
+    "root_sha": "98aa17f42714b3a72471f65e6a50b45eae812fa4",
+    "trees_verified": 798
+  },
+  "prefix_merkle": {
+    "root_sha": "f8377a6d46755414e7285bb10bf08b33403e8c7f",
+    "trees_verified": 118
+  },
+  "previous_leaves": 6141,
+  "new_leaves": 6988,
+  "unchanged_previous_leaves": 6139,
+  "changed_previous_leaves": [
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "before": "cc0f01acbbb9fa8928e1c0b3dca1259fe3e3d9be",
+      "after": "e662c725a2893a961057276b0a4ea77f134af1ca"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "before": "27d0418b97e19620ace53ee1ae3cb67e5c8f0629",
+      "after": "dc0844733d4806df8046c76b2a994dff775f0df9"
+    }
+  ],
+  "added_evidence_leaves": 847,
+  "current_section_links_verified": 13,
+  "old_index_fields_preserved_except_as_of_utc": 73,
+  "old_doc_body_preserved": true,
+  "full_replacement_qualified": false
+}

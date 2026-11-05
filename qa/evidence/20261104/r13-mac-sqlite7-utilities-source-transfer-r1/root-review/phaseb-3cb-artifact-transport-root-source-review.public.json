@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-artifact-transport-source-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:38:11.151Z",
+  "source_tree": "11d10aaad4f3f36113c1c2bdcb2f826b189849bb",
+  "metadata_tree": "a523aa5c1404a46f88d8b20792d13ddfe49672ee",
+  "source_files": 35,
+  "source_bytes": 204900,
+  "metadata_files": 17,
+  "metadata_bytes": 17737,
+  "all_blobs_and_merkle_verified": true,
+  "full_four_candidate_sources_read": true,
+  "strict_full_diff_reconstruction": {
+    "relay": 1,
+    "sender": 1,
+    "receiver": 2,
+    "inert": 3
+  },
+  "carrier_three_full_sources_exact": true,
+  "metadata_three_original_sdk_pages_reconstructed_byte_exact": true,
+  "actual_files": [
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 320,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 320,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+      "size": 109074848,
+      "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "size": 794,
+      "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "size": 3200,
+      "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+    }
+  ],
+  "raw_two_json_receipts_match_qualified_normal_build": true,
+  "normal_scope": "Exact 44 plus separate 7 from tree cc9bf4ebfa811284520b76d93fba9759692b5637; not a PhaseB runtime pass.",
+  "unchanged_deadlines": {
+    "parent": 300,
+    "child_endpoint": 90,
+    "connect": 10,
+    "term": 5,
+    "kill": 5
+  },
+  "new_outer_seconds": {
+    "inert": 60,
+    "transport": 360
+  },
+  "fixed_ssh_trust_unchanged": true,
+  "new_create_only_destinations": true,
+  "transfer_scope": "Exactly three public artifacts; canonical source bundle separately gated.",
+  "inert_request": {
+    "name": "phaseb-3cb-artifact-inert-exact-dispatch.public.json",
+    "blob": "da1e7dd25dc3881e759191df426742e157bf0948",
+    "bytes": 46810,
+    "sha256": "e127897bc1620b7f272d9afe1d16cfce3ba65a97d2faedd2f05b394e164b95db"
+  },
+  "transfer_proposed_request": {
+    "name": "phaseb-3cb-artifact-transfer-exact-dispatch.public.json",
+    "blob": "38928bd29ddf032dbbaafc8b3631ecc83a7d2a83",
+    "bytes": 393,
+    "sha256": "1cfdc654773efc109b833c4861b58364b95697a3cfea5ba9850bca7c5303c8c4"
+  },
+  "decision": "GO one exact inert only. Require actual authority/raw stdout and byte/custody proof before separate transport GO.",
+  "product_or_cli_runtime_authorized": false,
+  "full_openbao271_replacement": false
+}

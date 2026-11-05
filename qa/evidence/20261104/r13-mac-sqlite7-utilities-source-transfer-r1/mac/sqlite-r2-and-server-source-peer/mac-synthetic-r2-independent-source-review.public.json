@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.mac-synthetic-r2-independent-source-review.r1",
+  "reviewer": "ha_validation",
+  "status": "SOURCE_REVIEW_PASS_SCOPED",
+  "source_tree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d",
+  "all_source_blobs_whole_verified": 16,
+  "controller": {
+    "bytes": 16915,
+    "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+    "strict_diff_hunks": 6
+  },
+  "carrier": {
+    "bytes": 10622,
+    "sha256": "255bbabe28601cf53d5ea53ff047b8f27b47ac23205043eb14cc132a36b54391",
+    "git_blob": "d6d9ffc04a93fd18e0dc639cd8271c4ae2359b3f",
+    "strict_diff_hunks": 7
+  },
+  "capture_library": {
+    "name": "mac_guarded_current_capture_r3.py",
+    "bytes": 23578,
+    "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+    "unchanged": true
+  },
+  "scope": {
+    "new_fixed_attempt": "capture-sqlite-synthetic-r1/reviewed-attempt-r2",
+    "old_failed_case_roots_reused": false,
+    "seven_case_names_and_predicates_unchanged": true,
+    "original_seconds": 45,
+    "outer_seconds": 60,
+    "query_seconds": 3,
+    "volume_query_seconds": 30,
+    "deadline_reset_added": false
+  },
+  "findings": [
+    {
+      "boundary": "Sixth drift case",
+      "result": "closed source correction",
+      "detail": "Retains the actual database() main object, appends one byte to that exact owned held inode, and invokes unchanged immutable_query(). Its first operation is inputs.verify(), before any sqlite3.connect or query callback. The exact drift refusal and zero-connection predicate remain; re-entering auth_rows/database no longer causes the earlier absence guard to intercept this test."
+    },
+    {
+      "boundary": "Inert append scope",
+      "result": "no additional source blocker",
+      "detail": "All six payloads are hash/size checked and AST/compiled before imports. Only the same three already-reviewed import-safe libraries are loaded. The actual T5 guard precedes writes. The carrier appends only qa/mac_capture_sqlite_synthetic_r2.py and a new candidate receipt using create-only writes; it does not recreate ROOT/qa or execute capture/synthetic entrypoints."
+    },
+    {
+      "boundary": "Preserved original files",
+      "result": "exact original receipt binding",
+      "detail": "All five full nine-field identities and byte/SHA pins exactly match the retained actual inert stdout blob cad3d4ecd0b33bcb3e21f9e9b4accb52cc2ed4de. The carrier checks named identity and complete held readback before and after the new source is written."
+    },
+    {
+      "boundary": "Deadline and closure",
+      "result": "unchanged",
+      "detail": "Commands outcomeUnknown includes command completion deadline, cleanup, stream closure and errors. Carrier and synthetic require final closure/anchor and the original 45-second deadline, followed by post-flush deadline and authoritative exit zero. Early candidate receipts cannot qualify."
+    }
+  ],
+  "dispatch": {
+    "inert_source_and_stdin_exact": true,
+    "synthetic_six_source_pins_exact": true,
+    "anchor_exact": true,
+    "keys_distinct": true,
+    "inert_key": "heptabao-mac-capture-synthetic-r2-source-inert-f3c6bb33-20261105-r2",
+    "synthetic_key": "heptabao-mac-immutable-sqlite-owned-synthetic-f3c6bb33-20261105-r2"
+  },
+  "prior_failure": {
+    "tree": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+    "retained": true,
+    "not_reclassified": true
+  },
+  "limitations": [
+    "This peer review used only Git and in-memory byte/diff/dispatch validation. It ran no host command, SQLite, child process or product fixture and does not grant runtime approval.",
+    "The supplied two selected-definition components and AST receipts were read as separate author evidence, not rerun or promoted to actual Mac seven-case qualification.",
+    "The previously noted public code-FD close failure reporting limitation remains: any such exception blocks complete/exit zero, but a failed report is not proof every public code descriptor closed.",
+    "Runtime binding is the observed Python/_sqlite3/source files and versions, not all dynamic libraries. No transactional/cross-agent snapshot or whole-database backup is claimed.",
+    "The B HA quiet window remains in force; all actual Mac dispatches remain root-coordinated."
+  ]
+}

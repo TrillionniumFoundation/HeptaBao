@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.mac-capture-r2-synthetic-actual-packet.v1",
+  "job": "1a1a918c6cf-fc05-3143",
+  "entries": [
+    {
+      "path": "intent.public.json",
+      "blob": "d8877cfe683c3124bf3bd17b27dccbd7f76b51f0",
+      "bytes": 2786,
+      "sha256": "0afc9b153a8a3fb43daba7226ddaabf8c5cbc526d96344c160b2898b4539eb1f"
+    },
+    {
+      "path": "start-ack.original.json",
+      "blob": "10a6b531efb02581136736901cbbcfb47fb72c96",
+      "bytes": 3651,
+      "sha256": "ff9001b878bcfc471b6497e8811701be0ff58fe77d20dec9f9144bc1e1473891"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+    },
+    {
+      "path": "process-read.original.json",
+      "blob": "056dc192cab3ed72ccb3f5c621dd869aaad1dea3",
+      "bytes": 50026,
+      "sha256": "07091d0b7e306fd5cd60ad131ffa901e1b8e635fda6f5202faaaf8fa60271c78"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "readback.public.json",
+      "blob": "2740a79687845fa0b76aa7cda3b10180f8b03a7f",
+      "bytes": 3301,
+      "sha256": "6a5e1fe72959927605d6a84e935c25ad1939ef827c5b8a044e0aa7b6ef6fbc9e"
+    }
+  ]
+}

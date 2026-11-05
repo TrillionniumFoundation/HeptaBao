@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.phaseb-3cb-public-source-export-manifest.v1",
+  "source_only": true,
+  "files": [
+    {
+      "path": "PLAN.public.json",
+      "bytes": 5456,
+      "sha256": "8ffd38211ccf82c7703abacb88c76aef170b1a40a13f1ff2f4b8d90cd35dfa11",
+      "blob": "0ff4fc5f7a7723eff728f5f3699fc755f2b2f7b4"
+    },
+    {
+      "path": "source/source_export_phaseb_3cb_r1.py",
+      "bytes": 15352,
+      "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+      "blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000"
+    },
+    {
+      "path": "reference/source_export_r10.py",
+      "bytes": 15303,
+      "sha256": "b337bdbecc2fda8c42e3e7bba0014b59fcc5d65635a7a6657bd3afb687f0ac8b",
+      "blob": "59b59eccd94463da2ddf78ecd7dc3d5b4b2d3b4b"
+    },
+    {
+      "path": "review/source-export-binding.review.diff",
+      "bytes": 2245,
+      "sha256": "03e2838a5d53b800c467df87f2faee9c94e380ccfbc9f6087f0e66448e078943",
+      "blob": "1477f0f4974c7579a0acd354fdeaa23374433b1a"
+    },
+    {
+      "path": "review/exact-substitution-inverse.public.json",
+      "bytes": 2420,
+      "sha256": "f12da8518b1ec70d62f90953d20b1f3a0eb0266a4a99cf420656478725af208e",
+      "blob": "378ab65abd194da4ff5a7ecc5e039c44f15980fc"
+    },
+    {
+      "path": "offline/check.py",
+      "bytes": 862,
+      "sha256": "404a517ea40c49985f6b0cf4993ee06785c979758c12a83c3837fe1460f678ee",
+      "blob": "f847038952758348b7496f8dd4e79cf5816d5250"
+    },
+    {
+      "path": "offline/execution.original.json",
+      "bytes": 2929,
+      "sha256": "f17c8c91f4a81d787815bb095776d8d4e6232d3a5e8f41958dacf41b8609d1b7",
+      "blob": "45877b794e2f690314570cb3d34eafdbab3d9bd2"
+    },
+    {
+      "path": "offline/result.public.json",
+      "bytes": 2725,
+      "sha256": "58119c1449a6c606db32d23aa7d78abf7d4348cfc357c8d344d8c17ae9ac1f56",
+      "blob": "a8b25aacfbe40f89a39a0878c0eb0fb4347a2608"
+    },
+    {
+      "path": "reference/normal-root-review.public.json",
+      "bytes": 9781,
+      "sha256": "20fcd665668ba59b7ee8a80dbf207d446e67197be307251f3bfae09106791ba2",
+      "blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2"
+    }
+  ]
+}

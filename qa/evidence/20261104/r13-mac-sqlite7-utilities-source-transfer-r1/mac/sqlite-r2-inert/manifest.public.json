@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.mac-capture-r2-inert-actual-packet.v1",
+  "sourceTree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d",
+  "job": "1a1a916944c-fc05-3131",
+  "entries": [
+    {
+      "path": "intent.public.json",
+      "blob": "bcf5419d13fcbe9a2f6252e8f5c593b38386f62f",
+      "bytes": 129399,
+      "sha256": "57f1dd0d7fd155e61d3b0172ef3dd39122e66c823ddabfb76064ab857d6f6f32"
+    },
+    {
+      "path": "start-ack.original.json",
+      "blob": "113799354c32e60689c686ad461aa9d67a68d379",
+      "bytes": 12111,
+      "sha256": "df1d0a3390b884b41d1182f94e0e35638b8bff18c1c4670880b58f5c29e18e32"
+    },
+    {
+      "path": "authority.original.json",
+      "blob": "73364704d46b2b28c9243fa011566a7309835689",
+      "bytes": 731,
+      "sha256": "6c17deb3992e5435fe38e57438ccb8f4d1e7d3ec7d755e46c1be73f30883abb3"
+    },
+    {
+      "path": "process-read.original.json",
+      "blob": "016e2d4f2a1509094e3489738a60fbd402df8da7",
+      "bytes": 21237,
+      "sha256": "7ef0d7a36958ae9a757a1f61ea5cc9a01315dd1758aafd90abdf4f730fac913e"
+    },
+    {
+      "path": "stdout.original.json",
+      "blob": "c989d18cd054b9938c9818fc4522b6b07ed26ee7",
+      "bytes": 6723,
+      "sha256": "26bda20f283879acc659f7f44999e580e785fec6105c98612e9d164237f642e7"
+    },
+    {
+      "path": "stderr.original.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "readback.public.json",
+      "blob": "b871975add3ab6959837f9c269db976287b2cd2a",
+      "bytes": 1363,
+      "sha256": "a6d5916db30bfd93bdb42516cb0c459fc5750555f07bf2717c1ac7d76144dce9"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.root.rog-finite-current-inventory-actual-review.r1",
+  "at_utc": "2026-11-05T00:59:32.375Z",
+  "job": "1a1a933167b-fc05-3294",
+  "status": "KNOWN_OLD_CONFIG_FENCE_MISMATCH_RETAINED",
+  "authority_exit": 1,
+  "authority_complete_durable": true,
+  "exact_frozen_request_and_unique_ack": true,
+  "stdout_bytes": 46630,
+  "stdout_sha256": "aee43560000aa4878be8c2175a3ab13e056ce0442e2bba1a9606ae0ffadd5531",
+  "three_lossless_stream_pages_exact": true,
+  "stderr_empty_double_eof": true,
+  "scope": {
+    "entries": 46,
+    "read_verified": 19,
+    "metadata": 25,
+    "verified_parent_absences": 2,
+    "passes": 17,
+    "planned_metadata": 434,
+    "performed_metadata": 430,
+    "queries": 4,
+    "owned_children_including_final_ps": 5,
+    "byte_reads": 147072,
+    "read_calls": 41,
+    "elapsed_seconds": 0.10996575400349684
+  },
+  "all_owned_reaped_empty_and_fds_closed": true,
+  "only_failing_prior_predicate": {
+    "id": "f001",
+    "path": "/home/qian-qi/.openclaw/openclaw.json",
+    "prior_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+    "current_bytes": 21229,
+    "current_sha256": "6e3659907327039243c60a10b2925edb51e83e4c73f0925c60279ae6a8169819",
+    "current_identity_decimal": [
+      "66306",
+      "27003871",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "21229",
+      "1793839765609832532",
+      "1793839765611832523"
+    ],
+    "independent_file_info_version": "66306:27003871:21229:1793839765609832532:1793839765611832523",
+    "independent_file_info_blob": "230099e155bf0a6c5aabb576990297b9d92ebcb2"
+  },
+  "four_prior_held_service_fences_unchanged": [
+    {
+      "id": "f035",
+      "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service",
+      "sha256": "822b44dd4657e91ede788069acb352251369117b90bde6124e150c9442e5e65a",
+      "matches": true
+    },
+    {
+      "id": "f036",
+      "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+      "sha256": "1f5435149ad6bccd48ee9bb6a6a26f1dbe8652d6634fa3da8b2494839257e8f9",
+      "matches": true
+    },
+    {
+      "id": "f037",
+      "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+      "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+      "matches": true
+    },
+    {
+      "id": "f038",
+      "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+      "sha256": "13b0f19464a97726db94b95a8ec48b1465d972f958b21f87b77a185c0b5d088f",
+      "matches": true
+    }
+  ],
+  "observed_current_config": {
+    "enabled": false,
+    "release_generation": 203,
+    "agents": [
+      {
+        "id": "main",
+        "model_primary": "codex/gpt-6.1-sol"
+      },
+      {
+        "id": "azi2",
+        "model_primary": "codex/gpt-6.1-sol"
+      },
+      {
+        "id": "azi3",
+        "model_primary": "codex/gpt-6.1-sol"
+      },
+      {
+        "id": "azi4",
+        "model_primary": "codex/gpt-6.1-sol"
+      },
+      {
+        "id": "azi5",
+        "model_primary": "codex/gpt-6.1-sol"
+      },
+      {
+        "id": "zbj-llm-runtime",
+        "model_primary": "codex/gpt-6.1-sol"
+      }
+    ],
+    "address_reference_j3160": true,
+    "j3160_contacted": false
+  },
+  "observed_units": [
+    {
+      "unit": "openclaw-gateway.service",
+      "active": "inactive",
+      "substate": "dead",
+      "pid": 0,
+      "condition": "yes"
+    },
+    {
+      "unit": "openclaw-authbus-accept-after-restart.service",
+      "active": "inactive",
+      "substate": "dead",
+      "pid": 0,
+      "condition": "no"
+    },
+    {
+      "unit": "openclaw-authbus-restart-when-idle.service",
+      "active": "inactive",
+      "substate": "dead",
+      "pid": 0,
+      "condition": "no"
+    }
+  ],
+  "owner_crontab_absent": true,
+  "no_configuration_or_service_changes": true,
+  "old_exit1_not_reclassified": true,
+  "current_config_not_restored_to_old_hash": true,
+  "non_atomic": true,
+  "all_clients_or_backup_migration_qualified": false,
+  "production_cutover_or_cleanup_qualified": false
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.mac-capture-r2-inert-readback.v1",
+  "status": "PASS_INERT_APPEND_ONLY",
+  "job": "1a1a916944c-fc05-3131",
+  "requestBlob": "bcf5419d13fcbe9a2f6252e8f5c593b38386f62f",
+  "ackMatchesExactRequest": true,
+  "authorityZeroCompleteDurable": true,
+  "stdoutSdkHexAndTextByteExact": true,
+  "stderrEmptyDoubleEof": true,
+  "oldFiveSourcesWholeBytesAndNineIdentityStringsBeforeAfterEqualOriginalActual": true,
+  "originalActualInertTree": "c7cebe933d0d8c856db55a0f9760a61e279486dc",
+  "newSource": {
+    "bytes": 16915,
+    "identity": [
+      "16777244",
+      "72548952",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "16915",
+      "1793838192075174831",
+      "1793838192075185998"
+    ],
+    "name": "mac_capture_sqlite_synthetic_r2.py",
+    "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "wholeReadbackVerified": true
+  },
+  "heldAnchorIdentitiesBeforeAfterEqualOriginalActual": true,
+  "allOwnedCommandsReapedEmptyAndDescriptorsClosed": true,
+  "elapsedSeconds": 0.19535262510180473,
+  "originalSeconds": 45,
+  "outerSeconds": 60,
+  "entrypointsExecuted": false,
+  "sqliteOrCurrentCaptureExecuted": false,
+  "productionOrServiceOrConsumerExecuted": false,
+  "syntheticAdmission": "Parent conditional GO satisfied for separate exact d8877cfe request; no current production capture authority."
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-artifact-inert-actual-review.r1",
+  "at_utc": "2026-11-05T00:46:20.485Z",
+  "tree": "075b547032a7fb1991958020cab0fcfa54bc1f6c",
+  "whole_files": 30,
+  "whole_bytes": 254489,
+  "merkle_trees": 5,
+  "job": "1a1a92752aa-fc05-320d",
+  "authority_zero_complete_durable": true,
+  "three_native_sdk_payloads_exact_from_original_pages": 5,
+  "ack_matches_frozen_request": true,
+  "stdout_hex_text_exact_bytes": 1531,
+  "stderr_empty_double_eof": true,
+  "raw_receipt_lossless_semantics_match_stdout": true,
+  "elapsed_ns_decimal": "49775269",
+  "three_sources_created_mode0600_uid1000_nlink1": true,
+  "source_whole_bytes_and_nine_field_identity_versions_match": true,
+  "sources": [
+    {
+      "name": "sender.py",
+      "bytes": 6737,
+      "sha256": "e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835",
+      "version": "2050:2231724:6737:1793839290607492047:1793839290612250314"
+    },
+    {
+      "name": "receiver.py",
+      "bytes": 8275,
+      "sha256": "dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31",
+      "version": "2050:2231725:8275:1793839290617095272:1793839290621926236"
+    },
+    {
+      "name": "relay.py",
+      "bytes": 15857,
+      "sha256": "5cb99ccf85533ad91f83f24e86c629395b545ebbf5c967dab36989805dd632da",
+      "version": "2050:2231726:15857:1793839290626532209:1793839290631350238"
+    }
+  ],
+  "source_compile_only": true,
+  "transport_started_yet": false,
+  "decision": "GO exact transfer request 38928bd29ddf032dbbaafc8b3631ecc83a7d2a83 only after the source-export job is authoritatively terminal with all its owned processes stopped. Retain original300/90/10/TERM5/KILL5 and new outer360. Unknown is retained without replay.",
+  "phaseb_product_authorized": false,
+  "full_openbao271_replacement": false
+}

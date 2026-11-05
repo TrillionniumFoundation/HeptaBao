@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.rog-current-finite-readonly-packet.r1",
+  "job": "1a1a933167b-fc05-3294",
+  "known_exit1_preserved": true,
+  "files": [
+    {
+      "path": "rog-inventory-readonly-start.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5976e09f7030e7147f0173750aaffbe90f24aaf8"
+    },
+    {
+      "path": "rog-inventory-readonly-start.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aacc9176e64f008bf232100f556b6f5a676ba836"
+    },
+    {
+      "path": "rog-inventory-readonly-authority-initial.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fda6072885b614c1dd5377ebd8d7ad59fe008809"
+    },
+    {
+      "path": "rog-inventory-readonly-authority-initial.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "026a68d6efeb79e28d94106aa3ec6fbc553e62ff"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-00000.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2387cd122cb86b0f3b7b8b60b0b3229bc9a4a0d3"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-00000.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1d06feba7018899d6e47f2cc7b68763b96c65108"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-16384.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1229906fba63a007dfa81d506a3d098b9f90d1d"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-16384.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67c39e89b65b6168678b4fe0d553dec6b1820c42"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-32768.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efb37ec90a42aa76d089949ec5064fdf10fe2c72"
+    },
+    {
+      "path": "rog-inventory-readonly-streams-32768.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ac4f0e24183a2e029d3a73a95a3f34d017e598c"
+    },
+    {
+      "path": "rog-inventory-readonly-stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f44ea5f57b3db01bbe04a4bf24629997ae480bb7"
+    },
+    {
+      "path": "rog-inventory-readonly-exact-go.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd0ea3b875ad240b677f4c38a4fa4b26f434d661"
+    },
+    {
+      "path": "rog-inventory-readonly-root-actual-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "74fc53bab49fb4eaf20d440f9c3384e03aad99d4"
+    },
+    {
+      "path": "rog-current-config-file-info.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "230099e155bf0a6c5aabb576990297b9d92ebcb2"
+    },
+    {
+      "path": "rog-current-config-file-info.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72a761992b0c3287075173d864b7ebb40d528105"
+    },
+    {
+      "path": "mac-current-config-file-info.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4da54b20d58e844d2b75728dbf6eb6fd61f6a2af"
+    },
+    {
+      "path": "mac-current-config-file-info.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfa854cdc06f062b51d571e367f7d3bedcb1b53d"
+    },
+    {
+      "path": "readonly.exact-request.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc808bf2ca4f813956b1faf9844854aa8a16a149"
+    }
+  ]
+}

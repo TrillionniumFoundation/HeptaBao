@@ -1,0 +1,26 @@
+[
+  {
+    "before": "Create-only distribution and compile-check of the three reviewed shared artifact controls.",
+    "after": "Create-only distribution and compile-check of one fixed public 3cb source exporter."
+  },
+  {
+    "before": "PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')",
+    "after": "PARENT = Path('/home/qian-qi')"
+  },
+  {
+    "before": "normal-r10-shared-artifact-controls-r1",
+    "after": "heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1"
+  },
+  {
+    "before": "PINS = {\n    \"sender.py\": [\n        6752,\n        \"1cd76f2e8c0f851b2d8346f3bb5098362fc84524f4fd2b0adbbfa0860c9984b8\"\n    ],\n    \"receiver.py\": [\n        8270,\n        \"2b14e32feaa2d94de4c86477be85e469f9bb2df2fa0d5f57aa4f5e9e53cef91b\"\n    ],\n    \"relay.py\": [\n        15815,\n        \"29048225ac700e4ac290ccbf3d6cdec2a7623f17faef20f512f24142c4df38bf\"\n    ]\n}",
+    "after": "PINS = {\n    \"source_export_phaseb_3cb_r1.py\": [\n        15352,\n        \"7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a\"\n    ]\n}"
+  },
+  {
+    "before": "heptabao.r10-shared-artifact-inert-carrier.v1",
+    "after": "heptabao.phaseb3cb-source-export-inert-carrier.v1"
+  },
+  {
+    "before": "heptabao.r10-shared-artifact-inputs.v1",
+    "after": "heptabao.phaseb3cb-source-export-inputs.v1"
+  }
+]

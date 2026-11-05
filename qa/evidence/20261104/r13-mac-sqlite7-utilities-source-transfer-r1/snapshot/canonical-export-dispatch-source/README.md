@@ -1,0 +1,11 @@
+# Exact inert and exporter dispatch for the 3cb public source bundle
+
+This adds concrete request objects to the previously frozen source exporter tree 6bb3c9bf64025aa507dffe818e18dd8e66701b5e. The exporter remains exactly 15,352 bytes / 7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a. No host request has been dispatched.
+
+The first request publishes that single script into the new 0700 controls directory outside the export output root. It uses the original shared inert carrier's five unchanged functions: validates exact base64 bytes and SHA, compile-checks without executing the exporter, creates only absent controlled files, fsyncs, reads back bytes and preserves exact inode ownership for temporary unlink. It also retains the original internal temporary suffix under the new directory. The existing R3 checkout is not opened by this inert request.
+
+The controls script is /home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py. This is deliberately separate from /home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1, which must still be absent when the exporter starts. The exporter reads only the exact qualified R3 public Git checkout, verifies full canonical history and source state, and writes its standalone bundle and evidence into its new output directory. Its preserved source guard checks independent .git and forbids network Git protocols. Neither request starts Cargo, a product binary, a provider request or an acceptance fixture.
+
+Both dispatch JSON files contain the exact executable, argv, cwd, stable key and timeout; the inert file contains complete inline source and complete stdin. The inert outer 60 seconds is explicitly NEW. The exporter outer 330 seconds is NEW while its original total 300 seconds, Git child 90 seconds, and TERM5/KILL5 cleanup remain unchanged. Inert acceptance and exporter GO are separate. Missing ACK is reconciled under the same key, not used to start another exporter.
+
+Offline Python parsed/compiled the inert and decoded exporter and checked exact inverse replacements. It did not execute either module. This source-only result is separate from any future remote authority or source bundle receipt.

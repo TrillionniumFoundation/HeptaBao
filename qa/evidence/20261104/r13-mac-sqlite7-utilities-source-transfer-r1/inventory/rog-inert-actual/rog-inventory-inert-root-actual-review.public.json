@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.root.rog-finite-inventory-inert-actual-review.r1",
+  "at_utc": "2026-11-05T00:47:25.811Z",
+  "job": "1a1a92b2b52-fc05-3236",
+  "exact_frozen_request": "dd00d2ba4ab2299e5eff9d8db82608f3cc7c61be",
+  "request_binding_and_unique_ack": true,
+  "authority_zero_full_durable": true,
+  "raw_stdout_hex_text_exact_bytes": 684,
+  "empty_stderr_double_eof": true,
+  "elapsed_seconds": 0.010725479980465025,
+  "original_inert_seconds": 10,
+  "outer_seconds": 60,
+  "source_compiled_not_executed": true,
+  "host_inventory_read": false,
+  "children_started": false,
+  "files_written": false,
+  "rog_finite_counts": [
+    46,
+    17,
+    4,
+    31,
+    434
+  ],
+  "decision": "Inert passed; actual finite collector still waits for the compatibility export/transport I/O window to close. Same frozen readonly request and original45/60 remain.",
+  "full_host_inventory_qualified": false
+}

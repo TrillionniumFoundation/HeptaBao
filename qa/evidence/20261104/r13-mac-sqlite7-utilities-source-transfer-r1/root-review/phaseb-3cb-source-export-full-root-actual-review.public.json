@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-full-source-export-actual-review.r1",
+  "at_utc": "2026-11-05T01:01:08.340Z",
+  "tree": "ed8a68b499ac0643b7ed043ab939fc7a6349232e",
+  "whole_files": 151,
+  "whole_bytes": 564107,
+  "merkle_trees": 6,
+  "job": "1a1a928b8b0-fc05-321b",
+  "authority_zero_full_durable": true,
+  "exact_ack_request": true,
+  "stream_hex_text_exact": 519,
+  "stderr_empty_double_eof": true,
+  "sdk": {
+    "paged_native_sdks": 9,
+    "immutable_pages": 12,
+    "file_texts": 83
+  },
+  "child_raw_records": 27,
+  "child_raw_stdout": 27,
+  "child_raw_stderr": 27,
+  "all_27_named_git_children_reaped_empty": true,
+  "expected_exit1_only_two_no_partial_config_queries": true,
+  "source_before_after_head_tree_refs_origin_clean_exact": true,
+  "full_history": 3755,
+  "full_fsck": true,
+  "zero_prerequisites": true,
+  "bundle": {
+    "bytes": 23335023,
+    "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+    "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle"
+  },
+  "elapsed_before_receipt_seconds": 3.3535300320072565,
+  "elapsed_after_publication_seconds": 3.3550838390074205,
+  "budgets": {
+    "original300": true,
+    "original_git90": true,
+    "new_outer330": true
+  },
+  "canonical_desktop_import_qualified": false,
+  "product_phaseb_qualified": false,
+  "full_openbao271_replacement": false
+}

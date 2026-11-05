@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.phaseb-3cb-canonical-source-export-plan.v1",
+  "scope": "source_only_new_owned_public_git_export",
+  "source": {
+    "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source",
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "reachable_commits": 3755,
+    "normal_evidence_tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+    "root_review_blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2"
+  },
+  "reference": {
+    "blob": "59b59eccd94463da2ddf78ecd7dc3d5b4b2d3b4b",
+    "bytes": 15303,
+    "sha256": "b337bdbecc2fda8c42e3e7bba0014b59fcc5d65635a7a6657bd3afb687f0ac8b",
+    "published_tree": "3ef0bb67172283a4dd9864233e6704796ab6954e",
+    "path": "source/source_export_r10.py",
+    "actual_scope": "Prior completed desktop R10 standalone bundle export for X230; no PhaseB product qualification inherited"
+  },
+  "candidate": {
+    "path": "source/source_export_phaseb_3cb_r1.py",
+    "bytes": 15352,
+    "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+    "blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000"
+  },
+  "changes": {
+    "unique_constant_and_description_edits": 11,
+    "all_20_function_bodies_exact": true,
+    "full_inverse_exact": true,
+    "owned_lifecycle_and_final_publication_unchanged": true,
+    "base_custody": "Fixed Linux UID1000 home ancestor only; no directory enumeration. Both SOURCE and ROOT are fixed absolute descendants, and independent .git must equal SOURCE/.git."
+  },
+  "fresh_outputs": {
+    "control": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1",
+    "script": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py",
+    "root": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1",
+    "bundle": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+    "receipt": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+    "root_mode": 448,
+    "script_mode": 384,
+    "bundle_prerequisites": [],
+    "max_bundle_bytes": 67108864,
+    "actual_bundle_bytes": null,
+    "actual_bundle_sha256": null,
+    "actual_bundle_version": null
+  },
+  "command_scope": {
+    "git_bundle": "bundle create --version=2 <fixed new bundle> HEAD",
+    "complete_history": true,
+    "git_network_protocols_enabled": false,
+    "source_imported": false,
+    "source_writes": false,
+    "compiler_or_product_started": false,
+    "private_credentials_read": false,
+    "holds_or_production_changes": false
+  },
+  "budgets": {
+    "controller_seconds": 300,
+    "git_child_seconds": 90,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5,
+    "proposed_new_outer_seconds": 330
+  },
+  "dispatch": {
+    "host": "rog",
+    "inert_stage": {
+      "fresh_directory": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1",
+      "fixed_file": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py",
+      "bytes": 15352,
+      "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+      "git_blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000",
+      "expected_existing_state": "absent",
+      "overwrite_allowed": false,
+      "execute_during_stage": false
+    },
+    "run": {
+      "stable_key": "heptabao-phaseb-3cb-public-source-export-20261104-r1",
+      "executable": "/usr/bin/python3",
+      "argv": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py"
+      ],
+      "outer_seconds": 330,
+      "preconditions": [
+        "Root source review accepted",
+        "Root explicitly releases the physical-host quiet window",
+        "Exact inert script bytes/custody and no existing output ROOT confirmed",
+        "Root one-shot runtime dispatch GO"
+      ]
+    }
+  },
+  "outcome_contract": {
+    "raw_receipt_and_authoritative_zero_exit_both_required": true,
+    "all_owned_reaped_and_empty_required": true,
+    "unknown_is_not_replayed": true,
+    "partial_new_output_retained": true,
+    "old_B01_never_read_or_replayed": true
+  },
+  "downstream": {
+    "requires_separate_reviewed_transport_and_desktop_import": true,
+    "canonical_target": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1",
+    "standalone_no_old_checkout_prerequisite": true,
+    "desktop_import_must_verify": [
+      "zero bundle prerequisites",
+      "exact3cb/tree7f4d and sole parentbf0",
+      "3755 complete ancestors and root",
+      "full strict fsck",
+      "3911 tracked files / index and actual Git blobs",
+      "independent .git / no alternates or hardlinks",
+      "all owned child cleanup and unchanged fixed inputs"
+    ],
+    "artifact_transport_independent": true,
+    "phaseb_prepare_or_live_authorized": false
+  },
+  "qualification": {
+    "source_only": true,
+    "offline_ast_compile_only": true,
+    "export_started": false,
+    "transport_started": false,
+    "desktop_import_started": false,
+    "phaseb_runtime_started": false,
+    "full_openbao271_replacement": false
+  }
+}

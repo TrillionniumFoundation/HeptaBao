@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.ha-postrecovery-b-known-failure-complete-raw-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:39:12.730Z",
+  "job": "1a1a9094b62-fc05-30ab",
+  "fixture": "e70cd7fda3c928604cd82e8c1a157502",
+  "core_packet": {
+    "tree": "02c5afd1ca16d7df65680089dde0ba69d029b788",
+    "files": 15,
+    "bytes": 333065
+  },
+  "boundary_packet": {
+    "tree": "1e96e9c25850e07182850b6861fd576a505dcb86",
+    "files": 98,
+    "bytes": 193814
+  },
+  "all_whole_blobs_and_merkle_roots_verified": true,
+  "two_version_pinned_summary_chunks_exact_original_bytes": 107216,
+  "summary_version": "2050:542070:107216:1793837652687074773:1793837652687074773",
+  "exit_launch_raw_file_sdk_exact": true,
+  "terminal_stdout_hex_text_exact": 576,
+  "lossless_stdout_exit_semantics_equal": true,
+  "boundary_sdk_files_exact": 90,
+  "known_mutation_pairs": 45,
+  "http_status_histogram": {
+    "200": 37,
+    "204": 7,
+    "503": 1
+  },
+  "original_budget_histogram": {
+    "12": 1,
+    "15": 44
+  },
+  "unknown_mutation_transport_outcomes": 0,
+  "pass_counts": {
+    "original": 83,
+    "missing": 15,
+    "additional12": 0
+  },
+  "failure_code": "direction_new_committed_frontier_not_observed",
+  "stopped_rog_already_follower_at61": true,
+  "observations": 190,
+  "last_health_get_response_not_observed_preserved": true,
+  "all_http_outcomes_known_claimed": false,
+  "storage_commit_inferred_from_http": false,
+  "original_budget_raised": false,
+  "earlier_root_cleanup_review_blob": "668fec1db7af05d813df2fe7bf32060e9fc99ae2",
+  "qualification": false,
+  "full_openbao271_replacement": false
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "db7bc1",
+  "wall_time_seconds": 0.000027892,
+  "exit_code": 0,
+  "original_token_count": 226,
+  "output": "{\"candidate_modules_executed\": false, \"checks\": [\"closed_carrier_keys\", \"carrier_schema\", \"carrier_bytes_sender.py\", \"carrier_sha_sender.py\", \"carrier_gitblob_sender.py\", \"carrier_bytes_receiver.py\", \"carrier_sha_receiver.py\", \"carrier_gitblob_receiver.py\", \"carrier_bytes_relay.py\", \"carrier_sha_relay.py\", \"carrier_gitblob_relay.py\", \"actual_fileinfo_heptabao-server\", \"actual_custody_heptabao-server\", \"actual_fileinfo_native-build.public.json\", \"actual_custody_native-build.public.json\", \"actual_fileinfo_normal-release-result.public.json\", \"actual_custody_normal-release-result.public.json\", \"raw_native_bytes_sha\", \"raw_release_bytes_sha\", \"raw_receipt_commit_tree\", \"raw_receipt_binary\", \"native_provenance\", \"default_normal_features\", \"normal_completion\", \"abi\"], \"product_or_transport_started\": false, \"schema\": \"heptabao.phaseb3cb.transport-carrier-provenance-check.v1\", \"status\": \"passed\"}\n"
+}

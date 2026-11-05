@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.mac-current-public-utility-file-observations.r1",
+  "at_utc": "2026-11-05T00:44:42.621Z",
+  "host": "mac",
+  "scope": "Six fixed public executable paths only. Native file_info whole SHA256 and regular-file metadata; tools not executed, no private credentials read.",
+  "observations": [
+    {
+      "path": "/usr/bin/openssl",
+      "bytes": 1130832,
+      "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+      "version": "16777233:1152921500312572476:1130832:1786589515000000000:1786589515000000000",
+      "mode": 493,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "3194d65f17b64cf44b0eac8e5a4cccc5edac6601",
+      "raw_sha256": "71bfe1aa7ad284c118c60c0817113a2113d3d55770cd62c651b87b34c6c04fc6",
+      "raw_bytes": 417
+    },
+    {
+      "path": "/usr/bin/sandbox-exec",
+      "bytes": 102368,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+      "version": "16777233:1152921500312572700:102368:1786589515000000000:1786589515000000000",
+      "mode": 493,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "ee12eecb4ab68899d9d06edd61f8e5fed02683c7",
+      "raw_sha256": "cecf79df26ca6e184998e6a722c233031bffbeb8ad3ce5b633ac44dc5dfb306e",
+      "raw_bytes": 420
+    },
+    {
+      "path": "/bin/launchctl",
+      "bytes": 363488,
+      "sha256": "b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7",
+      "version": "16777233:1152921500312571385:363488:1786589515000000000:1786589515000000000",
+      "mode": 493,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "ceb1fc7ffc1789de2c39357cade4b233cc830368",
+      "raw_sha256": "ce019a4f04960e0528b0ab5b63d575c7753f90840c15fb0943619caa805d26db",
+      "raw_bytes": 413
+    },
+    {
+      "path": "/usr/sbin/diskutil",
+      "bytes": 1937776,
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f",
+      "version": "16777233:1152921500312575979:1937776:1786589515000000000:1786589515000000000",
+      "mode": 493,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "ff634202ee1db74eee2e0bae24af10c652643353",
+      "raw_sha256": "9531c7ac6507ee7feb548a09ab6b0910bf30deb38ba54da9fea2bc913f258cc4",
+      "raw_bytes": 419
+    },
+    {
+      "path": "/bin/ps",
+      "bytes": 170432,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
+      "version": "16777233:1152921500312571399:170432:1786589515000000000:1786589515000000000",
+      "mode": 2541,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "b319eda6e9544c45381b34b3d7ea9085040ad797",
+      "raw_sha256": "725d9ffabbf61256ed2e1cb2d4989e14f25868d59d397efe5a27ad0f6468994d",
+      "raw_bytes": 408
+    },
+    {
+      "path": "/sbin/mount",
+      "bytes": 174016,
+      "sha256": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd",
+      "version": "16777233:1152921500312571481:174016:1786589515000000000:1786589515000000000",
+      "mode": 365,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 1,
+      "raw_blob": "af874d027b40aada7177d17c0e22a76995e0d23a",
+      "raw_sha256": "5ab824b15475b2d6c89bd86e23e81ce37bef94ea1684ecdbff7adc7c4b440b7b",
+      "raw_bytes": 410
+    }
+  ],
+  "non_atomic": true,
+  "whole_executables_bytes": 3878912,
+  "shared_libraries_qualified": false,
+  "launchd_lifecycle_qualified": false,
+  "production_capture_qualified": false
+}

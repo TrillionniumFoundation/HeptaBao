@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.phaseb3cb.transport-source-check-admission-failure.v1",
+  "status": "not_executed",
+  "operation": "local exec_command",
+  "error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): Argument list too long (os error 7)\\\")\" }",
+  "candidate_executed": false,
+  "target_host_access": false,
+  "recovery": "Split independent per-source static comparisons into smaller command arguments without changing their assertions."
+}

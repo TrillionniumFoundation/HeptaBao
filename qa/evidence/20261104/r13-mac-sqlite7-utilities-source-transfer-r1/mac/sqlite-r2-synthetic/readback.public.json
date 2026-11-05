@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.mac-capture-r2-synthetic-readback.v1",
+  "status": "PASS_SEVEN_OWNED_SQLITE_CASES_ONLY",
+  "job": "1a1a918c6cf-fc05-3143",
+  "inertActualTree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f",
+  "sourceTree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d",
+  "priorFailedTreePreserved": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+  "rawSdkHexEqualsText": true,
+  "completeDoubleEof": true,
+  "authorityZeroCompleteDurable": true,
+  "ackExactRequest": true,
+  "cases": [
+    {
+      "case": "absent_sidecars_stay_absent",
+      "passed": true,
+      "refusalCode": null,
+      "sqliteConnectionsOpened": 1,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "empty_wal_and_shm_unchanged",
+      "passed": true,
+      "refusalCode": null,
+      "sqliteConnectionsOpened": 1,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "nonempty_wal_refused_before_connection",
+      "passed": true,
+      "refusalCode": "current_input_size_bound",
+      "sqliteConnectionsOpened": 0,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "journal_refused_before_connection",
+      "passed": true,
+      "refusalCode": "rollback_journal_refused_before_immutable",
+      "sqliteConnectionsOpened": 0,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "oversize_fixed_primary_row_refused",
+      "passed": true,
+      "refusalCode": "auth_primary_payload_cap",
+      "sqliteConnectionsOpened": 1,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "held_inode_drift_refused_before_connection",
+      "passed": true,
+      "refusalCode": "current_input_fd_name_or_metadata_changed",
+      "sqliteConnectionsOpened": 0,
+      "allDescriptorsClosed": true
+    },
+    {
+      "case": "actual_immutable_connection_rejects_write",
+      "passed": true,
+      "refusalCode": null,
+      "sqliteConnectionsOpened": 1,
+      "allDescriptorsClosed": true
+    }
+  ],
+  "sixSourcePinsExact": true,
+  "finalSourceAndRuntimeRechecksReached": true,
+  "runtime": {
+    "pythonExecutable": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "sqliteExtension": {
+      "bytes": 165632,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+      "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+    },
+    "sqliteVersion": "3.53.4",
+    "sqliteVersionInfo": [
+      3,
+      53,
+      4
+    ]
+  },
+  "runtimeScope": "Actual Python executable and _sqlite3 extension bytes plus reported Python/SQLite versions; not all dylib dependencies.",
+  "allOwnedCommandsReapedEmpty": true,
+  "allOwnedDescriptorsClosed": true,
+  "allTwentySevenT5AnchorStringsMatchPriorActual": true,
+  "elapsedSeconds": 0.23113099997863173,
+  "sharedSeconds": 45,
+  "outerSeconds": 60,
+  "productionCurrentCaptureExecuted": false,
+  "consumerExecuted": false,
+  "serviceOrManagerStarted": false,
+  "qualifiedForCurrentCaptureOnlyWhenSeparateCallerAndAuthorityGateAccepted": true
+}

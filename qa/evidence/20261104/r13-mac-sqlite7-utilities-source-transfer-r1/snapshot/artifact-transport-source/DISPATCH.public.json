@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.phaseb3cb.artifact-transport-dispatch.v1",
+  "status": "proposed_not_dispatched",
+  "inert": {
+    "host": "desktop",
+    "idempotency_key": "heptabao-phaseb-3cb-artifact-controls-inert-b247e251-20261105-r1",
+    "argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "<exact candidate/stage_artifact_controls.py UTF-8 bytes>"
+    ],
+    "inline_source": {
+      "bytes": 5060,
+      "sha256": "b247e2516fc1216df1c041da385edc5b4d6fe8fe772582d4d8139fde60daeefe",
+      "blob": "9c395b137eacdd01f9523f4d0f36713d82f52219"
+    },
+    "stdin": {
+      "bytes": 41278,
+      "sha256": "00f9a231803f2a006db80d1fe331364eba85bba7e9d109238cf917d113e5f99c",
+      "blob": "1516da405957a35ac1d943280bd6ca0b8485b8bd"
+    },
+    "source_path": "candidate/stage_artifact_controls.py",
+    "stdin_path": "inputs/source-carrier.json",
+    "outer_timeout_seconds": 60,
+    "outer_cap_classification": "NEW selected proposal; not a recovered historical value"
+  },
+  "transfer": {
+    "host": "desktop",
+    "idempotency_key": "heptabao-phaseb-3cb-shared-artifacts-5cb99ccf-20261105-r1",
+    "argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifact-controls-r1/relay.py"
+    ],
+    "stdin": "none",
+    "outer_timeout_seconds": 360,
+    "outer_cap_classification": "NEW supervisor cap, same explicit cap proposed in the retained R10 transport plan; inner 300/90 unchanged",
+    "requires_actual_inert_root_acceptance": true
+  },
+  "no_host_dispatch_in_this_source_packet": true
+}

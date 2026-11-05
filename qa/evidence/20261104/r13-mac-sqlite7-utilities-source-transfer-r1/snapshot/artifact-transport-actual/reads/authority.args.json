@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-transfer-authority-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a92c7f34-fc05-3248"
+    }
+  }
+}

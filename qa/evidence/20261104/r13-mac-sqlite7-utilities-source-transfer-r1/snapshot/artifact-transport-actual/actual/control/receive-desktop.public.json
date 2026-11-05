@@ -1,0 +1,10 @@
+{
+  "direct_child_reaped": true,
+  "elapsed_seconds": 2.208530387026258,
+  "exit_code": 0,
+  "label": "receive-desktop",
+  "limit_seconds": 90,
+  "pid": 4133389,
+  "remaining": [],
+  "timed_out": false
+}

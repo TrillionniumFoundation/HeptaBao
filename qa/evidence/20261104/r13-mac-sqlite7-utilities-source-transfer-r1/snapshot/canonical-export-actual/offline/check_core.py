@@ -1,0 +1,31 @@
+import hashlib,json,sys
+x=json.loads(sys.argv[1]);c=json.loads(x['core']);a=json.loads(x['authority']);s=json.loads(x['streams']);t=json.loads(s['stdout']['text']);ack=json.loads(x['ack']);checks=[]
+def ok(name,v):
+ assert v,name
+ checks.append(name)
+head='3cb873919170cc77101b27f6a3ab9e98f41f8d93';tree='7f4d48a647a81ca96e8a24a0a057c2c829459060';root='/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1';source='/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source'
+ok('authority0',a['job_id']==s['job_id']==ack['job']['id']=='1a1a928b8b0-fc05-321b' and a['state']=='succeeded' and a['exit_code']==0 and a['output_complete'] and a['output_durable'] and not a['timed_out'] and not a['cancelled'] and a['terminal_publication_confirmed'])
+ok('exact_request',all(ack['job'][k]==x['request'][k] for k in ('host','executable','args','cwd','idempotency_key')) and not ack['reused'])
+for k in ('stdout','stderr'):
+ z=s[k];ok(k+'_lossless_complete',z['offset']==0 and z['eof'] and z['size']==z['next_offset']==len(bytes.fromhex(z['bytes_hex'])) and bytes.fromhex(z['bytes_hex'])==z['text'].encode())
+ ok(k+'_authority',a['log_bytes'][k]['seen']==a['log_bytes'][k]['stored']==z['size'] and not a['log_truncated'][k] and a['log_synced'][k] and a['log_errors'][k] is None)
+ok('terminal',t['status']==t['receipt_candidate_status']==c['status']=='exported' and t['all_owned_stopped'] and t['publication_within_original_deadline'] and t['elapsed_after_publication_seconds']<300 and s['stderr']['text']=='')
+ok('canonical',c['canonical_commit']==head and c['canonical_tree']==tree and c['source']==source and c['canonical_proof']=={'commit':head,'tree':tree,'parents':['bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'],'root':'67d79b3b5442ed033d38929eab2010403463e56d','commit_count':3755,'full_fsck_passed':True})
+ok('budgets',c['overall_seconds']==300 and c['git_command_seconds']==90 and c['maximum_bundle_bytes']==64*1024*1024 and c['elapsed_seconds']<300 and c['deadline_before_receipt_passed'])
+ok('source_unchanged',c['source_before']==c['source_after'])
+b=c['source_before']
+ok('source_qualification',b['head']==head and b['tree']==tree and b['clean'] and not b['shallow'] and b['independent_git_directory'] and b['git_directory']==b['git_common_directory']==source+'/.git' and b['no_alternates'] and b['no_grafts'] and b['no_partial_clone'] and not any(b['lock_files'].values()))
+ok('original_controller',c['controller']['bytes']==15352 and c['controller']['sha256']=='7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a' and ':'.join(str(c['controller']['identity'][j]) for j in (0,1,6,7,8))==x['script_version'])
+base=['/usr/bin/git','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.hooksPath='+root+'/empty-hooks','-c','core.fsmonitor=false','-c','log.showSignature=false','-c','protocol.allow=never','-c','protocol.file.allow=always','-c','pack.threads=1','-C',source]
+source_commands=[('head',['rev-parse','--verify','HEAD']),('tree',['rev-parse','HEAD^{tree}']),('status',['status','--porcelain=v1','--untracked-files=all']),('git-dir',['rev-parse','--absolute-git-dir']),('common-dir',['rev-parse','--git-common-dir']),('shallow',['rev-parse','--is-shallow-repository']),('partial-config',['config','--local','--get-regexp','^(extensions[.]partialclone|remote[.].*[.]promisor|remote[.].*[.]partialclonefilter)$']),('origin',['config','--local','--get','remote.origin.url']),('refs',['for-each-ref','--format=%(refname) %(objectname)'])]
+spec=[('source-before-'+n,a) for n,a in source_commands]+[('export-proof-kind',['cat-file','-t',head]),('export-proof-tree',['rev-parse',head+'^{tree}']),('export-proof-parents',['show','-s','--format=%P',head]),('export-proof-count',['rev-list','--count',head]),('export-proof-roots',['rev-list','--max-parents=0',head]),('export-proof-full-fsck',['fsck','--full','--strict','--no-reflogs','--no-dangling',head]),('bundle-create',['bundle','create','--version=2',root+'/canonical-3cb-full.bundle','HEAD']),('bundle-verify',['bundle','verify',root+'/canonical-3cb-full.bundle']),('bundle-heads',['bundle','list-heads',root+'/canonical-3cb-full.bundle'])]+[('source-after-'+n,a) for n,a in source_commands]
+ok('exact_27_command_inventory',len(c['commands'])==len(spec)==27)
+for idx,(r,(label,args)) in enumerate(zip(c['commands'],spec,strict=True)):
+ ok('child_'+str(idx),r['label']==str(idx).zfill(3)+'-'+label and r['argv']==base+args and r['exit_code']==(1 if label.endswith('partial-config') else 0) and not r['timed_out'] and r['direct_child_reaped'] and r['remaining']==[] and r['limit_seconds']==90 and r['elapsed_seconds']<90)
+cleanup={r['label']:r for r in c['cleanup']}
+ok('all_owned_cleanup',c['all_owned_stopped'] and len(cleanup)==27 and len({r['pid'] for r in c['cleanup']})==27 and all(cleanup[r['label']]=={'label':r['label'],'pid':r['pid'],'exit_code':r['exit_code'],'direct_child_reaped':True,'remaining':[]} for r in c['commands']))
+bu=c['bundle'];i=bu['identity']
+ok('bundle_custody',0<bu['bytes']<=64*1024*1024 and bu['path']==root+'/canonical-3cb-full.bundle' and i[2]==1000 and i[5]==1 and i[6]==bu['bytes'] and i[4]&0o777==0o600)
+ok('standalone_header',bu['header']['version']==2 and bu['header']['prerequisites']==[] and bu['header']['heads']==[[head,'HEAD']] and c['expected_prerequisites']==[] and c['expected_full_commit_count']==3755)
+ok('no_product',not c['server_started'] and not c['compiler_started'] and not c['source_imported'] and not c['runtime_qualification'] and not c['network_git_protocols_enabled'] and c['product_tests_executed']==0)
+print(json.dumps({'schema':'heptabao.phaseb3cb.source-export-actual-core-review.v1','status':'passed','job_id':a['job_id'],'checks':checks,'all_owned_groups':27,'all_reaped_empty':True,'source_before_after_equal':True,'canonical_commit':head,'canonical_tree':tree,'whole_history_commits':3755,'elapsed_ns_decimal':str(c['terminal_unix_ns']-c['started_unix_ns']),'elapsed_seconds':c['elapsed_seconds'],'publication_elapsed_seconds':t['elapsed_after_publication_seconds'],'bundle':{'path':bu['path'],'bytes':bu['bytes'],'sha256':bu['sha256'],'version':':'.join(str(i[j]) for j in (0,1,6,7,8)),'prerequisites':[]},'product_started':False,'desktop_imported':False},sort_keys=True))

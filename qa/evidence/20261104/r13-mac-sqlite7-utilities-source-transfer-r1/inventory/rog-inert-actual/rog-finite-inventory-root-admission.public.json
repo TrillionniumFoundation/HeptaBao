@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root.rog-finite-inventory-admission.r1",
+  "at_utc": "2026-11-05T00:45:36.803Z",
+  "source_tree": "574b8ff0f6407e8c1fb642187047950a04799080",
+  "whole_files": 8,
+  "whole_bytes": 622785,
+  "exact_source_and_manifest_sha_pins": true,
+  "original_review_blob": "2f88e584a02262cae1e3709173e0b94fb2a0f83e",
+  "actual_x230_packet": "f0573b12d836940b39b4d8a6f1bd3682ce404f42",
+  "only_known_host_argument_differences": true,
+  "rog_scope": {
+    "entries": 46,
+    "passes": 17,
+    "queries": 4
+  },
+  "original_limits": {
+    "host_seconds": 45,
+    "outer_seconds": 60,
+    "child_seconds": 10,
+    "max_document_bytes": 2097152,
+    "max_total_read_bytes": 8388608,
+    "max_output_bytes": 65536,
+    "max_metadata_observations_per_pass": 32,
+    "max_backup_items": 16
+  },
+  "inert_no_inventory_io_children_writes": true,
+  "inert_request_blob": "dd00d2ba4ab2299e5eff9d8db82608f3cc7c61be",
+  "readonly_request_blob": "fc808bf2ca4f813956b1faf9844854aa8a16a149",
+  "decision": "Admit exactly one pure AST inert now. Readonly collection stays held until actual inert success and the compatibility agent releases public-export/transfer I/O window.",
+  "full_inventory_or_migration_qualified": false
+}

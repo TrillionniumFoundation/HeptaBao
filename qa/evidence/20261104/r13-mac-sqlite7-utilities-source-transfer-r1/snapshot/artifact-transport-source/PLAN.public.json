@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.phaseb3cb.artifact-transport-plan.v1",
+  "status": "source_only",
+  "paths": {
+    "controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifact-controls-r1",
+    "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1",
+    "incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming",
+    "intent": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/control/intent.public.json",
+    "result": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/control/result.public.json",
+    "inert_receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifact-controls-r1/inert-stage.result.public.json"
+  },
+  "read_scope": {
+    "host": "rog",
+    "exact_three_sources": [
+      {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+        "name": "heptabao-server",
+        "bytes": 109074848,
+        "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+        "source_mode": 320,
+        "target_mode": 320,
+        "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+        "name": "native-build.public.json",
+        "bytes": 794,
+        "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+        "source_mode": 384,
+        "target_mode": 256,
+        "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+        "name": "normal-release-result.public.json",
+        "bytes": 3200,
+        "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+        "source_mode": 384,
+        "target_mode": 256,
+        "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+      }
+    ],
+    "source_bundle": false,
+    "production_credentials": false
+  },
+  "write_scope": {
+    "host": "desktop",
+    "fresh_controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifact-controls-r1",
+    "fresh_transfer_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1",
+    "source_code_checkout": false,
+    "existing_paths_overwritten": false
+  },
+  "budgets": {
+    "original_parent_seconds": 300,
+    "original_child_and_endpoint_seconds": 90,
+    "original_connect_seconds": 10,
+    "original_cleanup_term_seconds": 5,
+    "original_cleanup_kill_seconds": 5,
+    "new_inert_outer_seconds": 60,
+    "new_transport_outer_seconds": 360,
+    "not_a_product_or_cli_deadline_change": true
+  },
+  "process_scope": {
+    "inert": "Python compile only; no candidate execution or transfer; original create-only publication functions.",
+    "transport": "One effective-config ssh -G child, one local Python receiver, one SSH sender; all fixed before dispatch. No Git, Cargo, server or HTTP."
+  },
+  "admission": {
+    "required": [
+      "Root source review and explicit inert dispatch GO.",
+      "Actual inert authority 0, raw receipt and exact three script readback, no target candidate execution during inert.",
+      "Separate explicit transfer GO and a coordinated desktop/ROG I/O window.",
+      "Complete transport authority 0, whole raw endpoint reports, source and trust fences, owned process groups empty, original final publication deadline."
+    ]
+  },
+  "failure": {
+    "automatic_retry": false,
+    "unknown_policy": "Retain exact original job, partial fresh files, intent and logs. Reconcile the same job/key; do not dispatch a second transfer or reuse its partial destination.",
+    "inert_retry_policy": "No automatic retry; reconcile exact source-only writes under the same key. Any repeat needs root's specific decision."
+  },
+  "trust": {
+    "source_alias": "rog-ts",
+    "hostname": "192.168.0.10",
+    "user": "qian-qi",
+    "host_key_alias": "hepta-node-rog",
+    "existing_config_sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4",
+    "known_hosts_sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034",
+    "no_trust_changes": true,
+    "original_ha_controller_sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "downstream": {
+    "local_stage_tree": "38520c8c2fc5545bd608fefa29e37535a086e443",
+    "requires_separate_actual_canonical_source_gate": true,
+    "source_export_proposal_tree": "6bb3c9bf64025aa507dffe818e18dd8e66701b5e",
+    "phaseb_live_go": false,
+    "old_b01_replayed": false
+  }
+}

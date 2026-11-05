@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.phaseb3cb.shared-artifact-fixed-pins.v1",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 109074848,
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 794,
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+      "name": "normal-release-result.public.json",
+      "bytes": 3200,
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+    }
+  ],
+  "controls": {
+    "sender": {
+      "bytes": 6737,
+      "sha256": "e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835",
+      "blob": "303de2f64027709294d38e578bc619435f3c6660"
+    },
+    "receiver": {
+      "bytes": 8275,
+      "sha256": "dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31",
+      "blob": "4ecee801d85bc7aa1eeef93fe45b443f0c9b372d"
+    },
+    "relay": {
+      "bytes": 15857,
+      "sha256": "5cb99ccf85533ad91f83f24e86c629395b545ebbf5c967dab36989805dd632da",
+      "blob": "942ea040fc67eebce7a96ac92c2a8d883d34a8f1"
+    },
+    "inert": {
+      "bytes": 5060,
+      "sha256": "b247e2516fc1216df1c041da385edc5b4d6fe8fe772582d4d8139fde60daeefe",
+      "blob": "9c395b137eacdd01f9523f4d0f36713d82f52219"
+    },
+    "carrier": {
+      "bytes": 41278,
+      "sha256": "00f9a231803f2a006db80d1fe331364eba85bba7e9d109238cf917d113e5f99c",
+      "blob": "1516da405957a35ac1d943280bd6ca0b8485b8bd"
+    }
+  },
+  "actual_metadata": {
+    "tree": "a523aa5c1404a46f88d8b20792d13ddfe49672ee",
+    "originals": [
+      {
+        "path": "metadata/server.file-info.original.json",
+        "bytes": 517,
+        "sha256": "3b575449b3125e8168637f33a1c5a3826ff0ed2b1d50a5ab45022cbd35d4a14a",
+        "blob": "977617318f9a65d365aef7e377d1f4b6a0cfcf46"
+      },
+      {
+        "path": "metadata/native.file-info.original.json",
+        "bytes": 504,
+        "sha256": "c2c5781e7e62e5f54e65c3ceeb34771896ba23ed30feaaebd65e71401e6c5e25",
+        "blob": "bf549a68af2c408518e8be47b99b72102cbd0679"
+      },
+      {
+        "path": "metadata/release.file-info.original.json",
+        "bytes": 515,
+        "sha256": "aa15f64a8b478dade14a2c5b162ae378361c5407dbde839cd1008deef7c8a67e",
+        "blob": "44771073bc4af3b48dc74b9c90907a2c5ab690ee"
+      }
+    ],
+    "server_file_info_included_whole_hash": true
+  },
+  "normal_qualification": {
+    "tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+    "core_blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3",
+    "root_review_blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2",
+    "original44": 44,
+    "extra7_separate": 7
+  },
+  "seed_not_transferred": true,
+  "transport_started": false,
+  "product_started": false
+}

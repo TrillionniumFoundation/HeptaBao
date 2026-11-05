@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.rog-finite-inventory-inert-packet.r1",
+  "job": "1a1a92b2b52-fc05-3236",
+  "entries": [
+    {
+      "path": "rog-inventory-inert-start.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ad46c03224d0d140ce2c59884af2855e51cc7cf"
+    },
+    {
+      "path": "rog-inventory-inert-start.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d13bd67ae3c06158a1a1fdf0670584da8f22b924"
+    },
+    {
+      "path": "rog-inventory-inert-authority.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b7a5a6fdd8be6cb2536eba674a3d01189d4913d4"
+    },
+    {
+      "path": "rog-inventory-inert-authority.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffd75c0cdab222bc4bdf1e1c1209199f6f89c1e3"
+    },
+    {
+      "path": "rog-inventory-inert-streams.return.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ffa32e3057994f224a829c1b99d3b86836c3eb8"
+    },
+    {
+      "path": "rog-inventory-inert-streams.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "38998bff1fab0fd7978f49dc8eeec834b8da141c"
+    },
+    {
+      "path": "rog-inventory-inert-stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d22779cfadefd778ce5cb7550981f3dec346d32"
+    },
+    {
+      "path": "rog-inventory-inert-root-actual-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b84bb055bccfff042415335f0008c4f8055593ca"
+    },
+    {
+      "path": "rog-finite-inventory-root-admission.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "929a828f40a176d34f0fe0284991a3998f8819c2"
+    },
+    {
+      "path": "inert.exact-request.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd00d2ba4ab2299e5eff9d8db82608f3cc7c61be"
+    },
+    {
+      "path": "readonly.exact-request.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc808bf2ca4f813956b1faf9844854aa8a16a149"
+    }
+  ]
+}

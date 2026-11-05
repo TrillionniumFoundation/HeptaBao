@@ -1,0 +1,164 @@
+{
+  "automatic_retry": false,
+  "compiler_started": false,
+  "controller": {
+    "bytes": 15857,
+    "identity": [
+      2050,
+      2231726,
+      1000,
+      1000,
+      33152,
+      1,
+      15857,
+      1793839290626532209,
+      1793839290631350238
+    ],
+    "sha256": "5cb99ccf85533ad91f83f24e86c629395b545ebbf5c967dab36989805dd632da"
+  },
+  "destination_create_only": true,
+  "destination_host": "desktop",
+  "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1",
+  "endpoint_seconds": 90,
+  "files": [
+    {
+      "bytes": 109074848,
+      "name": "heptabao-server",
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+    },
+    {
+      "bytes": 794,
+      "name": "native-build.public.json",
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+    },
+    {
+      "bytes": 3200,
+      "name": "normal-release-result.public.json",
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+    }
+  ],
+  "git_operations": 0,
+  "helpers": {
+    "receiver.py": {
+      "bytes": 8275,
+      "identity": [
+        2050,
+        2231725,
+        1000,
+        1000,
+        33152,
+        1,
+        8275,
+        1793839290617095272,
+        1793839290621926236
+      ],
+      "sha256": "dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31"
+    },
+    "sender.py": {
+      "bytes": 6737,
+      "identity": [
+        2050,
+        2231724,
+        1000,
+        1000,
+        33152,
+        1,
+        6737,
+        1793839290607492047,
+        1793839290612250314
+      ],
+      "sha256": "e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835"
+    }
+  },
+  "original_ha_controller": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "overall_seconds": 300,
+  "production_changed": false,
+  "runtime_qualification": false,
+  "schema": "heptabao.phaseb3cb.shared-public-artifacts-relay.v1",
+  "server_started": false,
+  "source_alias": "rog-ts",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "ssh_argv_prefix": [
+    "/usr/bin/ssh",
+    "-T",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=10",
+    "-o",
+    "ConnectionAttempts=1",
+    "-o",
+    "ClearAllForwardings=yes",
+    "-o",
+    "ForwardAgent=no",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none"
+  ],
+  "ssh_child_seconds": 90,
+  "status": "failed",
+  "trust_before": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  }
+}

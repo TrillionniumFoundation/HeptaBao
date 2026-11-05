@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root.ha-b-same-leader-preparation-source-semantics.r1",
+  "at_utc": "2026-11-05T00:50:08.805Z",
+  "proposal_tree": "fd34be3d1b05d186b0966e0e9562171ae2ace9d9",
+  "whole_packet_files": 24,
+  "whole_packet_bytes": 1025761,
+  "packet_merkle_trees": 21,
+  "product": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "canonical_tree_merkle_nodes": 358,
+    "canonical_tree_blobs": 3911,
+    "selected_exact_files": 4
+  },
+  "upstream": {
+    "version": "0.10.0-alpha.34",
+    "registry_checksum": "06fe14d529f8fc098fbb4b9655d5db9b7ee0594e6a9d4e220aa931618de17b1f",
+    "tag_commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+    "tree": "df6167c8f3075dd570ef6a6c7962af0ddddff42a",
+    "merkle_trees": 235,
+    "blob_entries": 1239,
+    "selected_exact_files": 9,
+    "physical_registry_cache_verified": false
+  },
+  "source_contracts_reviewed": {
+    "advanced_leader_type": true,
+    "u64_term_node_index": true,
+    "derived_log_order": "(term,node_id,index)",
+    "vote_and_prevote_compare_complete_last_logid": true,
+    "prevote_no_vote_term_persistence": true,
+    "product_prevote_enabled": true,
+    "default_committed_self_leader_restore_enabled": true,
+    "product_prevote_rpc_implemented": true
+  },
+  "accepted_design_scope": "Keep original higher-term function byte-identical. Add only a separately guarded same-leader branch requiring old last/committed/committed-vote and new committed/vote the identical leader; retain complete LogId and index strict growth, vote monotonicity, current observed leader, and existing persisted checks.",
+  "witness": {
+    "new_run_owned_key_only": true,
+    "cas0_create_once": true,
+    "metadata_delete_same_key_once": true,
+    "mac_exact_read_and_absence_required": true,
+    "known_mutation_outcomes_required": true,
+    "unknown_stops_without_retarget_or_retry": true,
+    "original_history_retired_acknowledged_and_finish_unchanged": true,
+    "actual_cipher_references_not_hardcoded338": true,
+    "shared_prepare60_clipped_by_original_controller2400": true
+  },
+  "inference": "A same-leader later committed log is newer by the exact library order and can make Mac's log newer than stopped ROG. This source argument predicts vote comparison only; actual natural election and original Mac1 guard remain mandatory.",
+  "generic_broader_replacement_branch_accepted": false,
+  "implementation_review_complete": false,
+  "host_run_authorized": false,
+  "original83_missing15_new0_unchanged": true,
+  "complete_failure_root_review_blob": "220bc755ce81649b58b7cdb4d961d6ea485348e0",
+  "full_openbao271_replacement": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-source-export-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:37:03.038Z",
+  "source_packet": {
+    "tree": "6bb3c9bf64025aa507dffe818e18dd8e66701b5e",
+    "files": 10,
+    "bytes": 59203
+  },
+  "dispatch_packet": {
+    "tree": "b3385f1b2ff87612587f7f688f3512b57aea707b",
+    "files": 13,
+    "bytes": 88094
+  },
+  "all_blobs_and_merkle_roots_verified": true,
+  "exporter_blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000",
+  "exporter_bytes": 15352,
+  "exporter_sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+  "whole_sources_read": true,
+  "strict_original_to_candidate_diff_exact": {
+    "exporter_hunks": 2,
+    "inert_hunks": 3
+  },
+  "fixed_inert_request_exact_source_and_stdin": true,
+  "source_identity": "3cb873919170cc77101b27f6a3ab9e98f41f8d93/7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "full_history_expected_commits": 3755,
+  "zero_prerequisites": true,
+  "source_before_after_head_tree_clean_origin_refs_guards": true,
+  "source_independent_git_no_alternates_no_partial_clone": true,
+  "source_network_or_application_execution": false,
+  "fresh_owned_paths": true,
+  "original_budgets": {
+    "controller": 300,
+    "git": 90,
+    "term": 5,
+    "kill": 5
+  },
+  "new_outer_budgets": {
+    "inert": 60,
+    "export": 330
+  },
+  "scope": "Public fixed Git source and new owned export only; no product, credential or production operations.",
+  "decision": "Admit exact one-shot inert request; separately require actual authoritative zero/full/durable, byte/custody verification before one-shot exporter.",
+  "inert_request_blob": "9b23c8a326997db97bf826968323630a8de9980f",
+  "inert_key": "heptabao-phaseb-3cb-source-export-inert-e9c2fb72-20261105-r1",
+  "export_request_blob": "07a207df7758dcde1f88f2ec259d1b96f73dddac",
+  "export_not_yet_started": true,
+  "full_openbao271_replacement": false
+}

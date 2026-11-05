@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py"
+    ],
+    "created_unix_ms": 1793839380656,
+    "cwd": "/home/qian-qi",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a928b8b0-fc05-321b",
+    "idempotency_key": "heptabao-phaseb-3cb-public-source-export-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a928b8b0-fc05-321b",
+    "request_digest": "1c210108ce96853e3db5963fd6beb6c50566ba1f45e368f67dac1049fa132191",
+    "request_fingerprint": 2026902444630771006,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a928b8b0-fc05-321b"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a928b8b0-fc05-321b"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,31 @@
+{
+  "action": "export-standalone-phaseb-3cb",
+  "bundle": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+  "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "canonical_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "compiler_started": false,
+  "controller": {
+    "bytes": 15352,
+    "identity": [
+      66306,
+      28324699,
+      1000,
+      1000,
+      33152,
+      1,
+      15352,
+      1793839073569610031,
+      1793839073570664013
+    ],
+    "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a"
+  },
+  "expected_full_commit_count": 3755,
+  "expected_prerequisites": [],
+  "git_command_seconds": 90,
+  "maximum_bundle_bytes": 67108864,
+  "network_git_protocols_enabled": false,
+  "overall_seconds": 300,
+  "schema": "heptabao.phaseb.rog-3cb-standalone-source-export.v1",
+  "server_started": false,
+  "source": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source"
+}

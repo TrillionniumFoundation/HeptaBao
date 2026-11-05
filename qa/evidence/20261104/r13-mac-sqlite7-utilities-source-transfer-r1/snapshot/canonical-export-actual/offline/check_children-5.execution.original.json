@@ -1,0 +1,7 @@
+{
+  "chunk_id": "eadd1c",
+  "wall_time_seconds": 0.000082494,
+  "exit_code": 0,
+  "original_token_count": 112,
+  "output": "{\"batch\": 5, \"files\": [{\"bytes\": 0, \"kind\": \"stdout\", \"name\": \"026-source-after-refs.stdout\", \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, {\"bytes\": 0, \"kind\": \"stderr\", \"name\": \"026-source-after-refs.stderr\", \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}], \"no_candidate_or_host_execution\": true, \"schema\": \"heptabao.phaseb3cb.export-child-originals-check.v1\", \"status\": \"passed\"}\n"
+}

@@ -1,0 +1,44 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/qa/mac_capture_sqlite_synthetic_r2.py",
+      "--public-volume-anchor-base64",
+      "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+      "--public-volume-anchor-sha256",
+      "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+      "--source-pins-base64",
+      "ewogICJtYWNfZ3VhcmRlZF9jdXJyZW50X2NhcHR1cmVfcjMucHkiOiAiNjA2YjVkZjU4OTA5ZWJlZGMwMzVlYmJmZjZhNGFhNWU3NTRkMTljNmE3ZTBmNWU0ZTg4YzlkZGZjNTdjMjY5MyIsCiAgIm1hY19jYXB0dXJlX3NxbGl0ZV9zeW50aGV0aWNfcjEucHkiOiAiMTA4Zjk1NmViMzc3OWZjZTMxZTAxZDYzMDU0NzM0NGUyMjM2MjgzOTA0MWFmZWNiMzgyMWJmODA1M2ZmMzkyYyIsCiAgIm1hY19vd25lZF9jb21tYW5kc19yMS5weSI6ICJlYjY3NmU2ZGVkYjZkNTk0ZDk0NGU5MjE3MzhjZjliMzg0ZjJhOThhMzdlZTJiZDFmYTU0MzNiODQ4YTM2ODY3IiwKICAibWFjX3Q1X3ZvbHVtZV9ndWFyZF9yMS5weSI6ICIxMGUxNDBiMzdhMTdiNWY3ZmQ1Y2M1NjliMTYzMmRhOTliNjFmZDU0NGVjNzMyYTg4MDZmZjQwMmQ0ZWUwZDk5IiwKICAibWFjX293bmVkX3VucmVhcGVkX3IxLnB5IjogImExNDNiYTMzNDE1OTkzMWQ1MzBiNDlhNTVjMjQ0NzFmNTZmYTFiNjJmMWUxMDEyZTEyYzc1ZTIxZjNjMjJiMWQiLAogICJtYWNfY2FwdHVyZV9zcWxpdGVfc3ludGhldGljX3IyLnB5IjogImYzYzZiYjMzNjgxNDQxMWFhNGEyNDQ5MGYwOTA0Y2RiZDBmYWMyYmI4OWRiY2MzNmQ2MTUxYWRhMTNhNTFiYTIiCn0K",
+      "--source-pins-sha256",
+      "c038f3e078babbca59ded1f6cc43b9c24a1abf4d6f1d5a4f98aa779aad196636"
+    ],
+    "created_unix_ms": 1793838335695,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1a918c6cf-fc05-3143",
+    "idempotency_key": "heptabao-mac-immutable-sqlite-owned-synthetic-f3c6bb33-20261105-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1a918c6cf-fc05-3143",
+    "request_digest": "28d4211f07303fcab3b244c05899ee05ff13dd7be8df6a2f7e9841f4b5c8aab6",
+    "request_fingerprint": 2942012873728081866,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a918c6cf-fc05-3143"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 19118,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a918c6cf-fc05-3143"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

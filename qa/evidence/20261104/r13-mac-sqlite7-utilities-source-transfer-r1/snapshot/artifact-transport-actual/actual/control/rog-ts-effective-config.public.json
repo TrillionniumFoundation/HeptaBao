@@ -1,0 +1,10 @@
+{
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.05096178303938359,
+  "exit_code": 0,
+  "label": "rog-ts-effective-config",
+  "limit_seconds": 90,
+  "pid": 4133385,
+  "remaining": [],
+  "timed_out": false
+}

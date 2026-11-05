@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-export-inert-authority-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1a923fbc6-fc05-31d9"
+    }
+  }
+}

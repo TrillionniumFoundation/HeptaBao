@@ -1,0 +1,52 @@
+--- reference/source_export_r10.py
++++ candidate/source_export_phaseb_3cb_r1.py
+@@ -1,27 +1,27 @@
+ #!/usr/bin/env python3
+-"""New fixed R10 standalone source export; no source import or application runs.
+-
+-The source is the independently completed desktop canonical clone. The bundle
+-contains exactly HEAD and its complete ancestry, with zero prerequisites.
++"""New fixed 3cb standalone source export; no source import or application runs.
++
++The source is the independently qualified ROG normal-build canonical clone.
++The bundle contains exactly HEAD and its complete ancestry, with zero prerequisites.
+ """
+ from pathlib import Path
+ import hashlib, json, os, platform, re, signal, stat, subprocess, sys, time
+ 
+ os.umask(0o077)
+-BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCE=BASE/'normal-r10-validation-source-r1'
+-ROOT=BASE/'normal-r10-x230-source-export-r1'
++BASE=Path('/home/qian-qi')
++SOURCE=BASE/'heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source'
++ROOT=BASE/'heptabao-phaseb-ingress-observer-source-export-20261104-r1'
+ CONTROL=ROOT
+-BUNDLE=ROOT/'canonical-r10-full.bundle'
+-CANONICAL='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+-TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-PARENT='1d12abc45a83d4b32e7185d01a876eb93110b1e2'
++BUNDLE=ROOT/'canonical-3cb-full.bundle'
++CANONICAL='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
++PARENT='bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3752
++CANONICAL_COUNT=3755
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-ACTION='export-standalone-r10'
++ACTION='export-standalone-phaseb-3cb'
+ START=time.monotonic()
+ UNTIL=START+300
+ children,commands=[],[]
+@@ -29,7 +29,7 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.r10.x230-standalone-source-export.v1','action':ACTION,
++result={'schema':'heptabao.phaseb.rog-3cb-standalone-source-export.v1','action':ACTION,
+  'started_unix_ns':time.time_ns(),'canonical_commit':CANONICAL,'canonical_tree':TREE,
+  'expected_full_commit_count':CANONICAL_COUNT,'expected_prerequisites':[],
+  'source_imported':False,'network_git_protocols_enabled':False,

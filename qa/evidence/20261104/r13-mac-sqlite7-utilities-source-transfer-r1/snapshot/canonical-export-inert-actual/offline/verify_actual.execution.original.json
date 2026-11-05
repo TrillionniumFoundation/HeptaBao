@@ -1,0 +1,7 @@
+{
+  "chunk_id": "64928d",
+  "wall_time_seconds": 0.000034692,
+  "exit_code": 0,
+  "original_token_count": 295,
+  "output": "{\"all_observed_child_program_flags_false\": true, \"artifact_transfer_started\": false, \"checks\": [\"single_expected_ack\", \"exact_request_identity\", \"authority_terminal\", \"stdout_complete\", \"stdout_lossless_hex\", \"stdout_authority_binding\", \"stderr_complete\", \"stderr_lossless_hex\", \"stderr_authority_binding\", \"stderr_empty\", \"stdout_receipt_equal\", \"prepared_compile_only\", \"exact_stdin\", \"positive_bounded_elapsed\", \"file_set\", \"whole_source\", \"source_version_identity\", \"exclusive_custody\", \"source_path\", \"raw_receipt\"], \"elapsed_ns_decimal\": \"6327567\", \"job_id\": \"1a1a923fbc6-fc05-31d9\", \"phaseb_product_started\": false, \"qualification\": \"inert_public_source_distribution_and_compile_only\", \"r3_source_before_after_probe_performed\": false, \"receipt_sha256\": \"a4989d68e41e83302ba32215b2ce70faf3b76307bb981d26f77aa0228bb7b0ca\", \"schema\": \"heptabao.phaseb3cb.source-export-inert-actual-review.v1\", \"source_bytes\": 15352, \"source_export_started\": false, \"source_sha256\": \"7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a\", \"source_version\": \"66306:28324699:15352:1793839073569610031:1793839073570664013\", \"status\": \"passed\", \"stderr_bytes\": 0, \"stdout_bytes\": 804}\n"
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.postcold-openraft-witness-source-review-membership.v1",
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "openraft_version": "0.10.0-alpha.34",
+  "lock_registry_checksum": "06fe14d529f8fc098fbb4b9655d5db9b7ee0594e6a9d4e220aa931618de17b1f",
+  "upstream_commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+  "upstream_tree": "df6167c8f3075dd570ef6a6c7962af0ddddff42a",
+  "upstream_merkle": {
+    "blob_entries": 1239,
+    "tree_objects": 235,
+    "all_reconstructed": true
+  },
+  "physical_registry_cache_byte_verification": false,
+  "implementation_written": false,
+  "host_actions": 0,
+  "files": [
+    {
+      "path": "upstream/openraft/src/log_id/mod.rs",
+      "bytes": 6344,
+      "sha256": "c9e4aaa4d095cf432bf0cd14b883067e40c57a648abb3ea6db0a41c6f9f2edc2",
+      "git_blob": "2a2fdf45b9354e73f90c68a313b35f2c51239f2e",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/log_id/mod.rs"
+    },
+    {
+      "path": "upstream/openraft/src/vote/leader_id/leader_id_adv.rs",
+      "bytes": 3315,
+      "sha256": "c74ad69544b17421dedc0cdf9f8036ac19562da76e9b6079a6adc28fcc5d22f8",
+      "git_blob": "17d718a969118c0083c0c5ba657a8e0e38ea28c7",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/vote/leader_id/leader_id_adv.rs"
+    },
+    {
+      "path": "upstream/openraft/src/engine/engine_impl.rs",
+      "bytes": 43876,
+      "sha256": "24b2adffaea3397c2e6733e002443ca4a7b41215381da37f9d502b8b6f8d7410",
+      "git_blob": "fc2e77e88b542939b4e3d9122471aae7459dd262",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/engine/engine_impl.rs"
+    },
+    {
+      "path": "upstream/openraft/src/engine/handler/vote_handler/mod.rs",
+      "bytes": 9837,
+      "sha256": "ba44d6897bd2410bde1e5ff0d3730c3110fdc13205151ecc998b30940e8cd7a7",
+      "git_blob": "ebdbd9aed293f10f2639f7cc13df00946370e58d",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/engine/handler/vote_handler/mod.rs"
+    },
+    {
+      "path": "upstream/openraft/src/config/config.rs",
+      "bytes": 33292,
+      "sha256": "b6e1f1beded50971c3165ba8a2ffd3fc3ad692862883335a6e35f71f628efc8c",
+      "git_blob": "912986bf9aad55ad92c50be249034b852c976929",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/config/config.rs"
+    },
+    {
+      "path": "upstream/openraft/src/engine/engine_config.rs",
+      "bytes": 2936,
+      "sha256": "a76d3423c3f8493a225847d932286daef9afd3c47177c66b2ce2204037c1ce05",
+      "git_blob": "186487c7912f2f981d2a78a3e542a6f163c88ddb",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/engine/engine_config.rs"
+    },
+    {
+      "path": "upstream/openraft/src/type_config.rs",
+      "bytes": 10466,
+      "sha256": "10ef8fb3b1e884042f4115a3fb638b8d1d050e5a7c92aec253c9878d8e172402",
+      "git_blob": "ad141da3d9d31a515c0b35593ef5d280bd1444a6",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/type_config.rs"
+    },
+    {
+      "path": "upstream/openraft/src/raft/mod.rs",
+      "bytes": 83555,
+      "sha256": "9b4b955ca7cd00f0603dc111e8c27a28b8f1de369955722aa4c3a3beb4351f8b",
+      "git_blob": "5dc0dac32ffe61d527e834b665a52db6de27331d",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/raft/mod.rs"
+    },
+    {
+      "path": "upstream/openraft/src/docs/protocol/pre_vote.md",
+      "bytes": 2862,
+      "sha256": "2cee230e580b9a0c4b9610eb04ef2b29725822adec0736d748924cd204cc3cd4",
+      "git_blob": "0675544cde8d8a9479fdc4a030401dfb7a674477",
+      "url": "https://raw.githubusercontent.com/databendlabs/openraft/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/docs/protocol/pre_vote.md"
+    },
+    {
+      "path": "canonical/Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "git_blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/Cargo.lock"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/state_machine.rs",
+      "bytes": 30327,
+      "sha256": "ab24d6f042dab7a4b203e28eb043824d993ce52be8c61fe2ba19d543b4b9ab0e",
+      "git_blob": "ec6bcf6100d63783e0fe137e8b4f344da5ecffae",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-raft-runtime/src/state_machine.rs"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/process/node.rs",
+      "bytes": 57838,
+      "sha256": "5d4d19faf497f1547146a31f127fb78a1074c542a4d575a8ac88c30362c64d09",
+      "git_blob": "7b2d461e05c250ae9c04b0027c39660c9e3ca3ef",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-raft-runtime/src/process/node.rs"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/process/network.rs",
+      "bytes": 29956,
+      "sha256": "8f8a26c29201cd2d95c175925106026a933faa78f4a6c37db051d3140091cacf",
+      "git_blob": "709edf36a773b05d4511d13664e13eaf223dc1fd",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/HeptaBao/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-raft-runtime/src/process/network.rs"
+    },
+    {
+      "path": "executed/base-runner.py",
+      "bytes": 54668,
+      "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+      "git_blob": "33694332d042aa407e77206973fb28328652d720",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/33694332d042aa407e77206973fb28328652d720"
+    },
+    {
+      "path": "executed/native-deadline-qa.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "git_blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    {
+      "path": "executed/direct-deadline-qa.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "git_blob": "bb07666bde008d18697e0979200b20058a609a7a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/bb07666bde008d18697e0979200b20058a609a7a"
+    }
+  ]
+}

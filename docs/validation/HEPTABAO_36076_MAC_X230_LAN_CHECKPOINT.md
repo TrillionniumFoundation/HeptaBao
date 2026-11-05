@@ -1,5 +1,51 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R13 检查点：Mac owned SQLite 7/7、源码导出与三产物传输通过；完整替代尚未达标
+
+更新于 2026-11-05T01:07:56Z。**本轮完成了 Mac 七项 owned SQLite 回归、六个系统工具的实际文件绑定、3cb 完整 canonical 源码导出，以及三个正常构建产物向 desktop 的传输。ROG 的 46 项固定观察全部完成，但旧配置 pin 已失配，因此该作业仍如实记录为退出 1。全量替代 OpenBao 2.7.1 的资格仍为 false。** 当前未进行生产初始化、解封、载入、切流或旧资产删除。[本轮完整状态](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/current-state.public.json)保留逐项来源和候选版本。
+
+| 门槛 | 本轮实际推进 | 尚未成立的资格 |
+|---|---|---|
+| KV2 正式迁移与恢复 | 3cb 正常产物仍绑定原 44＋另列 7；完整 23,335,023 B Git bundle 已导出，三个公开运行产物已实际传到 desktop | canonical bundle 尚未传入并独立导入 desktop；新 Phase B stage、prepare、真实 CLI 保存/恢复及当前异机备份仍待完成。旧 B01 UNKNOWN 原件继续保留 |
+| Mac、ROG、Pocket4 HA | 新 B1 的完整 SDK 与 45 对变更账本已全部核验，失败位置明确；同 leader 新前沿的狭窄准备方案已按确切 OpenRaft 源码审查 | B1 原 83 通过、15 未执行，新增恢复后冷启 12 项尚未进入；修订版还须重新完成真实原 98＋另列 12 |
+| AuthBus 脱离 J3160 | Mac R2 实际 7/7，通过最后源文件/runtime 再核验；六个系统工具实际文件 pin 已收齐 | 七项只触及 owned SQLite fixture；五 agent 当前凭证捕获、实际消费者闭环、launchd 重启与回滚尚未执行 |
+| 逐台切换 | ROG 46 个固定条目、17 轮 metadata pass、4 个查询和最终进程检查均已完成；当前配置变化获得独立二次核实 | 有限清点不等于所有客户端已迁移。每台真实凭证读写、重启、回滚及正式流量切换仍未完成 |
+| 旧版清理 | 原失败、UNKNOWN、旧服务和可恢复资产均保留 | 所有客户端与备份路径迁移条件尚未成立，尚未达到“只保留最新版 HeptaBao 服务” |
+
+### Mac 七项实际回归的范围
+
+R2 inert 作业 `1a1a916944c-fc05-3131` 和 synthetic 作业 `1a1a918c6cf-fc05-3143` 均为权威退出 0，输出完整、持久化，无外层超时、取消或重试。七项实际耗时 0.23113099997863173 秒，小于原 45 秒 controller 限额。七项依次覆盖：sidecar 缺失、空 WAL/SHM、拒绝非空 WAL、拒绝 rollback journal、拒绝超大行、已持有 inode 漂移拒绝，以及真实 immutable SQLite 连接拒写。实际打开并关闭的连接数为 `[1,1,0,0,1,0,1]`。第六项命中了原生产库的 `current_input_fd_name_or_metadata_changed`，未放松任何 hold/verify 定义；第七项及最终再核验本次确实执行。[根审阅](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/mac-r2-actual-root-review.public.json)与[原始七项输出](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/mac/sqlite-r2-synthetic/stdout.original.json)保留完整证据。旧 R1 的 5 通过、1 失败、1 未执行继续作为独立失败记录。
+
+六个公开系统工具已逐个取得 regular-file 完整 SHA-256 和九字段身份，合计哈希 3,878,912 B；`/bin/ps` 实际 mode 为 04755，`/sbin/mount` 为 0555，未把它们假定为普通 0755。[工具观察包](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/mac/public-utility-observations/)是独立时点的文件观察，不能宣称原子快照或共享库验证。Mac 当前配置二次观察仍为 34,851 B / `ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d`。完整 outer 和 peer 审查仍在源码阶段，生产输入没有因为七项测试通过而自动获得执行资格。
+
+### 完整源码导出与实际产物传输
+
+3cb 导出作业 `1a1a928b8b0-fc05-321b` 退出 0，core 耗时 3.3535300320072565 秒 / 原 300 秒。27 个具名 Git 子进程全部已回收且无残留，其中 25 个退出 0，另外两个 `git config --get-regexp` 以退出 1 明确表示不存在 partial 配置。完整 strict fsck、3,755 个 commits、唯一父链、源 HEAD/tree/refs/origin、非 shallow、无 alternates/grafts/partial 及前后 clean 检查均通过；没有构建、启动产品进程、联网或导入 desktop。bundle 为 23,335,023 B，SHA-256 `25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b`，零 prerequisite。[151 件原包](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/snapshot/canonical-export-actual/)和[全量根审阅](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/phaseb-3cb-source-export-full-root-actual-review.public.json)包含原 SDK 分页、27 组 record/stdout/stderr 与精确字节绑定。
+
+传输作业 `1a1a92c7f34-fc05-3248` 退出 0，耗时 2.3843565040733665 秒 / 原 300 秒。仅传输 server（109,074,848 B / `437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0`）、794 B native report 与 3,200 B release report。三个文件的源端、传输流和目标同一 fd 读回大小与哈希逐项相等；原 SSH trust pin 和控制源文件前后不变。三个本地 owned group 与两个远端 endpoint 均完整关闭，unknown=false。[38 件原包](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/snapshot/artifact-transport-actual/)与[根审阅](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/phaseb-3cb-artifact-transfer-full-root-review.public.json)支撑这项传输资格。它尚不构成 canonical 源码导入或新 Phase B 运行成功；旧 B01 `1a1a8177aec-fc05-2da5` 的 UNKNOWN 没有被重放或改写。
+
+### ROG 当前配置变化的实际证据
+
+ROG inert 作业 `1a1a92b2b52-fc05-3236` 已退出 0。实际有限清点 `1a1a933167b-fc05-3294` 在 0.10996575400349684 秒内完成原 46 项观察：19 项 read-verified、25 项 metadata、2 项经父目录校验的缺失；17 轮 pass 没有错误，计划 434 次 metadata 调用实际执行 430 次，少的四次源于这两个已验证缺失。四个查询的投影全部完成，连同最终 ps 共五个 owned 子进程均已回收。读取合计 147,072 B / 41 次，没有 SQLite 连接、服务写入或产品接口请求。
+
+该作业仍正确退出 1，唯一失配项为 `f001` 的旧配置 SHA。当前配置为 21,229 B / `6e3659907327039243c60a10b2925edb51e83e4c73f0925c60279ae6a8169819`，独立后续 file_info 获得相同完整哈希和精确 version。当前六 agent 为 main、azi2、azi3、azi4、azi5、zbj-llm-runtime，primary 均为 `codex/gpt-6.1-sol`；AuthBus enabled=false、generation=203，gateway 当前 inactive/dead、MainPID 0，原 hold dropin 不变。没有推断修改者，也没有恢复旧配置或启动 gateway。[完整实际包](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/inventory/rog-current-readonly-actual/)含原 authority、三页 streams、完整 stdout、根审阅与两台当前配置的独立元数据。后续迁移必须重新绑定这份当前状态，不能把旧 pin 改写为本次已经匹配。
+
+### HA 失败解析与下一轮必须证明的事实
+
+B1 完整 107,216 B summary、退出/launch 文件、权威状态、分页与终端字节已经全部闭合；45 对变更结果均有观察，最后一次只读 health GET 则仍为 response_observed=false。前者 unknown=0 不会被外推为所有 HTTP 请求均已知。[完整原件审阅](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/ha-b-complete-raw-root-review.public.json)保留此区别。停止的 ROG 当时是 follower，Pocket leader 与 Mac 的 committed/applied 仍停在 61；普通停止 follower 不会自然产生新提交。
+
+确切依赖为 OpenRaft 0.10.0-alpha.34，上游 tag commit `dfee06ca9a8193f061149ce784caa6bcbe92a0c4` 的文件成员、完整 tree 与 495 产品 TypeConfig 已核对。当前 advanced LogId 的完整顺序是 `(term, node_id, index)`，pre-vote 会拒绝较旧的完整日志，且不持久写入 vote/term。新方案仅为“同一 leader、vote 不倒退、完整 LogId 与 index 严格增长”添加狭窄分支，保留旧 higher-term 分支；一次 owned CAS0 witness 和一次同 key metadata DELETE 必须各自有已知结果，Mac 实际读值与缺失要验证，任何 unknown 立即停。它仍受原 60 秒方向准备和 2,400 秒 controller 限制，不强制 leader、不重放未知变更、不调整原 98 名称或历史计数。上游 tag 绑定也不冒称机器 Cargo registry 缓存的物理字节证明。[根源码语义审阅](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/ha-same-leader-root-source-semantics.public.json)只接受这个准备方案；真实 Mac 选主、ReadIndex、密文持久化及恢复后冷启仍须运行取得资格。
+
+### CI、版本隔离与证据连续性
+
+截至 2026-11-05T01:06:04Z，PR #152 的 `e5de554f5dfe99f0de30012122fe3e248fb60532`、run `41937740513` 两路格式检查均通过，完整 workspace tests 仍在执行。尚无本候选的新 Clippy 终态或布局实际测量，不使用旧提交的测试成功替代当前资格。[本次读取的原 jobs payload](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/ci-current-e5-jobs.original.json)按原字节保存；旧失败和原命令/阈值保持不变。
+
+已通过的 LAN/KV2/Pocket AuthBus 仍绑定 `49503322`，观察器正常构建绑定 `3cb87391`，PR 当前头为 `e5de554f`。全 2.7.1 表面分母、当前生产数据/备份迁移、逐台真实消费者重启和回滚都尚未完成。本轮附加 16 个不可变证据包、423 个包内文件条目、4,062,776 B，重算 73 个包内 Git tree；[逐件索引](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/packet-manifest.public.json)记录完整 blob、大小和 SHA-256。原 JSON 纳秒整数保留原始 token，没有普通 JSON 重序列化。此前检查点字段和所有旧证据继续保留。
+
+---
+
+## 历史检查点（截至 R12，以下原文保留）
+
 ## 当前检查点：ROG 正常构建 44＋7 通过；新 HA 停在方向准备条件，完整替代仍未获资格
 
 更新于 2026-11-05T00:24:38Z。**本轮已经补齐 ROG 观察器候选的正常构建和原始证据，原 44 项测试与另列 7 项测试分别通过；Mac、ROG、Pocket4 的新回归在方向准备阶段得到明确失败，原 83 项通过、15 项未执行，新增恢复后冷启 12 项尚未进入。全量替代 OpenBao 2.7.1 的资格仍为 false。** 当前没有生产切流，也没有删除旧服务、二进制或恢复资产。[本轮机器可读状态](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/root-review/current-state.public.json)记录每项结论的来源、版本与未完成项。

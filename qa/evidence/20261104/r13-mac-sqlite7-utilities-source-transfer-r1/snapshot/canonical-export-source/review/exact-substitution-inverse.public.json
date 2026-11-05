@@ -1,0 +1,62 @@
+{
+  "all_20_functions_byte_equal": true,
+  "edits": [
+    {
+      "label": "description",
+      "before": "\"\"\"New fixed R10 standalone source export; no source import or application runs.\n\nThe source is the independently completed desktop canonical clone. The bundle\ncontains exactly HEAD and its complete ancestry, with zero prerequisites.\n\"\"\"",
+      "after": "\"\"\"New fixed 3cb standalone source export; no source import or application runs.\n\nThe source is the independently qualified ROG normal-build canonical clone.\nThe bundle contains exactly HEAD and its complete ancestry, with zero prerequisites.\n\"\"\""
+    },
+    {
+      "label": "operator base",
+      "before": "BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')",
+      "after": "BASE=Path('/home/qian-qi')"
+    },
+    {
+      "label": "actual qualified source",
+      "before": "SOURCE=BASE/'normal-r10-validation-source-r1'",
+      "after": "SOURCE=BASE/'heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source'"
+    },
+    {
+      "label": "fresh output",
+      "before": "ROOT=BASE/'normal-r10-x230-source-export-r1'",
+      "after": "ROOT=BASE/'heptabao-phaseb-ingress-observer-source-export-20261104-r1'"
+    },
+    {
+      "label": "fresh bundle",
+      "before": "BUNDLE=ROOT/'canonical-r10-full.bundle'",
+      "after": "BUNDLE=ROOT/'canonical-3cb-full.bundle'"
+    },
+    {
+      "label": "commit",
+      "before": "CANONICAL='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'",
+      "after": "CANONICAL='3cb873919170cc77101b27f6a3ab9e98f41f8d93'"
+    },
+    {
+      "label": "tree",
+      "before": "TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'",
+      "after": "TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'"
+    },
+    {
+      "label": "parent",
+      "before": "PARENT='1d12abc45a83d4b32e7185d01a876eb93110b1e2'",
+      "after": "PARENT='bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'"
+    },
+    {
+      "label": "count",
+      "before": "CANONICAL_COUNT=3752",
+      "after": "CANONICAL_COUNT=3755"
+    },
+    {
+      "label": "action",
+      "before": "ACTION='export-standalone-r10'",
+      "after": "ACTION='export-standalone-phaseb-3cb'"
+    },
+    {
+      "label": "schema",
+      "before": "'schema':'heptabao.r10.x230-standalone-source-export.v1'",
+      "after": "'schema':'heptabao.phaseb.rog-3cb-standalone-source-export.v1'"
+    }
+  ],
+  "unique_inverse_whole_equal": true,
+  "scope": "source_only"
+}

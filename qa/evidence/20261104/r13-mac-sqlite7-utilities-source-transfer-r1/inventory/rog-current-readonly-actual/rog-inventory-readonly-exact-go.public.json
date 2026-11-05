@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.root.rog-finite-inventory-readonly-go.r1",
+  "at_utc": "2026-11-05T00:54:14.393Z",
+  "request_blob": "fc808bf2ca4f813956b1faf9844854aa8a16a149",
+  "inert_actual_tree": "761da8083067a1edd7d53ff0c488ed0cda82bb54",
+  "io_released_after_transfer_job": "1a1a92c7f34-fc05-3248",
+  "scope": "46 fixed entries /17 passes /4 readonly queries; original45/outer60/8MiB/64KiB; no service transition or credentials published.",
+  "single_attempt_key": "heptabao-finite-client-inventory-rog-r2-readonly-3f574f0b-20261104-r1"
+}

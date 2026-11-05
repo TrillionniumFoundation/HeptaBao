@@ -1,0 +1,13 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py"
+  ],
+  "cwd": "/home/qian-qi",
+  "timeout_seconds": 330,
+  "idempotency_key": "heptabao-phaseb-3cb-public-source-export-20261104-r1"
+}

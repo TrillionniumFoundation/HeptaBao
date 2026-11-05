@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.phaseb3cb.source-export-dispatch-addendum.v1",
+  "status": "source_only_not_dispatched",
+  "source_export_packet": "6bb3c9bf64025aa507dffe818e18dd8e66701b5e",
+  "original_exporter_unchanged": {
+    "bytes": 15352,
+    "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+    "blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000"
+  },
+  "controls": {
+    "root": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1",
+    "script": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-controls-20261104-r1/source_export_phaseb_3cb_r1.py",
+    "mode_directory": "0700",
+    "mode_script": "0600",
+    "created_exclusive": true,
+    "outside_export_output_root": true
+  },
+  "source": {
+    "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source",
+    "read_only": true,
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+  },
+  "export_output_root": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1",
+  "separate_requests": {
+    "inert": {
+      "request_file": "dispatch/inert.process-start.proposed.json",
+      "source": {
+        "bytes": 4816,
+        "sha256": "e9c2fb72e868b53ea90cd5ec87f6a619bce5ac3be560a960e261036658920cd1",
+        "blob": "462b8a3e21a6a9c7395823939eece9ab85fc3b00"
+      },
+      "stdin": {
+        "bytes": 20592,
+        "sha256": "9112fcf06fcf0971222e47fc07be4408ed9117064394b31f789a7ff87a487f30",
+        "blob": "60612e3a60587ff425aedefa628fe57a64feee94"
+      },
+      "new_outer_seconds": 60,
+      "executes_exporter": false,
+      "creates_export_root": false,
+      "starts_children": false
+    },
+    "export": {
+      "request_file": "dispatch/export.process-start.proposed.json",
+      "outer_seconds": 330,
+      "outer_cap": "NEW",
+      "original_internal_seconds": 300,
+      "original_git_seconds": 90,
+      "original_cleanup_term_seconds": 5,
+      "original_cleanup_kill_seconds": 5,
+      "requires_separate_explicit_root_go": true
+    }
+  },
+  "verification": {
+    "all_five_inert_functions_byte_equal": true,
+    "exact_inverse_to_original": true,
+    "compile_only_no_target_exec": true,
+    "exporter_decoded_whole_sha": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a"
+  },
+  "admission": [
+    "Root review of exact two request objects.",
+    "Single inert GO; freeze ACK then actual raw stdout/authority/source custody before admitting exporter.",
+    "The old R3 source remains immutable; no Cargo, product, provider, Git remote or source branch changes.",
+    "Single exporter GO only after inert actual acceptance and root I/O window.",
+    "On unknown reconcile the same stable key; do not repeat export/create a replacement generation automatically."
+  ],
+  "qualification": {
+    "source_only": true,
+    "inert_started": false,
+    "export_started": false,
+    "desktop_import_started": false,
+    "product_started": false
+  }
+}

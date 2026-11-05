@@ -1,0 +1,248 @@
+## Current evidence checkpoint — 2026-11-04 22:21 UTC
+
+Complete evidence: [88375c6](https://github.com/TrillionniumFoundation/HeptaBao/commit/88375c6b93ed498449d1e8cd350d7136aecc7ab4), [current report](https://github.com/TrillionniumFoundation/HeptaBao/blob/88375c6b93ed498449d1e8cd350d7136aecc7ab4/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md). This adds 29 packets / 404 original files, 450 total writes. All raw blobs and packet trees were verified; 5,691 prior leaves and the prior index's 73 fields (except its as-of time) remain unchanged. Unsafe original JSON integer tokens are preserved.
+
+- **Actual Pocket3 → empty Mac1 recovery: original98 PASS.** Normal default product remains 49503322. Job1a1a88ffe46-fc05-2f1b completed with 53 recorded intent/response pairs, all original budgets satisfied, zero unknowns/retries. These recorded pairs do not count every passive HTTP request. Mac's actual recovery unseal took 9,452.187 ms under15s. All338 referenced cipher leaves /35,742,393 B matched; nineteen history versions and all-host ReadIndex passed. Six Mac foreground sessions and all three final native nodes were reaped/stopped. New bounded natural-election preparation is explicitly reported; no forced leader.
+- **Post-restoration cold persistence is still open.** The original full cold restart precedes missing-cipher recovery; original finish deletes test metadata before final stop. Restarting those terminal roots cannot prove serving the deleted history. A fresh B scope will restart all nodes after successful recovery and before original finish. Old87/98 failure and separate128/128 remain separate evidence.
+- **Observer bf0 build is a retained failure, not a product qualification.** Cargo exit101 after62.09s, all owned cleanup complete, zero44/7 tests started. Full stdout/stderr and original SDK chunks were reconstructed. New independent source3cb8739 adds only the explicit Result error type. The original snapshot admission503 remains unresolved.
+- **Successor build was stopped before dispatch by source review.** R2 public source staging has a unique ACK, but c46 runner still hardcodes bf0/ac4027 and would reject3cb/7f4d before Cargo. Correct only those two identity literals and chained pins in a new control root; preserve old controls, tests and budgets. No new build or Phase B runtime is qualified. Planned binding.private.json now respects the unchanged custody guard; actual artifact fields remain null.
+- **Mac current finite inventory: known incomplete, fully cleaned up.** 38 entries:16 read-verified,17 metadata,4 verified-parent absences,1 blocked at/etc alias;7 service queries complete. Original exit1 retained. Single follow-up readlink proved/etc -> private/etc with original identity; target/crontab was not opened and absence is not claimed. All original bytes and SDK pages retained. Mac five-agent runtime/launchd/capture remains source work; partial inverse-write errors need conservative unknown classification before runtime.
+- **Full replacement, production cutover, current backup/client migration and legacy deletion remain unqualified.** Historical59-surface ledger targets2.6.2 and is not a complete2.7.1 denominator. Existing X23031/31, bounded69-per-side oracle, three-host128 and Pocket AuthBus results remain scoped. Main PR head6d3040 is unchanged; both CI jobs were still in the complete locked Rust workspace step at22:12 UTC, nine earlier steps successful.
+
+---
+
+## Prior checkpoint text (retained verbatim)
+
+## Current evidence checkpoint — 2026-11-04 21:12 UTC
+
+Complete evidence: [943f62a](https://github.com/TrillionniumFoundation/HeptaBao/commit/943f62a646ead859f118a6dab4c7c12387b58488). This appends 21 packets / 307 original files (332 total writes); all raw blobs and packet Merkle roots were independently verified and unsafe JSON integer tokens remain unchanged.
+
+- **Pocket R10 actual isolated AuthBus PASS:** 18/18 preflight, 66/66 main, initial/cold consumers 128/128 records each, rollback 95/95 records each. Unique labels are 112/112/77/77, with exact full-path provenance for repeated basenames. Four actual native 0.144.3 factories, eight local RPCs, AppRole/TLS/KV/Policy/renew/revoke, managed1/2 generation writes, SDK/raw-row/cache rollback, SIGKILL and cold restart all have original receipts. No J3160, provider, model, refresh or quota call; all owned processes exited. Real service-manager lifecycle and production cutover remain open.
+- **HA:** existing 128/128 remains valid. Requested Pocket3 → empty Mac1 direction remains **87/98**, stopped by the actual-leader guard before target unseal. All 90 operation metadata originals are archived. Readonly stopped logs on Mac and ROG both end at term2/node2/index61 with 62 contiguous entries; the R4 descendant-directory named-path scope limit is explicitly retained. New natural-election R3 remains source preparation.
+- **Official CLI native snapshot B01:** still FAIL_UNKNOWN, one save attempt, no archive or replay. Exact source and safe original-log projection prove the 503 occurs in admission before archive export/writer; inner error remains unresolved. Independent observer commit **bf0aaec** changes one function's observation only, preserves original calls/deadlines, and passed actual rustfmt; it has not yet been compiled or product-tested and is not this PR head.
+- **Backup evidence:** nine original public receipts describe one Nov 2 capture / Nov 3 offhost recovery chain, 23 files, seven nonempty DBs and six exact auth stores, within the original 300-second restore bound. Historical “main” UID1000/Linux paths are not mapped to a current Mac/ROG by name. Current credentials, SDK recovery and complete current inventory remain unqualified.
+- PR source remains **6d3040a**, draft/open/unmerged. CI run **41907498576**, merge/head jobs, remains in complete locked Rust workspace tests after nine successful steps each. No cancel or rerun.
+- **Full OpenBao 2.7.1 replacement, production initialization/unseal/load/cutover, and old-installation cleanup remain unqualified/unperformed.**
+
+Previous checkpoint text is preserved below.
+
+---
+
+## 当前检查点 — 2026-11-04 20:41 UTC
+
+**全量替代 OpenBao 2.7.1 的资格仍为 false。本 PR 保持 draft；生产初始化、解封、加载、切流和旧版删除均未执行。**
+
+最新已发布证据：[c18898b09f1bda9d306c67d13100b6320a1adad2](https://github.com/TrillionniumFoundation/HeptaBao/commit/c18898b09f1bda9d306c67d13100b6320a1adad2)。[完整检查点](https://github.com/TrillionniumFoundation/HeptaBao/blob/c18898b09f1bda9d306c67d13100b6320a1adad2/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) 与 [公开证据索引](https://github.com/TrillionniumFoundation/HeptaBao/blob/c18898b09f1bda9d306c67d13100b6320a1adad2/qa/evidence/20261104/36076-checkpoint.public.json) 包含原始失败、后续实际执行与独立复核，不将窄范围通过升级为全量兼容。
+
+| 当前已验证事项 | 结果和范围 |
+|---|---|
+| Mac / ROG / Pocket4 真实 HA 原 128 项 | **128/128 PASS**；67 次变更全部有明确结果，零 unknown、零重放。实际断主、自然重新选主、ReadIndex、丢失法定人数拒绝、持久化、全冷重启及 34MiB 恢复通过。实际缺失密文方向为 ROG→Mac。 |
+| 34MiB 导入原期限 | 实际 4519.807ms，原 5s 未放宽。三份实际 HA KV2 导出为 35,658,767B，整件 SHA 相同；不是只核 HTTP 状态。 |
+| Pocket→Mac 定向 98 项 R2 | **FAIL_DIRECTION_UNCOVERED**；实际 87/98、45 个明确响应、零 unknown/重放。Pocket 为源，但重新选举的实际 leader 是 ROG；原 Mac 方向检查在目标 unseal 前停止。11 项缺失保留，所有 owned 进程已停止。 |
+| X230 正式 V6 KV2 / OpenBao 2.7.1 对照 | 既有 31/31 大数据迁移恢复及两侧 69/69 对照维持；不能代替整个产品面验收。 |
+| 正常构建回归 | Mac、ROG 各 44/44 通过，运行二进制仍绑定 R10 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`。 |
+| 四处测试修正 | PR head 已更新为 `6d3040a2dbd06661a67f5c62df259ff446eb8515`，只改 4 个测试文件；未修改产品源或测试期限。原 SSH 已受支持，改以真实未支持 owner / ACME 图覆盖原拒绝合同。完整 tree 复核、实际 rustfmt 均通过。 |
+| 新完整 CI | [41907498576](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/41907498576) 的 head/merge 两路仍在执行；身份、格式与 repository truth 检查已通过。尚无完整 CI 通过结论，不取消或重跑现有任务。 |
+| Pocket AuthBus R10 | 11 个 QA 文件的实际 inert stage 通过；三个 R10 公开构建资产的 relay 源和 route 已复核。该检查点尚无实际 R10 consumer/preflight/live 通过结论。 |
+| 官方 CLI Phase B | 旧 B01 snapshot save 的失败和 unknown 原样保留；未得到归档，未执行后续 restore。具体修复与新的独立回归仍待完成。 |
+| 客户端 / 备份 / 生产 | 有限 inventory 计划和原件来源正在闭合；真实凭证消费、逐机重启回滚、生产托管与完整 2.7.1 产品面仍有门槛，清理资格为 false。 |
+
+本次证据提交保留所有旧证据和未通过结论；512 项以上文件级收口不代表新增产品能力。后续执行须使用新的已绑定隔离源、原有时限和现有安全检查，不能重放旧 unknown 请求。
+
+---
+
+### 以下为之前的完整检查点与审查历史（原文保留）
+
+## R10 当前证据检查点 — 2026-11-04 20:01 UTC
+
+**全量替代资格仍为 false；本 PR 保持 draft，生产未初始化、解封、加载、切流或删除旧版。**
+
+证据提交：[1f5e1ee6e44de71d3d007589dc1b981bfb064a45](https://github.com/TrillionniumFoundation/HeptaBao/commit/1f5e1ee6e44de71d3d007589dc1b981bfb064a45)。源候选仍为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，产品代码和原预算未在此证据提交改变。
+
+| 实际验证 | 当前结果 |
+|---|---|
+| Mac / ROG 正常默认功能 | 各 44/44，零失败、零忽略；既有完整原件保留 |
+| X230 34MiB 正式 V6 KV2 | 31/31；95 次明确变更、零重放；导出/导入、冷重启、快照恢复再冷重启；3×19 原始存储精度见证 |
+| X230 OpenBao 2.7.1 对照 | 两侧各 69/69，13 模块，逐规范化对象相等；67 数值状态 + 2 原合同归一拒绝，原驱动不变 |
+| Mac / ROG / Pocket4 本轮 HA | R1 16/128 前置失败已原样封存；R2 正在执行，尚无终态资格；Pocket→Mac 98 未在 R10 运行 |
+| 严格 HTTP 观察 | 86 个已知结果，85 完整响应 + 1 连接前失败，unknown=0；仍有 8 项官方状态差异，未测有效恢复体 |
+| 官方 CLI 快照 Phase B | FAIL/UNKNOWN：仅 B01，退出 2、无归档；审计 503 不等于客户端帧证明；81 个受控进程全部回收，无重放 |
+| 完整 CI 41879510413 | merge 作业失败，server lib 3708 passed / 4 failed / 8 ignored；head 作业观察时仍运行，完整 CI 未通过 |
+
+Phase B 原 `input_fence_changed_after_run` 保留。完整 before/after 输入值含原整数词面相等；源码显示端口 dict 的 int/str 键比较问题。这项观察器诊断不会消除独立的 CLI unknown。新 relay 仍有正常 native writer/admission 与原源状态合法交接两项实施前 OPEN，未实施、未授予资格。
+
+[详细检查点](https://github.com/TrillionniumFoundation/HeptaBao/blob/1f5e1ee6e44de71d3d007589dc1b981bfb064a45/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) · [本次完整清单](https://github.com/TrillionniumFoundation/HeptaBao/blob/1f5e1ee6e44de71d3d007589dc1b981bfb064a45/qa/evidence/20261104/r10-lan-x230-phaseb-checkpoint-r1/manifest.public.json)
+
+新增 25 个原件包 / 294 个原件文件、28 份根审阅及完整 CI 失败日志；所有以前失败和 unknown 未重写。当前真实 AuthBus 消费者、逐机真实凭证/重启/回滚、生产托管、所有客户端和备份迁移、全 OpenBao 2.7.1 表面仍待完成。
+
+### 以下为此前检查点，保留原文与历史时间
+
+---
+
+## Current validation: both normal 44-case gates pass; full replacement remains open
+
+R10 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` now has independent **Mac arm64 44/44** and **ROG Linux 44/44** runtime passes, with zero failed or ignored tests. Both runs used normal default features and the exact frozen six groups; each reaped all 14 owned process groups. Root verified each host's 20 complete original files, actual stdout test names and summaries, retained test binary and source fences, and the authoritative durable process exit. Original timeouts were preserved.
+
+- Mac job `1a1a7d89fad-fc05-2cb1`: result SHA256 `28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961`.
+- ROG job `1a1a7c83142-fc05-2c88`: result SHA256 `409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee`.
+- R9's two failed native-state witness cases actually pass in R10. The earlier R9 42/44 and Mac R8 failure records remain failures and are retained.
+
+The new Phase B R3 draft 2 controller also completed its actual seven-source parse/compile and **34 evidence + 32 controller synthetic memory checks** in job `1a1a7e773c5-fc05-2cdc`. No product, official CLI, target main, binding constructor, reference helper, network or child process was run by that offline check. Four module definitions and their pure synthetic methods were executed; per-source compile-only observations describe the preceding compilation stage. This is a new R3 identity and does not inherit the unrecovered old R2 controller's qualification.
+
+[Evidence commit cc5e1889](https://github.com/TrillionniumFoundation/HeptaBao/commit/cc5e1889deed19373f379e85c8bb41db8a3f073f) preserves the complete raw receipts and new Phase B source packet. Its 78 changed files include 76 additions and two summary updates; 4,442 other old leaves remain unchanged. Historical nanosecond integers and raw JSON bytes were preserved.
+
+As observed at 19:02 UTC, both current head and merge CI jobs were still executing complete workspace tests; there is no full CI pass yet. Current-candidate X230 34MiB migration/recovery, real three-host HA, strict wire observation and official native-archive CLI save/restore/cold recovery still need actual terminal evidence. The full 59-surface admission, real credential/custody, client/backup migration and per-host rollback gates also remain open. **Keep this PR draft and unmerged; production traffic and old installations are unchanged.**
+
+The sections below preserve earlier source and validation history; this update supersedes their pending normal44 statuses.
+
+---
+
+## Current candidate: R10 NoForward native-state witness repair
+
+The R9 normal release and release-libtest builds succeeded on ROG, but the exact runtime groups finished **42/44 passed, 2 failed, 0 ignored**. Both new NoForward HA tests failed during setup: their observation helper attempted to serialize a native KV2 owner as a flat State, which the production storage boundary correctly refuses. Those tests had not reached their target NoForward requests.
+
+R10 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` (tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`, parent R9 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`) changes only the existing cfg(test) observation helper. It uses the production checked projection of live native KV2 graphs, including pending edits, then compares complete state metadata, the encoded authenticated native root, actual KV1 root/key binding, durable generation and finite token uses. It captures the existing inspection deadline and checks it throughout. All 12,674 bytes from `finite_actor` onward, including both test bodies, real POST, two-node, audit and original-request deadline assertions, are unchanged. Production serialization refusal and routing behavior are unchanged by this commit.
+
+Validation completed: independent base/new Git tree recomputation; exact one-file blob review; complete original business-test suffix comparison; ROG rustfmt exited 0 with zero stderr and all 16,529 output bytes identical to the reviewed source. **R10 normal builds, exact 44-test runtime, Mac runtime and physical LAN regression are pending.** This is not a claim that the two HA behaviors already pass.
+
+R9's failed run is retained in validation commit [1197a56](https://github.com/TrillionniumFoundation/HeptaBao/commit/1197a56a396e8b6aee2928c2503983cba9e2ce19), with its complete [terminal evidence](https://github.com/TrillionniumFoundation/HeptaBao/tree/1197a56a396e8b6aee2928c2503983cba9e2ce19/qa/evidence/20261104/r9-normal44-terminal-r1). All 14 R9 owned process groups were stopped; source and retained artifacts remained unchanged. No retry replaced that failure. Mac's original 90-second source-fetch failure is also retained; its fixed-history offline continuation is source preparation only.
+
+Full OpenBao 2.7.1 replacement, native standby snapshot relay, official-CLI Phase B, production credential custody, client/backup cutover and old-installation cleanup remain open. The PR remains draft and unmerged.
+
+---
+
+## Preserved R9 and earlier progress records
+
+The following descriptions are historical records of their explicitly named candidates; pending/current labels below do not supersede R10 above.
+
+## R9: unified source, qualification still in progress
+
+The prior normal Mac run exposed a TCP/TLS response-read failure, and the strict standby wire observer stopped on an incomplete ordinary response. R9 preserves the reviewed native SSH ownership implementation, coalesces bounded ordinary HTTP response heads, and binds NoForward redirects to the original HTTP request, configured HTTPS leader origin, original deadline and terminal audit. It also includes the four reviewed strict-Clippy source corrections.
+
+The current source is [`1d12abc45a83d4b32e7185d01a876eb93110b1e2`](https://github.com/TrillionniumFoundation/HeptaBao/commit/1d12abc45a83d4b32e7185d01a876eb93110b1e2), tree `e1faeaa3ed49d26fb01a7617a8879cb693a12907`. All 3,911 file entries were independently read back against the reviewed tree. The ten existing PR workflow/documentation/repository-test files retain their exact bytes and modes. The native SSH work is now part of this PR's CI source.
+
+- Full qualification [run 41869016900](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/41869016900) is in progress for the exact head and prospective merge. Both jobs were observed in the complete locked Rust workspace step; no full-CI success is claimed. The separate trust-boundary run 41869016878 passed.
+- ROG has prepared the exact canonical commit in a new independent checkout and started a normal server/seed build plus the fixed 44-test inventory: 25 SSH, 1 mount, 5 native redirects, 2 original-actor boundaries, 5 ordinary response-framing tests and 6 NoForward tests. Runtime results are pending.
+- Mac materialized the same reviewed tree, but its exact-commit network fetch reached the unchanged 90-second preparation cap. That preparation failed with complete durable output and all 22 owned child groups reaped. No compiler or server started. The failed receipt is retained; an independently reviewed offline Git-object continuation is being prepared so both physical ABIs can use the same actual commit.
+- The real Mac/ROG/Pocket 128-case and Pocket-to-Mac 98-case controllers retain all five original QA files, assertions and runtime budgets. New R9 physical runs are pending. The separate strict-wire and official-CLI fixtures each use one physical host and three loopback processes; they are not the real three-host HA regression.
+- Default standby native-snapshot forwarding still requires a dedicated authenticated streaming implementation and actual official-CLI restore evidence. A CLI zero exit alone is not proof that a restore occurred.
+
+### Latest published terminal evidence: R8 and installed-consumer scopes
+
+Validation commit [`80bc5a913d3444add725d5a24f94dd7a23ff053a`](https://github.com/TrillionniumFoundation/HeptaBao/commit/80bc5a913d3444add725d5a24f94dd7a23ff053a) adds 191 exact evidence files (1,836,404 bytes). Its [checkpoint](https://github.com/TrillionniumFoundation/HeptaBao/blob/80bc5a913d3444add725d5a24f94dd7a23ff053a/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) and [machine-readable index](https://github.com/TrillionniumFoundation/HeptaBao/blob/80bc5a913d3444add725d5a24f94dd7a23ff053a/qa/evidence/20261104/36076-checkpoint.public.json) were read back exactly.
+
+- R8 normal ROG: **33 passed, 0 failed, 0 ignored**. R8 normal Mac: **32 passed, 1 failed, 0 ignored**. The retained Mac failure and causal socket observation remain failures, not replacement passes.
+- R8 X230: **31/31** formal 34MiB migration/recovery checks and **69/69 per implementation** scoped compatibility checks. The latter comprise 67 numeric HTTP-status cases plus two explicitly normalized lease outcomes; they do not claim 69 raw numeric status matches. Source/build identity remains R8.
+- Pocket R6 with the R8 normal artifact: **66/66** core checks, **128/128** initial and cold consumers, and **95/95** in each rollback view, with complete owned cleanup and unchanged production fences. Earlier R4 unknown and R5 results remain preserved. These are isolated installed-consumer and rollback results, not a production traffic cutover.
+- The R8 strict-wire run stopped at operation 73 with a 9-byte incomplete status prefix. Its HTTP outcome remains **unknown** and was not replayed. The official 2.7.1 CLI Phase A contains ten observations, not ten compatibility passes; a redirected invalid restore returning CLI zero is a recorded counterexample.
+
+**Full OpenBao 2.7.1 replacement, production initialization/unseal, service loading, per-client traffic cutover and old-version cleanup remain unqualified and unperformed.** Keep this PR in draft. No merge or removal is authorized by the scoped results above.
+
+---
+
+## Earlier records preserved below
+
+The following time-stamped sections describe prior source and evidence states. Their former “current” and “latest” wording is historical; the R9 section above governs the present status.
+
+## Latest published evidence: R7 terminal results (2026-11-04)
+
+Validation checkpoint [`173603791bf19bb5a7148caf2173ab19b1ac2463`](https://github.com/TrillionniumFoundation/HeptaBao/commit/173603791bf19bb5a7148caf2173ab19b1ac2463) adds 62 exact evidence files (521,167 bytes), with the full [checkpoint](https://github.com/TrillionniumFoundation/HeptaBao/blob/173603791bf19bb5a7148caf2173ab19b1ac2463/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) and [machine-readable index](https://github.com/TrillionniumFoundation/HeptaBao/blob/173603791bf19bb5a7148caf2173ab19b1ac2463/qa/evidence/20261104/36076-checkpoint.public.json) independently read back byte-for-byte.
+
+- R7 normal Linux: **31 passed, 0 failed, 0 ignored**. R7 normal Mac: **29 passed, 2 failed, 0 ignored**. The two actual TCP/TLS tests failed at native HTTP header parsing; the complete failed run and both platform identities remain preserved. R7 cross-platform qualification is **false**.
+- The frozen 86-file Mac T5 checkpoint is durable, and still covers validation `605b73dc` plus QA `15c5827`; its later save time does not make it a checkpoint of the R7 terminal results.
+- Pocket r3 readonly preflight is **failed**, with 18 completed checks passed before the exact registry query refused. Its original result, unchanged production inputs/units, and earlier failures are retained; no first-cycle or production qualification is inferred.
+- The next source candidate is separately published as [`051a9f47090dadf43a8329d3b7a7f0a3b8c79583`](https://github.com/TrillionniumFoundation/HeptaBao/commit/051a9f47090dadf43a8329d3b7a7f0a3b8c79583), tree `d5a0f91a4d47f7c8d5f34170ea167d10dc036e04`, on `codex/heptabao-native-ssh-http-20261104-r8`. Its only delta from R7 is two test files: restore accepted-socket blocking mode like the formal HTTP path, and preserve the exact expired-actor 403 contract separately from the deadline 503 case. Its 33-test normal regression is pending; it is not the source being exercised by the current PR CI run.
+
+Full OpenBao 2.7.1 replacement, production cutover, and cleanup remain **unqualified**. This is an evidence/body update; it does not merge this draft or replace its source head.
+
+---
+
+## Current verified status — 2026-11-04, r7 progress checkpoint
+
+The latest evidence checkpoint is [8100e8d](https://github.com/TrillionniumFoundation/HeptaBao/blob/8100e8de50eabe150b3a9b567acfc4f078072449/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md), with the [machine-readable index](https://github.com/TrillionniumFoundation/HeptaBao/blob/8100e8de50eabe150b3a9b567acfc4f078072449/qa/evidence/20261104/36076-checkpoint.public.json). The preserved sections below describe earlier checkpoints; this section records the later observations.
+
+- Full run **41814525698 failed** on both the exact head and prospective merge: each server libtest reported 3,672 passed, 1 failed and 8 ignored; later qualification gates were skipped. The sole failure was exact 503 expected where expiry of the original Actor after the actual AEAD pause deliberately returns exact 403. The 6s token TTL, 7s actual pause, 15s transfer budget and separate 2s-scope/3s-pause exact503 case remain unchanged.
+- An already existing, independently inspected normal ROG test-only revision **9c54d92 / tree30731312** completed both original cases, **2/2**, in 10.114s after normal compilation. It tightens the response shape to exact permission denial with no data/auth/unwrapped/consistency, retains no-file/pending-owner cleanup and fresh-root export. Its original launcher is not established by the observed metadata; this continuation did not start or repeat it. This is not a full-CI pass or part of the separate r7 31-test scope.
+- This PR now has **f9139c3**, which independently matches that one-file test correction. New full run **41837754898** is active on the exact head and prospective merge **4917ae1**; observed jobs **126600985114 / 126600986208** were in the complete locked workspace step. Trust-boundary run **41837754906** passed. No merge or whole-workflow success is claimed.
+- A separate combined product candidate is published at [d76783b](https://github.com/TrillionniumFoundation/HeptaBao/commit/d76783b5fe9eb58f54c18a43075d1f4e374fd3d6), branch `codex/heptabao-native-ssh-http-20261104-r7`. Its 24-file tree **97d4e782** exactly matches physical ROG **dc1c02db** and Mac **9c08c538**. It combines the explicit root-SSH original-reply carrier, preserved ordinary Q9/S7 large JSON handling, reviewed mount refusal fixture and complete HTTP307 header write. It is **not this PR's current full-CI source**.
+- Mac normal server/seed compilation of r7 is authoritative exit0, output complete/durable, 304.484s, with unchanged default features/profile/source and no owned-group survivors. Server SHA256 is `e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350`. Both Mac and ROG have separate fixed **25 SSH + 1 mount + 5 HTTP = 31** normal test runs pending; compilation is not runtime qualification.
+- The strict HTTP observer now checks fixed-length bodies and passively verifies the stdlib's actual chunk framing reads. Old malformed-response counterexamples remain preserved. Its 81-assertion component and separate 20-assertion independent closure do not replace a fresh product wire run. Existing normal33's proven43-byte incomplete307 remains a failed result.
+- Pocket r2 **read-only preflight failed** before any HeptaBao/SDK/native consumer started: 18 executed checks passed, then the registry rule rejected actual SQLITE_CANTOPEN14 with a111,644,672-byte main file and both WAL/SHM absent. That shape was outside the previously reviewed nonempty-WAL/missing-SHM fallback. Auth tables, configuration, original six caches, native4, holds and both inactive services were unchanged. A narrowly scoped new reader is being reviewed; no first-cycle success, live retry, hold release or cutover is claimed.
+
+**Full replacement, production cutover, all-client/backup migration and obsolete-asset deletion remain unqualified.** Existing normal33 full34/HA128/direct98 and independent AuthBus evidence remain valid only for their exact sources, binaries and scopes.
+
+---
+
+## Purpose
+
+Close the remaining formal storage, physical HA and installed-consumer gaps before replacing OpenBao 2.7.1. This remains a draft qualification PR. Production traffic and legacy assets are unchanged.
+
+## Immutable candidate and integration
+
+Physical source: `33cafa4c6e29f0bde1553e041550d21b4c725d9c`, tree `cdc2376e7b39c1d8bbbeb10a813d58bfe923f336`. Publication `054d17cd50951efa46d78db3911ad1d277a0c584` has exactly that tree.
+
+PR head: `0dc39624d1266a6fca98760757b9482bf6f98a7a`, tree `959c65d6782b288c41730da869c86007c268547c`. Its production Rust implementation matches the physical candidate; the only later Rust change corrects an obsolete test fixture that treated supported KV1 creation as an unsupported backend. Integration also preserves main's intentionally empty README, retains the existing documentation requirements in `docs/CURRENT_DOCUMENTATION.md` with negative regressions, and adds the CI resource observations described below.
+
+## Changes
+
+- Coalesce authenticated Legacy HBVP2 response framing through the existing bounded writer and a borrowed rustls stream. Strict mTLS/ALPN identity, wire bounds, absolute deadlines, ReadIndex and physical durability requirements remain in force.
+- Make the TLS-overlap fixture's controlled dispatch explicit, retaining actual durable storage, original frame deadlines, independent 100ms/20ms storage-lane checks and proof that the intended lost ACK occurred. This does not qualify production throughput under slow fsync.
+- Apply Rust 1.98 formatting to the 14 server files identified by CI.
+- Retain the same plan identity, package counts, validation commands, state-format navigation, corpus alignment and execution-truth checks in the existing technical documentation portal.
+- Bound Cargo compiler fanout to one job and record finite resource statistics during a compile-only pass. Stop and wait for the sampler before the unchanged original workspace test command. Matrix, features, profiles, test-thread count and all runtime/provider gates remain unchanged. After measured compilation consumed 66–77 minutes, the total job scheduling envelope is now 360 minutes, matching the repository's existing full-matrix workflow; every original request and fixture deadline is unchanged.
+- Correct the stale mount-refusal fixture from KV version 1 to unsupported version 3. Preserve all original ACL, CAS and payload-graph assertions. The original failure was independently reproduced in 0.08 seconds, returning 204 where that obsolete assertion expected 501.
+
+## Evidence and open gates
+
+**Latest normal source `33cafa`:**
+
+- Normal Mac and Linux builds completed under the original release profile, without private diagnostic features. Mac server SHA256: `d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`; Linux: `7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`.
+- X230 passed the original full34 migration/history/cold/snapshot recovery contract, 31/31, and the scoped official OpenBao 2.7.1 comparison, 69/69 on each implementation. These counts do not cover the entire OpenBao API.
+- Fresh normal r2 completed the unchanged original physical Mac/ROG/Pocket4 contract: **128/128**, exactly 98 direct-LAN cases plus 30 official-history cases. All 67 mutation intents have one complete response, zero unknown outcomes and their original deadlines. Actual ROG node 2 supplied the empty elected Mac node 1; cold unseal returned HTTP 200 in 10,083.937ms, and the original five-second official import returned HTTP 204 in 4,645.568ms. All 339 referenced leaves / 35,743,140 bytes matched exact hashes and sizes. Full snapshot/restore, ReadIndex, real leader termination/election, cold rejoin and all-node cold restart passed; all owned services, mesh and observers stopped.
+- A separate explicit direction fixture completed the original direct **98/98** with actual Pocket4 node 3 supplying the empty elected Mac node 1. It retains all three original pre-quarantine cold unseals and all original direct assertions, controls only the healthy data-source selection, and requires the actual election to produce the requested target before unseal. It does not force or fabricate a leader and is not another unchanged canonical128 run. All 53 mutations have one complete response, zero unknowns; target seq46 returned HTTP 200 in 9,362.428ms. All 338 referenced leaves / 35,742,379 bytes matched; all owned processes and observers stopped. The official 30 cases are covered by the canonical run and were not repeated in this separate scope.
+- The original normal r1 **90/128 failure remains preserved**, with a complete HTTP 503 at 14,099.923ms, 47 intents/47 responses/0 unknowns. The prior failure was not replayed. The two fresh normal passes establish their exact contracts, but do not prove a unique cause for earlier intermittent timing failures.
+- The HA assessment records one concurrent root evidence write on Mac: 24 files, 353,180 bytes, with fsync, over 273ms. Cross-host clocks were not calibrated; it is neither excluded as a contributor nor asserted as the cause.
+- Pocket4's full-current-state native scenario passed 49 parent checks, 111/111 initial and cold dual-agent checks, and 80/80 for each exact SDK/raw-row rollback. It used the actual current ordinal-5 identity and native 0.144.3. That import was idempotent. A separate missing-current-ordinal-5 scenario also passed: 49 parent checks, 110/110 initial and cold dual-agent checks, and 80/80 for each rollback. Main's exact current credential was actually inserted; the second agent inherited it while preserving its original raw primary row. Both complete four-phase scenarios were independently verified; production inputs and hold markers were unchanged.
+
+**Additional diagnosis and actual consumer preparation:**
+
+- Private phase source `e17180d81db8b62ce333b58961efb70021e1e259` completed a fresh physical run at **128/128**, with 67 intents, 67 responses and zero unknown outcomes. Its first attempt stopped at Pocket4 readiness on newly chosen ports, before recovery. A subsequent read-only check found those ports outside the existing firewall allowance; the failed attempt remains preserved. The successful second attempt returned to the original allowed ports without firewall edits.
+- The successful private run recovered all 339 missing objects / 35,743,010 bytes from ROG to the empty Mac leader. Its cold call returned HTTP 200 in 10,298.918ms and the original five-second official import returned HTTP 204 in 4,587.567ms. The independently verified exact Mac consumer emission contains 3509 trace rows with zero drops. All owned services/observers stopped. This is private diagnostic evidence and does **not** replace the separately reviewed normal-release canonical128 and Pocket4-to-Mac98 results above.
+- Actual installed SDK order previews preserve all five Mac and six ROG agents with managed order `[2,1]`, no active-profile override and no enforced order. The `[1,2]` counterexample changes ROG zbj's inherited order and is retained. No production config has switched.
+- The complete Pocket4 native evidence packet is retained at `c4adf3468c042f673228e3c0297dc592d94304ae`. Earlier QA commit `682c063994c18e1dafc476f6affa4d25e7ff716f` adds the exact Mac/ROG order-preview packet, cutover plan and actual literal scans. Mac's original generic-identity scan remains `ok=false`; a separate actual attribution receipt accounts for all ten hits as two routing aliases, with zero actual credential-identity hits. No failed receipt was rewritten.
+
+**Earlier `36076` evidence remains bound to its own binaries:**
+
+- Mac and X230 formal full34 passed 31/31 each; Mac signed KV1/cold restore/reader-floor checks passed 98/98.
+- Normal physical HA failed first at 100/128 with one unreplayed unknown-outcome import, then at 90/128 with complete cold-recovery HTTP 503. A private diagnostic build passed 128/128 once; it does not qualify a normal release.
+- ROG passed actual AuthBus import and independent native-user identity preservation: 60 parent checks, 94/94 initial and cold checks, and 64/64 for each rollback.
+- Mac's new native r5 passed 60 parent checks, 95/95 initial and cold checks, and 62/62 for each full-store rollback. All four actual phases were independently verified. The preceding r4 omitted initial rollback because a QA loop overwrote the phase name; r4 remains incomplete despite its original green counter. Its previously unattempted cleanup was completed separately.
+- Native results prove the stated local credential lifecycle under denied external egress. They do not establish provider availability, production gateway restart or cutover. Mac's production third fallback must retain its identity and current semantics; the isolated two-source order is not a production migration plan.
+
+**Installed coordinator and full replacement scope:**
+
+- Mac offline materials remain unloaded under the user-owned T5 directory. No production service start, API/init/unseal, AppRole, storage activation, HA cohort initialization or traffic cutover occurred. Production unseal/custody policy is still unbound.
+- X230's separate real system-manager fixture passed **547 dynamic checks**, including five actual nonroot process and filesystem-isolation observations, paired capture of all nine owner files under both original locks plus source quiescence, an actual snapshot restore and SIGKILL/cold restart, pending-manifest recovery without replay, and real exit-2/exit-3 no-auto-restart behavior. The three failed user-manager attempts and the failed first system-manager observation remain preserved. Exact installed unit inodes and all owned processes were cleaned; no global AppArmor/sysctl change was made.
+- ROG's normal-source actual SDK/direct-core fixture passed **314 dynamic checks**. A separate same-fixture **installed-entry API + actual installed SDK run passed 330**, including exact Binding/GuardedBao and original locks, twelve coordinator actions, ten actual SDK cases, fifty fresh full TLS observations, competing CAS, a real commit followed by exit 73, history recovery without replay, two server SIGKILL/cold restarts, SQLite backup/restore, bad-CA binding rollback, real renew-self, and persistent revocation of 21 tokens and three SecretIDs. Renewal advanced only the client's local due clock. Provider credentials were synthetic; no provider or J3160 request was made. The proposed unit in the ROG API fixture was not registered or started by a manager. These results do not qualify ROG manager isolation, OAuth refresh ownership, an enforced scheduler or production cutover.
+- The 330-check run was already present when later create-only staging refused before mkdir or server start. Read-only reconciliation identified durable job `1a1a67182ff-fc05-2559`, exit 0 with complete durable output; five source pins match exactly and current owned processes are absent. The observed metadata does not record the launching agent, so no attribution is claimed. No live replay occurred. Exact sources, full receipts, root review and the duplicate staging refusal are published on QA commit [`15c5827dd7a8cfc06131d4901903ebf7e8090599`](https://github.com/TrillionniumFoundation/HeptaBao/commit/15c5827dd7a8cfc06131d4901903ebf7e8090599).
+- The official OpenBao 2.7.1 loopback baseline recorded 49 dynamic invariants: default standby authorized snapshot GET returned 200, while the disabled-standby-read node returned 307. Its followers remained non-voters; archives were shape-checked only. The old observer did not retain raw header termination, so its complete/unknown counters are parser reports rather than independent strict framing evidence.
+- Normal33's first frontdoor observation remains **failed at 42/43**, with 67 recorded outcomes. Its final redirect target predicate failed, but raw Location and CRLFCRLF were not captured; Python's parser accepts EOF before header termination. The old parser-reported zero unknowns must not be interpreted as strict wire completeness.
+- A fresh normal33 run with a reviewed strict-header observer also **failed**: 59 intents/59 outcomes comprise 56 strictly complete HTTP responses, two definite preconnect failures and one unknown. The standby invalid-snapshot POST received exactly 43 bytes, equal by length and SHA256 to the first fixed `307`/`Location:` write fragment, then EOF before any origin, path or header terminator. This proves that observed response was truncated; it does not uniquely establish TCP RST as the cause. The request was not replayed and all four owned servers plus 59 request children were stopped. A minimal response-write repair is being prepared on a separate candidate.
+- Exact normal-source review still identifies native owner/composition gaps beyond these bounded contracts. SSH root-owner r4 has an identical source tree on ROG, Mac and GitHub (`20a7065b96e16b946c00e09841e0621d813457d6`). Mac's normal build passed in 256.753s, but Linux runtime is **18/20**, with retained audit-completion-test and actual HA ingress-carrier failures. The next explicit typed transport candidate must preserve original ingress/audit ownership and ordinary >1MiB KV reply capacity. No SSH qualification is claimed from compilation.
+- Validation commit [`0cc90b1a39ef832bf84fed83b9744e175ab6d8c6`](https://github.com/TrillionniumFoundation/HeptaBao/commit/0cc90b1a39ef832bf84fed83b9744e175ab6d8c6) adds 44 complete evidence/document files (882,924 bytes), retaining the original canonical128/Pocket-to-Mac98 evidence and publishing the system547, SDK314/330, official baseline, normal67 failure with its completion limitation, corrected mount unit pass and SSH r4 build/runtime results. Branch and key-file readbacks match exact content. The later strict-header 59-request failure and all 121 reconstructed public files, 57 private-header integrity records, independent body-length verification and root review are published in follow-up [`605b73dc1d9859703827f9f16ecc37eda67d7875`](https://github.com/TrillionniumFoundation/HeptaBao/commit/605b73dc1d9859703827f9f16ecc37eda67d7875).
+
+## CI
+
+Runs `41789789589` and `41791159057` failed at formatting and then the README/documentation conflict; both are retained.
+
+Run `41792816829` failed in both attempts: both workers received a shutdown signal during Rust compilation and exited 143. Logs showed neither a Rust compiler error nor the start of Rust tests. The underlying shutdown cause is unproven.
+
+Run `41797943393` is terminal **cancelled**. Both head and prospective-merge workspace compilations succeeded, taking 66m41s and 76m59s; each then ran part of the original Rust test suite before cancellation near the former 90-minute job limit. The head log contains one FAILED native KV2 mount ACL/CAS/backend-refusal test. Independent execution of that exact unmodified test on normal physical source `33cafa` reproduced a deterministic 204-versus-501 assertion failure in 0.08 seconds: KV1 already has an admitted registry owner. Later lint, documentation and runtime gates were skipped. Compilation sampling observed peak process RSS of about 12.72 GiB; cgroup counters were unavailable. No OOM cause or terminal qualification is claimed.
+
+New full qualification run [`41814525698`](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/41814525698) is in progress on head `0dc39624d1266a6fca98760757b9482bf6f98a7a` and prospective merge `186570233517b2295de7384ef96a5815ba7db06f`. It includes the minimal refusal-fixture correction and scheduling-only 360-minute total envelope; no runtime deadline or substantive ACL/CAS/graph assertion was relaxed. Trust-boundary run `41814525725` passed separately and is not the full qualification result.
+
+The corrected original mount-refusal unit was also compiled and run on the normal ROG release profile: 18m49s compilation, 1/1 exact test passed in 0.21s (3680 filtered). Physical test source `45d45a79349d8feaed35cb60335edc76ae81bd29`, tree `7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf`. This validates the fixture correction, not the complete CI matrix.
+
+[Source-bound validation checkpoint](https://github.com/TrillionniumFoundation/HeptaBao/blob/codex/heptabao-validation-20261104/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md). Installed-consumer helpers are on `codex/heptabao-authbus-qa-20261104`.
+
+Keep this PR in draft until complete exact-head CI, all remaining native capability/owner gates, final-source binding, production restart/rollback and per-consumer migration gates are closed. The scoped normal physical HA contracts above have passed. No old service, binary or backup has been deleted.

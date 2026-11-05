@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-artifact-transfer-full-original-review.r1",
+  "at_utc": "2026-11-05T01:01:43.769Z",
+  "tree": "bd70028b078c7c009762e8aacd7cb184f2925235",
+  "whole_files": 38,
+  "whole_bytes": 193102,
+  "merkle_trees": 6,
+  "job": "1a1a92c7f34-fc05-3248",
+  "prior_complete_semantic_core_review_blob": "fc7980b139047af6efd4e35437cf1f0d573aa33d",
+  "all_blobs_whole_verified": true,
+  "sdk": {
+    "paged_native_sdks": 3,
+    "immutable_pages": 5,
+    "file_texts": 11
+  },
+  "all_actual_child_records_and_logs_match_core": true,
+  "ssh_preflight_and_effective_config_raw_hash_verified": true,
+  "exact_root_request_matches_unique_ack": true,
+  "terminal_stdout_hex_text_exact": 367,
+  "stderr_empty_double_eof": true,
+  "transport_qualified": true,
+  "phaseb_runtime_qualified": false,
+  "full_openbao271_replacement": false
+}

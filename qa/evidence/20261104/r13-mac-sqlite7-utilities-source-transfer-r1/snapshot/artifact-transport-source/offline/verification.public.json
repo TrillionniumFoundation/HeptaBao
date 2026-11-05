@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.phaseb3cb.artifact-source-verification.v1",
+  "status": "passed_source_only",
+  "parts": [
+    {
+      "part": "sender",
+      "checks": 9,
+      "function_count": 9,
+      "class_count": 1,
+      "all_definition_source_bytes_equal": true,
+      "inverse_whole_equal": true,
+      "ast_compile_only": true
+    },
+    {
+      "part": "receiver",
+      "checks": 10,
+      "function_count": 9,
+      "class_count": 1,
+      "all_definition_source_bytes_equal": true,
+      "inverse_whole_equal": true,
+      "ast_compile_only": true
+    },
+    {
+      "part": "relay",
+      "checks": 13,
+      "function_count": 16,
+      "class_count": 1,
+      "all_definition_source_bytes_equal": true,
+      "inverse_whole_equal": true,
+      "ast_compile_only": true
+    },
+    {
+      "part": "inert",
+      "checks": 7,
+      "function_count": 5,
+      "class_count": 0,
+      "all_definition_source_bytes_equal": true,
+      "inverse_whole_equal": true,
+      "ast_compile_only": true
+    }
+  ],
+  "provenance_checks": 25,
+  "total_checks": 64,
+  "reference_functions_preserved": 39,
+  "reference_classes_preserved": 3,
+  "first_local_check_admission_failed": "Argument list too long; Python did not start. Preserved separately. Same assertions split into bounded per-source static calls.",
+  "candidate_or_product_executed": false,
+  "target_host_access_during_source_check": false,
+  "transport_started": false,
+  "normal_actual_qualification_is_separate": true
+}

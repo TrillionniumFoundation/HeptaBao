@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.mac-server-wrapper-independent-source-review.r1",
+  "reviewer": "ha_validation",
+  "status": "SOURCE_REVIEW_PASS_SCOPED",
+  "base": {
+    "bytes": 12911,
+    "sha256": "381f4a50323fbf383b56b0aa9307839072e552a709b560629eb9a9fcec4f210c",
+    "git_blob": "7aed2eee8fff6f06532e8e76aef981229d120a0a"
+  },
+  "candidate": {
+    "bytes": 13210,
+    "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+    "git_blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0"
+  },
+  "strict_delta_hunks": 3,
+  "original_finding": {
+    "field": "currentPrivateInputsOpened",
+    "result": "corrected",
+    "replacement": "productionCurrentPrivateInputsOpened=false; ownedPrivateInputReadAttempted before first owned-plan read; ownedPrivateInputReadCompleted only after it returns"
+  },
+  "reviewed_flow": [
+    "Fixed reviewed public module pins are checked before loading the custody helpers; actual HeldT5 anchors and diskutil UUID precede any owned private plan/config/admission read.",
+    "Only two fixed owned generations and exact loopback flat normal native_v6_file configuration are accepted. Binary whole SHA, exact size/mode and stable FD/name identity are checked before and after manager admission.",
+    "Manager admission binds generation, plan hash and actual wrapper PID/birth/executable identity. The wrapper only prepares exec; it does not claim server startup.",
+    "All Commands must be known completed and reaped, guard descriptors must close with a final anchor, pending cancellation must be absent and original 30 seconds must remain before the single os.execve.",
+    "The final three-hunk delta also restores available TERM/INT/PIPE/XFZ/XFSZ defaults before exec; it adds no launch retry, new deadline or child."
+  ],
+  "required_caller_boundary": [
+    "The manager must bind the exact reviewed public pins/plan and independently observe the same PID and birth become the pinned server executable.",
+    "ready/public stdout/candidate alone is never service startup, manager success or production-switch authorization.",
+    "A partial private read is reported as attempted; failure receipts and any nonzero exit cannot be treated as a completed startup."
+  ],
+  "limitations": [
+    "Source-only review of this wrapper and its precise delta; no independent manager, launchd, AST, host, service or real exec result is claimed.",
+    "The existing conservative descriptor/command failure behavior remains; exceptions during close or output prevent successful exec even if a partial candidate file already exists.",
+    "No runtime operation is authorized by this peer receipt; B HA quiet is unchanged."
+  ]
+}

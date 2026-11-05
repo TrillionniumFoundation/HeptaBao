@@ -1,0 +1,14 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-export-core-20261105-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root.phaseb-3cb-artifact-transfer-core-review.r1",
+  "at_utc": "2026-11-05T00:54:12.687Z",
+  "job": "1a1a92c7f34-fc05-3248",
+  "authority_blob": "49399e870ebc5d15b1b17ad9cc5e75d557df78e2",
+  "core_blob": "4cd77efe5119bfe03feb3cbe77e970f60b729c6f",
+  "raw_endpoint_blobs": [
+    "ccab864c0638b6264c6bf1513a85fac336c7c2b3",
+    "84cc816a324a7681ea2532d79fbe77f9f491b54d"
+  ],
+  "terminal_blob": "656fd6131cab3c01df3363afa4f84c13d7dd565a",
+  "all_six_supplied_blobs_whole_verified": true,
+  "authority_zero_full_durable": true,
+  "three_local_children_known_zero_reaped_empty": true,
+  "remote_endpoint_known_complete": true,
+  "all_three_source_stream_same_fd_destination_hashes_and_versions_match_qualified_files": true,
+  "trust_and_original_controller_fences_equal": true,
+  "elapsed_seconds": 2.3843565040733665,
+  "original_parent_seconds": 300,
+  "original_endpoint_seconds": 90,
+  "new_outer_seconds": 360,
+  "full_sdk_archive_status": "Agent preparing complete packet; this review only validates the supplied actual core/raw endpoints/authority/terminal.",
+  "public_transfer_qualified": true,
+  "canonical_desktop_source_import_qualified": false,
+  "phaseb_product_qualified": false,
+  "decision": "Release source-export and artifact-transfer I/O window; finite ROG readonly inventory may proceed.",
+  "full_openbao271_replacement": false
+}

@@ -1,0 +1,77 @@
+--- reference/relay.py
++++ candidate/relay.py
+@@ -1,55 +1,55 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of three fixed public R10 build artifacts.
++"""Create-only shared desktop copy of three fixed public 3cb ingress-observer build artifacts.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+ import hashlib,json,os,shlex,signal,stat,subprocess,sys,time
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-r10-shared-artifact-controls-r1'
+-ROOT=BASE/'normal-r10-shared-artifacts-r1'
++SOURCES=BASE/'normal-phaseb-ingress-observer-shared-artifact-controls-r1'
++ROOT=BASE/'normal-phaseb-ingress-observer-shared-artifacts-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+-HEAD='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+-TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
++  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+   "name": "heptabao-server",
+-  "bytes": 109091112,
+-  "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
++  "bytes": 109074848,
++  "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+   "source_mode": 320,
+   "target_mode": 320,
+-  "version": "66306:32420767:109091112:1793816931326390006:1793816931458389281"
++  "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/native-build.public.json",
++  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+   "name": "native-build.public.json",
+-  "bytes": 801,
+-  "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
++  "bytes": 794,
++  "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:32420770:801:1793816931839994753:1793816931839994753"
++  "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-result.public.json",
++  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+   "name": "normal-release-result.public.json",
+-  "bytes": 3227,
+-  "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
++  "bytes": 3200,
++  "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:32420769:3227:1793816931839107644:1793816931839107644"
++  "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+  }
+ ]
+-HELPERS={"sender.py":"1cd76f2e8c0f851b2d8346f3bb5098362fc84524f4fd2b0adbbfa0860c9984b8","receiver.py":"2b14e32feaa2d94de4c86477be85e469f9bb2df2fa0d5f57aa4f5e9e53cef91b"}
++HELPERS={"sender.py":"e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835","receiver.py":"dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.r10.shared-public-artifacts-relay.v1','status':'failed',
++result={'schema':'heptabao.phaseb3cb.shared-public-artifacts-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,

@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.public-source-evidence-manifest.v1",
+  "file_count": 23,
+  "files": [
+    {
+      "path": "upstream/openraft/src/log_id/mod.rs",
+      "bytes": 6344,
+      "sha256": "c9e4aaa4d095cf432bf0cd14b883067e40c57a648abb3ea6db0a41c6f9f2edc2",
+      "git_blob": "2a2fdf45b9354e73f90c68a313b35f2c51239f2e"
+    },
+    {
+      "path": "upstream/openraft/src/vote/leader_id/leader_id_adv.rs",
+      "bytes": 3315,
+      "sha256": "c74ad69544b17421dedc0cdf9f8036ac19562da76e9b6079a6adc28fcc5d22f8",
+      "git_blob": "17d718a969118c0083c0c5ba657a8e0e38ea28c7"
+    },
+    {
+      "path": "upstream/openraft/src/engine/engine_impl.rs",
+      "bytes": 43876,
+      "sha256": "24b2adffaea3397c2e6733e002443ca4a7b41215381da37f9d502b8b6f8d7410",
+      "git_blob": "fc2e77e88b542939b4e3d9122471aae7459dd262"
+    },
+    {
+      "path": "upstream/openraft/src/engine/handler/vote_handler/mod.rs",
+      "bytes": 9837,
+      "sha256": "ba44d6897bd2410bde1e5ff0d3730c3110fdc13205151ecc998b30940e8cd7a7",
+      "git_blob": "ebdbd9aed293f10f2639f7cc13df00946370e58d"
+    },
+    {
+      "path": "upstream/openraft/src/config/config.rs",
+      "bytes": 33292,
+      "sha256": "b6e1f1beded50971c3165ba8a2ffd3fc3ad692862883335a6e35f71f628efc8c",
+      "git_blob": "912986bf9aad55ad92c50be249034b852c976929"
+    },
+    {
+      "path": "upstream/openraft/src/engine/engine_config.rs",
+      "bytes": 2936,
+      "sha256": "a76d3423c3f8493a225847d932286daef9afd3c47177c66b2ce2204037c1ce05",
+      "git_blob": "186487c7912f2f981d2a78a3e542a6f163c88ddb"
+    },
+    {
+      "path": "upstream/openraft/src/type_config.rs",
+      "bytes": 10466,
+      "sha256": "10ef8fb3b1e884042f4115a3fb638b8d1d050e5a7c92aec253c9878d8e172402",
+      "git_blob": "ad141da3d9d31a515c0b35593ef5d280bd1444a6"
+    },
+    {
+      "path": "upstream/openraft/src/raft/mod.rs",
+      "bytes": 83555,
+      "sha256": "9b4b955ca7cd00f0603dc111e8c27a28b8f1de369955722aa4c3a3beb4351f8b",
+      "git_blob": "5dc0dac32ffe61d527e834b665a52db6de27331d"
+    },
+    {
+      "path": "upstream/openraft/src/docs/protocol/pre_vote.md",
+      "bytes": 2862,
+      "sha256": "2cee230e580b9a0c4b9610eb04ef2b29725822adec0736d748924cd204cc3cd4",
+      "git_blob": "0675544cde8d8a9479fdc4a030401dfb7a674477"
+    },
+    {
+      "path": "canonical/Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "git_blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/state_machine.rs",
+      "bytes": 30327,
+      "sha256": "ab24d6f042dab7a4b203e28eb043824d993ce52be8c61fe2ba19d543b4b9ab0e",
+      "git_blob": "ec6bcf6100d63783e0fe137e8b4f344da5ecffae"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/process/node.rs",
+      "bytes": 57838,
+      "sha256": "5d4d19faf497f1547146a31f127fb78a1074c542a4d575a8ac88c30362c64d09",
+      "git_blob": "7b2d461e05c250ae9c04b0027c39660c9e3ca3ef"
+    },
+    {
+      "path": "canonical/crates/heptabao-raft-runtime/src/process/network.rs",
+      "bytes": 29956,
+      "sha256": "8f8a26c29201cd2d95c175925106026a933faa78f4a6c37db051d3140091cacf",
+      "git_blob": "709edf36a773b05d4511d13664e13eaf223dc1fd"
+    },
+    {
+      "path": "executed/base-runner.py",
+      "bytes": 54668,
+      "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+      "git_blob": "33694332d042aa407e77206973fb28328652d720"
+    },
+    {
+      "path": "executed/native-deadline-qa.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "git_blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    {
+      "path": "executed/direct-deadline-qa.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "git_blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    {
+      "path": "PROPOSAL.md",
+      "bytes": 14322,
+      "sha256": "1684ffb82c9aff2711209c89c20c012bf2757b3bc45a4b1bef5a2b6b510cd679",
+      "git_blob": "c1a83b1e83d4cf3102e9782136e924534d9b850b"
+    },
+    {
+      "path": "source-membership.public.json",
+      "bytes": 6908,
+      "sha256": "ccd06850ee3e0020c0f10d6b2fbead6dfb65018599c0f9212514543e561b646c",
+      "git_blob": "96cc19ceb0f183e9fac1f49544acd7b40d38f1a2"
+    },
+    {
+      "path": "provenance/upstream-tag.original.json",
+      "bytes": 383,
+      "sha256": "de61832622ef5f73e379f5ea017c22406cc1ce0d2eebd708b5dc15312ce0ab8d",
+      "git_blob": "d338020ba261758f599127d3113ced925d08d7f4"
+    },
+    {
+      "path": "provenance/upstream-commit.original.json",
+      "bytes": 1511,
+      "sha256": "eea78423d140f58bda48ddc95820c24ba16b380d956e54a116e50ea437b908f8",
+      "git_blob": "a889d2f839af7ad7c78458736b3d217e228ce132"
+    },
+    {
+      "path": "provenance/upstream-exact-tree.original.json",
+      "bytes": 366124,
+      "sha256": "859c1b57dcae0fcf73e2a4a2b5f7538796108ba944da02a5c934c15d5d12d740",
+      "git_blob": "e73e4160e9e5974072b1a6c3283a892f4019d192"
+    },
+    {
+      "path": "provenance/canonical-runtime-directory.original.json",
+      "bytes": 51844,
+      "sha256": "d93d90595558e3dd6d73334dff1353733a6d29643fb853d54f98413197de8580",
+      "git_blob": "772a186fa76561641b5dab6964d10f490c4675e8"
+    },
+    {
+      "path": "provenance/canonical-process-tree.original.json",
+      "bytes": 7332,
+      "sha256": "b4f91612839de27a4e51cfbd23859185316708b330ae4fb87a31b1d6958af380",
+      "git_blob": "b051cbe95b96bf7ad89f7f02da073434792accfc"
+    }
+  ]
+}

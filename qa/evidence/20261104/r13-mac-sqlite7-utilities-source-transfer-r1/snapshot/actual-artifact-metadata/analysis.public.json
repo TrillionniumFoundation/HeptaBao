@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.phaseb-3cb-actual-public-artifact-metadata.v1",
+  "scope": "Three fixed pre-existing ROG normal artifacts; file_info includes full SHA256, not stat-only",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "actual_paths_and_versions": {
+    "server": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 320,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 320,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+      "size": 109074848,
+      "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
+    },
+    "native": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "size": 794,
+      "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+    },
+    "release": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "size": 3200,
+      "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
+    }
+  },
+  "whole_sha_and_bytes_match_qualified_build": true,
+  "two_receipt_versions_match_prior_native_sdk": true,
+  "all_operation_pages_complete": true,
+  "all_original_sdk_success": true,
+  "source_export_started": false,
+  "transport_started": false,
+  "product_or_compiler_started": false,
+  "automatic_retry": false
+}
