@@ -1,0 +1,34 @@
+{
+  "additional_manifest_sha256": "f786fc4e9038dbb63f54b3d4362ce13cf636be8e3cfd38a0001ae789725b2391",
+  "additional_support_change": "A read-only epoch-view derives equality while retaining the retained_roots field.",
+  "base_control_sha256": {
+    "aggregate_frozen_regressions.template.py": "a7f66f9b8ea516bccaa2121864734118b9ebde120ac9b0f534d53ea8704096cc",
+    "prepare_frozen_regressions.py": "d8ee97e7e79d05dd4b365e49d7ae565eeee601ac08295f7d95d1cc3d90ec5ea2",
+    "run_unified_regressions.py": "b5b936d1c75c2b7ef880aa0f60ca446bab479b30ddf0ccda9e0d095087e806f1"
+  },
+  "changed_test_exact_name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+  "changed_test_oracle": "The former equality of the entire NativeV6PublishedRoot was invalid across legitimate clock-only publication. R5 uses the reviewed strict Auth/root byte oracle with clock-only differences; source bytes and support hashes are recomputed from this exact frozen candidate.",
+  "expected_ha_tests": 9,
+  "expected_server_tests": 172,
+  "expected_unique_tests": 181,
+  "original_176_exact_names_retained": true,
+  "original_60_exact_names_retained": true,
+  "original_assertion_text_completely_unchanged": false,
+  "original_plan_budgets_retained": true,
+  "parent_source_commit": "6b16a9292d046bbc42aec65045fa105aaa1ac5de",
+  "parent_source_tree": "0de9c516e94a47cb89e2e0f5ac2146e60913cfef",
+  "prior_candidate_qualification_borrowed": false,
+  "prior_failed_candidate_results_preserved": {
+    "denominator": 181,
+    "linux_passed": 180,
+    "linux_r3_aggregate_sha256": "64e2b5cc57005ceb8a6c24cd8ca1033b4fc3c3e7a28236804123a39882cd00f5",
+    "mac_passed": 180,
+    "mac_r3_aggregate_sha256": "d0b4ac8ff03392517e102df4b2a2c9167f2b377474809da64d91d92b1db78975"
+  },
+  "product_tests_run_by_bootstrap": false,
+  "production_changed": false,
+  "schema": "heptabao.regression-semantic-change-scope.v1",
+  "source_commit": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+  "source_freeze_sha256": "57b91c763fac2f9300a2d3ff30fd739b6fa84089889befd8083f74a91d6bcf5a",
+  "source_tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a"
+}

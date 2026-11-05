@@ -1,0 +1,2258 @@
+{
+  "aggregate_starts_no_product_processes": true,
+  "all_owned_groups_empty": true,
+  "build_result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/build-r1/result.public.json",
+  "build_result_sha256": "8e6fae0298c1b643b70d18e383e8ec64113f8b6b1d55e046daf30a1200c53528",
+  "children": [
+    {
+      "all_owned_groups_empty": true,
+      "expected_tests": 172,
+      "libtest_sha256": "46a2bf0e6a0d01993ad154d4f80fa5082fdc66f3b23fa789c558bbdec20e1ab5",
+      "manifest_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/control/server-regression-manifest.public.json",
+      "manifest_sha256": "0f41bc4c6137a778a922baf99eff3772c5cae2cb5d3bf30417afd84b5dc9cf99",
+      "passed": 172,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/regression-server-r1/result.public.json",
+      "same_normal_build_receipt": true,
+      "sha256": "38fe026443a05e9fd501bd79918868fff7208fa96e40a04e23b7913396908681",
+      "status": "passed",
+      "suite": "server"
+    },
+    {
+      "all_owned_groups_empty": true,
+      "expected_tests": 9,
+      "libtest_sha256": "aad04c6fb205be71473779749fff21f5f315edd0f3e7f2681954019c14c07bc5",
+      "manifest_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/control/ha-regression-manifest.public.json",
+      "manifest_sha256": "06d3a44e334537b166150f841cf7d41cd3fa35a316ddaeb065fb29d673cb4b6d",
+      "passed": 9,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/regression-ha-r1/result.public.json",
+      "same_normal_build_receipt": true,
+      "sha256": "9b06ff1bc814e196138a34929da12ad0d6e8ba470883106b7f5e39b14c0f8b47",
+      "status": "passed",
+      "suite": "ha"
+    }
+  ],
+  "controller_sha256": "a7f66f9b8ea516bccaa2121864734118b9ebde120ac9b0f534d53ea8704096cc",
+  "expected_ha_tests": 9,
+  "expected_server_tests": 172,
+  "expected_unique_tests": 181,
+  "full_denominator_retained": true,
+  "full_replacement_qualified": false,
+  "ha_libtest_sha256": "aad04c6fb205be71473779749fff21f5f315edd0f3e7f2681954019c14c07bc5",
+  "original_176_passed": 176,
+  "original_176_retained": true,
+  "original_60_passed": 60,
+  "passed": 181,
+  "preparation_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/control/regression-preparation.public.json",
+  "preparation_sha256": "7780c7ae0dcbaf571d2ff9748a1268f0b4d1cd5ff22011ec9de9000faede9f99",
+  "production_changed": false,
+  "schema": "heptabao.unified-regression-aggregate.v1",
+  "server_binary_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r5/build-r1/artifacts/heptabao-server",
+  "server_libtest_sha256": "46a2bf0e6a0d01993ad154d4f80fa5082fdc66f3b23fa789c558bbdec20e1ab5",
+  "server_sha256": "8b42f0a6bc2de0647e558c065f517b52736c208b619902943663fe4a768f44d0",
+  "source_at_aggregation": {
+    "commit": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+    "status": "",
+    "tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a"
+  },
+  "source_commit": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+  "source_tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+  "source_unchanged": true,
+  "started_ns": 1793867412813694000,
+  "status": "passed",
+  "terminal_ns": 1793867412929511000,
+  "tests": [
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.03460520878434181,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+      "process_receipt": "test-0001.public.json",
+      "requested_by_groups": [
+        "original-ssh25"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015577083919197321,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+      "process_receipt": "test-0002.public.json",
+      "requested_by_groups": [
+        "original-ssh25"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015379417221993208,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+      "process_receipt": "test-0003.public.json",
+      "requested_by_groups": [
+        "original-ssh25"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015469292178750038,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+      "process_receipt": "test-0004.public.json",
+      "requested_by_groups": [
+        "original-ssh25"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.8615880836732686,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+      "process_receipt": "test-0005.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh-archive"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.136642040684819,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+      "process_receipt": "test-0006.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6724582077004015,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+      "process_receipt": "test-0007.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.9297087080776691,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+      "process_receipt": "test-0008.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.733857125043869,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+      "process_receipt": "test-0009.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8493402497842908,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+      "process_receipt": "test-0010.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6838854593224823,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+      "process_receipt": "test-0011.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.3538733748719096,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+      "process_receipt": "test-0012.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.46267395885661244,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+      "process_receipt": "test-0013.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.1836833343841136,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+      "process_receipt": "test-0014.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.9835768342018127,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+      "process_receipt": "test-0015.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.9161228747107089,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+      "process_receipt": "test-0016.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6187704997137189,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+      "process_receipt": "test-0017.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.0224393750540912,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+      "process_receipt": "test-0018.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.7291312501765788,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+      "process_receipt": "test-0019.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.0626684580929577,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+      "process_receipt": "test-0020.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5221182499080896,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+      "process_receipt": "test-0021.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 9.071384749840945,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+      "process_receipt": "test-0022.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 5.136298916768283,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+      "process_receipt": "test-0023.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 9.828210833016783,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+      "process_receipt": "test-0024.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 27.644306833855808,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ssh25",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key",
+      "process_receipt": "test-0025.public.json",
+      "requested_by_groups": [
+        "original-ssh25",
+        "new-ssh-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.6353185418993235,
+      "exact_one_test_proved": true,
+      "execution_group": "original-mount1",
+      "name": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+      "process_receipt": "test-0026.public.json",
+      "requested_by_groups": [
+        "original-mount1"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5844170828349888,
+      "exact_one_test_proved": true,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+      "process_receipt": "test-0027.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6298626251518726,
+      "exact_one_test_proved": true,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+      "process_receipt": "test-0028.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6792042497545481,
+      "exact_one_test_proved": true,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+      "process_receipt": "test-0029.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6174370422959328,
+      "exact_one_test_proved": true,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+      "process_receipt": "test-0030.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.0288909999653697,
+      "exact_one_test_proved": true,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection",
+      "process_receipt": "test-0031.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 3.4083210420794785,
+      "exact_one_test_proved": true,
+      "execution_group": "original-actor2",
+      "name": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+      "process_receipt": "test-0032.public.json",
+      "requested_by_groups": [
+        "original-actor2"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 7.740589333232492,
+      "exact_one_test_proved": true,
+      "execution_group": "original-actor2",
+      "name": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+      "process_receipt": "test-0033.public.json",
+      "requested_by_groups": [
+        "original-actor2"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016629790887236595,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ordinary5",
+      "name": "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+      "process_receipt": "test-0034.public.json",
+      "requested_by_groups": [
+        "original-ordinary5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015797791071236134,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ordinary5",
+      "name": "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+      "process_receipt": "test-0035.public.json",
+      "requested_by_groups": [
+        "original-ordinary5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015882666688412428,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ordinary5",
+      "name": "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+      "process_receipt": "test-0036.public.json",
+      "requested_by_groups": [
+        "original-ordinary5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.05698695778846741,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ordinary5",
+      "name": "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+      "process_receipt": "test-0037.public.json",
+      "requested_by_groups": [
+        "original-ordinary5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.03440004214644432,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ordinary5",
+      "name": "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline",
+      "process_receipt": "test-0038.public.json",
+      "requested_by_groups": [
+        "original-ordinary5"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016467958223074675,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+      "process_receipt": "test-0039.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015632249880582094,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+      "process_receipt": "test-0040.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8996649170294404,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+      "process_receipt": "test-0041.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 9.565501125063747,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+      "process_receipt": "test-0042.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 3.1283895410597324,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+      "process_receipt": "test-0043.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 5.802141333930194,
+      "exact_one_test_proved": true,
+      "execution_group": "original-no_forward6",
+      "name": "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline",
+      "process_receipt": "test-0044.public.json",
+      "requested_by_groups": [
+        "original-no_forward6"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.8312854589894414,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+      "process_receipt": "test-0045.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.8877032077871263,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+      "process_receipt": "test-0046.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.764907917007804,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+      "process_receipt": "test-0047.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016864541918039322,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+      "process_receipt": "test-0048.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01611216738820076,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+      "process_receipt": "test-0049.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01621887506917119,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+      "process_receipt": "test-0050.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01717220898717642,
+      "exact_one_test_proved": true,
+      "execution_group": "original-ingress7",
+      "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+      "process_receipt": "test-0051.public.json",
+      "requested_by_groups": [
+        "original-ingress7"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.017059999983757734,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+      "process_receipt": "test-0052.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016128041315823793,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+      "process_receipt": "test-0053.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 8.967333665583283,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+      "process_receipt": "test-0054.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016127208713442087,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+      "process_receipt": "test-0055.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015665083192288876,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+      "process_receipt": "test-0056.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01564774988219142,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+      "process_receipt": "test-0057.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01604699995368719,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+      "process_receipt": "test-0058.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016091540921479464,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+      "process_receipt": "test-0059.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016170500312000513,
+      "exact_one_test_proved": true,
+      "execution_group": "original-cold-h2-9",
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+      "process_receipt": "test-0060.public.json",
+      "requested_by_groups": [
+        "original-cold-h2-9"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.033733708783984184,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_bounds_workers_refs_bytes_and_repeated_fresh_reads",
+      "process_receipt": "test-0061.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.022658083122223616,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_reorders_completion_only_and_keeps_full_reference_identity",
+      "process_receipt": "test-0062.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016434875316917896,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_delivery_rechecks_revocation_after_source_read",
+      "process_receipt": "test-0063.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.032838167157024145,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_source_error_wrong_length_and_panic_join_workers",
+      "process_receipt": "test-0064.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.022492625284940004,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_writer_error_and_unconsumed_refs_close_full_queues",
+      "process_receipt": "test-0065.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.0164791252464056,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_original_shorter_scope_and_expired_request_cannot_extend",
+      "process_receipt": "test-0066.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01641120808199048,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_rejects_unadmitted_bounds_before_reading",
+      "process_receipt": "test-0067.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016404875088483095,
+      "exact_one_test_proved": true,
+      "execution_group": "new-prefetch",
+      "name": "engines::kv::native_records::paged::lossless_export::prefetch::tests::lossless_prefetch_consumer_unwind_stops_sources_before_scoped_join",
+      "process_receipt": "test-0068.public.json",
+      "requested_by_groups": [
+        "new-prefetch"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.7149279578588903,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_http_projection_cold_and_kv2_isolation",
+      "process_receipt": "test-0069.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.3986453749239445,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_http_missing_marker_wrong_scope_and_mutation_refuse",
+      "process_receipt": "test-0070.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.5877831671386957,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_wrapper_snapshot_restore_cold_preserves_original_envelope",
+      "process_receipt": "test-0071.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.35018845833837986,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_wrapper_ttl_and_owner_checks_do_not_relax",
+      "process_receipt": "test-0072.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5691876672208309,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_normalized_namespace_header_keeps_exact_owner",
+      "process_receipt": "test-0073.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6011697091162205,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_q9_n1_capacity_completion_digest_and_missing_marker",
+      "process_receipt": "test-0074.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8229611250571907,
+      "exact_one_test_proved": true,
+      "execution_group": "new-kv1-signed",
+      "name": "service::native_storage::tests::kv1_registry_tests::signed_lease_tests::formal_v6_signed_kv1_wrapped_special_data_keeps_original_selector_after_cold",
+      "process_receipt": "test-0075.public.json",
+      "requested_by_groups": [
+        "new-kv1-signed"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 9.957266583107412,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki-ha",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_forwarded_signing_election_cold_and_actual_crl",
+      "process_receipt": "test-0076.public.json",
+      "requested_by_groups": [
+        "new-pki-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 12.12651779083535,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki-ha",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_batch_lease_keeps_typed_owner_across_actual_cold_election",
+      "process_receipt": "test-0077.public.json",
+      "requested_by_groups": [
+        "new-pki-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 19.424438917078078,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki-ha",
+      "name": "service::native_v6_ha_pipeline_tests::native_pki_tests::formal_native_pki_ha_lost_actual_quorum_cannot_sign_or_disclose_public_material",
+      "process_receipt": "test-0078.public.json",
+      "requested_by_groups": [
+        "new-pki-ha"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.7295705829747021,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_source_promotion_preserves_existing_signer_certificate_and_lease",
+      "process_receipt": "test-0079.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.8593999170698225,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_issue_revoke_crl_and_cold_storage_preserve_real_crypto",
+      "process_receipt": "test-0080.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.7941334168426692,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_no_store_has_no_phantom_lease_or_certificate",
+      "process_receipt": "test-0081.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.3391065406613052,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_intermediate_signing_keeps_actual_chain_after_cold_restart",
+      "process_receipt": "test-0082.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8963181669823825,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_public_ocsp_uses_original_anonymous_semantics_and_real_signature",
+      "process_receipt": "test-0083.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5674837501719594,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_audited_public_reply_status_change_is_vetoed",
+      "process_receipt": "test-0084.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.472878041677177,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_audited_issue_rechecks_current_policy_without_resigning",
+      "process_receipt": "test-0085.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.133164250291884,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_audited_issue_cannot_refresh_original_deadline",
+      "process_receipt": "test-0086.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.1515774172730744,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_audited_issue_retains_original_precise_issuer_expiry",
+      "process_receipt": "test-0087.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.540174167137593,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_idle_reconciles_actual_batch_expiry_and_persists_crl",
+      "process_receipt": "test-0088.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.17647795798257,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_idle_checkpoint_preserves_original_transit_rotation",
+      "process_receipt": "test-0089.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 3.243469040840864,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_role_numeric_transport_preserves_original_parameter_acl",
+      "process_receipt": "test-0090.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.4107725829817355,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences",
+      "process_receipt": "test-0091.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.8531511658802629,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_lease_prefix_requires_sudo_and_revocation_keeps_real_owner",
+      "process_receipt": "test-0092.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8454558751545846,
+      "exact_one_test_proved": true,
+      "execution_group": "new-pki",
+      "name": "service::native_auth::pki_tests::native_pki_formal_mount_tune_disable_keeps_other_graphs_and_cold_custody",
+      "process_receipt": "test-0093.public.json",
+      "requested_by_groups": [
+        "new-pki"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5239538750611246,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_file_uses_real_shamir_activation_and_cold_reopen",
+      "process_receipt": "test-0094.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.4226138750091195,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_requires_a_bound_profile_and_original_root_actor",
+      "process_receipt": "test-0095.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.2534121251665056,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5",
+      "process_receipt": "test-0096.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.3587628328241408,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_rejects_unsupported_acme_without_retiring_v5",
+      "process_receipt": "test-0097.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.24366483325138688,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_rejects_unsupported_auth_mount_without_losing_it",
+      "process_receipt": "test-0098.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.043211625423282385,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_profile_cannot_replace_or_invent_a_runtime_owner",
+      "process_receipt": "test-0099.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.7967537078075111,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_file_restores_object_complete_history_and_reopens",
+      "process_receipt": "test-0100.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.4095250000245869,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_migrates_token_private_storage_and_cold_reopens",
+      "process_receipt": "test-0101.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.18281962536275387,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::native_raft_seed_requires_real_shamir_checkpoint_and_acknowledged_initialization",
+      "process_receipt": "test-0102.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.354610875248909,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_keeps_pending_initialization_recoverable_until_ack",
+      "process_receipt": "test-0103.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.3621157081797719,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_keeps_pending_rekey_cancellable_in_v5",
+      "process_receipt": "test-0104.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.30291600013151765,
+      "exact_one_test_proved": true,
+      "execution_group": "new-storage",
+      "name": "service::native_storage::tests::configured_native_activation_preserves_durable_nondefault_raft_policy_in_v5",
+      "process_receipt": "test-0105.public.json",
+      "requested_by_groups": [
+        "new-storage"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.360938458237797,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_formal_file_registry_crypto_and_two_cold_reopens",
+      "process_receipt": "test-0106.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5422151661477983,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_partial_batch_commits_success_and_keeps_plaintext_under_authority",
+      "process_receipt": "test-0107.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.3059974168427289,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_acl_source_create_capability_cas_and_refusal_scope",
+      "process_receipt": "test-0108.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.0679865828715265,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_after_audit_revocation_vetoes_partial_plaintext",
+      "process_receipt": "test-0109.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6105495421215892,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_after_audit_seal_keeps_committed_rotation_but_vetoes_reply",
+      "process_receipt": "test-0110.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.47603200003504753,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_capsule_cannot_replay_rebind_or_change_other_owners",
+      "process_receipt": "test-0111.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8378744167275727,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_snapshot_restores_kv_without_replacing_transit_keys",
+      "process_receipt": "test-0112.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.8090815832838416,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_worker_rotation_uses_original_clock_and_persists",
+      "process_receipt": "test-0113.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 1.481831083074212,
+      "exact_one_test_proved": true,
+      "execution_group": "new-transit",
+      "name": "service::native_auth::transit_tests::native_transit_finite_actor_terminal_receipt_keeps_retired_clock_successor",
+      "process_receipt": "test-0114.public.json",
+      "requested_by_groups": [
+        "new-transit"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 35.002378875389695,
+      "exact_one_test_proved": true,
+      "execution_group": "new-cold-restore",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_complete_archive_old_shamir_new_quorum_and_second_cold_restart",
+      "process_receipt": "test-0115.public.json",
+      "requested_by_groups": [
+        "new-cold-restore"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.6825616671703756,
+      "exact_one_test_proved": true,
+      "execution_group": "new-cold-restore",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss",
+      "process_receipt": "test-0116.public.json",
+      "requested_by_groups": [
+        "new-cold-restore"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.845302208326757,
+      "exact_one_test_proved": true,
+      "execution_group": "new-cold-restore",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_acme_archive_refused_without_destination_or_source_loss",
+      "process_receipt": "test-0117.public.json",
+      "requested_by_groups": [
+        "new-cold-restore"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016970249824225903,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-clock",
+      "name": "ha::snapshot_clock::tests::snapshot_clock_wire_refuses_cross_request_actor_ingress_direction_and_operation",
+      "process_receipt": "test-0118.public.json",
+      "requested_by_groups": [
+        "new-snapshot-clock"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016535500064492226,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-clock",
+      "name": "ha::snapshot_clock::tests::snapshot_clock_wire_requires_exact_single_successor_and_preserves_failed_auth_status",
+      "process_receipt": "test-0119.public.json",
+      "requested_by_groups": [
+        "new-snapshot-clock"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016553250141441822,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-clock",
+      "name": "ha::snapshot_clock::tests::snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403",
+      "process_receipt": "test-0120.public.json",
+      "requested_by_groups": [
+        "new-snapshot-clock"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01662650005891919,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-clock",
+      "name": "ha::snapshot_clock::tests::snapshot_clock_token_wire_keeps_maximum_escaped_token_within_small_frame",
+      "process_receipt": "test-0121.public.json",
+      "requested_by_groups": [
+        "new-snapshot-clock"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016989832744002342,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-clock",
+      "name": "ha::snapshot_clock::tests::snapshot_clock_outcome_box_preserves_frozen_named_field_wire_shape",
+      "process_receipt": "test-0122.public.json",
+      "requested_by_groups": [
+        "new-snapshot-clock"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.8034848337993026,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-standby",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners",
+      "process_receipt": "test-0123.public.json",
+      "requested_by_groups": [
+        "new-snapshot-standby"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 6.891028999816626,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-standby",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_finite_tokens_redirect_without_consumption",
+      "process_receipt": "test-0124.public.json",
+      "requested_by_groups": [
+        "new-snapshot-standby"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.4587993752211332,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-standby",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery",
+      "process_receipt": "test-0125.public.json",
+      "requested_by_groups": [
+        "new-snapshot-standby"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 4.484655666165054,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-standby",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart",
+      "process_receipt": "test-0126.public.json",
+      "requested_by_groups": [
+        "new-snapshot-standby"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.095435084309429,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-standby",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_missing_api_origin_remains_503",
+      "process_receipt": "test-0127.public.json",
+      "requested_by_groups": [
+        "new-snapshot-standby"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 14.97431220812723,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "process_receipt": "test-0128.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 4.82486250018701,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+      "process_receipt": "test-0129.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 9.682431707624346,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+      "process_receipt": "test-0130.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.2821689578704536,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+      "process_receipt": "test-0131.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 4.284150917083025,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv",
+      "process_receipt": "test-0132.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 19.746157791931182,
+      "exact_one_test_proved": true,
+      "execution_group": "new-cold-clock-floor",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::clock_floor_tests::cold_dr_unmarked_archive_inherits_precision_owner_without_resurrecting_temporary_authority",
+      "process_receipt": "test-0133.public.json",
+      "requested_by_groups": [
+        "new-cold-clock-floor"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.4206877499818802,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::native_archive_roundtrip_preserves_v5_state_and_reopens",
+      "process_receipt": "test-0134.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.2923733750358224,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::snapshot_authorization_precedes_spool_and_cancel_releases_single_transfer_slot",
+      "process_receipt": "test-0135.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.42147395806387067,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::changed_state_activation_and_authenticated_checksum_failure_never_publish_uploaded_state",
+      "process_receipt": "test-0136.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.2976169581525028,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::spool_reopen_cleans_only_owned_interrupted_leaves_and_never_follows_links",
+      "process_receipt": "test-0137.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.3635506248101592,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::strict_native_archive_import_still_requires_gzip_and_file_eof",
+      "process_receipt": "test-0138.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 2.909248333889991,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::public_native_restore_outer_end_variants_install_first_archive_and_reopen",
+      "process_receipt": "test-0139.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.6164012090303004,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::public_native_restore_rejects_required_tar_damage_and_invalid_first_archive",
+      "process_receipt": "test-0140.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.39931691717356443,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::public_native_restore_outer_end_never_bypasses_sealed_checksum_authentication",
+      "process_receipt": "test-0141.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.32633937476202846,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::expired_transfer_plan_drops_files_and_cannot_publish",
+      "process_receipt": "test-0142.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.3591255000792444,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::finite_use_root_snapshot_request_consumes_exactly_once_at_admission",
+      "process_receipt": "test-0143.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.4097028751857579,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::admission_elapsed_time_expires_actor_before_download_or_restore_publication",
+      "process_receipt": "test-0144.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.2844284577295184,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::fractional_admission_clock_preserves_short_lease_until_actual_expiration",
+      "process_receipt": "test-0145.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5140323750674725,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::restored_auth_configuration_cannot_reauthorize_a_pre_restore_provider_observation",
+      "process_receipt": "test-0146.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.28599245892837644,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::cancelled_and_rejected_restore_leave_an_existing_provider_plan_usable",
+      "process_receipt": "test-0147.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.4567492501810193,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::native_same_seal_ordinary_restore_rolls_back_without_changing_json_policy",
+      "process_receipt": "test-0148.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5508376671932638,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::rekeyed_native_restore_rejects_old_seal_and_accepts_new_seal_after_reopen",
+      "process_receipt": "test-0149.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.5639545409940183,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::completed_rekey_fences_pending_native_upload_and_download",
+      "process_receipt": "test-0150.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.42009995924308896,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::seal_json_reencoding_preserves_the_canonical_native_seal_identity",
+      "process_receipt": "test-0151.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.27885354217141867,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::authenticated_historical_v1_is_explicitly_refused_by_both_native_restore_paths",
+      "process_receipt": "test-0152.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.030325915664434433,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::canonical_seal_digest_matches_its_fixed_versioned_wire_vector",
+      "process_receipt": "test-0153.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.2803535000421107,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::native_seal_reader_rejects_linked_nonprivate_and_oversized_metadata",
+      "process_receipt": "test-0154.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.22658499982208014,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::snapshot_spool_rejects_public_directory_and_replaced_parent",
+      "process_receipt": "test-0155.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.023593457881361246,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-transfer",
+      "name": "service::snapshot_transfer::tests::v6_identical_seal_bytes_fastpath_retains_changed_file_and_live_seal_denials",
+      "process_receipt": "test-0156.public.json",
+      "requested_by_groups": [
+        "new-snapshot-transfer"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 12.439788124989718,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-https",
+      "name": "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+      "process_receipt": "test-0157.public.json",
+      "requested_by_groups": [
+        "new-snapshot-https"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 3.2731096670031548,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-https",
+      "name": "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+      "process_receipt": "test-0158.public.json",
+      "requested_by_groups": [
+        "new-snapshot-https"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016549834050238132,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::lossless_export_http_keeps_read_only_typed_download_and_body_bounds",
+      "process_receipt": "test-0159.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015724375378340483,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::lossless_export_mount_query_is_bounded_route_specific_and_keeps_strings",
+      "process_receipt": "test-0160.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01588183408603072,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::rejected_uploads_drain_framing_without_changing_the_refusal_or_deadline",
+      "process_receipt": "test-0161.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016097042243927717,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::native_chunked_decoder_accepts_split_chunks_and_rejects_ambiguous_or_unbounded_framing",
+      "process_receipt": "test-0162.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01615824969485402,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary",
+      "process_receipt": "test-0163.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016202707774937153,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::native_header_admission_does_not_read_entire_body_before_authorization",
+      "process_receipt": "test-0164.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015706750098615885,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+      "process_receipt": "test-0165.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01607054192572832,
+      "exact_one_test_proved": true,
+      "execution_group": "new-snapshot-framing",
+      "name": "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+      "process_receipt": "test-0166.public.json",
+      "requested_by_groups": [
+        "new-snapshot-framing"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.22773820906877518,
+      "exact_one_test_proved": true,
+      "execution_group": "new-ha-deadline",
+      "name": "ha::request_deadline_tests::ha_block_on_propagates_the_original_deadline_and_drops_it_after_scope",
+      "process_receipt": "test-0167.public.json",
+      "requested_by_groups": [
+        "new-ha-deadline"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.016505416948348284,
+      "exact_one_test_proved": true,
+      "execution_group": "new-r3-typed-restore-projection",
+      "name": "http::snapshot::reconciliation_projection_tests::native_pending_restore_projection_keeps_standard_envelope_and_exact_markers",
+      "process_receipt": "test-0168.public.json",
+      "requested_by_groups": [
+        "new-r3-typed-restore-projection"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015975958667695522,
+      "exact_one_test_proved": true,
+      "execution_group": "new-r3-typed-restore-projection",
+      "name": "http::snapshot::reconciliation_projection_tests::native_pending_restore_projection_rejects_forged_plain_json",
+      "process_receipt": "test-0169.public.json",
+      "requested_by_groups": [
+        "new-r3-typed-restore-projection"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01572887459769845,
+      "exact_one_test_proved": true,
+      "execution_group": "new-r3-typed-restore-projection",
+      "name": "http::snapshot::reconciliation_projection_tests::native_pending_restore_projection_keeps_non200_and_wrapped_paths",
+      "process_receipt": "test-0170.public.json",
+      "requested_by_groups": [
+        "new-r3-typed-restore-projection"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.01585908280685544,
+      "exact_one_test_proved": true,
+      "execution_group": "new-r3-typed-restore-projection",
+      "name": "http::snapshot::reconciliation_projection_tests::native_pending_restore_projection_rejects_changed_markers_or_reference",
+      "process_receipt": "test-0171.public.json",
+      "requested_by_groups": [
+        "new-r3-typed-restore-projection"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-server",
+      "elapsed_seconds": 0.015861791092902422,
+      "exact_one_test_proved": true,
+      "execution_group": "new-r3-typed-restore-projection",
+      "name": "http::snapshot::reconciliation_projection_tests::native_pending_restore_writer_refuses_unprojected_custody",
+      "process_receipt": "test-0172.public.json",
+      "requested_by_groups": [
+        "new-r3-typed-restore-projection"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 0.5514261252246797,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-clock-transport",
+      "name": "v6_closure_quorum::tests::snapshot_clock_transport_tests::snapshot_clock_authenticated_tls_slow_tail_stops_at_original_shortened_deadline",
+      "process_receipt": "test-0001.public.json",
+      "requested_by_groups": [
+        "native-ha-clock-transport"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 0.03413383336737752,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-clock-transport",
+      "name": "v6_closure_quorum::tests::snapshot_clock_transport_tests::snapshot_clock_private_reader_rejects_oversized_length_before_tail_and_preserves_legacy",
+      "process_receipt": "test-0002.public.json",
+      "requested_by_groups": [
+        "native-ha-clock-transport"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 0.2803823333233595,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-clock-transport",
+      "name": "v6_closure_quorum::tests::snapshot_clock_transport_tests::snapshot_clock_authenticated_transport_encodes_only_after_exact_server_pin",
+      "process_receipt": "test-0003.public.json",
+      "requested_by_groups": [
+        "native-ha-clock-transport"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 1.2921127076260746,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::accepted_tls_handshake_and_frame_drips_cannot_extend_original_inbound_deadline",
+      "process_receipt": "test-0004.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 1.3993674996308982,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_compaction",
+      "process_receipt": "test-0005.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 1.1809752499684691,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences",
+      "process_receipt": "test-0006.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 2.7283040420152247,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences",
+      "process_receipt": "test-0007.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 15.828068834263831,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::committed_root_pull_ready_batch_repairs_actual_follower_with_one_blackhole_in_14s",
+      "process_receipt": "test-0008.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    },
+    {
+      "crate": "heptabao-ha-service",
+      "elapsed_seconds": 1.116599790751934,
+      "exact_one_test_proved": true,
+      "execution_group": "native-ha-closure-quorum",
+      "name": "v6_closure_quorum::tests::committed_root_pull_ready_batch_rejects_reply_after_actual_epoch_publication",
+      "process_receipt": "test-0009.public.json",
+      "requested_by_groups": [
+        "native-ha-closure-quorum"
+      ],
+      "status": "passed"
+    }
+  ]
+}

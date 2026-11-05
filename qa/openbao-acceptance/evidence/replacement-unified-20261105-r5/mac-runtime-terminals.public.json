@@ -1,0 +1,282 @@
+{
+  "schema": "heptabao.r5-mac-independent-runtime-terminals.v1",
+  "source_admission": {
+    "at_unix_ms": 1793865730160,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aababc1e-fc05-4692",
+    "launch_nonce": "a0ddd25e977415681fddaf58937b42dc",
+    "log_bytes": {
+      "stderr": {
+        "seen": 337,
+        "stored": 337
+      },
+      "stdout": {
+        "seen": 1602,
+        "stored": 1602
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "build": {
+    "at_unix_ms": 1793866556700,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aabbb9c8-fc05-469a",
+    "launch_nonce": "c3b24056abc2428d34beb6dc5dd9a6a8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 418,
+        "stored": 418
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "server_regression": {
+    "at_unix_ms": 1793867075953,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aac9f39d-fc05-4748",
+    "launch_nonce": "fc963274a819b48b1aae2c78c635544f",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 522,
+        "stored": 522
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "ha_regression": {
+    "at_unix_ms": 1793867340847,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aad2f49e-fc05-47bc",
+    "launch_nonce": "a152fe3c8e524835e17b265d5c8dc53f",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 513,
+        "stored": 513
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "aggregate": {
+    "at_unix_ms": 1793867412965,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aad472cf-fc05-47cd",
+    "launch_nonce": "0866fc28d3946187f3ba959c6c69a243",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 315,
+        "stored": 315
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "packaging": {
+    "at_unix_ms": 1793868338194,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aae28ee2-fc05-4870",
+    "launch_nonce": "e4fbe37ff28c49a10c025d647d570c1f",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1417,
+        "stored": 1417
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_export": {
+    "at_unix_ms": 1793869187592,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aaef6981-fc05-48d5",
+    "launch_nonce": "1f20e98b5b22cb60135a1ba20dba2e10",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1090674,
+        "stored": 1090674
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_readback": {
+    "source_commit": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+    "source_tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+    "archive_members": 872,
+    "evidence_entries": 871,
+    "all_member_sha256_matched": true,
+    "manifest_member": "MANIFEST.public.json",
+    "sum_evidence_bytes": 4846174,
+    "status": "passed",
+    "passed": 181,
+    "required": 181,
+    "original_176": 176,
+    "original_60": 60,
+    "scope": "Mac complete regressions only",
+    "full_replacement_qualified": false,
+    "production_changed": false
+  },
+  "qualification_scope": "Mac complete regressions only; not two-host, full34, physical HA, AuthBus, production migration, or retirement qualification",
+  "production_changed": false,
+  "full_replacement_qualified": false
+}
