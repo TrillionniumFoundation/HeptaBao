@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.df026-h2qa12-files.unbound.v1",
+  "ready": false,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "files": [
+    {
+      "role": "executable",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa",
+      "name": "heptabao-native-h2-qa",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": null
+    },
+    {
+      "role": "rust_source",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+      "name": "native_h2_client.rs",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "test_source",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+      "name": "native_h2_client_tests.rs",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "cargo_manifest",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+      "name": "Cargo.toml",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "cargo_lock",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
+      "name": "Cargo.lock",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "canonical_lock",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
+      "name": "canonical.Cargo.lock",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "build_receipt",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
+      "name": "build-result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "build_controller",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+      "name": "build_native_h2_client_r1.py",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "build_binding",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+      "name": "build-binding.private.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "component_stdout",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
+      "name": "components.stdout",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "component_record",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
+      "name": "components.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "role": "component_list_stdout",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
+      "name": "components-list.stdout",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    }
+  ],
+  "current_product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "current_product_not_transported": true,
+  "normal5_destination_unmodified": true
+}

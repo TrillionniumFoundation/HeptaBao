@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.native-h2-qa-r3.future-transfer-paths.v1",
+  "source_only": true,
+  "ready": false,
+  "actual_new_artifact_qualification": false,
+  "source_candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_new_builder_sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+  "files": [
+    {
+      "role": "executable",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa",
+      "basename": "heptabao-native-h2-qa",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "rust_source",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+      "basename": "native_h2_client.rs",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "test_source",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+      "basename": "native_h2_client_tests.rs",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "cargo_manifest",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+      "basename": "Cargo.toml",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "cargo_lock",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
+      "basename": "Cargo.lock",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "canonical_lock",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
+      "basename": "canonical.Cargo.lock",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "build_receipt",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
+      "basename": "build-result.public.json",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "build_controller",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+      "basename": "build_native_h2_client_r1.py",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "build_binding",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+      "basename": "build-binding.private.json",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "component_stdout",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
+      "basename": "components.stdout",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "component_record",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
+      "basename": "components.public.json",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    },
+    {
+      "role": "component_list_stdout",
+      "source": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
+      "basename": "components-list.stdout",
+      "actual_source_identity": null,
+      "actual_source_sha256": null,
+      "actual_source_bytes": null
+    }
+  ],
+  "required_before_metadata": "Root-accepted unique R3 actual QA build terminal, six components and complete custody.",
+  "current_host_action_authorized": false
+}

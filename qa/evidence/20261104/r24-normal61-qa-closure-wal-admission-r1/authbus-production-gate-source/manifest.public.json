@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.authbus-production-source-gates-manifest.r1",
+  "sourceOnly": true,
+  "runtimeOrProductionGrant": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 7879,
+      "sha256": "8bd03f6e5829f5c4bf0c67e4eaf992c5ce202770269ab8f44ade0bea05c79303",
+      "git_blob": "5893bb5486c9275c8fe0649ad44c998abd63b036"
+    },
+    {
+      "path": "implemented-gates.public.json",
+      "bytes": 5151,
+      "sha256": "ce817da2b9a0912ee45b65cd92cfcc867ac4f45f95df678aa9233b2b5c8c9201",
+      "git_blob": "97c8beb428d44a27b6dcd27b96ca93cd64031932"
+    },
+    {
+      "path": "production-binding.unbound.public.json",
+      "bytes": 4833,
+      "sha256": "dbc62aa0ed96b2fcb980e421b543ea5f15c6f311f9b307abf9548764caa0ddcd",
+      "git_blob": "c052294084251cd89344139395bf3bd36757b020"
+    },
+    {
+      "path": "source-map.public.json",
+      "bytes": 3456,
+      "sha256": "22a5d83a6f675e8c711a6b3aa2c33b8fcf8d77691eed64274aae67c32cd1aebc",
+      "git_blob": "bb7132c7a5277e830df97ba9423582450fe39f36"
+    },
+    {
+      "path": "references/auth_native_v6_routes.rs",
+      "bytes": 21719,
+      "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01",
+      "git_blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b"
+    },
+    {
+      "path": "references/service_native_auth.rs",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "git_blob": "604bee0a92af08720cbd33b5c7c72f71d019e738"
+    },
+    {
+      "path": "references/caller/mac_current_outer_inputs_r2.py",
+      "bytes": 27292,
+      "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "git_blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c"
+    },
+    {
+      "path": "references/caller/mac_current_outer_wal_r1.py",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "git_blob": "8459b949c07982f56dae2e252565f3db0971e246"
+    },
+    {
+      "path": "references/caller/mac_current_fixture_materializer_r1.py",
+      "bytes": 23649,
+      "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+      "git_blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a"
+    },
+    {
+      "path": "references/caller/mac_current_cycle_r2.mjs",
+      "bytes": 24013,
+      "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc",
+      "git_blob": "d3b981f2c22a8e522555c12571d01c2be0008472"
+    },
+    {
+      "path": "references/caller/mac_owned_launchd_r3.py",
+      "bytes": 35734,
+      "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29",
+      "git_blob": "04466c9004d80289dac655fcd958a1e33f324ae4"
+    },
+    {
+      "path": "references/caller/mac_registry_readonly_wal_r1.py",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "git_blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920"
+    }
+  ],
+  "fileCount": 12,
+  "totalBytes": 391238,
+  "gateCount": 10,
+  "productionBindingFieldsNull": 25,
+  "hostCalls": 0
+}

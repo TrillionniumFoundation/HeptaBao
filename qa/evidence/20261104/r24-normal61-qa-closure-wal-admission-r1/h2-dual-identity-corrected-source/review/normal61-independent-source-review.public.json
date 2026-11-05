@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.source-peer.h2-dual-identity-normal61.v1",
+  "status": "PASS_SCOPED_SOURCE",
+  "scope": "Only current-product publication/selected61/original60/runner binding and explicit separation from the already-built df026 instrument; no host, imported modules, Cargo, runtime, or final artifact qualification.",
+  "sources": {
+    "binder": {
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    "base": "215d6db91333b5a74e4814c3fe66051e858d5e0e",
+    "diff": {
+      "blob": "4b6c62bab868da55fbb432abd03bcd98aabda3dd",
+      "bytes": 15417,
+      "sha256": "9e8b0a43194b36de172d6d7a10866ce2bc455cfeedec0741e82f3ede4da04dcb",
+      "strict_hunks": 16,
+      "whole_reconstruction": true
+    },
+    "normal_runner": {
+      "blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+      "bytes": 35452,
+      "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+    }
+  },
+  "findings": [],
+  "confirmed": [
+    "Current release/native/combined/source require PRODUCT_COMMIT 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec and PRODUCT_TREE eba5e650bd080b8ad41ea52a2bc68867f541d255.",
+    "Combined schema is heptabao.linux-normal-same-root-publication-exact-tests.v1 and controller_sha256 is exactly the reviewed 93dd6190 runner.",
+    "Runner intent fields original_60_test_total=60, selected_test_total=61, and additional_test_counts={ingress_observer:7,cold_h2:9,same_root_publication:1} exactly match new binding expectations.",
+    "Runner sets original_60_status=passed only after original cold/H2-nine scope passes; then sets overall failed before entering the separate additional publication scope.",
+    "Publication schema, count 1, original_44_7_9_denominators_unchanged, shared new group cap 600, outer clipping, actual_test_names and one tests record all match actual frozen runner field names and types.",
+    "The exact added testcase name is service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors.",
+    "The binder continues to require original 44 group shapes/actual names, seven and nine separate scopes, then requires the new publication record exit0/not-timed-out/reaped/empty and all combined cleanup closed.",
+    "Instrument build/source/original binding remain separately pinned to df026fe323dd7cf0f0ec57d7d2d9c5a79897053c / 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825, normal60 digest 84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b, and runner1a3fdc3a. These are conjunctions; current product 61 is not used as the historical tool's build receipt.",
+    "The result names instrument provenance independently from current product_test_qualification; no alternate OR identity path was added in the reviewed delta."
+  ],
+  "limitations": [
+    "Source-shape compatibility only. The current Linux normal61 job is not certified by this peer receipt.",
+    "I did not rerun six H2 components, inspect host files, evaluate the full Binding module, or repeat the prior QA provenance audit.",
+    "All final actual artifact pins and separate prepare/live admission remain required."
+  ]
+}

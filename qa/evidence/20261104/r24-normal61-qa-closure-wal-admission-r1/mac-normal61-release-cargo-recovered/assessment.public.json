@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.mac4e808-release-cargo-recovery.v1",
+  "status": "PASS_FIXED_WHOLE_OBSERVATION",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+  "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+  "bytes": 440534,
+  "sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+  "operation_chunks": 27,
+  "all_operations_completed": true,
+  "all_owned_futures_inactive": true,
+  "reason_counts": {
+    "compiler-artifact": 395,
+    "build-script-executed": 42,
+    "build-finished": 1
+  },
+  "event_count": 438,
+  "build_finished": {
+    "reason": "build-finished",
+    "success": true
+  },
+  "normal_receipt_events_digest_exact": true,
+  "history_unresolved_direct_reads_unchanged": true,
+  "prior_immutable_page_timeout_unchanged": true,
+  "no_product_reexecution": true
+}

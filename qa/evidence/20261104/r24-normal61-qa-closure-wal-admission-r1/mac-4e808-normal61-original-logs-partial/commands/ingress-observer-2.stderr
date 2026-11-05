@@ -1,0 +1,5 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBV6-FILE-REJECT source=crates/heptabao-server/src/service_native_v6_writer.rs:92:24 deadline_present=true expired_at_diagnostic=Some(false) remaining_us_at_diagnostic=Some(14999877) thread=ThreadId(2)
+HBV6-FILE-REJECT source=crates/heptabao-server/src/service_native_v6_writer.rs:92:24 deadline_present=true expired_at_diagnostic=Some(false) remaining_us_at_diagnostic=Some(14999703) thread=ThreadId(2)
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=remote_raft

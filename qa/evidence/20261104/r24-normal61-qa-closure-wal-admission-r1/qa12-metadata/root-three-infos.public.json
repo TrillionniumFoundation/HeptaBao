@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root.qa12-three-independent-metadata.v1",
+  "status": "PASS_READONLY_SOURCE_BINDING_INPUTS",
+  "packet": "f656ac312b0bde7e1372e4b1732605a1f066c5c1",
+  "files": 12,
+  "bytes": 10899,
+  "check_count": 13,
+  "checks": [
+    "exact3_readonly_requests",
+    "component_stdout.exact_original_sdk_all_settled",
+    "component_stdout.exact_readonly_path",
+    "component_stdout.whole_original_body_identity",
+    "component_stdout.actual_metadata_observed",
+    "component_record.exact_original_sdk_all_settled",
+    "component_record.exact_readonly_path",
+    "component_record.whole_original_body_identity",
+    "component_record.actual_metadata_observed",
+    "component_list_stdout.exact_original_sdk_all_settled",
+    "component_list_stdout.exact_readonly_path",
+    "component_list_stdout.whole_original_body_identity",
+    "component_list_stdout.actual_metadata_observed"
+  ],
+  "actual_files": 3,
+  "roles": [
+    "component_stdout",
+    "component_record",
+    "component_list_stdout"
+  ],
+  "matches_prior_qualified_original_whole_versions": true,
+  "actual_mode_octal": "0600",
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "new_jobs": 0,
+  "writes": 0,
+  "transport_go": false,
+  "full_replacement": false
+}

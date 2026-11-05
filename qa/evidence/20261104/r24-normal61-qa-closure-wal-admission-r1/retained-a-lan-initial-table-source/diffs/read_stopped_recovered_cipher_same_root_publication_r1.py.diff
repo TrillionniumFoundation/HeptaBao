@@ -1,0 +1,13 @@
+--- a/read_stopped_recovered_cipher_same_root_publication_r1.py
++++ b/read_stopped_recovered_cipher_same_root_publication_r1.py
+@@ -15,8 +15,8 @@
+ 
+ ROOT = "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1"
+ UID = 501
+-COMMIT = "1c66541993662f92cf717154e33717abedb2ea74"
+-TREE = "94ced21a63ff9aaca4538c0d4796efea2150e632"
++COMMIT = "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
++TREE = "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+ MAX_REFERENCE = MAX_OUTPUT = 1024 * 1024
+ MAX_LEAVES = 4096
+ MAX_LEAF = 1024 * 1024

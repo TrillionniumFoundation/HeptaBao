@@ -1,0 +1,218 @@
+{
+  "schema": "heptabao.normal-native-h2-gate.binding.v2",
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "host": {
+    "uid": 1000,
+    "machine_id_sha256": null,
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-live-r1",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/prepare-r1"
+  },
+  "qa_files": {
+    "phaseb_evidence_r3.py": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/qa/phaseb_evidence_r3.py",
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "bytes": 15201,
+      "uid": 1000,
+      "mode": 384
+    },
+    "native_fixture_reference_r8.py": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/qa/native_fixture_reference_r8.py",
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "bytes": 68149,
+      "uid": 1000,
+      "mode": 384
+    },
+    "official_cli_reference_r4.py": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/qa/official_cli_reference_r4.py",
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "bytes": 46586,
+      "uid": 1000,
+      "mode": 384
+    },
+    "native_h2_gate_r1.py": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/qa/native_h2_gate_r1.py",
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13",
+      "bytes": 62344,
+      "uid": 1000,
+      "mode": 384
+    },
+    "native_h2_binding_r1.py": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/qa/native_h2_binding_r1.py",
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4",
+      "bytes": 41350,
+      "uid": 1000,
+      "mode": 384
+    }
+  },
+  "artifacts": {
+    "server": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/artifacts/heptabao-server",
+      "sha256": null,
+      "bytes": null,
+      "uid": 1000,
+      "mode": 320
+    },
+    "native_receipt": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/artifacts/native-build.public.json",
+      "sha256": null,
+      "bytes": null,
+      "uid": 1000,
+      "mode": 384
+    },
+    "release_receipt": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/artifacts/normal-release-result.public.json",
+      "sha256": null,
+      "bytes": null,
+      "uid": 1000,
+      "mode": 384
+    },
+    "combined_tests": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/artifacts/normal-release-tests-result.public.json",
+      "sha256": null,
+      "bytes": null,
+      "uid": 1000,
+      "mode": 384
+    },
+    "test_groups": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/artifacts/groups.json",
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "bytes": 6249,
+      "uid": 1000,
+      "mode": 384
+    }
+  },
+  "h2_client": {
+    "executable": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/heptabao-native-h2-qa",
+      "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+      "bytes": 4616576,
+      "uid": 1000,
+      "mode": 320
+    },
+    "rust_source": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/native_h2_client.rs",
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+      "bytes": 19382,
+      "uid": 1000,
+      "mode": 384
+    },
+    "test_source": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/native_h2_client_tests.rs",
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+      "bytes": 8942,
+      "uid": 1000,
+      "mode": 384
+    },
+    "cargo_manifest": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/Cargo.toml",
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+      "bytes": 957,
+      "uid": 1000,
+      "mode": 384
+    },
+    "cargo_lock": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/Cargo.lock",
+      "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
+      "bytes": 17409,
+      "uid": 1000,
+      "mode": 384
+    },
+    "canonical_lock": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/canonical.Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "bytes": 101193,
+      "uid": 1000,
+      "mode": 384
+    },
+    "build_receipt": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/build-result.public.json",
+      "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+      "bytes": 62314,
+      "uid": 1000,
+      "mode": 384
+    },
+    "build_controller": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/build_native_h2_client_r1.py",
+      "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+      "bytes": 59791,
+      "uid": 1000,
+      "mode": 384
+    },
+    "build_binding": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/build-binding.private.json",
+      "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+      "bytes": 4039,
+      "uid": 1000,
+      "mode": 384
+    },
+    "component_stdout": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/components.stdout",
+      "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+      "bytes": 633,
+      "uid": 1000,
+      "mode": 384
+    },
+    "component_record": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/components.public.json",
+      "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+      "bytes": 804,
+      "uid": 1000,
+      "mode": 384
+    },
+    "component_list_stdout": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/h2qa/components-list.stdout",
+      "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+      "bytes": 507,
+      "uid": 1000,
+      "mode": 384
+    }
+  },
+  "utilities": {
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": null,
+      "bytes": null,
+      "uid": 0,
+      "mode": 493
+    },
+    "git": {
+      "path": "/usr/bin/git",
+      "sha256": null,
+      "bytes": null,
+      "uid": 0,
+      "mode": 493
+    },
+    "openssl": {
+      "path": "/usr/bin/openssl",
+      "sha256": null,
+      "bytes": null,
+      "uid": 0,
+      "mode": 493
+    }
+  },
+  "old_fences": [
+    null
+  ],
+  "budgets": {
+    "http_seconds": 15,
+    "h2_client_seconds": 15,
+    "action_seconds": 300,
+    "readiness_seconds": 45,
+    "election_seconds": 60,
+    "stable_leader_seconds": 2.2,
+    "peer_timeout_ms": 1500,
+    "forward_timeout_ms": 8000,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "ready_for_readonly_prepare": false,
+  "instrument_build_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "instrument_build_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+}

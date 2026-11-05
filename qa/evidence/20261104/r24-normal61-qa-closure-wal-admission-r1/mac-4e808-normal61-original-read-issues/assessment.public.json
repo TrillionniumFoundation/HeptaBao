@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.mac-normal61-cargo-read-gap.v1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "job_id": "1a1ab60127b-fc05-4d18",
+  "product_job_known_exit": 0,
+  "product_scope": "61 actual passed; 48 direct children reaped/empty",
+  "read_only_requests_submitted": 2,
+  "offset0": "MCP -32603 request timed out; original SDK retained",
+  "offset65536": "Promise.allSettled completed but per-item processing did not persist its outcome because originalText threw on first isError; outcome unproven",
+  "local_consumer_failure": "Error: MCP error at originalText; no product or host controller failure inferred",
+  "remaining_12_chunk_requests_submitted": false,
+  "repeated_reads": false,
+  "new_product_jobs": false,
+  "full_cargo_body_archive_complete": false,
+  "existing_file_info_whole_hashes_preserved": true
+}

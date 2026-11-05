@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.qa12-ack-selector-correction.v1",
+  "original_ack_tree": "b771211e606df0a9d785c0eb9dc49ca0bcdbf7c4",
+  "original_parser_failure": "Error: ACK no job; selector incorrectly required a top-level job_id after original SDK was already externally saved",
+  "correct_observed_field": "job.id",
+  "exact_host": "desktop",
+  "exact_job_id": "1a1ab9ff363-fc05-4f1d",
+  "request_digest": "d65d2bd093e30fe914c6e097767fe02b27e2aab1e8c30d6a2610af5d52dbbc2d",
+  "reused": false,
+  "local_record_pending": false,
+  "request_body_args_and_cwd_exact": true,
+  "original_ack_unchanged": true,
+  "new_process_start": 0,
+  "submission_total": 1,
+  "notes": "The parse error is not a process_start failure; job launch was acknowledged in the original nested job object. Original text retains the exact request_fingerprint integer."
+}

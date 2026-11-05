@@ -1,0 +1,247 @@
+--- a/receiver.py
++++ b/receiver.py
+@@ -1,6 +1,6 @@
+ from pathlib import Path
+ import hashlib,json,os,platform,re,select,signal,stat,subprocess,sys,time,tomllib
+-ACTUAL_INPUTS_READY=False
++ACTUAL_INPUTS_READY=True
+ if not ACTUAL_INPUTS_READY:
+  raise RuntimeError('unresolved exact H2 QA artifact transport input metadata')
+ os.umask(0o077)
+@@ -13,121 +13,121 @@
+   "role": "executable",
+   "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa",
+   "name": "heptabao-native-h2-qa",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 320,
+-  "target_mode": 320,
+-  "version": None
+- },
+- {
+-  "role": "rust_source",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+-  "name": "native_h2_client.rs",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "test_source",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+-  "name": "native_h2_client_tests.rs",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "cargo_manifest",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+-  "name": "Cargo.toml",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "cargo_lock",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
+-  "name": "Cargo.lock",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "canonical_lock",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
+-  "name": "canonical.Cargo.lock",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "build_receipt",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
+-  "name": "build-result.public.json",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "build_controller",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+-  "name": "build_native_h2_client_r1.py",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "build_binding",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+-  "name": "build-binding.private.json",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "component_stdout",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
+-  "name": "components.stdout",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "component_record",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
+-  "name": "components.public.json",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
+- },
+- {
+-  "role": "component_list_stdout",
+-  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
+-  "name": "components-list.stdout",
+-  "bytes": None,
+-  "sha256": None,
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": None
++  "bytes": 4616576,
++  "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
++  "source_mode": 320,
++  "target_mode": 320,
++  "version": "66306:36087297:4616576:1793877138264182979:1793877138272182977"
++ },
++ {
++  "role": "rust_source",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
++  "name": "native_h2_client.rs",
++  "bytes": 19382,
++  "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33710101:19382:1793875555781432155:1793875555783378037"
++ },
++ {
++  "role": "test_source",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
++  "name": "native_h2_client_tests.rs",
++  "bytes": 8942,
++  "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33710102:8942:1793875555784571573:1793875555785451802"
++ },
++ {
++  "role": "cargo_manifest",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
++  "name": "Cargo.toml",
++  "bytes": 957,
++  "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33710103:957:1793875555786744163:1793875555787844945"
++ },
++ {
++  "role": "cargo_lock",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
++  "name": "Cargo.lock",
++  "bytes": 17409,
++  "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087291:17409:1793877131842183994:1793877131842183994"
++ },
++ {
++  "role": "canonical_lock",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
++  "name": "canonical.Cargo.lock",
++  "bytes": 101193,
++  "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087292:101193:1793877131843183994:1793877131843183994"
++ },
++ {
++  "role": "build_receipt",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
++  "name": "build-result.public.json",
++  "bytes": 62314,
++  "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087332:62314:1793877143030182115:1793877143030182115"
++ },
++ {
++  "role": "build_controller",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
++  "name": "build_native_h2_client_r1.py",
++  "bytes": 59791,
++  "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33710100:59791:1793875555779834699:1793875555781107063"
++ },
++ {
++  "role": "build_binding",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
++  "name": "build-binding.private.json",
++  "bytes": 4039,
++  "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33710107:4039:1793875555795493743:1793875555796496852"
++ },
++ {
++  "role": "component_stdout",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
++  "name": "components.stdout",
++  "bytes": 633,
++  "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087317:633:1793877142711182176:1793877142711182176"
++ },
++ {
++  "role": "component_record",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
++  "name": "components.public.json",
++  "bytes": 804,
++  "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087319:804:1793877142722182174:1793877142722182174"
++ },
++ {
++  "role": "component_list_stdout",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
++  "name": "components-list.stdout",
++  "bytes": 507,
++  "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:36087313:507:1793877142692182179:1793877142692182179"
+  }
+ ]
+ protected=0

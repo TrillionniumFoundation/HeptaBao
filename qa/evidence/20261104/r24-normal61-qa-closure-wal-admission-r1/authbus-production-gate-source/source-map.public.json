@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.authbus-production-source-map.r1",
+  "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "refs": {
+    "inputs": {
+      "file": "mac_current_outer_inputs_r2.py",
+      "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+      "bytes": 27292,
+      "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "methods": [
+        "Inputs._file",
+        "Inputs.project_frozen",
+        "Inputs.normal_and_base_sources",
+        "Inputs.verify"
+      ]
+    },
+    "outer": {
+      "file": "mac_current_outer_wal_r1.py",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "methods": [
+        "main",
+        "bootstrap_api",
+        "seed_documents",
+        "canonical_and_inbox",
+        "token_lifecycle",
+        "capture_current"
+      ]
+    },
+    "materializer": {
+      "file": "mac_current_fixture_materializer_r1.py",
+      "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a",
+      "bytes": 23649,
+      "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+      "methods": [
+        "Materializer.validate_capsule",
+        "Materializer.materialize"
+      ]
+    },
+    "cycle": {
+      "file": "mac_current_cycle_r2.mjs",
+      "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+      "bytes": 24013,
+      "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc",
+      "methods": [
+        "cycle branch",
+        "rollback branch"
+      ]
+    },
+    "manager": {
+      "file": "mac_owned_launchd_r3.py",
+      "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+      "bytes": 35734,
+      "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29",
+      "methods": [
+        "OwnedLaunchd",
+        "GRAPH"
+      ]
+    },
+    "registry": {
+      "file": "mac_registry_readonly_wal_r1.py",
+      "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "methods": [
+        "capture_current",
+        "read_registry",
+        "WalInputs"
+      ]
+    },
+    "authRoutes": {
+      "bytes": 21719,
+      "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01",
+      "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+      "file": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "methods": [
+        "AuthState.native_v6_storage_profile",
+        "AuthState.native_v6_local_auth_route",
+        "AuthState.native_v6_plain_auth_route",
+        "AuthState.validate_native_v6_approle_login_lifetime_observed"
+      ]
+    },
+    "authOwner": {
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "file": "crates/heptabao-server/src/service_native_auth.rs",
+      "methods": [
+        "Service.dispatch_native_auth_request",
+        "NativeAuthDelivery.check_environment",
+        "Service.check_pending_native_auth_before_terminal",
+        "Service.bind_pending_native_auth_before_audit",
+        "Service.complete_native_auth_delivery"
+      ]
+    }
+  },
+  "priorPerHostPlanTree": "92f6c57e253f22a4a0682a36a47d60ecb44466ab",
+  "historicalXR01Tree": "e317853d6dc9d33bda79d7e6e947b95215f48738"
+}

@@ -1,0 +1,58 @@
+{
+  "files": [
+    {
+      "path": "file-info/server.public.json",
+      "bytes": 540,
+      "sha256": "dbc9c21072a9692c897dc67716f070d54e5b9956f5ba9a2859bc3e0d2afcaaac",
+      "git_blob": "491baf66132791ec1836a27a6d283e6f53fa0c06"
+    },
+    {
+      "path": "sdk/server.sdk.json",
+      "bytes": 701,
+      "sha256": "ffa3567338a9aad2b7fe0d63c58d5b1c045bdee7caaf5766d0c9c0ab39e13c1f",
+      "git_blob": "514b8217dc107332132f22fd789251b2ac87d63c"
+    },
+    {
+      "path": "file-info/seed.public.json",
+      "bytes": 538,
+      "sha256": "11b251f0f0c454ebd87b423c7cf4cbb4aa0c4f33457d83a850e7b568b0e190c6",
+      "git_blob": "2cdb3f6c9ee4c261e16ac77243ab5650186b6fd1"
+    },
+    {
+      "path": "sdk/seed.sdk.json",
+      "bytes": 699,
+      "sha256": "473bec3757606fe8d6baa48716196c94b8ac6c24782b6a74ad0c0647bad32730",
+      "git_blob": "872d6af31029804495aa81acbc4d839ffbc8923b"
+    },
+    {
+      "path": "file-info/libtest.public.json",
+      "bytes": 549,
+      "sha256": "32d459ec5a3be484dc7c307c468ff85f4b745791f9717747bf1766db06eee101",
+      "git_blob": "5bb43fb75c80ee9155b9e47c009861947005ad15"
+    },
+    {
+      "path": "sdk/libtest.sdk.json",
+      "bytes": 710,
+      "sha256": "49dede9b2ae46d4ec7e49e1800f6636ed6c75c8f5069273a15db6508c900b8d9",
+      "git_blob": "5b265854be2998182ffeb826addcb0b7af2af7ed"
+    },
+    {
+      "path": "receipts/normal-release-result.public.json",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "git_blob": "b011605fe037ff7aa764808ce402e69559150646"
+    },
+    {
+      "path": "receipts/native-build.public.json",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "git_blob": "27dbe301526370817252d0540006d801eddccad0"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 2622,
+      "sha256": "ab759d9ed9b5f3e0c782cf7c9ccfeb7a746fb1afbc66cbbb011616ec1c260b40",
+      "git_blob": "bdfafb9ce55b3d531c4bd4920e11281187a7d9e3"
+    }
+  ]
+}

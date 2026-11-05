@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.authbus-implemented-gates-source-only.r1",
+  "sourceScope": "current4e808 source and bound caller, not runtime qualification",
+  "gates": [
+    {
+      "id": "G01",
+      "gate": "Frozen source custody",
+      "implemented": "Four exact existing credential/provenance paths, per-file SHA256, held parent/name/FD custody, strict private metadata and before/after bytes.",
+      "source": [
+        "inputs"
+      ],
+      "scope": "Two historical credential generations only; no new current provider read."
+    },
+    {
+      "id": "G02",
+      "gate": "Credential identity and original lifetime",
+      "implemented": "Exactly two source IDs/generations; credential/account/access hashes; JWT account matches stored account; claims exp and stored expires both beyond current time+900s; nonempty refresh is retained but never invoked.",
+      "source": [
+        "inputs"
+      ],
+      "scope": "Expired/drifted sources refuse. No model/provider/refresh/quota changes and no current provider availability conclusion."
+    },
+    {
+      "id": "G03",
+      "gate": "Current-state observation",
+      "implemented": "Original five-agent two-primary-key route; registry-only bounded WAL route at5969912B, row1MiB, aggregate8MiB, query3s through closure, capture45s; held full9 and failure ledger retained.",
+      "source": [
+        "registry",
+        "outer"
+      ],
+      "scope": "Bounded point-in-time observations, not all-DB or cross-agent snapshots;7+10 public cases qualify components only."
+    },
+    {
+      "id": "G04",
+      "gate": "Actual installed code and models",
+      "implemented": "Closed40 public code inputs are whole-hashed; exact current config hash, ordered Mac5 agents and actual per-agent declared/default model are bound. Only four connection fields change in copied configuration.",
+      "source": [
+        "inputs",
+        "materializer",
+        "cycle"
+      ],
+      "scope": "Mac5 exact main,trnm,hepta-ui,hepta,hepta-backend. No inference for all accounts or other hosts."
+    },
+    {
+      "id": "G05",
+      "gate": "TLS and source artifact",
+      "implemented": "Normal source/retained server/receipt provenance is bound; fresh loopback TLS fixture has owned CA/leaf and peer checks; samePID/birth executable admission remains.",
+      "source": [
+        "inputs",
+        "outer",
+        "manager"
+      ],
+      "scope": "The fresh loopback CA/leaf/address do not supply production HA endpoint/cluster/CA identity."
+    },
+    {
+      "id": "G06",
+      "gate": "Fixture AppRole and least-scope policy",
+      "implemented": "Fresh fixture enables KV2 and AppRole, activates native storage, CAS0 seeds fixed canonical docs, then creates mac-five-current policy/role and stores generated role_id/secret_id only under fresh fixture.",
+      "source": [
+        "outer"
+      ],
+      "scope": "Role token_ttl180/max600, secret_id_ttl1200/num_uses0 are existing fixture values. They are not a production issuance or rotation grant."
+    },
+    {
+      "id": "G07",
+      "gate": "Actual consumer and canonical/inbox separation",
+      "implemented": "Installed AuthBus uses original flags; only original1/2 managed generations, profile3/local/usage/order preserved; inbox proposals observed separately; canonical documents stay whole-equal version1 and no coordinator runs.",
+      "source": [
+        "outer",
+        "cycle"
+      ],
+      "scope": "No production canonical grant is inferred from a proposal, local cache generation or publishNew=true."
+    },
+    {
+      "id": "G08",
+      "gate": "Token renew/revoke rejection observations",
+      "implemented": "Captures the actual cycle token; unassigned path403, renew-self accepted response, revoke-self204 and later manifest403.",
+      "source": [
+        "outer"
+      ],
+      "scope": "Existing token_lifecycle does not independently compare lookup-self TTL/expiry before versus after renewal; do not call its200 alone an expiry-extension proof."
+    },
+    {
+      "id": "G09",
+      "gate": "Independent restart and inverse",
+      "implemented": "Owned launchd graph initial/cold/new-process plus distinct initial-inverse/cold-inverse, independent checkpoints; inverse CAS only actual local/raw rows, derived effective recomputed, six caches last; once marker and unknown guard.",
+      "source": [
+        "manager",
+        "cycle",
+        "outer"
+      ],
+      "scope": "Owned QA labels/processes only. Existing production service or KeepAlive qualification is false."
+    },
+    {
+      "id": "G10",
+      "gate": "Native unsupported/namespace guard",
+      "implemented": "Actual4e808 native root profile requires identity_mfa absent and JWT/Kubernetes/OIDC state maps empty; closed local selectors retain AppRole/cert/token and root-specific allowed owners. Child selector and service closed-owner checks remain.",
+      "source": [
+        "authRoutes",
+        "authOwner"
+      ],
+      "scope": "Route selection is not authentication. Unsupported child route may return501; publication/audit/identity failure remains503. No aliasing unsupported auth to AppRole and no all-namespace claim."
+    }
+  ]
+}

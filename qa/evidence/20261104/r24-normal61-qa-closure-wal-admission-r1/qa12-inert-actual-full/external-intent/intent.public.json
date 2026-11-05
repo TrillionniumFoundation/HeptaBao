@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.ha-agent.qa12-inert-external-intent.v1",
+  "created_at_utc": "2026-11-05 12:12:02 UTC",
+  "host": "desktop",
+  "exact_request_blob": "d71478bc55634da553ecc5141111df8138029fad",
+  "exact_request_sha256": "06679ccdbbda3237ef9ee7cc1dd94b9edacf8bf7af8941bf8f17572572f1ed9f",
+  "root_go_blob": "df1b2c09ce047832d570db4f52f4f85260ee4091",
+  "root_go_sha256": "b40092ecb1c3d68f95a6694abecee3484ff5502e8eadf06c663ae7b481267253",
+  "idempotency_key": "heptabao-df026-h2qa12-controls-inert-r1-be0b0b53",
+  "maximum_submissions": 1,
+  "timeout_seconds": 60,
+  "effect": "Create-only three public Python control files, compile-only, and public receipt",
+  "artifact_transfer_authorized": false,
+  "product_authorized": false,
+  "no_replay_on_unknown": true,
+  "submission_performed": false
+}

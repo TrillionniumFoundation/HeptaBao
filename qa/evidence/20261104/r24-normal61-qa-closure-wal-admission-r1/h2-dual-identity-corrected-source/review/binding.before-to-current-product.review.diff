@@ -1,0 +1,235 @@
+--- before/binding.py
++++ candidate/binding.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""NEW normal-native H2 gate binding. Actual product and QA build receipts are required."""
++"""Current 4e808 product binding with independently qualified df026 H2 instrumentation."""
+ from __future__ import annotations
+ 
+ import hashlib
+@@ -15,9 +15,15 @@
+ import time
+ import tomllib
+ 
+-SCHEMA = "heptabao.normal-native-h2-gate.binding.v1"
+-COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+-TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
++SCHEMA = "heptabao.normal-native-h2-gate.binding.v2"
++PRODUCT_COMMIT = "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
++PRODUCT_TREE = "eba5e650bd080b8ad41ea52a2bc68867f541d255"
++PRODUCT_NORMAL_RUNNER_SHA = "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
++H2_INSTRUMENT_BUILD_COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
++H2_INSTRUMENT_BUILD_TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
++H2_INSTRUMENT_NORMAL_RESULT = (
++    48188, "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b")
++H2_INSTRUMENT_NORMAL_RUNNER_SHA = "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
+ OBSERVER_PATH = "crates/heptabao-server/src/ha_native_v6_runtime.rs"
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+@@ -38,6 +44,9 @@
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
++)
++SAME_ROOT_PUBLICATION_TESTS = (
++    "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+ )
+ H2_COMPONENT_TESTS = [
+     "component_tests::native_h2_client_accepts_complete_data_eos",
+@@ -289,8 +298,12 @@
+ 
+ class Binding:
+     def __init__(self, path: Path, expected_sha: str, until: int):
+-        need(type(COMMIT) is str and re.fullmatch(r"[0-9a-f]{40}", COMMIT) is not None
+-             and type(TREE) is str and re.fullmatch(r"[0-9a-f]{40}", TREE) is not None
++        need(type(PRODUCT_COMMIT) is str and re.fullmatch(r"[0-9a-f]{40}", PRODUCT_COMMIT) is not None
++             and type(PRODUCT_TREE) is str and re.fullmatch(r"[0-9a-f]{40}", PRODUCT_TREE) is not None
++             and type(H2_INSTRUMENT_BUILD_COMMIT) is str
++             and re.fullmatch(r"[0-9a-f]{40}", H2_INSTRUMENT_BUILD_COMMIT) is not None
++             and type(H2_INSTRUMENT_BUILD_TREE) is str
++             and re.fullmatch(r"[0-9a-f]{40}", H2_INSTRUMENT_BUILD_TREE) is not None
+              and type(PRODUCT_PINS[OBSERVER_PATH][0]) is str
+              and re.fullmatch(r"[0-9a-f]{40}", PRODUCT_PINS[OBSERVER_PATH][0]) is not None
+              and type(PRODUCT_PINS[OBSERVER_PATH][1]) is str
+@@ -301,12 +314,16 @@
+         need(observed["uid"] == os.getuid() and observed["mode"] == 0o600, "private_binding_custody")
+         spec = parse(raw)
+         need(type(spec) is dict and set(spec) == {
+-            "schema", "candidate_commit", "candidate_tree", "host", "layout",
++            "schema", "candidate_commit", "candidate_tree", "instrument_build_commit",
++            "instrument_build_tree", "host", "layout",
+             "qa_files", "artifacts", "h2_client", "utilities", "old_fences",
+             "budgets", "ready_for_readonly_prepare",
+         }, "exact_binding_fields")
+-        need(spec["schema"] == SCHEMA and spec["candidate_commit"] == COMMIT
+-             and spec["candidate_tree"] == TREE, "exact_diagnostic_candidate_binding")
++        need(spec["schema"] == SCHEMA and spec["candidate_commit"] == PRODUCT_COMMIT
++             and spec["candidate_tree"] == PRODUCT_TREE
++             and spec["instrument_build_commit"] == H2_INSTRUMENT_BUILD_COMMIT
++             and spec["instrument_build_tree"] == H2_INSTRUMENT_BUILD_TREE,
++             "exact_product_and_instrument_binding")
+         need(spec["ready_for_readonly_prepare"] is True, "unresolved_binding_is_not_admission")
+         need(spec["budgets"] == BUDGETS, "original_budgets_unchanged")
+         self.spec, self.path, self.sha256, self.initial_file = spec, path, expected_sha, observed
+@@ -321,7 +338,7 @@
+              and re.fullmatch(r"normal-native-h2-gate-live-r[0-9]+", self.work.name) is not None,
+              "owned_work_namespace")
+         need(self.source.parent == BASE
+-             and re.fullmatch(r"normal-cold-h2-validation-source-r[0-9]+", self.source.name) is not None,
++             and re.fullmatch(r"normal-same-root-publication-validation-source-r[0-9]+", self.source.name) is not None,
+              "canonical_source_namespace")
+         need(self.prepare.parent == self.control
+              and re.fullmatch(r"prepare-r[0-9]+", self.prepare.name) is not None, "prepare_namespace")
+@@ -404,12 +421,12 @@
+         component = parse(raw["component_record"])
+         need(type(build) is dict and build.get("schema") == "heptabao.native-h2-qa.build.v3"
+              and build.get("status") == "passed"
+-             and build.get("candidate_commit") == COMMIT and build.get("candidate_tree") == TREE
++             and build.get("candidate_commit") == H2_INSTRUMENT_BUILD_COMMIT and build.get("candidate_tree") == H2_INSTRUMENT_BUILD_TREE
+              and build.get("controller_sha256") == H2_BUILD_CONTROLLER_SHA
+              and build.get("binding_sha256") == self.h2_client["build_binding"]["sha256"]
+-             and build.get("normal_product_result_sha256") == self.artifacts["combined_tests"]["sha256"]
++             and build.get("normal_product_result_sha256") == H2_INSTRUMENT_NORMAL_RESULT[1]
+              and build.get("normal_product_runner_sha256")
+-             == "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
++             == H2_INSTRUMENT_NORMAL_RUNNER_SHA
+              and build.get("caps") == H2_BUILD_CAPS
+              and build.get("all_owned_stopped") is True
+              and build.get("all_input_fds_closed") is True
+@@ -417,15 +434,18 @@
+              and build.get("incomplete_command_labels") == []
+              and build.get("completed_within_original_build_deadline") is True
+              and build.get("source_before") == build.get("source_after")
+-             == {"commit": COMMIT, "tree": TREE, "status": ""}
++             == {"commit": H2_INSTRUMENT_BUILD_COMMIT, "tree": H2_INSTRUMENT_BUILD_TREE, "status": ""}
+              and build.get("lock_subset") == subset
+              and build.get("offline_only") is True
+              and build.get("product_modified") is False
+              and build.get("product_or_http_requests") == 0, "actual_qa_build_provenance")
+         need(type(original_binding) is dict
+              and original_binding.get("schema") == "heptabao.native-h2-qa.build-binding.v1"
+-             and original_binding.get("candidate_commit") == COMMIT
+-             and original_binding.get("candidate_tree") == TREE
++             and original_binding.get("candidate_commit") == H2_INSTRUMENT_BUILD_COMMIT
++             and original_binding.get("candidate_tree") == H2_INSTRUMENT_BUILD_TREE
++             and type(original_binding.get("normal_product_result")) is dict
++             and original_binding["normal_product_result"].get("bytes") == H2_INSTRUMENT_NORMAL_RESULT[0]
++             and original_binding["normal_product_result"].get("sha256") == H2_INSTRUMENT_NORMAL_RESULT[1]
+              and original_binding.get("ready") is True
+              and original_binding.get("caps") == H2_BUILD_CAPS,
+              "original_actual_qa_build_binding")
+@@ -467,7 +487,9 @@
+                      and item.get("owned_stopped") is True for item in cleanup),
+              "all_actual_qa_commands_and_cleanup")
+         remaining(until)
+-        return {"candidate_commit": COMMIT, "candidate_tree": TREE,
++        return {"instrument_build_commit": H2_INSTRUMENT_BUILD_COMMIT,
++                "instrument_build_tree": H2_INSTRUMENT_BUILD_TREE,
++                "instrument_build_normal_result_sha256": H2_INSTRUMENT_NORMAL_RESULT[1],
+                 "executable_sha256": executable["sha256"],
+                 "actual_build_receipt_sha256": self.h2_client["build_receipt"]["sha256"],
+                 "reviewed_sources": expected_sources,
+@@ -475,7 +497,7 @@
+                 "component_count": 6, "component_status": "passed",
+                 "lock_subset": subset, "offline_only": True,
+                 "http_or_product_qualification": False,
+-                "new_qa_components_not_added_to_product_44_7_9": True}
++                "new_qa_components_not_added_to_product_44_7_9_1": True}
+ 
+     def check_host(self, until: int) -> dict:
+         host = self.spec["host"]
+@@ -506,7 +528,7 @@
+         native, release, combined, groups = [receipt[key] for key in
+                                             ("native_receipt", "release_receipt", "combined_tests", "test_groups")]
+         for item in (native, release):
+-            need(item.get("source_commit") == COMMIT and item.get("source_tree") == TREE
++            need(item.get("source_commit") == PRODUCT_COMMIT and item.get("source_tree") == PRODUCT_TREE
+                  and item.get("source_freeze_verified") is True and item.get("build_exit_code") == 0
+                  and item.get("native_abi") == "x86_64-unknown-linux-gnu", "normal_build_source_identity")
+         artifact = release["artifacts"]["heptabao-server"]
+@@ -532,8 +554,8 @@
+             "--message-format=json-render-diagnostics"
+         ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
+         need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
+-        need(combined.get("schema") == "heptabao.linux-normal-cold-h2-exact-tests.v1"
+-             and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
++        need(combined.get("schema") == "heptabao.linux-normal-same-root-publication-exact-tests.v1"
++             and combined.get("source_commit") == PRODUCT_COMMIT and combined.get("source_tree") == PRODUCT_TREE
+              and combined.get("status") == "passed"
+              and combined.get("normal_default_features") is True
+              and combined.get("fixture_features") == []
+@@ -584,9 +606,7 @@
+              and increment.get("clamped_to_original_outer_deadline") is True
+              and increment.get("actual_test_names") == list(COLD_H2_TESTS)
+              and type(increment.get("tests")) is list and len(increment["tests"]) == 9
+-             and combined.get("original_44_and_ingress_7_status") == "passed"
+-             and combined.get("selected_test_total") == 60
+-             and combined.get("additional_test_counts") == {"ingress_observer": 7, "cold_h2": 9},
++             and combined.get("original_44_and_ingress_7_status") == "passed",
+              "exact_new_cold_h2_nine_regression")
+         for name, observed in zip(COLD_H2_TESTS, increment["tests"]):
+             test = observed["tests"]
+@@ -594,9 +614,29 @@
+                  and test.get("timed_out") is False
+                  and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                  "new_cold_h2_regression_terminal")
+-        need(combined.get("controller_sha256")
+-             == "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+-             "exact_actual_df026_normal_runner")
++        publication = combined.get("same_root_publication_regression")
++        need(type(publication) is dict
++             and publication.get("schema") == "heptabao.normal-same-root-publication-regression.v1"
++             and publication.get("status") == "passed" and publication.get("test_count") == 1
++             and publication.get("original_44_7_9_denominators_unchanged") is True
++             and publication.get("new_total_group_cap_seconds") == 600
++             and publication.get("clamped_to_original_outer_deadline") is True
++             and publication.get("actual_test_names") == list(SAME_ROOT_PUBLICATION_TESTS)
++             and type(publication.get("tests")) is list and len(publication["tests"]) == 1
++             and combined.get("original_60_status") == "passed"
++             and combined.get("original_60_test_total") == 60
++             and combined.get("selected_test_total") == 61
++             and combined.get("additional_test_counts")
++             == {"ingress_observer": 7, "cold_h2": 9, "same_root_publication": 1},
++             "current_product_61_with_separate_same_root_one")
++        for name, observed in zip(SAME_ROOT_PUBLICATION_TESTS, publication["tests"]):
++            test = observed["tests"]
++            need(observed.get("name") == name and test.get("exit_code") == 0
++                 and test.get("timed_out") is False
++                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
++                 "same_root_publication_regression_terminal")
++        need(combined.get("controller_sha256") == PRODUCT_NORMAL_RUNNER_SHA,
++             "exact_current_product_normal61_runner")
+         cleanup = combined.get("cleanup")
+         need(type(cleanup) is list and bool(cleanup)
+              and all(item.get("direct_child_reaped") is True and item.get("remaining") == []
+@@ -612,7 +652,7 @@
+             argv = ["/usr/bin/git", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=/dev/null",
+                     "-C", str(self.source), *suffix]
+             source_observation[key] = run_readonly(argv, "source-" + key, min(until, time.monotonic_ns() + 15_000_000_000)).decode().strip()
+-        need(source_observation == {"commit": COMMIT, "tree": TREE, "status": ""}, "canonical_clean_source")
++        need(source_observation == {"commit": PRODUCT_COMMIT, "tree": PRODUCT_TREE, "status": ""}, "canonical_clean_source")
+         product = {}
+         for relative, (blob, expected) in PRODUCT_PINS.items():
+             raw, observed = read_file(self.source / relative, 2 * 1024 * 1024, until)
+@@ -621,13 +661,20 @@
+             product[relative] = {"sha256": expected, "git_blob": blob, "bytes": len(raw)}
+         remaining(until)
+         return {
+-            "schema": "heptabao.normal-native-h2-gate.inputs.v1",
++            "schema": "heptabao.normal-native-h2-gate.inputs.v2",
+             "binding_sha256": self.sha256, "host": host, "files": observations,
+             "source": source_observation, "archive_and_audit_product_sources": product,
+             "budgets": BUDGETS,
+             "api_ports": {str(node): port for node, port in API_PORTS.items()},
+             "raft_ports": {str(node): port for node, port in RAFT_PORTS.items()},
+             "independent_h2_qa": h2_proof,
++            "product_test_qualification": {
++                "product_commit": PRODUCT_COMMIT, "product_tree": PRODUCT_TREE,
++                "normal_result_sha256": self.artifacts["combined_tests"]["sha256"],
++                "normal_runner_sha256": PRODUCT_NORMAL_RUNNER_SHA,
++                "original_tests": 44, "ingress_tests": 7, "cold_h2_tests": 9,
++                "same_root_publication_tests": 1, "total_tests": 61,
++            },
+             "official_cli_qualification": False,
+             "whole_replacement_qualification": False,
+         }

@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.mac-current-wal-4e808-actual-source-binding.r1",
+  "status": "ACTUAL_SOURCE_BOUND_NO_HOST_DISPATCH",
+  "oldProduct": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "serverBytes": 92408592,
+    "serverSha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+  },
+  "requestedSuccessor": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "normalTestCount": 61
+  },
+  "proposedFreshFixtureRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+  "actualFixtureAbsenceObserved": false,
+  "requiredSourceChanges": [
+    {
+      "file": "mac_current_outer_inputs_r2.py",
+      "names": [
+        "ROOT",
+        "NORMAL_ROOT",
+        "BINARY_SHA",
+        "BINARY_BYTES",
+        "COMMIT",
+        "TREE",
+        "PUBLIC_INPUTS.normal",
+        "PUBLIC_INPUTS.native_build"
+      ],
+      "condition": "Fill only from accepted new accepted 4e808 Mac normal61/source/binary receipts; no guessed target path or inherited binary hash."
+    },
+    {
+      "file": "mac_current_outer_wal_r1.py",
+      "names": [
+        "ROOT",
+        "COMMIT",
+        "TREE",
+        "BINARY",
+        "BINARY_SHA",
+        "BINARY_BYTES",
+        "sourceGeneration"
+      ]
+    },
+    {
+      "file": "mac_owned_launchd_r3.py",
+      "names": [
+        "ROOT",
+        "LABELS",
+        "SERVER",
+        "SERVER_SHA"
+      ]
+    },
+    {
+      "file": "mac_current_server_owner_r1.py",
+      "names": [
+        "ROOT",
+        "BINARY",
+        "BINARY_SHA",
+        "BINARY_BYTES"
+      ]
+    },
+    {
+      "files": [
+        "mac_current_fixture_materializer_r1.py",
+        "mac_current_capture_entry_wal_r1.py",
+        "mac_current_phase_owner_r2.py",
+        "mac_t5_volume_guard_r1.py",
+        "mac_current_cycle_r2.mjs",
+        "mac_single_native_r2.mjs",
+        "mac_auth_rows_cas_r1.mjs"
+      ],
+      "change": "Only the fixed new absolute fixture ROOT; no consumer/capture/CAS/deadline logic changes."
+    }
+  ],
+  "derivedArtifacts": [
+    "22 source hashes",
+    "candidate product and source pins",
+    "inert source/document tuples and payload hash",
+    "fresh inert request key and exact stdin",
+    "fresh runtime source/candidate hashes and key",
+    "source diffs and invariant proof"
+  ],
+  "retainedExact": [
+    "mac_guarded_current_capture_r3.py",
+    "mac_registry_readonly_wal_r1.py",
+    "all immutable/native/WAL public actual proof bytes",
+    "four frozen credential-source admission pins",
+    "current config and installed-code closed set",
+    "all original budget constants",
+    "registry WAL maximum5969912 bytes",
+    "row1048576 and aggregate8388608 bytes",
+    "before/after whole capsule equality",
+    "five-agent independent initial/cold/inverse and raw-only CAS semantics"
+  ],
+  "authority": {
+    "sourceBindingAuthorized": true,
+    "newInert": false,
+    "newRuntime": false,
+    "production": false,
+    "provider": false,
+    "j3160": false,
+    "cutover": false,
+    "deletion": false,
+    "oldDf026ConsumerResultNotTransferred": true,
+    "newNormal61IsNotConsumerQualification": true
+  },
+  "expectedPathsNotActualQualification": {
+    "normalRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+    "output": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
+    "expectedNormalSchema": "heptabao.mac-normal-same-root-publication-exact-tests.v1",
+    "expectedOriginalTestCount": 44,
+    "expectedAdditionalTests": {
+      "ingress_observer": 7,
+      "cold_h2": 9,
+      "same_root_publication": 1
+    },
+    "expectedSelectedTotal": 61,
+    "authority": {
+      "bytes": 731,
+      "sha256": "bc83bd470c81e4a0242d53d6176bc0f103107b52e537e2e2cb54397bd9345784",
+      "blob": "791e259a207753160e4abb274cc14b6a5f7a143c"
+    },
+    "rootQualificationReviewBlob": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+    "classification": "Paths now confirmed in independently read actual source/normal/retained metadata; versions remain finite observations, not future atomic identities."
+  },
+  "bindingReady": true,
+  "sourceOnlyGate": {
+    "constant": "BINDING_READY=True",
+    "locations": [
+      "mac_current_outer_wal_r1.py:main (first statement)",
+      "mac_current_server_owner_r1.py:main (first statement)",
+      "mac_current_outer_inputs_r2.py:Inputs.__init__ (first statement)",
+      "mac_owned_launchd_r3.py:OwnedLaunchd.__init__ (first statement)"
+    ],
+    "predicate": "need(BINDING_READY is True,'mac_normal61_binding_not_admitted')",
+    "effect": "Actual accepted product source slots are populated consistently. This constant expresses source readiness only; exact inert and current runtime requests still require independent root admission."
+  },
+  "actual": {
+    "macNormalRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2",
+    "serverPath": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+    "serverBytes": 92398928,
+    "serverSha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+    "serverFileInfoOriginalBlob": "491baf66132791ec1836a27a6d283e6f53fa0c06",
+    "serverFileInfoVersion": "16777244:72626763:92398928:1793876826299674364:1793876826322472740",
+    "serverFileInfo": {
+      "bytes": 540,
+      "sha256": "dbc9c21072a9692c897dc67716f070d54e5b9956f5ba9a2859bc3e0d2afcaaac",
+      "blob": "491baf66132791ec1836a27a6d283e6f53fa0c06"
+    },
+    "normalReceiptPath": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-result.public.json",
+    "normalReceiptRawBlob": "b011605fe037ff7aa764808ce402e69559150646",
+    "normalReceiptBytes": 3386,
+    "normalReceiptSha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+    "nativeReceiptPath": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/native-build.public.json",
+    "nativeReceiptRawBlob": "27dbe301526370817252d0540006d801eddccad0",
+    "nativeReceiptBytes": 814,
+    "nativeReceiptSha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+    "combinedResultRawBlob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+    "combinedResultBytes": 63478,
+    "combinedResultSha256": "02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113",
+    "combinedAuthorityRawBlob": "791e259a207753160e4abb274cc14b6a5f7a143c",
+    "combinedAuthorityBytes": 731,
+    "combinedAuthoritySha256": "bc83bd470c81e4a0242d53d6176bc0f103107b52e537e2e2cb54397bd9345784",
+    "actualSourceResultRawBlob": "05f3c12a962dc60660b092567c52a4b7499ab3d1",
+    "actualSourceResultSha256": "0ffc1af8d2455abd976aa12b4b1e64aed910adfccfbe310391ae61b01de8daaf",
+    "actualSourceAuthorityRawBlob": "d3e597cae0a5802e413b2c4dab8ec1711ac78f2a",
+    "actualSourceAuthoritySha256": "0eeff5b01781299a06ed83347eca03dd6ef8bd8c47dd048b6fca7e1098c1f4fb",
+    "rootQualificationReviewBlob": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+    "artifactRootQualificationReviewBlob": "eef1b661623b95cdb548f113b9d936d00b38ad09"
+  },
+  "baselineUnboundTree": "183d68904c1f42debc5beaab0d14ec7160e9e46a",
+  "rootApprovedScope": "Current normal61 core and independent whole retained artifact metadata may be used for SOURCE binding only. The full 48-command archive is separate; no Mac current runtime admission follows from this source-ready flag."
+}

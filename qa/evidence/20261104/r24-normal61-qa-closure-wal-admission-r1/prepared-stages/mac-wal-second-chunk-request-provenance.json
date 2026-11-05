@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.mac-wal-inert-extra-body-request-archive.r1",
+  "scope": "ARCHIVE_ONLY_NO_HOST_CALL",
+  "actualPacketTree": "c2a3562c7cf772ef2078d4175d665ae5e00e6876",
+  "ordinal": 18,
+  "requestOrigin": "Original exact five-field tool-argument object retained before the executed offset-65536 binary_read. This JSON text is now serialized from that retained object; no earlier standalone serialized request text is claimed.",
+  "losslessFields": "host/path/expected_version are strings; offset65536 and limit2812 are exact integers.",
+  "nativeResponseBlob": "a75bdc25a47677dd9e22a5d14808620cc00822eb",
+  "originalSdkSnapshotBlob": "aef8909a82ae6127229ce1df5bbba93b3bd59790",
+  "initialReadsetCount": 31,
+  "actualChunkResponseCount": 32,
+  "newHostCalls": 0,
+  "replayedStage": false,
+  "replayedRead": false
+}

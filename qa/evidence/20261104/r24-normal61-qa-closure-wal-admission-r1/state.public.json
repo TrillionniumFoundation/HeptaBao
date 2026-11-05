@@ -1,0 +1,443 @@
+{
+  "schema": "heptabao.replacement-checkpoint.r24.v1",
+  "as_of_utc": "2026-11-05T12:33:29Z",
+  "previous_checkpoint": {
+    "commit": "0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+    "tree": "d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5"
+  },
+  "evidence_prefix": "qa/evidence/20261104/r24-normal61-qa-closure-wal-admission-r1",
+  "overall": {
+    "full_openbao_2_7_1_replacement": false,
+    "production_cutover": false,
+    "old_service_binary_asset_cleanup": false,
+    "all_clients_and_backups_migrated": false,
+    "no_failure_or_unknown_reclassified_as_pass": true
+  },
+  "evidence": {
+    "packets": 23,
+    "packet_files": 1086,
+    "packet_bytes": 22719526,
+    "packet_Merkle_trees": 211,
+    "root_verified_leaves_before_state_and_manifest": 60
+  },
+  "candidate": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "canonical_leaves": 3914,
+    "canonical_bytes": 62227757,
+    "canonical_history_commits": 3763,
+    "worktree_index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092",
+    "draft_PR": 159,
+    "PR_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/159",
+    "one_changed_test_vs_sole_parent": true,
+    "production_source_changed_by_test_successor": false,
+    "fixture_fix": "Retain and republish the first real NativeRootMigrationPlan for A after B; independent V5-to-V6 migration uses fresh object_address_key and is not the original A.",
+    "request_deadline_ms": 15000,
+    "all_existing30_assertions_and_tail_preserved": true,
+    "PR_not_merged": true
+  },
+  "current_source_stages": {
+    "root_full_archive_checks": 722,
+    "root_review": "04b3c48583c6d52dc6d955d00e539dcf31c763f6",
+    "mac": {
+      "job": "1a1ab595aa2-fc05-4ce1",
+      "authority": "exit0/full/durable",
+      "core_blob": "05f3c12a962dc60660b092567c52a4b7499ab3d1",
+      "full_packet": "16bb1439f5cea1fd37a3d8a1319d2c37b21f6de8",
+      "commands": 41,
+      "streams": 82,
+      "full_NUL_streams": 2,
+      "version_pinned_chunks": 14,
+      "elapsed_seconds": 4.600696458015591,
+      "T5_UUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+      "network_fetch": false
+    },
+    "rog": {
+      "job": "1a1ab4fae51-fc05-4c67",
+      "authority": "exit0/full/durable",
+      "core_blob": "079369dac398d8fab512bd52c00657af7357467c",
+      "full_packet": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+      "commands": 56,
+      "streams": 112,
+      "full_NUL_streams": 2,
+      "version_pinned_chunks": 14,
+      "elapsed_seconds": 21.1782365149993,
+      "authorized_public_Git_source_fetch": true
+    },
+    "source_stage_only_not_product_qualification": true
+  },
+  "mac_normal61": {
+    "job": "1a1ab60127b-fc05-4d18",
+    "authority": "exit0/full/durable",
+    "core_packet": "94864d3311d217777454934cb81370d3dfad3645",
+    "core_blob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+    "core_bytes": 63478,
+    "core_sha256": "02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113",
+    "root_checks": 112,
+    "root_review": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+    "actual_tests": 61,
+    "original60_passed": true,
+    "new_same_root_republication_passed": true,
+    "old6plus4_artifacts_full9_and_whole_unchanged": true,
+    "owned_children_closed": 48,
+    "warm_ms": 435,
+    "cold_ms": 477,
+    "per_request_budget_ms": 15000,
+    "new_test_entire_setup_assertions_seconds": 16.72162637487054,
+    "release_build_seconds": 259.8831564588472,
+    "libtest_build_seconds": 450.3692048341036,
+    "full48_command_archive": "All 48 command records and 94 small streams closed in 190-file packet; first full Cargo log recovered; second Cargo log serial recovery and complete operation-chain root review pending.",
+    "independent_retained_artifact_infos": {
+      "packet": "4630679f2ad071d590894f1d5e8cfb82b6a8cb34",
+      "root_review": "eef1b661623b95cdb548f113b9d936d00b38ad09",
+      "all3_whole_SHA_version_0500_uid501_gid20_nlink1": true
+    },
+    "partial_archive": {
+      "tree": "6c8fc8aed7abf87b7e73d2dd3c121798e07a398a",
+      "root_review": "1c5ebf2bea9cabb6c64deb3810b56f977e103e05",
+      "root_checks": 380,
+      "all61_actual_test_records": true,
+      "all48_owned_children_closed": true
+    },
+    "release_Cargo_whole": {
+      "whole_bytes": 440534,
+      "whole_sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+      "events": 438,
+      "reason_counts": {
+        "compiler-artifact": 395,
+        "build-script-executed": 42,
+        "build-finished": 1
+      },
+      "last": {
+        "reason": "build-finished",
+        "success": true
+      },
+      "all_operation_packets_root_review_pending": true,
+      "historical_direct_reads_unchanged": true
+    },
+    "WAL_isolated_runtime_GO": true,
+    "LAN_runtime_GO": false,
+    "original_direct_read_issues": {
+      "offset0": "MCP -32603 timeout",
+      "parallel_offset65536": "Unpersisted result: UNKNOWN observation, not asserted timeout",
+      "no_product_reexecution": true
+    }
+  },
+  "rog_normal61": {
+    "request_blob": "0281db23601066bc5fa1d942013c655e61acdf70",
+    "root_go": "b706278f14288c6b57e435805cddc4ae6ca4a5a3",
+    "intent_packet": "d42d75bf7406c51979541070daed7ac599d4e526",
+    "ack_packet": "26f94a973f79b192789736e80fbb5fccf5baa003",
+    "job": "1a1ab76cee8-fc05-4e13",
+    "request_digest": "d79e75bbc8e29d377db05738b0aada8420a42b059031f6c4bea2e84fa94a0fb9",
+    "state": "KNOWN_EXIT0_FULL_DURABLE_TEST_CORE_ROOT_PENDING",
+    "original_outer_seconds": 12000,
+    "result_qualification": false,
+    "no_replay": true,
+    "terminal_packet": "65adf718c685e4d7a7ff565105a8256481873f06",
+    "observed_at_utc": "2026-11-05T12:21:46Z",
+    "authority_at_unix_ms": 1793880513658,
+    "stdout_bytes": 2220,
+    "stderr_bytes": 0,
+    "test_and_artifact_root_review_pending": true,
+    "agent_reports_61_pass_but_not_in_frozen_root_packet": true
+  },
+  "QA_R3": {
+    "scope": "offline QA instrument on retained df026; not current 4e808 product qualification",
+    "builder_sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+    "binding_sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+    "inert": {
+      "job": "1a1ab50b1b9-fc05-4c6e",
+      "packet": "91596e5bfab8434c718a83afa4556dbdceb91d19",
+      "authority": "exit0/full/durable",
+      "root_checks": 180,
+      "inputs": 8,
+      "independent_infos": 9,
+      "read_operations": 15,
+      "original_SDK_pages": 35
+    },
+    "build": {
+      "job": "1a1ab68bbb6-fc05-4d8a",
+      "core_packet": "73f0117cd63781c4c72287730972729503c44503",
+      "authority": "exit0/full/durable",
+      "root_checks": 83,
+      "root_review": "9d46fa64ba455089d6f0ae1f2331f570fabf4f87",
+      "core_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196",
+      "actual_components_passed": 6,
+      "all_six_share_one_30s_command": true,
+      "owned_children_closed": 12,
+      "input_FDs_closed": true,
+      "alias_FDs_once_closed": 9,
+      "alias_iterator_once_closed": true,
+      "new_Cargo_alias_inode": "31634075",
+      "retained_executable_bytes": 4616576,
+      "retained_executable_sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+      "retained_component_binary_bytes": 3004312,
+      "retained_component_binary_sha256": "2262437307b759a736a4606da48442e26b097c8a8e13bd5fbac244ee1df5786f",
+      "new_retained_files_mode": "0500",
+      "new_retained_files_links": 1,
+      "remaining22_streams_and_full_Cargo_JSON": "CLOSED: 12 records/24 streams, both 75-event Cargo sequences, 18 closed operations/33 original pages.",
+      "shared_target_released_to_exact_ROG_normal61": true,
+      "full_archive_tree": "f45a36bc253f88c3eebc58baf4720a875ca217d7",
+      "full_archive_files": 190,
+      "root_full_archive_review": "81a7931599ec85df94d8eb9afe42879d20a0367b",
+      "root_full_archive_checks": 384
+    },
+    "late_cancel_counterexample_preserved": true,
+    "corrected_after_both_handlers_restored_check": true,
+    "no_H2_fixture_or_product_HTTP_run": true
+  },
+  "X230": {
+    "fixed_locator": {
+      "windows01_02_zero_matches": true,
+      "window03_unique_original_fence_match": true,
+      "windows04_to12_not_dispatched": true,
+      "root_checks": 65
+    },
+    "recovered_R2_fence": {
+      "job": "1a1aac6213e-fc05-4714",
+      "state": "KNOWN_FAILURE",
+      "exit_code": 1,
+      "reason": "fixed_identity_mismatch during fixed directory bind",
+      "only2FD_closed": true,
+      "no_root_or_marker_created": true,
+      "latest_rejected_full9_not_observed": true
+    },
+    "original_relay": {
+      "job": "1a1aa57458d-fc05-4156",
+      "state": "UNKNOWN",
+      "latest_status_and_read": "INVALID_ARGUMENT private_job_directory FileNotFound; not original terminal authority",
+      "no_replay": true
+    },
+    "R3_effect_fence": {
+      "job": "1a1ab637c5e-fc05-4d3a",
+      "packet": "1529130c98ac8bf5770ccdda4ccb6f3c26cca024",
+      "authority": "exit0/full/durable",
+      "root_checks": 54,
+      "root_review": "5c08a1afd96a020c69b73bf71189017356100c7c",
+      "elapsed_ns": 53414886,
+      "FDs_once_closed": 10,
+      "metadata_calls": 113,
+      "read_bytes": 122403,
+      "marker_bytes": 2709,
+      "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+      "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+      "fixed_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1",
+      "root_identity_source": "actual held/named controller checks; not independent directory stat",
+      "future_effect_scope": "Exact old relay mandatory ROOT.mkdir cannot pass while this namespace reservation remains bound",
+      "old_relay_termination_proven": false,
+      "new_transport_started": false
+    }
+  },
+  "historical_failures": {
+    "mac_1c665_normal61": {
+      "job": "1a1ab058659-fc05-4989",
+      "original60_passed": true,
+      "extra1_failed": true,
+      "reason": "test independently re-migrated A to random-address-key A-prime",
+      "full_archive_incomplete": true,
+      "two_Cargo_stdout_complete_read_pending_after_MCP_timeouts": true
+    },
+    "QA_R2": {
+      "job": "1a1aaf3772d-fc05-48f5",
+      "state": "KNOWN_FAILURE",
+      "reason": "generic single-link admission rejected Cargo two-link executable",
+      "whole99_file_archive": true,
+      "subsequent_alias_observation_did_not_reclassify_failure": true
+    },
+    "root_checker_errors_preserved": [
+      "formatter whitespace checker missed optional trailing comma",
+      "inert operation selector counted index as operation",
+      "source archive verifier incorrectly generalized Mac no-network property to authorized ROG source fetch",
+      "official271 original PKI anchor exceeded source line count",
+      "R24 source/verifier-only selector, object-order, namespace-literal and archive-count mistakes preserved with narrow corrections.",
+      "Mac stage checker initially lacked separate large cached request and conflated 31 initial request rows with 32 response chunks; fixed input/coverage only. Original retained second-chunk args archived separately without host reread.",
+      "Checkpoint metadata structuredClone unsupported; no tree/commit or host action from failed constructor."
+    ],
+    "physical_LAN_latest": {
+      "candidate": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "job": "1a1aa914172-fc05-4473",
+      "pre_cold_passed": 91,
+      "pre_cold_total": 98,
+      "post_cold_executed": 0,
+      "post_cold_total": 12,
+      "large_KV_plaintext_bytes": 35651584,
+      "state": "FAILED_NOT_RECLASSIFIED",
+      "current4e808_run": false
+    }
+  },
+  "remaining": {
+    "KV2": "Current candidate full formal migration/save/restore/cold-read/rollback with original 34MiB corpus remains pending.",
+    "HA": "Current Mac/ROG/Pocket4 real leader kill, natural election, ReadIndex, persistence/restart and original98+12 remain unexecuted.",
+    "AuthBus": "Current five-agent isolated WAL/AuthBus runtime returned known exit1/full/durable. Full public stdout/closure and precise failure diagnosis pending; no replay. Trusted production address/CA/AppRole provenance, renewal pre/post expiry and per-host credential cycle/rollback remain unqualified.",
+    "clients": "Mac5 and ROG6 records are bounded prior observations; Pocket4 manager and X230 current consumer remain unresolved. ROG disabled generation203 and provider/model/refresh/quota flags are preserved.",
+    "backups": "Nov2 capture/Nov3 transport is one 9-receipt/23-file chain, not nine current complete backups or a global atomic snapshot.",
+    "cleanup": "No old OpenBao or HeptaBao service/binary/backup/intermediate removed; conditioned on full client+backup migration."
+  },
+  "official271": {
+    "version": "2.7.1",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182",
+    "whole_source_files": 242,
+    "whole_source_bytes": 3894129,
+    "tree_entries": 6328,
+    "tree_Merkles": 939,
+    "lexical_declarations": 423,
+    "declared_operations": 720,
+    "fields": 1064,
+    "registration_lifecycle_sites": 128,
+    "not_a_runtime_denominator": true,
+    "source_inventory_revision": 3,
+    "corrected_family_rows": 189,
+    "all_other_semantics_inverse_equal": true,
+    "current_native_gate_files": 14,
+    "gate_files_byte_equal_between1c665_and4e808": true,
+    "source_contract_complete_archive": "official271/official271-source-contract-v3.gzip.base64",
+    "source_corpus_complete_archive": "official271/source-corpus-r3.gzip.base64",
+    "reproduction_dependencies": "official271/root-review-v3-dependencies.tar.gz.base64",
+    "native_implementation_blockers": [
+      "Durable JWT/Kubernetes/OIDC/MFA/password-policy owners and identity/renew/revoke/cold codecs; current admission guards correctly keep unsupported state empty.",
+      "Durable external database/Kubernetes/RabbitMQ lease and effect owners with UNKNOWN reconciliation.",
+      "Native PKI ACME/EAB/external signer/KMS and transit external custody coverage.",
+      "Rekey/recovery/root-generation/rotation/raw and unowned sys/lifecycle transitions.",
+      "Mutable plugin catalog/runtime external provider protocol and durable reconciliation.",
+      "Protected namespace/workflow/control-group/nondefault administrative Raft and namespace lease owners.",
+      "Runtime backend/tooling/HTTP-method/dynamic-factory denominator beyond lexical source rows."
+    ],
+    "guard_removal_not_a_solution": true
+  },
+  "next_required": [
+    "Complete original Mac WAL stdout/closure, diagnose known failure, fix concrete blocker in a separately reviewed source successor; no replay or widened limits.",
+    "Finish ROG original61 test/core/artifact root review and Mac original second Cargo log recovery.",
+    "Run the exact QA12 relay and review current4e808 exporter/normal5/standalone canonical import; bind real destination metadata before H2.",
+    "Bind/run real current Mac/ROG/Pocket4 LAN98+12 after Mac owned-window closure; preserve natural election/ReadIndex/34MiB/cold gates.",
+    "Prepare current Linux X230 transport under sustained old relay fence, then each real credential RW/restart/rollback.",
+    "Complete trusted AuthBus P01 registration and pre/post renewal expiry evidence before production cutover or deletion.",
+    "Implement official2.7.1 missing native owners and snapshot CLI save/restore/standby/restart; full replacement remains false."
+  ],
+  "history": {
+    "all_previous_checkpoint_raw_content_preserved": true,
+    "old_UNKNOWNs_not_replayed": true,
+    "post_freeze_results_go_to_next_checkpoint": true,
+    "checkpoint_changes_only_two_documents_and_new_evidence": true
+  },
+  "QA12": {
+    "scope": "Qualified df026 instrument transport, separate from current 4e808 product",
+    "unbound_source_tree": "23b4a61f439a311019dbe2f64e7fa471e591475b",
+    "bound_source_tree": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+    "root_source_review": "52c0783130febaa156faea42fb28510dc4d3a2d6",
+    "independent_peer_tree": "b4f6510262b627497dc474182db319f082945fdb",
+    "peer_checks": 166,
+    "inert": {
+      "job": "1a1ab9ff363-fc05-4f1d",
+      "tree": "81a7463424e628054e332d9eedbcae4e363ce09b",
+      "authority": "exit0/full/durable",
+      "bodies": 4,
+      "chunks": 6,
+      "elapsed_ns": "224808947",
+      "root_review": "e38b1df454001d4a984606885618e0c1576bd7e5",
+      "ACK_selector_error_preserved_no_second_start": true
+    },
+    "relay": {
+      "exact_request": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+      "root_GO": "41c0f8a0bc4c490aa800636869d9fdeeb777b7e9",
+      "state": "GO issued; actual ACK/result not yet root received",
+      "files": 12,
+      "bytes": 4892547,
+      "outer_seconds": 360,
+      "relay_seconds": 300,
+      "endpoint_seconds": 90,
+      "cleanup_seconds": [
+        5,
+        5
+      ]
+    },
+    "HTTP_H2_product_qualification": false
+  },
+  "mac_AuthBus_WAL": {
+    "bound_source_tree": "9755935337552dd6c421e74380afb327f6f61892",
+    "exact_source_tree": "e3f18160f1a9c5aa259d82a0258586332dd4a223",
+    "source_root_checks": [
+      183,
+      68,
+      70
+    ],
+    "inert": {
+      "job": "1a1ab9595af-fc05-4ec7",
+      "tree": "c2a3562c7cf772ef2078d4175d665ae5e00e6876",
+      "authority": "exit0/full/durable",
+      "elapsed_seconds": 0.25948833394795656,
+      "independent_files": 31,
+      "binary_response_chunks": 32,
+      "whole_bytes": 596491,
+      "all_owned_closed": true,
+      "root_actual_review": "e38b1df454001d4a984606885618e0c1576bd7e5",
+      "combined_stage_root_checks": 288
+    },
+    "runtime": {
+      "job": "1a1abb090b9-fc05-4fc5",
+      "request_digest": "8a11f8589b890323455d4eb3cc1a7fc83394c63b936b04a09026583a9cf37db6",
+      "state": "KNOWN_FAILURE_EXIT1_FULL_DURABLE_STDOUT_ARCHIVE_AND_CLOSURE_PENDING",
+      "maximum_submissions": 1,
+      "timeout_seconds": 1080,
+      "original_fingerprint_preserved_as_raw": true,
+      "root_GO": "a358962bfd80a8c6ef7324a63abdc7a081bbf740",
+      "exact_request": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+      "intent": "323eaef39c0a8aa71b4d3ff5935f93685fac30cc",
+      "ACK": "78361ea940dee07ef1aff5f295805c6ced062a43",
+      "authority": "b56a7a6cf15a8b274061720debc80cb7f3070bbd",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "timed_out": false,
+      "stdout_bytes": 91043,
+      "stderr_bytes": 0,
+      "original_controller_seconds": 900,
+      "original_manager_seconds": 600,
+      "reason_not_yet_inferred": true,
+      "no_replay": true,
+      "production_cutover": false
+    },
+    "production_trust_source": {
+      "tree": "743d1e25b56ab4ff43d2d4a251872a025bb11fac",
+      "root_review": "2ae8dafc8d066bf04236458b0605d97cc3c563fa",
+      "unresolved_fields": 25,
+      "P01_observed_registration_projector_source_in_progress": true,
+      "fixture_CA_or_AppRole_not_production_registration": true,
+      "renew_self_200_alone_not_expiry_extension_proof": true,
+      "next_lookup_self_pre_post_source_required": true
+    }
+  },
+  "H2_dual_identity": {
+    "original_tree": "cdde39aad3a8c6afd402913a8427eab2786d675c",
+    "corrected_tree": "5ece6708768a38b53eb77aed35064618134f045f",
+    "root_checks": 109,
+    "root_review": "d1012eff48340a1caf4d190947b3a657af9cabe2",
+    "fixed_real_template_path_defect": "Generic first -r1 replacement changed ancestor directory. Exact control/work paths corrected; candidate driver/binder unchanged.",
+    "driver": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+    "binder": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+    "instrument_identity": "df026/424463 plus actual historical normal60",
+    "product_identity": "4e808/eba5 plus actual normal61 including retained-A publication",
+    "canonical_eight_whole_pins": true,
+    "unbound_current_artifacts": 4,
+    "ready": false,
+    "prepare_or_live_GO": false,
+    "physical_scope": "Three processes on one desktop, not real three-host LAN"
+  },
+  "current_LAN_source": {
+    "tree": "d93ea226dceadbed501799835f5d290faaf1f750",
+    "root_checks": 64,
+    "root_review": "3f8e94f23a79bbb1f304be7ccfbb7fd036052fc0",
+    "changed": "Three literal-binding files only; 227 definitions and original98+12/36 fences unchanged",
+    "actual_bindings_pending": true,
+    "runtime_GO": false
+  },
+  "current_source_export_proposal": {
+    "tree": "ef4509aecc8a4e595e9d6c4ba1ad6784bad52fef",
+    "whole_files": 20,
+    "root_whole_Merkle": true,
+    "root_semantic_review_pending": true,
+    "inert_or_export_GO": false
+  }
+}

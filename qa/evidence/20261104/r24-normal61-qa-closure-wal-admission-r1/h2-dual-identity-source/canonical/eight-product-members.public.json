@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.h2-4e808.exact-product-membership.v1",
+  "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "four_merkle_directories": [
+    {
+      "path": "",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "entry_count": 26,
+      "merkle_exact": true
+    },
+    {
+      "path": "crates",
+      "tree": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+      "entry_count": 49,
+      "merkle_exact": true
+    },
+    {
+      "path": "crates/heptabao-server",
+      "tree": "19f9a6ab211357e04e17266636279843921be619",
+      "entry_count": 8,
+      "merkle_exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "tree": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+      "entry_count": 780,
+      "merkle_exact": true
+    }
+  ],
+  "members": [
+    {
+      "path": "Cargo.lock",
+      "blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff",
+      "mode": "100644",
+      "expected_sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "mode": "100644",
+      "expected_sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "mode": "100644",
+      "expected_sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "mode": "100644",
+      "expected_sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "mode": "100644",
+      "expected_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "mode": "100644",
+      "expected_sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "mode": "100644",
+      "expected_sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "same_existing_frozen_blob": true
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "blob": "6828ae88590184830da949001b13abd82a4f9b10",
+      "mode": "100644",
+      "expected_sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d",
+      "same_existing_frozen_blob": true
+    }
+  ],
+  "unchanged_product_pin_count": 8,
+  "scope": "Exact membership of existing whole-read blob pins; no new product execution or full-tree enumeration is claimed."
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "d12646",
+  "wall_time_seconds": 0.093102412,
+  "exit_code": 1,
+  "original_token_count": 91,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/f86faac821c4/qa12_binding_peer_r1/verify.py\", line 249, in <module>\n    check(\"namespace contract retains original base\",\n  File \"/workspace/scratch/f86faac821c4/qa12_binding_peer_r1/verify.py\", line 19, in check\n    raise AssertionError(name)\nAssertionError: namespace contract retains original base\n"
+}

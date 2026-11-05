@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.root.additional-original-observations.r24.v1",
+  "mac_release_cargo": {
+    "whole_bytes": 440534,
+    "whole_sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+    "events": 438,
+    "reason_counts": {
+      "compiler-artifact": 395,
+      "build-script-executed": 42,
+      "build-finished": 1
+    },
+    "last": {
+      "reason": "build-finished",
+      "success": true
+    },
+    "all_operation_packets_root_review_pending": true,
+    "historical_direct_reads_unchanged": true
+  },
+  "normal_receipt_cargo_events_sha256_exact": true,
+  "release_log_info_version_exact": true,
+  "mac_extra_chunk_original_retained_args_matches_actual_response": true,
+  "extra_chunk_request_blob": "cfbe0f0bbe2c5f096259a9dd38d703e31720c776",
+  "extra_chunk_request_origin_blob": "115daebd8c7725915c3fd9420036c70ecd2b7843",
+  "no_new_host_reads": true,
+  "rog_original_terminal_packet": "65adf718c685e4d7a7ff565105a8256481873f06",
+  "rog_original_job": "1a1ab76cee8-fc05-4e13",
+  "rog_terminal": "exit0/full/durable/confirmed",
+  "rog_test_core_not_yet_root_received": true,
+  "mac_runtime_ack": {
+    "job": "1a1abb090b9-fc05-4fc5",
+    "request_digest": "8a11f8589b890323455d4eb3cc1a7fc83394c63b936b04a09026583a9cf37db6",
+    "state": "UNIQUE_START_ACK_LAUNCHED_TERMINAL_PENDING",
+    "maximum_submissions": 1,
+    "timeout_seconds": 1080,
+    "original_fingerprint_preserved_as_raw": true
+  }
+}

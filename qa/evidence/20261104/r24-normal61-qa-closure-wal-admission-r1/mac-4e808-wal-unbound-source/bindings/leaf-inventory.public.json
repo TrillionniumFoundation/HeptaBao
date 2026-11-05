@@ -1,0 +1,336 @@
+{
+  "schema": "heptabao.mac-current-wal-leaf-inventory.r1",
+  "count": 22,
+  "rows": [
+    {
+      "path": "sources/mac_auth_rows_cas_r1.mjs",
+      "category": "root_only",
+      "base": {
+        "bytes": 3109,
+        "sha256": "dee9272f36476e1584b5b5d6f2f423bb6702c90d3264ae7321d6cfa1e524281a",
+        "blob": "8056c17c50cd67dc08447f5f20ea0bf15694c563"
+      },
+      "candidate": {
+        "bytes": 3109,
+        "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64",
+        "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_authbus_cache_cas_r1.mjs",
+      "category": "unchanged",
+      "base": {
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+      },
+      "candidate": {
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_capture_sqlite_synthetic_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500"
+      },
+      "candidate": {
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_capture_sqlite_synthetic_r2.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+      },
+      "candidate": {
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_current_capture_entry_wal_r1.py",
+      "category": "root_only",
+      "base": {
+        "bytes": 42084,
+        "sha256": "396b685e68281cbfe07cb6e0490534b853b7a1ee08d22d46ce1e7e682925a36a",
+        "blob": "01a9c94738d63500ead50f1a0d923372992cb7d7"
+      },
+      "candidate": {
+        "bytes": 42084,
+        "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a",
+        "blob": "1001b044076205bd8497670a12504439bdf921c8"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_current_cycle_r2.mjs",
+      "category": "root_only",
+      "base": {
+        "bytes": 24013,
+        "sha256": "c20a681b74b26ef7bbb3d6d78542d379b5003d45d625506dfc4d1c0eb7153010",
+        "blob": "ca1fb71a314c76424ebd352deaaa57a6e601d6bf"
+      },
+      "candidate": {
+        "bytes": 24013,
+        "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc",
+        "blob": "d3b981f2c22a8e522555c12571d01c2be0008472"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_current_fixture_materializer_r1.py",
+      "category": "root_only",
+      "base": {
+        "bytes": 23649,
+        "sha256": "8279cb47b0a33c6f963e6aa6d23895e52aff848e5271300cb756832b57a513a3",
+        "blob": "57ba4e18936298402c7b9960a19ab41d4d53a2fe"
+      },
+      "candidate": {
+        "bytes": 23649,
+        "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+        "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_current_outer_inputs_r2.py",
+      "category": "product_binding",
+      "base": {
+        "bytes": 27067,
+        "sha256": "927592b55259a44ffc6c25028acd227cdb5ef72b5d62367a8f0d8ffacacfd3b4",
+        "blob": "e1a173ebe784722bc86d83bd2b32d1f96b97c8a0"
+      },
+      "candidate": {
+        "bytes": 26852,
+        "sha256": "8d012176846efc5f369b18339856435faa3bbec59845da980787bf4bc02da6e4",
+        "blob": "5b73c466e33c181774840697096b1bcc6698ac16"
+      },
+      "transformCount": 11
+    },
+    {
+      "path": "sources/mac_current_outer_wal_r1.py",
+      "category": "product_binding",
+      "base": {
+        "bytes": 68170,
+        "sha256": "515b9338f9066b7415689af969e97f09beb204b6c336f477975ec6c4f10b88a1",
+        "blob": "83c0f1fcda76a91f2eb3ce29c1891dda71d6921b"
+      },
+      "candidate": {
+        "bytes": 68126,
+        "sha256": "5f2d5a34e7af5cc6366c3945257185d7a82614a3d4017c86c6c4ae1965d976c6",
+        "blob": "4cf795da6a4e1bbaa28305f537276f5f1b4f11db"
+      },
+      "transformCount": 9
+    },
+    {
+      "path": "sources/mac_current_phase_owner_r2.py",
+      "category": "root_only",
+      "base": {
+        "bytes": 24977,
+        "sha256": "abc7ed419528cf61df6a6ca98dd0963faf4a6bb13708b67507c8cb19163087cc",
+        "blob": "c44a8692b4793f785b5b58114ad29d43063cbee4"
+      },
+      "candidate": {
+        "bytes": 24977,
+        "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500",
+        "blob": "0bb331760813905250de5c0722a74fdcebfc099e"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_current_server_owner_r1.py",
+      "category": "product_binding",
+      "base": {
+        "bytes": 13218,
+        "sha256": "924ba9af378557360c9e3d595390682947fd9f05ca12b64ed8388f50348f135c",
+        "blob": "21c6996669f8634a036e0ed39e9395f053bae88f"
+      },
+      "candidate": {
+        "bytes": 13166,
+        "sha256": "4cedb893f6340420d04fdabe5fd24c70e4db14699d25e5142dd3fed4ce31c81e",
+        "blob": "8cb9f9f84318d798cffec5dbdca3f060bff80476"
+      },
+      "transformCount": 6
+    },
+    {
+      "path": "sources/mac_darwin_owned_projection_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+      },
+      "candidate": {
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+        "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_guarded_current_capture_r3.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+      },
+      "candidate": {
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_native_owned_commands_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+      },
+      "candidate": {
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+        "blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_native_owned_unreaped_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+      },
+      "candidate": {
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+        "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_native_process_observer_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+      },
+      "candidate": {
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_owned_commands_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+      },
+      "candidate": {
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_owned_launchd_r3.py",
+      "category": "product_binding",
+      "base": {
+        "bytes": 35552,
+        "sha256": "cf994c2da1ce1ffc6a41806a3db71602e801c409d7bd05c8f9e26dfd138be56d",
+        "blob": "62e6c87ad287f6188a7b049601f8d3be8535faf8"
+      },
+      "candidate": {
+        "bytes": 35508,
+        "sha256": "1ed1c3c69c1817622c97fbfdb2460dafda71811852b3cec198a9287e0dea2346",
+        "blob": "9cd1618a6c4a7b2812e32f1abce7c789ac4cdcd0"
+      },
+      "transformCount": 7
+    },
+    {
+      "path": "sources/mac_owned_unreaped_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+      },
+      "candidate": {
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_registry_readonly_wal_r1.py",
+      "category": "unchanged",
+      "base": {
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920"
+      },
+      "candidate": {
+        "bytes": 31776,
+        "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+        "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920"
+      },
+      "transformCount": 0
+    },
+    {
+      "path": "sources/mac_single_native_r2.mjs",
+      "category": "root_only",
+      "base": {
+        "bytes": 28533,
+        "sha256": "bf1fb1785d6c72c5f440abaebd7fef98990e91de2ab69793468b7a6b57198c31",
+        "blob": "057c2e6dcddd546c3af7e5aee5df1502033d3b95"
+      },
+      "candidate": {
+        "bytes": 28533,
+        "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+        "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1"
+      },
+      "transformCount": 1
+    },
+    {
+      "path": "sources/mac_t5_volume_guard_r1.py",
+      "category": "root_only",
+      "base": {
+        "bytes": 13393,
+        "sha256": "bc1d25a7ad440aa2a7c9d667e6cbe8ca16b3ba58abd17e5e5a7f18aca284dec5",
+        "blob": "725a3e392a7ae8d93c7ef727418c868b891e0e72"
+      },
+      "candidate": {
+        "bytes": 13393,
+        "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70",
+        "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916"
+      },
+      "transformCount": 1
+    }
+  ]
+}

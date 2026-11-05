@@ -1,0 +1,51 @@
+function verifyWalExactAdmission(input,utf8,latin1,sha256,unb64,apply){
+ const raw=input.raw,vi=JSON.parse(input.staticRaw),req=JSON.parse(input.requestRaw),a=input.audit,checks=[],ck=(n,v)=>{if(!v)throw Error(n);checks.push(n);},hash=s=>sha256(latin1(utf8(s))),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),obj=p=>JSON.parse(raw[p]),map=new Map(a.records.map(r=>[r.path,r])),root="/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1";
+ const before=raw["references/df026-inert-carrier.py"],after=raw["carrier/mac_current_registry_wal_inert_4e808_r1.py"],diff=raw["diffs/df026-to-4e808-inert.review.diff"],patch=apply(before,diff);
+ ck("previous206_root_reviewed_carrier_exact",input.baseline.records.some(r=>r.blob==="75bc97f9905f1c517188689bbfed5b0c389ccb3e"&&r.bytes===15543)&&map.get("references/df026-inert-carrier.py").blob==="75bc97f9905f1c517188689bbfed5b0c389ccb3e");
+ ck("current_bound68_whole_result",raw["references/root-bound68-result.original.json"]===input.boundRootRaw&&hash(input.boundRootRaw)==="cbd484618a3dc0674d8f3e81e2a95fd116148bce9dcf766b7afc52edb3e07181");
+ ck("actual_static_inputs_whole",vi.baselineCarrier===before&&vi.carrier===after&&vi.diff===diff&&vi.inertRequest===input.requestRaw&&vi.runtimeRequest===raw["requests/future-runtime-start.public.json"]&&vi.baselineRuntimeRequest===raw["references/df026-runtime-request.original.json"]&&vi.anchorRaw===raw["bindings/t5-volume-anchor.original.json"]&&vi.sourcePinsRaw===raw["bindings/public-source-pins.public.json"]);
+ ck("strict7_hunk_carrier",patch.text===after&&patch.hunks===7&&utf8(before).length===15543&&utf8(after).length===15543);
+ const part=(s,start,end)=>{const i=s.indexOf(start),j=s.indexOf(end,i+start.length);if(i<0||j<0)throw Error("missing constants");return s.slice(i,j);};
+ const oldPins=part(before,"PINS={","\nDOCUMENT_PINS="),newPins=part(after,"PINS={","\nDOCUMENT_PINS="),oldDocs=part(before,"DOCUMENT_PINS={","\nPAYLOAD_BYTES="),newDocs=part(after,"DOCUMENT_PINS={","\nPAYLOAD_BYTES=");
+ const pins=JSON.parse(newPins.slice(5)),docs=JSON.parse(newDocs.slice(14)),priorPins=JSON.parse(oldPins.slice(5)),priorDocs=JSON.parse(oldDocs.slice(14));
+ let expected=before;
+ const replacements=[
+ ["mac-authbus-df026-current-registry-wal-r1","mac-authbus-4e808-current-registry-wal-r1"],[oldPins,newPins],[oldDocs,newDocs],
+ ["PAYLOAD_BYTES=779787","PAYLOAD_BYTES=780807"],
+ ["PAYLOAD_SHA='b5146c5165d1dfac7a2d55672fb9ddee89304c70ed2ea4c4e5f59032b44d1374'","PAYLOAD_SHA='4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4'"],
+ ["heptabao.mac-current-registry-wal-df026-inert.r1","heptabao.mac-current-registry-wal-4e808-inert.r1"],
+ ["heptabao.mac-current-registry-wal-df026-inert-public-inputs.r1","heptabao.mac-current-registry-wal-4e808-inert-public-inputs.r1"],
+ ["inert-registry-wal-df026-result.public.json","inert-registry-wal-4e808-result.public.json"]];
+ for(let i=0;i<replacements.length;i++){const [from,to]=replacements[i];ck("approved_single_replacement."+i,expected.split(from).length===2&&vi.transforms[i].before===from&&vi.transforms[i].after===to);expected=expected.replace(from,to);}
+ ck("all_other_carrier_logic_exact",expected===after&&vi.transforms.length===8);
+ ck("inert_request_exact_hash",utf8(input.requestRaw).length===797259&&hash(input.requestRaw)==="5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9");
+ ck("fixed_inert_host_exec_args_envelope",same(Object.keys(req).sort(),["host","executable","args","cwd","stdin","timeout_seconds","idempotency_key"].sort())&&req.host==="mac"&&req.executable==="/opt/homebrew/bin/python3"&&req.cwd==="/Users/qianqi"&&req.timeout_seconds===60&&same(req.args,["-I","-S","-B","-c",after])&&req.idempotency_key==="heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1");
+ ck("whole780807_stdin",utf8(req.stdin).length===780807&&hash(req.stdin)==="4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4"&&map.get("inputs/inert.stdin.public.json").sha256===hash(req.stdin));
+ const payload=JSON.parse(req.stdin),sortkeys=x=>Object.keys(x).sort();
+ ck("public_payload_exact_schema_names",same(sortkeys(payload),["schema","files","documents","anchorBase64"].sort())&&payload.schema==="heptabao.mac-current-registry-wal-4e808-inert-public-inputs.r1"&&Object.keys(pins).length===22&&Object.keys(docs).length===8&&same(sortkeys(payload.files),sortkeys(pins))&&same(sortkeys(payload.documents),sortkeys(docs))&&same(sortkeys(pins),sortkeys(priorPins)));
+ const boundSources=input.boundAudit.records.filter(r=>r.path.startsWith("sources/")),sourceEntries=a.records.filter(r=>r.path.startsWith("sources/"));
+ ck("22_source_members_exact_bound_tree",sourceEntries.length===22&&boundSources.length===22&&sourceEntries.every(r=>boundSources.some(b=>b.path===r.path&&b.blob===r.blob&&b.bytes===r.bytes&&b.sha256===r.sha256)));
+ for(const row of sourceEntries){const name=row.path.slice(8),b=unb64(payload.files[name]),sp=vi.expectedSources.find(x=>x.name===name);
+  ck(name+".whole_source_payload_pin",latin1(b)===latin1(utf8(raw[row.path]))&&b.length===row.bytes&&sha256(latin1(b))===row.sha256&&pins[name][0]===row.bytes&&pins[name][1]===row.sha256&&sp.blob===row.blob&&sp.bytes===row.bytes&&sp.sha256===row.sha256);
+ }
+ const sources=obj("bindings/public-source-pins.public.json"),candidate=obj("documents/candidate-current-manager-wal-r1.public.json");
+ ck("all22_candidate_pin_map",Object.keys(sources).length===22&&sourceEntries.every(r=>sources[r.path.slice(8)]===r.sha256&&candidate.sourcePins[r.path.slice(8)]===r.sha256)&&Object.keys(candidate.sourcePins).length===22);
+ for(const name of Object.keys(docs)){const body=raw["documents/"+name],b=unb64(payload.documents[name]),row=map.get("documents/"+name);
+  ck(name+".whole_document_payload",latin1(b)===latin1(utf8(body))&&vi.expectedDocuments[name]===body&&b.length===docs[name][0]&&sha256(latin1(b))===docs[name][1]&&row.sha256===docs[name][1]);
+  ck(name+".bound_document_member",input.boundAudit.records.some(r=>r.blob===row.blob&&r.bytes===row.bytes));
+  if(name.startsWith("proofs/"))ck(name+".historical_pin_unchanged",same(docs[name],priorDocs[name]));
+ }
+ const anchor=unb64(payload.anchorBase64);
+ ck("whole_actual_public_t5_anchor",latin1(anchor)===latin1(utf8(raw["bindings/t5-volume-anchor.original.json"]))&&anchor.length===967&&sha256(latin1(anchor))==="dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"&&input.baseline.records.some(r=>r.blob===map.get("bindings/t5-volume-anchor.original.json").blob));
+ const sr=obj("verification/static-result.public.json"),se=obj("verification/static-executor.original.json");
+ ck("actual122_static_execution_exact_input",se.exit_code===0&&se.output===raw["verification/static-result.public.json"]&&sr.ok===true&&sr.checkCount===122&&sr.checks.length===122&&sr.checks.every(c=>c.passed===true)&&sr.input.sha256===hash(input.staticRaw)&&sr.input.bytes===utf8(input.staticRaw).length);
+ ck("no_candidate_or_host_execution",sr.candidateModuleImports===0&&sr.candidateFunctionExecutions===0&&sr.candidatePythonSourcesRecompiled===0&&sr.compiledCarrierCount===1&&sr.actualHostCalls===0&&sr.actualChildProcesses===0&&sr.actualSockets===0&&sr.actualSqliteConnections===0&&sr.runtimePermissionGranted===false&&sr.inertRequestSubmitted===false);
+ const runtime=obj("requests/future-runtime-start.public.json"),oldrun=obj("references/df026-runtime-request.original.json"),arg=(r,k)=>{if(r.args.filter(x=>x===k).length!==1)throw Error("arg multiplicity");return r.args[r.args.indexOf(k)+1];};
+ let derived=JSON.parse(JSON.stringify(oldrun));derived.idempotency_key="heptabao-mac-current-five-agent-registry-wal-4e808-bce47fd1-20261105-r1";derived.args=derived.args.map(x=>x.replaceAll("/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1",root));
+ for(const k of ["--candidate-sha256","--public-source-pins-base64","--public-source-pins-sha256"])derived.args[derived.args.indexOf(k)+1]=arg(runtime,k);
+ ck("future_runtime_only_exact_root_pins_key",same(derived,runtime)&&runtime.host==="mac"&&runtime.executable==="/opt/homebrew/bin/python3"&&runtime.cwd==="/Users/qianqi"&&runtime.timeout_seconds===1080&&same(runtime.args.slice(0,4),["-I","-S","-B",root+"/qa/mac_current_outer_wal_r1.py"]));
+ ck("future_runtime_exact_candidate_sources_anchor",arg(runtime,"--candidate")===root+"/candidate-current-manager-wal-r1.public.json"&&arg(runtime,"--candidate-sha256")===hash(raw["documents/candidate-current-manager-wal-r1.public.json"])&&latin1(unb64(arg(runtime,"--public-source-pins-base64")))===latin1(utf8(raw["bindings/public-source-pins.public.json"]))&&arg(runtime,"--public-source-pins-sha256")===hash(raw["bindings/public-source-pins.public.json"])&&arg(runtime,"--public-volume-anchor-base64")===payload.anchorBase64&&arg(runtime,"--public-volume-anchor-sha256")==="dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8");
+ const plan=obj("PLAN.public.json");
+ ck("original_caps_and31_targets",plan.bounds.inertAbsoluteSeconds===45&&plan.bounds.inertDiskutilClippedSeconds===30&&plan.bounds.inertSupervisorSeconds===60&&plan.inertScope.expectedIndependentReadbackFileCountIncludingReceipt===31&&plan.inertScope.heldReadbackUsesSeparateReadDescriptor===true&&plan.inertScope.writeDescriptorClosedBeforeReadback===true&&plan.inertScope.absenceNotObservedByThisSourceWork===true);
+ return{schema:"heptabao.root.mac4e808-wal-exact-admission-source.v1",status:"PASS_EXACT_INERT_ADMISSION_SOURCE",packet:a.tree,files:a.files,bytes:a.bytes,merkle_trees:a.merkle.trees_verified,check_count:checks.length,checks,carrier:plan.carrier,request:plan.inertRequest,input:plan.input,root,source_files:22,public_documents:8,independent_target_files_including_receipt:31,actual_static_checks:122,strict_carrier_hunks:7,original_inert_seconds:45,original_diskutil_seconds:30,original_supervisor_seconds:60,future_runtime_source_only:plan.futureRuntimeRequest,inert_go_requires_separate_saved_exact_authorization:true,inert_request_submitted:false,future_runtime_go:false,production_credentials_qualified:false,full_replacement:false,host_calls_by_verifier:0};
+}

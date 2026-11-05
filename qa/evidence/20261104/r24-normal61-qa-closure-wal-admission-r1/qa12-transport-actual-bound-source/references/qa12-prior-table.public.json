@@ -1,0 +1,414 @@
+{
+  "schema": "heptabao.h2-instrument-df026.qa12.actual-source-provenance.v1",
+  "instrument_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "instrument_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "actual_build_job": "1a1ab68bbb6-fc05-4d8a",
+  "full_actual_tree": "f45a36bc253f88c3eebc58baf4720a875ca217d7",
+  "root_verification_result_blob": "81a7931599ec85df94d8eb9afe42879d20a0367b",
+  "current_product_qualification": false,
+  "transport_ready": false,
+  "observations_are_prior_actual_not_current_stat": true,
+  "expected_modes_are_not_substituted_for_unobserved_metadata": true,
+  "component_files_need_independent_metadata_before_strict_transport_binding": true,
+  "files": [
+    {
+      "role": "executable",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa",
+      "destination_basename": "heptabao-native-h2-qa",
+      "whole_bytes": 4616576,
+      "whole_sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+      "expected_source_mode": 320,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087297:4616576:1793877138264182979:1793877138272182977",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 320,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "independent_file_info_original",
+        "path": "actual/executable-info-01.original.json",
+        "bytes": 477,
+        "sha256": "2f92f5d798878b05a82ab53386e6bbdb0bf21dfdc3c7dc477054eb776fc6ec6c",
+        "blob": "a59450459bfa16400a6950cc6471154566678472"
+      },
+      "whole_content_source": {
+        "kind": "native_whole_file_hash_plus_successful_build_retained_copy",
+        "file_info_blob": "a59450459bfa16400a6950cc6471154566678472",
+        "core_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196",
+        "git_artifact_payload_not_uploaded": true
+      }
+    },
+    {
+      "role": "rust_source",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+      "destination_basename": "native_h2_client.rs",
+      "whole_bytes": 19382,
+      "whole_sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:33710101:19382:1793875555781432155:1793875555783378037",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "prior_inert_independent_file_info_original",
+        "path": "actual/file-info-02.original.json",
+        "blob": "b6202251fa7151bd625b91022b182ce89b3a33fd",
+        "bytes": 477,
+        "sha256": "cda1ff3d162a822a63db189afada9373250a8c3587ee2e8e51a5281ce68a3e60"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 19382,
+        "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+        "git_blob": "a959baa67acc8400cf1784a0fa747250420303c7"
+      }
+    },
+    {
+      "role": "test_source",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+      "destination_basename": "native_h2_client_tests.rs",
+      "whole_bytes": 8942,
+      "whole_sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:33710102:8942:1793875555784571573:1793875555785451802",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "prior_inert_independent_file_info_original",
+        "path": "actual/file-info-03.original.json",
+        "blob": "cefbe2c8b10e34212fc32459e08252e2ae16cd52",
+        "bytes": 481,
+        "sha256": "cb3725584ed5cbc617901839070853b2e72228de1331b97de22682efba290064"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 8942,
+        "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+        "git_blob": "a01644e79af4095f6bef58fe6b4278ba07d6f000"
+      }
+    },
+    {
+      "role": "cargo_manifest",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+      "destination_basename": "Cargo.toml",
+      "whole_bytes": 957,
+      "whole_sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:33710103:957:1793875555786744163:1793875555787844945",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "prior_inert_independent_file_info_original",
+        "path": "actual/file-info-04.original.json",
+        "blob": "4f7c4efa7ab72875c944acba78d7ac5e0146b737",
+        "bytes": 464,
+        "sha256": "792b271d15f8895d97222dcf4bd068e75ecac18c43b2dd363bb255b255923a45"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 957,
+        "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+        "git_blob": "02b4af5013c3461114b3064cf277f615de7258db"
+      }
+    },
+    {
+      "role": "cargo_lock",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
+      "destination_basename": "Cargo.lock",
+      "whole_bytes": 17409,
+      "whole_sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087291:17409:1793877131842183994:1793877131842183994",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "independent_file_info_original",
+        "path": "actual/qa-lock-info-01.original.json",
+        "bytes": 462,
+        "sha256": "c65e08bf86a7b59accfc03c8dc7abc08f4c00d4971cc9232779f87ea622fde66",
+        "blob": "628cb75177a436a08b4b65cd5990f1694e95c6b3"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 17409,
+        "sha256": "f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf",
+        "git_blob": "4bbcef94c138fe653b5f930a9a0427d8fe49565f"
+      }
+    },
+    {
+      "role": "canonical_lock",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
+      "destination_basename": "canonical.Cargo.lock",
+      "whole_bytes": 101193,
+      "whole_sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087292:101193:1793877131843183994:1793877131843183994",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "independent_file_info_original",
+        "path": "actual/canonical-lock-info-01.original.json",
+        "bytes": 474,
+        "sha256": "8759dbde23423a2328d5b93a4ed37abdade0d6ef087def4ca5d7e58b6451c51f",
+        "blob": "a8abe2fd0dbe8b554ffd5fbc6a221d42f66325e4"
+      },
+      "whole_content_source": {
+        "kind": "previous_root_accepted_full_input_same_whole_hash_as_retained_file",
+        "bytes": 101193,
+        "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+        "git_blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff"
+      }
+    },
+    {
+      "role": "build_receipt",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
+      "destination_basename": "build-result.public.json",
+      "whole_bytes": 62314,
+      "whole_sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087332:62314:1793877143030182115:1793877143030182115",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "independent_file_info_original",
+        "path": "actual/core-info-01.original.json",
+        "bytes": 460,
+        "sha256": "28d16b3e837b100501c4fb841180e58663ee86f2b33a87687c60d85f4be0d84a",
+        "blob": "2fc6834a3a75c42d568ed4d31e8ea93075de9827"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 62314,
+        "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+        "git_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196"
+      }
+    },
+    {
+      "role": "build_controller",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+      "destination_basename": "build_native_h2_client_r1.py",
+      "whole_bytes": 59791,
+      "whole_sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:33710100:59791:1793875555779834699:1793875555781107063",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "prior_inert_independent_file_info_original",
+        "path": "actual/file-info-01.original.json",
+        "blob": "574f5fe7b4cfa69da817c30bdb8e13e644767075",
+        "bytes": 479,
+        "sha256": "88e17e4d34459ab0b0ccfcddaf5ba2310f6d2ac1e9ae554e6bf49bb35b7fc403"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 59791,
+        "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+        "git_blob": "e42655d8e5d2ac89bc05f1f8ccba83b86e8ef361"
+      }
+    },
+    {
+      "role": "build_binding",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+      "destination_basename": "build-binding.private.json",
+      "whole_bytes": 4039,
+      "whole_sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:33710107:4039:1793875555795493743:1793875555796496852",
+      "observed_metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "metadata_source": {
+        "kind": "prior_inert_independent_file_info_original",
+        "path": "actual/file-info-08.original.json",
+        "blob": "6a21e29b0891bafaa47d284552a7fc0428a32a3a",
+        "bytes": 475,
+        "sha256": "c870eefed6b142447c3cdff049b43d7fffb645396aee0470231f4aa64b98b44a"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 4039,
+        "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+        "git_blob": "38fc58cb834b150a01dd15fa23cdf80ad7a7d3f0"
+      }
+    },
+    {
+      "role": "component_stdout",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
+      "destination_basename": "components.stdout",
+      "whole_bytes": 633,
+      "whole_sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087317:633:1793877142711182176:1793877142711182176",
+      "observed_metadata": null,
+      "metadata_source": {
+        "kind": "read_multiple_files_whole_text_version_original",
+        "path": "actual/components-evidence-01.original.json",
+        "bytes": 2938,
+        "sha256": "6bf87affa9f20ad80a4fd803b3907a6ec44dbec02a52d42fd28c515cd97b6ffc",
+        "blob": "6ed049609c75fafea1a00c1da93522440ffb8e3d"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 633,
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "git_blob": "fee43825b844d63c23d0ce40df7a880b26db138f"
+      },
+      "unobserved_metadata_fields": [
+        "uid",
+        "gid",
+        "mode",
+        "link_count"
+      ]
+    },
+    {
+      "role": "component_record",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
+      "destination_basename": "components.public.json",
+      "whole_bytes": 804,
+      "whole_sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087319:804:1793877142722182174:1793877142722182174",
+      "observed_metadata": null,
+      "metadata_source": {
+        "kind": "read_multiple_files_whole_text_version_original",
+        "path": "actual/components-evidence-01.original.json",
+        "bytes": 2938,
+        "sha256": "6bf87affa9f20ad80a4fd803b3907a6ec44dbec02a52d42fd28c515cd97b6ffc",
+        "blob": "6ed049609c75fafea1a00c1da93522440ffb8e3d"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 804,
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "git_blob": "d4184095476e03a8a37b93aa8960dd4d9b1ec8dc"
+      },
+      "unobserved_metadata_fields": [
+        "uid",
+        "gid",
+        "mode",
+        "link_count"
+      ]
+    },
+    {
+      "role": "component_list_stdout",
+      "source_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
+      "destination_basename": "components-list.stdout",
+      "whole_bytes": 507,
+      "whole_sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+      "expected_source_mode": 384,
+      "expected_source_uid": 1000,
+      "expected_source_nlink": 1,
+      "observed_version": "66306:36087313:507:1793877142692182179:1793877142692182179",
+      "observed_metadata": null,
+      "metadata_source": {
+        "kind": "read_multiple_files_whole_text_version_original",
+        "path": "actual/components-evidence-01.original.json",
+        "bytes": 2938,
+        "sha256": "6bf87affa9f20ad80a4fd803b3907a6ec44dbec02a52d42fd28c515cd97b6ffc",
+        "blob": "6ed049609c75fafea1a00c1da93522440ffb8e3d"
+      },
+      "whole_content_source": {
+        "kind": "actual_whole_readback_text",
+        "bytes": 507,
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "git_blob": "5a6739b7fd8dfa5515e9ad1ff54400d76272a2c9"
+      },
+      "unobserved_metadata_fields": [
+        "uid",
+        "gid",
+        "mode",
+        "link_count"
+      ]
+    }
+  ]
+}

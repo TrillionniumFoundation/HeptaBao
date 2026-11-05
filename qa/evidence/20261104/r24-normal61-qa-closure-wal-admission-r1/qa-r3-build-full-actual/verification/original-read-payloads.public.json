@@ -1,0 +1,461 @@
+{
+  "schema": "heptabao.qa-r3.complete-original-read-payloads.v1",
+  "status": "passed",
+  "operations": 18,
+  "immutable_page_count": 33,
+  "all_original_sdk_and_native_texts_exact": true,
+  "unsafe_ns_never_reserialized_for_comparison": true,
+  "host_calls_by_this_check": 0,
+  "observations": [
+    {
+      "label": "authority-01",
+      "operation_id": "8390573e21c1b8b5ede278cb99c649c0685ac76bf8379dce61b6a6cc73dfdf6b",
+      "read_tool": "process_status",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 908,
+      "original_sdk_sha256": "fad093d0e074fc4e9054a8afa394d63fa260364ba588a45c1fc97282d9687f2c",
+      "native_bytes": 729,
+      "native_sha256": "63a93af4c0bb572295c77713b488405aca7db05bf92ffde9f6878e999cd9d66b",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 908,
+          "next_offset": 908,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "streams-01",
+      "operation_id": "777a806ceec84fcbb418c7bc46e211de025f78cb7a63bc0581d88dc0aee594b0",
+      "read_tool": "process_read",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 1513,
+      "original_sdk_sha256": "af2fca6e8cca5c31fde7be5a77db6a28cca8ae7d8218aa65dcea1bcb055cb055",
+      "native_bytes": 1332,
+      "native_sha256": "491d2c46541b3cf63c3804d2b0ddc04912417be0328181f2147756db4cb5b837",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 1513,
+          "next_offset": 1513,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "core-info-01",
+      "operation_id": "a50df3f171de007c86483841eba7ae9cf2f188e3a693560cab17a26fb9abad0a",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 577,
+      "original_sdk_sha256": "91fc43f94817b9eea287c53d837ee74de9536a26bc7be43282352295a783625b",
+      "native_bytes": 460,
+      "native_sha256": "28d16b3e837b100501c4fb841180e58663ee86f2b33a87687c60d85f4be0d84a",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 577,
+          "next_offset": 577,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "core-body-01",
+      "operation_id": "7674262a6dd85abec20c1b50302651003326839fa0c5fa2676b0d4d00a7702f5",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 78557,
+      "original_sdk_sha256": "e5fd723578d391e9f81fd3b69afa01a45ac7e024559e0bbf94f7276f90bc1c40",
+      "native_bytes": 68565,
+      "native_sha256": "e2d565ba34029cc08b3c2fcd6c44e446137f8048c1359720d29ba1e8babc924d",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "next_offset": 16384,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "bytes": 16384,
+          "next_offset": 32768,
+          "eof": false
+        },
+        {
+          "offset": 32768,
+          "bytes": 16384,
+          "next_offset": 49152,
+          "eof": false
+        },
+        {
+          "offset": 49152,
+          "bytes": 16384,
+          "next_offset": 65536,
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 13021,
+          "next_offset": 78557,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "executable-info-01",
+      "operation_id": "0458814a8e523b4bf56e23045e4fecfc8e79e5d80802ea5e78d35e19f7e26bfa",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 594,
+      "original_sdk_sha256": "0c44744b29dc1ea7ff3e0504db3d22f3311f0225765054a1376db5bdea70e479",
+      "native_bytes": 477,
+      "native_sha256": "2f92f5d798878b05a82ab53386e6bbdb0bf21dfdc3c7dc477054eb776fc6ec6c",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 594,
+          "next_offset": 594,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "component-binary-info-01",
+      "operation_id": "fb362536bcb281d129c3b9786e6623c5ca662c6959966990126b64789700456a",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 600,
+      "original_sdk_sha256": "d5c9cdc431946fb0aef1609c1b837c7af70c1c688c8e5ae7858922e5d367fc65",
+      "native_bytes": 483,
+      "native_sha256": "d61b71b2e096db2ba6f8c518176a0f7651f3a3caca0b2db4904ad96e5a27ffba",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 600,
+          "next_offset": 600,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "components-evidence-01",
+      "operation_id": "96009eb592b8698940526f0eb9cbebb1d2672e25142c0a68d4d3776da8e499c7",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 3229,
+      "original_sdk_sha256": "050a7ecbacc58977d80344e9a1ace762065f877abadac73eb6099d4099779e7b",
+      "native_bytes": 2938,
+      "native_sha256": "6bf87affa9f20ad80a4fd803b3907a6ec44dbec02a52d42fd28c515cd97b6ffc",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 3229,
+          "next_offset": 3229,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "command-records-a-01",
+      "operation_id": "099b69119cc75f6b226f68939f0f2f2e4c9472eb37caa847a7095d2ed3946ac2",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 8138,
+      "original_sdk_sha256": "cd9dd76773cc91e2e4508bedb84c0440b07ae8cf6312d53f532c16aa36c0e42e",
+      "native_bytes": 7126,
+      "native_sha256": "b703fcfdf2f4431a31df9f0fdd6d26ee25797a3eaa9c35b3b3060d3bfb281de8",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 8138,
+          "next_offset": 8138,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "command-records-b-01",
+      "operation_id": "f0e5ce1c8de885d5f55a8a987bec7c67d9857ddb9821b945783244bc8cf0b262",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 8298,
+      "original_sdk_sha256": "b6e65c9c926ee6c7c1919b164f1aa7b9e1ce71b2b8d266792807520f5e8126e3",
+      "native_bytes": 7271,
+      "native_sha256": "b8666cabfbe655c3c5a2a1a34dbbfd0af729bf829bdf73a3ed515e31abadc840",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 8298,
+          "next_offset": 8298,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "build-stdout-info-01",
+      "operation_id": "dc24b7d737b2cab79ebf48b07ece99efbc4175cc0e875253d1466dea1067d40f",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 571,
+      "original_sdk_sha256": "a3b7a0b1b485f878eab7ca0c2001143c19fd0b7692c431cf00c39e52810f4503",
+      "native_bytes": 454,
+      "native_sha256": "1881cf49575553281c86359c64d58a440284c324998b6b46b793005c585876de",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 571,
+          "next_offset": 571,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "components-build-stdout-info-01",
+      "operation_id": "9b12914fbb7d5e876687664cea5a53495b23f6bdebf78706c4c4755687ca949c",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 582,
+      "original_sdk_sha256": "691546dfb2b018c85f8fb149ee54543b67accf36cd637e295a8cf6568322a553",
+      "native_bytes": 465,
+      "native_sha256": "4fd4a81d7870713bdbed6fd882b4920cc2eca8b6bc8cbe6ad3955b7ece44e646",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 582,
+          "next_offset": 582,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "command-streams-a-01",
+      "operation_id": "5d0bc034f0cc4617be5942a28f1d021c622ddee98dd521e0163031bd4dfe2a74",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 3406,
+      "original_sdk_sha256": "5d1fcc6bf6c45d71fd5c33b54a7426b7d725c5eb9d6220004302c57c2f339c9f",
+      "native_bytes": 3103,
+      "native_sha256": "de5d6c1ffd2a3b90d684acae25ea5e222dcfc71e04e7286a5358084d2720bd72",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 3406,
+          "next_offset": 3406,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "build-stdout-body-01",
+      "operation_id": "3d77c5576916f4d6367e20854b15573a92808e02959ffb84d9cb020991b1998e",
+      "read_tool": "binary_read",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 83939,
+      "original_sdk_sha256": "44ee8099a8b2a47627c283b35d075a9e43f009ac3ed8c5c2af31adc544a0adec",
+      "native_bytes": 83836,
+      "native_sha256": "3886a06dc78afdb2b2280b43a266cf1fd32334a3cae5e0e25b1d52a7cda3046f",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "next_offset": 16384,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "bytes": 16384,
+          "next_offset": 32768,
+          "eof": false
+        },
+        {
+          "offset": 32768,
+          "bytes": 16384,
+          "next_offset": 49152,
+          "eof": false
+        },
+        {
+          "offset": 49152,
+          "bytes": 16384,
+          "next_offset": 65536,
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 16384,
+          "next_offset": 81920,
+          "eof": false
+        },
+        {
+          "offset": 81920,
+          "bytes": 2019,
+          "next_offset": 83939,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "components-build-stdout-body-01",
+      "operation_id": "91a3cfe989d0794c31920af5b000b11d97a64e6ef021a575c40aebd7186e1910",
+      "read_tool": "binary_read",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 84006,
+      "original_sdk_sha256": "3fa22bb59511cdbba99d3388ae736c251553105c9d499c68713b1131ec69eeef",
+      "native_bytes": 83903,
+      "native_sha256": "54f8864034190781354482590f3b13c6829d1e58edaefa50b3378d11c9e59eb9",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "next_offset": 16384,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "bytes": 16384,
+          "next_offset": 32768,
+          "eof": false
+        },
+        {
+          "offset": 32768,
+          "bytes": 16384,
+          "next_offset": 49152,
+          "eof": false
+        },
+        {
+          "offset": 49152,
+          "bytes": 16384,
+          "next_offset": 65536,
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "bytes": 16384,
+          "next_offset": 81920,
+          "eof": false
+        },
+        {
+          "offset": 81920,
+          "bytes": 2086,
+          "next_offset": 84006,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "command-streams-b-01",
+      "operation_id": "14a9311351a3ae73cfaf65720d4df854d2f413dc6472ba380f6c5f7a308ac65f",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 3479,
+      "original_sdk_sha256": "d1554f6b0f0aca6f57aea7b54d6e9fd0430d14bfcd9b72dd4d4b46bdf2d589ac",
+      "native_bytes": 3180,
+      "native_sha256": "b7a4bdb5f67cfc73b2ce6832903a0eeb754101aea1db42b6d04d92f64ae86687",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 3479,
+          "next_offset": 3479,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "qa-lock-info-01",
+      "operation_id": "35f77122d4268030b7747e6f9b231d8d99eed5e54a65850944813943aeb77eff",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 579,
+      "original_sdk_sha256": "3fcf90a01e2e6361e5975887446980a25a06f96eadef8f2a1f0fdd1ec52c3edc",
+      "native_bytes": 462,
+      "native_sha256": "c65e08bf86a7b59accfc03c8dc7abc08f4c00d4971cc9232779f87ea622fde66",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 579,
+          "next_offset": 579,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "canonical-lock-info-01",
+      "operation_id": "3dc1a85b70b6cc63592890893ee572b47883d81f4703615721c3f226fd07febb",
+      "read_tool": "file_info",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 591,
+      "original_sdk_sha256": "ea4fe78800c308ee7205c1a5e39485681924c8599f4a7c4ad2ee6b9ee7973773",
+      "native_bytes": 474,
+      "native_sha256": "8759dbde23423a2328d5b93a4ed37abdade0d6ef087def4ca5d7e58b6451c51f",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 591,
+          "next_offset": 591,
+          "eof": true
+        }
+      ]
+    },
+    {
+      "label": "qa-lock-body-01",
+      "operation_id": "76450e06a2b2b3eda4053cb38f85410fd36bf36df3fa32a0297d4c064145b579",
+      "read_tool": "read_multiple_files",
+      "complete": true,
+      "owned_future_active": false,
+      "automatic_retry": false,
+      "original_sdk_bytes": 21793,
+      "original_sdk_sha256": "c6aaae6496fb61989fd657ffa98dbfa2bafab4666a28085ca945f2bce0723727",
+      "native_bytes": 19305,
+      "native_sha256": "b56a494e91ebc8d64660f8cff042fd0c820040027934d4da29df1ee9b883e8d9",
+      "immutable_pages": [
+        {
+          "offset": 0,
+          "bytes": 16384,
+          "next_offset": 16384,
+          "eof": false
+        },
+        {
+          "offset": 16384,
+          "bytes": 5409,
+          "next_offset": 21793,
+          "eof": true
+        }
+      ]
+    }
+  ]
+}

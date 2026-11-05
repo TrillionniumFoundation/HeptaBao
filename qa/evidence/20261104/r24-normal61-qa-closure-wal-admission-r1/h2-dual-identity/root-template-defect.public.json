@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root.h2-dual-source-template-path-defect.v1",
+  "status": "BLOCKED_TEMPLATE_NAMESPACE_BEFORE_HOST",
+  "source_packet": "cdde39aad3a8c6afd402913a8427eab2786d675c",
+  "binder_blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+  "template_blob": "03509beda4be72f320fc43985b4caf1a67d936a3",
+  "dispatch_blob": "d8f256854438485afdcd68ae66009642823b7f3f",
+  "expected_fixed_base": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "actual_template_layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-live-r1",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r2/normal-native-h2-gate-control-r1/prepare-r1"
+  },
+  "correct_plan_layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1"
+  },
+  "failed_source_predicate": "Binding.__init__: self.control.parent == BASE and exact control-rN namespace; current template changes the BASE ancestor to ...20261103-r2",
+  "affected": "Both templates and all derived control/work/qa/artifact/h2qa paths. Current source path itself uses the correct BASE.",
+  "required_correction": "Keep fixed BASE 20261103-r1; control/live terminal directory suffix r2; prepare-r1; update every derived template path. Preserve candidate binder/driver and existing source-only checks.",
+  "known_effect": "No host request submitted and ready flag remains false. This is a source/template defect, not a runtime product failure.",
+  "source_modules_executed": 0,
+  "host_calls": 0,
+  "template_admission": false,
+  "full_replacement": false
+}

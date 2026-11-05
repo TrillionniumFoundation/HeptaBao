@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/proofs/registry-wal-r1.authority.public.json\",\"sha256\":\"b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f\",\"size\":733,\"version\":\"16777244:72629156:733:1793880070024327924:1793880070024333590\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

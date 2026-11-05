@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.root.retained-a-mac-artifact-info-addendum.v1",
+  "as_of_utc": "2026-11-05 11:34:08 UTC",
+  "status": "PASS_THREE_INDEPENDENT_WHOLE_RETAINED_ARTIFACT_INFOS",
+  "packet": "4630679f2ad071d590894f1d5e8cfb82b6a8cb34",
+  "files": 10,
+  "bytes": 12581,
+  "core_review": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+  "core_blob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+  "checks": 14,
+  "checked": [
+    "server.original_SDK_whole_native",
+    "server.whole_retained_pin_exact",
+    "server.exact_version_fields",
+    "server.exact_current_normal_source_retained_path",
+    "seed.original_SDK_whole_native",
+    "seed.whole_retained_pin_exact",
+    "seed.exact_version_fields",
+    "seed.exact_current_normal_source_retained_path",
+    "libtest.original_SDK_whole_native",
+    "libtest.whole_retained_pin_exact",
+    "libtest.exact_version_fields",
+    "libtest.exact_current_normal_source_retained_path",
+    "three_distinct_inodes",
+    "native_and_normal_original_receipts_unchanged"
+  ],
+  "infos": {
+    "server": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 320,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 320,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "size": 92398928,
+      "version": "16777244:72626763:92398928:1793876826299674364:1793876826322472740"
+    },
+    "seed": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 320,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 320,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+      "size": 86761216,
+      "version": "16777244:72626765:86761216:1793876826766527617:1793876826790237905"
+    },
+    "libtest": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 320,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 320,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "1a8b739f6b26515b141d8412bf4503460b4cbc69898eb94f275f51aee8e16477",
+      "size": 154458864,
+      "version": "16777244:72626950:154458864:1793877277654775121:1793877277677929037"
+    }
+  },
+  "qualification_scope": "Actual file_info computes whole SHA; pins match exact current Mac normal61 core. Source-only WAL binding may use these facts; full48 command archive continues and no WAL/LAN/runtime GO is inferred.",
+  "source_only_binding_ready": true,
+  "WAL_runtime_GO": false,
+  "LAN_runtime_GO": false,
+  "full_replacement": false
+}

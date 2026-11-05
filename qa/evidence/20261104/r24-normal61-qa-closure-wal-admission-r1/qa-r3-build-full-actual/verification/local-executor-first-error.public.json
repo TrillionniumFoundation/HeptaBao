@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.qa-r3.local-verifier-setup-original-error.v1",
+  "observed_error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): Argument list too long (os error 7)\\\")\" }; verifier did not start; no candidate or host operation.",
+  "original_attempt_started_verifier": false,
+  "original_attempt_started_candidate_or_host_operation": false,
+  "correction": "Write the same source and JSON to local public scratch files through apply_patch, then execute the verifier with two fixed short paths.",
+  "verifier_source_changed": false,
+  "verification_input_changed": false,
+  "qa_build_not_replayed": true
+}

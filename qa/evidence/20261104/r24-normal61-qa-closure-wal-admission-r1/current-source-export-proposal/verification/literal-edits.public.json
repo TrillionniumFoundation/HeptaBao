@@ -1,0 +1,110 @@
+[
+  {
+    "source": "exporter",
+    "before": "New fixed df026 standalone source export",
+    "after": "New fixed 4e808 standalone source export",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "The source is the independently qualified ROG normal-build canonical clone.",
+    "after": "The source is the independently staged ROG canonical clone.",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "heptabao-cold-h2-normal-20261105-r1/source",
+    "after": "heptabao-same-root-publication-normal-20261105-r2/source",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "heptabao-cold-h2-source-export-20261105-r1",
+    "after": "heptabao-same-root-publication-source-export-20261105-r1",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "canonical-df026-full.bundle",
+    "after": "canonical-4e808-full.bundle",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "after": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "after": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "after": "1c66541993662f92cf717154e33717abedb2ea74",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "CANONICAL_COUNT=3757",
+    "after": "CANONICAL_COUNT=3763",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "export-standalone-cold-h2-df026",
+    "after": "export-standalone-same-root-publication-4e808",
+    "occurrences": 1
+  },
+  {
+    "source": "exporter",
+    "before": "heptabao.cold-h2.rog-df026-standalone-source-export.v1",
+    "after": "heptabao.same-root-publication.rog-4e808-standalone-source-export.v1",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "one fixed public df026 source exporter",
+    "after": "one fixed public 4e808 source exporter",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "heptabao-cold-h2-source-export-controls-20261105-r1",
+    "after": "heptabao-same-root-publication-source-export-controls-20261105-r1",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "source_export_cold_h2_df026_r1.py",
+    "after": "source_export_same_root_publication_4e808_r1.py",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "15324",
+    "after": "15364",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa",
+    "after": "9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761292f66d20",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "heptabao.cold-h2-df026-source-export-inert-carrier.v1",
+    "after": "heptabao.same-root-publication-4e808-source-export-inert-carrier.v1",
+    "occurrences": 1
+  },
+  {
+    "source": "inert",
+    "before": "heptabao.cold-h2-df026-source-export-inputs.v1",
+    "after": "heptabao.same-root-publication-4e808-source-export-inputs.v1",
+    "occurrences": 1
+  }
+]

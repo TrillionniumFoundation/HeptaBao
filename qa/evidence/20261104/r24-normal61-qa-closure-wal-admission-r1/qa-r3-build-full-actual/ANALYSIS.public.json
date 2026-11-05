@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.native-h2-qa.r3-draft2.complete-actual-analysis.v1",
+  "status": "passed_qa_instrument_only",
+  "job_id": "1a1ab68bbb6-fc05-4d8a",
+  "instrument_candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "instrument_candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "normal_product_qualification_at_instrument_build": "df026 actual normal44+7+9; this is instrument provenance and is not current-product qualification for 4e808",
+  "source_tree": "c39a25545380825bbe5d56949563bb08095f9730",
+  "inert_actual_tree": "91596e5bfab8434c718a83afa4556dbdceb91d19",
+  "root_go_blob": "fd933ac85c29dcfc2da761f1cd6aa2569dd16332",
+  "root_core_only_review_blob": "9d46fa64ba455089d6f0ae1f2331f570fabf4f87",
+  "actual": {
+    "authority_exit_code": 0,
+    "full_durable_terminal": true,
+    "actual_six_components_passed": true,
+    "command_records": 12,
+    "command_streams": 24,
+    "owned_children_closed": 12,
+    "all_input_fds_closed": true,
+    "command_outcome_unknown": false,
+    "elapsed_total_ns": "11713158150",
+    "cargo_event_counts": {
+      "build": 75,
+      "components_build": 75
+    },
+    "registry_dependencies_exact_canonical_subset": 76,
+    "owned_qa_package_count": 1,
+    "alias": {
+      "status": "observed_two_aliases",
+      "current_cargo_inode": "31634075",
+      "expected_links": 2,
+      "body_bytes": 9233152,
+      "eof_probe_calls": 2,
+      "eof_returned_bytes": 0,
+      "total_returned_byte_limit": 9233154,
+      "fds_closed_once": 9,
+      "iterator_closed_once": true,
+      "unknown": false,
+      "cancel_signal": null
+    },
+    "retained_executable": {
+      "bytes": 4616576,
+      "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+      "inode": "36087297",
+      "mode_octal": "0500",
+      "nlink": 1
+    },
+    "retained_component_binary": {
+      "bytes": 3004312,
+      "sha256": "2262437307b759a736a4606da48442e26b097c8a8e13bd5fbac244ee1df5786f",
+      "inode": "36087311",
+      "mode_octal": "0500",
+      "nlink": 1
+    }
+  },
+  "original_caps": {
+    "total_seconds": 600,
+    "outer_seconds": 660,
+    "release_build_seconds": 180,
+    "component_compile_seconds": 180,
+    "components_all_six_share_seconds": 30,
+    "git_seconds": 15,
+    "tool_seconds": 15,
+    "lock_seconds": 20,
+    "list_seconds": 15,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "complete_read_originals": {
+    "operations": 18,
+    "immutable_pages": 33,
+    "all_original_sdk_and_native_texts_exact": true,
+    "all_reads_closed": true
+  },
+  "offline_evidence_checks": {
+    "core_lossless_checks": 106,
+    "archive_checks": 220,
+    "host_or_candidate_calls": 0
+  },
+  "canonical_lock_observation": "The retained canonical copy has an independent whole-file hash/metadata. Its bytes match the previously independently read and root-accepted canonical input; no separate new copy payload read is claimed.",
+  "source_references": "reference/published-inert-inputs are exact R3 inert readback objects, not newly read input bodies.",
+  "original_failures": {
+    "r2_failed_retention_preserved": true,
+    "first_draft_late_cancel_counterexample_preserved": true,
+    "local_verifier_first_setup_argument_limit_preserved": true,
+    "local_verifier_source_and_input_unchanged_after_using_fixed_short_file_paths": true
+  },
+  "limits": {
+    "product_or_http_requests": 0,
+    "tls_alpn_h2_actual_product_qualified": false,
+    "native_snapshot_actual_h2_qualified": false,
+    "official_cli_phaseb_qualified": false,
+    "new_qa_tests_added_to_product_44_7_9_or_61": false,
+    "full_replacement": false,
+    "fixture_or_transport_go": false
+  },
+  "next_product_identity": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "normal61_qualification_not_inherited": true
+  }
+}

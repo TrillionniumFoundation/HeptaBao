@@ -1,0 +1,6 @@
+{
+  "error": "Error: historic_normal60_provenance_fixed",
+  "candidate_changed": false,
+  "host_calls": 0,
+  "diagnosis": "Root string predicate assumed compact single-quoted Python assignment. Actual source uses spaces and double quotes for the same exact fixed historical hash. Corrected only the literal text predicate; candidate and all prior results unchanged."
+}

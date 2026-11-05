@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.root.prepared-stage-review-initial-failure.v1",
+  "error": "Error: Mac exact admitted request",
+  "candidate_or_evidence_changed": false,
+  "phase": "root offline verification"
+}

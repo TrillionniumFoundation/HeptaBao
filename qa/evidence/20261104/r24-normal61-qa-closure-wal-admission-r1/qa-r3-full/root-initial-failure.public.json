@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.root.qa-r3-full-review-failure.v1",
+  "error": "Error: build.sole_owned_artifact_profile",
+  "candidate_changed": false,
+  "host_calls": 0,
+  "full_replacement": false,
+  "diagnosis": "Root JSON.stringify equality incorrectly treated JSON object key order as profile semantics. Original Cargo and core contain exactly the same five profile fields and values. Corrected only this equality to identical key sets and per-field values.",
+  "correction_changes_candidate_or_evidence": false
+}

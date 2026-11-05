@@ -1,0 +1,36 @@
+diff --git a/sources/mac_current_outer_inputs_r2.py b/sources/mac_current_outer_inputs_r2.py
+--- a/sources/mac_current_outer_inputs_r2.py
++++ b/sources/mac_current_outer_inputs_r2.py
+@@ -14,16 +14,16 @@
+ 
+ BASE=Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+ ROOT=BASE/'mac-authbus-4e808-current-registry-wal-r1'
+-BINDING_READY=False  # Actual Mac normal61 artifact/authority are not yet bound.
++BINDING_READY=True  # Actual normal61 pins are bound; host execution requires separate root GO.
+ LIVE=Path('/Users/qianqi/.openclaw')
+ PLUGIN=LIVE/'extensions/openclaw-authbus'
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ CODEX=LIVE/'npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex'
+ CORE=BASE/'authbus-profile2-selector-c138-20261104-r1'
+-NORMAL_ROOT=None
+-BINARY=None
+-BINARY_SHA=None
+-BINARY_BYTES=None
++NORMAL_ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1')
++BINARY=NORMAL_ROOT/'artifacts/heptabao-server'
++BINARY_SHA='c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63'
++BINARY_BYTES=92398928
+ COMMIT='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+ TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ PRIVATE_INPUTS={
+@@ -34,8 +34,8 @@
+ PUBLIC_INPUTS={
+  'historical_sources':(CORE/'final360-native-codex-live-r5/result.public.json','6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236',2*1024*1024),
+  'native_pin':(CORE/'runtime-contract-source-r1/native-pin.public.json','fce8536b33a83b920accd7264991759a13011057cac3502b0ce14fffc075339e',65536),
+- 'normal':(None,None,65536),
+- 'native_build':(None,None,65536)}
++ 'normal':(NORMAL_ROOT/'normal-release-result.public.json','2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571',65536),
++ 'native_build':(NORMAL_ROOT/'native-build.public.json','25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49',65536)}
+ GENERATIONS=(
+  ('bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1','332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9','c40f74bc2c0190ebb30259e25534f78f7048346814d1a02cd99274340add0606'),
+  ('48e095587f180413f65274d6d25d88d4ee6f9f99d981575f54bc4fb3399c286e','899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2','c6b074866138e3ed265414016ed7ba4a88bdbe062e3983269c61be8496f22caa'))

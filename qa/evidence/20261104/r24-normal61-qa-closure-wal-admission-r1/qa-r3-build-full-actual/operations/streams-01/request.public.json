@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "qa-r3-build-7ea25347-ac127d3e-streams-01",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1ab68bbb6-fc05-4d8a",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

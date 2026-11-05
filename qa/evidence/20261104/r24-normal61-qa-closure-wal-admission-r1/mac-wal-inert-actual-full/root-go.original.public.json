@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.root.mac4e808-wal-inert-exact-go.v1",
+  "issued_at_utc": "2026-11-05 11:59:34 UTC",
+  "decision": "GO_ONE_EXACT_INERT_STAGE_ONLY",
+  "source_packet": "e3f18160f1a9c5aa259d82a0258586332dd4a223",
+  "root_source_review": {
+    "name": "mac4e808-wal-exact-root-result.public.json",
+    "blob": "6e430ea1296bca546aa6519c705aa0ceeb31afd2",
+    "bytes": 5598,
+    "sha256": "463331bc9f7252101f467700d6c00291104ab5cef14c3fef2f7b0ac940503aa0"
+  },
+  "actual_bound_source": "9755935337552dd6c421e74380afb327f6f61892",
+  "exact_request": {
+    "bytes": 797259,
+    "sha256": "5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9",
+    "blob": "75cc9edd37fca32dacaa394fe7e7a815b455aa9b"
+  },
+  "carrier": {
+    "bytes": 15543,
+    "sha256": "9b9633f59900a171ab97347830380f1d8a1ef74d1fe742b5cc3b78df646cbae6",
+    "blob": "b0d546989d09c9e97e0edafda1a8144735f37003"
+  },
+  "stdin": {
+    "bytes": 780807,
+    "sha256": "4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4",
+    "blob": "931383bbc295b82ad7ff6cf57c33af3395e20966"
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "cwd": "/Users/qianqi",
+  "idempotency_key": "heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1",
+  "maximum_submissions": 1,
+  "pre_submit_requirement": "Save a durable external intent in a completed call before the single exact process_start; immediately externalize the original ACK before parsing and reconcile only its original job.",
+  "allowed_scope": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+    "create_only": true,
+    "source_files": 22,
+    "public_documents": 8,
+    "final_preclosure_candidate_receipt": 1,
+    "inert_absolute_seconds": 45,
+    "diskutil_seconds": 30,
+    "supervisor_seconds": 60,
+    "only_child": [
+      "/usr/sbin/diskutil",
+      "info",
+      "-plist",
+      "/Volumes/T5"
+    ],
+    "current_credentials": false,
+    "production_sqlite": false,
+    "consumer": false,
+    "service": false,
+    "git": false,
+    "cargo": false
+  },
+  "actual_acceptance": "Require complete durable terminal authority, whole original stdout/stderr and independent file_info plus version-pinned whole reads for all 31 exact published targets; candidate preclosure receipt alone is not success. Require held T5/FD and owned child closure.",
+  "unknown_rule": "Preserve any uncertainty and reconcile the same original job or read-operation identity; no new business key, reset, widening or replay.",
+  "future_runtime_request": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+  "future_runtime_go": false,
+  "production_cutover_go": false,
+  "full_replacement": false
+}

@@ -1,0 +1,50 @@
+--- reference/exporter.py
++++ candidate/exporter.py
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python3
+-"""New fixed df026 standalone source export; no source import or application runs.
+-
+-The source is the independently qualified ROG normal-build canonical clone.
++"""New fixed 4e808 standalone source export; no source import or application runs.
++
++The source is the independently staged ROG canonical clone.
+ The bundle contains exactly HEAD and its complete ancestry, with zero prerequisites.
+ """
+ from pathlib import Path
+@@ -9,19 +9,19 @@
+ 
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi')
+-SOURCE=BASE/'heptabao-cold-h2-normal-20261105-r1/source'
+-ROOT=BASE/'heptabao-cold-h2-source-export-20261105-r1'
++SOURCE=BASE/'heptabao-same-root-publication-normal-20261105-r2/source'
++ROOT=BASE/'heptabao-same-root-publication-source-export-20261105-r1'
+ CONTROL=ROOT
+-BUNDLE=ROOT/'canonical-df026-full.bundle'
+-CANONICAL='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-PARENT='6304a898192bfdf7eabec3c4ea40f7166e59a137'
++BUNDLE=ROOT/'canonical-4e808-full.bundle'
++CANONICAL='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
++PARENT='1c66541993662f92cf717154e33717abedb2ea74'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3757
++CANONICAL_COUNT=3763
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-ACTION='export-standalone-cold-h2-df026'
++ACTION='export-standalone-same-root-publication-4e808'
+ START=time.monotonic()
+ UNTIL=START+300
+ children,commands=[],[]
+@@ -29,7 +29,7 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.cold-h2.rog-df026-standalone-source-export.v1','action':ACTION,
++result={'schema':'heptabao.same-root-publication.rog-4e808-standalone-source-export.v1','action':ACTION,
+  'started_unix_ns':time.time_ns(),'canonical_commit':CANONICAL,'canonical_tree':TREE,
+  'expected_full_commit_count':CANONICAL_COUNT,'expected_prerequisites':[],
+  'source_imported':False,'network_git_protocols_enabled':False,

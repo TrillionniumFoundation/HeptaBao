@@ -1,0 +1,68 @@
+--- before/gate.py
++++ candidate/gate.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""NEW independent normal-native HTTP/2 gate for exact df026.
++"""NEW normal-native HTTP/2 gate for exact 4e808 using qualified df026 instrumentation.
+ 
+ Reuse the recovered normal setup and owned lifecycle. Two explicit H2 GETs
+ and one independent H1 archive control are new operations in a fresh fixture.
+@@ -25,7 +25,7 @@
+ from types import FunctionType
+ 
+ sys.dont_write_bytecode = True
+-SCHEMA = "heptabao.normal-native-h2-gate.controller.v1"
++SCHEMA = "heptabao.normal-native-h2-gate.controller.v2"
+ BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
+ SNAPSHOT_ROUTE = "/v1/sys/storage/raft/snapshot"
+ H2_BODY_LIMIT = 8 * 1024 * 1024
+@@ -811,8 +811,8 @@
+                 process, body, client = self.run_h2_once(case, spec, until)
+                 record["process"] = process
+                 require(client["schema"] == "heptabao.h2-single-request-client.v1"
+-                        and client["candidate_commit"] == bm.COMMIT
+-                        and client["candidate_tree"] == bm.TREE
++                        and client["candidate_commit"] == bm.H2_INSTRUMENT_BUILD_COMMIT
++                        and client["candidate_tree"] == bm.H2_INSTRUMENT_BUILD_TREE
+                         and client["operation"] == operation
+                         and client["deadline_monotonic_ns"] == str(until)
+                         and client["stage"] == "complete" and client["error_code"] is None,
+@@ -941,7 +941,10 @@
+             status = "passed" if passed else "failed"
+             report = {
+                 "schema": SCHEMA, "status": status, "failure_code": failure,
+-                "final_errors": final_errors, "candidate_commit": bm.COMMIT, "candidate_tree": bm.TREE,
++                "final_errors": final_errors,
++                "candidate_commit": bm.PRODUCT_COMMIT, "candidate_tree": bm.PRODUCT_TREE,
++                "instrument_build_commit": bm.H2_INSTRUMENT_BUILD_COMMIT,
++                "instrument_build_tree": bm.H2_INSTRUMENT_BUILD_TREE,
+                 "input_binding_sha256": binding.sha256, "prepared": prepared,
+                 "verified_inputs_before": self.verified, "verified_inputs_after": after,
+                 "actions": self.actions, "h2_gate_cases": self.h2_results,
+@@ -969,6 +972,8 @@
+                 "no_late_reset_or_whole_bidirectional_session_claim": True,
+                 "controller_request_or_restore_replays": 0, "full_replacement_qualification": False,
+                 "original_44_existing_7_new_9_denominators_unchanged": True,
++                "same_root_publication_regression_separate_count": 1,
++                "instrument_components_separate_count": 6,
+                 "final_deadline_monotonic_ns": final_until,
+                 "final_observations_completed_monotonic_ns": final_observations_completed,
+                 "terminal_unix_ns": time.time_ns(),
+@@ -1027,7 +1032,7 @@
+     if completed_after_cleanup >= until and failure is None:
+         failure = "original_prepare_deadline"
+     report = {
+-        "schema": "heptabao.normal-native-h2-gate.prepare.v1",
++        "schema": "heptabao.normal-native-h2-gate.prepare.v2",
+         "status": "passed" if failure is None and clean else "failed",
+         "binding_sha256": binding.sha256, "inputs": inputs, "failure_code": failure,
+         "owned_cleanup": cleanup, "all_owned_stopped": clean,
+@@ -1066,7 +1071,7 @@
+     raw, _ = bm.read_file(binding.prepare / "result.public.json", 4 * 1024 * 1024, until)
+     require(sha(raw) == args.prepare_result_sha256, "exact_prior_prepare_result")
+     prepared = bm.parse(raw)
+-    require(prepared["schema"] == "heptabao.normal-native-h2-gate.prepare.v1"
++    require(prepared["schema"] == "heptabao.normal-native-h2-gate.prepare.v2"
+             and prepared["status"] == "passed" and prepared["all_owned_stopped"] is True
+             and prepared["binding_sha256"] == binding.sha256
+             and prepared["runtime_started"] is False, "prior_prepare_admission")

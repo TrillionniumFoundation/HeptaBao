@@ -1,0 +1,4 @@
+{
+  "error": "Error: Mac chunk 17 65536",
+  "correction": "31 initial request rows, 32 actual response chunks; verify all returned versions and all initial request pins. Original files and candidates unchanged."
+}

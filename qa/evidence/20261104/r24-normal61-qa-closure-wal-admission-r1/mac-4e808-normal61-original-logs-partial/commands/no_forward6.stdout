@@ -1,0 +1,11 @@
+
+running 6 tests
+test http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress ... ok
+test http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target ... ok
+test service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor ... ok
+test service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location ... ok
+test service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 3557 filtered out; finished in 17.10s
+

@@ -1,0 +1,395 @@
+{
+  "schema": "heptabao.qa12-literal-binding-offline-verification.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "sender.py definitions whole identical",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact original None table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact bound table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "sender.py ready literal",
+      "passed": true
+    },
+    {
+      "name": "sender.py no sys.argv extra argument contract",
+      "passed": true
+    },
+    {
+      "name": "unique assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact instrument commit",
+      "passed": true
+    },
+    {
+      "name": "unique assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact instrument tree",
+      "passed": true
+    },
+    {
+      "name": "sender.py no current product substitution",
+      "passed": true
+    },
+    {
+      "name": "receiver.py definitions whole identical",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact original None table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact bound table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "receiver.py ready literal",
+      "passed": true
+    },
+    {
+      "name": "receiver.py no sys.argv extra argument contract",
+      "passed": true
+    },
+    {
+      "name": "unique assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact instrument commit",
+      "passed": true
+    },
+    {
+      "name": "unique assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact instrument tree",
+      "passed": true
+    },
+    {
+      "name": "receiver.py no current product substitution",
+      "passed": true
+    },
+    {
+      "name": "relay.py definitions whole identical",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact original None table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact bound table",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "unique assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "relay.py ready literal",
+      "passed": true
+    },
+    {
+      "name": "relay.py no sys.argv extra argument contract",
+      "passed": true
+    },
+    {
+      "name": "unique assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact instrument commit",
+      "passed": true
+    },
+    {
+      "name": "unique assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact instrument tree",
+      "passed": true
+    },
+    {
+      "name": "relay.py no current product substitution",
+      "passed": true
+    },
+    {
+      "name": "executable only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "executable exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "executable actual metadata",
+      "passed": true
+    },
+    {
+      "name": "rust_source only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "rust_source exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "rust_source actual metadata",
+      "passed": true
+    },
+    {
+      "name": "test_source only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "test_source exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "test_source actual metadata",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest actual metadata",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock actual metadata",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock actual metadata",
+      "passed": true
+    },
+    {
+      "name": "build_receipt only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "build_receipt exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "build_receipt actual metadata",
+      "passed": true
+    },
+    {
+      "name": "build_controller only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "build_controller exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "build_controller actual metadata",
+      "passed": true
+    },
+    {
+      "name": "build_binding only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "build_binding exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "build_binding actual metadata",
+      "passed": true
+    },
+    {
+      "name": "component_stdout only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "component_stdout exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "component_stdout actual metadata",
+      "passed": true
+    },
+    {
+      "name": "component_record only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "component_record exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "component_record actual metadata",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout only three slots changed",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout exact actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout actual metadata",
+      "passed": true
+    },
+    {
+      "name": "12 roles remain ordered",
+      "passed": true
+    },
+    {
+      "name": "unique assignment HELPERS",
+      "passed": true
+    },
+    {
+      "name": "exact new helpers",
+      "passed": true
+    },
+    {
+      "name": "all inert definitions byte equal",
+      "passed": true
+    },
+    {
+      "name": "unique assignment PINS",
+      "passed": true
+    },
+    {
+      "name": "three exact pins",
+      "passed": true
+    },
+    {
+      "name": "payload exact schema and keys",
+      "passed": true
+    },
+    {
+      "name": "sender.py payload exact bytes",
+      "passed": true
+    },
+    {
+      "name": "receiver.py payload exact bytes",
+      "passed": true
+    },
+    {
+      "name": "relay.py payload exact bytes",
+      "passed": true
+    },
+    {
+      "name": "original payload cap",
+      "passed": true
+    },
+    {
+      "name": "exact inert seven keys",
+      "passed": true
+    },
+    {
+      "name": "inert original invocation",
+      "passed": true
+    },
+    {
+      "name": "relay invocation from source contract",
+      "passed": true
+    },
+    {
+      "name": "relay precise self filename guard",
+      "passed": true
+    },
+    {
+      "name": "shared original cwd",
+      "passed": true
+    },
+    {
+      "name": "endpoints original 90s",
+      "passed": true
+    },
+    {
+      "name": "relay original 300s",
+      "passed": true
+    }
+  ],
+  "compiled_modules": 4,
+  "modules_executed": 0,
+  "host_requests": 0,
+  "child_product_or_runtime_requests": 0,
+  "exact_original_limits": true
+}

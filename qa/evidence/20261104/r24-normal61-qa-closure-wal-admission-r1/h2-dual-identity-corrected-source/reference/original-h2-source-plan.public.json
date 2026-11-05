@@ -1,0 +1,220 @@
+{
+  "schema": "heptabao.normal-native-h2-gate.source-plan.v1",
+  "status": "source_only_pending_root_review_and_actual_bindings",
+  "candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "source_ref": "codex/heptabao-cold-h2-normal-20261105-r1",
+    "normal_features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "product_qualification_transferred_from_3cb": false
+  },
+  "files": {
+    "controller": {
+      "path": "candidate/native_h2_gate_r1.py",
+      "bytes": 61973,
+      "sha256": "2f5470874d7d0ca983563c1f0bcd3a2421e8056757a245c47ed3a9d24caa9ae3",
+      "blob": "f04d3a94f7f5ec3cdf50736202054f801c2dabca"
+    },
+    "binding": {
+      "path": "candidate/native_h2_binding_r1.py",
+      "bytes": 37800,
+      "sha256": "4313eb8064624d7112722d64f13a89b431aff82ba246471e675b8b37eb3ff010",
+      "blob": "4764335f5771f8159387ecb64701f6fc965f69e6"
+    },
+    "builder": {
+      "path": "candidate/build_native_h2_client_r1.py",
+      "bytes": 35155,
+      "sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35",
+      "blob": "04dd6e289f66eef549c1667c77fbc44eafaf0693"
+    },
+    "client": {
+      "path": "candidate/native_h2_client.rs",
+      "bytes": 19382,
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+      "blob": "a959baa67acc8400cf1784a0fa747250420303c7"
+    },
+    "components": {
+      "path": "candidate/native_h2_client_tests.rs",
+      "bytes": 8942,
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+      "blob": "a01644e79af4095f6bef58fe6b4278ba07d6f000"
+    },
+    "manifest": {
+      "path": "candidate/Cargo.toml",
+      "bytes": 957,
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+      "blob": "02b4af5013c3461114b3064cf277f615de7258db"
+    }
+  },
+  "runtime_started": false,
+  "qa_cargo_started": false,
+  "qa_rust_components_executed": false,
+  "cloud_checks": {
+    "python_sources_parsed_not_executed": 3,
+    "pure_selected_lock_subset_components": 12,
+    "original_phaseb_definition_segments_byte_identical": 34,
+    "scope": "source parse and pure TOML/hash/refusal logic only"
+  },
+  "lifecycle": {
+    "qa_build": {
+      "host": "rog",
+      "root": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+      "control": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1",
+      "source": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+      "target": null,
+      "target_resolution": "root must bind a verified existing target after the sole normal job terminates; no automatic fallback or mkdir",
+      "new_caps": {
+        "total_seconds": 600,
+        "git_seconds": 15,
+        "tool_seconds": 15,
+        "lock_seconds": 20,
+        "build_seconds": 180,
+        "components_build_seconds": 180,
+        "list_seconds": 15,
+        "components_seconds": 30,
+        "cleanup_term_seconds": 5,
+        "cleanup_kill_seconds": 5
+      },
+      "new_outer_seconds": 660,
+      "offline_only": true,
+      "normal_44_7_9_actual_pass_required": true,
+      "commands_replayed": 0
+    },
+    "readonly_prepare": {
+      "host": "desktop",
+      "internal_seconds": 300,
+      "new_outer_seconds": 330,
+      "fixture_started": false,
+      "checks": "exact host, five QA sources, product release/native/44+7+9 receipts, independent QA build/lock/six-component proof, immutable input observations, canonical clean source and fixed products, ports and fresh work path"
+    },
+    "h2_fixture": {
+      "host": "desktop",
+      "physical_hosts": 1,
+      "process_nodes": 3,
+      "new_outer_seconds": 2400,
+      "original_action_seconds": 300,
+      "actions": [
+        "normal_setup",
+        "H01_h1_control",
+        "H02_h2_kv2_v2",
+        "H03_h2_native_archive"
+      ],
+      "final_readonly_and_cleanup_seconds": 300,
+      "http_and_h2_client_seconds": 15,
+      "readiness_seconds": 45,
+      "election_seconds": 60,
+      "stable_leader_seconds": 2.2,
+      "peer_timeout_ms": 1500,
+      "forward_timeout_ms": 8000,
+      "explicit_stop_term_seconds": 5,
+      "explicit_stop_kill_seconds": 5,
+      "original_timeout_kill_wait_seconds": 5,
+      "timeout_cleanup_contract": "original deadline SIGKILL/wait5 is separate from one explicit stop/finish TERM5+KILL5 ledger; no repeated explicit-stop budget",
+      "original_ports": {
+        "api": [
+          48630,
+          48632,
+          48634
+        ],
+        "raft": [
+          48631,
+          48633,
+          48635
+        ]
+      },
+      "service_or_request_retries": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "H01",
+      "client": "retained strict original HTTP/1 helper",
+      "operation": "GET /v1/sys/storage/raft/snapshot",
+      "target": "actual leader after normal setup",
+      "expected_status": 200,
+      "body": "canonical native gzip/tar archive, <=8MiB",
+      "audit": "one actual request/response pair on target, no intervening controller HTTP",
+      "role": "positive control"
+    },
+    {
+      "id": "H02",
+      "client": "independent Rust strict TLS HTTP/2",
+      "operation": "GET /v1/wire/data/seed?version=2",
+      "target": "actual leader observed before bounded single call",
+      "expected_status": 200,
+      "content_type": "application/json",
+      "body": "exact baseline version 2 data and metadata; marker normal33-wire-seed-2 is a retained synthetic fixture label",
+      "connection": "single fixed loopback TCP/TLS connection, CA+localhost+leaf SHA, selected ALPN h2, stream1, no retry/redirect"
+    },
+    {
+      "id": "H03",
+      "client": "independent Rust strict TLS HTTP/2",
+      "operation": "GET /v1/sys/storage/raft/snapshot",
+      "target": "actual leader observed before bounded single call",
+      "expected_status": 200,
+      "content_type": "application/gzip",
+      "body": "canonical complete native gzip/tar archive <=8MiB; all-node version1/version2/metadata state exactly unchanged afterward",
+      "connection": "same single-request rules with a new owned connection for this distinct operation"
+    }
+  ],
+  "h2_message_completion": {
+    "data_all_ok": true,
+    "trailers_awaited": true,
+    "trailers_empty_required": true,
+    "recv_end_stream_required": true,
+    "one_canonical_content_length_required": true,
+    "body_length_exact": true,
+    "h2_version": "0.4.19",
+    "source_commit": "d57d1b852fec9dda6d42d3454502006d52104da8",
+    "rst_before_eos_any_reason": "error including NO_ERROR",
+    "reset_after_received_eos": "received message completeness may remain true for any reset reason",
+    "no_late_reset_or_graceful_bidirectional_connection_claim": true
+  },
+  "client_proof": {
+    "max_body_bytes": 8388608,
+    "components": [
+      "component_tests::native_h2_client_accepts_complete_data_eos",
+      "component_tests::native_h2_client_accepts_complete_empty_trailers_eos",
+      "component_tests::native_h2_client_rejects_rst_no_error_after_exact_body_before_eos",
+      "component_tests::native_h2_client_rejects_eof_after_exact_body_before_eos",
+      "component_tests::native_h2_client_rejects_short_eos_and_duplicate_content_length",
+      "component_tests::native_h2_client_refuses_expired_or_extended_original_deadline"
+    ],
+    "new_component_count": 6,
+    "product_44_7_9_denominators_unchanged": true,
+    "product_success_requires_parent_checks": true,
+    "complete_error_response_may_exit_zero": true
+  },
+  "privacy": {
+    "token_in_private_bounded_stdin_only": true,
+    "raw_response_body_private": true,
+    "raw_exception_strings_suppressed": true,
+    "tls_trace_disabled": true,
+    "official_cli_stderr_unread": true,
+    "public_scan": "actual generated fixture literal/encoding variants only; not a universal secret detector"
+  },
+  "nonqualification": {
+    "whole_openbao271_replacement": false,
+    "official271_cli_interoperability": false,
+    "restore": false,
+    "post_restore_cold": false,
+    "standby_snapshot_relay": false,
+    "large_34MiB": false,
+    "production_cutover": false,
+    "provider": false,
+    "j3160": false
+  },
+  "unresolved": [
+    "actual completed df026 Linux normal release and exact 44/7/9 receipts and whole binary pins",
+    "root-approved existing ROG target and exact tool/host inputs",
+    "actual independent QA offline build and six Rust components plus authority/closure",
+    "reviewed byte-preserving artifact/source transport and create-only desktop local staging",
+    "actual desktop binding plus its SHA and old known failure public fences",
+    "readonly prepare authoritative success",
+    "one exclusive fresh fixture live authorization"
+  ]
+}

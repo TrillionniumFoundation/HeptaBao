@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-r3-build-7ea25347-ac127d3e-authority-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1ab68bbb6-fc05-4d8a"
+    }
+  }
+}

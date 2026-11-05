@@ -1,0 +1,29 @@
+--- a/inert_carrier.py
++++ b/inert_carrier.py
+@@ -10,16 +10,16 @@
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "sender.py": [
+-        8803,
+-        "62f3f3d69ebeb2ef902225069155f336923247948fc3b58ed3107af92454dbd1"
+-    ],
+-    "receiver.py": [
+-        19614,
+-        "771215df75bd1016601649b55ef8f8fb2208c46f80e4326768b640c646a32feb"
+-    ],
+-    "relay.py": [
+-        17895,
+-        "158a18cf495c679ba99382502c749aaf0983dcf428e7469c14fb23a9c4690ac7"
++        10240,
++        "8d0c03853efa820c4caa9b06327ab38be3f98ccd7b2d36e6045d85e9ffd9841d"
++    ],
++    "receiver.py": [
++        21051,
++        "8410b9d8235ad8a6deb6f9b3ee64d95ff1beeacc2c2d1138e880cac4259985e1"
++    ],
++    "relay.py": [
++        19332,
++        "d34b6df5f3701af8908aeb23dc2c0ef0fbbe61e24a8a8d5d4bab26e33ac1adad"
+     ]
+ }
+ def sha(raw):

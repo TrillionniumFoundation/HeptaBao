@@ -1,0 +1,645 @@
+{
+  "candidateFunctionsExecuted": 0,
+  "checkCount": 157,
+  "checks": [
+    {
+      "case": "22 exact baseline/candidate/pin/transform keys",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs: inverse unique 2",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py: inverse unique 17",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs: inverse unique 22",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py: inverse unique 26",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 31",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 32",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 33",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 34",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 35",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 36",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 37",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 38",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 39",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 40",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: inverse unique 41",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: explicit unbound flag",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: NORMAL_ROOT not provisionally bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: BINARY not provisionally bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: BINARY_SHA not provisionally bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: BINARY_BYTES not provisionally bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: actual receipts not bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: refusal is first actual entry statement",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: exact known source",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 53",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 54",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 55",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 56",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 57",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 58",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 59",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 60",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: inverse unique 61",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: explicit unbound flag",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: actual binary slots not bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: refusal is first actual entry statement",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: exact known source",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: exact source inventory",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: SYNTHETIC original exact",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: NATIVE_BINDING original exact",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: WAL_BINDING original exact",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py: inverse unique 73",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 78",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 79",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 80",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 81",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 82",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: inverse unique 83",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: explicit unbound flag",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: actual binary slots not bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: refusal is first actual entry statement",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 114",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 115",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 116",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 117",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 118",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 119",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: inverse unique 120",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: explicit unbound flag",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: actual server not bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: exact fresh labels",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: refusal is first actual entry statement",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py: retained whole bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs: inverse unique 136",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py: full SHA256/Git/bytes",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py: inverse unique 140",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py: whole inverse byte-exact baseline",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py: one root literal only",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py: AST/compile only",
+      "passed": true
+    },
+    {
+      "case": "18 Python AST compiled, no module imported",
+      "passed": true
+    },
+    {
+      "case": "candidate exact22 source hashes",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves syntheticBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves nativeBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves walBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves utilityPins",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves publicVolumeAnchorSha256",
+      "passed": true
+    },
+    {
+      "case": "candidate preserves budgets",
+      "passed": true
+    },
+    {
+      "case": "future actual slots all null",
+      "passed": true
+    },
+    {
+      "case": "binding readiness false",
+      "passed": true
+    },
+    {
+      "case": "no executable requests",
+      "passed": true
+    },
+    {
+      "case": "all original temporal budgets",
+      "passed": true
+    },
+    {
+      "case": "all original byte bounds",
+      "passed": true
+    }
+  ],
+  "hostCalls": 0,
+  "inputBytes": 981532,
+  "inputSha256": "482e2b421e79be0ea2cd7709cea07b76846368e40ae3a7affc37023535aadf1f",
+  "modulesImported": 0,
+  "networkCalls": 0,
+  "ok": true,
+  "privateInputsRead": 0,
+  "pythonCompileOnly": 18,
+  "runtimeQualification": false,
+  "schema": "heptabao.mac-current-4e808-static-source-result.r1",
+  "sourceFiles": 22
+}

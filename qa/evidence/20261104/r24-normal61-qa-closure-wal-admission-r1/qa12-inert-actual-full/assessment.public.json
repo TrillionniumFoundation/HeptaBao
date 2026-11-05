@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.qa12-inert-actual-assessment.v1",
+  "status": "PASS_CREATE_ONLY_CONTROL_PUBLICATION",
+  "job_id": "1a1ab9ff363-fc05-4f1d",
+  "host": "desktop",
+  "one_submission": true,
+  "exact_request_blob": "d71478bc55634da553ecc5141111df8138029fad",
+  "root_go_blob": "df1b2c09ce047832d570db4f52f4f85260ee4091",
+  "authority": {
+    "exit_code": 0,
+    "full": true,
+    "durable": true,
+    "timed_out": false
+  },
+  "stdout_bytes": 1496,
+  "stderr_bytes": 0,
+  "source_stage_interval_ns": "224808947",
+  "original_outer_seconds": 60,
+  "actual_files": [
+    {
+      "name": "sender.py",
+      "bytes": 10240,
+      "sha256": "8d0c03853efa820c4caa9b06327ab38be3f98ccd7b2d36e6045d85e9ffd9841d",
+      "version": "2050:7237361:10240:1793880756042201427:1793880756055641273",
+      "metadata": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "nlink": 1
+      },
+      "independent_info_whole": true,
+      "version_pinned_whole_readback": true,
+      "equals_reviewed_source": true,
+      "read_chunks": 1
+    },
+    {
+      "name": "receiver.py",
+      "bytes": 21051,
+      "sha256": "8410b9d8235ad8a6deb6f9b3ee64d95ff1beeacc2c2d1138e880cac4259985e1",
+      "version": "2050:7240776:21051:1793880756094977338:1793880756137338889",
+      "metadata": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "nlink": 1
+      },
+      "independent_info_whole": true,
+      "version_pinned_whole_readback": true,
+      "equals_reviewed_source": true,
+      "read_chunks": 2
+    },
+    {
+      "name": "relay.py",
+      "bytes": 19332,
+      "sha256": "d34b6df5f3701af8908aeb23dc2c0ef0fbbe61e24a8a8d5d4bab26e33ac1adad",
+      "version": "2050:7240777:19332:1793880756147890200:1793880756188765331",
+      "metadata": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "nlink": 1
+      },
+      "independent_info_whole": true,
+      "version_pinned_whole_readback": true,
+      "equals_reviewed_source": true,
+      "read_chunks": 2
+    },
+    {
+      "name": "inert-stage.result.public.json",
+      "bytes": 1906,
+      "sha256": "7bbfe7a368d6546aa7e39174bc1ed191ad6237a9e7fe7d45acbd63f9397be458",
+      "version": "2050:7240778:1906:1793880756201521437:1793880756243443001",
+      "metadata": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "nlink": 1
+      },
+      "independent_info_whole": true,
+      "version_pinned_whole_readback": true,
+      "equals_reviewed_source": null,
+      "read_chunks": 1
+    }
+  ],
+  "receipt_stdout_lossless_equal": true,
+  "three_sources_byte_equal_reviewed": true,
+  "all_publications": "created",
+  "python_compile_only": true,
+  "source_executed": false,
+  "artifact_transfer_started": false,
+  "git_started": false,
+  "compiler_started": false,
+  "service_started": false,
+  "ack_selector_failure_preserved": true,
+  "ack_reconciled_from_original_nested_job": true,
+  "relay_authorized": false,
+  "product_qualified": false
+}

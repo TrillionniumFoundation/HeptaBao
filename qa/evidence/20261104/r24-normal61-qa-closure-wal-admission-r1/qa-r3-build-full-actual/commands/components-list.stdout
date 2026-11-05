@@ -1,0 +1,8 @@
+component_tests::native_h2_client_accepts_complete_data_eos: test
+component_tests::native_h2_client_accepts_complete_empty_trailers_eos: test
+component_tests::native_h2_client_refuses_expired_or_extended_original_deadline: test
+component_tests::native_h2_client_rejects_eof_after_exact_body_before_eos: test
+component_tests::native_h2_client_rejects_rst_no_error_after_exact_body_before_eos: test
+component_tests::native_h2_client_rejects_short_eos_and_duplicate_content_length: test
+
+6 tests, 0 benchmarks

@@ -1,0 +1,13 @@
+{
+  "base_source_tree": "8de4fc96ed8f6b56da24a0e8115465bbf381645e",
+  "base_canonical": "1c66541993662f92cf717154e33717abedb2ea74",
+  "new_canonical": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "new_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+  "normal61_source_packet": "233a4e95dc603acb29482f95131bebb48fe5df27",
+  "rog_source_actual_full": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+  "mac_source_actual_full": "16bb1439f5cea1fd37a3d8a1319d2c37b21f6de8",
+  "mac_normal_ack": "15f12cb6c6a5256a2c55dbf32c49877a65fac43e",
+  "linux_normal_not_submitted": true,
+  "canonical_desktop_import_not_yet_observed": true
+}

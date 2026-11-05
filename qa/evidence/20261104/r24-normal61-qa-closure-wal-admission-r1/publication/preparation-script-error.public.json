@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.checkpoint-preparation-observer-error.r24.v1",
+  "error": "ReferenceError: structuredClone is not defined",
+  "scope": "In-memory checkpoint metadata construction; two public evidence blobs had been saved before this error.",
+  "checkpoint_tree_or_commit_created": false,
+  "host_actions_performed": false,
+  "corrective_action": "Use JSON deep copy only for known-safe metadata arrays/state; original raw JSON and unsafe integer tokens remain untouched."
+}

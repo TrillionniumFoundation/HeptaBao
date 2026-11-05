@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.qa12-transport-dispatch.unbound.v1",
+  "ready": false,
+  "actual_source_versions_complete": false,
+  "inert": {
+    "request": null,
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_contract": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "FINAL_BOUND_CARRIER_SOURCE"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60,
+    "idempotency_key": null,
+    "stdin_cap": 262144,
+    "reason": "Final actual 12-row binding changes endpoint/helper/carrier pins and must be reviewed before exact request exists."
+  },
+  "relay": {
+    "request": null,
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_contract": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": null,
+    "source_main_requires_no_extra_self_sha_argument": true
+  },
+  "endpoint_contract": {
+    "sender_python": "/usr/bin/python3",
+    "sender_host": "rog",
+    "sender_argv_contract": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "FINAL_BOUND_SENDER_SOURCE"
+    ],
+    "receiver_host": "desktop",
+    "receiver_argv_contract": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "FINAL_BOUND_RECEIVER_SOURCE"
+    ]
+  },
+  "limits": {
+    "relay_seconds": 300,
+    "child_seconds": 90,
+    "endpoint_seconds": 90,
+    "connect_seconds": 10,
+    "term_seconds": 5,
+    "kill_seconds": 5
+  },
+  "host_action_authorized": false
+}

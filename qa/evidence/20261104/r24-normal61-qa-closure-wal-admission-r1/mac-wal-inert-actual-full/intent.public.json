@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-inert-external-intent.r1",
+  "createdAtUtc": "2026-11-05 12:00:42 UTC",
+  "operation": "process_start",
+  "maximumSubmissions": 1,
+  "submittedAtIntentPublication": false,
+  "sourcePacket": "e3f18160f1a9c5aa259d82a0258586332dd4a223",
+  "rootGo": {
+    "bytes": 2694,
+    "sha256": "b34dbd6c6fe1f57d9e57ad254fe22055549d7ee2df7f253034126add1577d617",
+    "blob": "952f0725a4c36766b85f95720eafa3636d4566ab"
+  },
+  "exactRequest": {
+    "blob": "75cc9edd37fca32dacaa394fe7e7a815b455aa9b",
+    "bytes": 797259,
+    "sha256": "5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9"
+  },
+  "host": "mac",
+  "key": "heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1",
+  "executable": "/opt/homebrew/bin/python3",
+  "cwd": "/Users/qianqi",
+  "timeoutSeconds": 60,
+  "carrier": {
+    "blob": "b0d546989d09c9e97e0edafda1a8144735f37003",
+    "bytes": 15543,
+    "sha256": "9b9633f59900a171ab97347830380f1d8a1ef74d1fe742b5cc3b78df646cbae6"
+  },
+  "stdin": {
+    "blob": "931383bbc295b82ad7ff6cf57c33af3395e20966",
+    "bytes": 780807,
+    "sha256": "4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4"
+  },
+  "allowedScope": "ONE create-only inert publication of 22 exact sources, eight public documents and the candidate receipt; fixed T5/diskutil/FD custody only.",
+  "noCurrentPrivateCapture": true,
+  "noConsumerOrService": true,
+  "noProductionCutover": true,
+  "originalBudgets": {
+    "inert": 45,
+    "diskutilClipped": 30,
+    "supervisor": 60
+  },
+  "unknownRule": "Never resubmit with a new key; preserve original ACK/native SDK and reconcile only this original operation/job.",
+  "independentReadbackRequired": 31
+}

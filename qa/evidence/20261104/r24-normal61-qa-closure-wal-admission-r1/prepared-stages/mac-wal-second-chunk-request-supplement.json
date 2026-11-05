@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/qa/mac_current_outer_wal_r1.py",
+  "expected_version": "16777244:72629145:68348:1793880070017888768:1793880070017894309",
+  "offset": 65536,
+  "limit": 2812
+}

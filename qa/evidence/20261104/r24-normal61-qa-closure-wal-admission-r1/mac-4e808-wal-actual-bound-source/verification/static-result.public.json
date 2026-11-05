@@ -1,0 +1,504 @@
+{
+  "candidateFunctionsExecuted": 0,
+  "checkCount": 122,
+  "checks": [
+    {
+      "case": "original.normal.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.native.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.serverInfo.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.combined.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.authority.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.terminal.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.rootReview.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.artifactRootReview.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.sourceResult.wholepin",
+      "passed": true
+    },
+    {
+      "case": "original.sourceAuthority.wholepin",
+      "passed": true
+    },
+    {
+      "case": "normal.exactsource",
+      "passed": true
+    },
+    {
+      "case": "native.exactsource",
+      "passed": true
+    },
+    {
+      "case": "core.exactsource",
+      "passed": true
+    },
+    {
+      "case": "source.exactsource",
+      "passed": true
+    },
+    {
+      "case": "normal.real successful release",
+      "passed": true
+    },
+    {
+      "case": "native.provenance",
+      "passed": true
+    },
+    {
+      "case": "core.whole61 scope",
+      "passed": true
+    },
+    {
+      "case": "normal.native.core.same retained server",
+      "passed": true
+    },
+    {
+      "case": "artifact.profile exact",
+      "passed": true
+    },
+    {
+      "case": "artifact.independent metadata",
+      "passed": true
+    },
+    {
+      "case": "authority.actual terminal",
+      "passed": true
+    },
+    {
+      "case": "sourceAuthority.actual terminal",
+      "passed": true
+    },
+    {
+      "case": "source.actual prepared independent",
+      "passed": true
+    },
+    {
+      "case": "root.core accepted specific61",
+      "passed": true
+    },
+    {
+      "case": "root.artifact acceptance onlysource",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_auth_rows_cas_r1.mjs.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_authbus_cache_cas_r1.mjs.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_capture_sqlite_synthetic_r2.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_capture_entry_wal_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_cycle_r2.mjs.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_fixture_materializer_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.only four declared callers",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.ready literal bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.normal.actual receipt",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.native_build.actual receipt",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.known source",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.first guard unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.actual binary path",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_inputs_r2.py.actual bytes+SHA",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.only four declared callers",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.ready literal bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.known source",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.first guard unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.actual binary path",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_outer_wal_r1.py.actual bytes+SHA",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_phase_owner_r2.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.only four declared callers",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.ready literal bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.first guard unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.actual binary path",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_current_server_owner_r1.py.actual bytes+SHA",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_darwin_owned_projection_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_guarded_current_capture_r3.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_commands_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_owned_unreaped_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_native_process_observer_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_commands_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.only four declared callers",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.ready literal bound",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.actual SHA",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.first guard unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_launchd_r3.py.actual binary path",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_owned_unreaped_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_registry_readonly_wal_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_single_native_r2.mjs.unchanged",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py.wholepin",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py.strict replacement inverse",
+      "passed": true
+    },
+    {
+      "case": "sources/mac_t5_volume_guard_r1.py.unchanged",
+      "passed": true
+    },
+    {
+      "case": "exact4changed18whole retained",
+      "passed": true
+    },
+    {
+      "case": "candidate22 actual source pins",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged syntheticBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged nativeBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged walBinding",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged utilityPins",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged publicVolumeAnchorSha256",
+      "passed": true
+    },
+    {
+      "case": "candidate unchanged budgets",
+      "passed": true
+    },
+    {
+      "case": "original scopes not granted",
+      "passed": true
+    },
+    {
+      "case": "original budgets",
+      "passed": true
+    },
+    {
+      "case": "originalbytebounds",
+      "passed": true
+    }
+  ],
+  "hostCalls": 0,
+  "inputBytes": 1090317,
+  "inputSha256": "cb69a6684cdb22d9c02f146e43085647a7c352c4846cae800804b66086833124",
+  "modulesImported": 0,
+  "newPythonCompileOnly": 4,
+  "ok": true,
+  "privateInputsRead": 0,
+  "runtimeQualified": false,
+  "schema": "heptabao.mac-current-4e808-actual-source-static-result.r1",
+  "wholeUnchanged": 18
+}

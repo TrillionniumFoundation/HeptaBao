@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json\",\"sha256\":\"41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829\",\"size\":804,\"version\":\"66306:36087319:804:1793877142722182174:1793877142722182174\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

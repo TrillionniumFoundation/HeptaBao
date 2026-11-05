@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.independent-h2-source-root-review.v1",
+  "status": "PASS_SOURCE_ONLY_ACTUAL_BINDINGS_UNRESOLVED",
+  "source_tree": "1262d0c035246c05bbab3a630be8c658a86901a4",
+  "files": 49,
+  "bytes": 1034337,
+  "merkle_trees": 8,
+  "planned_paths_increment_tree": "83ec36052b3c3c9c61ac46be5451651c433cd368",
+  "client_blob": "a959baa67acc8400cf1784a0fa747250420303c7",
+  "client_sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+  "builder_blob": "04dd6e289f66eef549c1667c77fbc44eafaf0693",
+  "binder_blob": "4764335f5771f8159387ecb64701f6fc965f69e6",
+  "controller_blob": "f04d3a94f7f5ec3cdf50736202054f801c2dabca",
+  "root_read": [
+    "complete 19309B original Rust client plus exact 73B test module attachment",
+    "all changed controller regions against strict 14-hunk whole reproduction",
+    "all changed binder regions against strict 13-hunk whole reproduction",
+    "complete 655-line QA build source and strict six-hunk revision",
+    "complete README, plan and explicit h2 EOS boundary review"
+  ],
+  "independent_component_peer_blob": "efb7bd1ede7ef9375bf231059c343066412bf765",
+  "admission_requirements": [
+    "actual ROG canonical normal release and complete separate44+7+9 terminal qualification",
+    "exact idle existing target-normal-r3 directory and tool/cargo/source identity binding; no concurrent normal Cargo",
+    "all QA lock members must match canonical Cargo.lock name/version/source/checksum; all compilation locked/offline",
+    "actual six QA components, owned children/FD closure and original new-build600/outer660",
+    "new desktop source/artifact transfer and independently observed whole identities before readonly prepare",
+    "fresh fixture only; H01 strictH1 snapshot, H02 one H2 KV2 version2, H03 one H2 native snapshot; one connection/stream and same15-second deadline, selectedALPN, TLS/leaf trust, true EOS/CL/body hash, actual driver joined",
+    "parent requires200 and exact KV/archive semantics; complete503 is a failed application result"
+  ],
+  "retained_limits": {
+    "qa_build_runtime_qualified": false,
+    "rust_components_executed": false,
+    "fixture_runtime_qualified": false,
+    "official_271_cli_qualified": false,
+    "large_34MiB_qualified": false,
+    "production_credentials_accessed": false,
+    "whole_271_replacement": false,
+    "prior_PhaseB_unknown_replayed": false
+  },
+  "template_ready": false
+}

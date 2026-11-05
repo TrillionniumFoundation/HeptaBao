@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.qa12-instrument-relay-go.v1",
+  "decision": "GO_ONE_EXACT_INSTRUMENT_TRANSPORT",
+  "as_of_utc": "2026-11-05 12:29:26 UTC",
+  "exact_request": {
+    "path": "dispatch/relay.request.json",
+    "blob": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+    "bytes": 373,
+    "sha256": "03767c7c7ebadda9f95e02892f6b2f3522abe71ea0fa68317b45c23f97dc7352",
+    "mode": "100644"
+  },
+  "maximum_submissions": 1,
+  "idempotency_key": "heptabao-df026-h2qa12-artifact-relay-r1-d34b6df5",
+  "host": "desktop",
+  "source_tree": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+  "actual_inert_tree": "81a7463424e628054e332d9eedbcae4e363ce09b",
+  "actual_inert_job": "1a1ab9ff363-fc05-4f1d",
+  "root_actual_review": {
+    "name": "r24-prepared-stages-root-result.public.json",
+    "blob": "e38b1df454001d4a984606885618e0c1576bd7e5",
+    "bytes": 22021,
+    "sha256": "a80cae00b4b164cdd924a19c9cb7f3e4271bf1b71d766a46be177c08bee9b492"
+  },
+  "root_source_review": "52c0783130febaa156faea42fb28510dc4d3a2d6",
+  "independent_peer_tree": "b4f6510262b627497dc474182db319f082945fdb",
+  "independent_peer_review": "7b775b13f87a32300d9c076b21d5e0afa6fe674d",
+  "instrument_actual_build_full_tree": "f45a36bc253f88c3eebc58baf4720a875ca217d7",
+  "instrument_root_review": "81a7931599ec85df94d8eb9afe42879d20a0367b",
+  "original_caps": {
+    "supervisor": 360,
+    "relay": 300,
+    "endpoint": 90,
+    "connect": 10,
+    "cleanup": [
+      5,
+      5
+    ]
+  },
+  "allowed_scope": {
+    "files": 12,
+    "bytes": 4892547,
+    "source_identity": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c / 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "destination": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming",
+    "mode": "Create-only exact instrument transport through reviewed pinned SSH; no product fixture."
+  },
+  "dispatch_protocol": "External exact intent completed before one process_start, original ACK external before parsing, reconcile original job only on UNKNOWN. No source rewrite, new key, deadline reset, or destination reuse.",
+  "product_qualification": false,
+  "http_h2_runtime_go": false,
+  "lan_runtime_go": false,
+  "x230_transport_go": false,
+  "production_cutover_go": false,
+  "old_unknowns_preserved": true
+}

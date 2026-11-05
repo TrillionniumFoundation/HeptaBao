@@ -1,0 +1,441 @@
+{
+  "actual_six_components_passed": true,
+  "check_count": 106,
+  "checks": [
+    {
+      "name": "core-whole-metadata",
+      "passed": true
+    },
+    {
+      "name": "exact-request-pin",
+      "passed": true
+    },
+    {
+      "name": "original-unique-job",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-host",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-executable",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-cwd",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-args",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-idempotency_key",
+      "passed": true
+    },
+    {
+      "name": "known-authority-zero",
+      "passed": true
+    },
+    {
+      "name": "authority-complete-stdout",
+      "passed": true
+    },
+    {
+      "name": "authority-complete-stderr",
+      "passed": true
+    },
+    {
+      "name": "actual-full-stderr-empty",
+      "passed": true
+    },
+    {
+      "name": "actual-v3-passed",
+      "passed": true
+    },
+    {
+      "name": "exact-builder-binding",
+      "passed": true
+    },
+    {
+      "name": "candidate-source",
+      "passed": true
+    },
+    {
+      "name": "normal-60-provenance",
+      "passed": true
+    },
+    {
+      "name": "all-original-caps",
+      "passed": true
+    },
+    {
+      "name": "exact-absolute-total",
+      "passed": true
+    },
+    {
+      "name": "canonical-before-after",
+      "passed": true
+    },
+    {
+      "name": "no-product-or-http",
+      "passed": true
+    },
+    {
+      "name": "six-exact-component-names",
+      "passed": true
+    },
+    {
+      "name": "six-actual-listing",
+      "passed": true
+    },
+    {
+      "name": "six-actual-pass",
+      "passed": true
+    },
+    {
+      "name": "twelve-exact-command-records",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-before-commit",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-before-commit",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-before-commit",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-before-status",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-before-status",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-before-status",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-rustc-version",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-rustc-version",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-rustc-version",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-lock",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-lock",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-lock",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-build",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-build",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-build",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-components-build",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-components-build",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-components-build",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-components-list",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-components-list",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-components-list",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-components",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-components",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-components",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-after-commit",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-after-commit",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-after-commit",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-after-tree",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-after-tree",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-after-tree",
+      "passed": true
+    },
+    {
+      "name": "whole-record-equals-core-source-after-status",
+      "passed": true
+    },
+    {
+      "name": "known-closed-command-source-after-status",
+      "passed": true
+    },
+    {
+      "name": "command-original-deadline-source-after-status",
+      "passed": true
+    },
+    {
+      "name": "twelve-unique-owned-children",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-0",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-1",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-2",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-3",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-4",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-5",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-6",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-7",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-8",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-9",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-10",
+      "passed": true
+    },
+    {
+      "name": "owned-once-terminal-11",
+      "passed": true
+    },
+    {
+      "name": "provenance-covers-twelve",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-0",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-1",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-2",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-3",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-4",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-5",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-6",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-7",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-8",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-9",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-10",
+      "passed": true
+    },
+    {
+      "name": "direct-popen-wnowait-11",
+      "passed": true
+    },
+    {
+      "name": "overall-cleanup-known",
+      "passed": true
+    },
+    {
+      "name": "component-record-whole-hash",
+      "passed": true
+    },
+    {
+      "name": "component-stdout-pin-components",
+      "passed": true
+    },
+    {
+      "name": "component-original-cap-components",
+      "passed": true
+    },
+    {
+      "name": "component-stdout-pin-components-list",
+      "passed": true
+    },
+    {
+      "name": "component-original-cap-components-list",
+      "passed": true
+    },
+    {
+      "name": "normal-two-alias-observed",
+      "passed": true
+    },
+    {
+      "name": "dynamic-source-full9",
+      "passed": true
+    },
+    {
+      "name": "alias-body-eof-budget",
+      "passed": true
+    },
+    {
+      "name": "alias-once-resources",
+      "passed": true
+    },
+    {
+      "name": "alias-no-cancel-and-original-deadline",
+      "passed": true
+    },
+    {
+      "name": "retained-independent-whole-executable",
+      "passed": true
+    },
+    {
+      "name": "retained-single-link-custody-executable",
+      "passed": true
+    },
+    {
+      "name": "lossless-full9-version-executable",
+      "passed": true
+    },
+    {
+      "name": "retained-normal-profile-executable",
+      "passed": true
+    },
+    {
+      "name": "retained-independent-whole-component_binary",
+      "passed": true
+    },
+    {
+      "name": "retained-single-link-custody-component_binary",
+      "passed": true
+    },
+    {
+      "name": "lossless-full9-version-component_binary",
+      "passed": true
+    },
+    {
+      "name": "retained-normal-profile-component_binary",
+      "passed": true
+    },
+    {
+      "name": "normal-retained-from-observed-alias",
+      "passed": true
+    }
+  ],
+  "components_share_one_original_30_second_command": true,
+  "elapsed_total_ns": "11713158150",
+  "full_cargo_json_and_other_command_streams_archiving_pending": true,
+  "host_or_child_calls_by_this_verifier": 0,
+  "http_or_product_qualification": false,
+  "job_id": "1a1ab68bbb6-fc05-4d8a",
+  "lossless_ns_verified": true,
+  "original_caps_preserved": true,
+  "owned_commands_closed": 12,
+  "schema": "heptabao.qa-r3.actual-core-closure-check.v1",
+  "status": "passed-core-closure"
+}

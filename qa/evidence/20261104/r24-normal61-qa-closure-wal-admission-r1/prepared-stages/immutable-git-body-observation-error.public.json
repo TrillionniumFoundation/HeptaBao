@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.root.packet-read-error.v1",
+  "tree": "c2a3562c7cf772ef2078d4175d665ae5e00e6876",
+  "error": "blob missing independent/16/body.original.txt",
+  "phase": "Git read-only whole-packet verification",
+  "product_or_stage_replayed": false,
+  "root_packet_accepted": false,
+  "resolution": {
+    "same_immutable_packet_reverified": true,
+    "provenance": {
+      "cached_reverified": 116,
+      "newly_fetched": 65
+    },
+    "host_replay": false,
+    "stage_rerun": false
+  }
+}

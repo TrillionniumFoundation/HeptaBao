@@ -1,0 +1,7 @@
+{
+  "chunk_id": "41b434",
+  "wall_time_seconds": 0.000023175,
+  "exit_code": 0,
+  "original_token_count": 68,
+  "output": "{\"decoded_sources\": 3, \"host_actions\": 0, \"module_execution\": false, \"status\": \"passed\", \"stdin_actual\": 61860, \"stdin_cap\": 262144, \"transport_execution\": false, \"unchanged_carrier_definitions\": [\"sha\", \"ident\", \"sync_dir\", \"exact\", \"publish\"], \"whole_compile_only\": 1}\n"
+}

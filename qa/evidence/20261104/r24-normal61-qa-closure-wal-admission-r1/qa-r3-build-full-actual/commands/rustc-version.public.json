@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "-vV"
+  ],
+  "completed_monotonic_ns": 207340915845279,
+  "completed_within_deadline": true,
+  "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/project",
+  "deadline_monotonic_ns": 207355797369846,
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.118475433,
+  "exit_code": 0,
+  "label": "rustc-version",
+  "outer_cap_seconds": 15,
+  "owned_pgid": 2470298,
+  "remaining": [],
+  "started_monotonic_ns": 207340797369846,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "3975d062e234a9f3921955bf6ae5b90f5819df94fa825d057f76b34a35ed0f4d",
+  "timed_out": false
+}

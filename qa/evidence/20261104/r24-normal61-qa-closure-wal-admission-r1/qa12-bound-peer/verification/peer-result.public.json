@@ -1,0 +1,722 @@
+{
+  "schema": "heptabao.qa12-final-binding-independent-narrow-peer.v1",
+  "status": "passed",
+  "reviewed_tree": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+  "checks_count": 166,
+  "checks": [
+    {
+      "name": "whole source actual-source-metadata/build_binding.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/build_controller.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/build_receipt.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/canonical_lock.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/cargo_lock.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/cargo_manifest.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/component_list_stdout.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/component_record.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/component_stdout.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/executable.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/rust_source.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source actual-source-metadata/test_source.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole source before/inert_carrier.py",
+      "passed": true
+    },
+    {
+      "name": "whole source before/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "whole source before/relay.py",
+      "passed": true
+    },
+    {
+      "name": "whole source before/sender.py",
+      "passed": true
+    },
+    {
+      "name": "whole source binding/files.actual.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole source candidate/inert_carrier.py",
+      "passed": true
+    },
+    {
+      "name": "whole source candidate/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "whole source candidate/relay.py",
+      "passed": true
+    },
+    {
+      "name": "whole source candidate/sender.py",
+      "passed": true
+    },
+    {
+      "name": "whole source diffs/inert_carrier.py.diff",
+      "passed": true
+    },
+    {
+      "name": "whole source diffs/receiver.py.diff",
+      "passed": true
+    },
+    {
+      "name": "whole source diffs/relay.py.diff",
+      "passed": true
+    },
+    {
+      "name": "whole source diffs/sender.py.diff",
+      "passed": true
+    },
+    {
+      "name": "whole source dispatch/inert.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole source dispatch/relay.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole source payload/three-controls.bound.json",
+      "passed": true
+    },
+    {
+      "name": "whole source references/qa12-complete-table.public.json",
+      "passed": true
+    },
+    {
+      "name": "sender.py original diff strict forward",
+      "passed": true
+    },
+    {
+      "name": "sender.py original diff strict reverse",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact hunk count",
+      "passed": true
+    },
+    {
+      "name": "sender.py all definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "sender.py only specified top-level assignments changed",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact false to true ready literal",
+      "passed": true
+    },
+    {
+      "name": "sender.py actual bound table",
+      "passed": true
+    },
+    {
+      "name": "sender.py instrument identity remains df026",
+      "passed": true
+    },
+    {
+      "name": "sender.py no current product identity substituted",
+      "passed": true
+    },
+    {
+      "name": "sender.py only three per-file slots change",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original diff strict forward",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original diff strict reverse",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact hunk count",
+      "passed": true
+    },
+    {
+      "name": "receiver.py all definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "receiver.py only specified top-level assignments changed",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact false to true ready literal",
+      "passed": true
+    },
+    {
+      "name": "receiver.py actual bound table",
+      "passed": true
+    },
+    {
+      "name": "receiver.py instrument identity remains df026",
+      "passed": true
+    },
+    {
+      "name": "receiver.py no current product identity substituted",
+      "passed": true
+    },
+    {
+      "name": "receiver.py only three per-file slots change",
+      "passed": true
+    },
+    {
+      "name": "relay.py original diff strict forward",
+      "passed": true
+    },
+    {
+      "name": "relay.py original diff strict reverse",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact hunk count",
+      "passed": true
+    },
+    {
+      "name": "relay.py all definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "relay.py only specified top-level assignments changed",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact false to true ready literal",
+      "passed": true
+    },
+    {
+      "name": "relay.py actual bound table",
+      "passed": true
+    },
+    {
+      "name": "relay.py instrument identity remains df026",
+      "passed": true
+    },
+    {
+      "name": "relay.py no current product identity substituted",
+      "passed": true
+    },
+    {
+      "name": "relay.py only three per-file slots change",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier.py original diff strict forward",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier.py original diff strict reverse",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier.py exact hunk count",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier.py all definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "inert_carrier.py only specified top-level assignments changed",
+      "passed": true
+    },
+    {
+      "name": "published complete provenance table equals my prior exact v2 table",
+      "passed": true
+    },
+    {
+      "name": "12 roles exact original order",
+      "passed": true
+    },
+    {
+      "name": "12 destination names unique",
+      "passed": true
+    },
+    {
+      "name": "all source paths distinct",
+      "passed": true
+    },
+    {
+      "name": "v2 table historical observations not transport qualification",
+      "passed": true
+    },
+    {
+      "name": "executable 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "executable exact original table row",
+      "passed": true
+    },
+    {
+      "name": "executable native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "executable native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "executable source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "executable destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "executable no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "rust_source 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "rust_source exact original table row",
+      "passed": true
+    },
+    {
+      "name": "rust_source native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "rust_source native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "rust_source source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "rust_source destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "rust_source no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "test_source 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "test_source exact original table row",
+      "passed": true
+    },
+    {
+      "name": "test_source native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "test_source native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "test_source source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "test_source destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "test_source no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest exact original table row",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "cargo_manifest no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock exact original table row",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "cargo_lock no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock exact original table row",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "canonical_lock no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "build_receipt 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "build_receipt exact original table row",
+      "passed": true
+    },
+    {
+      "name": "build_receipt native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "build_receipt native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "build_receipt source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "build_receipt destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "build_receipt no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "build_controller 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "build_controller exact original table row",
+      "passed": true
+    },
+    {
+      "name": "build_controller native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "build_controller native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "build_controller source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "build_controller destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "build_controller no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "build_binding 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "build_binding exact original table row",
+      "passed": true
+    },
+    {
+      "name": "build_binding native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "build_binding native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "build_binding source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "build_binding destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "build_binding no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "component_stdout 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "component_stdout exact original table row",
+      "passed": true
+    },
+    {
+      "name": "component_stdout native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "component_stdout native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "component_stdout source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "component_stdout destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "component_stdout no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "component_record 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "component_record exact original table row",
+      "passed": true
+    },
+    {
+      "name": "component_record native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "component_record native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "component_record source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "component_record destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "component_record no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout 8 exact fields only",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout exact original table row",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout native full metadata source content exact",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout native file_info path whole size sha and version exact",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout source mode uid gid nlink exact observed",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout destination mode explicitly separate",
+      "passed": true
+    },
+    {
+      "name": "component_list_stdout no unbound values and exact source root",
+      "passed": true
+    },
+    {
+      "name": "relay helpers exact bound source hashes",
+      "passed": true
+    },
+    {
+      "name": "publisher pins exact three source bytes and hashes",
+      "passed": true
+    },
+    {
+      "name": "carrier exact schema and source names",
+      "passed": true
+    },
+    {
+      "name": "sender.py base64 exact source bytes",
+      "passed": true
+    },
+    {
+      "name": "receiver.py base64 exact source bytes",
+      "passed": true
+    },
+    {
+      "name": "relay.py base64 exact source bytes",
+      "passed": true
+    },
+    {
+      "name": "carrier stays in unchanged 262144 byte envelope",
+      "passed": true
+    },
+    {
+      "name": "exact inert keys no ambient override",
+      "passed": true
+    },
+    {
+      "name": "exact inert argv code stdin and cwd",
+      "passed": true
+    },
+    {
+      "name": "exact relay keys no new stdin or environment",
+      "passed": true
+    },
+    {
+      "name": "exact relay argv cwd timeout and stable key",
+      "passed": true
+    },
+    {
+      "name": "namespace contract retains original base",
+      "passed": true
+    },
+    {
+      "name": "receiver explicitly instrument not product qualification",
+      "passed": true
+    }
+  ],
+  "source_diff_details": {
+    "sender.py": {
+      "strict_hunks": 2,
+      "unchanged_definition_count": 10,
+      "only_changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES"
+      ]
+    },
+    "receiver.py": {
+      "strict_hunks": 2,
+      "unchanged_definition_count": 17,
+      "only_changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES"
+      ]
+    },
+    "relay.py": {
+      "strict_hunks": 2,
+      "unchanged_definition_count": 17,
+      "only_changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES",
+        "HELPERS"
+      ]
+    },
+    "inert_carrier.py": {
+      "strict_hunks": 1,
+      "unchanged_definition_count": 5,
+      "only_changed_assignments": [
+        "PINS"
+      ]
+    }
+  },
+  "scope": "strict literal binding, actual historical metadata, unchanged definitions and full remaining bytes, carrier and exact dispatch",
+  "compiled_sources": 8,
+  "candidate_modules_executed": 0,
+  "host_requests": 0,
+  "cargo_or_product_or_transport_execution": false,
+  "current_product_qualification": false,
+  "actual_file_info_is_historical_observation": true,
+  "unchanged_limits": {
+    "endpoint_seconds": 90,
+    "relay_seconds": 300,
+    "relay_outer_seconds": 360,
+    "inert_outer_seconds": 60,
+    "term_seconds": 5,
+    "kill_seconds": 5
+  },
+  "transport_ready_not_claimed": true
+}

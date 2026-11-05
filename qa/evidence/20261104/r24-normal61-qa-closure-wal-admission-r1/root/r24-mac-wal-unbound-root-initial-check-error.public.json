@@ -1,0 +1,5 @@
+{
+  "error": "Error: mac_current_outer_inputs_r2.py.only_product_slots_and_entry_guard",
+  "stack": "Error: mac_current_outer_inputs_r2.py.only_product_slots_and_entry_guard\n    at ck (eval at <anonymous> (exec_main.mjs:39:18), <anonymous>:2:79)\n    at verifyCurrentWalUnbound (eval at <anonymous> (exec_main.mjs:39:18), <anonymous>:17:22)\n    at exec_main.mjs:39:57",
+  "cause": "Verifier expected category string product; actual immutable leaf inventory uses product_binding. Only that selector label is corrected, not any source or validation predicate."
+}

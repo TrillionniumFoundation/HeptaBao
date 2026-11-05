@@ -1,0 +1,12 @@
+diff --git a/verification/actual-verifier.js b/verification/actual-verifier.js
+--- a/verification/actual-verifier.js
++++ b/verification/actual-verifier.js
+@@ -64,7 +64,7 @@
+   need("empty_stderr",files["actual/stderr.original.txt"]==="");
+   need("final_report_success",report.ok===true&&report.outcomeUnknown===false&&report.preparedCandidate===true&&report.authoritativeExitZeroRequired===true);
+   need("original45_after_all_closure",report.newOriginalInertSeconds===45&&report.originalDeadlineMetAfterClosure===true&&report.elapsedSeconds>=0&&report.elapsedSeconds<45);
+-  need("t5_original27_strings",JSON.stringify(report.heldT5Final.anchors)===JSON.stringify(anchor.anchors)&&report.heldT5Final.expectedVolumeDevice===anchor.expectedVolumeDevice&&anchor.expectedVolumeDevice==="16777244"&&report.heldT5Final.volumeUUIDVerified===true&&report.heldT5Final.lastAnchorCheckPassed===true);
++  need("t5_original27_strings",JSON.stringify(report.heldT5Final.anchors.map(x=>[x.path,x.identity]))===JSON.stringify(anchor.anchors.map(x=>[x.path,x.identity]))&&report.heldT5Final.expectedVolumeDevice===anchor.expectedVolumeDevice&&anchor.expectedVolumeDevice==="16777244"&&report.heldT5Final.volumeUUIDVerified===true&&report.heldT5Final.lastAnchorCheckPassed===true);
+   need("all_t5_descriptors_closed",report.heldT5Final.allDescriptorsClosed===true&&report.heldT5Final.closeErrors.length===0&&report.allOwnedDescriptorsClosed===true);
+   need("only_fixed_diskutil_owned",report.commands.commands.length===1&&report.commands.unknownCommandCount===0&&report.commands.allOwnedCommandsStopped===true&&report.allOwnedCommandsStopped===true);
+   const command=report.commands.commands[0],cleanup=command.cleanup;

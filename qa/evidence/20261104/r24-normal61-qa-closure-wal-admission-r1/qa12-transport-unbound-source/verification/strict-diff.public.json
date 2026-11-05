@@ -1,0 +1,22 @@
+[
+  {
+    "name": "sender.py",
+    "hunks": 2,
+    "whole": true
+  },
+  {
+    "name": "receiver.py",
+    "hunks": 6,
+    "whole": true
+  },
+  {
+    "name": "relay.py",
+    "hunks": 3,
+    "whole": true
+  },
+  {
+    "name": "inert_carrier.py",
+    "hunks": 3,
+    "whole": true
+  }
+]

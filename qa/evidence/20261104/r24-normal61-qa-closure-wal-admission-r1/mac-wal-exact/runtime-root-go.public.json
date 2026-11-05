@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.root.mac4e808-current-wal-runtime-go.v1",
+  "decision": "GO_ONE_EXACT_ISOLATED_RUNTIME",
+  "as_of_utc": "2026-11-05 12:29:26 UTC",
+  "exact_request": {
+    "path": "requests/future-runtime-start.public.json",
+    "blob": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+    "bytes": 5267,
+    "sha256": "5c612c632efed01b0e4ec97c2d1822b15b23628610dd679eff24dba99d43fde8",
+    "mode": "100644"
+  },
+  "maximum_submissions": 1,
+  "idempotency_key": "heptabao-mac-current-five-agent-registry-wal-4e808-bce47fd1-20261105-r1",
+  "host": "mac",
+  "source_tree": "e3f18160f1a9c5aa259d82a0258586332dd4a223",
+  "actual_inert_tree": "c2a3562c7cf772ef2078d4175d665ae5e00e6876",
+  "actual_inert_job": "1a1ab9595af-fc05-4ec7",
+  "root_actual_review": {
+    "name": "r24-prepared-stages-root-result.public.json",
+    "blob": "e38b1df454001d4a984606885618e0c1576bd7e5",
+    "bytes": 22021,
+    "sha256": "a80cae00b4b164cdd924a19c9cb7f3e4271bf1b71d766a46be177c08bee9b492"
+  },
+  "root_source_reviews": [
+    "5880ad714a2c6e285b9c20b2be97424d25d161ad",
+    "6e430ea1296bca546aa6519c705aa0ceeb31afd2"
+  ],
+  "product": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "server_sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+    "normal61_core_root_review": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+    "retained_artifact_info_root_review": "eef1b661623b95cdb548f113b9d936d00b38ad09",
+    "normal61_partial_all_tests_root_review": "1c5ebf2bea9cabb6c64deb3810b56f977e103e05"
+  },
+  "original_caps": {
+    "supervisor": 1080,
+    "controller": 900,
+    "manager": 600,
+    "failure_cleanup": 60,
+    "phase": 120,
+    "capture": 45,
+    "query": 3,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "ready": 30,
+    "tls": 30,
+    "wal": 5969912,
+    "row": 1048576,
+    "aggregate": 8388608,
+    "private_capsule": 4194304,
+    "entry_report": 262144,
+    "envelope": 196608
+  },
+  "allowed_scope": "Exactly the reviewed current five-agent read-only registry/WAL capture and isolated local AuthBus fixture with owned launchd server/consumer, restart and inverse local rollback, using fixed T5 namespace. Execute only the frozen request.",
+  "dispatch_protocol": "Persist exact intent in a completed external call; one process_start; externally retain original ACK before interpretation; reconcile only original job if unknown. Preserve all original limits and historical unknowns.",
+  "limits": [
+    "Inert-only readiness is not runtime success.",
+    "Current original Mac Cargo log recovery continues read-only; normal61 test/core/artifact evidence is already closed. Do not replay the product run.",
+    "No production client configuration, cutover, deletion, J3160/provider/model/refresh/quota mutation.",
+    "Production trust/renewal TTL proof remain separate gates."
+  ]
+}

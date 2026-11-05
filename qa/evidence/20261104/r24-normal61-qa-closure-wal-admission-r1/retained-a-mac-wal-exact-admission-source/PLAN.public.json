@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-inert-source-plan.r1",
+  "qualification": "SOURCE_ONLY_EXACT_REQUESTS_NOT_SUBMITTED",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "boundSource": {
+    "tree": "9755935337552dd6c421e74380afb327f6f61892",
+    "manifest": "a6d8424dc1d3c7181ee0a445f0a1c7904735c061",
+    "rootStaticResult": {
+      "bytes": 5338,
+      "sha256": "cbd484618a3dc0674d8f3e81e2a95fd116148bce9dcf766b7afc52edb3e07181",
+      "blob": "5880ad714a2c6e285b9c20b2be97424d25d161ad"
+    }
+  },
+  "originalCarrier": {
+    "bytes": 15543,
+    "sha256": "4e1002699df48e8a1d2a64556729335c4eafa6de95d7472e4bc454ac896367aa",
+    "blob": "75bc97f9905f1c517188689bbfed5b0c389ccb3e"
+  },
+  "carrier": {
+    "bytes": 15543,
+    "sha256": "9b9633f59900a171ab97347830380f1d8a1ef74d1fe742b5cc3b78df646cbae6",
+    "blob": "b0d546989d09c9e97e0edafda1a8144735f37003"
+  },
+  "carrierDiff": {
+    "bytes": 5729,
+    "sha256": "d00fb817a37ed2ab277a0d9d772f42822a29a23a5f0a9e3ecd165cfbc35576ce",
+    "blob": "3700eb75df83328e978543fee5bb4be3608d1bf3",
+    "strictHunks": 7
+  },
+  "input": {
+    "bytes": 780807,
+    "sha256": "4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4",
+    "blob": "931383bbc295b82ad7ff6cf57c33af3395e20966"
+  },
+  "inertRequest": {
+    "bytes": 797259,
+    "sha256": "5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9",
+    "blob": "75cc9edd37fca32dacaa394fe7e7a815b455aa9b"
+  },
+  "futureRuntimeRequest": {
+    "bytes": 5267,
+    "sha256": "5c612c632efed01b0e4ec97c2d1822b15b23628610dd679eff24dba99d43fde8",
+    "blob": "db1c0badddf800b253a5476cdb1ab49f2cabf543"
+  },
+  "inertScope": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "cwd": "/Users/qianqi",
+    "key": "heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1",
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+    "rootMustBeAbsentAtExecution": true,
+    "absenceNotObservedByThisSourceWork": true,
+    "sourceFiles": 22,
+    "pythonCompileOnly": 18,
+    "javascriptByteVerificationOnly": 4,
+    "publicDocuments": 8,
+    "independentlyPublishedFilesBeforeReceipt": 30,
+    "finalReceiptBasename": "inert-registry-wal-4e808-result.public.json",
+    "expectedIndependentReadbackFileCountIncludingReceipt": 31,
+    "definitionOnlyModules": [
+      "mac_owned_unreaped_r1.py",
+      "mac_owned_commands_r1.py",
+      "mac_t5_volume_guard_r1.py"
+    ],
+    "onlyOwnedChild": "/usr/sbin/diskutil info -plist /Volumes/T5",
+    "currentCapture": false,
+    "currentCredentials": false,
+    "productionSqlite": false,
+    "consumer": false,
+    "launchd": false,
+    "server": false,
+    "git": false,
+    "cargo": false,
+    "retainedProofDocuments": 7,
+    "proofRawBytesNotReserialized": true,
+    "heldReadbackUsesSeparateReadDescriptor": true,
+    "writeDescriptorClosedBeforeReadback": true,
+    "expectedMode": "0600",
+    "expectedUid": 501,
+    "expectedNlink": 1
+  },
+  "bounds": {
+    "inertAbsoluteSeconds": 45,
+    "inertDiskutilClippedSeconds": 30,
+    "inertSupervisorSeconds": 60,
+    "stdoutMaximumBytes": 65536,
+    "publishedPublicReadbackMaximumBytes": 1048576,
+    "runtimeSupervisorSeconds": 1080,
+    "controllerSeconds": 900,
+    "managerSeconds": 600,
+    "cleanupSeconds": 60,
+    "phaseSeconds": 120,
+    "captureSeconds": 45,
+    "querySeconds": 3,
+    "registryWalMaximumBytes": 5969912,
+    "rowMaximumBytes": 1048576,
+    "aggregateMaximumBytes": 8388608,
+    "capsuleMaximumBytes": 4194304,
+    "httpSeconds": 10,
+    "readySeconds": 30,
+    "nativeSeconds": [
+      15,
+      8,
+      3
+    ],
+    "changedFromReviewedBaseline": false
+  },
+  "exactChanges": [
+    "One fresh ROOT literal",
+    "22 fixed source size/SHA tuples from the accepted actual-bound tree",
+    "Candidate document pin; seven historical proof-document pins and raw bytes unchanged",
+    "Stdin whole length and SHA256",
+    "Two fixed inert schema strings",
+    "One fixed candidate-receipt basename",
+    "Exact observer/action keys and future runtime source-pin/candidate binding"
+  ],
+  "staticVerification": {
+    "actualExitCode": 0,
+    "checks": 122,
+    "strictCarrierHunks": 7,
+    "topLevelDefinitionsWholeUnchanged": 11,
+    "mainDifference": "Three fixed schema/receipt labels only",
+    "carrierCompileOnly": 1,
+    "candidatePythonSourcesRecompiled": 0,
+    "candidateModulesImported": 0,
+    "candidateFunctionsExecuted": 0,
+    "actualHostCalls": 0,
+    "oldComponentMatricesRepeated": 0
+  },
+  "admissibility": {
+    "rootGoCreated": false,
+    "inertRequestSubmitted": false,
+    "runtimeRequestSubmitted": false,
+    "requiresExactRootInertGo": true,
+    "onInertGo": "Persist original exact external intent in a completed call, submit the one fixed request once, immediately persist original ACK, then reconcile that job only.",
+    "unknownAck": "Never submit a new key or replay the publisher.",
+    "runtimeRequires": "Independent acceptance of original complete authority, full stdout/stderr, 31 independent file_info/version-pinned whole reads, exact T5/child/FD closure, followed by separate exact runtime GO.",
+    "candidateReceiptAlone": "Contains pre-final-closure candidate state; never use it alone as success or dispatch authority.",
+    "preserveHistoricalUnknowns": true,
+    "noProductionCutoverOrExistingServiceChange": true,
+    "renewEvidenceLimit": "Existing fixture renew HTTP200 proves acceptance only; lookup-self TTL/expiry before/after comparison remains missing. Existing revoke204 followed by prior-token403 is retained.",
+    "privateCaptureOrProductionCredentialsQualifiedByThisPacket": false
+  }
+}

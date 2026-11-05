@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-exact-request-table.r1",
+  "sourceOnly": true,
+  "submitted": false,
+  "requests": [
+    {
+      "phase": "inert",
+      "host": "mac",
+      "key": "heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1",
+      "pin": {
+        "bytes": 797259,
+        "sha256": "5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9",
+        "blob": "75cc9edd37fca32dacaa394fe7e7a815b455aa9b"
+      },
+      "timeoutSeconds": 60,
+      "payload": {
+        "bytes": 780807,
+        "sha256": "4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4",
+        "blob": "931383bbc295b82ad7ff6cf57c33af3395e20966"
+      },
+      "controller": {
+        "bytes": 15543,
+        "sha256": "9b9633f59900a171ab97347830380f1d8a1ef74d1fe742b5cc3b78df646cbae6",
+        "blob": "b0d546989d09c9e97e0edafda1a8144735f37003"
+      },
+      "requiresSeparateExactRootGo": true
+    },
+    {
+      "phase": "future_runtime",
+      "host": "mac",
+      "key": "heptabao-mac-current-five-agent-registry-wal-4e808-bce47fd1-20261105-r1",
+      "pin": {
+        "bytes": 5267,
+        "sha256": "5c612c632efed01b0e4ec97c2d1822b15b23628610dd679eff24dba99d43fde8",
+        "blob": "db1c0badddf800b253a5476cdb1ab49f2cabf543"
+      },
+      "timeoutSeconds": 1080,
+      "entrypoint": {
+        "bytes": 68348,
+        "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+        "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+      },
+      "candidate": {
+        "bytes": 7211,
+        "sha256": "1e39c5c4e8a3fb9c6eeb1eb56f45b02e169f1d2052f45e1531b72c1435665cd7",
+        "blob": "e795f3dc4fa03cfdc6d9ea8c35cdbb0e64732342"
+      },
+      "sourcePins": {
+        "bytes": 2276,
+        "sha256": "327238637119363509a244473de193c60e5b822a7faa11ed3a3b388a39e4f447",
+        "blob": "329eebac590c138d73dbe15b6ef947586d185105"
+      },
+      "requiresActualInertAcceptanceAndSeparateExactRootGo": true
+    }
+  ]
+}

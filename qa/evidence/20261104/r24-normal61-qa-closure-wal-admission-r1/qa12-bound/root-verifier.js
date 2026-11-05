@@ -1,0 +1,42 @@
+function verifyQA12Bound(input,utf8,latin1,sha256,unb64,apply){
+ const raw=input.raw,a=input.audit,checks=[],ck=(n,v)=>{if(!v)throw Error(n);checks.push(n);},obj=p=>JSON.parse(raw[p]),hash=s=>sha256(latin1(utf8(s))),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),si=JSON.parse(input.staticRaw),table=obj("binding/files.actual.public.json"),prior=input.unboundRaw,map=new Map(a.records.map(r=>[r.path,r])),priorMap=new Map(input.unboundAudit.records.map(r=>[r.path,r])),prov=obj("references/qa12-complete-table.public.json");
+ const allPrior=[...input.qaFull.records,...input.qaInert.records,...input.threeInfos.records],knownBlobs=new Map(allPrior.map(r=>[r.blob,r])),t0=JSON.parse(prior["binding/files.unbound.public.json"]).files;
+ ck("prior_root78_and_actual_tool384",input.unboundResult.status==="PASS_UNBOUND_TOOL_TRANSPORT_SOURCE_ONLY"&&input.unboundResult.check_count===78&&input.qaResult.status==="PASS_QUALIFIED_QA_INSTRUMENT_ONLY"&&input.qaResult.check_count===384);
+ ck("exact12_ordered_slots",table.length===12&&same(table.map(x=>x.role),t0.map(x=>x.role))&&same(table,si.table_after)&&same(t0,si.table_before));
+ let total=0;
+ for(let i=0;i<table.length;i++){
+  const row=table[i],old=t0[i],mdraw=raw["actual-source-metadata/"+row.role+".original.json"],md=JSON.parse(mdraw),meta=map.get("actual-source-metadata/"+row.role+".original.json"),p=prov.files.find(x=>x.role===row.role),unchanged=x=>Object.fromEntries(Object.entries(x).filter(([k])=>!["bytes","sha256","version"].includes(k)));
+  ck(row.role+".only_three_actual_slots",same(unchanged(row),unchanged(old))&&old.bytes===null&&old.sha256===null&&old.version===null);
+  ck(row.role+".original_independent_metadata_whole",knownBlobs.has(meta.blob)&&knownBlobs.get(meta.blob).bytes===meta.bytes&&knownBlobs.get(meta.blob).sha256===meta.sha256&&p.metadata_source.blob===meta.blob&&si.actual_info[row.role]===mdraw);
+  ck(row.role+".source_path_size_hash_version",row.path===md.path&&row.bytes===md.size&&row.sha256===md.sha256&&row.version===md.version&&row.path===p.source_path&&row.name===p.destination_basename&&row.bytes===p.whole_bytes&&row.sha256===p.whole_sha256&&row.version===p.observed_version);
+  ck(row.role+".source_metadata_and_target_mode",md.mode===row.source_mode&&md.metadata.mode===row.source_mode&&md.metadata.uid===1000&&md.metadata.gid===1000&&md.metadata.link_count===1&&(row.role==="executable"?row.source_mode===320&&row.target_mode===320:row.source_mode===384&&row.target_mode===256));
+  total+=row.bytes;
+ }
+ ck("exact4892547_instrument_bytes",total===4892547&&prov.instrument_commit==="df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"&&prov.instrument_tree==="424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"&&prov.current_product_qualification===false&&prov.observations_are_prior_actual_not_current_stat===true);
+ function tableBlock(s){const i=s.indexOf("FILES="),j=s.indexOf("\n]",i)+2;if(i<0||j<2)throw Error("table delimiters");return s.slice(i,j);}
+ for(const name of ["sender.py","receiver.py","relay.py"]){
+  const before=raw["before/"+name],after=raw["candidate/"+name],patch=apply(before,raw["diffs/"+name+".diff"]);
+  ck(name+".root_reviewed_before_bytes",before===prior["candidate/"+name]&&map.get("before/"+name).blob===priorMap.get("candidate/"+name).blob&&si.before[name]===before&&si.after[name]===after);
+  ck(name+".strict_two_hunks",patch.text===after&&patch.hunks===2);
+  const oldTable=tableBlock(before),newTable=tableBlock(after),parsed=JSON.parse(newTable.slice(6).replace(/\bNone\b/g,"null"));
+  ck(name+".all12_bound_table_exact",same(parsed,table));
+  let expected=before.replace("ACTUAL_INPUTS_READY=False","ACTUAL_INPUTS_READY=True").replace(oldTable,newTable);
+  if(name==="relay.py"){
+   const h1=before.match(/^HELPERS=(.+)$/m)[1],h2=after.match(/^HELPERS=(.+)$/m)[1],helpers=JSON.parse(h2);
+   ck("relay.helpers_exact_two_bound_sources",Object.keys(helpers).length===2&&helpers["sender.py"]===hash(raw["candidate/sender.py"])&&helpers["receiver.py"]===hash(raw["candidate/receiver.py"]));expected=expected.replace("HELPERS="+h1,"HELPERS="+h2);
+  }
+  ck(name+".all_other_transport_logic_unchanged",expected===after);
+ }
+ const carrier=raw["candidate/inert_carrier.py"],before=raw["before/inert_carrier.py"],patch=apply(before,raw["diffs/inert_carrier.py.diff"]);
+ const pinblock=s=>{const i=s.indexOf("PINS = "),j=s.indexOf("\n}\n",i)+2;return s.slice(i,j);},bp=pinblock(before),np=pinblock(carrier),pins=JSON.parse(np.slice(7));
+ ck("inert_exact_only_cascaded_pin_table",before===prior["candidate/inert_carrier.py"]&&si.carrier_before===before&&si.carrier_after===carrier&&patch.text===carrier&&patch.hunks===1&&before.replace(bp,np)===carrier);
+ const payloadRaw=raw["payload/three-controls.bound.json"],payload=JSON.parse(payloadRaw);
+ ck("67638_public_payload_original262144_cap",utf8(payloadRaw).length===67638&&payloadRaw===si.payload&&payload.schema==="heptabao.df026-shared-h2qa12-inputs.v1"&&Object.keys(payload.files).length===3&&Object.keys(pins).length===3&&carrier.includes("read(262145)")&&carrier.includes("len(incoming) <= 262144"));
+ for(const name of ["sender.py","receiver.py","relay.py"]){const body=raw["candidate/"+name],b=unb64(payload.files[name]);ck(name+".exact_payload_pin",latin1(b)===latin1(utf8(body))&&pins[name][0]===b.length&&pins[name][1]===hash(body));}
+ const req=obj("dispatch/inert.request.json"),relay=obj("dispatch/relay.request.json"),base="/home/qian-qi/heptabao-ha-closure-20261103-r1",sourceDir=base+"/normal-native-h2-qa-shared-artifact-controls-r1";
+ ck("inert_exact73140_request",hash(raw["dispatch/inert.request.json"])==="06679ccdbbda3237ef9ee7cc1dd94b9edacf8bf7af8941bf8f17572572f1ed9f"&&utf8(raw["dispatch/inert.request.json"]).length===73140&&same(req,si.inert_request)&&req.host==="desktop"&&req.executable==="/usr/bin/python3"&&req.cwd===base&&req.timeout_seconds===60&&req.idempotency_key==="heptabao-df026-h2qa12-controls-inert-r1-be0b0b53"&&same(req.args,["-I","-S","-B","-c",carrier])&&req.stdin===payloadRaw);
+ ck("future_relay_exact_source_argv_no_extra_arg",same(relay,si.relay_request)&&relay.host==="desktop"&&relay.executable==="/usr/bin/python3"&&relay.cwd===base&&relay.timeout_seconds===360&&relay.idempotency_key==="heptabao-df026-h2qa12-artifact-relay-r1-d34b6df5"&&same(relay.args,["-I","-S","-B",sourceDir+"/relay.py"])&&!Object.hasOwn(relay,"stdin"));
+ const ex=obj("verification/static-executor.original.json"),read=obj("verification/static-result-read.original.json"),r=obj("verification/static-result.public.json");
+ ck("actual96_AST_checks_full_result_recovered",ex.exit_code===0&&ex.output.startsWith("Warning: truncated output")&&read.exit_code===0&&read.output===raw["verification/static-result.public.json"]&&r.status==="passed"&&r.checks.length===96&&r.checks.every(x=>x.passed===true)&&r.compiled_modules===4&&r.modules_executed===0&&r.host_requests===0&&r.child_product_or_runtime_requests===0&&r.exact_original_limits===true);
+ return{schema:"heptabao.root.qa12-actual-literal-bound-source.v1",status:"PASS_EXACT_INERT_SOURCE_READY",packet:a.tree,files:a.files,bytes:a.bytes,merkle_trees:a.merkle.trees_verified,check_count:checks.length,checks,actual_instrument_source_artifacts:12,transport_bytes:total,metadata_scope:"Previously observed whole immutable source versions; execution must revalidate the same held identities. No destination observation is inferred.",source_modes:{executable:"0500",public_files:"0600"},target_modes:{executable:"0500",public_files:"0400"},actual_source_checks:96,all_transport_definitions_unchanged:true,only_source_bindings_and_cascaded_pins_changed:true,inert_request:map.get("dispatch/inert.request.json"),future_relay_request:map.get("dispatch/relay.request.json"),inert_carrier:map.get("candidate/inert_carrier.py"),inert_payload:map.get("payload/three-controls.bound.json"),control_directory:sourceDir,inert_original_seconds:60,relay_original_seconds:300,relay_supervisor_seconds:360,endpoint_original_seconds:90,ssh_connect_seconds:10,cleanup_term_seconds:5,cleanup_kill_seconds:5,inert_go_requires_separate_saved_authorization:true,actual_inert_submitted:false,relay_go:false,current_product_qualified:false,full_replacement:false,host_calls_by_verifier:0};
+}

@@ -1,0 +1,28 @@
+diff --git a/sources/mac_current_server_owner_r1.py b/sources/mac_current_server_owner_r1.py
+--- a/sources/mac_current_server_owner_r1.py
++++ b/sources/mac_current_server_owner_r1.py
+@@ -10,11 +10,12 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
+ QA=ROOT/'qa'
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server')
+-BINARY_SHA='ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0'
+-BINARY_BYTES=92408592
++BINDING_READY=False  # Actual Mac normal61 artifact/authority are not yet bound.
++BINARY=None
++BINARY_SHA=None
++BINARY_BYTES=None
+ GENERATIONS=('server-initial','server-cold-new-process')
+ PUBLIC_MODULES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',
+                 'mac_t5_volume_guard_r1.py','mac_native_process_observer_r1.py')
+@@ -90,6 +91,7 @@
+             with critical():os.close(fd)
+ 
+ def main():
++    need(BINDING_READY is True,'mac_normal61_binding_not_admitted')
+     parser=argparse.ArgumentParser()
+     parser.add_argument('--plan',type=Path,required=True)
+     parser.add_argument('--plan-sha256',required=True)

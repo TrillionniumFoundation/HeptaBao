@@ -1,0 +1,23 @@
+{
+  "idempotency_key": "qa-r3-build-7ea25347-ac127d3e-command-streams-a-01",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-commit.stdout",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-commit.stderr",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-tree.stdout",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-tree.stderr",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-status.stdout",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-before-status.stderr",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/rustc-version.stdout",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/rustc-version.stderr",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/lock.stdout",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/lock.stderr"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.qa12-three-metadata-actual.v1",
+  "status": "PASS_READONLY_BINDING_INPUTS",
+  "source_provenance_blob": "b9951d3f7ac4ce16c151c6c1b4c3bc43ee4ebc64",
+  "all_original_sdk_saved_before_parse": true,
+  "raw_sdk_tree": "89fa6950f5400a78bc38059d3f5fd184cb2be3c4",
+  "checks": [
+    {
+      "role": "component_stdout",
+      "name": "path",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "bytes",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "sha256",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "version",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "mode",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "owner",
+      "passed": true
+    },
+    {
+      "role": "component_stdout",
+      "name": "single_link",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "path",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "bytes",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "sha256",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "version",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "mode",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "owner",
+      "passed": true
+    },
+    {
+      "role": "component_record",
+      "name": "single_link",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "path",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "bytes",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "sha256",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "version",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "mode",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "owner",
+      "passed": true
+    },
+    {
+      "role": "component_list_stdout",
+      "name": "single_link",
+      "passed": true
+    }
+  ],
+  "all_three_whole_sha_and_version_equal_prior_read": true,
+  "observed_mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "link_count": 1,
+  "new_job": false,
+  "product_operation": false,
+  "write": false,
+  "transport_or_inert_go": false
+}

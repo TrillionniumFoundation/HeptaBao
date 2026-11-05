@@ -1,0 +1,1459 @@
+{
+  "additional_group_caps_seconds": {
+    "cold_h2": 600,
+    "ingress_observer": 600,
+    "same_root_publication": 600
+  },
+  "additional_test_counts": {
+    "cold_h2": 9,
+    "ingress_observer": 7,
+    "same_root_publication": 1
+  },
+  "binary": {
+    "bytes": 153768880,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "bcf55999af9bc25568d4ed3260e5d4690ef49f5f3b0b3d6b086bab8b90fa922f"
+  },
+  "binary_unchanged": true,
+  "build": {
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 458.54913574969396,
+    "exit_code": 0,
+    "label": "build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 75349,
+    "remaining": [],
+    "stderr_sha256": "bb149b4852a7c2cd2ae3549c787ce70fe5abedc3a2a0d014751015f6ef706a85",
+    "stdout_sha256": "28dd0052df65afd7f8b997e82f5d9ead0866ae9fd49a6762993fc8a137c1aa78",
+    "timed_out": false
+  },
+  "build_artifact_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 101,
+      "label": "same-root-publication-1",
+      "pid": 80445,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "same-root-publication-1-list",
+      "pid": 80443,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-9",
+      "pid": 80438,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-9-list",
+      "pid": 80436,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-8",
+      "pid": 80434,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-8-list",
+      "pid": 80432,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-7",
+      "pid": 80430,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-7-list",
+      "pid": 80428,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-6",
+      "pid": 80426,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-6-list",
+      "pid": 80424,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-5",
+      "pid": 80422,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-5-list",
+      "pid": 80420,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-4",
+      "pid": 80418,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-4-list",
+      "pid": 80416,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-3",
+      "pid": 80359,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-3-list",
+      "pid": 80357,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-2",
+      "pid": 80355,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-2-list",
+      "pid": 80353,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-1",
+      "pid": 80351,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "cold-h2-1-list",
+      "pid": 80349,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-7",
+      "pid": 80344,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-7-list",
+      "pid": 80342,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-6",
+      "pid": 80340,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-6-list",
+      "pid": 80338,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-5",
+      "pid": 80336,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-5-list",
+      "pid": 80334,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-4",
+      "pid": 80332,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-4-list",
+      "pid": 80330,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-3",
+      "pid": 80324,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-3-list",
+      "pid": 80322,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-2",
+      "pid": 80293,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-2-list",
+      "pid": 80291,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-1",
+      "pid": 80259,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ingress-observer-1-list",
+      "pid": 80257,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "no_forward6",
+      "pid": 80045,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "no_forward6-list",
+      "pid": 80039,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ordinary5",
+      "pid": 80029,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ordinary5-list",
+      "pid": 80024,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2",
+      "pid": 79721,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2-list",
+      "pid": 79711,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "redirect5",
+      "pid": 79675,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "redirect5-list",
+      "pid": 79670,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1",
+      "pid": 79660,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1-list",
+      "pid": 79655,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25",
+      "pid": 78779,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25-list",
+      "pid": 78688,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "build",
+      "pid": 75349,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "normal-release-build",
+      "pid": 73562,
+      "remaining": []
+    }
+  ],
+  "cold_h2_regression": {
+    "actual_test_names": [
+      "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+      "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+      "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+    ],
+    "clamped_to_original_outer_deadline": true,
+    "elapsed_seconds": 10.046520499978215,
+    "existing_ingress_7_denominator_unchanged": true,
+    "new_total_group_cap_seconds": 600,
+    "original_44_denominator_unchanged": true,
+    "schema": "heptabao.normal-cold-h2-regression.v1",
+    "status": "passed",
+    "test_count": 9,
+    "tests": [
+      {
+        "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015598541591316462,
+          "exit_code": 0,
+          "label": "cold-h2-1",
+          "outer_cap_seconds": 599.9832029580139,
+          "owned_pgid": 80351,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "5951dde5667d967b0a84295869bb787d251149662ee92e7b32790f4104f5f933",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015981582924723625,
+          "exit_code": 0,
+          "label": "cold-h2-2",
+          "outer_cap_seconds": 599.9505956657231,
+          "owned_pgid": 80355,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "de19d2bb6fce147829affb318f0f5c0a668a45072a059373e8b5ba088e9c0bbc",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 9.632530166767538,
+          "exit_code": 0,
+          "label": "cold-h2-3",
+          "outer_cap_seconds": 599.9181815828197,
+          "owned_pgid": 80359,
+          "remaining": [],
+          "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+          "stdout_sha256": "c2ff186395d78fb41fff935c3cd227ae9c52d765b101a75b3b559145b32e2cc5",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015328874811530113,
+          "exit_code": 0,
+          "label": "cold-h2-4",
+          "outer_cap_seconds": 590.2685955828056,
+          "owned_pgid": 80418,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e88783852d131f4bc347c3bef6f407fc69586f05fb8daa6dc3a5caf409276ad2",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015718749724328518,
+          "exit_code": 0,
+          "label": "cold-h2-5",
+          "outer_cap_seconds": 590.2368163326755,
+          "owned_pgid": 80422,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "cbc388f77294abc76fd12949ebd576d9071ef3479e9b1b8bf3b6ef64e9832ac0",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015787791926413774,
+          "exit_code": 0,
+          "label": "cold-h2-6",
+          "outer_cap_seconds": 590.2048779157922,
+          "owned_pgid": 80426,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "0d64dd0a3b58f148152c3a8f57aca18773d46706551a4bc00d642d39e55f7e15",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.0162923326715827,
+          "exit_code": 0,
+          "label": "cold-h2-7",
+          "outer_cap_seconds": 590.1721353749745,
+          "owned_pgid": 80430,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "a9b11eb98390edd2c25228dec2c9d40a7f4e36b603a39dedbefc1dd463d08ff4",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.01563970884308219,
+          "exit_code": 0,
+          "label": "cold-h2-8",
+          "outer_cap_seconds": 590.1387739996426,
+          "owned_pgid": 80434,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "f833c62b4872030d1349e0d949302cb00475b8a32a5c94528d37986b3ade4317",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015950208995491266,
+          "exit_code": 0,
+          "label": "cold-h2-9",
+          "outer_cap_seconds": 590.1065392498858,
+          "owned_pgid": 80438,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "36b4f42e4f40cac7b3067f46ab76fb2e3893ecb0aeb4d5d72c3a45fe1f5f04bb",
+          "timed_out": false
+        }
+      }
+    ]
+  },
+  "controller_sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
+  "failure": "",
+  "failure_type": "AssertionError",
+  "fixture_features": [],
+  "group_results": [
+    {
+      "actual_test_names": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ],
+      "label": "ssh25",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "native_ssh_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 68.83902645902708,
+        "exit_code": 0,
+        "label": "ssh25",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 78779,
+        "remaining": [],
+        "stderr_sha256": "3d7796e94a3c77350ac176e8c1171bc5332b074d16bc45432bb284089ab94917",
+        "stdout_sha256": "46e136ff873d1d6c1dcdde84edc4823034792314cec9b337aaeaae6e2620d83e",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ],
+      "label": "mount1",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 1.6883590421639383,
+        "exit_code": 0,
+        "label": "mount1",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 79660,
+        "remaining": [],
+        "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+        "stdout_sha256": "82191d9bb75a8b174fa16bcb61bacf682ba7b54e488f493fe2cf57d137d78daa",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ],
+      "label": "redirect5",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "http::snapshot::redirect_tests::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 2.2994497502222657,
+        "exit_code": 0,
+        "label": "redirect5",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 79675,
+        "remaining": [],
+        "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+        "stdout_sha256": "1f8c9523a1441900f947492422ab98557d2655a3381223c8499431422e5acc9c",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "label": "actor2",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "lossless_export_parallel_worker_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 11.203406457789242,
+        "exit_code": 0,
+        "label": "actor2",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 79721,
+        "remaining": [],
+        "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+        "stdout_sha256": "6901da7af4f509c0ce9388a2f5b8fe865b9ea030f872a6ccd5c48eb80ab0b772",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ],
+      "label": "ordinary5",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "http::response_coalescing_tests::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.06328558269888163,
+        "exit_code": 0,
+        "label": "ordinary5",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 80029,
+        "remaining": [],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "ac8d620485b083fbc236f5c7ec4edcd74d6f82f6294a526efa4a1026986d62d2",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ],
+      "label": "no_forward6",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "no_forward271_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 17.74654966732487,
+        "exit_code": 0,
+        "label": "no_forward6",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 80045,
+        "remaining": [],
+        "stderr_sha256": "e7e1a69075c61549b6f20e9c1410119cac3fda6ca8330b7b293204ce16c49a5f",
+        "stdout_sha256": "63c159c9e42007a6aee63685fc37c58e85d390c817e1654e856b4380c3deec9e",
+        "timed_out": false
+      }
+    }
+  ],
+  "groups": [
+    {
+      "exact": false,
+      "filter": "native_ssh_",
+      "label": "ssh25",
+      "runtime_seconds": 600,
+      "tests": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ]
+    },
+    {
+      "exact": true,
+      "filter": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+      "label": "mount1",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::snapshot::redirect_tests::",
+      "label": "redirect5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "lossless_export_parallel_worker_",
+      "label": "actor2",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::response_coalescing_tests::",
+      "label": "ordinary5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "no_forward271_",
+      "label": "no_forward6",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ]
+    }
+  ],
+  "groups_sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+  "ingress_observer_regression": {
+    "actual_test_names": [
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+    ],
+    "clamped_to_original_outer_deadline": true,
+    "elapsed_seconds": 5.648366875015199,
+    "new_total_group_cap_seconds": 600,
+    "original_44_denominator_unchanged": true,
+    "schema": "heptabao.normal-ingress-observer-regression.v1",
+    "status": "passed",
+    "test_count": 7,
+    "tests": [
+      {
+        "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 1.7316948748193681,
+          "exit_code": 0,
+          "label": "ingress-observer-1",
+          "outer_cap_seconds": 599.9828927093185,
+          "owned_pgid": 80259,
+          "remaining": [],
+          "stderr_sha256": "bf242ff1f87b64e04e744c31b376d60f73dc3033a9b2517bc7abeb85cc9c3d08",
+          "stdout_sha256": "d45fb44151c97dcf0886011c07d7423e845f538dcbff0990c218d8e6d1c079d5",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 1.8462476669810712,
+          "exit_code": 0,
+          "label": "ingress-observer-2",
+          "outer_cap_seconds": 598.2327275001444,
+          "owned_pgid": 80293,
+          "remaining": [],
+          "stderr_sha256": "287093aad038d147d504ee6ddb04101c73d93ad81160eb4de584aa39804f0a08",
+          "stdout_sha256": "cbc12e193b7141dcfbff2cf741d921290f951881425f52a5b43fada1da1f6de9",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 1.7496528751216829,
+          "exit_code": 0,
+          "label": "ingress-observer-3",
+          "outer_cap_seconds": 596.3673510421067,
+          "owned_pgid": 80324,
+          "remaining": [],
+          "stderr_sha256": "ecc6392cb3bfe5e1d2c1e9e31cf3303b66e44dbaa48cedcc913855a3822a3d82",
+          "stdout_sha256": "77f3bb8a753f6611b33272d1f0a946fab724d780753e738234352d6c69970b49",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015700375195592642,
+          "exit_code": 0,
+          "label": "ingress-observer-4",
+          "outer_cap_seconds": 594.5992717919871,
+          "owned_pgid": 80332,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "f8d9e605ce865629de05588be647d4e09a9db762db7ef88d662642dedcc7b24a",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015541000291705132,
+          "exit_code": 0,
+          "label": "ingress-observer-5",
+          "outer_cap_seconds": 594.5673471670598,
+          "owned_pgid": 80336,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "63247eb83413b488f509ebde308fbb6707f65b383e55709880bdd3479aaf6ec7",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015766124706715345,
+          "exit_code": 0,
+          "label": "ingress-observer-6",
+          "outer_cap_seconds": 594.5357724591158,
+          "owned_pgid": 80340,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "340b5d24e90c12909603eb8fcba382e895d47f7545c7cb7db8000b8a07a000f2",
+          "timed_out": false
+        }
+      },
+      {
+        "name": "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 0.015462624840438366,
+          "exit_code": 0,
+          "label": "ingress-observer-7",
+          "outer_cap_seconds": 594.5034312922508,
+          "owned_pgid": 80344,
+          "remaining": [],
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "31d38786b7af6e166e7973ec9f8cfb814f6f27b6bf7f56cbb92c626fe93a8b23",
+          "timed_out": false
+        }
+      }
+    ]
+  },
+  "launcher_started_monotonic": 2756475.638995875,
+  "native_build_receipt_sha256": "998a3f148c5297ff4b59a7a63ef60f67a3341d6304527066f333fb3e422eb987",
+  "normal_default_features": true,
+  "normal_release_build": {
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "build",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--bin",
+      "heptabao-server",
+      "--bin",
+      "heptabao-seed",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 261.48079958418384,
+    "exit_code": 0,
+    "label": "normal-release-build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 73562,
+    "remaining": [],
+    "stderr_sha256": "fb04796846d837fe6fdbebf2e59606a36ebb7a27a42e9d548444689813f74eb9",
+    "stdout_sha256": "017352f588bb8d41c5d18f342c0da6de2a09102497946ae174c4b95e5ff3f4eb",
+    "timed_out": false
+  },
+  "original_44_and_ingress_7_status": "passed",
+  "original_44_status": "passed",
+  "original_60_status": "passed",
+  "original_60_test_total": 60,
+  "original_outer_seconds": 8280,
+  "outer_phase_caps_seconds": {
+    "each_listing": 30,
+    "each_runtime_group": 600,
+    "normal_libtest_build": 1800,
+    "normal_release_build": 1800
+  },
+  "production_changed": false,
+  "profile": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/r13-full-native-cargo-home-r1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "release_artifacts": {
+    "heptabao-seed": {
+      "bytes": 86761216,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429"
+    },
+    "heptabao-server": {
+      "bytes": 92398928,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63"
+    }
+  },
+  "release_artifacts_unchanged": true,
+  "retained_df026_after": {
+    "all_opened_descriptors_closed": true,
+    "files": [
+      {
+        "bytes": 3331,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560012,
+          501,
+          20,
+          33152,
+          1,
+          3331,
+          1793852381427071602,
+          1793852381427071602
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json",
+        "sha256": "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98"
+      },
+      {
+        "bytes": 800,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560013,
+          501,
+          20,
+          33152,
+          1,
+          800,
+          1793852381428523878,
+          1793852381428523878
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json",
+        "sha256": "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e"
+      },
+      {
+        "bytes": 49069,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560299,
+          501,
+          20,
+          33152,
+          1,
+          49069,
+          1793852965715564348,
+          1793852965715564348
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json",
+        "sha256": "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4"
+      },
+      {
+        "bytes": 86751008,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560010,
+          501,
+          20,
+          33088,
+          1,
+          86751008,
+          1793852381283624293,
+          1793852381308102146
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+        "sha256": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced"
+      },
+      {
+        "bytes": 92408592,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560008,
+          501,
+          20,
+          33088,
+          1,
+          92408592,
+          1793852380813909456,
+          1793852380837250122
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+      },
+      {
+        "bytes": 153800944,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560084,
+          501,
+          20,
+          33088,
+          1,
+          153800944,
+          1793852842398962786,
+          1793852842423999399
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "sha256": "5a714ff2bc79561fb812272e325fb90c1941916f0d28f9ffb9c618710667bf69"
+      }
+    ],
+    "purpose": "Immutable retained qualification files outside the reusable Cargo target",
+    "status": "unchanged"
+  },
+  "retained_df026_before": {
+    "all_opened_descriptors_closed": true,
+    "files": [
+      {
+        "bytes": 3331,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560012,
+          501,
+          20,
+          33152,
+          1,
+          3331,
+          1793852381427071602,
+          1793852381427071602
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json",
+        "sha256": "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98"
+      },
+      {
+        "bytes": 800,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560013,
+          501,
+          20,
+          33152,
+          1,
+          800,
+          1793852381428523878,
+          1793852381428523878
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json",
+        "sha256": "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e"
+      },
+      {
+        "bytes": 49069,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560299,
+          501,
+          20,
+          33152,
+          1,
+          49069,
+          1793852965715564348,
+          1793852965715564348
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json",
+        "sha256": "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4"
+      },
+      {
+        "bytes": 86751008,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560010,
+          501,
+          20,
+          33088,
+          1,
+          86751008,
+          1793852381283624293,
+          1793852381308102146
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+        "sha256": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced"
+      },
+      {
+        "bytes": 92408592,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560008,
+          501,
+          20,
+          33088,
+          1,
+          92408592,
+          1793852380813909456,
+          1793852380837250122
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+      },
+      {
+        "bytes": 153800944,
+        "close_attempted": true,
+        "closed": true,
+        "identity": [
+          16777244,
+          72560084,
+          501,
+          20,
+          33088,
+          1,
+          153800944,
+          1793852842398962786,
+          1793852842423999399
+        ],
+        "opened": true,
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "sha256": "5a714ff2bc79561fb812272e325fb90c1941916f0d28f9ffb9c618710667bf69"
+      }
+    ],
+    "purpose": "Immutable retained qualification files outside the reusable Cargo target",
+    "status": "unchanged"
+  },
+  "runtime_tests_started": true,
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "same_pid_launcher": 73491,
+  "same_root_publication_regression": {
+    "actual_test_names": [
+      "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors"
+    ],
+    "clamped_to_original_outer_deadline": true,
+    "new_total_group_cap_seconds": 600,
+    "original_44_7_9_denominators_unchanged": true,
+    "schema": "heptabao.normal-same-root-publication-regression.v1",
+    "status": "failed",
+    "test_count": 1,
+    "tests": [
+      {
+        "name": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+        "tests": {
+          "argv": [
+            "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+            "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ],
+          "direct_child_reaped": true,
+          "elapsed_seconds": 17.037647874560207,
+          "exit_code": 101,
+          "label": "same-root-publication-1",
+          "outer_cap_seconds": 599.9832736253738,
+          "owned_pgid": 80445,
+          "remaining": [],
+          "stderr_sha256": "23733caeb16ce2efc98e66dbc0d65fbb40ade3f34ce311926c6fb87aa992f5a8",
+          "stdout_sha256": "df1065ccd098064206b5e3aaf7b57cc08d95b13bf8c21aa63d1d288cf66aaed8",
+          "timed_out": false
+        }
+      }
+    ]
+  },
+  "schema": "heptabao.mac-normal-same-root-publication-exact-tests.v1",
+  "selected_test_total": 61,
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "source_unchanged": true,
+  "started_ns": 1793870631103303000,
+  "status": "failed",
+  "terminal_ns": 1793871493185676000,
+  "test_count": 44,
+  "within_original_outer_before_receipt": true
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "kind": "author_v8_assembly",
+    "outcome": "rejected_before_any_store_or_host",
+    "reason": "expected QA module constant is absent in inputs; use its exact ROOT assignment as insertion anchor"
+  },
+  {
+    "kind": "author_v8_assembly",
+    "outcome": "complete_inverse_byte_exact",
+    "counts": {
+      "product": 4,
+      "rootOnly": 7,
+      "unchanged": 11
+    }
+  }
+]

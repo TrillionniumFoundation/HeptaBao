@@ -1,0 +1,8 @@
+{
+  "scope": "local V8 packet composition; zero tools/mutations executed before error",
+  "error": "Error: nonraw bindings/product-binding.actual.public.json object",
+  "cause": "Packet composer selected the binding object instead of its already-frozen raw field.",
+  "candidateSourceChanged": false,
+  "requestChanged": false,
+  "hostCalls": 0
+}

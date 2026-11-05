@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.retained-a-mac61-independent-artifact-proof.v1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "job_id": "1a1ab60127b-fc05-4d18",
+  "core_tree": "94864d3311d217777454934cb81370d3dfad3645",
+  "core_blob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+  "independent_artifacts": [
+    {
+      "role": "server",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "bytes": 92398928,
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "version": "16777244:72626763:92398928:1793876826299674364:1793876826322472740",
+      "mode": 320,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1,
+      "file_info_blob": "491baf66132791ec1836a27a6d283e6f53fa0c06",
+      "file_info_sha256": "dbc9c21072a9692c897dc67716f070d54e5b9956f5ba9a2859bc3e0d2afcaaac",
+      "file_info_bytes": 540
+    },
+    {
+      "role": "seed",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "bytes": 86761216,
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+      "version": "16777244:72626765:86761216:1793876826766527617:1793876826790237905",
+      "mode": 320,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1,
+      "file_info_blob": "2cdb3f6c9ee4c261e16ac77243ab5650186b6fd1",
+      "file_info_sha256": "11b251f0f0c454ebd87b423c7cf4cbb4aa0c4f33457d83a850e7b568b0e190c6",
+      "file_info_bytes": 538
+    },
+    {
+      "role": "libtest",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "bytes": 154458864,
+      "sha256": "1a8b739f6b26515b141d8412bf4503460b4cbc69898eb94f275f51aee8e16477",
+      "version": "16777244:72626950:154458864:1793877277654775121:1793877277677929037",
+      "mode": 320,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1,
+      "file_info_blob": "5bb43fb75c80ee9155b9e47c009861947005ad15",
+      "file_info_sha256": "32d459ec5a3be484dc7c307c468ff85f4b745791f9717747bf1766db06eee101",
+      "file_info_bytes": 549
+    }
+  ],
+  "core_and_normal_native_receipts_match": true,
+  "all_artifact_queries_read_only": true,
+  "normal61_known_terminal_pass": true,
+  "root_independent_review_pending": true,
+  "full_original_command_archive_pending": true,
+  "production_action": false
+}

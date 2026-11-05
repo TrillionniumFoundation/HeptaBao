@@ -1,0 +1,127 @@
+diff --git a/inert/mac_current_registry_wal_inert_r1.py b/inert/mac_current_registry_wal_inert_r1.py
+--- a/inert/mac_current_registry_wal_inert_r1.py
++++ b/inert/mac_current_registry_wal_inert_r1.py
+@@ -10,29 +10,29 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+45.0
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
+ QA=ROOT/'qa'
+ PROOFS=ROOT/'proofs'
+ PINS={
+     "mac_current_fixture_materializer_r1.py": [
+         23649,
+-        "8279cb47b0a33c6f963e6aa6d23895e52aff848e5271300cb756832b57a513a3"
++        "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1"
+     ],
+     "mac_current_capture_entry_wal_r1.py": [
+         42084,
+-        "396b685e68281cbfe07cb6e0490534b853b7a1ee08d22d46ce1e7e682925a36a"
++        "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a"
+     ],
+     "mac_owned_launchd_r3.py": [
+-        35552,
+-        "cf994c2da1ce1ffc6a41806a3db71602e801c409d7bd05c8f9e26dfd138be56d"
++        35734,
++        "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29"
+     ],
+     "mac_current_server_owner_r1.py": [
+-        13218,
+-        "924ba9af378557360c9e3d595390682947fd9f05ca12b64ed8388f50348f135c"
++        13396,
++        "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60"
+     ],
+     "mac_current_phase_owner_r2.py": [
+         24977,
+-        "abc7ed419528cf61df6a6ca98dd0963faf4a6bb13708b67507c8cb19163087cc"
++        "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500"
+     ],
+     "mac_native_process_observer_r1.py": [
+         13423,
+@@ -48,7 +48,7 @@
+     ],
+     "mac_t5_volume_guard_r1.py": [
+         13393,
+-        "bc1d25a7ad440aa2a7c9d667e6cbe8ca16b3ba58abd17e5e5a7f18aca284dec5"
++        "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70"
+     ],
+     "mac_owned_unreaped_r1.py": [
+         10990,
+@@ -64,27 +64,27 @@
+     ],
+     "mac_current_cycle_r2.mjs": [
+         24013,
+-        "c20a681b74b26ef7bbb3d6d78542d379b5003d45d625506dfc4d1c0eb7153010"
++        "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc"
+     ],
+     "mac_single_native_r2.mjs": [
+         28533,
+-        "bf1fb1785d6c72c5f440abaebd7fef98990e91de2ab69793468b7a6b57198c31"
++        "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431"
+     ],
+     "mac_auth_rows_cas_r1.mjs": [
+         3109,
+-        "dee9272f36476e1584b5b5d6f2f423bb6702c90d3264ae7321d6cfa1e524281a"
++        "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64"
+     ],
+     "mac_authbus_cache_cas_r1.mjs": [
+         6846,
+         "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+     ],
+     "mac_current_outer_inputs_r2.py": [
+-        27067,
+-        "927592b55259a44ffc6c25028acd227cdb5ef72b5d62367a8f0d8ffacacfd3b4"
++        27292,
++        "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11"
+     ],
+     "mac_current_outer_wal_r1.py": [
+-        68170,
+-        "515b9338f9066b7415689af969e97f09beb204b6c336f477975ec6c4f10b88a1"
++        68348,
++        "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01"
+     ],
+     "mac_darwin_owned_projection_r1.py": [
+         12858,
+@@ -134,11 +134,11 @@
+     ],
+     "candidate-current-manager-wal-r1.public.json": [
+         7211,
+-        "bf698ef260e6b9d68cf42ef734287dfbb514eb68cef68dab06a6731845ce79ae"
++        "1e39c5c4e8a3fb9c6eeb1eb56f45b02e169f1d2052f45e1531b72c1435665cd7"
+     ]
+ }
+-PAYLOAD_BYTES=779787
+-PAYLOAD_SHA='b5146c5165d1dfac7a2d55672fb9ddee89304c70ed2ea4c4e5f59032b44d1374'
++PAYLOAD_BYTES=780807
++PAYLOAD_SHA='4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4'
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -219,7 +219,7 @@
+ def main():
+     os.umask(0o077)
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
+-    report={'schema':'heptabao.mac-current-registry-wal-df026-inert.r1','ok':False,'files':[],
++    report={'schema':'heptabao.mac-current-registry-wal-4e808-inert.r1','ok':False,'files':[],
+         'currentPrivateInputsOpened':False,'productionSqliteOpened':False,'sqliteExecuted':False,
+         'consumerExecuted':False,'serviceStarted':False,'gitStarted':False,'cargoStarted':False,
+         'fixedLibraryDefinitionsLoadedOnly':True,'newOriginalInertSeconds':45,
+@@ -232,7 +232,7 @@
+         need(len(raw)==PAYLOAD_BYTES and sha(raw)==PAYLOAD_SHA,'entire_fixed_public_payload')
+         payload=json.loads(raw)
+         need(set(payload)=={'schema','files','documents','anchorBase64'}
+-            and payload['schema']=='heptabao.mac-current-registry-wal-df026-inert-public-inputs.r1',
++            and payload['schema']=='heptabao.mac-current-registry-wal-4e808-inert-public-inputs.r1',
+             'exact_public_payload_schema')
+         need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_22_sources')
+         need(isinstance(payload['documents'],dict) and set(payload['documents'])==set(DOCUMENT_PINS),
+@@ -293,7 +293,7 @@
+         prepared=True
+         report['preparedCandidate']=True
+         receipt=encode(report)
+-        candidate=publish_public(guard,ROOT/'inert-registry-wal-df026-result.public.json',
++        candidate=publish_public(guard,ROOT/'inert-registry-wal-4e808-result.public.json',
+                                  receipt,(len(receipt),sha(receipt)),'inert_candidate_receipt')
+     except BaseException as error:
+         report['errorType']=type(error).__name__

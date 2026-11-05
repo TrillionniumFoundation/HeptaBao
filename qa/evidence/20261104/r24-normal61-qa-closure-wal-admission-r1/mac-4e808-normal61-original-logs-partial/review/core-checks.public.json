@@ -1,0 +1,303 @@
+{
+  "schema": "heptabao.mac-retained-a-normal61-core-review.v1",
+  "scope": "actual4e808_mac_core_before_full_command_archive",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "job_id": "1a1ab60127b-fc05-4d18",
+  "original_counts": {
+    "44": 44,
+    "ingress_observer": 7,
+    "cold_h2": 9
+  },
+  "new_same_root_publication": 1,
+  "total_actual_unique_names": 61,
+  "names": [
+    "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+    "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+    "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+    "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+    "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+    "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+    "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+    "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+    "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+    "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+    "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+    "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+    "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+    "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+    "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+    "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+    "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+    "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+    "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+    "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+    "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key",
+    "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+    "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+    "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+    "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+    "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection",
+    "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+    "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+    "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+    "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+    "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+    "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+    "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline",
+    "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+    "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+    "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+    "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+    "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+    "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+    "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+    "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+    "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+    "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors"
+  ],
+  "owned_count": 48,
+  "old_retained_count": 10,
+  "warm_ms": 435,
+  "cold_ms": 477,
+  "per_request_budget_ms": 15000,
+  "new_test_command_elapsed_seconds": 16.72162637487054,
+  "checks": [
+    {
+      "label": "canonical",
+      "passed": true
+    },
+    {
+      "label": "pass_scope",
+      "passed": true
+    },
+    {
+      "label": "core_source_and_retained_artifacts",
+      "passed": true
+    },
+    {
+      "label": "retained_6_plus_4_lossless_exact",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/normal-release-result.public.json",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/native-build.public.json",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/result.public.json",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/result.public.json",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/same-root-publication-1.public.json",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/same-root-publication-1.stdout",
+      "passed": true
+    },
+    {
+      "label": "retained_closed:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/same-root-publication-1.stderr",
+      "passed": true
+    },
+    {
+      "label": "group_names:ssh25",
+      "passed": true
+    },
+    {
+      "label": "group_command:ssh25",
+      "passed": true
+    },
+    {
+      "label": "group_names:mount1",
+      "passed": true
+    },
+    {
+      "label": "group_command:mount1",
+      "passed": true
+    },
+    {
+      "label": "group_names:redirect5",
+      "passed": true
+    },
+    {
+      "label": "group_command:redirect5",
+      "passed": true
+    },
+    {
+      "label": "group_names:actor2",
+      "passed": true
+    },
+    {
+      "label": "group_command:actor2",
+      "passed": true
+    },
+    {
+      "label": "group_names:ordinary5",
+      "passed": true
+    },
+    {
+      "label": "group_command:ordinary5",
+      "passed": true
+    },
+    {
+      "label": "group_names:no_forward6",
+      "passed": true
+    },
+    {
+      "label": "group_command:no_forward6",
+      "passed": true
+    },
+    {
+      "label": "ingress_observer_regression",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+      "passed": true
+    },
+    {
+      "label": "extra_command:ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+      "passed": true
+    },
+    {
+      "label": "extra_command:ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+      "passed": true
+    },
+    {
+      "label": "extra_command:ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+      "passed": true
+    },
+    {
+      "label": "extra_command:ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+      "passed": true
+    },
+    {
+      "label": "cold_h2_regression",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+      "passed": true
+    },
+    {
+      "label": "extra_command:http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+      "passed": true
+    },
+    {
+      "label": "same_root_publication_regression",
+      "passed": true
+    },
+    {
+      "label": "extra_command:service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+      "passed": true
+    },
+    {
+      "label": "61_unique_names",
+      "passed": true
+    },
+    {
+      "label": "48_owned_reaped_empty_zero",
+      "passed": true
+    },
+    {
+      "label": "normal_native_chain",
+      "passed": true
+    },
+    {
+      "label": "new_1_runtime_stdout",
+      "passed": true
+    },
+    {
+      "label": "new_1_runtime_timing",
+      "passed": true
+    },
+    {
+      "label": "old_outer",
+      "passed": true
+    }
+  ],
+  "external_intent_tree": "1fb39d18ec5f4d81bbb5fa4035b2550dbc3c888f",
+  "ack_tree": "15f12cb6c6a5256a2c55dbf32c49877a65fac43e",
+  "source_full_tree": "16bb1439f5cea1fd37a3d8a1319d2c37b21f6de8",
+  "full_48_command_archive_pending": true,
+  "independent_release_artifact_file_info_pending": true,
+  "root_independent_review_pending": true,
+  "linux_qualification": false,
+  "lan_qualification": false,
+  "ci154_causality_or_qualification": false,
+  "old_failures_unchanged": true
+}

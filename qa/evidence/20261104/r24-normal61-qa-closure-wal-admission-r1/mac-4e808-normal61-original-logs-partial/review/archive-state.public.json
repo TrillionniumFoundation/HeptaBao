@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.normal61-partial-raw-archive.v1",
+  "core_tree": "94864d3311d217777454934cb81370d3dfad3645",
+  "artifact_info_tree": "4630679f2ad071d590894f1d5e8cfb82b6a8cb34",
+  "records_complete": 48,
+  "small_streams_complete": 94,
+  "all_run_and_list_names_exact": true,
+  "actual_unique_tests": 61,
+  "large_cargo_streams_complete": 0,
+  "large_streams_pending": 2,
+  "cargo_read_gap_tree": "f0a87824af5ba3957a57e1f5304f7e4de4873c55",
+  "full_archive": false,
+  "product_known_pass": true,
+  "unknown_read_does_not_reclassify_product_terminal": true
+}

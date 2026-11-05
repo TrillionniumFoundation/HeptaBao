@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.root.mac-normal61-first-readonly-recovery.v1",
+  "status": "PASS_ONE_CLOSED_READ_OBSERVATION",
+  "packet": "18c215eb3f8d76f6aad7f37e6105de273049aa5d",
+  "files": 15,
+  "bytes": 112887,
+  "check_count": 13,
+  "checks": [
+    "exact_readonly_fixed_original_file_version_16KiB",
+    "unique_operation_admission_then_closed",
+    "f0_o0_start.original_SDK_native",
+    "f0_o0_status0.original_SDK_native",
+    "f0_o0_result0.original_SDK_native",
+    "f0_o0_result16384.original_SDK_native",
+    "f0_o0_result0.immutable_original_page",
+    "f0_o0_result0.same_whole_snapshot",
+    "f0_o0_result16384.immutable_original_page",
+    "f0_o0_result16384.same_whole_snapshot",
+    "reconstructed_exact22342_originalSDK",
+    "sdk_payload_exact_native",
+    "chunk_actual_original_file_range_hash"
+  ],
+  "operation_id": "e76b4ceaa600681f65fa07f408b698d04bf2bfafed823cfa72a2e751416089ec",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+  "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+  "original_read_chunk": {
+    "offset": 0,
+    "next_offset": 16384,
+    "size": 440534,
+    "sha256": "35ddf035e8a127a2d2cfe3c340db240ee09cc3fc747c80a0682b20c8d9f6aca8"
+  },
+  "whole_original_sdk_bytes": 22342,
+  "immutable_pages": 2,
+  "owned_read_future_closed": true,
+  "first_two_old_RPC_outcomes_not_reclassified": true,
+  "product_job_replayed": false,
+  "whole_Cargo_log_completed": false,
+  "full_replacement": false
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-inert-recap.r1",
+  "qualification": "PASS_INERT_ONLY_INDEPENDENT_READBACK_COMPLETE",
+  "rootGo": {
+    "bytes": 2694,
+    "sha256": "b34dbd6c6fe1f57d9e57ad254fe22055549d7ee2df7f253034126add1577d617",
+    "blob": "952f0725a4c36766b85f95720eafa3636d4566ab"
+  },
+  "originalJob": "1a1ab9595af-fc05-4ec7",
+  "exactKey": "heptabao-mac-current-registry-wal-4e808-inert-9b9633f5-20261105-r1",
+  "intent": {
+    "bytes": 1712,
+    "sha256": "eeadc9cc6976b8e808f99053ae8819c5f52c3e2a78d142cf7099ea9142fdce26",
+    "blob": "d6b47ca5e5b6419c10a072cb0c78220890991f11"
+  },
+  "originalAck": {
+    "bytes": 17119,
+    "sha256": "56d010f60dfe78cd535ada4186eeb4948596cd374a82874f9b89028b35619396",
+    "blob": "4a04ccdaf8c13d359cc97c8a013049c50c11d0f9"
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "70c2e4bf8a3ffed60fa4ad6553850de5480d751433b5106052993ba6cd4fb919",
+    "blob": "a9dec37091d9c59c9a25e2355ea50a30ced008ac"
+  },
+  "stdout": {
+    "bytes": 15407,
+    "sha256": "8ac6df3d6c7eda707ec07ae169a526b44b50a46adf00cc7d54b12b83de70ea3e",
+    "blob": "0e7e293a84a1565ab8e4f2c3bde2e73c21ab347d"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "authorityExitCode": 0,
+  "complete": true,
+  "durable": true,
+  "timedOut": false,
+  "outcomeUnknown": false,
+  "elapsedSeconds": 0.25948833394795656,
+  "sourceFiles": 22,
+  "publicDocuments": 8,
+  "receiptFiles": 1,
+  "compiledPythonSources": 18,
+  "byteVerifiedJavaScriptSources": 4,
+  "allOwnedCommandsStopped": true,
+  "allOwnedDescriptorsClosed": true,
+  "independentReadback": {
+    "metadata": 31,
+    "wholeBodies": 31,
+    "chunks": 32,
+    "totalBytes": 596491,
+    "mcpNativePairs": 66,
+    "allExpectedVersionAndWholeShaExact": true,
+    "fullNineIdentityDecimalStringsExact": true
+  },
+  "preclosureReceipt": {
+    "bytes": 13005,
+    "sha256": "15a913807cd49c6b4130f30aa72c605482c23544d3e3dabfb0e90d0036d2a42b",
+    "blob": "d79a4f80b8c5793b2dae43b938e6e9583103d80a",
+    "embeddedOk": false,
+    "prepared": true,
+    "finalStdoutOk": true,
+    "sharedJsonFieldsComparedByOriginalTokens": 28
+  },
+  "verification": {
+    "passed": 320,
+    "scope": "Only existing original raw evidence; no host calls or additional runtime tests.",
+    "originalVerifierFailure": "Only object property-order comparison of T5 anchors; corrected to exact ordered path/full9 tuples. Both verifier versions and error retained. No evidence/source/request changed."
+  },
+  "currentPrivateInputsOpened": false,
+  "productionSqliteOpened": false,
+  "consumerExecuted": false,
+  "serviceStarted": false,
+  "futureRuntimeRequest": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+  "futureRuntimeSubmitted": false,
+  "futureRuntimeRootGoRequired": true,
+  "historicalUnknownsUnchanged": true,
+  "noOriginalBusinessReplay": true,
+  "noProductionCutover": true,
+  "noFullReplacementClaim": true
+}

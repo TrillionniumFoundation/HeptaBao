@@ -1,0 +1,186 @@
+--- before/sender.py
++++ candidate/sender.py
+@@ -1,8 +1,8 @@
+ from pathlib import Path
+ import hashlib,json,os,platform,select,signal,stat,subprocess,sys,time
+-ACTUAL_INPUTS_READY=True
++ACTUAL_INPUTS_READY=False
+ if not ACTUAL_INPUTS_READY:
+- raise RuntimeError('unresolved exact normal artifact transport input metadata')
++ raise RuntimeError('unresolved exact H2 QA artifact transport input metadata')
+ os.umask(0o077)
+ START=time.monotonic()
+ UNTIL=START+90
+@@ -10,55 +10,130 @@
+ TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+-  "name": "heptabao-server",
+-  "bytes": 110339520,
+-  "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
++  "role": "executable",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa",
++  "name": "heptabao-native-h2-qa",
++  "bytes": None,
++  "sha256": None,
+   "source_mode": 320,
+   "target_mode": 320,
+-  "version": "66306:31618600:110339520:1793854196517721681:1793854196660721163"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+-  "name": "native-build.public.json",
+-  "bytes": 772,
+-  "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+-  "name": "normal-release-result.public.json",
+-  "bytes": 3137,
+-  "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+-  "name": "normal-release-tests-result.public.json",
+-  "bytes": 48188,
+-  "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618802:48188:1793855417596045434:1793855417596045434"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
+-  "name": "groups.json",
+-  "bytes": 6249,
+-  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:27299399:6249:1793850441629209928:1793850441629209928"
++  "version": None
++ },
++ {
++  "role": "rust_source",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
++  "name": "native_h2_client.rs",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "test_source",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
++  "name": "native_h2_client_tests.rs",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "cargo_manifest",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
++  "name": "Cargo.toml",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "cargo_lock",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/Cargo.lock",
++  "name": "Cargo.lock",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "canonical_lock",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/canonical.Cargo.lock",
++  "name": "canonical.Cargo.lock",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "build_receipt",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/result.public.json",
++  "name": "build-result.public.json",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "build_controller",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
++  "name": "build_native_h2_client_r1.py",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "build_binding",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
++  "name": "build-binding.private.json",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "component_stdout",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout",
++  "name": "components.stdout",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "component_record",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
++  "name": "components.public.json",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
++ },
++ {
++  "role": "component_list_stdout",
++  "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout",
++  "name": "components-list.stdout",
++  "bytes": None,
++  "sha256": None,
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": None
+  }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.df026.fixed-public-normal-endpoint.v1','status':'failed',
++result={'schema':'heptabao.df026.fixed-public-h2-qa-endpoint.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):

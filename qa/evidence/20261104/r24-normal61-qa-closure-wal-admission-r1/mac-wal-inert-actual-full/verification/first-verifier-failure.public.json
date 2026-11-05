@@ -1,0 +1,11 @@
+{
+  "name": "Error",
+  "message": "Error: t5_original27_strings",
+  "correction": {
+    "error": "t5_original27_strings",
+    "scope": "Verifier only; original source, request, job and evidence unchanged.",
+    "cause": "Compared JSON.stringify object property order: final stdout uses sorted identity/path keys, original anchor uses path/identity. Corrected to compare each exact [path, nine original decimal strings] tuple in the same array order.",
+    "hostCalls": 0,
+    "originalHistoricalQualificationUnchanged": true
+  }
+}

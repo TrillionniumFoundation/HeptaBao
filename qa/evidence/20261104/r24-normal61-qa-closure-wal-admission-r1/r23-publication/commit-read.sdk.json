@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"node_id\":\"C_kwDOUGncwNoAKDBmZDA2NGEzN2Q4YzAwMTk0YWE5MjY2NDBiOWVmOGI2ZTVjZGVlYjI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T11:32:52Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T11:32:52Z\"},\"tree\":{\"sha\":\"d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5\"},\"message\":\"docs(validation): freeze R23 current Mac61, QA components, X230 fence and exact OpenBao 2.7.1 gaps\\n\\nPreserve all prior failures and UNKNOWNs; qualify only the exact observed scopes. Current ROG normal61 has one launch ACK. No production cutover, old-asset cleanup, or full-replacement claim.\",\"parents\":[{\"sha\":\"661d591f61e27559a3937e44d0b9280267ba64cf\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/661d591f61e27559a3937e44d0b9280267ba64cf\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/661d591f61e27559a3937e44d0b9280267ba64cf\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+    "display_title": "0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+    "structuredContent": {
+      "title": "0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+      "content": "{\"sha\":\"0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"node_id\":\"C_kwDOUGncwNoAKDBmZDA2NGEzN2Q4YzAwMTk0YWE5MjY2NDBiOWVmOGI2ZTVjZGVlYjI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T11:32:52Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T11:32:52Z\"},\"tree\":{\"sha\":\"d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5\"},\"message\":\"docs(validation): freeze R23 current Mac61, QA components, X230 fence and exact OpenBao 2.7.1 gaps\\n\\nPreserve all prior failures and UNKNOWNs; qualify only the exact observed scopes. Current ROG normal61 has one launch ACK. No production cutover, old-asset cleanup, or full-replacement claim.\",\"parents\":[{\"sha\":\"661d591f61e27559a3937e44d0b9280267ba64cf\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/661d591f61e27559a3937e44d0b9280267ba64cf\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/661d591f61e27559a3937e44d0b9280267ba64cf\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2"
+    }
+  },
+  "isError": false
+}

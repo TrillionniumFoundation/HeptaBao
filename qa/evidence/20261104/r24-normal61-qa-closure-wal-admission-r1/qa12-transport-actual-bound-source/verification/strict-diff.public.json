@@ -1,0 +1,32 @@
+{
+  "sender.py": {
+    "hunks": 2,
+    "strict_whole": true,
+    "inverse_whole": true,
+    "pin": {
+      "bytes": 10240,
+      "sha256": "8d0c03853efa820c4caa9b06327ab38be3f98ccd7b2d36e6045d85e9ffd9841d",
+      "blob": "f0f4a4ab9be5e4552a6f73019c7afd8905c7c176"
+    }
+  },
+  "receiver.py": {
+    "hunks": 2,
+    "strict_whole": true,
+    "inverse_whole": true,
+    "pin": {
+      "bytes": 21051,
+      "sha256": "8410b9d8235ad8a6deb6f9b3ee64d95ff1beeacc2c2d1138e880cac4259985e1",
+      "blob": "142a2dd651be390e2b0c987e4e2ee7151b592301"
+    }
+  },
+  "relay.py": {
+    "hunks": 2,
+    "strict_whole": true,
+    "inverse_whole": true,
+    "pin": {
+      "bytes": 19332,
+      "sha256": "d34b6df5f3701af8908aeb23dc2c0ef0fbbe61e24a8a8d5d4bab26e33ac1adad",
+      "blob": "ba270f35170c3910777088f4e7b4df1038fc64be"
+    }
+  }
+}

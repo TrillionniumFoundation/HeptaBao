@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.h2-template-path-correction.notice.v1",
+  "status": "SOURCE_ONLY_CORRECTION",
+  "supersedes_template_paths_in_tree": "cdde39aad3a8c6afd402913a8427eab2786d675c",
+  "finding": "The old author template generation replaced the first -r1 substring, changing the fixed BASE ancestor to r2 while leaving the control/work basename at r1. Actual Binding control/work namespace predicates reject that template.",
+  "correction": "Only two template payloads change: explicit immutable BASE-r1 plus control-r2/work-r2/prepare-r1 and their derived file/argv paths.",
+  "fixed_base": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "binding_changed_leaf_paths": 25,
+  "dispatch_changed_leaf_paths": 4,
+  "candidate_binding_blob_unchanged": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+  "candidate_driver_blob_unchanged": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+  "original_51_checks_and_sources_preserved": true,
+  "original_51_check_scope_note": "They did not evaluate the lexical namespace/path predicates. Their old inputs remain historical and are not relabelled as the corrected templates.",
+  "correction_checks": {
+    "count": 75,
+    "status": "passed",
+    "scope": "Actual AST-selected Binding lexical path predicates plus exact 29 changed JSON leaves and 3/2-hunk strict forward/reverse diffs; no full module import, no target host or product operation.",
+    "old_control_and_work_refuse": true,
+    "new_all_27_selected_predicates_pass": true
+  },
+  "budgets_flags_binding_content_pins_and_ready_unchanged": true,
+  "ready_for_readonly_prepare": false,
+  "requests_authorized": false,
+  "new_runtime_qualification": false
+}

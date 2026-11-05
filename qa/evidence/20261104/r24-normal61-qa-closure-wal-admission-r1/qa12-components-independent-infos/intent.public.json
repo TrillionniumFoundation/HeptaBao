@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.qa12-fixed-three-metadata-intent.v1",
+  "scope": "readonly_file_info_only",
+  "source_provenance_blob": "b9951d3f7ac4ce16c151c6c1b4c3bc43ee4ebc64",
+  "host": "rog",
+  "source_job": "1a1ab68bbb6-fc05-4d8a",
+  "new_jobs": 0,
+  "products": 0,
+  "builds": 0,
+  "writes": 0,
+  "requests": [
+    {
+      "role": "component_stdout",
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.stdout"
+      },
+      "expected_whole": {
+        "bytes": 633,
+        "sha256": "9c8b4f62679c5771d7a0b575674f9961e64afaefe46eb30b1825c2f696ed3274",
+        "version": "66306:36087317:633:1793877142711182176:1793877142711182176"
+      },
+      "expected_source_metadata": {
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1
+      },
+      "purpose": "Obtain currently unobserved UID/GID/mode/nlink; existing whole/version must remain exact. Expected metadata are requirements, not observations."
+    },
+    {
+      "role": "component_record",
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json"
+      },
+      "expected_whole": {
+        "bytes": 804,
+        "sha256": "41a0386206a00967a450df01dab89d008d8fc543c4e84702f80aaa1fcbe1f829",
+        "version": "66306:36087319:804:1793877142722182174:1793877142722182174"
+      },
+      "expected_source_metadata": {
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1
+      },
+      "purpose": "Obtain currently unobserved UID/GID/mode/nlink; existing whole/version must remain exact. Expected metadata are requirements, not observations."
+    },
+    {
+      "role": "component_list_stdout",
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.stdout"
+      },
+      "expected_whole": {
+        "bytes": 507,
+        "sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+        "version": "66306:36087313:507:1793877142692182179:1793877142692182179"
+      },
+      "expected_source_metadata": {
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "link_count": 1
+      },
+      "purpose": "Obtain currently unobserved UID/GID/mode/nlink; existing whole/version must remain exact. Expected metadata are requirements, not observations."
+    }
+  ],
+  "dispatch_go": false,
+  "no_replay_unknown": true
+}

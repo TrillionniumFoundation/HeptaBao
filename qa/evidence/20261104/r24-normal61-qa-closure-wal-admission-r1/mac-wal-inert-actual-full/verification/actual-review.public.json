@@ -1,0 +1,1660 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-inert-actual-review.r1",
+  "ok": true,
+  "qualification": "PASS_INERT_ONLY_INDEPENDENT_READBACK_COMPLETE",
+  "originalJob": "1a1ab9595af-fc05-4ec7",
+  "checkCount": 320,
+  "checks": [
+    {
+      "case": "sdk_native_exact.actual/start",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.actual/authority",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.actual/read-00000",
+      "passed": true
+    },
+    {
+      "case": "root_exact_one_inert_go",
+      "passed": true
+    },
+    {
+      "case": "exact_go_request_full_bytes",
+      "passed": true
+    },
+    {
+      "case": "external_intent_exact_request",
+      "passed": true
+    },
+    {
+      "case": "fixed_job",
+      "passed": true
+    },
+    {
+      "case": "typed_original_request_ack",
+      "passed": true
+    },
+    {
+      "case": "one_fresh_key_ack",
+      "passed": true
+    },
+    {
+      "case": "original_supervisor60",
+      "passed": true
+    },
+    {
+      "case": "known_complete_durable_exit0",
+      "passed": true
+    },
+    {
+      "case": "full_stream_original.stdout",
+      "passed": true
+    },
+    {
+      "case": "authority_full_stream.stdout",
+      "passed": true
+    },
+    {
+      "case": "full_stream_original.stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_full_stream.stderr",
+      "passed": true
+    },
+    {
+      "case": "empty_stderr",
+      "passed": true
+    },
+    {
+      "case": "final_report_success",
+      "passed": true
+    },
+    {
+      "case": "original45_after_all_closure",
+      "passed": true
+    },
+    {
+      "case": "t5_original27_strings",
+      "passed": true
+    },
+    {
+      "case": "all_t5_descriptors_closed",
+      "passed": true
+    },
+    {
+      "case": "only_fixed_diskutil_owned",
+      "passed": true
+    },
+    {
+      "case": "diskutil_exact_argv_natural0",
+      "passed": true
+    },
+    {
+      "case": "diskutil_cleanup_all_closed",
+      "passed": true
+    },
+    {
+      "case": "original_child_cleanup_caps",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.currentPrivateInputsOpened",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.productionSqliteOpened",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.sqliteExecuted",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.consumerExecuted",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.serviceStarted",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.gitStarted",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.cargoStarted",
+      "passed": true
+    },
+    {
+      "case": "no_side_effect.inputEntrypointsExecuted",
+      "passed": true
+    },
+    {
+      "case": "22source_8document_18compile",
+      "passed": true
+    },
+    {
+      "case": "only_three_definition_libraries",
+      "passed": true
+    },
+    {
+      "case": "actual_input_exact",
+      "passed": true
+    },
+    {
+      "case": "fresh_only_root_paths",
+      "passed": true
+    },
+    {
+      "case": "actual_parent_full9_strings",
+      "passed": true
+    },
+    {
+      "case": "fixed30_public_payload",
+      "passed": true
+    },
+    {
+      "case": "unique31_fixed_published_names",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/01/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.1",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.1",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.1",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/01/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.1.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.1",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.1",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/02/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.2",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.2",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.2",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/02/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.2.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.2",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.2",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/03/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.3",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.3",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.3",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/03/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.3.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.3",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.3",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/04/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.4",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.4",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.4",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/04/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.4.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.4",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.4",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/05/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.5",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.5",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.5",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/05/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.5.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.5",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.5",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/06/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.6",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.6",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.6",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/06/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.6.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.6",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.6",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/07/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.7",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.7",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.7",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/07/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.7.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.7",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.7",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/08/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.8",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.8",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.8",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/08/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.8.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.8",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.8",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/09/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.9",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.9",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.9",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/09/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.9.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.9",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.9",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/10/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.10",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.10",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.10",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/10/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.10.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.10",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.10",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/11/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.11",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.11",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.11",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/11/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.11.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.11",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.11",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/12/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.12",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.12",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.12",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/12/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.12.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.12",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.12",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/13/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.13",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.13",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.13",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/13/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.13.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.13",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.13",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/14/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.14",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.14",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.14",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/14/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.14.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.14",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.14",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/15/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.15",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.15",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.15",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/15/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.15.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.15",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.15",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/16/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.16",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.16",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.16",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/16/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.16.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.16",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.16",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/17/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.17",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.17",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.17",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/17/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.17.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.17",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.17",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/18/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.18",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.18",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.18",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/18/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.18.0",
+      "passed": true
+    },
+    {
+      "case": "progress_no_retry.18.65536",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/18/read-65536",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.18.65536",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.18",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.18",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/19/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.19",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.19",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.19",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/19/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.19.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.19",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.19",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/20/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.20",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.20",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.20",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/20/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.20.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.20",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.20",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/21/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.21",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.21",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.21",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/21/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.21.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.21",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.21",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/22/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.22",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.22",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.22",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/22/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.22.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.22",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.22",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/23/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.23",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.23",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.23",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/23/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.23.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.23",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.23",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/24/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.24",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.24",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.24",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/24/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.24.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.24",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.24",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/25/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.25",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.25",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.25",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/25/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.25.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.25",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.25",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/26/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.26",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.26",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.26",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/26/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.26.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.26",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.26",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/27/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.27",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.27",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.27",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/27/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.27.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.27",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.27",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/28/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.28",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.28",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.28",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/28/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.28.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.28",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.28",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/29/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.29",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.29",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.29",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/29/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.29.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.29",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.29",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/30/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.30",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.30",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.30",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/30/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.30.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.30",
+      "passed": true
+    },
+    {
+      "case": "original_frozen_public_bytes.30",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/31/file-info",
+      "passed": true
+    },
+    {
+      "case": "actual_full9_strings.31",
+      "passed": true
+    },
+    {
+      "case": "held_file_expected_custody.31",
+      "passed": true
+    },
+    {
+      "case": "independent_info_exact.31",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.independent/31/read-00000",
+      "passed": true
+    },
+    {
+      "case": "pinned_chunk_exact.31.0",
+      "passed": true
+    },
+    {
+      "case": "full_independent_body.31",
+      "passed": true
+    },
+    {
+      "case": "candidate_receipt_hash_bound",
+      "passed": true
+    },
+    {
+      "case": "candidate_is_preclosure_not_success",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.byteVerifiedJavascriptSources",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.candidateFileAloneIsNotQualification",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.cargoStarted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.compiledPythonCountExpected",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.compiledSources",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.consumerExecuted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.createdProofs",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.createdQa",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.createdRoot",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.currentPrivateInputsOpened",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.files",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.fixedLibraryDefinitionsLoadedOnly",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.freshRootAbsence",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.gitStarted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.inputBytes",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.inputEntrypointsExecuted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.inputSha256",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.loadedLibraryDefinitions",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.newOriginalInertSeconds",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.ok",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.preparedCandidate",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.productionSqliteOpened",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.publicDocumentCount",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.schema",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.serviceStarted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.sourceCount",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.sqliteExecuted",
+      "passed": true
+    },
+    {
+      "case": "candidate_raw_token.volumeProbe",
+      "passed": true
+    },
+    {
+      "case": "complete31_independent_32chunks_66pairs",
+      "passed": true
+    }
+  ],
+  "exactMcpNativePairs": 66,
+  "independentFileInfoCount": 31,
+  "independentWholeBodyCount": 31,
+  "binaryChunks": 32,
+  "totalIndependentWholeBytes": 596491,
+  "elapsedSeconds": 0.25948833394795656,
+  "candidatePreclosureKeys": 28,
+  "originalAuthority": {
+    "bytes": 733,
+    "sha256": "70c2e4bf8a3ffed60fa4ad6553850de5480d751433b5106052993ba6cd4fb919",
+    "blob": "a9dec37091d9c59c9a25e2355ea50a30ced008ac"
+  },
+  "originalStdout": {
+    "bytes": 15407,
+    "sha256": "8ac6df3d6c7eda707ec07ae169a526b44b50a46adf00cc7d54b12b83de70ea3e",
+    "blob": "0e7e293a84a1565ab8e4f2c3bde2e73c21ab347d"
+  },
+  "candidateReceipt": {
+    "bytes": 13005,
+    "sha256": "15a913807cd49c6b4130f30aa72c605482c23544d3e3dabfb0e90d0036d2a42b",
+    "blob": "d79a4f80b8c5793b2dae43b938e6e9583103d80a"
+  },
+  "bodies": [
+    {
+      "ordinal": 1,
+      "name": "qa/mac_current_fixture_materializer_r1.py",
+      "bytes": 23649,
+      "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+      "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a",
+      "version": "16777244:72629128:23649:1793880070005496387:1793880070005505345",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 2,
+      "name": "qa/mac_current_capture_entry_wal_r1.py",
+      "bytes": 42084,
+      "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a",
+      "blob": "1001b044076205bd8497670a12504439bdf921c8",
+      "version": "16777244:72629129:42084:1793880070008921181:1793880070008927639",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 3,
+      "name": "qa/mac_owned_launchd_r3.py",
+      "bytes": 35734,
+      "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29",
+      "blob": "04466c9004d80289dac655fcd958a1e33f324ae4",
+      "version": "16777244:72629130:35734:1793880070009546102:1793880070009552227",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 4,
+      "name": "qa/mac_current_server_owner_r1.py",
+      "bytes": 13396,
+      "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60",
+      "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81",
+      "version": "16777244:72629131:13396:1793880070010137942:1793880070010143358",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 5,
+      "name": "qa/mac_current_phase_owner_r2.py",
+      "bytes": 24977,
+      "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500",
+      "blob": "0bb331760813905250de5c0722a74fdcebfc099e",
+      "version": "16777244:72629132:24977:1793880070010697825:1793880070010703324",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 6,
+      "name": "qa/mac_native_process_observer_r1.py",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "version": "16777244:72629133:13423:1793880070011281331:1793880070011286539",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 7,
+      "name": "qa/mac_guarded_current_capture_r3.py",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "version": "16777244:72629134:23578:1793880070011833382:1793880070011838965",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 8,
+      "name": "qa/mac_owned_commands_r1.py",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "version": "16777244:72629135:5965:1793880070012399098:1793880070012404514",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 9,
+      "name": "qa/mac_t5_volume_guard_r1.py",
+      "bytes": 13393,
+      "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70",
+      "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916",
+      "version": "16777244:72629136:13393:1793880070012935315:1793880070012940440",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 10,
+      "name": "qa/mac_owned_unreaped_r1.py",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "version": "16777244:72629137:10990:1793880070013493074:1793880070013498740",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 11,
+      "name": "qa/mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "version": "16777244:72629138:16476:1793880070014026708:1793880070014032291",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 12,
+      "name": "qa/mac_capture_sqlite_synthetic_r2.py",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+      "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "version": "16777244:72629139:16915:1793880070014595841:1793880070014601132",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 13,
+      "name": "qa/mac_current_cycle_r2.mjs",
+      "bytes": 24013,
+      "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc",
+      "blob": "d3b981f2c22a8e522555c12571d01c2be0008472",
+      "version": "16777244:72629140:24013:1793880070015143808:1793880070015148974",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 14,
+      "name": "qa/mac_single_native_r2.mjs",
+      "bytes": 28533,
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+      "version": "16777244:72629141:28533:1793880070015703941:1793880070015709441",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 15,
+      "name": "qa/mac_auth_rows_cas_r1.mjs",
+      "bytes": 3109,
+      "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64",
+      "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746",
+      "version": "16777244:72629142:3109:1793880070016268199:1793880070016273657",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 16,
+      "name": "qa/mac_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "version": "16777244:72629143:6846:1793880070016790668:1793880070016796042",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 17,
+      "name": "qa/mac_current_outer_inputs_r2.py",
+      "bytes": 27292,
+      "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+      "version": "16777244:72629144:27292:1793880070017318219:1793880070017323635",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 18,
+      "name": "qa/mac_current_outer_wal_r1.py",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246",
+      "version": "16777244:72629145:68348:1793880070017888768:1793880070017894309",
+      "chunkOffsets": [
+        0,
+        65536
+      ]
+    },
+    {
+      "ordinal": 19,
+      "name": "qa/mac_darwin_owned_projection_r1.py",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+      "version": "16777244:72629146:12858:1793880070018637515:1793880070018642598",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 20,
+      "name": "qa/mac_native_owned_unreaped_r1.py",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+      "version": "16777244:72629147:10761:1793880070019186774:1793880070019192273",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 21,
+      "name": "qa/mac_native_owned_commands_r1.py",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+      "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+      "version": "16777244:72629148:5972:1793880070019737657:1793880070019743365",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 22,
+      "name": "qa/mac_registry_readonly_wal_r1.py",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+      "version": "16777244:72629149:31776:1793880070020272875:1793880070020278750",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 23,
+      "name": "proofs/synthetic-r2.stdout.public.json",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "version": "16777244:72629150:16228:1793880070020880630:1793880070020886255",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 24,
+      "name": "proofs/synthetic-r2.authority.public.json",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+      "blob": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "version": "16777244:72629151:733:1793880070021462345:1793880070021468803",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 25,
+      "name": "proofs/native-proc-r2.stdout.public.json",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "blob": "08056cb82289a44037c771b0ea03982ea11064be",
+      "version": "16777244:72629152:24032:1793880070021927359:1793880070021933067",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 26,
+      "name": "proofs/native-proc-r2.authority.public.json",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "blob": "da54efb279857250790f0ed946c55aaad405d505",
+      "version": "16777244:72629153:733:1793880070022541281:1793880070022547864",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 27,
+      "name": "proofs/native-proc-r2.child-stdout.public.json",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "blob": "b5277782c948051b4483afe62c9951a1aa80096b",
+      "version": "16777244:72629154:11066:1793880070023022210:1793880070023028293",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 28,
+      "name": "proofs/registry-wal-r1.stdout.public.json",
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+      "blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540",
+      "version": "16777244:72629155:62662:1793880070023606634:1793880070023613050",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 29,
+      "name": "proofs/registry-wal-r1.authority.public.json",
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+      "blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e",
+      "version": "16777244:72629156:733:1793880070024327924:1793880070024333590",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 30,
+      "name": "candidate-current-manager-wal-r1.public.json",
+      "bytes": 7211,
+      "sha256": "1e39c5c4e8a3fb9c6eeb1eb56f45b02e169f1d2052f45e1531b72c1435665cd7",
+      "blob": "e795f3dc4fa03cfdc6d9ea8c35cdbb0e64732342",
+      "version": "16777244:72629157:7211:1793880070024776230:1793880070024781230",
+      "chunkOffsets": [
+        0
+      ]
+    },
+    {
+      "ordinal": 31,
+      "name": "inert-registry-wal-4e808-result.public.json",
+      "bytes": 13005,
+      "sha256": "15a913807cd49c6b4130f30aa72c605482c23544d3e3dabfb0e90d0036d2a42b",
+      "blob": "d79a4f80b8c5793b2dae43b938e6e9583103d80a",
+      "version": "16777244:72629158:13005:1793880070025428608:1793880070025438148",
+      "chunkOffsets": [
+        0
+      ]
+    }
+  ],
+  "verifiedIntegerPolicy": "Full identity fields and file versions compared as original decimal strings; candidate shared values compared as original JSON tokens. All original raw bodies retained.",
+  "noPublisherReplay": true,
+  "noFutureRuntimeSubmission": true,
+  "noCurrentPrivateCapture": true,
+  "noProductionCutover": true
+}

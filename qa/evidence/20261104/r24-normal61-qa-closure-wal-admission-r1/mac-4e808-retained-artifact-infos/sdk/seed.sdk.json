@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":320,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":320,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-seed\",\"sha256\":\"faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429\",\"size\":86761216,\"version\":\"16777244:72626765:86761216:1793876826766527617:1793876826790237905\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

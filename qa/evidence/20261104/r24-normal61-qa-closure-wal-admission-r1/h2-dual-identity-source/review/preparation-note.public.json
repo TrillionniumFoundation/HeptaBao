@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.source-preparation.note.v1",
+  "prior_attempt": {
+    "status": "failed_before_projection_or_publication",
+    "error": "ReferenceError: structuredClone is not defined",
+    "scope": "V8 cached table cloning after three read-only Git fetches; no host call or mutation"
+  },
+  "resolution": "JSON clone used only on this table of strings and safe small integers; native ns remain version strings. Candidate sources and offline tests unchanged."
+}

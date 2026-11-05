@@ -1,0 +1,31 @@
+diff --git a/sources/mac_owned_launchd_r3.py b/sources/mac_owned_launchd_r3.py
+--- a/sources/mac_owned_launchd_r3.py
++++ b/sources/mac_owned_launchd_r3.py
+@@ -11,13 +11,14 @@
+ from pathlib import Path
+ from mac_native_process_observer_r1 import ProcessReader
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
+ QA=ROOT/'qa'
++BINDING_READY=False  # Actual Mac normal61 artifact/authority are not yet bound.
+ DOMAIN='gui/501'
+-LABELS={'server':'org.heptabao.qa.mac-authbus-df026-wal-r1.server',
+-        'consumer':'org.heptabao.qa.mac-authbus-df026-wal-r1.consumer'}
+-SERVER=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server')
+-SERVER_SHA='ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0'
++LABELS={'server':'org.heptabao.qa.mac-authbus-4e808-wal-r1.server',
++        'consumer':'org.heptabao.qa.mac-authbus-4e808-wal-r1.consumer'}
++SERVER=None
++SERVER_SHA=None
+ GRAPH=(('server-start','server-initial'),('phase','initial'),
+        ('server-kill','server-initial'),('server-start','server-cold-new-process'),
+        ('phase','cold-new-process'),('server-kill','server-cold-new-process'),
+@@ -87,6 +88,7 @@
+ 
+ class OwnedLaunchd:
+     def __init__(self,*,guard,commands,signals,until,anchor_raw,anchor_sha256,qa_pins,python_runtime):
++        need(BINDING_READY is True,'mac_normal61_binding_not_admitted')
+         now=time.monotonic()
+         need(now<until<=now+NEW_MANAGER_SECONDS,'one_new_manager_deadline')
+         need(guard.uuid_verified and not guard.closed,'held_t5_before_manager')

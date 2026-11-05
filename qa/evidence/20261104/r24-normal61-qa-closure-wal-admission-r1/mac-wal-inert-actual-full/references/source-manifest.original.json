@@ -1,0 +1,377 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-inert-source-manifest.r1",
+  "qualification": "SOURCE_ONLY_NOT_SUBMITTED",
+  "files": [
+    {
+      "path": "bindings/product-binding.actual.public.json",
+      "mode": "100644",
+      "bytes": 7869,
+      "sha256": "d88d5598872b4e6c52074ab853fc3a0d7ef492628a1a2ced2361bb6e5e829816",
+      "blob": "f25284e7400ed9b8a40c73f14726f2fe8c456294"
+    },
+    {
+      "path": "bindings/public-source-pins.public.json",
+      "mode": "100644",
+      "bytes": 2276,
+      "sha256": "327238637119363509a244473de193c60e5b822a7faa11ed3a3b388a39e4f447",
+      "blob": "329eebac590c138d73dbe15b6ef947586d185105"
+    },
+    {
+      "path": "bindings/t5-volume-anchor.original.json",
+      "mode": "100644",
+      "bytes": 967,
+      "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+      "blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
+    },
+    {
+      "path": "carrier/mac_current_registry_wal_inert_4e808_r1.py",
+      "mode": "100644",
+      "bytes": 15543,
+      "sha256": "9b9633f59900a171ab97347830380f1d8a1ef74d1fe742b5cc3b78df646cbae6",
+      "blob": "b0d546989d09c9e97e0edafda1a8144735f37003"
+    },
+    {
+      "path": "diffs/df026-to-4e808-inert.review.diff",
+      "mode": "100644",
+      "bytes": 5729,
+      "sha256": "d00fb817a37ed2ab277a0d9d772f42822a29a23a5f0a9e3ecd165cfbc35576ce",
+      "blob": "3700eb75df83328e978543fee5bb4be3608d1bf3"
+    },
+    {
+      "path": "documents/candidate-current-manager-wal-r1.public.json",
+      "mode": "100644",
+      "bytes": 7211,
+      "sha256": "1e39c5c4e8a3fb9c6eeb1eb56f45b02e169f1d2052f45e1531b72c1435665cd7",
+      "blob": "e795f3dc4fa03cfdc6d9ea8c35cdbb0e64732342"
+    },
+    {
+      "path": "documents/proofs/native-proc-r2.authority.public.json",
+      "mode": "100644",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "blob": "da54efb279857250790f0ed946c55aaad405d505"
+    },
+    {
+      "path": "documents/proofs/native-proc-r2.child-stdout.public.json",
+      "mode": "100644",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+    },
+    {
+      "path": "documents/proofs/native-proc-r2.stdout.public.json",
+      "mode": "100644",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "blob": "08056cb82289a44037c771b0ea03982ea11064be"
+    },
+    {
+      "path": "documents/proofs/registry-wal-r1.authority.public.json",
+      "mode": "100644",
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f",
+      "blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e"
+    },
+    {
+      "path": "documents/proofs/registry-wal-r1.stdout.public.json",
+      "mode": "100644",
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+      "blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540"
+    },
+    {
+      "path": "documents/proofs/synthetic-r2.authority.public.json",
+      "mode": "100644",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+      "blob": "0673ffaf642cd44775ecc910e9320ff43989952e"
+    },
+    {
+      "path": "documents/proofs/synthetic-r2.stdout.public.json",
+      "mode": "100644",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "blob": "781d085d4fdc52ada91ea796572099137c87cd55"
+    },
+    {
+      "path": "inputs/inert.stdin.public.json",
+      "mode": "100644",
+      "bytes": 780807,
+      "sha256": "4cbfe07b6e0f504768fc52e1bab8dcbc7af0c9326e9db69c89b8b9bcc07283c4",
+      "blob": "931383bbc295b82ad7ff6cf57c33af3395e20966"
+    },
+    {
+      "path": "PLAN.public.json",
+      "mode": "100644",
+      "bytes": 5667,
+      "sha256": "7f93a01bb6423d0bb401b44db141fffd9f3a6ecc552ac2c8e29095c6e95e660f",
+      "blob": "8e0338ac540e5632b8131f56d6566d98298e11df"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 4972,
+      "sha256": "77c8b58ff86910faad4c8b27ff6b985f1e032d1658190759296ef07bc65d4f9d",
+      "blob": "d1dde8936557744ca95aead8ee9eaf29d1794989"
+    },
+    {
+      "path": "references/bound-source-manifest.original.json",
+      "mode": "100644",
+      "bytes": 14780,
+      "sha256": "161792e150e18ebf317427ddae9ece0f7e462924adb15ff34b04380281c4a803",
+      "blob": "a6d8424dc1d3c7181ee0a445f0a1c7904735c061"
+    },
+    {
+      "path": "references/df026-inert-carrier.py",
+      "mode": "100644",
+      "bytes": 15543,
+      "sha256": "4e1002699df48e8a1d2a64556729335c4eafa6de95d7472e4bc454ac896367aa",
+      "blob": "75bc97f9905f1c517188689bbfed5b0c389ccb3e"
+    },
+    {
+      "path": "references/df026-inert-request.original.json",
+      "mode": "100644",
+      "bytes": 796239,
+      "sha256": "76e0ed23387a9a0887a1aa778b8cc04238159b15135dbc982aae09066079ba85",
+      "blob": "47543124f7890d5a65bb523f8dfa49cf96441c6f"
+    },
+    {
+      "path": "references/df026-runtime-request.original.json",
+      "mode": "100644",
+      "bytes": 5267,
+      "sha256": "a8fdb478286456a64d141f766ac034d8350323d4828341d0c4179fee646ce9c8",
+      "blob": "c8b3545c8bffac95bf1c0746f7678f28133d6368"
+    },
+    {
+      "path": "references/root-bound68-result.original.json",
+      "mode": "100644",
+      "bytes": 5338,
+      "sha256": "cbd484618a3dc0674d8f3e81e2a95fd116148bce9dcf766b7afc52edb3e07181",
+      "blob": "5880ad714a2c6e285b9c20b2be97424d25d161ad"
+    },
+    {
+      "path": "REQUESTS.public.json",
+      "mode": "100644",
+      "bytes": 1988,
+      "sha256": "67e002afda027aedaa5e0131e88d617f71b0e2186e87e5203b0d507feb20d188",
+      "blob": "b960e62ce6a8cd9d072d0bbd60a6834621f5a727"
+    },
+    {
+      "path": "requests/future-runtime-start.public.json",
+      "mode": "100644",
+      "bytes": 5267,
+      "sha256": "5c612c632efed01b0e4ec97c2d1822b15b23628610dd679eff24dba99d43fde8",
+      "blob": "db1c0badddf800b253a5476cdb1ab49f2cabf543"
+    },
+    {
+      "path": "requests/inert-start.public.json",
+      "mode": "100644",
+      "bytes": 797259,
+      "sha256": "5e3dc6fd2c755b42f5e574afd7b1d78905ef3a7b4600abbf7a544486e76798d9",
+      "blob": "75cc9edd37fca32dacaa394fe7e7a815b455aa9b"
+    },
+    {
+      "path": "sources/mac_auth_rows_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 3109,
+      "sha256": "aea4fb56bbf8c51457d99f8a46fb1dcce11acc99ef82c8c57ab8c6c4e1b68f64",
+      "blob": "26e00c58f5daa0d68ceb62b5f0be560c06c39746"
+    },
+    {
+      "path": "sources/mac_authbus_cache_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "path": "sources/mac_capture_sqlite_synthetic_r1.py",
+      "mode": "100644",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "blob": "992fa2b52760e5f3d0b192837053728011e11500"
+    },
+    {
+      "path": "sources/mac_capture_sqlite_synthetic_r2.py",
+      "mode": "100644",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+      "blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+    },
+    {
+      "path": "sources/mac_current_capture_entry_wal_r1.py",
+      "mode": "100644",
+      "bytes": 42084,
+      "sha256": "32fcee225a7d185242bbc9cc792b9ed9572c26f38e04ad7b10c1831e2409cb4a",
+      "blob": "1001b044076205bd8497670a12504439bdf921c8"
+    },
+    {
+      "path": "sources/mac_current_cycle_r2.mjs",
+      "mode": "100644",
+      "bytes": 24013,
+      "sha256": "9ebc50e88b990987041f8fb9280b5ebedd96d1211a38cb24d2f6f4c518483fdc",
+      "blob": "d3b981f2c22a8e522555c12571d01c2be0008472"
+    },
+    {
+      "path": "sources/mac_current_fixture_materializer_r1.py",
+      "mode": "100644",
+      "bytes": 23649,
+      "sha256": "686b89842b19da959c5ea1af25f7568ea65070bf6b3cacd25443ea0a3cb809f1",
+      "blob": "aa9842e1543eee1dbcacc797161ddda31d59cb5a"
+    },
+    {
+      "path": "sources/mac_current_outer_inputs_r2.py",
+      "mode": "100644",
+      "bytes": 27292,
+      "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c"
+    },
+    {
+      "path": "sources/mac_current_outer_wal_r1.py",
+      "mode": "100644",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+    },
+    {
+      "path": "sources/mac_current_phase_owner_r2.py",
+      "mode": "100644",
+      "bytes": 24977,
+      "sha256": "4b545e9b3147cc118565255cdfcd64ee41095f4f957f9c151d103892d4a92500",
+      "blob": "0bb331760813905250de5c0722a74fdcebfc099e"
+    },
+    {
+      "path": "sources/mac_current_server_owner_r1.py",
+      "mode": "100644",
+      "bytes": 13396,
+      "sha256": "7ff8a1d8c8b134869d1256826e063e6d22950c3defd03b127ada17061c445f60",
+      "blob": "db0aeb856c01006e6e66ba72269f029dfa13ca81"
+    },
+    {
+      "path": "sources/mac_darwin_owned_projection_r1.py",
+      "mode": "100644",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+    },
+    {
+      "path": "sources/mac_guarded_current_capture_r3.py",
+      "mode": "100644",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+    },
+    {
+      "path": "sources/mac_native_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+      "blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+    },
+    {
+      "path": "sources/mac_native_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+    },
+    {
+      "path": "sources/mac_native_process_observer_r1.py",
+      "mode": "100644",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+    },
+    {
+      "path": "sources/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    },
+    {
+      "path": "sources/mac_owned_launchd_r3.py",
+      "mode": "100644",
+      "bytes": 35734,
+      "sha256": "f33b4b61fdb97f4612e1667840e148e69dc2702b49f0832f1491800ddbc6cf29",
+      "blob": "04466c9004d80289dac655fcd958a1e33f324ae4"
+    },
+    {
+      "path": "sources/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    },
+    {
+      "path": "sources/mac_registry_readonly_wal_r1.py",
+      "mode": "100644",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+      "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920"
+    },
+    {
+      "path": "sources/mac_single_native_r2.mjs",
+      "mode": "100644",
+      "bytes": 28533,
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1"
+    },
+    {
+      "path": "sources/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "bytes": 13393,
+      "sha256": "56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70",
+      "blob": "40e12084ba78c86abb3f16c10c64a30664a8b916"
+    },
+    {
+      "path": "verification/packet-composition-first-error.public.json",
+      "mode": "100644",
+      "bytes": 347,
+      "sha256": "aed90a0d3cc008eeb24accfb14b888a164d8e5c552b8c9b82f8d066c394cf155",
+      "blob": "62d420ee2758a5c481e9d2ee31fdc91fc34955a1"
+    },
+    {
+      "path": "verification/static-assembly.original.json",
+      "mode": "100644",
+      "bytes": 225,
+      "sha256": "d8ff628eb8b172ad5da133c8d624153623f93db4e1af96a4782f6ee982f1e955",
+      "blob": "b237797504f001a767a217672299764d61bd23e3"
+    },
+    {
+      "path": "verification/static-executor.original.json",
+      "mode": "100644",
+      "bytes": 10490,
+      "sha256": "3b2b1f23bd1162b0b2829d781ea84173b3b75b7535cacea5df58789bbea4aa6e",
+      "blob": "694261551180b3b7b8b17379459cb9637b138935"
+    },
+    {
+      "path": "verification/static-input.public.json",
+      "mode": "100644",
+      "bytes": 1011412,
+      "sha256": "807d8c101f867bb000e1997873ced3bd9d5203c9449fb6634db6a7a79815c11a",
+      "blob": "c5728e96a243252059accc0c4b8776cbe2af813a"
+    },
+    {
+      "path": "verification/static-result.public.json",
+      "mode": "100644",
+      "bytes": 9502,
+      "sha256": "10be16acbcc5e0e1e01e6119a38986aa08a7544f238fb602e2fbd60129e0e226",
+      "blob": "b60e23a6a718b49e3a86c6628f106feb582a8b4d"
+    },
+    {
+      "path": "verification/static-verifier.py",
+      "mode": "100644",
+      "bytes": 13695,
+      "sha256": "ba101b8eadc4101912dc84ba3c283e218b923974427b188f3b0bd78a249437d7",
+      "blob": "ac51f62e805c09addb89cd27128cd3c6529c879c"
+    }
+  ],
+  "fileCountExcludingManifest": 52,
+  "totalBytesExcludingManifest": 4094668,
+  "boundSourceTree": "9755935337552dd6c421e74380afb327f6f61892",
+  "staticChecks": 122,
+  "carrierOnlyCompileCount": 1,
+  "hostCalls": 0,
+  "productionPermission": false
+}

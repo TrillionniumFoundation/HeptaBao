@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.authbus-production-binding-unbound.r1",
+  "status": "SOURCE_PLAN_ONLY_NOT_PRODUCTION_ADMISSION",
+  "knownProduct": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "macCurrentSourceTree": "9755935337552dd6c421e74380afb327f6f61892",
+    "normalCoreAcceptedForSourceBinding": true,
+    "currentConsumerQualified": false
+  },
+  "production": {
+    "address": null,
+    "clusterId": null,
+    "nodeRoleAndMembership": null,
+    "namespace": null,
+    "namespaceIncarnation": null,
+    "caSource": null,
+    "caSha256": null,
+    "leafSha256": null,
+    "tlsServerName": null,
+    "roleRoute": null,
+    "roleIdSource": null,
+    "roleIdSha256": null,
+    "secretIdSource": null,
+    "secretIdProvenance": null,
+    "secretIdPublicDigest": null,
+    "policySource": null,
+    "policySha256": null,
+    "policyReadback": null,
+    "lifetimeAndUsePolicy": null,
+    "renewalBeforeAfter": null,
+    "revocationAndRejection": null,
+    "persistedTokenOrCredentialSource": null,
+    "serviceManagerBinding": null,
+    "registeredBackupBinding": null,
+    "rollbackBaselineBinding": null
+  },
+  "sourceAcceptance": {
+    "privateValuesPublished": false,
+    "sourcePathsMustComeFromActualObservedRegistration": true,
+    "noGuessedPrivatePaths": true,
+    "noBroadInventory": true,
+    "noProductionWriteOrRefreshInThisPlan": true
+  },
+  "parallelSourceSteps": [
+    {
+      "id": "P01",
+      "title": "Public registration binding",
+      "inputs": "Existing observed configuration/registration outputs only; derive exact endpoint,CA/RoleID/SecretID source paths and service/backup references without reading private values.",
+      "implementation": "Build a bounded public projection using the already reviewed finite collector discipline. Unknown or unresolved fields stay unresolved; only actually named files can form a later exact readset.",
+      "output": "Public production-binding with exact source blob/whole hash/field provenance and separate unresolved fields.",
+      "currentAuthority": "SOURCE_ONLY",
+      "newHostReadset": null
+    },
+    {
+      "id": "P02",
+      "title": "Private credential-source admission caller",
+      "inputs": "Only paths authorized afterP01; exact held parent/name/FD plus mode/owner/nlink and raw SHA evidence; never generic env/home discovery.",
+      "implementation": "Reuse Inputs lifetime/cancellation/once-close and exact frozen proof predicates; separate provider credential provenance from AppRole delivery credentials. Bind account/generation/lifetime without provider request. If expiry/drift fails, refuse; no refresh fallback.",
+      "output": "Private capsule plus bounded public metadata/hash/closure, with explicit source scope and no values.",
+      "currentAuthority": "SOURCE_ONLY",
+      "newHostReadset": null
+    },
+    {
+      "id": "P03",
+      "title": "Production endpoint/ACL lifecycle verification source",
+      "inputs": "Exact registered endpoint/cluster/namespace/CA/leaf, explicit role/secret source and public policy bytes fromP01/P02.",
+      "implementation": "A separate exact executor must retain TLS trust and native unsupported guards; predeclare one login, actual lookup-self baseline/renewed lease observations, read/deny scope and revoke→deny checks. Treat unknown as stop; no silent retry or cluster initialization. Existing loopback-only caller is not relaxed to arbitrary addresses.",
+      "output": "Per-operation request identity, response/receipt hashes, original absolute deadlines and final owner closure.",
+      "currentAuthority": "SOURCE_ONLY",
+      "exactRequest": null
+    },
+    {
+      "id": "P04",
+      "title": "Per-host service/persistence/inverse source",
+      "inputs": "Actual service unit/label/config and registered backup source from each host, all exact public identities. No Pocket-to-Mac/ROG/X230 extrapolation.",
+      "implementation": "Prepare fixed compare-and-swap switch and inverse using actual before/candidate values, processbirth/manager ownership and bounded cold-start evidence. Backup registration/restore payload must be tied to the current host; preserve unrelated state and original unknowns.",
+      "output": "One concrete reversible per-host request plus rollback/baseline evidence for review; no production cutover in current package.",
+      "currentAuthority": "SOURCE_ONLY",
+      "exactRequest": null
+    }
+  ],
+  "nonGoals": [
+    "No provider request, token refresh, model switch or quota modification",
+    "No J3160 access",
+    "No production init/unseal/role creation/rotation or cutover",
+    "No Docker deletion from apparent emptiness",
+    "No reinterpretation of historical UNKNOWN or finite non-atomic observations",
+    "No fullreplacement or fullbackend compatibility conclusion"
+  ]
+}

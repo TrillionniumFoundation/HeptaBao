@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/qa/mac_t5_volume_guard_r1.py\",\"sha256\":\"56f0490e6b4457ec59f82ffb17984f16108c0856879c21ceabc3ea6670605d70\",\"size\":13393,\"version\":\"16777244:72629136:13393:1793880070012935315:1793880070012940440\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

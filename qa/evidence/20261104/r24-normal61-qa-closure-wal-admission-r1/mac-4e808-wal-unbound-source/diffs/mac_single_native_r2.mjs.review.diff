@@ -1,0 +1,12 @@
+diff --git a/sources/mac_single_native_r2.mjs b/sources/mac_single_native_r2.mjs
+--- a/sources/mac_single_native_r2.mjs
++++ b/sources/mac_single_native_r2.mjs
+@@ -220,7 +220,7 @@
+ try {
+   plan = JSON.parse(privateRead(process.argv[2]));
+   const AGENTS = ['main', 'trnm', 'hepta-ui', 'hepta', 'hepta-backend'];
+-  const ROOT = '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1';
++  const ROOT = '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1';
+   need(plan.schema === 'heptabao.mac-five-agent-worker.private.r1' && plan.mode === 'native'
+     && AGENTS.includes(plan.agentId) && ['initial', 'cold-new-process'].includes(plan.phase),
+     'exact_native_worker_scope');

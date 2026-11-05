@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-r3-build-7ea25347-ac127d3e-components-build-stdout-info-01",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-build.stdout"
+    }
+  }
+}

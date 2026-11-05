@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifact-controls-r1/sender.py\",\"sha256\":\"8d0c03853efa820c4caa9b06327ab38be3f98ccd7b2d36e6045d85e9ffd9841d\",\"size\":10240,\"version\":\"2050:7237361:10240:1793880756042201427:1793880756055641273\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

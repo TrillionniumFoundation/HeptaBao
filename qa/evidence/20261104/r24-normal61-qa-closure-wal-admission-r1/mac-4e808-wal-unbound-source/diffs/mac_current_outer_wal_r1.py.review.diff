@@ -1,0 +1,41 @@
+diff --git a/sources/mac_current_outer_wal_r1.py b/sources/mac_current_outer_wal_r1.py
+--- a/sources/mac_current_outer_wal_r1.py
++++ b/sources/mac_current_outer_wal_r1.py
+@@ -12,13 +12,14 @@
+ import socket, ssl, stat, sys, time, traceback
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-df026-current-registry-wal-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1')
+ QA=ROOT/'qa'
+-COMMIT='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server')
+-BINARY_SHA='ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0'
+-BINARY_BYTES=92408592
++BINDING_READY=False  # Actual Mac normal61 artifact/authority are not yet bound.
++COMMIT='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
++BINARY=None
++BINARY_SHA=None
++BINARY_BYTES=None
+ NAMES=('mac_guarded_current_capture_r3.py','mac_capture_sqlite_synthetic_r1.py',
+  'mac_capture_sqlite_synthetic_r2.py','mac_owned_commands_r1.py','mac_t5_volume_guard_r1.py',
+  'mac_owned_unreaped_r1.py','mac_native_process_observer_r1.py','mac_current_phase_owner_r2.py',
+@@ -837,6 +838,7 @@
+             'wholeProductionBackupClaimed':False}
+ 
+ def main():
++    need(BINDING_READY is True,'mac_normal61_binding_not_admitted')
+     os.umask(0o077);ctx=Context()
+     parser=argparse.ArgumentParser()
+     parser.add_argument('--candidate',type=Path,required=True)
+@@ -857,7 +859,7 @@
+         'currentProviderAvailabilityQualified':False,'allAccountsQualified':False,
+         'productionManagerQualification':False,'fullReplacementQualified':False,
+         'automaticBusinessRetry':False,'credentialValuesPublished':False,
+-        'sourceGeneration':'new_registry_readonly_wal_df026_successor',
++        'sourceGeneration':'new_registry_readonly_wal_4e808_unbound_successor',
+         'newOuterSeconds':900,'newManagerSeconds':600,'newManagerCleanupSeconds':60,
+         'originalPhaseSeconds':120,'originalNativeSeconds':[15,8,3],
+         'originalHttpSeconds':10,'originalCaptureSeconds':45}

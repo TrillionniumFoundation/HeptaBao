@@ -1,0 +1,19 @@
+{
+  "idempotency_key": "qa-r3-build-7ea25347-ac127d3e-command-records-b-01",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-build.public.json",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components-list.public.json",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/components.public.json",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-after-commit.public.json",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-after-tree.public.json",
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/source-after-status.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.root.qa12-exact-inert-go.v1",
+  "issued_at_utc": "2026-11-05 12:11:06 UTC",
+  "decision": "GO_ONE_EXACT_CREATE_ONLY_QA12_CONTROL_STAGE",
+  "source_packet": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+  "root_review": {
+    "name": "qa12-bound-root-result.public.json",
+    "blob": "52c0783130febaa156faea42fb28510dc4d3a2d6",
+    "bytes": 5858,
+    "sha256": "c6c099670a4fe9f71b4aed1b18050d501590de4c69efd8eedd19b8a17aadeb35"
+  },
+  "exact_request": {
+    "path": "dispatch/inert.request.json",
+    "blob": "d71478bc55634da553ecc5141111df8138029fad",
+    "bytes": 73140,
+    "sha256": "06679ccdbbda3237ef9ee7cc1dd94b9edacf8bf7af8941bf8f17572572f1ed9f",
+    "mode": "100644"
+  },
+  "carrier": {
+    "path": "candidate/inert_carrier.py",
+    "blob": "8e58625c86882783e6a112142bea52440efa9930",
+    "bytes": 5039,
+    "sha256": "be0b0b537a4ca7cd919886bfe84f4ffe75496e9cf83c3617ba45d65dc3487a6e",
+    "mode": "100644"
+  },
+  "payload": {
+    "path": "payload/three-controls.bound.json",
+    "blob": "50aefbe07022dea954d576ed3cfeb96eb84b39ad",
+    "bytes": 67638,
+    "sha256": "79ac2b3ecafb0d06f22a9a93774a29a18e93917cdda266cd32828b3d8479bf5a",
+    "mode": "100644"
+  },
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-df026-h2qa12-controls-inert-r1-be0b0b53",
+  "timeout_seconds": 60,
+  "maximum_submissions": 1,
+  "external_intent_required_before_single_submit": true,
+  "original_ack_external_before_parse": true,
+  "scope": {
+    "control_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifact-controls-r1",
+    "source_files": [
+      "sender.py",
+      "receiver.py",
+      "relay.py"
+    ],
+    "receipt": "inert-stage.result.public.json",
+    "create_only": true,
+    "python_compile_only": true,
+    "artifact_transfer": false,
+    "ssh": false,
+    "git": false,
+    "cargo": false,
+    "server": false,
+    "product_requests": false
+  },
+  "acceptance": "Require original full/durable terminal, complete stdout/stderr, all 4 exact independent file_info plus version-pinned whole readbacks, 3 sources byte-equal accepted binding and original carrier closure; no preclosure or path-existence inference.",
+  "unknown": "Reconcile the original exact key/job only; do not re-submit, choose a new key, reset original limits or treat EOF as terminal.",
+  "future_relay_request": {
+    "path": "dispatch/relay.request.json",
+    "blob": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+    "bytes": 373,
+    "sha256": "03767c7c7ebadda9f95e02892f6b2f3522abe71ea0fa68317b45c23f97dc7352",
+    "mode": "100644"
+  },
+  "relay_go": false,
+  "H2_product_fixture_go": false,
+  "full_replacement": false
+}

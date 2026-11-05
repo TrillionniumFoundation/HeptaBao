@@ -1,0 +1,6 @@
+
+running 1 test
+test service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3562 filtered out; finished in 10.23s
+

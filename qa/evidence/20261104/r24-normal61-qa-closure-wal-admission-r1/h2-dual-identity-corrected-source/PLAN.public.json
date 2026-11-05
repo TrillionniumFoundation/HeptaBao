@@ -1,0 +1,202 @@
+{
+  "schema": "heptabao.normal-native-h2-gate.identity-split-source.v2",
+  "status": "source_only_unbound_current_product",
+  "product": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "normal_schema": "heptabao.linux-normal-same-root-publication-exact-tests.v1",
+    "normal_runner_blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+    "normal_runner_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+    "original_groups": [
+      44,
+      7,
+      9
+    ],
+    "additional_same_root_publication": 1,
+    "linux_actual_qualification_bound": false,
+    "linux_artifacts": null,
+    "desktop_incoming_path": null,
+    "desktop_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "desktop_source_actual_qualification_bound": false,
+    "total_test_count": 61
+  },
+  "instrument": {
+    "build_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "build_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "normal_build_ancestry_sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+    "normal_build_ancestry_runner_sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+    "actual_qa_build_job": "1a1ab68bbb6-fc05-4d8a",
+    "actual_full_tree": "f45a36bc253f88c3eebc58baf4720a875ca217d7",
+    "actual_build_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196",
+    "actual_build_sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+    "root_actual_verifier_result_blob": "81a7931599ec85df94d8eb9afe42879d20a0367b",
+    "component_count": 6,
+    "components_one_shared_seconds": 30,
+    "client_source_changed": false,
+    "component_source_changed": false,
+    "new_build_authorized": false,
+    "desktop_transport_actual": false,
+    "actual_source_provenance_blob": "d6cdef0256dc9705f552ba31fa194caccbb28d47",
+    "all_twelve_have_independent_metadata": true
+  },
+  "source_baseline": {
+    "tree": "c78b6b2dee947454173a83a13437cebd3adadbf7",
+    "binding_blob": "215d6db91333b5a74e4814c3fe66051e858d5e0e",
+    "controller_blob": "f04d3a94f7f5ec3cdf50736202054f801c2dabca",
+    "original_review_blob": "59304830338ad5ab0573751e2d25b084b6f3a55f"
+  },
+  "changed_sources": {
+    "native_h2_binding_r1.py": {
+      "path": "candidate/native_h2_binding_r1.py",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4",
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a"
+    },
+    "native_h2_gate_r1.py": {
+      "path": "candidate/native_h2_gate_r1.py",
+      "bytes": 62344,
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13",
+      "blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448"
+    }
+  },
+  "source_checks": {
+    "result_blob": "f113040e21cd7cda55dafd13b1b6e60d2440c773",
+    "check_count": 51,
+    "scope": "Local AST/compile-only and selected pure predicates with exact existing QA public bytes; synthetic current-product publication shape only.",
+    "actual_product61_execution": false,
+    "unchanged_definition_counts": {
+      "binding": 17,
+      "controller": 42
+    },
+    "strict_diff_hunks": {
+      "binding": 16,
+      "controller": 7
+    }
+  },
+  "runtime": {
+    "ready_for_readonly_prepare": false,
+    "requests_authorized": false,
+    "host_calls_in_this_source_packet": 0,
+    "normal_setup_and_lifecycle_unchanged": true,
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/prepare-r1",
+    "readonly_prepare": {
+      "host": "desktop",
+      "internal_seconds": 300,
+      "new_outer_seconds": 330,
+      "fixture_started": false,
+      "checks": "Current product exact 4e808 normal61 plus independent df026 instrument actual six-component proof; source and owned bindings remain separate."
+    },
+    "h2_fixture": {
+      "host": "desktop",
+      "physical_hosts": 1,
+      "process_nodes": 3,
+      "new_outer_seconds": 2400,
+      "original_action_seconds": 300,
+      "actions": [
+        "normal_setup",
+        "H01_h1_control",
+        "H02_h2_kv2_v2",
+        "H03_h2_native_archive"
+      ],
+      "final_readonly_and_cleanup_seconds": 300,
+      "http_and_h2_client_seconds": 15,
+      "readiness_seconds": 45,
+      "election_seconds": 60,
+      "stable_leader_seconds": 2.2,
+      "peer_timeout_ms": 1500,
+      "forward_timeout_ms": 8000,
+      "explicit_stop_term_seconds": 5,
+      "explicit_stop_kill_seconds": 5,
+      "original_timeout_kill_wait_seconds": 5,
+      "timeout_cleanup_contract": "original deadline SIGKILL/wait5 is separate from one explicit stop/finish TERM5+KILL5 ledger; no repeated explicit-stop budget",
+      "original_ports": {
+        "api": [
+          48630,
+          48632,
+          48634
+        ],
+        "raft": [
+          48631,
+          48633,
+          48635
+        ]
+      },
+      "service_or_request_retries": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "H01",
+      "client": "retained strict original HTTP/1 helper",
+      "operation": "GET /v1/sys/storage/raft/snapshot",
+      "target": "actual leader after normal setup",
+      "expected_status": 200,
+      "body": "canonical native gzip/tar archive, <=8MiB",
+      "audit": "one actual request/response pair on target, no intervening controller HTTP",
+      "role": "positive control"
+    },
+    {
+      "id": "H02",
+      "client": "independent Rust strict TLS HTTP/2",
+      "operation": "GET /v1/wire/data/seed?version=2",
+      "target": "actual leader observed before bounded single call",
+      "expected_status": 200,
+      "content_type": "application/json",
+      "body": "exact baseline version 2 data and metadata; marker normal33-wire-seed-2 is a retained synthetic fixture label",
+      "connection": "single fixed loopback TCP/TLS connection, CA+localhost+leaf SHA, selected ALPN h2, stream1, no retry/redirect"
+    },
+    {
+      "id": "H03",
+      "client": "independent Rust strict TLS HTTP/2",
+      "operation": "GET /v1/sys/storage/raft/snapshot",
+      "target": "actual leader observed before bounded single call",
+      "expected_status": 200,
+      "content_type": "application/gzip",
+      "body": "canonical complete native gzip/tar archive <=8MiB; all-node version1/version2/metadata state exactly unchanged afterward",
+      "connection": "same single-request rules with a new owned connection for this distinct operation"
+    }
+  ],
+  "h2_message_completion": {
+    "data_all_ok": true,
+    "trailers_awaited": true,
+    "trailers_empty_required": true,
+    "recv_end_stream_required": true,
+    "one_canonical_content_length_required": true,
+    "body_length_exact": true,
+    "h2_version": "0.4.19",
+    "source_commit": "d57d1b852fec9dda6d42d3454502006d52104da8",
+    "rst_before_eos_any_reason": "error including NO_ERROR",
+    "reset_after_received_eos": "received message completeness may remain true for any reset reason",
+    "no_late_reset_or_graceful_bidirectional_connection_claim": true
+  },
+  "privacy": {
+    "token_in_private_bounded_stdin_only": true,
+    "raw_response_body_private": true,
+    "raw_exception_strings_suppressed": true,
+    "tls_trace_disabled": true,
+    "official_cli_stderr_unread": true,
+    "public_scan": "actual generated fixture literal/encoding variants only; not a universal secret detector"
+  },
+  "nonqualification": {
+    "whole_openbao271_replacement": false,
+    "official271_cli_interoperability": false,
+    "restore": false,
+    "post_restore_cold": false,
+    "standby_snapshot_relay": false,
+    "large_34MiB": false,
+    "production_cutover": false,
+    "provider": false,
+    "j3160": false
+  },
+  "remaining_gates": [
+    "Root acceptance of this new SOURCE identity.",
+    "Actual Linux 4e808 normal61 release/native/combined61 exact receipts and retained server pins.",
+    "Independent current-product desktop canonical source and product artifact transport/stage closure.",
+    "QA12 reviewed transport and actual endpoint/custody closure; all twelve prior actual metadata observations are now available, not asserted to be current at dispatch.",
+    "Create-only local QA/product/instrument input copies, host/utilities and old-failure fences, concrete private binding SHA.",
+    "One read-only prepare with actual terminal and owned cleanup.",
+    "Separate exclusive fresh H2 fixture GO; no original B01 replay."
+  ]
+}
