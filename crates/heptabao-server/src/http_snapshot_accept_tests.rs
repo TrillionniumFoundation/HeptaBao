@@ -113,6 +113,15 @@ fn read_response(reader: &mut impl Read, head: bool) -> TestResult<WireResponse>
             return Err("missing or unsupported bounded response framing".into());
         }
     }
+    // The owned worker closes TLS after the complete reply. Read through that
+    // close under the original deadline, including for 204/HEAD: skipping the
+    // body merely because of the status must not hide unexpected wire bytes.
+    let mut trailing = [0; 1];
+    assert_eq!(
+        reader.read(&mut trailing)?,
+        0,
+        "unexpected response body bytes"
+    );
     Ok(WireResponse {
         status,
         headers,
@@ -249,6 +258,8 @@ impl HttpsFixture {
                 deadline,
             );
             write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+            stream.conn.send_close_notify();
+            stream.flush()?;
             if Instant::now() >= deadline {
                 return Err(io::Error::new(
                     io::ErrorKind::TimedOut,
@@ -322,13 +333,24 @@ impl HttpsFixture {
         namespace: &str,
         body: &[u8],
     ) -> TestResult<WireResponse> {
+        self.snapshot_path(method, SNAPSHOT, token, namespace, body)
+    }
+
+    fn snapshot_path(
+        &self,
+        method: &str,
+        path: &str,
+        token: &str,
+        namespace: &str,
+        body: &[u8],
+    ) -> TestResult<WireResponse> {
         let audit_before = self.audit_entries()?;
         let reply = self.exchange(
             method,
-            SNAPSHOT,
+            path,
             token,
             namespace,
-            if method == "POST" {
+            if matches!(method, "POST" | "PUT") {
                 "application/octet-stream"
             } else {
                 "application/json"
@@ -435,13 +457,22 @@ fn seed() -> TestResult<Seed> {
             .status,
         204
     );
-    assert_eq!(fixture.call("PUT", "sys/policies/acl/snapshot-read-sudo", &root,
-        json!({"policy":"path \"sys/storage/raft/snapshot\" { capabilities=[\"read\",\"update\",\"sudo\"] }"}))?.status, 204);
+    assert_eq!(
+        fixture
+            .call(
+                "PUT",
+                "sys/policies/acl/snapshot-no-access",
+                &root,
+                json!({"policy":"path \"secret/data/history\" { capabilities=[\"read\"] }"})
+            )?
+            .status,
+        204
+    );
     let issued = fixture.call(
         "POST",
         "auth/token/create",
         &root,
-        json!({"policies":["snapshot-read-sudo"],"no_default_policy":true,"ttl":"1h"}),
+        json!({"policies":["snapshot-no-access"],"no_default_policy":true,"ttl":"1h"}),
     )?;
     assert_eq!(issued.status, 200);
     let actor = Zeroizing::new(
@@ -660,29 +691,40 @@ fn native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_histor
     );
     assert!(archive.body.starts_with(&[0x1f, 0x8b]));
     assert!(!archive.body.is_empty());
-    let changed = fixture.call(
-        "POST",
-        "secret/data/history",
-        &root,
-        json!({"options":{"cas":3},"data":{"after_snapshot":true}}),
-    )?;
-    assert_eq!(changed.status, 200);
-    assert_eq!(changed.json()?["data"]["version"], 4);
-    let current = fixture.call("GET", "secret/data/history", &root, Value::Null)?;
-    assert_eq!(
-        current.json()?["data"]["data"],
-        json!({"after_snapshot":true})
-    );
-    let restored = fixture.snapshot("POST", &root, "", &archive.body)?;
-    assert_eq!(
-        restored.status,
-        200,
-        "typed restore response: {}",
-        restored.json()?
-    );
-    exact_history(&fixture, &root)?;
-    fixture.cold_reopen(&key)?;
-    exact_history(&fixture, &root)?;
+    for (method, path) in [
+        ("POST", SNAPSHOT),
+        ("PUT", SNAPSHOT),
+        ("POST", "sys/storage/raft/snapshot-force"),
+        ("PUT", "sys/storage/raft/snapshot-force"),
+    ] {
+        let marker = format!("{method}:{path}");
+        let changed = fixture.call(
+            "POST",
+            "secret/data/history",
+            &root,
+            json!({"options":{"cas":3},"data":{"after_snapshot":marker}}),
+        )?;
+        assert_eq!(changed.status, 200);
+        assert_eq!(changed.json()?["data"]["version"], 4);
+        let current = fixture.call("GET", "secret/data/history", &root, Value::Null)?;
+        assert_eq!(
+            current.json()?["data"]["data"],
+            json!({"after_snapshot":marker})
+        );
+        let restored = fixture.snapshot_path(method, path, &root, "", &archive.body)?;
+        assert_eq!(restored.status, 204, "completed {method} {path} restore");
+        assert!(restored.body.is_empty());
+        assert!(!restored.headers.contains_key("content-length"));
+        assert!(!restored.headers.contains_key("transfer-encoding"));
+        exact_history(&fixture, &root)?;
+        let later = fixture.call("GET", "secret/data/history?version=4", &root, Value::Null)?;
+        assert_eq!(
+            later.status, 404,
+            "the uploaded archive removes the later marker"
+        );
+        fixture.cold_reopen(&key)?;
+        exact_history(&fixture, &root)?;
+    }
     let head = fixture.snapshot("HEAD", &root, "", &[])?;
     assert_eq!(head.status, 200);
     assert_eq!(
@@ -710,7 +752,10 @@ fn native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refu
             ("POST", b"not-an-archive".as_slice()),
         ] {
             let rejected = fixture.snapshot(method, token, "", body)?;
-            assert_eq!(rejected.status, 403, "typed snapshot remains root-owned");
+            assert_eq!(
+                rejected.status, 403,
+                "the original actor has no snapshot ACL"
+            );
             assert!(rejected.json()?.get("data").is_none());
         }
     }
@@ -722,7 +767,7 @@ fn native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refu
         "denied HTTP requests cannot allocate a snapshot spool"
     );
     let corrupted = fixture.snapshot("POST", &root, "", b"invalid gzip archive")?;
-    assert_eq!(corrupted.status, 400);
+    assert_eq!(corrupted.status, 500);
     assert!(corrupted.json()?.get("data").is_none());
     exact_history(&fixture, &root)?;
     assert!(

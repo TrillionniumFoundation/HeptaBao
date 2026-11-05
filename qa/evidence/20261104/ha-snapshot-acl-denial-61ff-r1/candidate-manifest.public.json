@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.snapshot-acl-denial-candidate.v1",
+  "status": "source_draft_for_independent_review",
+  "base": {
+    "review_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+    "physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+    "same_tree_not_same_commit": true
+  },
+  "files": [
+    {
+      "key": "service",
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 520380,
+      "sha256": "ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313",
+      "git_blob": "965df43d4bd0b43f15160d8d7387aa49c2432250",
+      "base_sha256": "cdfef850d98df682507555c46fffe9f99d9f311c97c1bfa71a34a9352675ba6d",
+      "base_git_blob": "166665836a0ac82c10f4fd95d1d8f88cc7e0c280"
+    },
+    {
+      "key": "transfer",
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 64166,
+      "sha256": "a29b89e4efca56a28dbbaefccab89aac329e6cf75de1d75f62bc80545ddee4d1",
+      "git_blob": "0a4596c5b5cdb97dbd453862e1cdc26690eb8141",
+      "base_sha256": "f0a55fac5295a579d760a33b88b5faf3471c3b1a96a2e3145ee9f1c7cebb5946",
+      "base_git_blob": "56f983ba633e12ac180fcc0a20e45c9bf7204b72"
+    },
+    {
+      "key": "ha-v6",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "bytes": 22960,
+      "sha256": "fd7d4801ed2f3e28823c311c360f26a828a83e27bcab69f946bf0acb6a640f3e",
+      "git_blob": "2b6281aba7d5fdf802f83a9fa1be25d3b50b4cec",
+      "base_sha256": "a6afda6d9eac65cdd7b83ddb11fec5243936bcfc63d6c88d0df3f65c29b48bea",
+      "base_git_blob": "2055d5255dccf242520bab7cb5634ca72aaf388f"
+    },
+    {
+      "key": "v6",
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "bytes": 27950,
+      "sha256": "4bc682d4565942e10d93a72ea48de4e1e9c44f7d7891750899cebaa0cb0b65f0",
+      "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+      "base_sha256": "1ae6caa804ef31a8a587a7471fd1e1584ff756ce6280bba776ae5e9f459a0f87",
+      "base_git_blob": "f27834a54ebed4aacc47b16d40899ce81ae9720d"
+    },
+    {
+      "key": "clock",
+      "path": "crates/heptabao-server/src/service_snapshot_clock.rs",
+      "bytes": 14254,
+      "sha256": "f01580b4fbbeb0e31eb690e18c1dafc6b542bb72bfb82c318d58b01748c003e3",
+      "git_blob": "71148ff6176168e2e73756071f35988812aa48dc",
+      "base_sha256": "8f2db9579894aeea46f1f1ced8d8f088c58541582b473cec7cce1f7ffcd45578",
+      "base_git_blob": "b21252f6e07066c54e1454b3c208937d3d314ea5"
+    },
+    {
+      "key": "denial",
+      "path": "crates/heptabao-server/src/service_snapshot_denial.rs",
+      "bytes": 14308,
+      "sha256": "c3273310c926cd68a489fb0b111b29f4e194b973718effa670b6b5d3afa82496",
+      "git_blob": "421b365cd3119c3da9bffa2372096137cd16d605",
+      "base_sha256": null,
+      "base_git_blob": null
+    },
+    {
+      "key": "snapshot-file",
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "bytes": 16786,
+      "sha256": "98d3215819659dce42213be41215827cb19110311221ea460a09cacb63576414",
+      "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9",
+      "base_sha256": "5bff2789fc641c7787d43ddf88b21005639079e68d4b4d007e87489483a23c5e",
+      "base_git_blob": "8d9c19f65828db5d9e68b8dbf808617b63f93386"
+    },
+    {
+      "key": "protocol",
+      "path": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+      "bytes": 38750,
+      "sha256": "188b1e44be59e8bcae0e8184e2925be5f8ca9c04bbaf02bec00c5665913c5f5f",
+      "git_blob": "7e86854bbf598cc7f2b3c2845ba94d4ed196e7f1",
+      "base_sha256": "a3ee9092a2539a0557710197972565c99efd29c0a4e14d72462557cb4a2cbcf7",
+      "base_git_blob": "0a188b04716d7c69696acdabcc047f36a8e7b00c"
+    },
+    {
+      "key": "ha-restore",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "bytes": 44113,
+      "sha256": "7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d",
+      "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
+      "base_sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "base_git_blob": "0a94044292493853c7770cb36aa69544c1488aca"
+    },
+    {
+      "key": "standby-tests",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "bytes": 16428,
+      "sha256": "f1676351ba8f74e2ac64dc07efd109657447e8241fc1872334a1200ddea811b0",
+      "git_blob": "c6040baa75c4cefc1d53d817032d04020cb0f6a2",
+      "base_sha256": "28787c489d5a4156d50b4374ebf255dae9e674bcf4cea8a04319c09f10e42a93",
+      "base_git_blob": "eaa7c7ad9a7db00cc911d69349dea8130ae71ff9"
+    },
+    {
+      "key": "acl-tests",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "bytes": 17411,
+      "sha256": "a68cad2e3423dfe479d8b00e6e49f88b6bcbe6b2fdbeab326c7c167022693774",
+      "git_blob": "9a7959a991063572a172a6791835301e1bcc793d",
+      "base_sha256": null,
+      "base_git_blob": null
+    },
+    {
+      "key": "http",
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 231754,
+      "sha256": "6f855ab990ed6eba637a239cbdceda0b1172eae4173c68e34c950f88c22288cc",
+      "git_blob": "c7a4307e7a50075bb777f324aba48af929e46f2e",
+      "base_sha256": "5d28279270a09be5cc3a807dde43d6838263d50ca0619291ea95dab9243c18d4",
+      "base_git_blob": "7c401cb1bd161f507fc8d0722770aa3bf364007c"
+    },
+    {
+      "key": "consistency",
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "bytes": 16843,
+      "sha256": "d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf",
+      "git_blob": "ed64b70e48cb8d549597e0102cf9003e0c1e606f",
+      "base_sha256": "6beeea5710dc3a2087216b7b9efea871f17d5c68f2ba0e24bd3a6122a8da5c43",
+      "base_git_blob": "e6d243427873b61b1a69f1a0ac63ddad27c4d0cd"
+    }
+  ],
+  "patch": {
+    "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/product.patch",
+    "bytes": 84576,
+    "sha256": "4de10395d9c41a868619a4c6af0d8f8ccb59c404f7c927e367221cc7fecf3e37"
+  },
+  "imported_protocol": {
+    "commit": "061f96a4b272b556329b89d461b918e370d21e45",
+    "path": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+    "sha256": "188b1e44be59e8bcae0e8184e2925be5f8ca9c04bbaf02bec00c5665913c5f5f",
+    "unchanged": true
+  },
+  "behavior_intent": [
+    "Public root-namespace snapshot routes admit the real original actor under read/update ACL; internal recovery and maintenance retain root fences.",
+    "Standby ACL refusal retains an affine denial capsule without transfer lease or archive capability.",
+    "Leader classifies an actual bearer/ACL refusal before mandatory audit and the existing terminal clock writer; only a real receipt or strict complete NoChange can produce a Denied completion.",
+    "Follower consumes the authenticated receipt, performs actual synchronization and ReadIndex, checks direct shared A-to-B or strict NoChange, then rechecks original actor and consumes the closed Denied completion.",
+    "Existing physical-seal reader is moved to the held SnapshotSpool; SnapshotLease delegates to the same implementation.",
+    "Historical public snapshot restore uses the original update ACL and explicit POST/PUT upload route rather than a blanket root-token guard."
+  ],
+  "validation": {
+    "formatted": false,
+    "compiled": false,
+    "rust_tests_executed": false,
+    "normal_binary_observer_executed": false,
+    "multi_physical_host_ha_executed": false,
+    "base_strict_clippy_is_not_candidate_validation": true,
+    "source_review_readback_pending": true
+  },
+  "known_remaining_product_gaps": [
+    "A first new expiry observed only after the one leader clock writer returns 503 without replay; it is not mislabeled as a proved entry-time Denied 403.",
+    "Other pre-plan errors such as a quota refusal are not covered by the new snapshot denial capsule.",
+    "Ordinary KV X-Vault-No-Request-Forwarding plus global precision still needs an independent closed authority and metadata-only leader clock path.",
+    "Listener consistency Forward restriction is implemented in revision 3; its new integration and normal-wire validation have not run.",
+    "Other non-clock maintenance states remain ineligible for this local standby snapshot path."
+  ],
+  "evidence_boundaries": {
+    "fixed_openbao_policy_oracle": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+    "old_token_oracle_missing_ttl_invalid_restore": true,
+    "normal_observer_reference_complete": true,
+    "valid_nonroot_restore_not_yet_runtime_verified": true,
+    "full_replacement_qualified": false,
+    "production_or_current_physical_source_changed": false,
+    "normal_observer_revision_commit": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
+    "new_official_ttl_invalid_restore_wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b"
+  },
+  "revision": 3,
+  "previous_draft_commit": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+  "review_correction": {
+    "reviewer": "bao_acceptance",
+    "previous_draft": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+    "finding": "The pending snapshot Denied Actor path could short-circuit the old physical-seal check after the actual B ReadIndex.",
+    "fix": "Explicitly read and match the original physical seal after the B ReadIndex/local checkpoint and before final Actor classification/Denied completion.",
+    "source_path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs"
+  },
+  "added_integration_tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv"
+  ],
+  "test_scope": "Formal storage profile and actual pinned three-voter mTLS/Raft Service owners, using cfg(test) convenience startup. Public HTTP TLS and physical hosts are not claimed.",
+  "routing_delta": {
+    "base": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+    "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision3-routing.patch",
+    "bytes": 9952,
+    "sha256": "9bc2687355e319a6e0ffdd35895d5c353c2616067eb8c7521e92ecb6efdd3c65",
+    "effect": "Retain the actual HTTP consistency Forward decision as an ingress/method/path/namespace-bound restriction against local standby dispatch. It creates no read, Actor, archive, retry or SDK authority."
+  },
+  "actual_previous_normal_observation": {
+    "physical_source": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "observer_source_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+    "job_id": "1a1a7db0220-fc05-2cb5",
+    "wire_sha256": "da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b",
+    "result_sha256": "dd66db757e8c08c8168cab8f2c28efa4ae59a7f148edba46be7c4fe51341ca20",
+    "complete_status_cases": 34,
+    "status_matches": 18,
+    "status_differences": 16,
+    "differences_by_group": {
+      "nonroot_snapshot": 10,
+      "ordinary_kv_global_precision": 6
+    },
+    "observation_invariants": 98,
+    "known_outcomes": 168,
+    "complete_http": 134,
+    "definite_preconnect": 34,
+    "unknown_outcomes": 0,
+    "all_owned_stopped": true,
+    "source": "root exact raw receipt report; candidate itself not run"
+  }
+}

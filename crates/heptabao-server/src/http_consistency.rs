@@ -340,6 +340,65 @@ pub(crate) fn admit(
     }
 }
 
+// The actual HTTP consistency decision can forbid a local standby read.
+// This request-scoped restriction carries no Actor, state proof, token use,
+// reply authority or permission to retry. SDK/direct requests cannot create
+// this scope, and a different ingress or logical target does not inherit it.
+struct ActiveRoute {
+    ingress: [u8; 16],
+    method: String,
+    path: Zeroizing<String>,
+    namespace: Zeroizing<String>,
+}
+thread_local! {
+    static ACTIVE_ROUTE: std::cell::RefCell<Option<ActiveRoute>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+pub(super) struct ForwardScope {
+    previous: Option<ActiveRoute>,
+    _thread: std::marker::PhantomData<std::rc::Rc<()>>,
+}
+impl ForwardScope {
+    pub(super) fn enter(
+        forward: bool,
+        ingress: [u8; 16],
+        method: &str,
+        path: &str,
+        namespace: &str,
+    ) -> Self {
+        let route = forward.then(|| ActiveRoute {
+            ingress,
+            method: method.to_owned(),
+            path: Zeroizing::new(path.to_owned()),
+            namespace: Zeroizing::new(namespace.to_owned()),
+        });
+        Self {
+            previous: ACTIVE_ROUTE.with(|slot| slot.replace(route)),
+            _thread: std::marker::PhantomData,
+        }
+    }
+}
+impl Drop for ForwardScope {
+    fn drop(&mut self) {
+        ACTIVE_ROUTE.with(|slot| {
+            slot.replace(self.previous.take());
+        });
+    }
+}
+
+pub(crate) fn requires_active(method: &str, path: &str, namespace: &str) -> bool {
+    ACTIVE_ROUTE.with(|slot| {
+        slot.borrow().as_ref().is_some_and(|route| {
+            route.method == method
+                && route.path.as_str() == path
+                && route.namespace.as_str() == namespace
+                && crate::auth::current_ingress()
+                    .is_some_and(|ingress| ingress.attempt_id() == route.ingress)
+        })
+    })
+}
+
 pub(super) fn forward(
     service: &Arc<Mutex<Service>>,
     request: ServiceRequest<'_>,

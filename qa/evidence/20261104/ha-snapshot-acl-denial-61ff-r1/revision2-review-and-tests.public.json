@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.snapshot-denial.review-correction.v1",
+  "previous_draft_commit": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+  "finding": "The pending snapshot Denied Actor path could short-circuit the old physical-seal check after the actual B ReadIndex.",
+  "fix": "Explicitly read and match the original physical seal after the B ReadIndex/local checkpoint and before final Actor classification/Denied completion.",
+  "request_budget_changed": false,
+  "source_clock_or_receipt_authority_changed": false,
+  "test_names": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints"
+  ],
+  "test_execution": "not_started",
+  "normal_observer_reference_recovered": true
+}

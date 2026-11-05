@@ -73,6 +73,20 @@ mod lossless_export;
 #[path = "service_snapshot_v6.rs"]
 mod v6;
 
+#[cfg(feature = "native-v6-ha")]
+#[path = "service_snapshot_denial.rs"]
+mod denial;
+
+#[cfg(feature = "native-v6-ha")]
+enum StandbySnapshotAdmission {
+    Redirect,
+    Authenticated {
+        actor: Box<Principal>,
+        clock: (Instant, Duration),
+    },
+    Denied(Box<denial::StandbySnapshotDenial>),
+}
+
 // A routing hint is deliberately not an application read/write capability.
 // Only this module can construct one, from a configured HA peer API origin.
 #[derive(Clone)]
@@ -92,8 +106,49 @@ pub(crate) enum NativeSnapshotAdmission {
 // The wrapped key bytes are erased when the affine transfer plan is dropped.
 type AdmittedSnapshotSealIdentity = ([u8; 32], SealMetadata, Zeroizing<Vec<u8>>);
 
+#[cfg(feature = "native-v6-ha")]
+struct StandbySnapshotClockRequest {
+    operation: crate::ha::snapshot_clock::SnapshotClockOperation,
+    method: String,
+    token: Zeroizing<String>,
+    origin_peer: Option<std::net::IpAddr>,
+    ingress: [u8; 16],
+}
+
+#[cfg(feature = "native-v6-ha")]
+impl StandbySnapshotClockRequest {
+    fn capture(request: &RequestView<'_>) -> Result<Self, Response> {
+        use crate::ha::snapshot_clock::SnapshotClockOperation;
+        let operation = match (request.method, request.path) {
+            ("GET" | "HEAD", "sys/storage/raft/snapshot") => SnapshotClockOperation::Download,
+            ("POST" | "PUT", "sys/storage/raft/snapshot") => SnapshotClockOperation::ValidateUpload,
+            ("POST" | "PUT", "sys/storage/raft/snapshot-force") => {
+                SnapshotClockOperation::ValidateForceUpload
+            }
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "standby clock operation is unavailable",
+                ));
+            }
+        };
+        let ingress = crate::auth::current_ingress()
+            .ok_or_else(|| Response::error(503, "standby clock requires original HTTP ingress"))?
+            .attempt_id();
+        Ok(Self {
+            operation,
+            method: request.method.to_owned(),
+            token: Zeroizing::new(request.token.to_owned()),
+            origin_peer: request.origin_peer,
+            ingress,
+        })
+    }
+}
+
 pub(super) struct SnapshotTransferPlan {
     actor: Principal,
+    #[cfg(feature = "native-v6-ha")]
+    method: String,
     path: String,
     namespace: String,
     activation: String,
@@ -115,6 +170,11 @@ pub(super) struct SnapshotTransferPlan {
     #[cfg(feature = "native-v6-storage")]
     lossless_download: Option<SnapshotFile>,
     is_download: bool,
+    // Only actual non-consuming standby admission sets this. Download and
+    // upload validation retain a read proof; neither can restore or publish.
+    standby_read: bool,
+    #[cfg(feature = "native-v6-ha")]
+    standby_clock: Option<StandbySnapshotClockRequest>,
     // Native negative-outcome custody belongs to this pending request, not
     // the idle Service. Dropping a cancelled transfer must not poison the
     // next unrelated request; finalization restores exactly the original one.
@@ -280,9 +340,31 @@ impl PendingExternalRequest {
                         Response::error(413, "snapshot archive exceeds transfer bound")
                     })?;
                 }
-                snapshot_archive::import(archive, &plan.lease, plan.deadline)
-                    .map(Observation::Upload)
-                    .map_err(|_| Response::error(400, "invalid native snapshot archive"))
+                // Only these already-admitted public upload paths use the
+                // restore-compatible outer ending. Repair and other internal
+                // callers retain strict gzip/file EOF; archive bytes cannot
+                // choose this policy or supply any installation authority.
+                let imported = if matches!(
+                    plan.path.as_str(),
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                ) {
+                    snapshot_archive::import_public_restore(archive, &plan.lease, plan.deadline)
+                } else {
+                    snapshot_archive::import(archive, &plan.lease, plan.deadline)
+                };
+                imported.map(Observation::Upload).map_err(|_| {
+                    Response::error(
+                        if matches!(
+                            plan.path.as_str(),
+                            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                        ) {
+                            500
+                        } else {
+                            400
+                        },
+                        "invalid native snapshot archive",
+                    )
+                })
             })()
         };
         (ExternalEffectResult::SnapshotTransfer(result), None)
@@ -399,42 +481,71 @@ impl Service {
                 "invalid native snapshot route",
             )));
         }
+        #[cfg(feature = "native-v6-ha")]
+        let (mut standby_actor, mut standby_observation) = (None, None);
+        #[cfg(not(feature = "native-v6-ha"))]
+        let (standby_actor, standby_observation): (
+            Option<Principal>,
+            Option<(Instant, Duration)>,
+        ) = (None, None);
         // This is before authentication/finite-use persistence, staging and
         // JSON HA forwarding. The receiving leader independently authorizes
         // the original request; observing a leader never grants authority.
         match self.configured_standby_destination() {
             Ok(Some(origin)) => {
-                let now = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap_or(Duration::ZERO)
-                    .as_secs();
-                let fingerprint = self.request_fingerprint(
-                    request.method,
-                    request.path,
-                    request.namespace,
-                    request.token,
-                );
-                erase_json(&mut request.body);
-                if self
-                    .audit_event("request", &fingerprint, now, None)
-                    .is_err()
-                {
-                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
-                        Response::error(503, "snapshot redirect audit unavailable"),
-                    ));
+                #[cfg(feature = "native-v6-ha")]
+                match self.prepare_native_standby_snapshot_read(&request) {
+                    Ok(StandbySnapshotAdmission::Redirect) => {}
+                    Ok(StandbySnapshotAdmission::Authenticated { actor, clock }) => {
+                        standby_actor = Some(*actor);
+                        standby_observation = Some(clock);
+                    }
+                    Ok(StandbySnapshotAdmission::Denied(denied)) => {
+                        erase_json(&mut request.body);
+                        return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                            self.complete_standby_snapshot_denial(*denied),
+                        ));
+                    }
+                    Err(response) => {
+                        erase_json(&mut request.body);
+                        return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                            response,
+                        ));
+                    }
                 }
-                if self
-                    .audit_event("response", &fingerprint, now, Some(307))
-                    .is_err()
-                {
-                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
-                    self.recovery_required = true;
-                    self.ha_activation = None;
-                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
-                        Response::error(503, "snapshot redirect response audit unavailable"),
-                    ));
+                if standby_actor.is_none() {
+                    let now = SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap_or(Duration::ZERO)
+                        .as_secs();
+                    let fingerprint = self.request_fingerprint(
+                        request.method,
+                        request.path,
+                        request.namespace,
+                        request.token,
+                    );
+                    erase_json(&mut request.body);
+                    if self
+                        .audit_event("request", &fingerprint, now, None)
+                        .is_err()
+                    {
+                        return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                            Response::error(503, "snapshot redirect audit unavailable"),
+                        ));
+                    }
+                    if self
+                        .audit_event("response", &fingerprint, now, Some(307))
+                        .is_err()
+                    {
+                        crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                        self.recovery_required = true;
+                        self.ha_activation = None;
+                        return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                            Response::error(503, "snapshot redirect response audit unavailable"),
+                        ));
+                    }
+                    return NativeSnapshotAdmission::Redirect(origin);
                 }
-                return NativeSnapshotAdmission::Redirect(origin);
             }
             Err(response) => {
                 erase_json(&mut request.body);
@@ -444,15 +555,24 @@ impl Service {
         }
         // Pair wall time and the monotonic anchor before reconciliation, audit,
         // authentication and finite-use persistence can spend admission time.
-        let started = Instant::now();
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::ZERO);
+        let (started, now) = standby_observation.unwrap_or_else(|| {
+            let started = Instant::now();
+            let now = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or(Duration::ZERO);
+            (started, now)
+        });
         let previous_clock = self.native_snapshot_clock.replace((started, now));
         let previous = self.native_snapshot_transport;
+        let previous_standby = self.native_snapshot_standby_read;
+        let previous_actor =
+            std::mem::replace(&mut self.native_snapshot_standby_actor, standby_actor);
+        self.native_snapshot_standby_read = self.native_snapshot_standby_actor.is_some();
         self.native_snapshot_transport = true;
         let result = self.begin_request_before(request, deadline, false);
         self.native_snapshot_transport = previous;
+        self.native_snapshot_standby_read = previous_standby;
+        self.native_snapshot_standby_actor = previous_actor;
         self.native_snapshot_clock = previous_clock;
         NativeSnapshotAdmission::Execute(result)
     }
@@ -482,6 +602,123 @@ impl Service {
             .api_address(leader)
             .map(|origin| Some(TrustedSnapshotOrigin(origin.to_owned())))
             .ok_or_else(|| Response::error(503, "HA leader API address is unavailable"))
+    }
+
+    pub(super) fn native_standby_snapshot_is_read_eligible(&self) -> bool {
+        #[cfg(feature = "native-v6-ha")]
+        if self.native_root.is_some() && self.ha.is_some() {
+            return self.state.as_ref().is_some_and(|state| {
+                !state.auth.has_control_group_state()
+                    && !state.auth.has_policy_expiration_state()
+                    && !state.engines.has_kubernetes_opaque_artifact_state()
+                    && !state.engines.has_live_leases()
+            });
+        }
+        false
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    fn prepare_native_standby_snapshot_read(
+        &mut self,
+        request: &ServiceRequest<'_>,
+    ) -> Result<StandbySnapshotAdmission, Response> {
+        if crate::http::consistency::requires_active(
+            request.method,
+            request.path,
+            request.namespace,
+        ) || !matches!(
+            (request.method, request.path),
+            ("GET" | "HEAD", "sys/storage/raft/snapshot")
+                | (
+                    "POST" | "PUT",
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                )
+        ) || !request.namespace.is_empty()
+            || request.wrap_ttl_seconds.is_some()
+            || request.body.as_object().is_none_or(|body| !body.is_empty())
+        {
+            return Ok(StandbySnapshotAdmission::Redirect);
+        }
+        // Actual synchronization and ReadIndex precede token inspection.
+        // A routing hint cannot select stale credentials or spend a use.
+        self.sync_from_ha_with_anchor(false)?;
+        // A cold V5 standby must observe the actual committed activation before
+        // deciding whether its installed root supports this read-only path.
+        if !self.native_ha_snapshot_transport_enabled()
+            || !self.native_standby_snapshot_is_read_eligible()
+        {
+            return Ok(StandbySnapshotAdmission::Redirect);
+        }
+        let started = Instant::now();
+        let observed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
+        let clock = RequestClock::anchored(observed, started)
+            .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
+        let at = clock
+            .observed_at()
+            .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let mut actor = match state.auth.authenticate_read_only_from_observed(
+            request.token,
+            AuthorityTime::Precise(at),
+            request.origin_peer,
+        ) {
+            Ok(Some(actor)) => actor,
+            // Missing, invalid, finite-use and wrapping credentials still
+            // redirect without consumption; only a real unlimited Actor can
+            // select local ACL handling.
+            _ => return Ok(StandbySnapshotAdmission::Redirect),
+        };
+        let admission = Self::bind_identity_principal(state, &mut actor, request.namespace)
+            .and_then(|()| {
+                state
+                    .auth
+                    .authorize_request_parameters_observed(
+                        &actor,
+                        request.namespace,
+                        request.method,
+                        request.path,
+                        &request.body,
+                        AuthorityTime::Precise(at),
+                    )
+                    .map_err(|error| Response::error(error.status, &error.message))
+            })
+            .and_then(|()| {
+                state
+                    .auth
+                    .authorize_request_observed(
+                        &actor,
+                        request.namespace,
+                        request.path,
+                        if matches!(request.method, "GET" | "HEAD") {
+                            "read"
+                        } else {
+                            "update"
+                        },
+                        AuthorityTime::Precise(at),
+                    )
+                    .map_err(|error| Response::error(error.status, &error.message))
+            });
+        if state.has_token_api_precision_state() && crate::auth::current_ingress().is_none() {
+            return Err(Response::error(
+                503,
+                "standby clock requires original HTTP ingress",
+            ));
+        }
+        match admission {
+            Ok(()) => Ok(StandbySnapshotAdmission::Authenticated {
+                actor: Box::new(actor),
+                clock: (started, observed),
+            }),
+            Err(response) if response.status == 403 => self
+                .prepare_standby_snapshot_denial(request, actor, response, clock, observed, started)
+                .map(|denied| StandbySnapshotAdmission::Denied(Box::new(denied))),
+            Err(response) => Err(response),
+        }
     }
 
     pub(super) fn stage_snapshot_transfer(
@@ -532,6 +769,18 @@ impl Service {
                 "native snapshot requires the root namespace and no query fields",
             );
         }
+        if !actor.is_root()
+            && !matches!(
+                request.path,
+                "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+            )
+        {
+            return Response::error(403, "permission denied");
+        }
+        #[cfg(feature = "native-v6-ha")]
+        if !actor.is_root() && native_ha_pending_restore.is_some() {
+            return Response::error(403, "permission denied");
+        }
         let Some((started, now)) = self.native_snapshot_clock else {
             return Response::error(503, "snapshot admission clock unavailable");
         };
@@ -543,6 +792,25 @@ impl Service {
         let repair = request.path == NATIVE_HA_REPAIR_PATH;
         if !download && !matches!(request.method, "POST" | "PUT") {
             return Response::error(405, "snapshot restore requires POST or PUT");
+        }
+        // Public snapshot policy tokens must pass the same real read/update
+        // ACL before any V5/V6 export, validation lease or restore preparation.
+        // Internal repair/lossless/pending-restore operations remain root-only.
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(error) => return error,
+        };
+        let Some(state) = self.state.as_ref() else {
+            return Response::error(503, "server is sealed");
+        };
+        if let Err(error) = state.auth.authorize_request_observed(
+            &actor,
+            request.namespace,
+            request.path,
+            if download { "read" } else { "update" },
+            time,
+        ) {
+            return Response::error(error.status, &error.message);
         }
         if !download
             && !repair
@@ -562,6 +830,20 @@ impl Service {
         let base = match self.current_state_identity() {
             Ok(value) => value,
             Err(error) => return error,
+        };
+        #[cfg(feature = "native-v6-ha")]
+        let standby_clock = if self.native_snapshot_standby_read
+            && self
+                .state
+                .as_ref()
+                .is_some_and(State::has_token_api_precision_state)
+        {
+            match StandbySnapshotClockRequest::capture(request) {
+                Ok(context) => Some(context),
+                Err(error) => return error,
+            }
+        } else {
+            None
         };
         #[cfg(feature = "native-v6-storage")]
         let native_root_contents = if lossless_mount.is_some() && self.ha.is_none() {
@@ -603,6 +885,8 @@ impl Service {
             };
         let mut plan = SnapshotTransferPlan {
             actor,
+            #[cfg(feature = "native-v6-ha")]
+            method: request.method.to_owned(),
             path: request.path.to_owned(),
             namespace: request.namespace.to_owned(),
             activation: self.unseal_nonce.clone(),
@@ -621,6 +905,9 @@ impl Service {
             #[cfg(feature = "native-v6-storage")]
             lossless_download: None,
             is_download: download,
+            standby_read: self.native_snapshot_standby_read,
+            #[cfg(feature = "native-v6-ha")]
+            standby_clock,
             #[cfg(feature = "native-v6-storage")]
             native_request_binding: None,
             #[cfg(feature = "native-v6-ha")]
@@ -702,7 +989,15 @@ impl Service {
         };
         plan.download = source;
         #[cfg(feature = "native-v6-ha")]
+        if plan.standby_read
+            && !download
+            && let Err(error) = self.prepare_native_ha_standby_snapshot_validation(&mut plan)
+        {
+            return error;
+        }
+        #[cfg(feature = "native-v6-ha")]
         if !download
+            && !plan.standby_read
             && self.native_ha_snapshot_transport_enabled()
             && matches!(
                 plan.path.as_str(),
@@ -878,7 +1173,32 @@ impl Service {
             // restore of captured consensus or replay-ledger bytes.
             return self.finish_native_ha_historical_upload(plan, result);
         }
-        if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
+        let authority = if plan.standby_read {
+            #[cfg(feature = "native-v6-ha")]
+            {
+                if !matches!(
+                    plan.path.as_str(),
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                ) || plan.native_ha_source.is_none()
+                {
+                    return Response::error(
+                        503,
+                        "standby snapshot original read proof is unavailable",
+                    );
+                }
+                self.sync_from_ha_with_anchor(false)
+            }
+            #[cfg(not(feature = "native-v6-ha"))]
+            {
+                Err(Response::error(
+                    503,
+                    "standby snapshot requires native HA read proof",
+                ))
+            }
+        } else {
+            self.revalidate_native_snapshot_ha_leader()
+        };
+        if let Err(response) = authority {
             return response;
         }
         if Instant::now() >= plan.deadline {
@@ -927,6 +1247,25 @@ impl Service {
                 Response::ok(Value::Null)
             }
             Observation::Upload(mut imported) if !plan.is_download => {
+                if plan.standby_read {
+                    // Actual local parsing precedes the forwarding decision,
+                    // as on an OpenBao 2.7.1 read-enabled standby. A validated
+                    // archive is still only data: this branch never reaches a
+                    // restore writer, Begin, epoch change or publication.
+                    return match self.configured_standby_destination() {
+                        Ok(Some(origin)) => Response {
+                            unwrapped_json: None,
+                            response_headers: ResponseHeaders::validated_snapshot_redirect(origin),
+                            consistency_index: None,
+                            status: 307,
+                            body: Value::Null,
+                        },
+                        Ok(None) => {
+                            Response::error(503, "HA role changed during snapshot validation")
+                        }
+                        Err(error) => error,
+                    };
+                }
                 #[cfg(feature = "native-v6-storage")]
                 if self.native_root.is_some() && !imported.metadata.is_v6() {
                     // The V5 installer cannot retire V6 external-object custody.

@@ -61,6 +61,10 @@ pub(crate) use native_v6_runtime::{
     NativeV6RequestObservation, NativeV6TimingSpan,
 };
 
+#[cfg(feature = "native-v6-ha")]
+#[path = "ha_snapshot_clock.rs"]
+pub(crate) mod snapshot_clock;
+
 // Timing only: every caller's original operation is evaluated exactly once.
 // With no native request observation this wrapper retains no data or output.
 pub(crate) fn observe_native_v6_timing<T, E>(
@@ -697,6 +701,8 @@ pub struct HaProcess {
     forward_timeout: Duration,
     emit_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
+    #[cfg(feature = "native-v6-ha")]
+    snapshot_clock_handler: Arc<Mutex<Option<snapshot_clock::SnapshotClockHandler>>>,
     listener: Option<PeerListener>,
 }
 
@@ -920,6 +926,8 @@ impl HaProcess {
         let identities = Arc::new(identities);
         let ids_by_node = Arc::new(ids_by_node);
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
+        #[cfg(feature = "native-v6-ha")]
+        let snapshot_clock_handler = Arc::new(Mutex::new(None));
         let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
         let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
         #[cfg(feature = "native-v6-ha")]
@@ -965,6 +973,8 @@ impl HaProcess {
             let rpc_service = rpc_service.clone();
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
+            #[cfg(feature = "native-v6-ha")]
+            let listener_snapshot_clock_handler = snapshot_clock_handler.clone();
             let forward_slots = forward_slots.clone();
             let read_slots = read_slots.clone();
             #[cfg(feature = "native-v6-ha")]
@@ -996,6 +1006,22 @@ impl HaProcess {
                             |authenticated| {
                                 #[cfg(feature = "private-ha-forward-diagnostic")]
                                 { receiver_kind = Some("authenticated_unclassified"); }
+                                #[cfg(feature = "native-v6-ha")]
+                                if heptabao_ha_service::is_snapshot_clock_request(authenticated.payload()) {
+                                    return snapshot_clock::handle_authenticated(
+                                        authenticated,
+                                        snapshot_clock::ListenerContext {
+                                            cluster: &listener_cluster_id,
+                                            cluster_digest: native_cluster_digest,
+                                            local: local_id,
+                                            ids,
+                                            native_candidate,
+                                            node: &listener_native_node,
+                                            handler: &listener_snapshot_clock_handler,
+                                            slots: &forward_slots,
+                                        },
+                                    );
+                                }
                                 #[cfg(feature = "native-v6-ha")]
                                 if heptabao_ha_service::is_native_v6_closure_frame(authenticated.payload())
                                     || heptabao_ha_service::is_native_v6_root_pull_frame(authenticated.payload())
@@ -1293,6 +1319,8 @@ impl HaProcess {
             forward_timeout,
             emit_legacy_peer_v1,
             forward_handler,
+            #[cfg(feature = "native-v6-ha")]
+            snapshot_clock_handler,
             listener: Some(listener_pool),
         })
     }

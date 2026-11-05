@@ -78,6 +78,8 @@ pub(crate) use native_ssh::NativeSshEngineOwner;
 #[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_kv2_lossless_export.rs"]
 mod native_kv2_lossless_export;
+#[cfg(any(test, feature = "native-v6-storage"))]
+pub(crate) use native_kv2_lossless_export::NativeKv2LosslessExportBudget;
 #[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;

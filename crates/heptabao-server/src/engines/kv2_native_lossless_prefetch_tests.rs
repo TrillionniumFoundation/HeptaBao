@@ -244,7 +244,7 @@ fn lossless_prefetch_source_error_wrong_length_and_panic_join_workers() -> ReadR
                         bytes.push(0);
                         Ok(Zeroizing::new(bytes))
                     }
-                    // Exercise unwind cleanup without depending on a panic hook.
+                    // Exercise a real worker unwind without depending on a panic hook.
                     _ => std::panic::resume_unwind(Box::new(
                         "synthetic bounded prefetch worker failure",
                     )),
@@ -428,7 +428,7 @@ fn lossless_prefetch_consumer_unwind_stops_sources_before_scoped_join() -> ReadR
                 entered_rx
                     .recv_timeout(deadline.instant().saturating_duration_since(Instant::now()))
                     .map_err(|_| super::super::rejected())?;
-                // The fixture tests scoped joining during unwinding, not panic hooks.
+                // Exercise scoped consumer joining during a real unwind, without panic hooks.
                 std::panic::resume_unwind(Box::new("synthetic private writer unwind"));
             },
         );

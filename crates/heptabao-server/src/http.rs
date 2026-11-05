@@ -27,6 +27,9 @@ use std::{
 #[cfg(test)]
 #[path = "http_api_alpn_tests.rs"]
 mod api_alpn_tests;
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "http_formal_api_fixture.rs"]
+pub(crate) mod formal_api_fixture;
 #[path = "http_h2.rs"]
 mod h2_transport;
 #[path = "http_logical.rs"]
@@ -674,6 +677,23 @@ fn serve_inner(
         ha.lock()
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
+        #[cfg(feature = "native-v6-ha")]
+        {
+            let weak_clock_service = Arc::downgrade(&service);
+            ha.lock()
+                .map_err(|_| "HA process lock is unavailable".to_owned())?
+                .register_snapshot_clock_handler(Arc::new(move |request| {
+                    let deadline = request.deadline();
+                    let _scope = RequestDeadlineScope::enter(deadline);
+                    let service = weak_clock_service.upgrade().ok_or_else(|| {
+                        Response::error(503, "snapshot clock Service is unavailable")
+                    })?;
+                    let mut writer = lock_until(&service, deadline).map_err(|_| {
+                        Response::error(503, "snapshot clock Service owner is unavailable")
+                    })?;
+                    writer.observe_snapshot_terminal_clock(request)
+                }))?;
+        }
     }
     let listener = match TcpListener::bind(config.listen) {
         Ok(value) => value,
@@ -969,7 +989,11 @@ fn serve_inner(
                     deadline,
                 );
                 mutation_profile.point(mutation_profile::Point::DispatchEnd);
+                let native_redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                if native_redirect {
+                    snapshot::finish_redirect_connection(&mut stream);
+                }
             });
         if spawn.is_err() {
             #[cfg(target_os = "linux")]
@@ -1098,6 +1122,13 @@ fn process_parsed_request(
                     );
                 }
             };
+            let _consistency_route = consistency::ForwardScope::enter(
+                matches!(consistency, Ok(true)),
+                *attempt_id,
+                service_request.method,
+                service_request.path,
+                service_request.namespace,
+            );
             let mut reply = if let Err(response) = &consistency {
                 let mut rejected = audited_wire_rejection(
                     service,
@@ -1177,6 +1208,52 @@ fn execute_deferred_native_body(
         return native_kv2_large::execute(service, request, native, source, deadline);
     }
     snapshot::execute(service, request, native, source, deadline)
+}
+
+/// Exercise the actual HTTP parser, ingress scope, Service admission/finalize,
+/// and wire writer against a real formal HA Service. This does not substitute
+/// a public TLS socket, a Raft proof, an Actor, or a publication receipt.
+#[cfg(all(test, feature = "native-v6-ha"))]
+pub(crate) fn formal_standby_http_wire_fixture(
+    service: &Arc<Mutex<Service>>,
+    bytes: &[u8],
+    deadline: Instant,
+) -> Result<Zeroizing<Vec<u8>>, String> {
+    formal_standby_http_wire_fixture_with_consistency(service, bytes, deadline, false)
+}
+
+#[cfg(all(test, feature = "native-v6-ha"))]
+pub(crate) fn formal_standby_http_wire_fixture_with_consistency(
+    service: &Arc<Mutex<Service>>,
+    bytes: &[u8],
+    deadline: Instant,
+    missing_forward: bool,
+) -> Result<Zeroizing<Vec<u8>>, String> {
+    let _scope = RequestDeadlineScope::enter(deadline);
+    let mut reader = bytes;
+    let parsed = read_request_mode(
+        &mut reader,
+        deadline.saturating_duration_since(Instant::now()),
+        true,
+    )
+    .map(|request| ParsedRequest::Api(Box::new(request)));
+    let attempt = crypto::random::<16>().map_err(|_| "fixture ingress randomness unavailable")?;
+    let (reply, head, namespace) = process_parsed_request(
+        service,
+        None,
+        parsed,
+        &mut reader,
+        None,
+        IpAddr::from([127, 0, 0, 1]),
+        &attempt,
+        consistency::Settings::checked(None, None, missing_forward)?,
+        deadline,
+    );
+    let mut output = Zeroizing::new(Vec::new());
+    reply
+        .write_with_namespace(&mut *output, head, &namespace)
+        .map_err(|_| "fixture HTTP response writer failed")?;
+    Ok(output)
 }
 
 #[cfg(all(test, feature = "native-v6-storage"))]

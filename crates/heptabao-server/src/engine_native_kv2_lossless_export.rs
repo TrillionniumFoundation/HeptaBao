@@ -5,6 +5,14 @@ use crate::state_records::{ObjectRef, RecordError, RecordReader};
 use std::io::Write;
 use zeroize::Zeroizing;
 
+/// Borrow the caller's existing deadline and cancellation flag. This grouping
+/// creates no new budget and does not change any source or delivery gate.
+#[cfg(any(test, feature = "native-v6-storage"))]
+pub(crate) struct NativeKv2LosslessExportBudget<'a> {
+    pub(crate) deadline: crate::v6_native_custody::OriginalDeadline,
+    pub(crate) stop: &'a std::sync::atomic::AtomicBool,
+}
+
 struct ScopedReader<'a, F> {
     scope: &'a MountScope,
     source: &'a F,
@@ -69,10 +77,10 @@ impl EngineState {
              + Sync
          ),
         before_delivery: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
-        deadline: crate::v6_native_custody::OriginalDeadline,
-        stop: &std::sync::atomic::AtomicBool,
+        check: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
+        budget: NativeKv2LosslessExportBudget<'_>,
     ) -> Result<()> {
-        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+        let NativeKv2LosslessExportBudget { deadline, stop } = budget;
         let result = (|| {
             check().map_err(|_| error(503, "native lossless export request expired"))?;
             let canonical = canonical_secret_mount(mount)?;
@@ -99,7 +107,7 @@ impl EngineState {
                 output,
                 &|reference| source(&scope, reference),
                 before_delivery,
-                &check,
+                check,
                 deadline,
                 stop,
             )?;

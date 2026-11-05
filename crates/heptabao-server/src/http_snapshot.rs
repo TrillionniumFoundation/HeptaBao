@@ -176,6 +176,37 @@ pub(super) fn project_local_redirect(reply: NativeReply) -> NativeReply {
     }
 }
 
+pub(super) fn finish_redirect_connection(
+    stream: &mut StreamOwned<rustls::ServerConnection, DeadlineStream>,
+) {
+    // The actual redirect is already written. This close helper never parses
+    // or forwards an upload. An immediate close with unread TCP bytes can
+    // reset the peer and erase even a fully written TLS response.
+    // Perform the staged close from HTTP/1.1 connection teardown: finish TLS,
+    // half-close the write side, then discard transport bytes until peer EOF
+    // or the unchanged accepted connection deadline. No request body decoder,
+    // Service call, spool, retry or additional I/O budget is involved.
+    stream.conn.send_close_notify();
+    if stream.flush().is_err()
+        || stream
+            .sock
+            .stream
+            .shutdown(std::net::Shutdown::Write)
+            .is_err()
+    {
+        return;
+    }
+    let mut discarded = Zeroizing::new([0u8; 8192]);
+    loop {
+        match stream.sock.read(&mut *discarded) {
+            Ok(0) => break,
+            Ok(_) => {}
+            Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+            Err(_) => break,
+        }
+    }
+}
+
 pub(super) enum Framing {
     Download,
     Length(u64),
@@ -343,6 +374,11 @@ pub(super) fn execute(
     deadline: Instant,
 ) -> NativeReply {
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let public_snapshot_upload = matches!(request.method, "POST" | "PUT")
+        && matches!(
+            request.path,
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        );
     let execution = match lock_until(service, deadline) {
         Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),
         Err(_) => return NativeReply::Json(Response::error(503, "snapshot admission unavailable")),
@@ -377,12 +413,49 @@ pub(super) fn execute(
             None,
         ),
     };
+    let uploaded_archive = public_snapshot_upload
+        && file.is_none()
+        && observation.is_native_snapshot_upload_observation();
     // No network/body I/O occurs under the service writer. The final request
     // audit must succeed before this file capability can reach the socket.
-    let response = match lock_until(service, deadline) {
+    let mut response = match lock_until(service, deadline) {
         Ok(mut writer) => writer.finish_external_request(*pending, observation),
         Err(_) => return NativeReply::Json(Response::error(503, "snapshot finalize unavailable")),
     };
+    if let Some(origin) = response.response_headers.take_validated_snapshot_redirect() {
+        return if response.status == 307 && file.is_none() {
+            let headers = match std::mem::take(&mut response.response_headers)
+                .into_local_redirect_metadata()
+            {
+                Ok(headers) => headers,
+                Err(()) => {
+                    return NativeReply::Json(Response::error(
+                        503,
+                        "snapshot redirect metadata changed",
+                    ));
+                }
+            };
+            NativeReply::Redirect {
+                origin,
+                target: RedirectTarget::Native(native.target),
+                headers,
+            }
+        } else {
+            NativeReply::Json(Response::error(
+                503,
+                "snapshot redirect lost its original route",
+            ))
+        };
+    }
+    if uploaded_archive && response.status == 200 {
+        // OpenBao's public restore wire contract is 204 with no body. Apply
+        // this only after the actual finalizer, mandatory audit and delivery
+        // checks succeed. The typed Upload observation excludes inspect/cancel
+        // reconciliation; the exact public routes exclude repair. Preserve the
+        // final response's quota/consistency headers and internal Service reply.
+        response.status = 204;
+        crate::service::erase_json(&mut response.body);
+    }
     if response.status == 200
         && let Some(file) = file
     {

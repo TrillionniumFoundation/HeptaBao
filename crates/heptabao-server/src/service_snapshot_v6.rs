@@ -156,7 +156,11 @@ impl Service {
             .ok_or_else(unavailable)?
             .check_environment(self)?;
         let state = self.state.as_ref().ok_or_else(unavailable)?;
-        if !plan.actor.is_root() || !plan.namespace.is_empty() {
+        let public_snapshot = matches!(
+            plan.path.as_str(),
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        );
+        if (!plan.actor.is_root() && !public_snapshot) || !plan.namespace.is_empty() {
             return Err(Response::error(403, "permission denied"));
         }
         let now = snapshot_observed_time(plan.now, plan.started.elapsed());

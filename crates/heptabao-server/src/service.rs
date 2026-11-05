@@ -374,6 +374,8 @@ mod recovery_keys;
 mod token_delivery;
 #[path = "service_token_precision.rs"]
 mod token_precision;
+#[cfg(feature = "native-v6-ha")]
+pub(crate) use token_precision::SnapshotClockObservation;
 #[path = "service_wrapper_ha.rs"]
 mod wrapper_ha;
 #[cfg(target_os = "linux")]
@@ -1301,6 +1303,17 @@ pub(crate) enum ExternalEffectResult {
     ),
 }
 
+impl ExternalEffectResult {
+    // This classifies only the stream importer's observation. It grants no
+    // restore or delivery authority; the original finalizer must still run.
+    pub(crate) fn is_native_snapshot_upload_observation(&self) -> bool {
+        matches!(
+            self,
+            Self::SnapshotTransfer(Ok(snapshot_transfer::Observation::Upload(_)))
+        )
+    }
+}
+
 pub(crate) struct PendingExternalRequest {
     raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
     quota_response_headers: Option<rate_limit_quotas::AcceptedHeaders>,
@@ -1533,6 +1546,11 @@ pub struct Service {
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
+    // Scoped only by actual native snapshot admission while this writer is
+    // held. The original read-only Principal is moved once into normal ACL
+    // dispatch; client headers and peer frames cannot select these fields.
+    native_snapshot_standby_read: bool,
+    native_snapshot_standby_actor: Option<Principal>,
     snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
     openldap_in_flight: openldap_secret::OpenLdapFlights,
     openldap_cursor: Option<(String, String, String)>,
@@ -1998,6 +2016,8 @@ impl Service {
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
+            native_snapshot_standby_read: false,
+            native_snapshot_standby_actor: None,
             snapshot_spool: None,
             openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
             openldap_cursor: None,
@@ -2316,7 +2336,9 @@ impl Service {
     /// provider effect may be returned as an owned external plan after its
     /// intent has been durably committed.
     pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let started = std::time::Instant::now();
+        let started = self
+            .native_snapshot_clock
+            .map_or_else(std::time::Instant::now, |(started, _)| started);
         let observed = self.native_snapshot_clock.map_or_else(
             || {
                 SystemTime::now()
@@ -2751,9 +2773,28 @@ impl Service {
         &mut self,
         fingerprint: &str,
         request_clock: (u64, Option<RequestClock>),
+        response: Response,
+        after_audit: impl FnOnce(),
+        retain_clock_receipt: bool,
+    ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
+        self.audit_completed_response_with_clock_source(
+            fingerprint,
+            request_clock,
+            response,
+            after_audit,
+            retain_clock_receipt,
+            None,
+        )
+    }
+
+    fn audit_completed_response_with_clock_source(
+        &mut self,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
         mut response: Response,
         after_audit: impl FnOnce(),
         retain_clock_receipt: bool,
+        standby_snapshot: Option<&snapshot_transfer::SnapshotTransferPlan>,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
         #[cfg(feature = "native-v6-storage")]
@@ -2824,6 +2865,20 @@ impl Service {
         let terminal_floor = terminal_owner.and_then(|()| {
             if let Some(refusal) = pre_admission_refusal {
                 return Err(refusal);
+            }
+            if let Some(plan) = standby_snapshot {
+                #[cfg(feature = "native-v6-ha")]
+                return self
+                    .check_native_standby_snapshot_before_audit(plan)
+                    .map(|()| None);
+                #[cfg(not(feature = "native-v6-ha"))]
+                {
+                    let _ = plan;
+                    return Err(Response::error(
+                        503,
+                        "standby snapshot clock requires native HA",
+                    ));
+                }
             }
             if response.response_headers.has_local_redirect() {
                 // The matched local hint was selected before actor admission and
@@ -2984,11 +3039,13 @@ impl Service {
                 None,
             );
         }
-        crate::ha_forward_completion::audited(if terminal_floor_succeeded {
-            token_clock
-        } else {
-            None
-        });
+        crate::ha_forward_completion::audited(
+            if terminal_floor_succeeded && standby_snapshot.is_none() {
+                token_clock
+            } else {
+                None
+            },
+        );
         self.stamp_consistency_index(&mut response);
         if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
             authority.mark_response_audited(fingerprint);
@@ -3061,6 +3118,61 @@ impl Service {
         }
     }
 
+    fn has_pending_external_dispatch(&self) -> bool {
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_pending = self.pending_sdk_request.is_some()
+            || self.pending_sdk_auth_request.is_some()
+            || self.pending_sdk_control_authority.is_some()
+            || self.pending_sdk_credential_list.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_pending = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_pending = self.pending_native_auth_delivery.is_some()
+            || self.pending_native_cg_delivery.is_some()
+            || self.pending_native_kv2_large.is_some()
+            || self.pending_native_kv2_witness.is_some()
+            || self.pending_native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_auth_pending = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_pending = false;
+        sdk_pending
+            || self.rate_limit_quotas.has_pending_ingress()
+            || native_auth_pending
+            || native_ha_gc_pending
+            || self.pending_database_effect.is_some()
+            || self.pending_database_config_effect.is_some()
+            || self.pending_database_rotation_effect.is_some()
+            || self.pending_database_batch_effect.is_some()
+            || self.pending_online_auth_effect.is_some()
+            || self.pending_plugin_auth.is_some()
+            || self.pending_plugin_read.is_some()
+            || self.pending_plugin_kms.is_some()
+            || self.pending_external_key.is_some()
+            || self.pending_external_transit.is_some()
+            || self.pending_external_pki.is_some()
+            || self.pending_external_pki_no_effect.is_some()
+            || self.pending_acme_external.is_some()
+            || self.pending_kubernetes_token.is_some()
+            || self.pending_openldap_effect.is_some()
+            || self.pending_snapshot_transfer.is_some()
+            || self.pending_workflow_external_hold.is_some()
+            || self.pending_ordinary_kv_authority.is_some()
+            || self.pending_token_api_authority.is_some()
+            || self.pending_ha_step_down.is_some()
+            || self.pending_forward_delivery.is_some()
+            || self.pending_help_authority.is_some()
+            || self.pending_namespace_deletion.is_some()
+            || self.pending_approle_tidy.is_some()
+            || self.pending_native_remount.is_some()
+            || self.pending_transit_cache_reload.is_some()
+            || self.pending_acme_authority.is_some()
+            || self.pending_local_unseal_completion.is_some()
+            || self.pending_ordinary_kv_commit_notice.is_some()
+    }
+
     fn begin_at_mode_started_clock_with_quota(
         &mut self,
         request: RequestDispatch<'_>,
@@ -3109,59 +3221,7 @@ impl Service {
             erase_json(&mut body);
             return RequestExecution::Complete(self.leader_response(method));
         }
-        #[cfg(any(target_os = "linux", target_os = "macos"))]
-        let sdk_pending = self.pending_sdk_request.is_some()
-            || self.pending_sdk_auth_request.is_some()
-            || self.pending_sdk_control_authority.is_some()
-            || self.pending_sdk_credential_list.is_some();
-        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-        let sdk_pending = false;
-        #[cfg(feature = "native-v6-storage")]
-        let native_auth_pending = self.pending_native_auth_delivery.is_some()
-            || self.pending_native_cg_delivery.is_some()
-            || self.pending_native_kv2_large.is_some()
-            || self.pending_native_kv2_witness.is_some()
-            || self.pending_native_file_gc.is_some();
-        #[cfg(not(feature = "native-v6-storage"))]
-        let native_auth_pending = false;
-        #[cfg(feature = "native-v6-ha")]
-        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
-        #[cfg(not(feature = "native-v6-ha"))]
-        let native_ha_gc_pending = false;
-        if sdk_pending
-            || self.rate_limit_quotas.has_pending_ingress()
-            || native_auth_pending
-            || native_ha_gc_pending
-            || self.pending_database_effect.is_some()
-            || self.pending_database_config_effect.is_some()
-            || self.pending_database_rotation_effect.is_some()
-            || self.pending_database_batch_effect.is_some()
-            || self.pending_online_auth_effect.is_some()
-            || self.pending_plugin_auth.is_some()
-            || self.pending_plugin_read.is_some()
-            || self.pending_plugin_kms.is_some()
-            || self.pending_external_key.is_some()
-            || self.pending_external_transit.is_some()
-            || self.pending_external_pki.is_some()
-            || self.pending_external_pki_no_effect.is_some()
-            || self.pending_acme_external.is_some()
-            || self.pending_kubernetes_token.is_some()
-            || self.pending_openldap_effect.is_some()
-            || self.pending_snapshot_transfer.is_some()
-            || self.pending_workflow_external_hold.is_some()
-            || self.pending_ordinary_kv_authority.is_some()
-            || self.pending_token_api_authority.is_some()
-            || self.pending_ha_step_down.is_some()
-            || self.pending_forward_delivery.is_some()
-            || self.pending_help_authority.is_some()
-            || self.pending_namespace_deletion.is_some()
-            || self.pending_approle_tidy.is_some()
-            || self.pending_native_remount.is_some()
-            || self.pending_transit_cache_reload.is_some()
-            || self.pending_acme_authority.is_some()
-            || self.pending_local_unseal_completion.is_some()
-            || self.pending_ordinary_kv_commit_notice.is_some()
-        {
+        if self.has_pending_external_dispatch() {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
                 503,
@@ -4067,7 +4127,7 @@ impl Service {
                 }
                 Err(_) => return Response::error(503, "HA process lock is unavailable"),
             };
-            if leader != Some(local) {
+            if leader != Some(local) && !self.native_snapshot_standby_read {
                 let Some(_) = leader else {
                     return Response::error(503, "HA cluster has no elected leader");
                 };
@@ -4113,7 +4173,11 @@ impl Service {
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
-                if let Some(response) = self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
+                let force_active_route =
+                    crate::http::consistency::requires_active(method, path, namespace);
+                if !force_active_route
+                    && let Some(response) =
+                        self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
                 {
                     return response;
                 }
@@ -4124,6 +4188,16 @@ impl Service {
                     .as_ref()
                     .filter(|data| data.no_request_forwarding())
                 {
+                    // Preserve the native immutable read opportunity under the
+                    // original no-forward request before selecting its typed
+                    // local redirect. No retry or new authority is introduced.
+                    #[cfg(feature = "native-v6-storage")]
+                    if !force_active_route
+                        && self.native_root.is_some()
+                        && let Some(response) = self.immutable_kv_response_mode(&request, true)
+                    {
+                        return response;
+                    }
                     let Some(profile) = data
                         .local_redirect
                         .as_ref()
@@ -4464,7 +4538,10 @@ impl Service {
         // A trusted wall-clock observation is persisted before a wrapping
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
-        if !owner_manifest_migration {
+        if self.native_snapshot_standby_read && !self.native_standby_snapshot_is_read_eligible() {
+            return Response::error(503, "standby snapshot now requires resource maintenance");
+        }
+        if !owner_manifest_migration && !self.native_snapshot_standby_read {
             #[cfg(feature = "native-v6-storage")]
             let native_pki_maintenance =
                 self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
@@ -4770,7 +4847,14 @@ impl Service {
         {
             return response;
         }
-        let mut principal = if let Some(actor) = resume {
+        let mut principal = if self.native_snapshot_standby_read {
+            match self.native_snapshot_standby_actor.take() {
+                Some(actor) => Some(actor),
+                None => {
+                    return Response::error(503, "standby snapshot original actor is unavailable");
+                }
+            }
+        } else if let Some(actor) = resume {
             Some(actor)
         } else if !authenticate_bearer {
             None
@@ -5600,7 +5684,13 @@ impl Service {
             )
         {
             if self.native_snapshot_transport {
-                let Some(principal) = principal.take().filter(Principal::is_root) else {
+                let Some(principal) = principal.take().filter(|actor| {
+                    actor.is_root()
+                        || (matches!(
+                            path,
+                            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                        ) && request.body.as_object().is_some_and(|body| body.is_empty()))
+                }) else {
                     return Response::error(403, "permission denied");
                 };
                 return self.stage_snapshot_transfer(principal, &request);
@@ -6333,6 +6423,14 @@ impl Service {
     }
 
     fn immutable_kv_response(&mut self, request: &RequestView<'_>) -> Option<Response> {
+        self.immutable_kv_response_mode(request, false)
+    }
+
+    fn immutable_kv_response_mode(
+        &mut self,
+        request: &RequestView<'_>,
+        route_refused_read: bool,
+    ) -> Option<Response> {
         if self
             .state
             .as_ref()
@@ -6360,7 +6458,7 @@ impl Service {
             return None;
         }
         if request.token.is_empty() {
-            return Some(Response::error(403, "permission denied"));
+            return (!route_refused_read).then(|| Response::error(403, "permission denied"));
         }
         let time = match request.token_time() {
             Ok(time) => time,
@@ -6373,14 +6471,17 @@ impl Service {
         ) {
             Ok(Some(principal)) => principal,
             Ok(None) => return None,
-            Err(error) => return Some(Response::error(error.status, &error.message)),
+            Err(error) => {
+                return (!route_refused_read)
+                    .then(|| Response::error(error.status, &error.message));
+            }
         };
         if let Err(error) = principal.bind_request_clock(request.token_clock) {
             return Some(Response::error(error.status, &error.message));
         }
         if let Err(error) = Self::bind_identity_principal(state, &mut principal, request.namespace)
         {
-            return Some(error);
+            return (!route_refused_read).then_some(error);
         }
         if let Err(error) = state.auth.authorize_request_parameters_observed(
             &principal,
@@ -6390,7 +6491,7 @@ impl Service {
             request.body,
             time,
         ) {
-            return Some(Response::error(error.status, &error.message));
+            return (!route_refused_read).then(|| Response::error(error.status, &error.message));
         }
         // Direct Service callers must authorize the same operation as the HTTP
         // parser: GET+list is a LIST, never a read-only-policy enumeration bypass.
@@ -6406,7 +6507,7 @@ impl Service {
             capability,
             time,
         ) {
-            return Some(Response::error(error.status, &error.message));
+            return (!route_refused_read).then(|| Response::error(error.status, &error.message));
         }
         let authority = match ordinary_kv_delivery::OrdinaryKvAuthority::new(
             principal,

@@ -28,6 +28,8 @@ mod closure_batch_receiver_tests;
 mod closure_pipeline_tests;
 #[path = "v6_committed_root_pull_tests.rs"]
 mod committed_root_pull_tests;
+#[path = "snapshot_clock_transport_tests.rs"]
+mod snapshot_clock_transport_tests;
 struct Root(PathBuf);
 impl Root {
     fn new() -> std::io::Result<Self> {

@@ -156,7 +156,15 @@ fn archive_error(error: NativeV6ArchiveError) -> Response {
     }
 }
 fn actor_original(auth: &AuthState, plan: &SnapshotTransferPlan) -> Result<(), Response> {
-    if Instant::now() >= plan.deadline || !plan.actor.is_root() || !plan.namespace.is_empty() {
+    if Instant::now() >= plan.deadline
+        || plan.is_download
+        || !matches!(plan.method.as_str(), "POST" | "PUT")
+        || !matches!(
+            plan.path.as_str(),
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        )
+        || !plan.namespace.is_empty()
+    {
         return Err(unavailable());
     }
     auth.authorize_request(

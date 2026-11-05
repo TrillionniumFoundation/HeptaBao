@@ -1,4 +1,5 @@
 import copy
+import io
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -34,18 +35,78 @@ class HaRestoreGuards(unittest.TestCase):
             self.assertFalse(f.complete(bad))
         self.assertTrue(f.complete(rows[:-1]+[{'case':'additional_real_observation','passed':True}]+rows[-1:]))
 
-    def test_publication_requires_new_generation_exact_epoch_and_import_identity(self):
-        value = {'data':{'cluster_coordinated':True,'imported_generation':5,
-                        'previous_local_generation':20,'published_local_generation':22,'replay_epoch':9}}
-        self.assertEqual(f.publication((200,value),20,5,previous_epoch=8)['replay_epoch'],9)
-        for key,replacement in [('cluster_coordinated',1),('imported_generation',6),
-                ('previous_local_generation',19),('published_local_generation',20),('replay_epoch',8),
-                ('replay_epoch',10),('replay_epoch',True)]:
-            changed=copy.deepcopy(value);changed['data'][key]=replacement
-            self.assertIsNone(f.publication((200,changed),20,5,previous_epoch=8),key)
-        for status in (409,500,503): self.assertIsNone(f.publication((status,value),20,5))
-        secret=copy.deepcopy(value);secret['auth']={'client_token':'sensitive-sentinel'}
-        self.assertIsNone(f.publication((200,secret),20,5))
+    def test_publication_requires_exact_204_and_independently_observed_generation_and_epoch(self):
+        before = {'generation':20,'replay_epoch':8}
+        observed = {'generation':22,'replay_epoch':9}
+        result = f.publication((204,{}),before,5,observed,expected_before_epoch=8)
+        self.assertEqual(result['previous_replay_epoch'],8)
+        self.assertEqual(result['replay_epoch'],9)
+        self.assertEqual(result['uploaded_archive_generation'],5)
+        self.assertEqual(result['observed_local_generation'],22)
+        self.assertEqual(result['observation_source'],'sys/internal/capacity')
+        self.assertNotIn('published_local_generation',result)
+        for key,replacement in [('generation',20),('generation',19),('generation',True),
+                                ('replay_epoch',8),('replay_epoch',10),('replay_epoch',True)]:
+            changed=dict(observed);changed[key]=replacement
+            self.assertIsNone(f.publication((204,{}),before,5,changed,expected_before_epoch=8),key)
+        for status in (200,201,202,204.0,307,409,500,503):
+            self.assertIsNone(f.publication((status,{}),before,5,observed,expected_before_epoch=8))
+        for body in ({'data':{}},{'auth':{'client_token':'sensitive-sentinel'}},
+                     {'recovery_reference':'pending'},None):
+            self.assertIsNone(f.publication((204,body),before,5,observed,expected_before_epoch=8))
+        for observed_bad in (None,{}, {'generation':22}, {'replay_epoch':9}):
+            self.assertIsNone(f.publication((204,{}),before,5,observed_bad,expected_before_epoch=8))
+        for before_bad in (None,{}, {'generation':20}, {'replay_epoch':8},
+                           {'generation':True,'replay_epoch':8}, {'generation':-1,'replay_epoch':8},
+                           {'generation':20,'replay_epoch':True}):
+            self.assertIsNone(f.publication((204,{}),before_bad,5,observed,expected_before_epoch=8))
+        for uploaded in (True,-1,None):
+            self.assertIsNone(f.publication((204,{}),before,uploaded,observed,expected_before_epoch=8))
+        for expected in (True,-1,None,7,9):
+            with self.assertRaises(f.FixtureError):f.checked_before_capacity(before,expected)
+            self.assertIsNone(f.publication((204,{}),before,5,observed,expected_before_epoch=expected))
+
+    def test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress(self):
+        drifted_before = {'generation':20,'replay_epoch':9}
+        # This post-read equals the old expected 8+1 but proves no transition
+        # from the actually observed source epoch9. Reject both observations.
+        coincidental_after = {'generation':22,'replay_epoch':9}
+        with self.assertRaises(f.FixtureError):f.checked_before_capacity(drifted_before,8)
+        self.assertIsNone(f.publication((204,{}),drifted_before,5,coincidental_after,
+                                       expected_before_epoch=8))
+        actual_after = {'generation':22,'replay_epoch':10}
+        self.assertIsNone(f.publication((204,{}),drifted_before,5,actual_after,
+                                       expected_before_epoch=8))
+        self.assertIsNone(f.publication((204,{}),drifted_before,5,coincidental_after,
+                                       expected_before_epoch=9))
+
+    def test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once(self):
+        archive_bytes = b'synthetic-native-snapshot'
+        archive = SimpleNamespace(stat=lambda:SimpleNamespace(st_size=len(archive_bytes)),
+                                  open=lambda mode:io.BytesIO(archive_bytes))
+        class Socket:
+            def __init__(self, reply):self.reply=reply;self.sent=[]
+            def __enter__(self):return self
+            def __exit__(self,*_):return False
+            def sendall(self, value):self.sent.append(value)
+            def makefile(self, mode):
+                self.assert_mode=mode
+                return io.BytesIO(self.reply)
+        for headers,tail,accepted in ((b'',b'',True),(b'',b'illegal-tail',False),
+                                      (b'Content-Length: 0\r\n',b'',False),
+                                      (b'Transfer-Encoding: chunked\r\n',b'0\r\n\r\n',False)):
+            stream=Socket(b'HTTP/1.1 204 No Content\r\nConnection: close\r\n'+headers+b'\r\n'+tail)
+            node=SimpleNamespace(http_port=8200,
+                context=SimpleNamespace(wrap_socket=lambda raw,server_hostname:raw))
+            with patch.object(f.socket,'create_connection',return_value=stream) as connected:
+                if accepted:self.assertEqual(f.restore_http(node,'synthetic-token',archive),(204,{}))
+                else:
+                    with self.assertRaises(f.FixtureError):f.restore_http(node,'synthetic-token',archive)
+            connected.assert_called_once_with(('127.0.0.1',8200),timeout=7)
+            self.assertEqual(len(stream.sent),2)
+            self.assertTrue(stream.sent[0].startswith(b'POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\n'))
+            self.assertEqual(stream.sent[1],archive_bytes)
+            self.assertEqual(stream.assert_mode,'rb')
 
     def test_provider_timeout_or_wrapper_cannot_count_as_epoch_fence(self):
         good=(503,{'errors':['online authentication authority changed']})

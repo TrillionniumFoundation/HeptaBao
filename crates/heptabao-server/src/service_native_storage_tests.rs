@@ -274,6 +274,99 @@ fn configured_native_activation_requires_a_bound_profile_and_original_root_actor
 fn configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5() -> TestResult
 {
     let root = super::super::tests::Root::new();
+    // An actual bound loopback endpoint is enrolled while sealed. Config GET
+    // and POST are local owner operations; no provider request is authorized.
+    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    provider_listener.set_nonblocking(true)?;
+    let provider_address = provider_listener.local_addr()?;
+    let provider_origin = format!("https://localhost:{}", provider_address.port());
+    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+    let mut service = root.service()?;
+    service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+        origin: provider_origin.clone(),
+        address: provider_address,
+        server_name: "localhost".to_owned(),
+        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+        path_prefix: "/api/".to_owned(),
+        shared_secret: String::new(),
+    }])?;
+    service.configure_native_v6_storage(NativeStorageProfile::File)?;
+    let (_, token) = initialize(&mut service)?;
+    // Root Kubernetes still lacks a formal native owner. Keep its genuine
+    // secret-bearing config in root, so catalog validation reaches the
+    // configured-storage refusal instead of an earlier child-profile refusal.
+    assert_eq!(
+        request(
+            &mut service,
+            "POST",
+            "sys/mounts/kubernetes",
+            &token,
+            json!({"type":"kubernetes"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            "POST",
+            "kubernetes/config",
+            &token,
+            json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()})
+        )
+        .status,
+        204
+    );
+    let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+    assert_eq!(before.status, 200);
+    assert_eq!(before.body["data"]["service_account_token_set"], true);
+    let source = service
+        .state
+        .as_ref()
+        .ok_or("unsupported Kubernetes state")?;
+    assert!(!source.engines.supports_native_v6_root_storage());
+    let owner_before = crate::service::owner_store::serialize_owner(source)
+        .map_err(|_| "unsupported Kubernetes complete owner before")?;
+    assert!(
+        owner_before
+            .windows(provider_bearer.len())
+            .any(|part| part == provider_bearer.as_bytes())
+    );
+    let identity_before = service
+        .current_state_identity()
+        .map_err(|_| "unsupported Kubernetes v5 identity before")?;
+    assert_eq!(
+        request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
+        409
+    );
+    assert!(service.native_root.is_none());
+    let retained = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+    assert_eq!(retained.status, 200);
+    assert_eq!(retained.body["data"], before.body["data"]);
+    let owner_after = crate::service::owner_store::serialize_owner(
+        service
+            .state
+            .as_ref()
+            .ok_or("unsupported Kubernetes retained state")?,
+    )
+    .map_err(|_| "unsupported Kubernetes complete retained owner")?;
+    // Compare every secret-bearing owner byte without formatting it.
+    assert!(owner_after.as_slice() == owner_before.as_slice());
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
+        identity_before
+    );
+    assert!(
+        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
+    Ok(())
+}
+
+#[test]
+fn configured_native_activation_rejects_unsupported_acme_without_retiring_v5() -> TestResult {
+    let root = super::super::tests::Root::new();
     let mut service = root.service()?;
     service.configure_native_v6_storage(NativeStorageProfile::File)?;
     let (_, token) = initialize(&mut service)?;
@@ -323,8 +416,12 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
             .as_ref()
             .ok_or("unsupported V5 source state")?;
         assert!(!state.engines.supports_native_v6_root_storage());
-        Zeroizing::new(serde_json::to_vec(&state.engines)?)
+        crate::service::owner_store::serialize_owner(state)
+            .map_err(|_| "unsupported ACME complete owner before")?
     };
+    let identity_before = service
+        .current_state_identity()
+        .map_err(|_| "unsupported ACME v5 identity before")?;
     assert_eq!(
         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
         409
@@ -339,14 +436,18 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
     );
     assert_eq!(retained.status, 200);
     assert_eq!(retained.body["data"], before.body["data"]);
-    let owner_after = Zeroizing::new(serde_json::to_vec(
-        &service
-            .state
-            .as_ref()
-            .ok_or("retained V5 source state")?
-            .engines,
-    )?);
+    let owner_after = crate::service::owner_store::serialize_owner(
+        service.state.as_ref().ok_or("retained V5 source state")?,
+    )
+    .map_err(|_| "unsupported ACME complete retained owner")?;
+    // Preserve all owners, including the actual private CA, without formatting secrets.
     assert!(owner_after.as_slice() == owner_before.as_slice());
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unsupported ACME retained v5 identity")?,
+        identity_before
+    );
     Ok(())
 }
 

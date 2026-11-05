@@ -234,8 +234,11 @@ impl Service {
                             source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference)
                         },
                         &|| source.before_delivery(),
-                        deadline,
-                        &stopped,
+                        &|| deadline.check().map_err(|_| RecordError::Invalid),
+                        crate::engines::NativeKv2LosslessExportBudget {
+                            deadline,
+                            stop: &stopped,
+                        },
                     )
                     .map_err(Response::from_engine_error)?;
                 writer.finish().map_err(|_| unavailable())?;

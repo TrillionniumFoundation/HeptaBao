@@ -200,6 +200,59 @@ impl SnapshotSpool {
         Ok(current)
     }
 
+    /// Read the committed seal through the retained checked parent; this
+    /// read-only capability neither acquires a transfer lease nor creates a file.
+    pub(crate) fn read_seal_metadata(
+        &self,
+        deadline: Instant,
+    ) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
+        #[cfg(not(unix))]
+        {
+            let _ = deadline;
+            Err(invalid())
+        }
+        #[cfg(unix)]
+        {
+            self.verify()?;
+            if Instant::now() >= deadline {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "snapshot transfer deadline exceeded",
+                ));
+            }
+            let file = File::from(rustix::fs::openat(
+                &self.parent,
+                "seal.json",
+                rustix::fs::OFlags::RDONLY
+                    | rustix::fs::OFlags::NOFOLLOW
+                    | rustix::fs::OFlags::CLOEXEC
+                    | rustix::fs::OFlags::NONBLOCK,
+                rustix::fs::Mode::empty(),
+            )?);
+            let metadata = file.metadata()?;
+            if !metadata.is_file()
+                || metadata.nlink() != 1
+                || metadata.mode() & 0o077 != 0
+                || metadata.uid() != self.parent.metadata()?.uid()
+                || metadata.len() > SEAL_METADATA_LIMIT as u64
+            {
+                return Err(invalid());
+            }
+            let bytes = read_seal_bytes(file, metadata.len())?;
+            if bytes.len() > SEAL_METADATA_LIMIT {
+                return Err(invalid());
+            }
+            self.verify()?;
+            if Instant::now() >= deadline {
+                return Err(io::Error::new(
+                    io::ErrorKind::TimedOut,
+                    "snapshot transfer deadline exceeded",
+                ));
+            }
+            Ok(bytes)
+        }
+    }
+
     pub(crate) fn lease(self: &Arc<Self>) -> io::Result<Arc<SnapshotLease>> {
         self.verify()?;
         self.busy
@@ -231,51 +284,7 @@ impl SnapshotLease {
         &self,
         deadline: Instant,
     ) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
-        #[cfg(not(unix))]
-        {
-            let _ = deadline;
-            Err(invalid())
-        }
-        #[cfg(unix)]
-        {
-            self.spool.verify()?;
-            if Instant::now() >= deadline {
-                return Err(io::Error::new(
-                    io::ErrorKind::TimedOut,
-                    "snapshot transfer deadline exceeded",
-                ));
-            }
-            let file = File::from(rustix::fs::openat(
-                &self.spool.parent,
-                "seal.json",
-                rustix::fs::OFlags::RDONLY
-                    | rustix::fs::OFlags::NOFOLLOW
-                    | rustix::fs::OFlags::CLOEXEC
-                    | rustix::fs::OFlags::NONBLOCK,
-                rustix::fs::Mode::empty(),
-            )?);
-            let metadata = file.metadata()?;
-            if !metadata.is_file()
-                || metadata.nlink() != 1
-                || metadata.mode() & 0o077 != 0
-                || metadata.uid() != self.spool.parent.metadata()?.uid()
-                || metadata.len() > SEAL_METADATA_LIMIT as u64
-            {
-                return Err(invalid());
-            }
-            let bytes = read_seal_bytes(file, metadata.len())?;
-            if bytes.len() > SEAL_METADATA_LIMIT {
-                return Err(invalid());
-            }
-            self.spool.verify()?;
-            if Instant::now() >= deadline {
-                return Err(io::Error::new(
-                    io::ErrorKind::TimedOut,
-                    "snapshot transfer deadline exceeded",
-                ));
-            }
-            Ok(bytes)
-        }
+        self.spool.read_seal_metadata(deadline)
     }
 
     pub(crate) fn file(

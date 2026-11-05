@@ -303,6 +303,21 @@ impl Pipeline {
     }
 
     fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {
+        Self::start_with_initial_configuration(configured_native_storage, &[])
+    }
+
+    // The negative archive fixture installs its real process enrollment only
+    // before the initial unseal. It never restarts this source cohort.
+    pub(super) fn start_with_initial_outbound_endpoints(
+        endpoints: Vec<crate::outbound::EndpointConfig>,
+    ) -> TestResult<Self> {
+        Self::start_with_initial_configuration(false, &endpoints)
+    }
+
+    fn start_with_initial_configuration(
+        configured_native_storage: bool,
+        endpoints: &[crate::outbound::EndpointConfig],
+    ) -> TestResult<Self> {
         let mut files = Root::new();
         private_directory(&files.path)?;
         files.path = fs::canonicalize(&files.path)?;
@@ -360,6 +375,21 @@ impl Pipeline {
         // TLS endpoints. No manually initialized router or test-owned log CAS.
         for index in [1, 2, 0] {
             pipeline.start_process(index)?;
+        }
+        if !endpoints.is_empty() {
+            for service in &pipeline.services {
+                let until = Instant::now() + REQUEST_BUDGET;
+                let _scope = RequestDeadlineScope::enter(until);
+                let service = service.as_ref().ok_or("initial outbound Service absent")?;
+                let mut writer =
+                    lock_until(service, until).map_err(|_| "initial outbound Service deadline")?;
+                assert!(writer.state.is_none());
+                writer.install_outbound_endpoints(endpoints.to_vec())?;
+                assert!(writer.state.is_none());
+                if Instant::now() >= until {
+                    return Err("initial outbound original startup deadline".into());
+                }
+            }
         }
         let leader = pipeline.ready_leader()?;
         // Bootstrap configuration owns group construction. It does not
@@ -466,6 +496,21 @@ impl Pipeline {
                 writer.seal_forward_completion(&response);
                 request.token.zeroize();
                 response
+            }))?;
+        let weak_clock_service = Arc::downgrade(&service);
+        process
+            .lock()
+            .map_err(|_| "pipeline process poisoned")?
+            .register_snapshot_clock_handler(Arc::new(move |request| {
+                let deadline = request.deadline();
+                let _scope = RequestDeadlineScope::enter(deadline);
+                let service = weak_clock_service.upgrade().ok_or_else(|| {
+                    Response::error(503, "native pipeline snapshot clock owner closed")
+                })?;
+                let mut writer = lock_until(&service, deadline).map_err(|_| {
+                    Response::error(503, "native pipeline snapshot clock owner unavailable")
+                })?;
+                writer.observe_snapshot_terminal_clock(request)
             }))?;
         self.services[index] = Some(service);
         Ok(())

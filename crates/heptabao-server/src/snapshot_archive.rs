@@ -330,10 +330,36 @@ fn small(reader: &mut impl Read, name: &str) -> io::Result<Vec<u8>> {
     Ok(bytes)
 }
 
+enum ImportEnd {
+    Strict,
+    PublicRestore,
+}
+
+/// Strict native archive validation retains the complete gzip and file EOF.
 pub(crate) fn import(
+    archive: SnapshotFile,
+    lease: &Arc<SnapshotLease>,
+    deadline: Instant,
+) -> io::Result<Import> {
+    import_with_end(archive, lease, deadline, ImportEnd::Strict)
+}
+
+/// The public restore routes consume one complete native tar, like the fixed
+/// OpenBao restore path. This returns untrusted Import data: sealed checksums,
+/// source identity, the full state graph and live installation gates still run.
+pub(crate) fn import_public_restore(
+    archive: SnapshotFile,
+    lease: &Arc<SnapshotLease>,
+    deadline: Instant,
+) -> io::Result<Import> {
+    import_with_end(archive, lease, deadline, ImportEnd::PublicRestore)
+}
+
+fn import_with_end(
     mut archive: SnapshotFile,
     lease: &Arc<SnapshotLease>,
     deadline: Instant,
+    end: ImportEnd,
 ) -> io::Result<Import> {
     archive.rewind_checked()?;
     // Native exports have no filename/comment/extra fields. Refuse optional
@@ -372,14 +398,23 @@ pub(crate) fn import(
     }
     let mut terminator = [0; 1024];
     gzip.read_exact(&mut terminator)?;
-    let mut trailing = [0; 1];
-    if terminator != [0; 1024] || gzip.read(&mut trailing)? != 0 {
+    if terminator != [0; 1024] {
         return Err(bad());
     }
-    // GzDecoder reads exactly one gzip member; reject appended members/data.
-    if gzip.into_inner().read(&mut trailing)? != 0 {
-        return Err(bad());
+    if matches!(end, ImportEnd::Strict) {
+        let mut trailing = [0; 1];
+        if gzip.read(&mut trailing)? != 0 {
+            return Err(bad());
+        }
+        // GzDecoder reads exactly one gzip member; strict callers also require
+        // the complete underlying file to end after that member.
+        if gzip.into_inner().read(&mut trailing)? != 0 {
+            return Err(bad());
+        }
     }
+    // Public restore stops at the first complete tar. Every required read above
+    // still propagates errors; no later member is decoded or used as a fallback.
+    // The HTTP owner has already staged the entire bounded, deadline-owned body.
     let mut state = output.writer;
     state.rewind_checked()?;
     let mut magic = [0; 8];

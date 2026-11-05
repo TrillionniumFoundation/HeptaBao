@@ -9,8 +9,16 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) struct Headers(
     BTreeMap<String, Vec<Zeroizing<String>>>,
     // Redirect custody is rare and remains affine; keep ordinary Response errors small.
-    Option<Box<LocalRedirect>>,
+    Option<Box<Redirect>>,
 );
+
+// Neither routing capability is ordinary header data. Keep their provenance
+// distinct while retaining one boxed pointer in ordinary Response values.
+#[derive(Clone)]
+enum Redirect {
+    Local(LocalRedirect),
+    SnapshotValidated(super::TrustedSnapshotOrigin),
+}
 
 // This local routing capsule is not ordinary header data. SDK and HA decoders
 // never construct it, and serializing a copy cannot downgrade it to Location.
@@ -95,25 +103,50 @@ impl Headers {
     ) -> Self {
         Self(
             BTreeMap::new(),
-            Some(Box::new(LocalRedirect {
+            Some(Box::new(Redirect::Local(LocalRedirect {
                 origin,
                 profile,
                 deadline,
-            })),
+            }))),
         )
     }
     pub(super) fn has_local_redirect(&self) -> bool {
-        self.1.is_some()
+        matches!(self.1.as_deref(), Some(Redirect::Local(_)))
     }
     pub(super) fn local_redirect_matches_current(&self, status: u16) -> bool {
         status == 307
-            && self
-                .1
-                .as_deref()
-                .is_some_and(LocalRedirect::matches_current)
+            && matches!(
+                self.1.as_deref(),
+                Some(Redirect::Local(redirect)) if redirect.matches_current()
+            )
     }
     pub(crate) fn take_local_redirect(&mut self) -> Option<LocalRedirect> {
-        self.1.take().map(|redirect| *redirect)
+        if !self.has_local_redirect() {
+            return None;
+        }
+        match *self.1.take()? {
+            Redirect::Local(redirect) => Some(redirect),
+            Redirect::SnapshotValidated(_) => None,
+        }
+    }
+    // Only the snapshot finalizer mints this marker. The listener consumes it
+    // after original-actor, archive, ReadIndex, clock and audit completion.
+    pub(super) fn validated_snapshot_redirect(origin: super::TrustedSnapshotOrigin) -> Self {
+        Self(
+            BTreeMap::new(),
+            Some(Box::new(Redirect::SnapshotValidated(origin))),
+        )
+    }
+    pub(crate) fn take_validated_snapshot_redirect(
+        &mut self,
+    ) -> Option<super::TrustedSnapshotOrigin> {
+        if !matches!(self.1.as_deref(), Some(Redirect::SnapshotValidated(_))) {
+            return None;
+        }
+        match *self.1.take()? {
+            Redirect::SnapshotValidated(origin) => Some(origin),
+            Redirect::Local(_) => None,
+        }
     }
     pub(crate) fn into_local_redirect_metadata(self) -> Result<Self, ()> {
         // Only the existing node-local numeric quota merge can add metadata
@@ -251,6 +284,8 @@ impl Headers {
                     )
                 })
                 .collect(),
+            // Retain either local capability so an attempted HA encoding
+            // fails closed instead of stripping its origin/provenance.
             self.1.clone(),
         )
     }

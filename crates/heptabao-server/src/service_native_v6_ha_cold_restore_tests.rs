@@ -599,6 +599,292 @@ fn cold_dr_complete_archive_old_shamir_new_quorum_and_second_cold_restart() -> T
 // must refuse it before publishing a destination, without deleting its owner.
 #[test]
 fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
+    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    provider_listener.set_nonblocking(true)?;
+    let provider_address = provider_listener.local_addr()?;
+    let provider_origin = format!("https://localhost:{}", provider_address.port());
+    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+    let source =
+        Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+            origin: provider_origin.clone(),
+            address: provider_address,
+            server_name: "localhost".to_owned(),
+            ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+            path_prefix: "/api/".to_owned(),
+            shared_secret: String::new(),
+        }])?;
+    let leader = source.ready_leader()?;
+    // A real root Kubernetes config carries a private bearer but performs no
+    // provider I/O. Root SSH is now supported; unsupported child SSH cannot
+    // pass the namespace admission needed to create this historical archive.
+    expect(
+        source.call(
+            leader,
+            "POST",
+            "sys/mounts/cold-kubernetes",
+            source.admin(),
+            json!({"type":"kubernetes"}),
+        )?,
+        204,
+        "unsupported-cold-kubernetes-mount",
+    )?;
+    expect(
+        source.call(leader, "POST", "cold-kubernetes/config", source.admin(),
+                    json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()}))?,
+        204,
+        "unsupported-cold-kubernetes-config",
+    )?;
+    let retained = expect(
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
+        200,
+        "unsupported-cold-kubernetes-before",
+    )?
+    .body["data"]
+        .clone();
+    assert_eq!(retained["service_account_token_set"], true);
+    activate(&source, leader)?;
+    let archive = export(&source, leader, source.admin())?;
+    let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
+    // Experimental migration retains this opaque owner, while the native
+    // dispatcher refuses its unsupported public config route. Observe the
+    // same boundary before and after recovery refusal; inspect the complete
+    // authenticated native graph and private owner encoding below.
+    let boundary_before = expect(
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
+        501,
+        "unsupported-cold-kubernetes-activated-before",
+    )?;
+    let observed_at = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_secs();
+    let inspect_retained = || -> TestResult<(StateIdentity, u64, Zeroizing<Vec<u8>>)> {
+        // One original read-only inspection budget, as with Pipeline::with_service.
+        // The actual mutable journal is borrowed only to authenticate and export
+        // its full native object closure; no application mutation is performed.
+        let until = Instant::now() + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let deadline = OriginalDeadline::capture()?;
+        let service = source.services[leader]
+            .as_ref()
+            .ok_or("unsupported cold source Service")?;
+        let mut service = lock_until(service, until).map_err(|_| "unsupported cold source lock")?;
+        assert!(service.native_storage_profile.is_none());
+        assert!(service.native_candidate_profile.is_none());
+        let before = service
+            .current_state_identity()
+            .map_err(|_| "unsupported cold source identity")?;
+        let generation = service
+            .durable
+            .as_ref()
+            .ok_or("unsupported cold source durable")?
+            .generation();
+        let seal_identity = crate::service::snapshot_transfer::canonical_seal_identity(
+            service
+                .seal
+                .as_ref()
+                .ok_or("unsupported cold source seal")?,
+        )?;
+        let proof = service
+            .capture_native_ha_unseal_proof()
+            .map_err(|_| "unsupported cold actual source proof")?
+            .ok_or("unsupported cold native proof absent")?;
+        assert_eq!(proof.identity(), before);
+        assert_eq!(proof.generation(), generation);
+        let spool = service
+            .snapshot_spool
+            .as_ref()
+            .ok_or("unsupported cold prior export spool")?
+            .clone();
+        let lease = spool.lease()?;
+        let local = lease.file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, until)?;
+        let output = lease.file(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE, until)?;
+        let (_authenticated_archive, report) = proof
+            .export_snapshot_archive(&mut service, local, output, seal_identity, &mut |current| {
+                deadline
+                    .check()
+                    .map_err(|_| Response::error(503, "cold inspection deadline"))?;
+                if current.current_state_identity()? != before
+                    || current.native_storage_profile.is_some()
+                    || current.native_candidate_profile.is_some()
+                {
+                    return Err(Response::error(503, "cold inspection source changed"));
+                }
+                Ok(())
+            })
+            .map_err(|_| "unsupported cold complete authenticated snapshot")?;
+        assert_eq!(report.local.generation, generation);
+        proof
+            .check_warm(&service)
+            .map_err(|_| "unsupported cold post-export proof")?;
+        let state = service
+            .state
+            .as_ref()
+            .ok_or("unsupported cold retained state")?;
+        let root = service
+            .native_root
+            .as_ref()
+            .ok_or("unsupported cold retained native root")?;
+        let root_bytes = root
+            .encode()
+            .map_err(|_| "unsupported cold root encoding")?;
+        let parent = root
+            .kv2_parent_key()
+            .map_err(|_| "unsupported cold native parent")?;
+        let engines = &state.engines;
+        assert!(!engines.supports_native_v6_root_storage());
+        // This is the same split representation used by check_native_installed:
+        // complete opaque engine metadata plus exact authenticated KV2 graph
+        // roots, with every payload already reopened by the real exporter above.
+        // Preserve ALL State owners; do not serialize a live NativeReadView or
+        // replace native data with an empty engine to make Serde succeed.
+        let project = |engines: &crate::engines::EngineState| -> TestResult<Zeroizing<Vec<u8>>> {
+            let check = || {
+                deadline
+                    .check()
+                    .map_err(|_| crate::state_records::RecordError::Invalid)
+            };
+            let (opaque, graphs) = engines
+                .project_checked_native_roots(
+                    &parent,
+                    &root.kv2,
+                    root.reader_floor.native_kv2_format,
+                    &check,
+                )
+                .map_err(|_| "unsupported cold native engine projection")?;
+            let graph_bytes =
+                crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
+                    .map_err(|_| "unsupported cold native graph encoding")?;
+            let expected_graph_bytes =
+                crate::secret_serde::to_vec(&root.kv2, crate::state_record_root::MAX_ROOT_BYTES)
+                    .map_err(|_| "unsupported cold expected graph encoding")?;
+            assert!(graph_bytes.as_slice() == expected_graph_bytes.as_slice());
+            let mut all_owners = state.clone();
+            all_owners.engines = opaque.into();
+            let owner_bytes = crate::service::owner_store::serialize_owner(&all_owners)
+                .map_err(|_| "unsupported cold all-owner encoding")?;
+            let mut snapshot = Zeroizing::new(Vec::new());
+            snapshot.extend_from_slice(b"cold-dr-complete-native-state-v1\0");
+            snapshot.extend_from_slice(&(root_bytes.len() as u64).to_be_bytes());
+            snapshot.extend_from_slice(&root_bytes);
+            snapshot.extend_from_slice(&(owner_bytes.len() as u64).to_be_bytes());
+            snapshot.extend_from_slice(&owner_bytes);
+            deadline.check()?;
+            Ok(snapshot)
+        };
+        let owner_bytes = project(engines)?;
+        let mut inspected = engines.clone();
+        let dispatch = inspected
+            .kubernetes_dispatch(
+                "",
+                "cold-kubernetes/config",
+                "GET",
+                &json!({}),
+                observed_at,
+                None,
+            )?
+            .ok_or("unsupported cold retained Kubernetes route absent")?;
+        let crate::engines::kubernetes::Dispatch::Immediate(response) = dispatch else {
+            return Err("retained Kubernetes config unexpectedly requested provider I/O".into());
+        };
+        assert_eq!(response.status, 200);
+        assert!(!response.mutated);
+        assert!(response.body["data"] == retained);
+        let inspected_bytes = project(&inspected)?;
+        assert!(owner_bytes.as_slice() == inspected_bytes.as_slice());
+        proof
+            .check_warm(&service)
+            .map_err(|_| "unsupported cold completed source proof")?;
+        assert_eq!(
+            service
+                .current_state_identity()
+                .map_err(|_| "unsupported cold completed identity")?,
+            before
+        );
+        assert_eq!(
+            service
+                .durable
+                .as_ref()
+                .ok_or("unsupported cold completed durable")?
+                .generation(),
+            generation
+        );
+        assert!(Instant::now() < until);
+        Ok((before, generation, owner_bytes))
+    };
+    let (before, generation_before, engine_owner_before) = inspect_retained()?;
+    assert!(
+        engine_owner_before
+            .windows(provider_bearer.len())
+            .any(|part| part == provider_bearer.as_bytes())
+    );
+    let mut bundle = Root::new();
+    private_directory(&bundle.path)?;
+    bundle.path = fs::canonicalize(&bundle.path)?;
+    let archive_path = bundle.path.join("snapshot.bin");
+    let seal_path = bundle.path.join("seal.json");
+    let shares_path = bundle.path.join("shares.json");
+    private_file(&archive_path, &archive)?;
+    private_file(&seal_path, &seal_bytes)?;
+    let shares = Zeroizing::new(serde_json::to_vec(&[source.key.as_str()])?);
+    private_file(&shares_path, &shares)?;
+    let share_hash = crypto::digest(&shares);
+    drop(shares);
+    let destination = bundle.path.join("must-remain-unpublished");
+    use crate::service::native_seed::{ColdSeedError, recover_ha_seed};
+    assert!(matches!(
+        recover_ha_seed(
+            &archive_path,
+            &seal_path,
+            &shares_path,
+            &destination,
+            &hex(&crypto::digest(&archive)),
+            &hex(&crypto::digest(&seal_bytes))
+        ),
+        Err(ColdSeedError::GraphRejected)
+    ));
+    assert!(!destination.exists());
+    let (after_identity, generation_after, engine_owner_after) = inspect_retained()?;
+    assert_eq!(after_identity, before);
+    assert_eq!(generation_after, generation_before);
+    assert!(engine_owner_after.as_slice() == engine_owner_before.as_slice());
+    assert!(fs::read(&archive_path)? == archive);
+    assert!(fs::read(&seal_path)? == seal_bytes);
+    assert_eq!(
+        crypto::digest(&Zeroizing::new(fs::read(&shares_path)?)),
+        share_hash
+    );
+    let boundary_after = expect(
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
+        501,
+        "unsupported-cold-kubernetes-activated-after",
+    )?;
+    assert!(boundary_after.body == boundary_before.body);
+    assert!(
+        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
+    Ok(())
+}
+
+#[test]
+fn cold_dr_unsupported_acme_archive_refused_without_destination_or_source_loss() -> TestResult {
     let source = Pipeline::start()?;
     let leader = source.ready_leader()?;
     // SSH now has a formal native owner. Enabled PKI ACME still lacks one.
@@ -874,3 +1160,6 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
 
 #[path = "service_native_v6_ha_cold_restore_clock_floor_tests.rs"]
 mod clock_floor_tests;
+
+#[path = "service_native_v6_ha_standby_http_tests.rs"]
+mod standby_http_tests;
