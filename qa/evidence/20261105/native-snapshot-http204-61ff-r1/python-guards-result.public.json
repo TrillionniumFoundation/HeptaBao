@@ -1,0 +1,259 @@
+{
+  "schema": "heptabao.snapshot-wire-204.local-python-guards.v1",
+  "source_commit": "0e3237fe287553c49e14109ddfbdf33b674e8a64",
+  "source_tree": "3b9e1fa2c40d211c5fb04bbb6d1d559ab7c89bae",
+  "freeze_sha256": "54cc1662cc21420047c740314950d8af5c95da4f0c7c07e89275af22990bd095",
+  "interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "cryptography_version": "50.0.2",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/61ff8bef4cc9/heptabao_resume/snapshot_wire/run_selected_python_guards.py"
+  ],
+  "selected_tests": [
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_publication_requires_exact_204_and_independently_observed_generation_and_epoch",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once"
+  ],
+  "actual_test_names": [
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_publication_requires_exact_204_and_independently_observed_generation_and_epoch",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once"
+  ],
+  "tests_run": 3,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "success": true,
+  "exit_code": 0,
+  "elapsed_seconds": 0.21168418300021585,
+  "fixed_dependency_files_verified_before_and_after": 30,
+  "candidate_source_files_verified_before_and_after": 10,
+  "fixed_source_unchanged": true,
+  "actual_imported_isolated_modules": [
+    {
+      "module": "bao_http",
+      "path": "qa/openbao-acceptance/bao_http.py",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f",
+      "git_blob": "a3afa32fb83a1f214e4d05dc928c39f29090d647"
+    },
+    {
+      "module": "capacity_live",
+      "path": "qa/openbao-acceptance/capacity_live.py",
+      "bytes": 22340,
+      "sha256": "f70b835ad5062e8f3f452e794d8da65a4485325d24120eb2b966a09ce18aefc5",
+      "git_blob": "7ee0d4846547bc75ada2271af59579d967bfbc9e"
+    },
+    {
+      "module": "core_isolation",
+      "path": "qa/openbao-acceptance/core_isolation.py",
+      "bytes": 22789,
+      "sha256": "4fd350a1587023b53fc2854335ddb9fd667cecf0aaadd137b9d16ea01b413c4c",
+      "git_blob": "048e09cd4a2863e25c1c383be9268aa8a4020ec5"
+    },
+    {
+      "module": "external_tls_fixtures",
+      "path": "qa/openbao-acceptance/external_tls_fixtures.py",
+      "bytes": 15323,
+      "sha256": "424f611f490449deb88fa791ef1847f65f8133fc1ac19e8e0b68df5ac8d0c1f9",
+      "git_blob": "7c7d11dd31403d3c3d9ee8a4bb570b8a9c349230"
+    },
+    {
+      "module": "fixture_mounts",
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd"
+    },
+    {
+      "module": "fixture_transport_case",
+      "path": "qa/openbao-acceptance/fixture_transport_case.py",
+      "bytes": 3107,
+      "sha256": "ae1687032064ede4b0106b36d265e0ef346dab0a0e7140e5d092ff9885d32d2b",
+      "git_blob": "8e645b6332b5c0156d1a549f4bd619ebb840c763"
+    },
+    {
+      "module": "ha_destructive",
+      "path": "qa/openbao-acceptance/ha_destructive.py",
+      "bytes": 25702,
+      "sha256": "f7137d46c54ff03495778ad38f5300cd263ddb3050791dd160aea53cb831bd42",
+      "git_blob": "78c58c871f9ff11d936dae9ddc73454b568b55d6"
+    },
+    {
+      "module": "ha_network_partition",
+      "path": "qa/openbao-acceptance/ha_network_partition.py",
+      "bytes": 19031,
+      "sha256": "f0bd16146322f58922eef57c35858a36acdbc6991ec3eedcfecd44e74a7960e9",
+      "git_blob": "e85b27117582f53dfe41f29875b06e0f403fc599"
+    },
+    {
+      "module": "heptabao",
+      "path": "clients/python/heptabao/__init__.py",
+      "bytes": 194,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2",
+      "git_blob": "856df0cad90c9fe3bcac80b3662e4d7259592ca5"
+    },
+    {
+      "module": "heptabao.consistency",
+      "path": "clients/python/heptabao/consistency.py",
+      "bytes": 4836,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe",
+      "git_blob": "19ab60eab7e1f8f909dcead6e0a0f487f1324b61"
+    },
+    {
+      "module": "heptabao.private_state",
+      "path": "clients/python/heptabao/private_state.py",
+      "bytes": 9746,
+      "sha256": "41e8d13c84f36fc7eff5e555edf0620c817053cfb06c98899074c35cdacf5d7f",
+      "git_blob": "74ce4f3e5edfa24d15cbf66a5595c651ce4fffd1"
+    },
+    {
+      "module": "heptabao.transport",
+      "path": "clients/python/heptabao/transport.py",
+      "bytes": 21936,
+      "sha256": "fbf797ed819364f39fca60fb1d61032d29a43feb3c275de8f6b37c2f9e88429f",
+      "git_blob": "76ba79c5c8da10881337f7e9eee1e0fbd54f490b"
+    },
+    {
+      "module": "identity_upgrade",
+      "path": "qa/openbao-acceptance/identity_upgrade.py",
+      "bytes": 7863,
+      "sha256": "5d45248bb592765e5f718ba5a3216682fe9b405cb92bc7b201e1553b0369507b",
+      "git_blob": "e4e677a140be957d5c79087d7d03ef4d5fd2e50b"
+    },
+    {
+      "module": "kv1_record_scale_live",
+      "path": "qa/openbao-acceptance/kv1_record_scale_live.py",
+      "bytes": 15286,
+      "sha256": "ee8a44d6fc40c847eb4a1bb1cf97d276f574dd8bc0e78ae3d16cd1f08b6846c6",
+      "git_blob": "06a8e54e78c7de250b120d16ca89cb0d645d54ef"
+    },
+    {
+      "module": "ldap_openldap_live",
+      "path": "qa/openbao-acceptance/ldap_openldap_live.py",
+      "bytes": 16312,
+      "sha256": "c94c3cc23c3c26d94335e6a249bc503451d1ac291eda9fb223260973d535c221",
+      "git_blob": "d181bae174093296519746bab1782a6c13d84e95"
+    },
+    {
+      "module": "ldap_renewal_live",
+      "path": "qa/openbao-acceptance/ldap_renewal_live.py",
+      "bytes": 26133,
+      "sha256": "e5b3eb54b07a76feba86c25099ffa8f8b167a7b25d7d3b463e6c4b60ba9290bd",
+      "git_blob": "46d4941c34933487e95ec0464202c1dde7939886"
+    },
+    {
+      "module": "native_snapshot_cli_live",
+      "path": "qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "bytes": 38855,
+      "sha256": "d11d83113be42bcc14ed34f7d7c4b09623e5abb20786568aa4bbf392a07c8c35",
+      "git_blob": "328078b1b8ab6fb85cfaeb0731d739a4b4413143"
+    },
+    {
+      "module": "native_snapshot_ha_live",
+      "path": "qa/openbao-acceptance/native_snapshot_ha_live.py",
+      "bytes": 21460,
+      "sha256": "4610bec3e9096dab4298fa36d7182754ef3b52a69b16bb4173dbcb680c13a056",
+      "git_blob": "17ecd6e8a37c65c5653fba9260bf0354a2f2c83c"
+    },
+    {
+      "module": "native_snapshot_ha_restore_live",
+      "path": "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+      "bytes": 27202,
+      "sha256": "53eba5a69fb7b870fa5ee051237994b5fe8073879f1ce3f9b77656b75dedbda4",
+      "git_blob": "c2a5b6e5892ed08f255cb6507ebe1e36ebd59853"
+    },
+    {
+      "module": "native_token_expiry",
+      "path": "qa/openbao-acceptance/native_token_expiry.py",
+      "bytes": 771,
+      "sha256": "94668e2a1a5e325ffd6cf71937c8cab973a8450048ff678dc3fb4fe8011d922f",
+      "git_blob": "f7c356c85d8ff310bf394a2811553c9800b21fb9"
+    },
+    {
+      "module": "official_openbao_launcher",
+      "path": "qa/openbao-acceptance/official_openbao_launcher.py",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+      "git_blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405"
+    },
+    {
+      "module": "online_evidence",
+      "path": "qa/openbao-acceptance/online_evidence.py",
+      "bytes": 4395,
+      "sha256": "3e15bc20dc4d1a75b4bd860252d887981020f1f9781be33d43a1c4ee26900ea9",
+      "git_blob": "6b4615cf5ab093e751f82f76f21e86fb1e1de3b3"
+    },
+    {
+      "module": "owned_process",
+      "path": "qa/openbao-acceptance/owned_process.py",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "git_blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889"
+    },
+    {
+      "module": "provider_renewal_upgrade",
+      "path": "qa/openbao-acceptance/provider_renewal_upgrade.py",
+      "bytes": 15796,
+      "sha256": "e92c0290ef5ff378835b9496c54c83e9d05791e0f047a74dea483a6b00158ba9",
+      "git_blob": "790aca3654d855166970f0dca749af11b702aaa3"
+    },
+    {
+      "module": "radius_renewal_ha",
+      "path": "qa/openbao-acceptance/radius_renewal_ha.py",
+      "bytes": 17338,
+      "sha256": "8553cb9efc65880820add47904aa2181ae1dd4337ad24fd3742cadaa3a296fc9",
+      "git_blob": "a8d22d1ecd2f4894cec5e312a4c8453c484868e3"
+    },
+    {
+      "module": "radius_renewal_live",
+      "path": "qa/openbao-acceptance/radius_renewal_live.py",
+      "bytes": 33202,
+      "sha256": "e0a64757a00744f2ba00f9261f42afbd9e04d39121d4853e8149e840006b1c10",
+      "git_blob": "d86b53bd380b7624c46837f09e5c4250658da30c"
+    },
+    {
+      "module": "remote_jwks_live",
+      "path": "qa/openbao-acceptance/remote_jwks_live.py",
+      "bytes": 10489,
+      "sha256": "e0076bcc703ee8cf5c641123e74514b73cffd0e4510ee779b53c1fe72fd90a18",
+      "git_blob": "f958c0cbee806d5ff078ac7e73b640176bf40e78"
+    },
+    {
+      "module": "smoke",
+      "path": "qa/single-node/smoke.py",
+      "bytes": 16470,
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "git_blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8"
+    },
+    {
+      "module": "test_native_snapshot_ha_restore_live",
+      "path": "qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py",
+      "bytes": 11629,
+      "sha256": "156f32843f6f0090eb067dd52b5d76c1dc7070cb553a49464bc42788bcbc76db",
+      "git_blob": "8625f999540cebae970f524e2bb88bc5836a610f"
+    }
+  ],
+  "full_modules_imported": true,
+  "ast_test_extraction_or_stub_modules": false,
+  "audit_hook_blocked_events": [],
+  "real_network_or_child_process_started": false,
+  "real_tls_or_ha_executed": false,
+  "rust_compiled_or_tested": false,
+  "physical_host_tested": false,
+  "wire_parity_qualified": false,
+  "full_replacement_qualified": false,
+  "stdout": {
+    "path": "python-guards.stdout.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "python-guards.stderr.log",
+    "bytes": 750,
+    "sha256": "ab72c9b5a8ef2b42f4a707a4330cc214fc9055f0c3488713f48aae2b7ef62628"
+  }
+}
