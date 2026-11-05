@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.unbound-fixed-read-plan-manifest.v1",
+  "original_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+  "entries": [
+    {
+      "path": "readback-plan.unbound.public.json",
+      "bytes": 34660,
+      "sha256": "60737fc0c602d224abe05867b4f52d3d2cf98007a3d2a9a8e84197196e61fd06",
+      "blob": "891c925ab04f5fee137a4a188bfadb77e968ba98"
+    },
+    {
+      "path": "verification/checks.public.json",
+      "bytes": 3825,
+      "sha256": "1e2e47085895c0930074ba116636694dbcc2d023aef608e57bfd3b9e66e9a960",
+      "blob": "730e2e820a2bd04cc9f1ad135c2016db0f0dafce"
+    },
+    {
+      "path": "reference/original-carrier.py",
+      "bytes": 6977,
+      "sha256": "94c271a01ca8d6af24d9d512e2fb61f2e2a86a46bdca7bc975a913db386c4495",
+      "blob": "de80837d2a09f29631d6458d3ed20676703cf0fb"
+    },
+    {
+      "path": "reference/original-fixed-output-plan.public.json",
+      "bytes": 4029,
+      "sha256": "e74aff8381bba97f3d5d99ccdee82c38c2be74a7be2b5cc081ed5ac5e5036dd8",
+      "blob": "e28b981cd31a74aec1f2b03da7b32b6582bedd4f"
+    },
+    {
+      "path": "reference/public-tool-schemas.json",
+      "bytes": 10889,
+      "sha256": "b50c97f2192b05ead8b89e18a62509b305f6a7a2d1c007aa4db9cdc7e03aaa62",
+      "blob": "eea2b57f249cab1a626936dfc90984d8e35b7f66"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1337,
+      "sha256": "21b9da803ece3bc7912d3e79f62bc75d6a73688ad1ed77a17f49e66d69e0f3e5",
+      "blob": "19d7ff4eca94aec69f5edbc372989a099a4c0e29"
+    }
+  ]
+}

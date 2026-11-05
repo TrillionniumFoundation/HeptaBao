@@ -1,5 +1,65 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R27：原始读取恢复、发布回执定位与当前版本验证源码
+
+状态截点 **2026-11-05T15:01:07Z**。产品仍为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 未达标；没有正式切流，也没有删除旧服务、二进制或备份资产。** Mac 与 ROG 的 normal61 已有原任务实际证据；它们不能替代当前 34MiB、物理三机 HA、官方 CLI 或真实凭证回归。
+
+[机器状态](../../qa/evidence/20261104/r27-original-read-recovery-and-current-source-closure-r1/state.public.json) · [完整清单](../../qa/evidence/20261104/r27-original-read-recovery-and-current-source-closure-r1/manifest.public.json)。本轮包含 **12 个完整归档包、321 份包内文件、5,031,781 B**，另有 45 份根审、调度意图及原始回执，再加状态与清单。所有纳入分包均整字节验证 SHA-256、Git blob 与目录 Merkle。完整归档中的 partial、SOURCE-only 和 UNKNOWN 保持原分类。
+
+### 本轮真正闭合的证据
+
+| 项目 | 已证事实 | 尚不能据此声称 |
+|---|---|---|
+| normal5 控制源发布 | 原任务 `1a1abd1f635-fc05-50c9` 为 exit0 / full / durable；3 个公开源及 receipt 的 4 个独立 info、4 个全文全部补齐。79 份实际记录完整，根审 184 项，早先 24 份原记录逐字不变。 | 五项正式产品资产尚未传输；relay 精确请求虽已审，其提交仍暂停。 |
+| 当前规范源码导出 | 原任务 `1a1abe371de-fc05-5122` exit0 / full / durable 保持。原 `79cb…` body operation 按同 ID 恢复，4 页重建 53,354 B 原 SDK payload，得到 39,692 B 原 receipt；根审 93 项。 | 不意味着全部 27 个命令的独立记录和 stdout/stderr 已归档；81 份文件的 6 批固定读取仍未提交。 |
+| 导出 bundle 独立身份 | 原 `ff387…` file_info operation 的首次状态超时保留；同 ID 恢复到 completed / inactive，原 609 B payload 完整。文件 **22,320,862 B / `bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac`**，完整版本和九项身份字段与发布 receipt 一致，根审 16 项。 | 不能跳过剩余导出日志、carrier、目标端导入或独立读回；没有重新 export 或另起 file_info。 |
+| Mac 公共 SDK 源码 | 13 个原固定读取中，归档内 **3 个完整**：loader 6,047 B、selector 前两段共 131,072 B。第 3 条最后 5,883 B 原结果尾页由根端按同 ID 取回；作者 24 项吸纳核验与根端原件逐字一致。 | selector 与 registry 全文未齐；没有导入/执行 SDK，没有证明五个 agent 的实际 selected owner。截点后 04–13 获准继续，但其后来结果不在本冻结内。 |
+| 当前官方 2.7.1 CLI Phase B 源码 | 新后继绑定当前 4e808 / normal61；原 44、7、9 与新增 same-root 1 分开核对。严格 8+4+4 hunks，4 份原 QA 源及控制器不变；作者 143 项静态检查、14 个选定 receipt predicate case 和根审 39 项均通过。 | 仍是 SOURCE-only：4 个产品槽为空，ready=false，prepare/live 未授权，5 个当前 CLI case 未运行。旧 2 个 B01 UNKNOWN、6 个 fence 和原预算保留；不能冒充 34MiB 或 HA 通过。 |
+
+导出来源的 canonical commit/tree、3,763 个提交历史、无 shallow/partial/alternates/grafts 的发布证据已进入原 core 审查；目标端独立导入仍是单独门槛。bundle 的 file_info 是全文件哈希和身份观察，不是已经完成目标端 source import。
+
+### LAN 源发布：丢失 ACK 仍须绑定原任务
+
+九份公开控制源的 create-only / compile-only 请求 `70f27390d318755075562482091b3bf27946b37d` **只提交过一次**，key 为 `heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82`，原 outer timeout 60 秒。process_start 返回 MCP timeout，未取得 ACK。原错误、提交前外部 intent 和精确请求均保留，不能由此推断未发布、已失败或已清理。
+
+原请求的 typed RequestBinding 摘要已用本轮 normal5 的实际 ACK 作正控核验，目标 digest 为 `5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0`。这证明原请求的定位摘要，不证明目标任务已执行。
+
+durable inventory 两次只读观察为 8,513 与 8,542 条 desktop 身份；旧 opaque cursor 返回明确的 snapshot-changed 拒绝，原件保留。目录项不含 key/digest/argv，而且 process_status 本身不向调用者返回原 key/digest。因此时间接近、候选 ID 或单独的 exit0 都不能作为原请求身份依据；没有拼造 cursor、补造 job ID 或重提 process_start。
+
+随后在已观察 worker jobs 根下，对固定时间前缀的 `request.json` 作原 digest 的有界内容搜索。实际扫描 9,800 个 entries、103 个合规文件、341,337 B，在所选授权 regular/single-link 文件范围内完整结束，只返回一个路径：
+
+`1a1ac1641eb-fc05-521f/request.json`
+
+搜索先匹配完整行，再返回行首 512 B；这条预览被截断且不含 digest。它仍只是**待核候选**，不是完整请求证明。截点归档内仅有候选 request.json 的独立 file_info ACK 和首次同 ID status timeout，原 operation 为 `db7ae88f198bd69bb3cbde693ce78fdf7618649ebee7096d26e28c478ba28ec1`。其后同 ID 恢复、版本固定全文、stdin 独立哈希及原 job authority/streams 必须另行归档。
+
+实际原 request 需要与已审 executable/args/cwd/timeout/空 env 归一规则及 digest 对齐；原 stdin 应为 477,056 B / `2fa460dc1a032ca1f1e453dd4845e80a8e937dcc47e6bc5477b2301fa267f610`。身份和终态未闭合前，normal5 relay 继续 HOLD，LAN prepare/live 均为 false。
+
+### AuthBus 修复边界
+
+完整 loader 证明实际入口为 `loader.t`，并且显式 `onlyPluginIds` 会影响 scoped-load 集合，即使 scope 字符串为 all。删除不符合 npm-root guard 的 enabled plugin 会改变加载输入；不能由此证明它未被选用或不相关。
+
+原 Mac WAL 任务的 `actual_finite_harness_code_root` 失败保持已知 exit1 / full / durable；原 guard、私有 capsule 和清理事实保持不变。当前只有源码读取与审查，不能把 configured model 当作实际 selected harness，也没有接触 J3160、provider、refresh 或 quota。原续期增量仍为未绑定 SOURCE：同一 token 的前后 lifetime/expiry 与真实 renew/revoke 尚未验证。
+
+只读传输调度在截点明确改为最多两条读线、每线最多一个 native read future：原 LAN 身份恢复与原 SDK 固定读取可独立推进。每条仍须完整原 payload、hash/version 和 completed/inactive 后才进入下一 native read；保留原 key、原 ID、原 offset，二次未明则停止该线。这个调度变化不修改任何产品测试期限、业务请求或资格门槛，也不授权新的产品 process_start。
+
+### 五项用户门槛的当前结论
+
+| 门槛 | 当前判断 | 下一项实际证据 |
+|---|---|---|
+| KV2 正式存储 | 当前源码已有 active-native 全历史写入和 native-large HA 路径；旧文档所说的缺失不能直接套到当前代码。当前 4e808 的完整 34MiB 正式迁移/恢复仍未运行。 | 在已验证当前二进制及精确官方 2.7.1 oracle 下，保持原 31 checks，完成迁移、快照、恢复、冷启动和回滚。单机这条验证不以 desktop 传输或物理 LAN 运行作为语义前置。 |
+| 物理 HA | 当前 Mac / ROG / Pocket4 的 98 项及单列 12 项冷启动验证尚未执行。历史 df026 的 91/98 失败仍保留。 | 原真实断主、自然选主、ReadIndex、持久化与重启回归；不得强行选主或延长期限来补通过。 |
+| AuthBus | 公共 SDK 3/13 读取已闭合；selected owner、可信 issuer/cluster/CA/AppRole/Policy 及真实续期撤销未闭合。 | 完成剩余原源码读取，建立精确运行闭包与可信凭证来源，再验证原真实凭证流程。 |
+| 逐台切换 | 没有正式切流。Mac5/ROG6 是有界旧观察；Pocket4 manager 与 X230 当前 consumer 仍有缺口，ROG disabled generation203 保留。 | 每台真实凭证读写、重启、回滚和原样恢复完成后才切流，并核对所有客户端与备份路径。 |
+| 旧版清理 | 条件未满足，未删除旧 OpenBao/HeptaBao 服务、二进制、备份或可再生资产。 | 所有客户端、当前备份路径及恢复证明完成后，再执行明确的旧版清单清理，仅保留最新版服务。 |
+
+官方 2.7.1 的源码路径/字段枚举仍不是运行时全量兼容分母。Native auth/secret/lease、外部系统副作用、PKI/KMS/Transit custody、rekey/recovery/root generation、插件与管理工作流的未资格范围保持原记录。没有通过移除 guards、缩减原断言或混用历史版本结果宣告全量替代。
+
+---
+
+## 以下为 R26 及更早正文的逐字历史保留
+
+# HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
+
 ## 当前 R26：KV2 路由复核、续期证据增量与原始读取归档
 
 状态截点 **2026-11-05T14:04:34Z**。当前产品仍是 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 仍未达标；逐台正式切流和旧版清理条件均未满足。** 本轮补齐可核查的读取原件、修正部署与续期验证源码，不把源码审查计作真实凭证、恢复或 HA 通过。

@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.sdk03-author-adoption-root-crosscheck.r1",
+  "packet": "9e7e3bb7c7e3e891506ca7109625a28d3f8a8fa0",
+  "whole_files": 9,
+  "whole_bytes": 200888,
+  "whole_merkle_trees": 1,
+  "original_payload_byte_equal_to_root_recovered": true,
+  "original_native_byte_equal_to_root_recovered": true,
+  "root_review_exact": true,
+  "root_original_tail_recovery_review": "b17c121f99407014855add6c44b2e6699307a73f",
+  "author_adoption": "6604b671c8fe49eddf3f5c516aa6e36db46bdec8",
+  "original_read_replayed": false,
+  "sdk_execution": false,
+  "selected_owner_proven": false
+}

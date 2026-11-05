@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.current-lan-inert-external-intent.r1",
+  "scope": "Create-only nine public source files and receipt; compile-only; no prepare or product/LAN execution.",
+  "submission_state_at_intent": "NOT_SUBMITTED",
+  "exact_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+  "exact_request_bytes": 484591,
+  "exact_request_sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+  "host": "desktop",
+  "idempotency_key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+  "timeout_seconds": 60,
+  "original_go_blob": "08fbd1dfbf36ec8ee7bc3aeb8eadac18e6bf9cf9",
+  "resumption_blob": "f3d7a0e8b704c4886831c83be08daa747bd47b6a",
+  "preceding_normal5_actual_tree": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+  "preceding_root_review": "8dae54de9916da7322c1f9fa544b3223de781120",
+  "normal5_all_observations_closed": true,
+  "single_submit_required": true,
+  "unknown_no_new_key_or_resubmit": true,
+  "ack_must_be_externally_persisted_before_parse": true,
+  "source_import_qualification": false,
+  "prepare_go": false,
+  "live_go": false,
+  "normal5_relay_go": false
+}

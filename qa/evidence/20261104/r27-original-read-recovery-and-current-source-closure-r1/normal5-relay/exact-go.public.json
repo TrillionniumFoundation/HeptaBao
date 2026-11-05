@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.current-normal5-artifact-relay-exact-go.r1",
+  "decision": "GO_EXACT_CREATE_ONLY_PUBLIC_ARTIFACT_TRANSFER",
+  "request": {
+    "blob": "337709a2869237259b8576b63623e7b74f138fb8",
+    "bytes": 383,
+    "sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-normal5-artifact-relay-r1-075193b0"
+  },
+  "basis": {
+    "source_packet": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+    "source_root_review": "60adf9e31d99d260984864884e553147767ce48f",
+    "source_root_checks": 95,
+    "full_inert_actual_packet": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+    "full_inert_root_review": "8dae54de9916da7322c1f9fa544b3223de781120",
+    "full_inert_root_checks": 184,
+    "independent_control_source_infos": [
+      {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+        "sha256": "f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96",
+        "size": 7602,
+        "version": "2050:7360639:7602:1793884028932043583:1793884028937079006"
+      },
+      {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+        "sha256": "dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19",
+        "size": 9138,
+        "version": "2050:7360657:9138:1793884028944391717:1793884028951075515"
+      },
+      {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+        "sha256": "075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4",
+        "size": 16719,
+        "version": "2050:7360808:16719:1793884028960515194:1793884028968904561"
+      }
+    ],
+    "current_rog_normal61_root_review": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+    "current_rog_normal61_root_checks": 147
+  },
+  "scope": {
+    "files": 5,
+    "total_bytes": 110287359,
+    "source_host": "rog",
+    "destination_host": "desktop",
+    "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "only_public_server_and_native_release_combined61_groups_files": true,
+    "no_seed_binary": true,
+    "no_git_build_server_HTTP_or_product_execution": true
+  },
+  "original_budgets_seconds": {
+    "outer": 360,
+    "relay": 300,
+    "endpoints": 90,
+    "connect": 10,
+    "cleanup_TERM": 5,
+    "cleanup_KILL": 5
+  },
+  "sequence": "Only after the earlier LAN inert process has a known closed terminal; no overlapping mutation on this line. Preserve separate exact intent in a completed call before one original process_start, then ACK external before parse; original key/request unchanged (no extra SHA argv). Existing read windows each at most one operation.",
+  "on_unknown": "Preserve original ACK/authority/error and reconcile only original job. No new key, native replay, widening of deadline, signal outside owned cleanup or recreation of destination root.",
+  "postcondition": "Need authoritative exit0/full/durable plus full original sender/receiver/controller receipts, versions and hashes and independent destination file-info before consumers bind. This transfer alone grants no service or full replacement qualification.",
+  "no_LAN_prepare_or_live": true,
+  "no_H2_prepare_or_live": true,
+  "no_X230_execution": true,
+  "no_production_cutover": true,
+  "no_old_asset_deletion": true
+}

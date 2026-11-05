@@ -1,0 +1,7 @@
+{
+  "chunk_id": "845b0e",
+  "wall_time_seconds": 0.000021863,
+  "exit_code": 0,
+  "original_token_count": 227,
+  "output": "{\"body_bytes\": 39692, \"body_sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\", \"bundle_reported_only\": {\"bytes\": 22320862, \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\", \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"}, \"checks\": 94, \"command_count\": 27, \"explicit_per_fd_ledger_present\": false, \"historical_query_errors_preserved\": true, \"host_or_runtime_calls_by_verifier\": 0, \"independent_bundle_info_submitted\": false, \"new_binary_read_or_exporter_submitted\": false, \"owned_closed\": 27, \"same_operation_id\": \"79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2\", \"schema\": \"heptabao.4e808-export-original-read-recovery-offline-checks.v1\", \"separate_command_log_reads_submitted\": 0, \"source_before_equals_after\": true, \"status\": \"PASS_ORIGINAL_READ_RECOVERY_CORE_ONLY\", \"whole_original_sdk_bytes\": 53354}\n"
+}

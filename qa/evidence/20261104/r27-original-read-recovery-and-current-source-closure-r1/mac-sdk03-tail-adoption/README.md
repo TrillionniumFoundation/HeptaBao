@@ -1,0 +1,5 @@
+# SDK read 03 — root's same-ID immutable tail adopted
+
+Root performed one original operation_result call for operation 44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f, offset 81920, limit 16384, after the global pause. This packet preserves its returned original SDK and native page without another Runtime call by this agent. The already archived first five pages in df282bad33bae04e947cea7a6d823dc7e1bf18e5 plus this 5,883-byte tail reproduce the original 87,803-byte payload exactly. That payload reproduces the original 87,700-byte native result and the 65,536-byte selector chunk at offset 65,536. Twenty-four local byte/binding checks pass.
+
+The original failed tail page, the complete 72-file partial packet, and its point-in-time partial classification remain unchanged. Progress is now 3 of 13 complete observations, comprising one complete loader file and two selector chunks. The selector file and registry file are not complete. Reads 04–13 remain unsubmitted and paused. No SDK import, owner selection, capture, consumer, or other Runtime call occurred during this adoption.

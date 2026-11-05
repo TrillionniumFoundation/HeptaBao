@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.df026-official271-phaseb-source-manifest.v1",
+  "status": "source_only_unresolved_inputs",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "ready_for_readonly_prepare": false,
+  "source_or_runtime_operations_started": 0,
+  "original_controller_sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 5407,
+      "sha256": "aa55fc5003e282ea62670524e0f36ee49c26d4356c2173d72b0f16b77b70bf29",
+      "blob": "6613497dfe5712ca7be9f891c531fff392b1d954"
+    },
+    {
+      "path": "binding/partial-binding.private.json",
+      "bytes": 6678,
+      "sha256": "794d6bd786494c272b719214e8a4642d0a1d8bdc9f00198c0e7708527242b46b",
+      "blob": "96e5729464a3668045ea72ceffc788b7f8dc8bc1"
+    },
+    {
+      "path": "candidate/native_fixture_reference_r8.py",
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "blob": "7e465b3ea72814726ed2e01355ab91412190a747"
+    },
+    {
+      "path": "candidate/official_cli_reference_r4.py",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de"
+    },
+    {
+      "path": "candidate/phaseb_binding_r3.py",
+      "bytes": 26563,
+      "sha256": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed",
+      "blob": "f60dbb093d69641bc8cd4a367320ec6fc5bdc0fd"
+    },
+    {
+      "path": "candidate/phaseb_controller_r3.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+    },
+    {
+      "path": "candidate/phaseb_evidence_r3.py",
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed"
+    },
+    {
+      "path": "dispatch/requests.template.json",
+      "bytes": 2739,
+      "sha256": "95275d21fd01b54c93082c813525d268adbb1c1c3782e9dc3e753168b30f59ee",
+      "blob": "68faf2fa0fee9ed1b4a879d549ef6dc0c83ba13d"
+    },
+    {
+      "path": "reference/normal_df026_runner.py",
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+    },
+    {
+      "path": "reference/phaseb_binding_r3.py",
+      "bytes": 23664,
+      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+      "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a"
+    },
+    {
+      "path": "review/binding.review.diff",
+      "bytes": 6149,
+      "sha256": "ab72dd07b2ea7865140662c21f523d6066be7895e1682efcddae3dcf32f1d884",
+      "blob": "571faf236cd54e42d43a436edbf2b27fdc10c0c6"
+    },
+    {
+      "path": "review/check_source_delta.initial.py",
+      "bytes": 4287,
+      "sha256": "735f920a5e26dfbded89d05832679390446668036c1c75e1ba35e0dfb3db1856",
+      "blob": "d0ca00430f1af9fdd4d1d20735b84223b80a0041"
+    },
+    {
+      "path": "review/check_source_delta.py",
+      "bytes": 4757,
+      "sha256": "a85f00bc45e2a5fb9bad94b2a43e46a0056dc631d69212aeb4da734a7b46b1e0",
+      "blob": "4d288831dd6e1d347b2852743286722bd33d0213"
+    },
+    {
+      "path": "review/initial-checker-failure.public.json",
+      "bytes": 246,
+      "sha256": "ee799665794e80e3df883bd885b82afa98f2915593643e51332daf0d85273faf",
+      "blob": "a5b886f925e9157c463ffd6b795049a720db11b6"
+    },
+    {
+      "path": "review/product-membership.public.json",
+      "bytes": 1693,
+      "sha256": "8a9ed8ec836d7853fb0634a3cded32d3e778531279d6635f9d29e9664cf98a3e",
+      "blob": "a2d0b437fc4884cc3cfd07cbc128791fa7881f76"
+    },
+    {
+      "path": "review/review-input.json",
+      "bytes": 96029,
+      "sha256": "73c4bff533c8e53feda949b4b8450cd0db45bf6ba59c55c83219e51ce1fff70e",
+      "blob": "b8dc9fc8cc1c97cc36fa4aed74f4fff42e3c4339"
+    },
+    {
+      "path": "review/source-delta-check.public.json",
+      "bytes": 4062,
+      "sha256": "663e14d2acf5e4c621126ea230bab001b790a76cf9e404452689f2c1d3cde516",
+      "blob": "f7f00be220148417503593cc8ae2e95222ec6251"
+    }
+  ]
+}

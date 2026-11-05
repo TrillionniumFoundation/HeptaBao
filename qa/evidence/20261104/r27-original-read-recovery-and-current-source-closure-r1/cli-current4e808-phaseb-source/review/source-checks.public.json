@@ -1,0 +1,704 @@
+{
+  "candidate_binding": {
+    "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+    "bytes": 28134,
+    "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+  },
+  "check_count": 143,
+  "checks": [
+    {
+      "check": "old_exact_blob",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_61_and_exact_runner_gate",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_move_total_check_to_one_test_gate",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_combined_schema",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_canonical_namespace",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_read_source_member",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_separate_one_test_tuple",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_tree",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_current_commit",
+      "passed": true
+    },
+    {
+      "check": "inverse_unique_docstring",
+      "passed": true
+    },
+    {
+      "check": "binder_inverse_whole_exact",
+      "passed": true
+    },
+    {
+      "check": "unified_diff_headers",
+      "passed": true
+    },
+    {
+      "check": "binder_strict_whole_diff",
+      "passed": true
+    },
+    {
+      "check": "unified_diff_headers",
+      "passed": true
+    },
+    {
+      "check": "strict_whole_binding/partial-binding.private.json",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:binding_source_sha",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:binding_source_length",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:current_tree",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:current_commit",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:current_canonical_source",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:fresh_work_prefix_only",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_binding/partial-binding.private.json:fresh_control_prefix_only",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_whole_binding/partial-binding.private.json",
+      "passed": true
+    },
+    {
+      "check": "unified_diff_headers",
+      "passed": true
+    },
+    {
+      "check": "strict_whole_dispatch/requests.template.json",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:new_live_key",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:new_prepare_key",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:current_61_prerequisite",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:current_tree",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:current_commit",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:current_dispatch_schema",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_unique_dispatch/requests.template.json:fresh_control_prefix_only",
+      "passed": true
+    },
+    {
+      "check": "template_inverse_whole_dispatch/requests.template.json",
+      "passed": true
+    },
+    {
+      "check": "all_definition_names_unchanged",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_need",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_remaining",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_sha",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_identity",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_exact_path",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_no_symlink_ancestors",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_duplicate_free",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_parse",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_read_file",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_pin_file",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_load_verified_module",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_Binding.check_host",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_Binding.quick_fence",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_Binding.fresh_path",
+      "passed": true
+    },
+    {
+      "check": "definition_whole_unchanged_Binding.check_ports",
+      "passed": true
+    },
+    {
+      "check": "constructor_only_source_namespace",
+      "passed": true
+    },
+    {
+      "check": "retained_source_exact_phaseb_controller_r3.py",
+      "passed": true
+    },
+    {
+      "check": "retained_source_exact_phaseb_evidence_r3.py",
+      "passed": true
+    },
+    {
+      "check": "retained_source_exact_native_fixture_reference_r8.py",
+      "passed": true
+    },
+    {
+      "check": "retained_source_exact_official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "check": "whole_module_compile_only_phaseb_binding_r3.py",
+      "passed": true
+    },
+    {
+      "check": "whole_module_compile_only_phaseb_controller_r3.py",
+      "passed": true
+    },
+    {
+      "check": "whole_module_compile_only_phaseb_evidence_r3.py",
+      "passed": true
+    },
+    {
+      "check": "whole_module_compile_only_native_fixture_reference_r8.py",
+      "passed": true
+    },
+    {
+      "check": "whole_module_compile_only_official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "check": "current_product_identity",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_INGRESS_OBSERVER_TESTS",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_COLD_H2_TESTS",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_FEATURES",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_PROFILE",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_BUDGETS",
+      "passed": true
+    },
+    {
+      "check": "original_constant_unchanged_API_PORTS",
+      "passed": true
+    },
+    {
+      "check": "one_separate_ABA_name",
+      "passed": true
+    },
+    {
+      "check": "canonical_merkle_root",
+      "passed": true
+    },
+    {
+      "check": "canonical_merkle_crates",
+      "passed": true
+    },
+    {
+      "check": "canonical_merkle_heptabao-server",
+      "passed": true
+    },
+    {
+      "check": "canonical_merkle_src",
+      "passed": true
+    },
+    {
+      "check": "canonical_root_matches_candidate",
+      "passed": true
+    },
+    {
+      "check": "canonical_member_link_crates",
+      "passed": true
+    },
+    {
+      "check": "canonical_member_link_heptabao-server",
+      "passed": true
+    },
+    {
+      "check": "canonical_member_link_src",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/http_h2.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_http_h2.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_service_native_v6_ha_read.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_ha_native_v6_runtime.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/snapshot_archive.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_snapshot_archive.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/service.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_service.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_service_snapshot_transfer.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_whole_crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_member_service_snapshot_v6_ha_restore.rs",
+      "passed": true
+    },
+    {
+      "check": "future_exact_layout",
+      "passed": true
+    },
+    {
+      "check": "unresolved_binding_and_dispatch",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_still_null_server",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_still_null_native_receipt",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_still_null_release_receipt",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_still_null_combined_tests",
+      "passed": true
+    },
+    {
+      "check": "existing_requirement_unchanged_host",
+      "passed": true
+    },
+    {
+      "check": "existing_requirement_unchanged_official_cli",
+      "passed": true
+    },
+    {
+      "check": "existing_requirement_unchanged_utilities",
+      "passed": true
+    },
+    {
+      "check": "existing_requirement_unchanged_old_fences",
+      "passed": true
+    },
+    {
+      "check": "existing_requirement_unchanged_budgets",
+      "passed": true
+    },
+    {
+      "check": "future_qa_exact_native_fixture_reference_r8.py",
+      "passed": true
+    },
+    {
+      "check": "future_qa_exact_official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "check": "future_qa_exact_phaseb_binding_r3.py",
+      "passed": true
+    },
+    {
+      "check": "future_qa_exact_phaseb_controller_r3.py",
+      "passed": true
+    },
+    {
+      "check": "future_qa_exact_phaseb_evidence_r3.py",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_owned_path_combined_tests",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_owned_path_native_receipt",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_owned_path_release_receipt",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_owned_path_server",
+      "passed": true
+    },
+    {
+      "check": "future_artifact_owned_path_test_groups",
+      "passed": true
+    },
+    {
+      "check": "dispatch_timeout_prepare",
+      "passed": true
+    },
+    {
+      "check": "dispatch_private_basename_prepare",
+      "passed": true
+    },
+    {
+      "check": "dispatch_controller_path_prepare",
+      "passed": true
+    },
+    {
+      "check": "dispatch_exact_host_tool_cwd_prepare",
+      "passed": true
+    },
+    {
+      "check": "dispatch_unresolved_digest_prepare",
+      "passed": true
+    },
+    {
+      "check": "dispatch_timeout_live",
+      "passed": true
+    },
+    {
+      "check": "dispatch_private_basename_live",
+      "passed": true
+    },
+    {
+      "check": "dispatch_controller_path_live",
+      "passed": true
+    },
+    {
+      "check": "dispatch_exact_host_tool_cwd_live",
+      "passed": true
+    },
+    {
+      "check": "dispatch_unresolved_digest_live",
+      "passed": true
+    },
+    {
+      "check": "original_build_reference_whole_normal61-combined.public.json",
+      "passed": true
+    },
+    {
+      "check": "original_build_reference_whole_normal61-native.public.json",
+      "passed": true
+    },
+    {
+      "check": "original_build_reference_whole_normal61-release.public.json",
+      "passed": true
+    },
+    {
+      "check": "original_build_reference_whole_groups.json",
+      "passed": true
+    },
+    {
+      "check": "original_build_reference_whole_historical-df026-normal60.public.json",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_actual_current61_receipts",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_historical_df026_normal60_refused",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_receipt_missing",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_name_changed",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_failed",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_timed_out",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_unreaped",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_survivor",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_budget_changed",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_ABA_parent_clip_missing",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_sixty_total_rejected",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_separate_count_missing",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_old_runner_rejected",
+      "passed": true
+    },
+    {
+      "check": "selected_predicate_old_candidate_rejected",
+      "passed": true
+    },
+    {
+      "check": "actual_ready_guard_refuses_template",
+      "passed": true
+    },
+    {
+      "check": "five_case_map_exact_original_set",
+      "passed": true
+    },
+    {
+      "check": "five_cases_still_not_run",
+      "passed": true
+    },
+    {
+      "check": "all_case_anchors_exact_source",
+      "passed": true
+    }
+  ],
+  "diff_hunks": {
+    "binder": 8,
+    "binding/partial-binding.private.json": 4,
+    "dispatch/requests.template.json": 4
+  },
+  "limits": [
+    "The actual normal61 receipts are data inputs to an offline admission predicate, not a new normal run.",
+    "Host, source import, product transport, local-stage versions, prepare and live remain unresolved.",
+    "No official CLI or archive/H2/component product test was executed by this verifier."
+  ],
+  "new_runtime_qualification": false,
+  "product_operations": 0,
+  "runtime_requests": 0,
+  "schema": "heptabao.phaseb-4e808-source-checks.v1",
+  "selected_component_count": 14,
+  "selected_components": [
+    {
+      "case": "actual_current61_receipts",
+      "expected_failure": null,
+      "observed_failure": null,
+      "passed": true
+    },
+    {
+      "case": "historical_df026_normal60_refused",
+      "expected_failure": "diagnostic_original44_terminal_pass_required",
+      "observed_failure": "diagnostic_original44_terminal_pass_required",
+      "passed": true
+    },
+    {
+      "case": "ABA_receipt_missing",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "ABA_name_changed",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "ABA_failed",
+      "expected_failure": "same_root_publication_regression_terminal",
+      "observed_failure": "same_root_publication_regression_terminal",
+      "passed": true
+    },
+    {
+      "case": "ABA_timed_out",
+      "expected_failure": "same_root_publication_regression_terminal",
+      "observed_failure": "same_root_publication_regression_terminal",
+      "passed": true
+    },
+    {
+      "case": "ABA_unreaped",
+      "expected_failure": "same_root_publication_regression_terminal",
+      "observed_failure": "same_root_publication_regression_terminal",
+      "passed": true
+    },
+    {
+      "case": "ABA_survivor",
+      "expected_failure": "same_root_publication_regression_terminal",
+      "observed_failure": "same_root_publication_regression_terminal",
+      "passed": true
+    },
+    {
+      "case": "ABA_budget_changed",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "ABA_parent_clip_missing",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "sixty_total_rejected",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "separate_count_missing",
+      "expected_failure": "current_product_61_with_separate_same_root_one",
+      "observed_failure": "current_product_61_with_separate_same_root_one",
+      "passed": true
+    },
+    {
+      "case": "old_runner_rejected",
+      "expected_failure": "exact_current_product_normal61_runner",
+      "observed_failure": "exact_current_product_normal61_runner",
+      "passed": true
+    },
+    {
+      "case": "old_candidate_rejected",
+      "expected_failure": "diagnostic_original44_terminal_pass_required",
+      "observed_failure": "diagnostic_original44_terminal_pass_required",
+      "passed": true
+    }
+  ],
+  "selected_execution": "Actual Binding.verify receipt-only AST statements, need/BindingError, literal constants and one ready guard; no module/Binding constructor/fixture execution.",
+  "selected_predicates_sha256": "6df934aa1824940ad59027de78dd3779c093c207db4306b9b30f6e9f00a86f39",
+  "status": "passed_source_only",
+  "unchanged_definitions": [
+    "need",
+    "remaining",
+    "sha",
+    "identity",
+    "exact_path",
+    "no_symlink_ancestors",
+    "duplicate_free",
+    "parse",
+    "read_file",
+    "pin_file",
+    "load_verified_module",
+    "Binding.check_host",
+    "Binding.quick_fence",
+    "Binding.fresh_path",
+    "Binding.check_ports"
+  ],
+  "whole_modules_compiled_not_executed": 5
+}

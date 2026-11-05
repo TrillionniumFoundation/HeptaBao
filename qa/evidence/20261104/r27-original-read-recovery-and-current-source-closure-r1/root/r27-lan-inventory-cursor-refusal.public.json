@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.lan-lost-ack-inventory-cursor-refusal.r1",
+  "request": {
+    "host": "desktop",
+    "limit": 128,
+    "cursor": "9fa6ee98be32390505e76f00272c27d74aa6edbb549270e8b71a6ebce585d412:1a1a0d103c1-fc05-157"
+  },
+  "original_sdk": {
+    "name": "r27-lan-inventory-original-cursor-refusal.sdk.json",
+    "blob": "2f1438ca83810e4dbf4b59d4e256605fb79b23fa",
+    "bytes": 166,
+    "sha256": "822f3e96e93c695bdc94ac1ec50fe2e276a012c8e85816713599fe622bcf94c9"
+  },
+  "classification": "SNAPSHOT_CHANGED_TYPED_REFUSAL",
+  "no_job_absence_inference": true,
+  "no_process_replay": true,
+  "original_target_delivery_still_unknown": true,
+  "next": "Use documented fresh first page; retain all original errors; only original server-returned cursors."
+}

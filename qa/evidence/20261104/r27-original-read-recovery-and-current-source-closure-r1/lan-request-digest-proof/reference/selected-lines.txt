@@ -1,0 +1,626 @@
+## jobs.rs 59-90
+
+59: #[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+60: #[serde(deny_unknown_fields)]
+61: pub struct ProcessStartParams {
+62: 	/// Configured host name, never a raw SSH destination.
+63: 	pub host: String,
+64: 	/// Executable path or command name. Shell syntax is not accepted.
+65: 	pub executable: String,
+66: 	#[serde(default)]
+67: 	pub args: Vec<String>,
+68: 	#[serde(default)]
+69: 	pub cwd: Option<String>,
+70: 	#[serde(default)]
+71: 	pub env: BTreeMap<String, String>,
+72: 	/// Optional standard input written once at process start (max 1 MiB).
+73: 	#[serde(default)]
+74: 	pub stdin: Option<String>,
+75: 	/// Optional process timeout. The remote supervisor terminates the process group.
+76: 	#[serde(default)]
+77: 	pub timeout_seconds: Option<u64>,
+78: 	/// Mandatory stable operation key; exact retries reconcile the original durable job.
+79: 	#[schemars(required)]
+80: 	pub idempotency_key: Option<String>,
+81: 	/// Non-negative Unix nice adjustment, 0..19.
+82: 	#[serde(default)]
+83: 	pub nice: Option<u8>,
+84: 	/// Optional transient systemd CPUQuota percentage, 1..1000.
+85: 	#[serde(default)]
+86: 	pub cpu_quota_percent: Option<u16>,
+87: 	/// Optional transient systemd MemoryMax in bytes.
+88: 	#[serde(default)]
+89: 	pub memory_max_bytes: Option<u64>,
+90: }
+
+## jobs.rs 154-177
+
+154: struct JobRecord {
+155: 	#[serde(default)]
+156: 	execution_mode: ExecutionMode,
+157: 	#[serde(default)]
+158: 	system_jobctl: bool,
+159: 	id: String,
+160: 	host: String,
+161: 	ssh_target: String,
+162: 	unit: String,
+163: 	remote_job_dir: String,
+164: 	executable: String,
+165: 	args: Vec<String>,
+166: 	cwd: Option<String>,
+167: 	env_keys: Vec<String>,
+168: 	created_unix_ms: u128,
+169: 	idempotency_key: Option<String>,
+170: 	request_fingerprint: u64,
+171: 	#[serde(default)]
+172: 	request_digest: Option<String>,
+173: 	#[serde(default = "default_launch_state")]
+174: 	launch_state: String,
+175: 	#[serde(default)]
+176: 	launch_error: Option<String>,
+177: }
+
+## jobs.rs 223-295
+
+223: fn next_job_id() -> String {
+224: 	let seq = JOB_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+225: 	format!("{:x}-{:x}-{:x}", now_ms(), std::process::id(), seq)
+226: }
+227: 
+228: fn jobs_dir() -> Result<PathBuf> {
+229: 	let path = runtime_config()?.state_dir.join("jobs");
+230: 	std::fs::create_dir_all(&path)?;
+231: 	Ok(path)
+232: }
+233: 
+234: fn record_path(id: &str) -> Result<PathBuf> {
+235: 	if !valid_name(id) {
+236: 		bail!("invalid job id `{id}`");
+237: 	}
+238: 	Ok(jobs_dir()?.join(format!("{id}.json")))
+239: }
+240: 
+241: fn with_registry_read<T>(gate: &RwLock<()>, read: impl FnOnce() -> Result<T>) -> Result<T> {
+242: 	let _read = gate
+243: 		.read()
+244: 		.map_err(|_| anyhow::anyhow!("job registry read lock unavailable"))?;
+245: 	read()
+246: }
+247: 
+248: fn save_record(record: &JobRecord) -> Result<()> {
+249: 	save_record_with_registry_gate(record, &REGISTRY_ACCESS, || record_path(&record.id))
+250: }
+251: 
+252: fn save_record_with_registry_gate(
+253: 	record: &JobRecord,
+254: 	gate: &RwLock<()>,
+255: 	record_path: impl FnOnce() -> Result<PathBuf>,
+256: ) -> Result<()> {
+257: 	// Include path/directory creation and both fsyncs. Every local publication,
+258: 	// including a launch outcome replacing pending metadata, uses this writer.
+259: 	let _write = gate
+260: 		.write()
+261: 		.map_err(|_| anyhow::anyhow!("job registry write lock unavailable"))?;
+262: 	let path = record_path()?;
+263: 	save_record_at(&path, record)
+264: }
+265: 
+266: fn save_record_at(path: &Path, record: &JobRecord) -> Result<()> {
+267: 	let tmp = path.with_extension(format!("json.tmp.{}", std::process::id()));
+268: 	let bytes = serde_json::to_vec_pretty(record)?;
+269: 	// The durable identity must remain readable by the bounded recovery path.
+270: 	// Reject an oversized request before creating a receipt or remote effect.
+271: 	if bytes.len() as u64 > MAX_JOB_RECORD_BYTES {
+272: 		bail!("durable job record exceeds {} bytes", MAX_JOB_RECORD_BYTES);
+273: 	}
+274: 	#[cfg(unix)]
+275: 	let mut file = {
+276: 		use std::os::unix::fs::OpenOptionsExt;
+277: 		OpenOptions::new()
+278: 			.create_new(true)
+279: 			.write(true)
+280: 			.mode(0o600)
+281: 			.open(&tmp)?
+282: 	};
+283: 	#[cfg(not(unix))]
+284: 	let mut file = OpenOptions::new().write(true).create_new(true).open(&tmp)?;
+285: 	file.write_all(&bytes)?;
+286: 	// The identity must be durable before an external process can be launched.
+287: 	file.sync_all()?;
+288: 	drop(file);
+289: 	std::fs::rename(&tmp, path)?;
+290: 	#[cfg(unix)]
+291: 	if let Some(parent) = path.parent() {
+292: 		File::open(parent)?.sync_all()?;
+293: 	}
+294: 	Ok(())
+295: }
+
+## jobs.rs 1673-1732
+
+1673: // Keep the alphabetical key order of the original serde_json::Value map.
+1674: // Borrow potentially large input while retaining exactly its original JSON bytes.
+1675: #[derive(Serialize)]
+1676: struct RequestBinding<'a> {
+1677: 	args: &'a [String],
+1678: 	cpu_quota_percent: Option<u16>,
+1679: 	cwd: Option<&'a str>,
+1680: 	env: &'a BTreeMap<String, String>,
+1681: 	executable: &'a str,
+1682: 	host: &'a str,
+1683: 	memory_max_bytes: Option<u64>,
+1684: 	nice: Option<u8>,
+1685: 	stdin: Option<&'a str>,
+1686: 	timeout_seconds: Option<u64>,
+1687: }
+1688: fn request_binding(params: &ProcessStartParams) -> RequestBinding<'_> {
+1689: 	RequestBinding {
+1690: 		args: &params.args,
+1691: 		cpu_quota_percent: params.cpu_quota_percent,
+1692: 		cwd: params.cwd.as_deref(),
+1693: 		env: &params.env,
+1694: 		executable: &params.executable,
+1695: 		host: &params.host,
+1696: 		memory_max_bytes: params.memory_max_bytes,
+1697: 		nice: params.nice,
+1698: 		stdin: params.stdin.as_deref(),
+1699: 		timeout_seconds: params.timeout_seconds,
+1700: 	}
+1701: }
+1702: struct RequestHashWriter(Sha256);
+1703: impl Write for RequestHashWriter {
+1704: 	fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+1705: 		self.0.update(bytes);
+1706: 		Ok(bytes.len())
+1707: 	}
+1708: 	fn flush(&mut self) -> std::io::Result<()> {
+1709: 		Ok(())
+1710: 	}
+1711: }
+1712: pub(crate) fn request_digest(params: &ProcessStartParams) -> Result<String> {
+1713: 	let mut writer = RequestHashWriter(Sha256::new());
+1714: 	serde_json::to_writer(&mut writer, &request_binding(params))?;
+1715: 	let digest = writer.0.finalize();
+1716: 	let mut hex = String::with_capacity(64);
+1717: 	const HEX: &[u8; 16] = b"0123456789abcdef";
+1718: 	for byte in digest {
+1719: 		hex.push(HEX[(byte >> 4) as usize] as char);
+1720: 		hex.push(HEX[(byte & 15) as usize] as char);
+1721: 	}
+1722: 	Ok(hex)
+1723: }
+1724: 
+1725: // Retain the old prefix only for readable legacy metadata. New idempotent
+1726: // requests compare all 256 bits, and legacy bindings never silently relaunch.
+1727: fn fingerprint(digest: &str) -> u64 {
+1728: 	digest
+1729: 		.get(..16)
+1730: 		.and_then(|prefix| u64::from_str_radix(prefix, 16).ok())
+1731: 		.unwrap_or(0)
+1732: }
+
+## jobs.rs 2186-2279
+
+2186: // Shared by start and reconciliation: existing unsafe directories never become a new launch.
+2187: const PRIVATE_DIRECTORY_CODE: &str = r#"
+2188: import os, pathlib, stat, sys
+2189: _hepta_directory_pins = []
+2190: def private_job_directory(raw, create=False):
+2191:     if not isinstance(raw, str) or not raw.startswith("/") or any(p in (".", "..") for p in raw.split("/")):
+2192:         raise SystemExit("unsafe remote job path")
+2193:     parts = [p for p in raw.split("/") if p]
+2194:     if len(parts) < 3 or parts[-2] != "jobs":
+2195:         raise SystemExit("remote job path must name a dedicated state/jobs/job directory")
+2196:     shared_access = getattr(os, "O_PATH", os.O_RDONLY) if sys.platform == "linux" else os.O_RDONLY
+2197:     path_only_shared = shared_access != os.O_RDONLY
+2198:     directory_flags = os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+2199:     fd = os.open("/", shared_access | directory_flags)
+2200:     _hepta_directory_pins.append(fd)
+2201:     for offset, part in enumerate(parts):
+2202:         private = offset >= len(parts) - 3
+2203:         if create and private and not path_only_shared:
+2204:             try:
+2205:                 os.mkdir(part, mode=0o700, dir_fd=fd)
+2206:                 os.fsync(fd)
+2207:             except FileExistsError:
+2208:                 pass
+2209:         access = os.O_RDONLY if private else shared_access
+2210:         try:
+2211:             child = os.open(part, access | directory_flags, dir_fd=fd)
+2212:         except FileNotFoundError:
+2213:             if not (create and private and path_only_shared):
+2214:                 raise
+2215:             # O_PATH traverses an existing searchable ancestor without reading it.
+2216:             # A new child still needs its parent's original durability barrier:
+2217:             # acquire a readable handle before mkdir, or refuse without creating.
+2218:             sync_parent = os.open(".", os.O_RDONLY | directory_flags, dir_fd=fd)
+2219:             _hepta_directory_pins.append(sync_parent)
+2220:             pinned = os.fstat(fd)
+2221:             readable = os.fstat(sync_parent)
+2222:             if (pinned.st_dev, pinned.st_ino) != (readable.st_dev, readable.st_ino):
+2223:                 raise SystemExit("remote parent directory identity changed; no directory created")
+2224:             try:
+2225:                 os.mkdir(part, mode=0o700, dir_fd=sync_parent)
+2226:             except FileExistsError:
+2227:                 pass
+2228:             else:
+2229:                 os.fsync(sync_parent)
+2230:             child = os.open(part, os.O_RDONLY | directory_flags, dir_fd=sync_parent)
+2231:         _hepta_directory_pins.append(child)
+2232:         info = os.fstat(child)
+2233:         if private and (info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) != 0o700):
+2234:             raise SystemExit("unsafe remote state/jobs/job directory; existing permissions are never repaired")
+2235:         fd = child
+2236:     os.fchdir(fd)
+2237:     return pathlib.Path(".")
+2238: 
+2239: def private_bound_job_directory(raw, expected):
+2240:     job = private_job_directory(raw)
+2241:     info = os.fstat(_hepta_directory_pins[-1])
+2242:     if (info.st_dev, info.st_ino) != (expected["device"], expected["inode"]):
+2243:         raise SystemExit("remote job directory identity changed; no workload submitted")
+2244:     return job
+2245: 
+2246: def private_open_job_file(name):
+2247:     try:
+2248:         fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+2249:                      dir_fd=_hepta_directory_pins[-1])
+2250:     except FileNotFoundError:
+2251:         return None
+2252:     except OSError as error:
+2253:         raise SystemExit("unsafe remote job file " + name) from error
+2254:     info = os.fstat(fd)
+2255:     if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or
+2256:             info.st_uid != os.geteuid() or stat.S_IMODE(info.st_mode) & 0o022):
+2257:         os.close(fd)
+2258:         raise SystemExit("unsafe remote job file " + name + ": non-regular or linked inode")
+2259:     return fd
+2260: 
+2261: def private_read_json(name):
+2262:     import json
+2263:     fd = private_open_job_file(name)
+2264:     if fd is None: return None
+2265:     with os.fdopen(fd, "rb") as stream:
+2266:         before = os.fstat(stream.fileno())
+2267:         if before.st_size > 4 * 1024 * 1024:
+2268:             raise SystemExit("unsafe remote job file " + name + ": linked or oversized inode")
+2269:         encoded = stream.read(4 * 1024 * 1024 + 1)
+2270:         after = os.fstat(stream.fileno())
+2271:         current = os.stat(name, dir_fd=_hepta_directory_pins[-1], follow_symlinks=False)
+2272:     def stamp(info):
+2273:         return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_nlink,
+2274:                 info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+2275:     if len(encoded) > 4 * 1024 * 1024 or stamp(before) != stamp(after) or stamp(after) != stamp(current):
+2276:         raise SystemExit("unsafe remote job file " + name + ": changed while reading")
+2277:     try:
+2278:         value = json.loads(encoded)
+2279:         if not isinstance(value, dict): raise ValueError("not an object")
+
+## jobs.rs 2294-2314
+
+2294: const BOUND_OBSERVATION_CODE: &str = r#"
+2295: import io, json
+2296: _original_query = json.load(sys.stdin)
+2297: _bound_job = private_job_directory(_original_query["job_dir"])
+2298: _bound_request = private_read_json("request.json")
+2299: _digest = _original_query.get("request_digest")
+2300: if (not isinstance(_bound_request, dict) or not isinstance(_digest, str) or len(_digest) != 64 or
+2301:         any(c not in "0123456789abcdef" for c in _digest) or
+2302:         _bound_request.get("job_id") != _original_query.get("job_id") or
+2303:         _bound_request.get("job_dir") != _original_query.get("job_dir") or
+2304:         _bound_request.get("unit") != _original_query.get("unit") or
+2305:         _bound_request.get("request_digest", _bound_request.get("request_fingerprint")) != _digest):
+2306:     raise SystemExit("remote job request binding missing or mismatched")
+2307: # Metadata is validated before a status can claim success or cancellation can
+2308: # acknowledge a terminal receipt. The status owner interprets a torn private
+2309: # started.json as unknown, and a confirmed terminal receipt takes precedence.
+2310: # Cancellation still validates its owner record before sending any signal.
+2311: for _name in ("launch.json", "exit.json"):
+2312:     private_read_json(_name)
+2313: sys.stdin = io.StringIO(json.dumps(_original_query))
+2314: "#;
+
+## jobs.rs 2331-2401
+
+2331: const START_CODE: &str = r#"
+2332: import fcntl, json, os, pathlib, shutil, subprocess, sys, time
+2333: req = json.load(sys.stdin)
+2334: req["default_cwd"] = os.getcwd()
+2335: os.umask(0o077)
+2336: job = private_job_directory(req["job_dir"], create=True)
+2337: lock_fd = os.open(job / "launch.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+2338: lock_info = os.fstat(lock_fd)
+2339: if not stat.S_ISREG(lock_info.st_mode) or lock_info.st_uid != os.geteuid() or lock_info.st_nlink != 1 or stat.S_IMODE(lock_info.st_mode) != 0o600:
+2340:     raise SystemExit("unsafe remote launch lock")
+2341: launch_lock = os.fdopen(lock_fd, "a")
+2342: fcntl.flock(launch_lock.fileno(), fcntl.LOCK_EX)
+2343: 
+2344: 
+2345: def read_json(name):
+2346:     return private_read_json(name)
+2347: 
+2348: def atomic(name, value):
+2349:     target = job / name
+2350:     tmp = job / (name + ".tmp")
+2351:     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+2352:     with os.fdopen(fd, "w", encoding="utf-8") as stream:
+2353:         stream.write(json.dumps(value, sort_keys=True) + "\n")
+2354:         stream.flush(); os.fsync(stream.fileno())
+2355:     os.replace(tmp, target)
+2356:     fd = os.open(job, os.O_RDONLY)
+2357:     try: os.fsync(fd)
+2358:     finally: os.close(fd)
+2359: 
+2360: def stage_file(name, data, mode):
+2361:     # A durable request/launch must never refer to an unsynchronized input or
+2362:     # supervisor archive. Partial creates remain tombstones, never replacements.
+2363:     fd = os.open(job / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, mode)
+2364:     with os.fdopen(fd, "wb") as stream:
+2365:         stream.write(data)
+2366:         os.fchmod(stream.fileno(), mode)
+2367:         stream.flush()
+2368:         os.fsync(stream.fileno())
+2369:     os.fsync(_hepta_directory_pins[-1])
+2370: 
+2371: stdin_text = req.pop("stdin", None)
+2372: existing = read_json("request.json")
+2373: if existing is not None:
+2374:     if (existing.get("job_id") != req.get("job_id") or existing.get("request_fingerprint") != req.get("request_fingerprint") or
+2375:             existing.get("job_dir") != req.get("job_dir") or existing.get("unit") != req.get("unit") or
+2376:             existing.get("request_digest", existing.get("request_fingerprint")) != req.get("request_digest", req.get("request_fingerprint"))):
+2377:         raise SystemExit("remote job directory is bound to a different request")
+2378:     launch = read_json("launch.json")
+2379:     exit_data = read_json("exit.json")
+2380:     # An existing request never launches again. Owner tombstones need not be
+2381:     # parsed here; status owns their conservative interpretation.
+2382:     if launch and launch.get("backend") == "launch_failed":
+2383:         raise SystemExit("prior remote launch failed; reconcile original identity without replay")
+2384:     if launch or exit_data:
+2385:         print(json.dumps({"ok": True, "reused_remote": True, **(launch or {"backend": "completed"})}, sort_keys=True))
+2386:         raise SystemExit(0)
+2387:     raise SystemExit("ambiguous prior launch: inspect this job; do not relaunch under another key")
+2388: else:
+2389:     if any(os.path.lexists(job / name) for name in ("stdin.bin","runner.py","owner-intent.json","started.json","child.json","launch.json","exit.json","exit.witness.json","exit.witness.json.tmp","stdout.log","stderr.log")):
+2390:         raise SystemExit("prior or uncertain job artifacts exist without request binding; no launch submitted")
+2391:     req["launch_nonce"] = os.urandom(16).hex()
+2392:     req["terminal_publication_protocol"] = 1
+2393:     if stdin_text is not None:
+2394:         stage_file("stdin.bin", stdin_text.encode("utf-8"), 0o600)
+2395:         req["stdin_path"] = str(pathlib.Path(req["job_dir"]) / "stdin.bin")
+2396:     fd = os.open(job / "request.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+2397:     with os.fdopen(fd, "w", encoding="utf-8") as stream:
+2398:         json.dump(req, stream, sort_keys=True); stream.flush(); os.fsync(stream.fileno())
+2399:     fd = os.open(job, os.O_RDONLY)
+2400:     try: os.fsync(fd)
+2401:     finally: os.close(fd)
+
+## jobs.rs 3821-3869
+
+3821: async fn launch_record(
+3822: 	record: &mut JobRecord,
+3823: 	params: &ProcessStartParams,
+3824: 	guard: &Option<OwnedStartGuard>,
+3825: 	owner: &Arc<super::effect_owner_fence::AdmissionPermit>,
+3826: ) -> Result<LaunchOutcome> {
+3827: 	launch_record_with_entry(record, params, guard, owner, || Ok(())).await
+3828: }
+3829: 
+3830: async fn launch_record_with_entry<F, G>(
+3831: 	record: &mut JobRecord,
+3832: 	params: &ProcessStartParams,
+3833: 	guard: &Option<OwnedStartGuard>,
+3834: 	owner: &Arc<super::effect_owner_fence::AdmissionPermit>,
+3835: 	enter: F,
+3836: ) -> Result<LaunchOutcome>
+3837: where
+3838: 	F: FnOnce() -> Result<G> + Send + 'static,
+3839: 	G: Send + 'static,
+3840: {
+3841: 	let config = runtime_config()?;
+3842: 	let host = config.host(&record.host)?;
+3843: 	// These eight permits bound remote launches through outcome publication,
+3844: 	// not observation RPCs or the independent pending/audit writer workers.
+3845: 	// Waiting for SSH never consumes a blocking-pool thread.
+3846: 	let publication_permit = start_outcome_slots()
+3847: 		.acquire_owned()
+3848: 		.await
+3849: 		.map_err(|_| anyhow::anyhow!("job launch publication capacity unavailable"))?;
+3850: 	let request = json!({
+3851: 		"job_id": record.id,
+3852: 		"job_dir": record.remote_job_dir,
+3853: 		"request_digest": record.request_digest,
+3854: 		"unit": record.unit,
+3855: 		"request_fingerprint": record.request_digest.clone().unwrap_or_else(|| format!("{:016x}", record.request_fingerprint)),
+3856: 		"platform": host.platform,
+3857: 		"execution_mode": record.execution_mode,
+3858: 		"executable": params.executable,
+3859: 		"args": params.args,
+3860: 		"cwd": params.cwd,
+3861: 		"env": params.env,
+3862: 		"stdin": params.stdin,
+3863: 		"timeout_seconds": params.timeout_seconds,
+3864: 		"nice": params.nice.unwrap_or(0),
+3865: 		"cpu_quota_percent": params.cpu_quota_percent,
+3866: 		"memory_max_bytes": params.memory_max_bytes,
+3867: 		"allow_job_network": host.allow_job_network,
+3868: 		"allow_detached_fallback": host.allow_detached_fallback,
+3869: 	});
+
+## jobs.rs 4061-4115
+
+4061: 	let config = runtime_config()?;
+4062: 	let host = config.host(&params.host)?;
+4063: 	validate_new_host_resource_limits(host.platform, &params)?;
+4064: 	let id = next_job_id();
+4065: 	let unit = format!("hepta-runtime-job-{id}");
+4066: 	let remote_job_dir = format!("{}/jobs/{id}", host.remote_state_dir.trim_end_matches('/'));
+4067: 	let mut record = JobRecord {
+4068: 		system_jobctl: host.platform == Platform::Linux
+4069: 			&& host.execution_mode == ExecutionMode::Isolated,
+4070: 		execution_mode: host.execution_mode,
+4071: 		id: id.clone(),
+4072: 		host: params.host.clone(),
+4073: 		ssh_target: host.ssh_target.clone(),
+4074: 		unit,
+4075: 		remote_job_dir,
+4076: 		executable: params.executable.clone(),
+4077: 		args: params.args.clone(),
+4078: 		cwd: params.cwd.clone(),
+4079: 		env_keys: params.env.keys().cloned().collect(),
+4080: 		created_unix_ms: now_ms(),
+4081: 		idempotency_key: params.idempotency_key.clone(),
+4082: 		request_fingerprint,
+4083: 		request_digest: Some(digest),
+4084: 		launch_state: "pending".to_string(),
+4085: 		launch_error: None,
+4086: 	};
+4087: 	// Persist identity before remote launch. Later calls reconcile this same
+4088: 	// host, job ID and request binding; never invent a second remote job.
+4089: 	publish_pending_record(&record, &start_guard, &owner_admission).await?;
+4090: 	// The independent SSH owner can outlive this request future. Carry the
+4091: 	// exact binding into its final entry; do not consume the grant while queued.
+4092: 	// Share the owned binding rather than copying up to 1 MiB of admitted stdin.
+4093: 	let params = Arc::new(params);
+4094: 	let entry_params = params.clone();
+4095: 	let launch = launch_record_with_entry(
+4096: 		&mut record,
+4097: 		&params,
+4098: 		&start_guard,
+4099: 		&owner_admission,
+4100: 		move || enter(&entry_params),
+4101: 	)
+4102: 	.await?;
+4103: 	let mut result = json!({"reused": false, "job": record, "launch": launch.value});
+4104: 	attach_launch_record_warning(&mut result, &launch);
+4105: 	let completion = start_audit(
+4106: 		"process_start",
+4107: 		&params.host,
+4108: 		&id,
+4109: 		&json!({"phase":"result","launch_state":record.launch_state}),
+4110: 		&start_guard,
+4111: 		&owner_admission,
+4112: 	)
+4113: 	.await;
+4114: 	let result = retain_result_after_audit(result, completion);
+4115: 	Ok(serde_json::to_string_pretty(&result)?)
+
+## jobs.rs 4282-4373
+
+4282: pub fn list_jobs(params: ProcessListParams) -> Result<String> {
+4283: 	if let Some(host) = params.host.as_deref() {
+4284: 		runtime_config()?.host(host)?;
+4285: 	}
+4286: 	let rows = list_job_rows_in(&jobs_dir()?, params.host.as_deref())?;
+4287: 	job_inventory_rows_response(&rows)
+4288: }
+4289: 
+4290: /// The old unpaginated API remains unchanged; this API never silently truncates it.
+4291: pub fn list_jobs_page(params: ProcessListPageParams) -> Result<String> {
+4292: 	if let Some(host) = params.host.as_deref() {
+4293: 		runtime_config()?.host(host)?;
+4294: 	}
+4295: 	let rows = inventory_page_rows_at(
+4296: 		&runtime_config()?.state_dir,
+4297: 		params.host.as_deref(),
+4298: 		InventoryLimits::default(),
+4299: 	)?;
+4300: 	let root = runtime_config()?.state_dir.to_string_lossy();
+4301: 	page_job_rows(&rows, &params, &root)
+4302: }
+4303: 
+4304: // Retain the original public field types until the complete source scan has
+4305: // passed every final fence. This drops private args/paths per record without
+4306: // serializing unselected records or changing whole-source error ordering.
+4307: struct InventoryRow {
+4308: 	id: String,
+4309: 	host: String,
+4310: 	created_unix_ms: u128,
+4311: 	execution_mode: ExecutionMode,
+4312: 	launch_state: String,
+4313: }
+4314: 
+4315: fn list_job_rows_in(dir: &Path, host: Option<&str>) -> Result<Vec<InventoryRow>> {
+4316: 	let mut rows = Vec::new();
+4317: 	let mut bytes = Vec::new();
+4318: 	for entry in std::fs::read_dir(dir)? {
+4319: 		let entry = entry?;
+4320: 		let path = entry.path();
+4321: 		if path.extension().and_then(|value| value.to_str()) != Some("json") {
+4322: 			continue;
+4323: 		}
+4324: 		let expected_id = path
+4325: 			.file_stem()
+4326: 			.and_then(|stem| stem.to_str())
+4327: 			.ok_or_else(|| {
+4328: 				anyhow::anyhow!("invalid durable job record name: {}", path.display())
+4329: 			})?;
+4330: 		// Keep the complete compatibility read before filtering. A corrupt or
+4331: 		// unsafe neighbor must still refuse the inventory, even after an earlier
+4332: 		// row would exceed the wire budget. Only public fields survive this step.
+4333: 		let record = read_record_at_with_buffer(&path, expected_id, &mut bytes)?;
+4334: 		if host.is_none_or(|host| record.host == host) {
+4335: 			rows.push(InventoryRow {
+4336: 				id: record.id,
+4337: 				host: record.host,
+4338: 				created_unix_ms: record.created_unix_ms,
+4339: 				execution_mode: record.execution_mode,
+4340: 				launch_state: record.launch_state,
+4341: 			});
+4342: 		}
+4343: 	}
+4344: 	// Stable sorting preserves encounter order for tied timestamps, as with
+4345: 	// the previous full-record sort followed by filtering. Defer JSON conversion
+4346: 	// until every source has passed so unselected wide timestamps stay inert.
+4347: 	rows.sort_by_key(|record| record.created_unix_ms);
+4348: 	Ok(rows)
+4349: }
+4350: 
+4351: fn inventory_page_rows_at(
+4352: 	root: &Path,
+4353: 	host: Option<&str>,
+4354: 	limits: InventoryLimits,
+4355: ) -> Result<Vec<Value>> {
+4356: 	let records = inventory_projected_at(root, limits, |record| InventoryRow {
+4357: 		id: record.id,
+4358: 		host: record.host,
+4359: 		created_unix_ms: record.created_unix_ms,
+4360: 		execution_mode: record.execution_mode,
+4361: 		launch_state: record.launch_state,
+4362: 	})?;
+4363: 	let mut rows: Vec<Value> = records
+4364: 		.into_iter()
+4365: 		.filter(|record| host.is_none_or(|host| record.host == host))
+4366: 		.map(|record| {
+4367: 			json!({"id":record.id,"host":record.host,"created_unix_ms":record.created_unix_ms,
+4368: 			"execution_mode":record.execution_mode,"launch_state":record.launch_state})
+4369: 		})
+4370: 		.collect();
+4371: 	rows.sort_by(|left, right| left["id"].as_str().cmp(&right["id"].as_str()));
+4372: 	Ok(rows)
+4373: }
+
+## jobs.rs 4677-4699
+
+4677: fn job_inventory_rows_response(records: &[InventoryRow]) -> Result<String> {
+4678: 	const MAX_INVENTORY_WIRE_BYTES: usize = 1024 * 1024;
+4679: 	let jobs: Vec<Value> = records
+4680: 		.iter()
+4681: 		.map(|record| {
+4682: 			json!({
+4683: 				"id":record.id,"host":record.host,"created_unix_ms":record.created_unix_ms,
+4684: 				"execution_mode":record.execution_mode,"launch_state":record.launch_state,
+4685: 			})
+4686: 		})
+4687: 		.collect();
+4688: 	let text = serde_json::to_string(&json!({"jobs":jobs,"total":records.len(),
+4689: 		"inventory_complete":true,"status_authoritative":false}))?;
+4690: 	let wire = serde_json::to_vec(&rmcp::model::CallToolResult::success(vec![
+4691: 		rmcp::model::ContentBlock::text(text.clone()),
+4692: 	]))?;
+4693: 	if wire.len() > MAX_INVENTORY_WIRE_BYTES {
+4694: 		bail!(
+4695: 			"Durable job inventory exceeds the 1 MiB response budget; narrow using the configured host filter. No partial inventory returned."
+4696: 		);
+4697: 	}
+4698: 	Ok(text)
+4699: }

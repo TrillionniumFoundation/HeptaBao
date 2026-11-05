@@ -1,0 +1,401 @@
+{
+  "body_bytes": 39692,
+  "body_sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+  "bundle_reported_only": {
+    "bytes": 22320862,
+    "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+    "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+  },
+  "checks": 94,
+  "checks_passed": [
+    {
+      "name": "original_one_binary_read_admission",
+      "passed": true
+    },
+    {
+      "name": "later_same_id_closed",
+      "passed": true
+    },
+    {
+      "name": "page_request_0",
+      "passed": true
+    },
+    {
+      "name": "page_sdk_0",
+      "passed": true
+    },
+    {
+      "name": "page_range_0",
+      "passed": true
+    },
+    {
+      "name": "page_request_1",
+      "passed": true
+    },
+    {
+      "name": "page_sdk_1",
+      "passed": true
+    },
+    {
+      "name": "page_range_1",
+      "passed": true
+    },
+    {
+      "name": "page_request_2",
+      "passed": true
+    },
+    {
+      "name": "page_sdk_2",
+      "passed": true
+    },
+    {
+      "name": "page_range_2",
+      "passed": true
+    },
+    {
+      "name": "page_request_3",
+      "passed": true
+    },
+    {
+      "name": "page_sdk_3",
+      "passed": true
+    },
+    {
+      "name": "page_range_3",
+      "passed": true
+    },
+    {
+      "name": "original_payload_whole",
+      "passed": true
+    },
+    {
+      "name": "payload_native_exact",
+      "passed": true
+    },
+    {
+      "name": "body_decoded_exact",
+      "passed": true
+    },
+    {
+      "name": "original_version_pinned_request",
+      "passed": true
+    },
+    {
+      "name": "body_info_request_native_exact",
+      "passed": true
+    },
+    {
+      "name": "unique_job_binding",
+      "passed": true
+    },
+    {
+      "name": "authority_success_complete",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stdout",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_terminal",
+      "passed": true
+    },
+    {
+      "name": "core_scope",
+      "passed": true
+    },
+    {
+      "name": "original_caps",
+      "passed": true
+    },
+    {
+      "name": "core_false_compiler_started",
+      "passed": true
+    },
+    {
+      "name": "core_false_network_git_protocols_enabled",
+      "passed": true
+    },
+    {
+      "name": "core_false_runtime_qualification",
+      "passed": true
+    },
+    {
+      "name": "core_false_server_started",
+      "passed": true
+    },
+    {
+      "name": "core_false_source_imported",
+      "passed": true
+    },
+    {
+      "name": "zero_product_tests",
+      "passed": true
+    },
+    {
+      "name": "source_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "source_expected_guards",
+      "passed": true
+    },
+    {
+      "name": "canonical_history_full",
+      "passed": true
+    },
+    {
+      "name": "controller_actual_inert_identity",
+      "passed": true
+    },
+    {
+      "name": "commands_cleanup_unique27",
+      "passed": true
+    },
+    {
+      "name": "command_exact_000-source-before-head",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_000-source-before-head",
+      "passed": true
+    },
+    {
+      "name": "command_exact_001-source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_001-source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "command_exact_002-source-before-status",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_002-source-before-status",
+      "passed": true
+    },
+    {
+      "name": "command_exact_003-source-before-git-dir",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_003-source-before-git-dir",
+      "passed": true
+    },
+    {
+      "name": "command_exact_004-source-before-common-dir",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_004-source-before-common-dir",
+      "passed": true
+    },
+    {
+      "name": "command_exact_005-source-before-shallow",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_005-source-before-shallow",
+      "passed": true
+    },
+    {
+      "name": "command_exact_006-source-before-partial-config",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_006-source-before-partial-config",
+      "passed": true
+    },
+    {
+      "name": "command_exact_007-source-before-origin",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_007-source-before-origin",
+      "passed": true
+    },
+    {
+      "name": "command_exact_008-source-before-refs",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_008-source-before-refs",
+      "passed": true
+    },
+    {
+      "name": "command_exact_009-export-proof-kind",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_009-export-proof-kind",
+      "passed": true
+    },
+    {
+      "name": "command_exact_010-export-proof-tree",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_010-export-proof-tree",
+      "passed": true
+    },
+    {
+      "name": "command_exact_011-export-proof-parents",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_011-export-proof-parents",
+      "passed": true
+    },
+    {
+      "name": "command_exact_012-export-proof-count",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_012-export-proof-count",
+      "passed": true
+    },
+    {
+      "name": "command_exact_013-export-proof-roots",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_013-export-proof-roots",
+      "passed": true
+    },
+    {
+      "name": "command_exact_014-export-proof-full-fsck",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_014-export-proof-full-fsck",
+      "passed": true
+    },
+    {
+      "name": "command_exact_015-bundle-create",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_015-bundle-create",
+      "passed": true
+    },
+    {
+      "name": "command_exact_016-bundle-verify",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_016-bundle-verify",
+      "passed": true
+    },
+    {
+      "name": "command_exact_017-bundle-heads",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_017-bundle-heads",
+      "passed": true
+    },
+    {
+      "name": "command_exact_018-source-after-head",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_018-source-after-head",
+      "passed": true
+    },
+    {
+      "name": "command_exact_019-source-after-tree",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_019-source-after-tree",
+      "passed": true
+    },
+    {
+      "name": "command_exact_020-source-after-status",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_020-source-after-status",
+      "passed": true
+    },
+    {
+      "name": "command_exact_021-source-after-git-dir",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_021-source-after-git-dir",
+      "passed": true
+    },
+    {
+      "name": "command_exact_022-source-after-common-dir",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_022-source-after-common-dir",
+      "passed": true
+    },
+    {
+      "name": "command_exact_023-source-after-shallow",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_023-source-after-shallow",
+      "passed": true
+    },
+    {
+      "name": "command_exact_024-source-after-partial-config",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_024-source-after-partial-config",
+      "passed": true
+    },
+    {
+      "name": "command_exact_025-source-after-origin",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_025-source-after-origin",
+      "passed": true
+    },
+    {
+      "name": "command_exact_026-source-after-refs",
+      "passed": true
+    },
+    {
+      "name": "cleanup_exact_026-source-after-refs",
+      "passed": true
+    },
+    {
+      "name": "all_owned_stopped",
+      "passed": true
+    },
+    {
+      "name": "reported_bundle_full_identity",
+      "passed": true
+    },
+    {
+      "name": "reported_bundle_header",
+      "passed": true
+    }
+  ],
+  "command_count": 27,
+  "explicit_per_fd_ledger_present": false,
+  "historical_query_errors_preserved": true,
+  "host_or_runtime_calls_by_verifier": 0,
+  "independent_bundle_info_submitted": false,
+  "new_binary_read_or_exporter_submitted": false,
+  "owned_closed": 27,
+  "same_operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "schema": "heptabao.4e808-export-original-read-recovery-offline-checks.v1",
+  "separate_command_log_reads_submitted": 0,
+  "source_before_equals_after": true,
+  "status": "PASS_ORIGINAL_READ_RECOVERY_CORE_ONLY",
+  "whole_original_sdk_bytes": 53354
+}

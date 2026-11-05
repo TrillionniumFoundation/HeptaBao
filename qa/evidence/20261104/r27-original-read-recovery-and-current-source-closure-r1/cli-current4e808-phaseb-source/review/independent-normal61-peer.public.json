@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.official-cli-normal61-independent-source-peer.v1",
+  "decision": "NO_NEW_SOURCE_BLOCKER_WITHIN_REVIEWED_NORMAL61_GATE",
+  "source_pins": {
+    "before": {
+      "blob": "f60dbb093d69641bc8cd4a367320ec6fc5bdc0fd",
+      "bytes": 26563,
+      "sha256": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed"
+    },
+    "after": {
+      "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+      "bytes": 28134,
+      "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+    },
+    "diff": {
+      "blob": "e2ce9d10ab41ceb44ae694c675c4dc7391443888",
+      "bytes": 6502,
+      "sha256": "59f7ae9c69c9cdf2de437cb1f748c6528a387649f74c1b4f2ccccd22bbc0e0b2"
+    },
+    "h2_basis": {
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    "actual_normal": {
+      "blob": "162336b81e26f391b12d2e6c860c6eb9cc2a9c71",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+    },
+    "runner": {
+      "blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+      "bytes": 35452,
+      "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+    }
+  },
+  "strict_diff": {
+    "hunks": 8,
+    "forward_exact": true,
+    "reverse_exact": true,
+    "reverse_header_adapted_explicitly": true
+  },
+  "verification": {
+    "checks": 24,
+    "all_passed": true,
+    "method": "Pure V8 exact string/diff/data comparisons. No Python module import, selected test execution or Rust validation.",
+    "runtime_calls": 0
+  },
+  "findings": [
+    "The new publication gate is byte-identical to the reviewed H2 binder block. It requires independent original60 and new ABA1 success, total61, exact one test name, unchanged original44+7+9 counts and the 600-second cap clipped to the original outer deadline.",
+    "The original44 group gate, ingress7 gate, cold-H2 nine terminal loop, all helper functions, cleanup and the remainder of verify are byte-identical. The diff is exactly eight hunks and reconstructs both directions.",
+    "The actual current4e808 normal receipt matches the new schema, commit/tree, runner93dd6190, original60 status/count, extra-one fields and a successful reaped/empty ABA child. The exact test name also matches the frozen runner.",
+    "The source namespace and source/read.rs literals move to current4e808 through the explicit diff. The new read.rs tuple is not a fresh whole-canonical-tree audit in this peer.",
+    "Existing unresolved-binding admission and source/artifact custody checks remain. Artifact files still require their own actual transfer and qualified bindings."
+  ],
+  "limitations": [
+    "Only the binder increment and its normal61 contract were reviewed; the unchanged main controller, official CLI scenarios, whole canonical membership and current desktop artifact state were not requalified.",
+    "The author is running selected guard components separately; this peer did not repeat them.",
+    "No host request, process, candidate module, Cargo or product call occurred. This report is not a dispatch GO."
+  ],
+  "harness_history": [
+    "The first reverse-diff invocation used a helper restricted to a/b headers and refused before/after headers. Explicit header reversal produced exact whole equality in both directions.",
+    "One subsequent local bookkeeping cell had a JavaScript syntax error before execution. A shorter corrected cell produced the 24 recorded checks. Candidate files and original evidence were never edited."
+  ]
+}

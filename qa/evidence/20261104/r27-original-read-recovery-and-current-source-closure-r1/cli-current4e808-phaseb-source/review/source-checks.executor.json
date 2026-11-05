@@ -1,0 +1,7 @@
+{
+  "chunk_id": "ec9e21",
+  "wall_time_seconds": 0.110238321,
+  "exit_code": 0,
+  "original_token_count": 54,
+  "output": "{\"checks\": 143, \"diff_hunks\": {\"binder\": 8, \"binding/partial-binding.private.json\": 4, \"dispatch/requests.template.json\": 4}, \"selected_components\": 14, \"status\": \"passed_source_only\", \"unchanged_definitions\": 15}\n"
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.mac-harness-sdk-body-admission-stopped.v1",
+  "sequence": 3,
+  "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+  "error_name": "Error",
+  "message": "MCP isError before parse",
+  "public_stage": "result_5",
+  "sdk_blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+  "native_blob": "2bc15a5e63d2c8371f42ce25e1fc4939608bd46d",
+  "new_admissions_stopped": true,
+  "original_operation_replayed": false
+}

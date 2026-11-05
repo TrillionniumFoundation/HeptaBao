@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.bundle-info-original-operation-reconciliation-intent.r1",
+  "request": {
+    "operation_id": "ff387163112a03be30bf3e34048d805875843353041ebc52525b49c952e28f22"
+  },
+  "original_request_blob": "acc835e68783db906a62599cdf811917037c3ba6",
+  "scope": "Read only original admitted file_info operation state; no new file_info, export, key or business execution.",
+  "runtime_serial": true,
+  "on_error": "Preserve original SDK; keep UNKNOWN and stop.",
+  "original_unknown_packet": "adccb091af8195159d3378ed225e5609c5b76d0e"
+}

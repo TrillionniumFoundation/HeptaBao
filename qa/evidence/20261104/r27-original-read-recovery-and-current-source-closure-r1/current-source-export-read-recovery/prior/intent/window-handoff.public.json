@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.current4e808-export-window-handoff.v1",
+  "source": "collaboration message from /root/authbus_migration",
+  "actual_handoff": "已准3个Mac SDK info现全部 completed/stored_observed/owned_future_active=false，3 original payload全页SHA/EOF核完并外存，0在途，窗口明确释放。您可按根既定唯一exporter GO接短dispatch/observe窗（我不新增host），HA也已通知。后续SDK13正文块仍HOLD，不与你争SSH。",
+  "root_go": "67ebf4aa754a26328b3316515f462fe9d8932ac8",
+  "external_intent": {
+    "path": "intent/external-intent.public.json",
+    "bytes": 1787,
+    "sha256": "6c22f5bd651f703d42bb1a66cb9f7e3dbad6ded33e0cb9fcbfde3973253fff93",
+    "blob": "9b955414fae9e9240d1e52f498c3eec5d445f37e"
+  },
+  "exporter_submitted_at_handoff_capture": false
+}

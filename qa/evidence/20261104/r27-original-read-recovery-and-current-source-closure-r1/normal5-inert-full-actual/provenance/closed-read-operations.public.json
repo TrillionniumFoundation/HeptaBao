@@ -1,0 +1,107 @@
+[
+  {
+    "key": "observe_info0",
+    "operation_id": "3a2554cd41d2692bbbfdc260738ac8864fe70e83969531ab5d165a60f7b702bc",
+    "tool": "file_info",
+    "closed_state": "completed/stored_observed/inactive",
+    "original_payload_bytes": 613,
+    "original_payload_sha256": "19467b126a1be011894a8fb182949e837bbdf022eba821ca8f05958688673035",
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 613,
+        "external_tree": "1d0cf782ce19ec6f8d9a919653975422a7ea3062"
+      }
+    ],
+    "start_sdk_tree": "b0a3858fce74e3525045c1bce83bf0d518bbb0c8",
+    "status_sdk_tree": "7bd3c4531f05e83232c01306c80f4b97fad39572"
+  },
+  {
+    "key": "observe_info1",
+    "operation_id": "36117fafbe5ca824c6ea8847f49144f8c7af1ca6fdef4c54734852fe4c4bcf89",
+    "tool": "file_info",
+    "closed_state": "completed/stored_observed/inactive",
+    "original_payload_bytes": 615,
+    "original_payload_sha256": "b70dbf4e7b627d499966a4a98f68823d777e518eab51b7c63f30f2833bf20677",
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 615,
+        "external_tree": "6e6aaf13f4a722dde81f76b30c2ef69385f19e72"
+      }
+    ],
+    "start_sdk_tree": "65b672866127a4d19edec5445b4c1ab0c699ac24",
+    "status_sdk_tree": "283314d47e90d9b0f9e654fe0f44da478da6cd83"
+  },
+  {
+    "key": "observe_info2",
+    "operation_id": "ffa71308172ec61db404d28f6cb20809339e758ce179d7fe1de08653a63090a5",
+    "tool": "file_info",
+    "closed_state": "completed/stored_observed/inactive",
+    "original_payload_bytes": 614,
+    "original_payload_sha256": "36ebe0f22daf8ac57673ebcdd457cd8101e8f4321880bae06862dbbdc59a73bc",
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 614,
+        "external_tree": "a73ece39a00f2ec55c4c11fe71815c0f1a2de084"
+      }
+    ],
+    "start_sdk_tree": "3998c913beb8f869995b8da9c06235cf45406d48",
+    "status_sdk_tree": "c9feab7afd8a90474a5c2a68fb25174f7e3a5c9a"
+  },
+  {
+    "key": "observe_info3",
+    "operation_id": "d26ed9d98ed77729a489cc8e8d5b5cdb0e83fada7ec62d66232f821ead925863",
+    "tool": "file_info",
+    "closed_state": "completed/stored_observed/inactive",
+    "original_payload_bytes": 634,
+    "original_payload_sha256": "bccc4a506a9dafc58d553cd5d0604938b733677f7e9193e7f7ee4badda9ee5a2",
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 634,
+        "external_tree": "42dbe4d393fc292f45ee18b8e2a3326573b50f63"
+      }
+    ],
+    "start_sdk_tree": "732c9e62809771c13fdcb00804de1fd1ec3d5727",
+    "status_sdk_tree": "53905f06758fe6decc4a51b5331ab69e70871559"
+  },
+  {
+    "key": "observe_bodies",
+    "operation_id": "45615ea27f11b1a3901fd5b5dfd944e0cf8969fb4883b11bceb1755991839754",
+    "tool": "read_multiple_files",
+    "closed_state": "completed/stored_observed/inactive",
+    "original_payload_bytes": 39743,
+    "original_payload_sha256": "04c5f60f3a743f56b8a6c67e616f63ecff4e04901f5bd641970290e339ab8852",
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "19174e24df190e573807f744402adcb8f2c3668c"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "1b611f20a78f8bb2cbc09e051045eac2572b2fab"
+      },
+      {
+        "offset": 16384,
+        "bytes": 8192,
+        "external_tree": "6cafb7f5a47a7a298f6e2acd76ccb95ba9d800c8"
+      },
+      {
+        "offset": 24576,
+        "bytes": 8192,
+        "external_tree": "d52d6cc786a9d6a5a074dcb16509260d31c5cd5c"
+      },
+      {
+        "offset": 32768,
+        "bytes": 6975,
+        "external_tree": "2b5baeccec2060c7cbc47faebae55558b2e91113"
+      }
+    ],
+    "start_sdk_tree": "519d150034a5c441fdbb60ad3a60f3191f80e2a9",
+    "status_sdk_tree": "9ba98d53daa52f1757502136acf5a7d494ff274f"
+  }
+]

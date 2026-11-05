@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.root-pure-checker-observation.r1",
+  "first_attempt": "TypeError: Cannot read properties of undefined (reading 'phaseb_controller_r3.py')",
+  "cause": "Root checker used nonexistent binding.qa; actual schema is binding.qa_files.",
+  "correction": "Corrected checker field name only; exact source, binding, budgets, request templates and artifacts unchanged.",
+  "runtime_calls": 0
+}

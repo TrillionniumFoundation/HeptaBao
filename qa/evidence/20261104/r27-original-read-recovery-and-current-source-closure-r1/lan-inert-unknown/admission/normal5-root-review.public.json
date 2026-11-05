@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.normal5-inert-full-original-read-root-review.r1",
+  "status": "PASS_INERT_PUBLICATION_AND_COMPLETE_INDEPENDENT_READBACK",
+  "tree": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+  "whole": {
+    "files": 79,
+    "bytes": 389194,
+    "merkle": {
+      "root_sha": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+      "trees_verified": 42
+    }
+  },
+  "checks": 184,
+  "prior_root57_preserved": true,
+  "prior_original_files_byte_equal": 24,
+  "original_observations": 5,
+  "original_immutable_pages": 9,
+  "independent_infos": 4,
+  "independent_whole_bodies": 4,
+  "receipt_lossless_equal_to_original_stdout": true,
+  "three_admitted_source_files_byte_exact": true,
+  "full_independent_readback": true,
+  "all_observed_read_futures_inactive": true,
+  "artifact_transfer_started": false,
+  "relay_go": false,
+  "product_or_LAN_runtime_qualification": false,
+  "per_FD_ledger_available": false,
+  "actual_files": [
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+      "sha256": "f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96",
+      "size": 7602,
+      "version": "2050:7360639:7602:1793884028932043583:1793884028937079006"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+      "sha256": "dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19",
+      "size": 9138,
+      "version": "2050:7360657:9138:1793884028944391717:1793884028951075515"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+      "sha256": "075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4",
+      "size": 16719,
+      "version": "2050:7360808:16719:1793884028960515194:1793884028968904561"
+    },
+    {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json",
+      "sha256": "5895787120177c001e1f39dcba7eb934cf6a223979c5bd287a7eadfb26a5d080",
+      "size": 1930,
+      "version": "2050:7360829:1930:1793884028978636319:1793884028986701978"
+    }
+  ]
+}

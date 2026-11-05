@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.root.lan-current-single-inert-go.r1",
+  "decision": "GO_ONE_EXACT_INERT_PROCESS_START_ONLY",
+  "request": {
+    "path": "dispatch/inert.request.json",
+    "blob": "70f27390d318755075562482091b3bf27946b37d",
+    "bytes": 484591,
+    "sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+    "mode": "100644",
+    "idempotency_key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "timeout_seconds": 60
+  },
+  "rootReview": {
+    "name": "r25-lan-actual-bound-root-review.public.json",
+    "blob": "da34eedd281b7a39de558d93efb4569544570b1b",
+    "bytes": 8787,
+    "sha256": "8ff98c3f962d56ecb25e6e801bea13b41f5d43aa97d7f8e851cb1286fbeafced"
+  },
+  "scope": {
+    "createOnlyDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1",
+    "publicPythonSources": 9,
+    "publicReceipt": 1,
+    "compileOnly": true,
+    "sourceExecuted": false,
+    "Git": false,
+    "compiler": false,
+    "service": false,
+    "transport": false,
+    "LAN": false
+  },
+  "originalBounds": {
+    "stdinBytes": 1048576,
+    "actualStdinBytes": 477056,
+    "supervisorSeconds": 60
+  },
+  "protocol": [
+    "Wait until the current authorized normal5 inert and its fixed observations close; do not preempt or bundle starts.",
+    "External exact intent completed before ONE process_start.",
+    "Original ACK saved externally before parsing; reconcile original job only.",
+    "Archive whole original stdout/stderr and authoritative terminal; read back all nine source files and receipt with their exact original metadata before any prepare request."
+  ],
+  "remaining": {
+    "desktopCanonicalImportUnresolved": true,
+    "prepareNotAuthorized": true,
+    "liveNotAuthorized": true,
+    "old36FencesUnchanged": true,
+    "oldUnknownsNotReplayed": true,
+    "fullReplacement": false
+  }
+}

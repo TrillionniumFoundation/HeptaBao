@@ -1,0 +1,9 @@
+{
+  "actual_reference": "historical-df026-normal60.public.json",
+  "change": "Only use the existing historical receipt filename in the verifier; no candidate or receipt mutation",
+  "initial_result": "FileNotFoundError",
+  "point": "After static source checks; before selected admission cases",
+  "requested_reference": "normal60-historical.public.json",
+  "runtime_requests": 0,
+  "schema": "heptabao.source-checker-path-correction.v1"
+}

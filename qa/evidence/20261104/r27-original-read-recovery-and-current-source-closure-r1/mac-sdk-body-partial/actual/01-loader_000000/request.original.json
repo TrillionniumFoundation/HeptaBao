@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-sdk-body-loader-bd6a9f36-o000000-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "expected_version": "16777233:405239125:6047:1784843462897326061:1784843462897326061",
+      "offset": 0,
+      "limit": 6047
+    }
+  }
+}

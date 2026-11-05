@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.mac-harness-sdk-public-body-partial.v1",
+  "request_packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "root_source_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+  "window_handoff": "ec4c1436786743417dc92f95d70f0ce726df6240",
+  "fixed_operations": 13,
+  "submitted": 3,
+  "full_observations": 2,
+  "whole_source_files": 1,
+  "new_admissions_stopped": true,
+  "active_tool_calls": 0,
+  "read_operations_with_prior_closed_status": 3,
+  "remaining_never_submitted": [
+    {
+      "sequence": 4,
+      "id": "selector_131072",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o131072-20261105-r1",
+      "request_blob": "a2a547a6bbc82a257554894738921a5aa6c3af40"
+    },
+    {
+      "sequence": 5,
+      "id": "selector_196608",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o196608-20261105-r1",
+      "request_blob": "f18cf31a59d44d67a555e1f825cb81c04217f25b"
+    },
+    {
+      "sequence": 6,
+      "id": "selector_262144",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o262144-20261105-r1",
+      "request_blob": "99ed54191e78751c355e56dcad4a9092738ee651"
+    },
+    {
+      "sequence": 7,
+      "id": "selector_327680",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o327680-20261105-r1",
+      "request_blob": "f7ca139554917c00dc1b1e0f645c71271227eadd"
+    },
+    {
+      "sequence": 8,
+      "id": "selector_393216",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o393216-20261105-r1",
+      "request_blob": "d315599c4ba52f9acd464b5d892c53ad1cee7dac"
+    },
+    {
+      "sequence": 9,
+      "id": "selector_458752",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o458752-20261105-r1",
+      "request_blob": "6b07dc690f283226e0818f2eb4ba225f1eb4015f"
+    },
+    {
+      "sequence": 10,
+      "id": "selector_524288",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o524288-20261105-r1",
+      "request_blob": "b2c92e92721193ea322807adf98db5c1d89cb089"
+    },
+    {
+      "sequence": 11,
+      "id": "selector_589824",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o589824-20261105-r1",
+      "request_blob": "3d69268de77fe52a32a9aa617b7ee91e6451d490"
+    },
+    {
+      "sequence": 12,
+      "id": "selector_655360",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o655360-20261105-r1",
+      "request_blob": "6a358ed8b0c816a252ac857371415b113b8d705b"
+    },
+    {
+      "sequence": 13,
+      "id": "registry_000000",
+      "key": "heptabao-mac-harness-sdk-body-registry-a845875a-o000000-20261105-r1",
+      "request_blob": "601c0c0b77ee3bc2dc92b54af4c3491245fd098b"
+    }
+  ],
+  "operations": [
+    {
+      "sequence": 1,
+      "id": "loader_000000",
+      "key": "heptabao-mac-harness-sdk-body-loader-bd6a9f36-o000000-20261105-r1",
+      "operation_id": "4067ea1adf703ac98617ad01d82659d0b54e4d041eddfe64d14bd0c5bf0989b0",
+      "ack_blob": "2c35825ee7f09f1debf544067aa0aa4db8679d35",
+      "status_blob": "d8ef02224ec57b32346891f2d78defe6f93e2454",
+      "prior_status_completed": true,
+      "prior_status_inactive": true,
+      "whole_observation": true,
+      "original_payload_bytes_observed": 8486,
+      "original_payload_expected_bytes": 8486,
+      "original_payload_sha256": "4d50c14fe6104e56cc055b5abe3f8e9f73c22494f7b399db98f984330ca746ad"
+    },
+    {
+      "sequence": 2,
+      "id": "selector_000000",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o000000-20261105-r1",
+      "operation_id": "8947cbc2b20c9dd2d5365f787b06053d20e4f0e356c36368669e931127b138ea",
+      "ack_blob": "523b58368dcc5e893852bce44edc025ee28bd145",
+      "status_blob": "8381be76d9fbb775e8b0e1a58f66918017cda8bc",
+      "prior_status_completed": true,
+      "prior_status_inactive": true,
+      "whole_observation": true,
+      "original_payload_bytes_observed": 87798,
+      "original_payload_expected_bytes": 87798,
+      "original_payload_sha256": "bd29c4314914785f6361658994c13b5cd214c77c6bbae515c484c2c0416ca87d"
+    },
+    {
+      "sequence": 3,
+      "id": "selector_065536",
+      "key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o065536-20261105-r1",
+      "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+      "ack_blob": "520f523329aa20333c5dda8e44afc9cca72f3dc9",
+      "status_blob": "41e15b4e60973df4d8c27c8ba00ef7c83d996a83",
+      "prior_status_completed": true,
+      "prior_status_inactive": true,
+      "whole_observation": false,
+      "original_payload_bytes_observed": 81920,
+      "original_payload_expected_bytes": 87803,
+      "original_payload_sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74"
+    }
+  ],
+  "last_error": {
+    "schema": "heptabao.mac-harness-sdk-body-admission-stopped.v1",
+    "sequence": 3,
+    "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+    "error_name": "Error",
+    "message": "MCP isError before parse",
+    "public_stage": "result_5",
+    "sdk_blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "native_blob": "2bc15a5e63d2c8371f42ce25e1fc4939608bd46d",
+    "new_admissions_stopped": true,
+    "original_operation_replayed": false
+  },
+  "error_boundary": {
+    "native_error_is_mcp_timeout": true,
+    "isError_checked_before_json_parse": true,
+    "parser_error": false,
+    "original_read_previously_known_completed": true,
+    "missing_original_payload_tail_offset": 81920,
+    "expected_original_payload_total_bytes": 87803,
+    "tail_bytes_not_observed": 5883,
+    "third_binary_chunk_whole_verified": false,
+    "no_inference_about_global_runtime_health": true,
+    "no_original_operation_replayed": true
+  },
+  "scope": {
+    "public_code_only": true,
+    "metadata_prior_tree": "e543a922a661b02341a27b30d1bc7d264de400c3",
+    "sdk_imported": false,
+    "sdk_executed": false,
+    "consumer_started": false,
+    "selected_owner_determined": false,
+    "credential_read": false
+  }
+}

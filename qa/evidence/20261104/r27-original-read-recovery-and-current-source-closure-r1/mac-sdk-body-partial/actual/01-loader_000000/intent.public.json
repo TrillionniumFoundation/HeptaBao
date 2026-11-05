@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-harness-sdk-public-body-read-intent.v1",
+  "created_utc": "2026-11-05 14:11:39 UTC",
+  "sequence": 1,
+  "request_packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "root_source_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+  "root_window_handoff": "ec4c1436786743417dc92f95d70f0ce726df6240",
+  "request_pin": {
+    "bytes": 418,
+    "sha256": "e79a59a5ef201627dd592500ca5f51cb15879fabf2b8dbfed44295668cfd3ad6",
+    "blob": "01c4204a56c959338feda02a0f9de355fd2be977"
+  },
+  "exact_request_original": "{\n  \"idempotency_key\": \"heptabao-mac-harness-sdk-body-loader-bd6a9f36-o000000-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js\",\n      \"expected_version\": \"16777233:405239125:6047:1784843462897326061:1784843462897326061\",\n      \"offset\": 0,\n      \"limit\": 6047\n    }\n  }\n}\n",
+  "policy": {
+    "one_original_operation_in_flight": true,
+    "sdk_saved_before_parse": true,
+    "isError_checked_before_parse": true,
+    "stop_new_admissions_on_any_error": true,
+    "whole_three_sources_before_selected_owner_conclusions": true,
+    "no_sdk_execution": true,
+    "no_business_replay": true
+  }
+}

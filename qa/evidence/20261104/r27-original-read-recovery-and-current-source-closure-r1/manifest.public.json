@@ -1,0 +1,534 @@
+{
+  "schema": "heptabao.r27.original-read-recovery-complete-packet-manifest.v1",
+  "as_of_utc": "2026-11-05T15:01:07Z",
+  "previous_commit": "e29583fdc0729854377376450fe19a4465747364",
+  "prefix": "qa/evidence/20261104/r27-original-read-recovery-and-current-source-closure-r1",
+  "packets": [
+    {
+      "name": "normal5-inert-full-actual",
+      "tree": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+      "files": 79,
+      "bytes": 389194,
+      "merkle": {
+        "root_sha": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+        "trees_verified": 42
+      }
+    },
+    {
+      "name": "current-source-export-read-recovery",
+      "tree": "77c8372e11f2f128cc8cd76ac9b52a9b9d1d329d",
+      "files": 52,
+      "bytes": 732775,
+      "merkle": {
+        "root_sha": "77c8372e11f2f128cc8cd76ac9b52a9b9d1d329d",
+        "trees_verified": 15
+      }
+    },
+    {
+      "name": "mac-sdk-body-partial",
+      "tree": "df282bad33bae04e947cea7a6d823dc7e1bf18e5",
+      "files": 72,
+      "bytes": 742328,
+      "merkle": {
+        "root_sha": "df282bad33bae04e947cea7a6d823dc7e1bf18e5",
+        "trees_verified": 13
+      }
+    },
+    {
+      "name": "current-source-bundle-info-unknown",
+      "tree": "adccb091af8195159d3378ed225e5609c5b76d0e",
+      "files": 9,
+      "bytes": 8650,
+      "merkle": {
+        "root_sha": "adccb091af8195159d3378ed225e5609c5b76d0e",
+        "trees_verified": 3
+      }
+    },
+    {
+      "name": "lan-inert-unknown",
+      "tree": "90fb803c6c686008e6c13fca3208fa08e6347f7f",
+      "files": 9,
+      "bytes": 501667,
+      "merkle": {
+        "root_sha": "90fb803c6c686008e6c13fca3208fa08e6347f7f",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "mac-sdk03-tail-adoption",
+      "tree": "9e7e3bb7c7e3e891506ca7109625a28d3f8a8fa0",
+      "files": 9,
+      "bytes": 200888,
+      "merkle": {
+        "root_sha": "9e7e3bb7c7e3e891506ca7109625a28d3f8a8fa0",
+        "trees_verified": 1
+      }
+    },
+    {
+      "name": "lan-request-digest-proof",
+      "tree": "0677afe2321ba79b3f76bc8c1586f5f2a2002c4a",
+      "files": 14,
+      "bytes": 762333,
+      "merkle": {
+        "root_sha": "0677afe2321ba79b3f76bc8c1586f5f2a2002c4a",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "normal5-relay-execution-binding",
+      "tree": "8526311cc368f5e8332feb6fbdc1ddd54c1b08af",
+      "files": 9,
+      "bytes": 20596,
+      "merkle": {
+        "root_sha": "8526311cc368f5e8332feb6fbdc1ddd54c1b08af",
+        "trees_verified": 4
+      }
+    },
+    {
+      "name": "cli-current4e808-phaseb-source",
+      "tree": "ce236663c9969af8d7e00cf598a6594666c5d0fc",
+      "files": 44,
+      "bytes": 1542524,
+      "merkle": {
+        "root_sha": "ce236663c9969af8d7e00cf598a6594666c5d0fc",
+        "trees_verified": 12
+      }
+    },
+    {
+      "name": "lan-fixed-readback-source",
+      "tree": "c78c683e0611af3a6db6180cd6e253915d04240b",
+      "files": 7,
+      "bytes": 63214,
+      "merkle": {
+        "root_sha": "c78c683e0611af3a6db6180cd6e253915d04240b",
+        "trees_verified": 3
+      }
+    },
+    {
+      "name": "search-semantics-and-sdk-handoff",
+      "tree": "1fb95b0b5b5b02847ae9b3de57147fd8c11d1eb6",
+      "files": 9,
+      "bytes": 58978,
+      "merkle": {
+        "root_sha": "1fb95b0b5b5b02847ae9b3de57147fd8c11d1eb6",
+        "trees_verified": 3
+      }
+    },
+    {
+      "name": "lan-candidate-info-partial",
+      "tree": "21365773d9c3bd0749a6aeeedd7d52f09a94ff07",
+      "files": 8,
+      "bytes": 8634,
+      "merkle": {
+        "root_sha": "21365773d9c3bd0749a6aeeedd7d52f09a94ff07",
+        "trees_verified": 4
+      }
+    }
+  ],
+  "packet_files": 321,
+  "packet_bytes": 5031781,
+  "packet_merkle_trees": 110,
+  "root_files_including_state_and_manifest": 47,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r27-read-window-resumption.public.json",
+      "blob": "ec4c1436786743417dc92f95d70f0ce726df6240",
+      "bytes": 2196,
+      "sha256": "98761534feab3b8c8c02d8e24fe2afbd59efc00941e75b37d85af0da55bff1c4",
+      "path": "read-window/resumption.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-create-tree.sdk.json",
+      "blob": "33c3d4e7659faf9f4c0841120d245f91b05b0bfa",
+      "bytes": 195,
+      "sha256": "1b4aedeca431a7cf79b62c65a933cd77d4fce234184559e08fbd61c378ac3335",
+      "path": "r26-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-create-commit.sdk.json",
+      "blob": "a609dc7dcbf0a3c8a8abdb0c75c5a510da2588bb",
+      "bytes": 195,
+      "sha256": "9ad51ee2114b41b2118f4c0a58466a7cac56da6a4cee738c6405dbc9c014d101",
+      "path": "r26-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-update-ref.sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e",
+      "path": "r26-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-root-tree-read.sdk.json",
+      "blob": "9c7760e6943dff5cb91912aa199f2c10d869b09a",
+      "bytes": 13939,
+      "sha256": "ea36f49430865bee128aa3ee1c141ea4d0e34d8eef30e249e390a9336eafbde8",
+      "path": "r26-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-pre-ref-read.sdk.json",
+      "blob": "6ee5c299b9b418c9301c9cdf18e2961c0de14590",
+      "bytes": 10064,
+      "sha256": "aa45ee2bfde5715965ab730d16a5896d123162a18121e24a9de14c4e6476f72b",
+      "path": "r26-publication/pre-ref-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-commit-read.sdk.json",
+      "blob": "1578ae7ed12c34c1a716593e31bf25997cfebeb6",
+      "bytes": 3545,
+      "sha256": "a821cea6d5b12b5d6f29a6f72234b30b595b1dd8c3dabff25f0a7e8fbefebc62",
+      "path": "r26-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-ref-read.sdk.json",
+      "blob": "e107490287682a7d91994dbb2785c50178f60d43",
+      "bytes": 9464,
+      "sha256": "fba5ac6171a9312e6afef964d08ef5372319c375650fce69730eb338a1f2af31",
+      "path": "r26-publication/ref-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-pre-publication-proof.public.json",
+      "blob": "dd7f4ebe3d800d17c9d8ffe7e99ccc92e9a6f26a",
+      "bytes": 851,
+      "sha256": "147e0bc21c9a4e836ad071fd61222efef29b1299cd54ab5369f2856964740cf3",
+      "path": "r26-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-post-publication-proof.public.json",
+      "blob": "09cc40b63bc630e0e89b37866912f096eca02b0d",
+      "bytes": 1423,
+      "sha256": "1ac11fddc0c270343026f703c2ca69ca54de334d853a1181ddb3183c7099ea26",
+      "path": "r26-publication/post-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-export-recovered-core-root-verifier.js",
+      "blob": "47c3f0af7d5be332635ae2f2786e7621e86cb4e8",
+      "bytes": 5937,
+      "sha256": "f68668a0399aa6481076d8370e529f502b98c24fa9bda18a2991ce1a383542cf",
+      "path": "current-source-export-recovery/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-export-recovered-core-root-review.public.json",
+      "blob": "f5ba075194d439a50f5ea8907a708cbf867b54fd",
+      "bytes": 1848,
+      "sha256": "487ab06af32912afdebdfbf933a98bceb31dcae6e0cbd58e35e8b9a49ee41502",
+      "path": "current-source-export-recovery/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-normal5-root-first-verifier.js",
+      "blob": "882a064bcec17c19592e91a52293fd449a3263ab",
+      "bytes": 6103,
+      "sha256": "a9b08d140be8bb705c8d20ae84585a134adc967ec65dedb163ff781b3fc09ad3",
+      "path": "normal5-full/first-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-normal5-root-format-correction.public.json",
+      "blob": "0871f61fd21e8287f938f51d7e0feaf3f277ece9",
+      "bytes": 350,
+      "sha256": "e1b66449006a0c0262a8dbccfbf37cea3836c5908ee4d1406459be83339bbeff",
+      "path": "normal5-full/root-format-observation.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-normal5-full-root-verifier.js",
+      "blob": "733cf33668fdf811669956e9e0eeb2afa40ca0b2",
+      "bytes": 6113,
+      "sha256": "96cbbd788b41cb7c036b3ebae107c9566ec89684edf941002b8b3c0d00685965",
+      "path": "normal5-full/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-normal5-full-root-review.public.json",
+      "blob": "8dae54de9916da7322c1f9fa544b3223de781120",
+      "bytes": 3528,
+      "sha256": "79711baf8b62101cfab8b233dd7d81bbfa2fb028c55115073203e618be195e31",
+      "path": "normal5-full/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-inert-window-resumption.public.json",
+      "blob": "f3d7a0e8b704c4886831c83be08daa747bd47b6a",
+      "bytes": 1917,
+      "sha256": "733bd5d9feed55a1494cc90e5a8b7531c0ce407fbb8b668535dd6857d42bd848",
+      "path": "lan-inert/resumption.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-normal5-relay-exact-go.public.json",
+      "blob": "57b7f674265078565f7d215bf3519feed5fc4fdc",
+      "bytes": 4965,
+      "sha256": "3bd35e0f5c3c7d81f33a1a9e42a9992e62c6a003f347ccf233ecd8148fe59ba4",
+      "path": "normal5-relay/exact-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk-original-tail-root-intent.public.json",
+      "blob": "10ac655fc7e33a154edc19ada31145bc252eaaa2",
+      "bytes": 931,
+      "sha256": "5c704ee348b74c3ba0d03d5efc938c6c6bb3217bdd1c32021ea07766d8e07fe3",
+      "path": "sdk-tail-reconciliation/intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk03-recovered-original-payload.json",
+      "blob": "117b2a2e861a3d77f257ea67a6b3d74907d1fd20",
+      "bytes": 87803,
+      "sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74",
+      "path": "sdk-tail-reconciliation/original-payload.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk03-recovered-original-native.json",
+      "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4",
+      "bytes": 87700,
+      "sha256": "ecd2cb08bfc8dc94aff4dc839f4828b2762b1eb2263f745c6e852a5dc1f8c937",
+      "path": "sdk-tail-reconciliation/original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk-original-tail-root-original-sdk.json",
+      "blob": "d269dfe7afaa74e540defbf11fe4faca345cf9a0",
+      "bytes": 8704,
+      "sha256": "8a8abd37861405c833ad8a785a77d32c9b75c77b876ec28e66ce10c92dcfb85d",
+      "path": "sdk-tail-reconciliation/original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk03-original-tail-root-review.public.json",
+      "blob": "b17c121f99407014855add6c44b2e6699307a73f",
+      "bytes": 1971,
+      "sha256": "f5e5503b6f4f30aab1debb3f69ef7d010624a7dd0c4001898867baf27ff9e1b4",
+      "path": "sdk-tail-reconciliation/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-lost-ack-locator-intent.public.json",
+      "blob": "b6195b77588fcf7e362a116dbe69a9e1ff503793",
+      "bytes": 966,
+      "sha256": "3e06607c0ec83e12e8bd6a85c2f6994b8c51dee148e1ce2437a2d23d0b3f419e",
+      "path": "lan-original-job-reconciliation/locator-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-opaque-pagination-intent.public.json",
+      "blob": "cbc69ab58961b6e510885df1f601362713b0a792",
+      "bytes": 1293,
+      "sha256": "14c41e4fa62bef5ad4a48725d10a20ef7d010293950d74229c42cac6643f59d5",
+      "path": "root/r27-lan-opaque-pagination-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-inventory-original-cursor-refusal.sdk.json",
+      "blob": "2f1438ca83810e4dbf4b59d4e256605fb79b23fa",
+      "bytes": 166,
+      "sha256": "822f3e96e93c695bdc94ac1ec50fe2e276a012c8e85816713599fe622bcf94c9",
+      "path": "root/r27-lan-inventory-original-cursor-refusal.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-inventory-cursor-refusal.public.json",
+      "blob": "0c2e31b0b2073574849ced3141c3956815884d8b",
+      "bytes": 759,
+      "sha256": "af7df37a61fb242c08303472484d12e1cf266bccadad6f92f31a0d6aae728e9b",
+      "path": "root/r27-lan-inventory-cursor-refusal.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-root-reconcile-intent.public.json",
+      "blob": "89801fc895df9d754a62675136c94895f53a7d12",
+      "bytes": 545,
+      "sha256": "b1fb326c6f28682b6349aa8c15bfe9a87a73a5efa8f49463b3a3e0283d620e66",
+      "path": "root/r27-bundle-info-root-reconcile-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-root-original-status.sdk.json",
+      "blob": "9f8380d6dce00c82d0ab7f3c9caa6023fded2c8a",
+      "bytes": 932,
+      "sha256": "1cda1bceabfa4562fa0f1eaac76089de8e095da6724bbd6c2f83e39cccf883b1",
+      "path": "root/r27-bundle-info-root-original-status.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-root-original-result.sdk.json",
+      "blob": "059ba9bd4038c162aeaee931b55a15b236c7ae89",
+      "bytes": 1621,
+      "sha256": "b02821f297a0cb6a9ed14b545d47f8477eed82211ac9243c87cf8aaca5815dd8",
+      "path": "root/r27-bundle-info-root-original-result.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-original-native-payload.json",
+      "blob": "a08a55cee0a9689de5943f581db31b72c53bc82f",
+      "bytes": 609,
+      "sha256": "bb5a6137b5a82dc824e95c2f3bd76754cfc0f0cd34d407bfbf36bccee963cabc",
+      "path": "root/r27-bundle-info-original-native-payload.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-original-native.json",
+      "blob": "ec3349a520cb3fc910e9bd61c6641a3fde6b8c5a",
+      "bytes": 492,
+      "sha256": "ae77945f6650802406597342691c525626f3bc6732933cd136b9550027b23c56",
+      "path": "root/r27-bundle-info-original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-original-closed-status.json",
+      "blob": "b19e16bc8792914017bf892bb997934189971120",
+      "bytes": 800,
+      "sha256": "678569e7e05c711f3e8f7733cdb200810b241acb4afc1e0fd7128af5a9617ed0",
+      "path": "root/r27-bundle-info-original-closed-status.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bundle-info-recovered-root-review.public.json",
+      "blob": "29a455f6c2e8c85667f9a025146c473ed0e33b9c",
+      "bytes": 2888,
+      "sha256": "727a782988842952c5b1b0382e07aafdac73288445a3b5b0c32c07f483b13d84",
+      "path": "root/r27-bundle-info-recovered-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-original-digest-search-intent.public.json",
+      "blob": "fee993cd3803f50048af24d947a04fd9b19c7d4a",
+      "bytes": 2127,
+      "sha256": "3a6d378af7ed51d376daa05bb17b284b5c10001ccc65950a49c1f4b3e7c77dbc",
+      "path": "root/r27-lan-original-digest-search-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-original-digest-search-intent-exact-anchor.public.json",
+      "blob": "d47cf3868a51fa0c3afcefcb7d2394d54ea9636c",
+      "bytes": 2371,
+      "sha256": "41ec0e58e3a565b57b5c435bac5223d9209338ce73ea762e51adcf49dacf77f1",
+      "path": "root/r27-lan-original-digest-search-intent-exact-anchor.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-cli-current-root-verifier.js",
+      "blob": "554aeff0b6587f4f19191a4046416da077a052c7",
+      "bytes": 3484,
+      "sha256": "55950d32b670f8fdd7b8f859afe90dc48af77caba81b5ebe955222289a46557e",
+      "path": "root/r27-cli-current-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-cli-current-root-initial-checker-observation.public.json",
+      "blob": "e07a5c7e255be8fe9328abb90c4496c75347fe06",
+      "bytes": 407,
+      "sha256": "141bc2d4f58698b4ff55f68c8834f59f9e02538e07dfd8186d7fbd545ffd872c",
+      "path": "root/r27-cli-current-root-initial-checker-observation.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-cli-current-root-source-review.public.json",
+      "blob": "4a1d54dca7708634b197892b7b987a04970f69f7",
+      "bytes": 2824,
+      "sha256": "ec6f5d0d11d7a3bfe58ba9de12dda8c7b794f5448f533e23c56ff1c9d224dabd",
+      "path": "root/r27-cli-current-root-source-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-original-digest-search-start.sdk.json",
+      "blob": "cf06d32ff6fcaa5c6cecd0d3573e3523061e04be",
+      "bytes": 1293,
+      "sha256": "e3d1d208acac5bea4d7d7c2620073823728d30dff1a3e1cccfa7336b6d712b0d",
+      "path": "root/r27-lan-original-digest-search-start.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-lan-digest-search-candidate.public.json",
+      "blob": "e7ab6df094d46ecb4022aa64c1de26a99ba3ef21",
+      "bytes": 3164,
+      "sha256": "f55c771c598ba4bfcd6149ac02bc0b88aad5620b4dac9d9bb7d5a16d823f1d56",
+      "path": "root/r27-lan-digest-search-candidate.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-bounded-two-read-line-window.public.json",
+      "blob": "2e3c3c8c3791c0ed9e7f38020b003e2148f52d84",
+      "bytes": 1730,
+      "sha256": "b3458768bc84cf84bde4a079431adae10d05afb5e676eabfda449415a398623f",
+      "path": "root/r27-bounded-two-read-line-window.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-pre-branch-read.sdk.json",
+      "blob": "ad3f295436ba54207bdebbeb6a8d7c9e02e95579",
+      "bytes": 9347,
+      "sha256": "d7b332bf4e9bfb754f7d1727054cc0eb47951556a27709e312c9303adaede5c6",
+      "path": "publication/pre-branch-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk-loader-static-source-note.md",
+      "blob": "3405cf0f05a4ecc36cd38bd09a121f3714680dcd",
+      "bytes": 3047,
+      "sha256": "9899f37e896ffd11e5497a02c64015ae97933dc0903fe18d18ddf892ff90e319",
+      "path": "auth-sdk/loader-static-source-note.md",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-sdk03-adoption-root-crosscheck.public.json",
+      "blob": "1aee75321bd88863a938eb4a882a4065b0b60655",
+      "bytes": 582,
+      "sha256": "2186492485a3cfa38295886e239809634291b2fa67f025afaef12ebb0eb193ae",
+      "path": "root/r27-sdk03-adoption-root-crosscheck.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-state.public.json",
+      "blob": "524e868e8f3035ee98507dd19398045886f60937",
+      "bytes": 40939,
+      "sha256": "2e281c4f8c55750d7bf2a7a37b6f5c3aae59a39e8b145ed8aa2122f5c741c014",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "name": "r27-checkpoint.md",
+      "blob": "1a01206840998ebd83e3b2f5e427b2e9dd8fd03b",
+      "bytes": 267040,
+      "sha256": "c9037414a071b358982ad45cd48da6d60ed3cdf24d9e625517c959f29714ce40",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "99bbdc192bea78df52b6fabee9d0b1bec44145fd"
+    },
+    {
+      "name": "r27-checkpoint-index.public.json",
+      "blob": "fdf9569cb836d8af7e2227fcc7888524e1203708",
+      "bytes": 511232,
+      "sha256": "807eed825bc8aa2d2f7722f54c2d1922558ce954d82875dec21c00138caa6431",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "77d0ec7d0f9ba8c7caeff779554ecbd48f35760c"
+    }
+  ],
+  "integrity": {
+    "whole_blob_bytes_sha256_git_object_verified": true,
+    "all_packet_merkle_subtrees_verified": true,
+    "all_prior_non_document_leaves_preserved": true,
+    "whole_previous_document_preserved": true,
+    "original_index_raw_bytes_preserved_except_first_asof_and_new_append": true,
+    "original_int64_tokens_not_reserialized": true,
+    "no_business_or_unknown_replay": true,
+    "no_production_cutover_or_legacy_deletion": true,
+    "complete_packet_integrity_does_not_grant_runtime_qualification": true,
+    "freeze_includes_only_listed_immutable_packets": true
+  }
+}

@@ -1,0 +1,61 @@
+--- before/dispatch-template
++++ after/dispatch-template
+@@ -1,14 +1,14 @@
+ {
+-  "schema": "heptabao.df026-phaseb-dispatch-template.v1",
++  "schema": "heptabao.4e808-phaseb-dispatch-template.v1",
+   "ready": false,
+   "requests_authorized": false,
+-  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+-  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
++  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
++  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+   "source_schema": "heptabao.official271-native-cli-phaseb-r3.binding.v1",
+   "fixture_has_new_root_and_credentials": true,
+   "old_unknown_attempts_replayed": false,
+   "preconditions": [
+-    "Root acceptance of actual df026 Linux normal release plus original44, original7 and new9 as separate exact sets, authoritative termination and owned cleanup.",
++    "Root acceptance of actual 4e808 Linux normal release plus original44, original7, existing9 and separate same-root publication1 as exact sets, authoritative termination and owned cleanup.",
+     "Completed standalone canonical desktop import and exact readback; no source qualification inferred from planned paths.",
+     "Completed shared normal artifact transfer; actual five-artifact local stage; byte-preserved official CLI identity; exact new binding.private.json and reviewed source pins.",
+     "Independent explicit ALPN=h2 fixture qualification reviewed separately; neither it nor thread components substitutes for this five-window official CLI experiment.",
+@@ -22,15 +22,15 @@
+         "-I",
+         "-S",
+         "-B",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/phaseb_controller_r3.py",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+         "--binding",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/binding.private.json",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+         "--binding-sha256",
+         "UNRESOLVED_ACTUAL_BINDING_SHA256",
+         "--prepare-only"
+       ],
+       "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+-      "idempotency_key": "heptabao-official271-phaseb-df026-prepare-10816-20261105-r3",
++      "idempotency_key": "heptabao-official271-phaseb-4e808-prepare-10816-20261105-r4",
+       "timeout_seconds": 330
+     },
+     "live": {
+@@ -40,9 +40,9 @@
+         "-I",
+         "-S",
+         "-B",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/phaseb_controller_r3.py",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+         "--binding",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/binding.private.json",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+         "--binding-sha256",
+         "UNRESOLVED_ACTUAL_BINDING_SHA256",
+         "--run",
+@@ -50,7 +50,7 @@
+         "UNRESOLVED_ACTUAL_PREPARE_RESULT_SHA256"
+       ],
+       "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+-      "idempotency_key": "heptabao-official271-phaseb-df026-live-10816-20261105-r3",
++      "idempotency_key": "heptabao-official271-phaseb-4e808-live-10816-20261105-r4",
+       "timeout_seconds": 3000
+     }
+   },

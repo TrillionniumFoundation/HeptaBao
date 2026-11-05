@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.lan-lost-ack-durable-job-locator-intent.r1",
+  "request": {
+    "host": "desktop",
+    "limit": 128
+  },
+  "scope": "Read only retained durable job metadata to locate the exact already submitted public LAN source-publication key. No process_start, target command, signal or replay.",
+  "exact_key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+  "exact_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+  "all_other_runtime_lines_paused": true,
+  "raw_response_handling": "Retain original SDK in private working memory, inspect schema without printing unrelated job metadata, publish only task-related public provenance; no assumption that other jobs contain no private data.",
+  "on_error": "Preserve error SDK, stop. No fresh process request or alternate key.",
+  "on_match": "Bind exact host/key/typed command or request digest before querying original job authority.",
+  "no_absence_inference_from_partial_page": true
+}

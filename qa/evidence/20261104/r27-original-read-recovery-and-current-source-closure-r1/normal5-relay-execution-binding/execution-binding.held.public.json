@@ -1,0 +1,235 @@
+{
+  "schema": "heptabao.current-normal5-execution-binding-held.r1",
+  "status": "SOURCE_BINDING_COMPLETE_EXECUTION_ON_HOLD",
+  "execution_enabled": false,
+  "request": {
+    "blob": "337709a2869237259b8576b63623e7b74f138fb8",
+    "bytes": 383,
+    "sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff"
+  },
+  "exact_idempotency_key": "heptabao-4e808-normal5-artifact-relay-r1-075193b0",
+  "exact_args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py"
+  ],
+  "root_go": {
+    "blob": "57b7f674265078565f7d215bf3519feed5fc4fdc",
+    "bytes": 4965,
+    "sha256": "3bd35e0f5c3c7d81f33a1a9e42a9992e62c6a003f347ccf233ecd8148fe59ba4"
+  },
+  "hold": "Root requires earlier original LAN inert task to have a known closed terminal and a separate window handoff. Its unique process_start returned MCP timeout with no observed job ID; no relay submission is allowed now.",
+  "prior_lan_unknown_tree": "90fb803c6c686008e6c13fca3208fa08e6347f7f",
+  "relay_submitted": false,
+  "external_execution_intent_created": false,
+  "no_source_edits": true,
+  "actual_inert_packet": {
+    "tree": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+    "files": 79,
+    "bytes": 389194,
+    "merkle_trees": 42,
+    "whole_readback": true
+  },
+  "root_actual_review": "8dae54de9916da7322c1f9fa544b3223de781120",
+  "root_actual_checks": 184,
+  "source_packet": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+  "source_root_review": "60adf9e31d99d260984864884e553147767ce48f",
+  "four_bound_public_files": [
+    {
+      "role": "sender_source",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+      "bytes": 7602,
+      "sha256": "f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96",
+      "version": "2050:7360639:7602:1793884028932043583:1793884028937079006",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "source_publication_full9": [
+        2050,
+        7360639,
+        1000,
+        1000,
+        33152,
+        1,
+        7602,
+        "1793884028932043583",
+        "1793884028937079006"
+      ],
+      "source_publication_full9_note": "Exact original publication tuple; unsafe ns preserved as decimal strings.",
+      "original_file_info_blob": "55126d871bf6a74e02ee04f7dffc705f32cc10bf",
+      "whole_body_blob": "0c8c52efec04adda307038d0fb6b78ca7a383f2d",
+      "completed_file_info_operation": "3a2554cd41d2692bbbfdc260738ac8864fe70e83969531ab5d165a60f7b702bc",
+      "completed_body_operation": "45615ea27f11b1a3901fd5b5dfd944e0cf8969fb4883b11bceb1755991839754"
+    },
+    {
+      "role": "receiver_source",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+      "bytes": 9138,
+      "sha256": "dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19",
+      "version": "2050:7360657:9138:1793884028944391717:1793884028951075515",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "source_publication_full9": [
+        2050,
+        7360657,
+        1000,
+        1000,
+        33152,
+        1,
+        9138,
+        "1793884028944391717",
+        "1793884028951075515"
+      ],
+      "source_publication_full9_note": "Exact original publication tuple; unsafe ns preserved as decimal strings.",
+      "original_file_info_blob": "a82304d85a2e17aca89db2d71197a7fa29606acb",
+      "whole_body_blob": "e05caf981119945ac8bdf6edbaf80529296a6806",
+      "completed_file_info_operation": "36117fafbe5ca824c6ea8847f49144f8c7af1ca6fdef4c54734852fe4c4bcf89",
+      "completed_body_operation": "45615ea27f11b1a3901fd5b5dfd944e0cf8969fb4883b11bceb1755991839754"
+    },
+    {
+      "role": "relay_source",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+      "bytes": 16719,
+      "sha256": "075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4",
+      "version": "2050:7360808:16719:1793884028960515194:1793884028968904561",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "source_publication_full9": [
+        2050,
+        7360808,
+        1000,
+        1000,
+        33152,
+        1,
+        16719,
+        "1793884028960515194",
+        "1793884028968904561"
+      ],
+      "source_publication_full9_note": "Exact original publication tuple; unsafe ns preserved as decimal strings.",
+      "original_file_info_blob": "8981772bca3b1f79cea53da7a99f7a41b8043d63",
+      "whole_body_blob": "29e860e99ae64e317a8e224b8fdfe42dddea88a7",
+      "completed_file_info_operation": "ffa71308172ec61db404d28f6cb20809339e758ce179d7fe1de08653a63090a5",
+      "completed_body_operation": "45615ea27f11b1a3901fd5b5dfd944e0cf8969fb4883b11bceb1755991839754"
+    },
+    {
+      "role": "inert_receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json",
+      "bytes": 1930,
+      "sha256": "5895787120177c001e1f39dcba7eb934cf6a223979c5bd287a7eadfb26a5d080",
+      "version": "2050:7360829:1930:1793884028978636319:1793884028986701978",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "source_publication_full9": null,
+      "source_publication_full9_note": "Receipt was not included in the publisher's three-source full9 array; its independent native file_info/whole read are bound without inventing a full-mode stat field.",
+      "original_file_info_blob": "8a9806553c9821f3669450ad9f7b3dcf5fe1a983",
+      "whole_body_blob": "6523d4ec0bea709a1cc7f32f83a696dcbe3676c5",
+      "completed_file_info_operation": "d26ed9d98ed77729a489cc8e8d5b5cdb0e83fada7ec62d66232f821ead925863",
+      "completed_body_operation": "45615ea27f11b1a3901fd5b5dfd944e0cf8969fb4883b11bceb1755991839754"
+    }
+  ],
+  "observations_are_historical_not_new_current_stats": true,
+  "receipt_is_admission_evidence_not_an_added_runtime_input": true,
+  "unchanged_runtime_source_checks": "The admitted relay and helpers retain their own before/after exact source/identity/SSH fences and original create-only destination and cleanup checks. This document does not alter or replace those checks.",
+  "future_sequence": [
+    "Root resolves the original LAN task and explicitly releases the execution window.",
+    "Persist a separate exact external execution intent in one completed call.",
+    "Submit the unchanged request exactly once under its original key; externally store the original ACK before parsing.",
+    "Reconcile only the original job; collect authority/full streams/endpoints/cleanup and five independent destination infos."
+  ],
+  "original_budgets_seconds": {
+    "outer": 360,
+    "relay": 300,
+    "endpoints": 90,
+    "connect": 10,
+    "cleanup_TERM": 5,
+    "cleanup_KILL": 5
+  },
+  "scope": {
+    "files": 5,
+    "total_bytes": 110287359,
+    "source_host": "rog",
+    "destination_host": "desktop",
+    "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "only_public_server_and_native_release_combined61_groups_files": true,
+    "no_seed_binary": true,
+    "no_git_build_server_HTTP_or_product_execution": true
+  },
+  "checks": [
+    {
+      "name": "request_exact_root_GO_projection",
+      "passed": true
+    },
+    {
+      "name": "request_no_extra_self_SHA_argv",
+      "passed": true
+    },
+    {
+      "name": "root_control_metadata_three_exact",
+      "passed": true
+    },
+    {
+      "name": "file0_independent_version_and_whole",
+      "passed": true
+    },
+    {
+      "name": "file1_independent_version_and_whole",
+      "passed": true
+    },
+    {
+      "name": "file2_independent_version_and_whole",
+      "passed": true
+    },
+    {
+      "name": "file3_independent_version_and_whole",
+      "passed": true
+    },
+    {
+      "name": "root_current_source_and_artifact_scope",
+      "passed": true
+    },
+    {
+      "name": "original_caps_unchanged",
+      "passed": true
+    }
+  ],
+  "go_for_LAN_prepare_or_live": false,
+  "go_for_product_or_X230_or_H2": false
+}

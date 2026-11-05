@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.source-export.same-operation-readonly-recovery.v1",
+  "operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "action": "one operation_status; only if completed/stored_observed/owned_future_active=false retrieve immutable original pages",
+  "parent_authorization": "Root message after successful effective_config SDK e98614a5de4de8c2d958c5ce68fc8641479c5d1f",
+  "request": {
+    "operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2"
+  },
+  "no_new_operation_start": true,
+  "no_binary_read_replay": true,
+  "no_exporter_replay": true,
+  "no_bundle_info_or_command_logs": true,
+  "stop_at_any_error": true,
+  "original_timeout_errors_unchanged": true,
+  "page_limit_if_closed": 16384
+}

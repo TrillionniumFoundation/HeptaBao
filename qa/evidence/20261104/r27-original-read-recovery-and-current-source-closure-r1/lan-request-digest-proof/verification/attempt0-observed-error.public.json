@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.offline-calculator-harness-failure.v1",
+  "observed_error": "Error: outside ASCII-only proof scope",
+  "stage": "first calculation before any digest result or artifact publication",
+  "cause": "The evaluator source used a doubly escaped character-class regex. The input ASCII check was corrected to direct character code comparison.",
+  "runtime_calls": 0,
+  "request_changed": false,
+  "original_tool_output_retrieved": false
+}

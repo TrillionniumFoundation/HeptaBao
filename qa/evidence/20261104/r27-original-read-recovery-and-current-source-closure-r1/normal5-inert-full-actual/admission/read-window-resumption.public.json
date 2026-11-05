@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.read-window-resumption-after-original-read-closure.r1",
+  "scope": "Exact previously authorized public reads only; no product process, no credential read, no SDK execution.",
+  "prior_unresolved_operation": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "reported_original_closure": {
+    "status_blob": "d1b011b488754ac90007be0f3f87c231465eab3f",
+    "original_payload_blob": "b3d86851dcc965842d83528e084d2437f1052749",
+    "original_receipt_blob": "0109d7597b2754ee665367177ba1cd3e832d4b34",
+    "owned_future_active": false,
+    "core_whole_bytes": 39692,
+    "core_sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+  },
+  "read_windows": [
+    {
+      "owner": "authbus_migration",
+      "packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+      "root_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+      "scope": "Thirteen already frozen binary_read requests for exactly loader/selector/registry; same paths/keys/versions/offsets/limits; 682650 bytes total; no SDK import/execute.",
+      "max_active_original_operations": 1
+    },
+    {
+      "owner": "ha_validation",
+      "packet": "c5365e0c9867944720ffd61c63a2976717083cf3",
+      "scope": "Only pending normal5 info1/info2/info3, each fully closed before next; then one fixed read_multiple_files of four public bodies, compare against independent versions/whole hashes.",
+      "max_active_original_operations": 1
+    }
+  ],
+  "maximum_new_read_operations_active": 2,
+  "collector_rules": "Persist exact request and original SDK before parsing; check isError before JSON.parse; status and immutable pages only on admitted original ID; lossless unsafe integers; no new key/native replay on UNKNOWN. Any new error stops new admissions on that line and is reported to root; never interrupt an in-flight operation.",
+  "excluded": [
+    "LAN inert waits explicit root window after normal5 full closure",
+    "normal5 relay lacks GO",
+    "export bundle-info and 81 logs wait next window",
+    "new business requests, service changes, production cutover and deletion",
+    "any historical UNKNOWN business replay"
+  ],
+  "full_product_qualification": false
+}

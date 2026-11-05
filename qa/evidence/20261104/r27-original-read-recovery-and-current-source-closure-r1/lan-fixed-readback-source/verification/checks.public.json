@@ -1,0 +1,214 @@
+{
+  "checks": [
+    {
+      "name": "source9_names_exact_carrier",
+      "passed": true
+    },
+    {
+      "name": "source0_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source0_offset0",
+      "passed": true
+    },
+    {
+      "name": "source0_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source1_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source1_offset0",
+      "passed": true
+    },
+    {
+      "name": "source1_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source2_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source2_offset0",
+      "passed": true
+    },
+    {
+      "name": "source2_offset16384",
+      "passed": true
+    },
+    {
+      "name": "source2_offset32768",
+      "passed": true
+    },
+    {
+      "name": "source2_offset49152",
+      "passed": true
+    },
+    {
+      "name": "source2_offset65536",
+      "passed": true
+    },
+    {
+      "name": "source2_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source3_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source3_offset0",
+      "passed": true
+    },
+    {
+      "name": "source3_offset16384",
+      "passed": true
+    },
+    {
+      "name": "source3_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source4_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source4_offset0",
+      "passed": true
+    },
+    {
+      "name": "source4_offset16384",
+      "passed": true
+    },
+    {
+      "name": "source4_offset32768",
+      "passed": true
+    },
+    {
+      "name": "source4_offset49152",
+      "passed": true
+    },
+    {
+      "name": "source4_offset65536",
+      "passed": true
+    },
+    {
+      "name": "source4_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source5_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source5_offset0",
+      "passed": true
+    },
+    {
+      "name": "source5_offset16384",
+      "passed": true
+    },
+    {
+      "name": "source5_offset32768",
+      "passed": true
+    },
+    {
+      "name": "source5_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source6_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source6_offset0",
+      "passed": true
+    },
+    {
+      "name": "source6_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source7_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source7_offset0",
+      "passed": true
+    },
+    {
+      "name": "source7_offset16384",
+      "passed": true
+    },
+    {
+      "name": "source7_offset32768",
+      "passed": true
+    },
+    {
+      "name": "source7_offset49152",
+      "passed": true
+    },
+    {
+      "name": "source7_offset65536",
+      "passed": true
+    },
+    {
+      "name": "source7_offset81920",
+      "passed": true
+    },
+    {
+      "name": "source7_whole_span",
+      "passed": true
+    },
+    {
+      "name": "source8_bytes_sha_exact",
+      "passed": true
+    },
+    {
+      "name": "source8_offset0",
+      "passed": true
+    },
+    {
+      "name": "source8_whole_span",
+      "passed": true
+    },
+    {
+      "name": "all_observation_keys_distinct",
+      "passed": true
+    },
+    {
+      "name": "all_keys_within_public_limit",
+      "passed": true
+    },
+    {
+      "name": "only_four_allowed_native_reads",
+      "passed": true
+    },
+    {
+      "name": "all_fixed_host_desktop",
+      "passed": true
+    },
+    {
+      "name": "all_file_paths_in_original_fixed10",
+      "passed": true
+    },
+    {
+      "name": "job_and_versions_unbound",
+      "passed": true
+    },
+    {
+      "name": "all_execution_disabled",
+      "passed": true
+    },
+    {
+      "name": "carrier_receipt_real_LF_contract",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "runtime_calls": 0
+}

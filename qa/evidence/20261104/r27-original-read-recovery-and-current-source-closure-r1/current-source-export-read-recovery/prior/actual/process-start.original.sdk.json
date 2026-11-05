@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian-qi/heptabao-same-root-publication-source-export-controls-20261105-r1/source_export_same_root_publication_4e808_r1.py\"\n    ],\n    \"created_unix_ms\": 1793885172190,\n    \"cwd\": \"/home/qian-qi\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"rog\",\n    \"id\": \"1a1abe371de-fc05-5122\",\n    \"idempotency_key\": \"heptabao-4e808-standalone-source-export-9af6738d-20261105-r1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1abe371de-fc05-5122\",\n    \"request_digest\": \"d2dc110e3e901abadfe5c8eb57ef7e3b58c98de223cdd9ed3ac636eb2fef02f8\",\n    \"request_fingerprint\": 15194037995718056634,\n    \"ssh_target\": \"rog-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1abe371de-fc05-5122\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1abe371de-fc05-5122\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

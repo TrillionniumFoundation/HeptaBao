@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.evidence-whole-manifest.v1",
+  "scope": "root-same-id-sdk-tail-adoption",
+  "files": [
+    {
+      "path": "ADOPTION.public.json",
+      "bytes": 3111,
+      "sha256": "8433c9a31bdfa37aed72195ab28745b21da213df53031a673cc3070dddb2bf2e",
+      "blob": "6604b671c8fe49eddf3f5c516aa6e36db46bdec8"
+    },
+    {
+      "path": "original-binary-result.json",
+      "bytes": 87700,
+      "sha256": "ecd2cb08bfc8dc94aff4dc839f4828b2762b1eb2263f745c6e852a5dc1f8c937",
+      "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4"
+    },
+    {
+      "path": "original-sdk-payload.json",
+      "bytes": 87803,
+      "sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74",
+      "blob": "117b2a2e861a3d77f257ea67a6b3d74907d1fd20"
+    },
+    {
+      "path": "original-tail-request.json",
+      "bytes": 126,
+      "sha256": "8e64d664ce1abe0271bff3d149cc009c7a54711236d427ff185afec06ce756c4",
+      "blob": "0ef371e0ddecff72e3dbf95e7628f61c56d93df6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1109,
+      "sha256": "a2b39b1265e7cebea8b613d8ee039e1d7065c82a1469efe254f9d64fc45ab39e",
+      "blob": "c4f4ef4c9c07d2b21b4874be105730b167774044"
+    },
+    {
+      "path": "root-review.json",
+      "bytes": 1971,
+      "sha256": "f5e5503b6f4f30aab1debb3f69ef7d010624a7dd0c4001898867baf27ff9e1b4",
+      "blob": "b17c121f99407014855add6c44b2e6699307a73f"
+    },
+    {
+      "path": "tail.original.native.json",
+      "bytes": 8533,
+      "sha256": "0cb786d38e2e7858a36afdc528373ac5af64de5e7fce81113bcbeb16b1575624",
+      "blob": "5a93ea5281297c96b2e96743d242773b316d289f"
+    },
+    {
+      "path": "tail.original.sdk.json",
+      "bytes": 8704,
+      "sha256": "8a8abd37861405c833ad8a785a77d32c9b75c77b876ec28e66ce10c92dcfb85d",
+      "blob": "d269dfe7afaa74e540defbf11fe4faca345cf9a0"
+    }
+  ]
+}

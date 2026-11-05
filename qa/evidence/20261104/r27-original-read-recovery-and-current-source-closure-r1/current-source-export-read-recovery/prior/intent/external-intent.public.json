@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.current4e808-standalone-export-external-intent.v1",
+  "action": "single_exact_standalone_source_export",
+  "root_go": {
+    "key": "go",
+    "blob": "67ebf4aa754a26328b3316515f462fe9d8932ac8",
+    "bytes": 2954,
+    "sha256": "697454de64a827fbad94ef6d95cd74b7010a918a6d314fc72acf98cb69a47519"
+  },
+  "exact_request": {
+    "key": "request",
+    "blob": "93e41338e8e24a65a8c9fcff2887a65f1b646467",
+    "bytes": 374,
+    "sha256": "b389fef4b9169107a0cd81b15ed804ecd6015e08232d881b4d4e3c9d207a2e67"
+  },
+  "request": {
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-same-root-publication-source-export-controls-20261105-r1/source_export_same_root_publication_4e808_r1.py"
+    ],
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 330,
+    "idempotency_key": "heptabao-4e808-standalone-source-export-9af6738d-20261105-r1"
+  },
+  "maximum_process_start_submissions": 1,
+  "intent_saved_in_completed_call_before_dispatch": true,
+  "dispatch_precondition": "HA explicitly hands off after its current call closes; do not interrupt an in-flight call",
+  "source": {
+    "blob": "2540cac365b9c0afd91ae4b8adee80e01221f38e",
+    "bytes": 15364,
+    "sha256": "9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761292f66d20"
+  },
+  "candidate": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "original_caps": {
+    "actionSeconds": 300,
+    "gitLeafSeconds": 90,
+    "cleanupSeconds": [
+      5,
+      5
+    ],
+    "outerSeconds": 330,
+    "bundleBytes": 67108864
+  },
+  "preserve_ack_before_parse": true,
+  "unknown_requires_original_job_reconciliation": true,
+  "carrier_import_product_authorized": false
+}

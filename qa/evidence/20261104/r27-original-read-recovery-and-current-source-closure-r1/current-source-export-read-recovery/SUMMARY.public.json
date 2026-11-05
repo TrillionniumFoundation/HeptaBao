@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.4e808-standalone-export-original-body-recovery.v1",
+  "status": "ORIGINAL_READ_CLOSED_CORE_RECOVERED_SEPARATE_BUNDLE_AND_LOG_READBACK_PENDING",
+  "prior_partial_tree": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+  "prior_partial_peer_blob": "6f427d2c76879624683b873eb9ccc05ecc463b56",
+  "export_job": "1a1abe371de-fc05-5122",
+  "exporter_start_count_in_this_history": 1,
+  "existing_read_operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "recovery": {
+    "later_status_blob": "d1b011b488754ac90007be0f3f87c231465eab3f",
+    "state": "completed/stored_observed",
+    "owned_future_active": false,
+    "immutable_pages": 4,
+    "original_sdk": {
+      "path": "recovery01/payload.original.sdk.json",
+      "bytes": 53354,
+      "sha256": "b47aa85056850f65d1f457b8a206b5b2444f460baa25d8839866cc8b8227af99",
+      "blob": "b3d86851dcc965842d83528e084d2437f1052749"
+    },
+    "body": {
+      "path": "actual/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "blob": "0109d7597b2754ee665367177ba1cd3e832d4b34"
+    },
+    "body_version": "66306:28091501:39692:1793885177751063403:1793885177751063403",
+    "independent_prior_info_blob": "0c10544cc211fe71ea282bb32e242b700e5f9275",
+    "same_original_path_size_sha_version_and_eof": true
+  },
+  "preserved_history": {
+    "old_two_status_rpc_errors": true,
+    "old_one_page_rpc_error": true,
+    "old_local_parser_error": true,
+    "no_old_blob_or_tree_rewritten": true,
+    "scope": "Later same-ID success reconciles the retained original read; it does not turn previous failed RPC observations into successful deliveries.",
+    "old_peer_path_alias": "The prior peer maps errors/status-attempt-01 aliases to actual reads/result-body/status.original.sdk.json and status.original.json; the original partial packet is unchanged."
+  },
+  "actual_core_review": {
+    "checks": 94,
+    "exact_git_commands": 27,
+    "exit_zero": 25,
+    "expected_partial_config_exit_one": 2,
+    "unique_pids": 27,
+    "cleanup_rows": 27,
+    "all_direct_children_reaped": true,
+    "all_remaining_groups_empty": true,
+    "source_before_equals_after": true,
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "history_count": 3763,
+    "zero_prerequisites": true,
+    "controller_full9_matches_inert": true,
+    "core_elapsed_seconds": 3.3373927639913745,
+    "terminal_after_publication_elapsed_seconds": 3.3388441129936837,
+    "original_seconds": {
+      "controller": 300,
+      "git_each": 90,
+      "outer": 330
+    },
+    "per_fd_ledger": false,
+    "fd_scope": "Exact admitted code closes stable/fsync descriptors in finally and publication streams through with; success path completed. The core emits no individual FD ledger, so no such ledger is invented."
+  },
+  "bundle_publisher_observation": {
+    "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+    "bytes": 22320862,
+    "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+    "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179",
+    "independent_file_info_completed": false,
+    "carrier_slots_filled": false
+  },
+  "pending": {
+    "bundle_info_requests_submitted": 0,
+    "command_log_files_read": 0,
+    "command_log_files_remaining": 81,
+    "fixed_batches": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      6
+    ],
+    "read_plan_blob": "9f60d88c19ab9282bfabb520ae5a2d1fe0c90602",
+    "batch_snapshot_is_atomic": false,
+    "requires_root_window": true
+  },
+  "current": {
+    "runtime_call_inflight": false,
+    "new_operation_start_calls": 0,
+    "new_binary_read_calls": 0,
+    "new_exporter_starts": 0,
+    "new_bundle_info_calls": 0,
+    "new_command_log_calls": 0,
+    "carrier_or_importer_started": false,
+    "product_started": false,
+    "full_archive_qualified": false
+  },
+  "local_verifier_note": "Both verifier executions are retained. The final source tightens one redundant cap expression from receipt length to bundle length; the exact bundle bytes and original maximum were already separately fixed. Same original inputs, 94 PASS, no candidate or evidence changes."
+}

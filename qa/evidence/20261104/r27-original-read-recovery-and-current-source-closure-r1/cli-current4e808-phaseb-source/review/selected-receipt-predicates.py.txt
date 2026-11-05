@@ -1,0 +1,115 @@
+        for item in (native, release):
+            need(item.get("source_commit") == COMMIT and item.get("source_tree") == TREE
+                 and item.get("source_freeze_verified") is True and item.get("build_exit_code") == 0
+                 and item.get("native_abi") == "x86_64-unknown-linux-gnu", "normal_build_source_identity")
+        artifact = release["artifacts"]["heptabao-server"]
+        need(native.get("schema") == "heptabao.native-build.v1"
+             and release.get("schema") == "heptabao.native-default-build-result.v1"
+             and native.get("binary_sha256") == self.artifacts["server"]["sha256"]
+             and native.get("features") == FEATURES and artifact.get("features") == FEATURES
+             and artifact.get("profile") == PROFILE
+             and artifact.get("sha256") == self.artifacts["server"]["sha256"]
+             and artifact.get("bytes") == self.artifacts["server"]["bytes"],
+             "normal_default_abi_profile_artifact")
+        need(release.get("normal_default_candidate") is True
+             and release.get("timed_out") is False
+             and release.get("owned_group_survivors_after_wait") is False
+             and release.get("build_finished_success") is True
+             and native["provenance"]["result_sha256"] == self.artifacts["release_receipt"]["sha256"]
+             and native["provenance"]["cargo_events_sha256"] == release["cargo_events_sha256"],
+             "normal_release_provenance")
+        command = release["command"]
+        need(type(command) is list and command[1:] == [
+            "build", "--release", "--locked", "--offline", "-p", "heptabao-server",
+            "--bin", "heptabao-server", "--bin", "heptabao-seed",
+            "--message-format=json-render-diagnostics"
+        ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
+        need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
+        need(combined.get("schema") == "heptabao.linux-normal-same-root-publication-exact-tests.v1"
+             and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
+             and combined.get("status") == "passed"
+             and combined.get("normal_default_features") is True
+             and combined.get("fixture_features") == []
+             and combined.get("test_count") == 44 and combined.get("groups_sha256") == GROUPS_SHA
+             and combined.get("groups") == groups and combined.get("runtime_tests_started") is True
+             and combined.get("binary_unchanged") is True
+             and combined.get("release_artifacts_unchanged") is True
+             and combined.get("source_unchanged") is True
+             and combined.get("native_build_receipt_sha256") == self.artifacts["native_receipt"]["sha256"],
+             "diagnostic_original44_terminal_pass_required")
+        shapes = [("ssh25", 25), ("mount1", 1), ("redirect5", 5), ("actor2", 2),
+                  ("ordinary5", 5), ("no_forward6", 6)]
+        need(type(groups) is list and [(g["label"], len(g["tests"])) for g in groups] == shapes,
+             "original_group_denominator")
+        actual = combined.get("group_results")
+        need(type(actual) is list and len(actual) == len(groups), "complete_44_group_results")
+        for group, observed in zip(groups, actual):
+            test = observed["tests"]
+            need(observed["label"] == group["label"]
+                 and len(observed["actual_test_names"]) == len(group["tests"])
+                 and set(observed["actual_test_names"]) == set(group["tests"])
+                 and test.get("exit_code") == 0 and test.get("timed_out") is False
+                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                 "original_group_terminal_and_ownership")
+        extra = combined.get("ingress_observer_regression")
+        need(type(extra) is dict
+             and extra.get("schema") == "heptabao.normal-ingress-observer-regression.v1"
+             and extra.get("status") == "passed" and extra.get("test_count") == 7
+             and extra.get("original_44_denominator_unchanged") is True
+             and extra.get("new_total_group_cap_seconds") == 600
+             and extra.get("actual_test_names") == list(INGRESS_OBSERVER_TESTS)
+             and type(extra.get("tests")) is list and len(extra["tests"]) == 7
+             and combined.get("original_44_status") == "passed",
+             "exact_ingress_observer_negative_regression")
+        for name, observed in zip(INGRESS_OBSERVER_TESTS, extra["tests"]):
+            test = observed["tests"]
+            need(observed.get("name") == name and test.get("exit_code") == 0
+                 and test.get("timed_out") is False
+                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                 "ingress_observer_regression_terminal")
+        increment = combined.get("cold_h2_regression")
+        need(type(increment) is dict
+             and increment.get("schema") == "heptabao.normal-cold-h2-regression.v1"
+             and increment.get("status") == "passed" and increment.get("test_count") == 9
+             and increment.get("original_44_denominator_unchanged") is True
+             and increment.get("existing_ingress_7_denominator_unchanged") is True
+             and increment.get("new_total_group_cap_seconds") == 600
+             and increment.get("clamped_to_original_outer_deadline") is True
+             and increment.get("actual_test_names") == list(COLD_H2_TESTS)
+             and type(increment.get("tests")) is list and len(increment["tests"]) == 9
+             and combined.get("original_44_and_ingress_7_status") == "passed",
+             "exact_new_cold_h2_nine_regression")
+        for name, observed in zip(COLD_H2_TESTS, increment["tests"]):
+            test = observed["tests"]
+            need(observed.get("name") == name and test.get("exit_code") == 0
+                 and test.get("timed_out") is False
+                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                 "new_cold_h2_regression_terminal")
+        publication = combined.get("same_root_publication_regression")
+        need(type(publication) is dict
+             and publication.get("schema") == "heptabao.normal-same-root-publication-regression.v1"
+             and publication.get("status") == "passed" and publication.get("test_count") == 1
+             and publication.get("original_44_7_9_denominators_unchanged") is True
+             and publication.get("new_total_group_cap_seconds") == 600
+             and publication.get("clamped_to_original_outer_deadline") is True
+             and publication.get("actual_test_names") == list(SAME_ROOT_PUBLICATION_TESTS)
+             and type(publication.get("tests")) is list and len(publication["tests"]) == 1
+             and combined.get("original_60_status") == "passed"
+             and combined.get("original_60_test_total") == 60
+             and combined.get("selected_test_total") == 61
+             and combined.get("additional_test_counts")
+             == {"ingress_observer": 7, "cold_h2": 9, "same_root_publication": 1},
+             "current_product_61_with_separate_same_root_one")
+        for name, observed in zip(SAME_ROOT_PUBLICATION_TESTS, publication["tests"]):
+            test = observed["tests"]
+            need(observed.get("name") == name and test.get("exit_code") == 0
+                 and test.get("timed_out") is False
+                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                 "same_root_publication_regression_terminal")
+        need(combined.get("controller_sha256")
+             == "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+             "exact_current_product_normal61_runner")
+        cleanup = combined.get("cleanup")
+        need(type(cleanup) is list and bool(cleanup)
+             and all(item.get("direct_child_reaped") is True and item.get("remaining") == []
+                     and not item.get("cleanup_error_type") for item in cleanup), "build_all_owned_stopped")

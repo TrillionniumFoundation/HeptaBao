@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.4e808-export-fixed-public-read-window-intent.v1",
+  "prior_recovery_tree": "77c8372e11f2f128cc8cd76ac9b52a9b9d1d329d",
+  "authorized_scope": "Root second readonly window after recovered core93 PASS; one fixed bundle file_info then six fixed command-log batches, one operation at a time and no new admission after any error",
+  "requests": [
+    {
+      "name": "bundle-info",
+      "idempotency_key": "heptabao-4e808-export-5122-bundle-info-r1",
+      "tool": "file_info"
+    },
+    {
+      "name": "commandlogs-01",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-01-r1",
+      "tool": "read_multiple_files"
+    },
+    {
+      "name": "commandlogs-02",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-02-r1",
+      "tool": "read_multiple_files"
+    },
+    {
+      "name": "commandlogs-03",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-03-r1",
+      "tool": "read_multiple_files"
+    },
+    {
+      "name": "commandlogs-04",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-04-r1",
+      "tool": "read_multiple_files"
+    },
+    {
+      "name": "commandlogs-05",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-05-r1",
+      "tool": "read_multiple_files"
+    },
+    {
+      "name": "commandlogs-06",
+      "idempotency_key": "heptabao-4e808-export-5122-commandlogs-06-r1",
+      "tool": "read_multiple_files"
+    }
+  ],
+  "no_new_exporter": true,
+  "no_new_carrier_or_importer": true,
+  "no_product_or_compiler": true,
+  "no_directory_scan": true,
+  "max_file_bytes": 65536,
+  "max_response_bytes": 131072,
+  "max_files_per_batch": 15,
+  "immutable_page_limit": 16384,
+  "strict_stop_on_error": true
+}

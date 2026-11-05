@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.lan-lost-ack-opaque-pagination-intent.r1",
+  "previous_intent": "b6195b77588fcf7e362a116dbe69a9e1ff503793",
+  "scope": "Continue the already observed durable process inventory snapshot using only each server-returned opaque next_cursor; no new process execution or process_start replay.",
+  "host": "desktop",
+  "limit": 128,
+  "observed_total": 8513,
+  "first_page_rows": 128,
+  "initial_next_cursor": "9fa6ee98be32390505e76f00272c27d74aa6edbb549270e8b71a6ebce585d412:1a1a0d103c1-fc05-157",
+  "matching": {
+    "target_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+    "target_request_digest": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+    "key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+    "candidate_ids_are_not_identity_proof": true,
+    "authoritative_status_digest_match_required": true
+  },
+  "privacy": "Keep all raw inventory pages privately; only publish exact target-related records and hashes/counts. No unrelated args or credentials read.",
+  "on_refused_cursor": "Stop and preserve refusal. A fresh first snapshot can be requested as documented; never construct a cursor.",
+  "on_transport_error": "Preserve original error and stop this call loop; no process resubmission.",
+  "runtime_serial": true
+}

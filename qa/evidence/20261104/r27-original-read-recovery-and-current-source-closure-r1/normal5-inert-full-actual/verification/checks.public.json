@@ -1,0 +1,244 @@
+{
+  "checks": [
+    {
+      "name": "exact_request_original_pin",
+      "passed": true
+    },
+    {
+      "name": "external_intent_whole_and_unique_submit",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_typed_request_binding",
+      "passed": true
+    },
+    {
+      "name": "authority_same_job_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "stream_job_exact",
+      "passed": true
+    },
+    {
+      "name": "stdout_hex_text_full_authority_match",
+      "passed": true
+    },
+    {
+      "name": "stderr_hex_text_full_authority_match",
+      "passed": true
+    },
+    {
+      "name": "prepared_compile_only_exact_three_publications",
+      "passed": true
+    },
+    {
+      "name": "no_sources_executed_or_product_actions",
+      "passed": true
+    },
+    {
+      "name": "stdin_whole",
+      "passed": true
+    },
+    {
+      "name": "original_internal_elapsed_record",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_original_ack_id_and_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_closed_inactive_same_id",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_exact_native_text",
+      "passed": true
+    },
+    {
+      "name": "observe_info0_fixed_metadata_path",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_original_ack_id_and_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_closed_inactive_same_id",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_exact_native_text",
+      "passed": true
+    },
+    {
+      "name": "observe_info1_fixed_metadata_path",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_original_ack_id_and_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_closed_inactive_same_id",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_exact_native_text",
+      "passed": true
+    },
+    {
+      "name": "observe_info2_fixed_metadata_path",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_original_ack_id_and_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_closed_inactive_same_id",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_exact_native_text",
+      "passed": true
+    },
+    {
+      "name": "observe_info3_fixed_metadata_path",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_original_ack_id_and_no_reuse",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_closed_inactive_same_id",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_immutable_page_8192",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_immutable_page_16384",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_immutable_page_24576",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_immutable_page_32768",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "observe_bodies_exact_native_text",
+      "passed": true
+    },
+    {
+      "name": "body_fixed_four_paths_and_caps",
+      "passed": true
+    },
+    {
+      "name": "five_unique_original_read_operations",
+      "passed": true
+    },
+    {
+      "name": "independent_four_file_snapshot_not_atomic",
+      "passed": true
+    },
+    {
+      "name": "info0_source_owner_mode_links",
+      "passed": true
+    },
+    {
+      "name": "body0_independent_info_whole_and_version",
+      "passed": true
+    },
+    {
+      "name": "source0_reported_full9_and_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "info1_source_owner_mode_links",
+      "passed": true
+    },
+    {
+      "name": "body1_independent_info_whole_and_version",
+      "passed": true
+    },
+    {
+      "name": "source1_reported_full9_and_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "info2_source_owner_mode_links",
+      "passed": true
+    },
+    {
+      "name": "body2_independent_info_whole_and_version",
+      "passed": true
+    },
+    {
+      "name": "source2_reported_full9_and_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "info3_source_owner_mode_links",
+      "passed": true
+    },
+    {
+      "name": "body3_independent_info_whole_and_version",
+      "passed": true
+    },
+    {
+      "name": "receipt_all_lossless_values_match_original_stdout",
+      "passed": true
+    },
+    {
+      "name": "new_lan_inert_still_not_submitted",
+      "passed": true
+    }
+  ]
+}

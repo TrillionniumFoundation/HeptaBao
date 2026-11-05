@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.lan-original-digest-narrow-read-search-intent.r1",
+  "request": {
+    "host": "desktop",
+    "root": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs",
+    "kind": "content",
+    "query": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+    "query_mode": "literal",
+    "file_pattern": "1a1ac*/request.json",
+    "exclude_patterns": [
+      "1a1a0*",
+      "1a1a1*",
+      "1a1a2*",
+      "1a1a3*",
+      "1a1a4*",
+      "1a1a5*",
+      "1a1a6*",
+      "1a1a7*",
+      "1a1a8*",
+      "1a1a9*",
+      "1a1aa*",
+      "1a1ab*"
+    ],
+    "include_hidden": true,
+    "context_lines": 0,
+    "max_entries": 10000,
+    "max_bytes": 16777216,
+    "max_results": 8,
+    "timeout_seconds": 30
+  },
+  "scope": "Read-only search for the exact public original request digest in fixed request metadata filenames within one observed worker jobs parent and one bounded creation-ID prefix. No unknown request bodies returned except a matching digest record; keep raw search rows private until exact target metadata is validated.",
+  "observed_root_anchor": {
+    "job_id": "1a1abd1f635-fc05-50c9",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1abd1f635-fc05-50c9",
+    "actual_ack": "eabf961"
+  },
+  "original_request": "70f27390d318755075562482091b3bf27946b37d",
+  "digest_proof": "2c75dc334d4b2fb8ffbc540748f771149ff8017e",
+  "time_window": {
+    "prefix": "1a1ac",
+    "start_utc": "2026-11-05T13:57:23.584Z",
+    "end_utc": "2026-11-05T18:37:00.799Z",
+    "preceding_r26_freeze": "2026-11-05T14:04:34Z"
+  },
+  "limitations": [
+    "Prefix narrows candidates only; no filename or time proves request identity.",
+    "No result, truncation, refusal or timeout does not prove absence or nonexecution.",
+    "process_status alone does not return the original key/digest and cannot establish identity.",
+    "Exact matched path metadata/full public request must bind original digest/argv/cwd/empty env and original stdin size/hash before job status is attributed."
+  ],
+  "runtime_serial": true,
+  "business_replay": false,
+  "new_process_key": false
+}

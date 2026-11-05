@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.runtime-search-reference-pins.v1",
+  "repository": "TrillionniumFoundation/hepta-runtime",
+  "reference_ref": "e1eb14ae8eff2fc2c3565a86a36b10dd44eac915",
+  "associated_jobs_source": "fc559bec715e95fee000b65c54c083f4fdd43450",
+  "deployed_source_identity_proven": false,
+  "files": [
+    {
+      "path": "src/mcp/runtime/search_globs.rs",
+      "blob": "26fb798b531c7e0e69f10ced96b0079b5268acbc",
+      "bytes": 3730,
+      "sha256": "15f33768e4ad4df6356ba9dc3c13a706d47e5cf789bf20bf21b446ee3cac1966"
+    },
+    {
+      "path": "src/mcp/runtime/search_jobs.rs",
+      "blob": "5ce336ccdb405a1ed0f4d934975a5676eaab27f0",
+      "bytes": 28728,
+      "sha256": "374e990110c8c93eebf358bac63db242494d1c1e5d3cca26cb4cf126b0c27adb"
+    },
+    {
+      "path": "src/mcp/runtime/search_worker.py",
+      "blob": "04cdd19e4ec485e60e2e61ed7e7cf8e8621bb0e0",
+      "bytes": 37981,
+      "sha256": "7a196c3906bb50baf073c6b718c3d2ad1618c84a2d2927be29044f8c18de45a7"
+    }
+  ],
+  "reviewed_ranges": {
+    "search_worker_py": [
+      [
+        257,
+        275
+      ],
+      [
+        448,
+        513
+      ],
+      [
+        515,
+        640
+      ]
+    ],
+    "search_globs_rs": [
+      [
+        27,
+        91
+      ]
+    ]
+  },
+  "runtime_calls": 0
+}

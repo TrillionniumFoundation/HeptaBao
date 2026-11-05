@@ -1,0 +1,363 @@
+{
+  "bounds": {
+    "compressed_archive_bytes": 16777216,
+    "expanded_archive_bytes": 33554432
+  },
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "cases": [
+    {
+      "case": "B01",
+      "controller_replays": 0,
+      "current_status": "not_run",
+      "label": "leader_save_archive_A",
+      "manual_redirects": 0,
+      "native_archive_only": true,
+      "official_default_redirect_behavior": true,
+      "operation": "save",
+      "output": "A",
+      "qualification": "CLI exit 0 AND terminal server status 200 AND canonical native archive valid.",
+      "qualified": false,
+      "requires": "Observed actual role, fresh owned output path, one official CLI invocation.",
+      "source_anchors": [
+        {
+          "bytes": 6309,
+          "end_line": 779,
+          "function": "cli_case",
+          "sha256": "8d3d70c24abf083d5d4a06907dadb3a84a4dbb8a446424b3694ad54a996c934a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 682
+        },
+        {
+          "bytes": 1844,
+          "end_line": 892,
+          "function": "execute",
+          "sha256": "94f1d41583980c708693b80cf5b18005012e7124c34716d7c8467a4a372316f1",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 866
+        },
+        {
+          "bytes": 7316,
+          "end_line": 996,
+          "function": "finish",
+          "sha256": "8d19cd5c6a8a1e6378c592d3c1d8d80c2fac29b48e51f577c9659060f1b2fc63",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 894
+        }
+      ],
+      "target_role_observed_before_once": "leader"
+    },
+    {
+      "case": "B02",
+      "cold_restart": "After a known terminal/readback only; stop owned nodes once, start2/3/1, once-unseal each, exact state and audit prefix; no reactivation/upload replay.",
+      "controller_replays": 0,
+      "current_status": "not_run",
+      "known_rejection": "400/403 AND entire state unchanged from before restore; may reach original cold readback but restoration remains unqualified.",
+      "label": "leader_restore_archive_A",
+      "manual_redirects": 0,
+      "native_archive_only": true,
+      "official_default_redirect_behavior": true,
+      "operation": "restore",
+      "qualification": "CLI exit 0 AND terminal status 200/204 AND all-node exact initial two-version values and metadata, followed by one original cold restart/readback.",
+      "qualified": false,
+      "requires": "Verified owned prior CLI archive A from B01; unchanged input fence; once-only CAS2 creates version3 before restore.",
+      "source_anchors": [
+        {
+          "bytes": 6309,
+          "end_line": 779,
+          "function": "cli_case",
+          "sha256": "8d3d70c24abf083d5d4a06907dadb3a84a4dbb8a446424b3694ad54a996c934a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 682
+        },
+        {
+          "bytes": 1844,
+          "end_line": 892,
+          "function": "execute",
+          "sha256": "94f1d41583980c708693b80cf5b18005012e7124c34716d7c8467a4a372316f1",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 866
+        },
+        {
+          "bytes": 7316,
+          "end_line": 996,
+          "function": "finish",
+          "sha256": "8d19cd5c6a8a1e6378c592d3c1d8d80c2fac29b48e51f577c9659060f1b2fc63",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 894
+        },
+        {
+          "bytes": 1444,
+          "end_line": 648,
+          "function": "mutate_version3",
+          "sha256": "17ec03b93a72aceaeedefb4c8fc169090e6cb018910426ae9062d8cd7ee3beef",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 625
+        },
+        {
+          "bytes": 2317,
+          "end_line": 816,
+          "function": "finish_restore_readback",
+          "sha256": "34fd882e7e376b678ff4fd1144fd2757949c4f37c69bd798f9f31c259d26735c",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 781
+        },
+        {
+          "bytes": 2959,
+          "end_line": 864,
+          "function": "cold_restart",
+          "sha256": "a8c3730bd6cba2ee2dafc7c32df9d0d3a315db82ff069e3b2a0db65d08027c1a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 818
+        }
+      ],
+      "target_role_observed_before_once": "leader",
+      "unknown": "Success with different state, rejection with unaccounted mutation, unavailable/malformed readback, process or server-boundary uncertainty: no new mutation, CLI or cold restart."
+    },
+    {
+      "case": "B03",
+      "controller_replays": 0,
+      "current_status": "not_run",
+      "label": "leader_save_archive_B",
+      "manual_redirects": 0,
+      "native_archive_only": true,
+      "official_default_redirect_behavior": true,
+      "operation": "save",
+      "output": "B",
+      "qualification": "CLI exit 0 AND terminal server status 200 AND canonical native archive valid.",
+      "qualified": false,
+      "requires": "Observed actual role, fresh owned output path, one official CLI invocation.",
+      "source_anchors": [
+        {
+          "bytes": 6309,
+          "end_line": 779,
+          "function": "cli_case",
+          "sha256": "8d3d70c24abf083d5d4a06907dadb3a84a4dbb8a446424b3694ad54a996c934a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 682
+        },
+        {
+          "bytes": 1844,
+          "end_line": 892,
+          "function": "execute",
+          "sha256": "94f1d41583980c708693b80cf5b18005012e7124c34716d7c8467a4a372316f1",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 866
+        },
+        {
+          "bytes": 7316,
+          "end_line": 996,
+          "function": "finish",
+          "sha256": "8d19cd5c6a8a1e6378c592d3c1d8d80c2fac29b48e51f577c9659060f1b2fc63",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 894
+        }
+      ],
+      "target_role_observed_before_once": "leader"
+    },
+    {
+      "case": "B04",
+      "controller_replays": 0,
+      "current_status": "not_run",
+      "known_failure_continuation": "Only a recognized known business terminal may allow independent B05; it does not qualify B04 and does not replace archive B.",
+      "label": "default_standby_save",
+      "manual_redirects": 0,
+      "native_archive_only": true,
+      "official_default_redirect_behavior": true,
+      "operation": "save",
+      "output": "standby-save-output",
+      "qualification": "CLI exit 0 AND terminal server status 200 AND canonical native archive valid.",
+      "qualified": false,
+      "requires": "Observed actual role, fresh owned output path, one official CLI invocation.",
+      "source_anchors": [
+        {
+          "bytes": 6309,
+          "end_line": 779,
+          "function": "cli_case",
+          "sha256": "8d3d70c24abf083d5d4a06907dadb3a84a4dbb8a446424b3694ad54a996c934a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 682
+        },
+        {
+          "bytes": 1844,
+          "end_line": 892,
+          "function": "execute",
+          "sha256": "94f1d41583980c708693b80cf5b18005012e7124c34716d7c8467a4a372316f1",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 866
+        },
+        {
+          "bytes": 7316,
+          "end_line": 996,
+          "function": "finish",
+          "sha256": "8d19cd5c6a8a1e6378c592d3c1d8d80c2fac29b48e51f577c9659060f1b2fc63",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 894
+        }
+      ],
+      "target_role_observed_before_once": "standby"
+    },
+    {
+      "case": "B05",
+      "cold_restart": "After a known terminal/readback only; stop owned nodes once, start2/3/1, once-unseal each, exact state and audit prefix; no reactivation/upload replay.",
+      "controller_replays": 0,
+      "current_status": "not_run",
+      "known_rejection": "400/403 AND entire state unchanged from before restore; may reach original cold readback but restoration remains unqualified.",
+      "label": "default_standby_restore_archive_B",
+      "manual_redirects": 0,
+      "native_archive_only": true,
+      "official_default_redirect_behavior": true,
+      "operation": "restore",
+      "qualification": "CLI exit 0 AND terminal status 200/204 AND all-node exact initial two-version values and metadata, followed by one original cold restart/readback.",
+      "qualified": false,
+      "requires": "Verified owned prior CLI archive B from B03; unchanged input fence; once-only CAS2 creates version3 before restore.",
+      "source_anchors": [
+        {
+          "bytes": 6309,
+          "end_line": 779,
+          "function": "cli_case",
+          "sha256": "8d3d70c24abf083d5d4a06907dadb3a84a4dbb8a446424b3694ad54a996c934a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 682
+        },
+        {
+          "bytes": 1844,
+          "end_line": 892,
+          "function": "execute",
+          "sha256": "94f1d41583980c708693b80cf5b18005012e7124c34716d7c8467a4a372316f1",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 866
+        },
+        {
+          "bytes": 7316,
+          "end_line": 996,
+          "function": "finish",
+          "sha256": "8d19cd5c6a8a1e6378c592d3c1d8d80c2fac29b48e51f577c9659060f1b2fc63",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 894
+        },
+        {
+          "bytes": 1444,
+          "end_line": 648,
+          "function": "mutate_version3",
+          "sha256": "17ec03b93a72aceaeedefb4c8fc169090e6cb018910426ae9062d8cd7ee3beef",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 625
+        },
+        {
+          "bytes": 2317,
+          "end_line": 816,
+          "function": "finish_restore_readback",
+          "sha256": "34fd882e7e376b678ff4fd1144fd2757949c4f37c69bd798f9f31c259d26735c",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 781
+        },
+        {
+          "bytes": 2959,
+          "end_line": 864,
+          "function": "cold_restart",
+          "sha256": "a8c3730bd6cba2ee2dafc7c32df9d0d3a315db82ff069e3b2a0db65d08027c1a",
+          "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+          "start_line": 818
+        }
+      ],
+      "target_role_observed_before_once": "standby",
+      "unknown": "Success with different state, rejection with unaccounted mutation, unavailable/malformed readback, process or server-boundary uncertainty: no new mutation, CLI or cold restart."
+    }
+  ],
+  "controller_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+  "exact_case_set": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05"
+  ],
+  "full_replacement_qualification": false,
+  "old_unknown_fences": [
+    {
+      "bytes": 270785,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/result.public.json",
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+      "uid": 1000
+    },
+    {
+      "bytes": 83438,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3/result.public.json",
+      "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68",
+      "uid": 1000
+    },
+    {
+      "bytes": 19915,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r3/result.public.json",
+      "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590",
+      "uid": 1000
+    },
+    {
+      "bytes": 109148,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+      "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+      "uid": 1000
+    },
+    {
+      "bytes": 45176,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+      "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+      "uid": 1000
+    },
+    {
+      "bytes": 278829,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/result.public.json",
+      "sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+      "uid": 1000
+    }
+  ],
+  "schema": "heptabao.official271-phaseb-4e808-remaining-cases.v1",
+  "separate_unproved_scopes": [
+    "34MiB native archive",
+    "Explicit TLS ALPN=h2 client framing gate",
+    "Official CLI negotiated ALPN",
+    "OpenBao-owned state archive interoperability",
+    "Cross-physical-host restore and cold durability",
+    "Full OpenBao2.7.1 route × operation × configuration × lifecycle behavior",
+    "Current production or consumer cutover"
+  ],
+  "setup": {
+    "initial_version3_status": 404,
+    "initial_versions": [
+      1,
+      2
+    ],
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "reference_seed_and_formal_activation_unchanged": true,
+    "required_exercised_storage": "native_v6_raft",
+    "required_records": "heptabao-state-records-v6",
+    "source_anchors": [
+      {
+        "bytes": 4285,
+        "end_line": 574,
+        "function": "setup_phase",
+        "sha256": "c44ec5f3fa80f62945204e9b87bdaefe3054cf86a2cbc4e63cd332e5f66dfb22",
+        "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+        "start_line": 515
+      },
+      {
+        "bytes": 2787,
+        "end_line": 623,
+        "function": "state_view",
+        "sha256": "42d9b388c0877f091c5fe05bb756314890c6a0a55b385be32ac696111164fe63",
+        "source_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+        "start_line": 583
+      }
+    ]
+  },
+  "source_only": true,
+  "terminal_gate": "5 ordered known CLI cases, 2 completed cold results, no unknown/final error/failure, all five case qualifications and all dynamic checks true."
+}

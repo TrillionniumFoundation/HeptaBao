@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.root-checker-format-observation.r1",
+  "scope": "Pure local root verifier only; no host operation.",
+  "error": "manifest dispatch/exact-request.json",
+  "cause": "Root used git_blob_sha field from prior partial-manifest format; complete manifest uses blob.",
+  "original_artifacts_changed": false,
+  "host_replayed": false
+}

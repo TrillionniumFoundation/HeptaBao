@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.serial-original-immutable-tail-reconciliation.r1",
+  "request": {
+    "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+    "offset": 81920,
+    "limit": 16384
+  },
+  "original_request_blob": "0ef371e0ddecff72e3dbf95e7628f61c56d93df6",
+  "original_read_status_blob": "41e15b4e60973df4d8c27c8ba00ef7c83d996a83",
+  "original_read_already_closed": true,
+  "full_original_payload_bytes": 87803,
+  "prior_covered_payload_bytes": 81920,
+  "missing_payload_bytes": 5883,
+  "scope": "One read of the exact original immutable result tail after all three live tool calls returned. No new native binary_read or operation_start and no replay of business effects.",
+  "all_agents_new_runtime_paused": true,
+  "on_error": "Preserve original SDK; no automatic retry or new admission.",
+  "on_success": "Whole payload reconstruction with the existing first five pages remains required."
+}

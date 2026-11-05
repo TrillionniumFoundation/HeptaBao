@@ -1,0 +1,112 @@
+--- before/binding-template
++++ after/binding-template
+@@ -3,35 +3,35 @@
+     "combined_tests": {
+       "bytes": null,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/artifacts/normal-release-tests-result.public.json",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/normal-release-tests-result.public.json",
+       "sha256": null,
+       "uid": 1000
+     },
+     "native_receipt": {
+       "bytes": null,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/artifacts/native-build.public.json",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/native-build.public.json",
+       "sha256": null,
+       "uid": 1000
+     },
+     "release_receipt": {
+       "bytes": null,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/artifacts/normal-release-result.public.json",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/normal-release-result.public.json",
+       "sha256": null,
+       "uid": 1000
+     },
+     "server": {
+       "bytes": null,
+       "mode": 320,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/artifacts/heptabao-server",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/heptabao-server",
+       "sha256": null,
+       "uid": 1000
+     },
+     "test_groups": {
+       "bytes": 6249,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/artifacts/groups.json",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/groups.json",
+       "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+       "uid": 1000
+     }
+@@ -48,8 +48,8 @@
+     "readiness_seconds": 45,
+     "stable_leader_seconds": 2.2
+   },
+-  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+-  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
++  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
++  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+   "host": {
+     "machine": "x86_64",
+     "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+@@ -57,10 +57,10 @@
+     "uid": 1000
+   },
+   "layout": {
+-    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3",
+-    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-validation-source-r1",
+-    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r3",
+-    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/prepare-r1"
++    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
++    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
++    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4",
++    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1"
+   },
+   "official_cli": {
+     "bytes": 181760103,
+@@ -117,35 +117,35 @@
+     "native_fixture_reference_r8.py": {
+       "bytes": 68149,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/native_fixture_reference_r8.py",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/native_fixture_reference_r8.py",
+       "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+       "uid": 1000
+     },
+     "official_cli_reference_r4.py": {
+       "bytes": 46586,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/official_cli_reference_r4.py",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/official_cli_reference_r4.py",
+       "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+       "uid": 1000
+     },
+     "phaseb_binding_r3.py": {
+-      "bytes": 26563,
++      "bytes": 28134,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/phaseb_binding_r3.py",
+-      "sha256": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_binding_r3.py",
++      "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d",
+       "uid": 1000
+     },
+     "phaseb_controller_r3.py": {
+       "bytes": 61210,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/phaseb_controller_r3.py",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_controller_r3.py",
+       "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+       "uid": 1000
+     },
+     "phaseb_evidence_r3.py": {
+       "bytes": 15201,
+       "mode": 384,
+-      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3/qa/phaseb_evidence_r3.py",
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/qa/phaseb_evidence_r3.py",
+       "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+       "uid": 1000
+     }

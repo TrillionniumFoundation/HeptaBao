@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.current-lan-inert-window-resumption.r1",
+  "at_utc": "2026-11-05 14:18:15 UTC",
+  "prior_exact_go": "08fbd1dfbf36ec8ee7bc3aeb8eadac18e6bf9cf9",
+  "prior_source_root_review": "da34eedd281b7a39de558d93efb4569544570b1b",
+  "exact_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+  "exact_request_bytes": 484591,
+  "exact_request_sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+  "idempotency_key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+  "host": "desktop",
+  "timeout_seconds": 60,
+  "scope": "Only original create-only publication of nine reviewed public source files and receipt, plus compile-only checks. This resumes the previously approved exact source-publication request without modification.",
+  "normal5_independent_reads": {
+    "tree": "f630c18f2bc2954cf9c9432497bebf5e81488317",
+    "root_review": "8dae54de9916da7322c1f9fa544b3223de781120",
+    "root_checks": 184,
+    "closed_original_operations": 5,
+    "original_result_pages": 9,
+    "all_source_and_receipt_bodies_whole": true,
+    "currently_in_flight": 0
+  },
+  "submission": "Persist separate exact external intent in a completed call; submit the original request once; persist ACK before parsing; reconcile only original job; no new key or re-submit on UNKNOWN.",
+  "observation_window": "After the original job has a known terminal, collect exact published public inputs/receipt by bounded fixed-path info and whole readback. On this line at most one read operation; Auth and compatibility each retain at most one independent read operation, total at most three and below the previously verified per-owner ceiling four.",
+  "no_prepare": true,
+  "no_product_execution": true,
+  "no_LAN_runtime": true,
+  "no_credential_use": true,
+  "no_source_import_qualification": true,
+  "no_normal5_relay_go": true,
+  "no_production_cutover": true,
+  "no_legacy_deletion": true
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.sdk-third-read-original-tail-recovery.r1",
+  "status": "ORIGINAL_THIRD_READ_WHOLE_PAYLOAD_RECOVERED",
+  "checks": 11,
+  "original_operation": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+  "previous_original_read_closed": true,
+  "original_result_page_read_only": true,
+  "original_request_blob": "0ef371e0ddecff72e3dbf95e7628f61c56d93df6",
+  "recovered_tail_original_sdk": {
+    "name": "r27-sdk-original-tail-root-original-sdk.json",
+    "blob": "d269dfe7afaa74e540defbf11fe4faca345cf9a0",
+    "bytes": 8704,
+    "sha256": "8a8abd37861405c833ad8a785a77d32c9b75c77b876ec28e66ce10c92dcfb85d"
+  },
+  "whole_original_payload": {
+    "name": "r27-sdk03-recovered-original-payload.json",
+    "blob": "117b2a2e861a3d77f257ea67a6b3d74907d1fd20",
+    "bytes": 87803,
+    "sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74"
+  },
+  "whole_original_native": {
+    "name": "r27-sdk03-recovered-original-native.json",
+    "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4",
+    "bytes": 87700,
+    "sha256": "ecd2cb08bfc8dc94aff4dc839f4828b2762b1eb2263f745c6e852a5dc1f8c937"
+  },
+  "payload_bytes": 87803,
+  "payload_sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74",
+  "tail_bytes": 5883,
+  "original_first_five_pages_reused_without_new_host_read": true,
+  "chunk": {
+    "file": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "offset": 65536,
+    "bytes": 65536,
+    "sha256": "d3f211c9477cd58343ca6b7fbeb57321157f4734565bd8191a020c86718169dd",
+    "next_offset": 131072,
+    "total_file_bytes": 673468,
+    "file_complete": false
+  },
+  "native_read_reissued": false,
+  "prior_tail_error_preserved": true,
+  "original_reads_complete": 3,
+  "original_reads_total": 13,
+  "remaining_new_reads_unsubmitted": 10,
+  "SDK_executed": false,
+  "selected_owner_observed": false
+}

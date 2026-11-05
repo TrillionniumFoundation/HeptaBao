@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.4e808-export-bundle-info-admitted-status-error.v1",
+  "status": "ADMITTED_ORIGINAL_FILE_INFO_STATUS_QUERY_FAILED_NATIVE_RESULT_UNOBSERVED",
+  "recovery_tree": "77c8372e11f2f128cc8cd76ac9b52a9b9d1d329d",
+  "original_exporter_job": "1a1abe371de-fc05-5122",
+  "original_exporter_authority": "succeeded/exit0/full/durable",
+  "previous_body_operation": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "previous_body_operation_reconciled_closed": true,
+  "operation_id": "ff387163112a03be30bf3e34048d805875843353041ebc52525b49c952e28f22",
+  "request": {
+    "path": "observations/bundle-info/request.json",
+    "bytes": 277,
+    "sha256": "5866cbe892c89dfd797bff586575d05e12586521fde88e1865dbebf6091984b7",
+    "blob": "acc835e68783db906a62599cdf811917037c3ba6"
+  },
+  "admission": {
+    "path": "observations/bundle-info/admission.original.json",
+    "bytes": 543,
+    "sha256": "b489e995dd484713b099fa79db72728ec448573b9504b17f59f9b1f0bfb6063a",
+    "blob": "0a9dc327cf5fb501ffba4f2426ed649578abd3db"
+  },
+  "read_scope": "One fixed file_info; native tool computes whole SHA, not pure stat.",
+  "status_observation_error": {
+    "request": {
+      "path": "observations/bundle-info/status-00.request.json",
+      "bytes": 89,
+      "sha256": "c643b7a314fe9715d8e825a6b81fee72646629f04dd55c4d422cd5c40947329b",
+      "blob": "cfdc93998664856384089788e0a9adb758e6048b"
+    },
+    "sdk": {
+      "path": "observations/bundle-info/status-00.original.sdk.json",
+      "bytes": 248,
+      "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70",
+      "blob": "0cede4881f37869cfd279b69b738c87eb62b4889"
+    },
+    "error_text": {
+      "path": "observations/bundle-info/status-00.error.original.txt",
+      "bytes": 152,
+      "sha256": "2395b66a6a6b772851af42e65f4f859c26c316cf1824099405ab805caf337478",
+      "blob": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487"
+    },
+    "classification": "MCP -32603 request timed out",
+    "native_operation_terminal_observed": false,
+    "underlying_file_read_failed_claimed": false
+  },
+  "owned_future_active": "UNKNOWN",
+  "payload_bytes_received": 0,
+  "new_operation_start_calls": 1,
+  "status_calls": 1,
+  "result_page_calls": 0,
+  "unsubmitted": {
+    "command_log_batches": 6,
+    "command_log_files": 81,
+    "carrier_or_importer": 0,
+    "new_exporter": 0,
+    "product": 0
+  },
+  "current_rpc_inflight": false,
+  "new_admission_blocked": true,
+  "guards": "SDK externally saved before checking isError; error text not parsed as JSON. No original operation or exporter replay; no new path or substitute key.",
+  "next_step": "Await root same-ID reconciliation window; keep historical RPC error unchanged.",
+  "full_archive_qualification": false,
+  "independent_bundle_metadata_verified": false,
+  "carrier_slots_filled": false
+}

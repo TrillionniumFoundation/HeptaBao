@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.lan-inert-request-binding-offline-verification.v1",
+  "runtime_calls": 0,
+  "cases": [
+    {
+      "id": "positive_control",
+      "request_blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+      "request_bytes": 50263,
+      "request_sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+      "binding_bytes": 50205,
+      "binding_sha256": "f17808c175e7af11f330fe072002c304dcec55106a44e585144fdae36628de41",
+      "fingerprint_u64_decimal": "17399666787345739537",
+      "host": "desktop",
+      "idempotency_key": "heptabao-4e808-normal5-controls-inert-r1-895d6cc9",
+      "stdin_bytes": 44751,
+      "stdin_sha256": "0131c070d026175066c1b91ebaa90dedd49bb467dc6fd2f0dee4f680020d6d9b",
+      "timeout_seconds": 60,
+      "actual_ack_blob": "eabf96144a41dfa980f68457657ee3d0cc8f7c4d",
+      "actual_ack_bytes": 6244,
+      "actual_ack_sha256": "b2344f7868857ad2d8e8416599d6942fcd5e9b59d6ea84b25f35d82d4d106752",
+      "job_id": "1a1abd1f635-fc05-50c9",
+      "actual_ack_request_digest": "f17808c175e7af11f330fe072002c304dcec55106a44e585144fdae36628de41",
+      "actual_ack_fingerprint_decimal": "17399666787345739537",
+      "exact_digest_match": true,
+      "exact_fingerprint_match": true
+    },
+    {
+      "id": "target",
+      "request_blob": "70f27390d318755075562482091b3bf27946b37d",
+      "request_bytes": 484591,
+      "request_sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+      "binding_bytes": 484532,
+      "binding_sha256": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+      "fingerprint_u64_decimal": "6770005846723198190",
+      "host": "desktop",
+      "idempotency_key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+      "stdin_bytes": 477056,
+      "stdin_sha256": "2fa460dc1a032ca1f1e453dd4845e80a8e937dcc47e6bc5477b2301fa267f610",
+      "timeout_seconds": 60
+    }
+  ],
+  "checks": [
+    {
+      "name": "idempotency_key_excluded_from_typed_digest",
+      "passed": true
+    },
+    {
+      "name": "nice_zero_differs_from_original_null",
+      "passed": true,
+      "alternative_digest": "3b30155b7fa3fcdbdfaf081f71ba347c9c46f004450817e0427790662346faec"
+    },
+    {
+      "name": "stdin_empty_differs_from_original_complete",
+      "passed": true,
+      "alternative_digest": "9a05be6070fc7eef7450243afe21a2dbff11e81eb35cc019086d324815d59f25"
+    },
+    {
+      "name": "timeout_61_differs_from_original_60",
+      "passed": true,
+      "alternative_digest": "3bd170cfd8f9b5c9d452a10379f7c82fddc05df22b726e5ecdeac3ddd7718bcb"
+    },
+    {
+      "name": "host_rog_differs_from_original_desktop",
+      "passed": true,
+      "alternative_digest": "696cbcf0aa1ae2dc1d5316d95b31763111dc472de54014e8f1456c9b9c249fec"
+    },
+    {
+      "name": "normal5_digest_exact_actual_ack",
+      "passed": true
+    },
+    {
+      "name": "normal5_fingerprint_exact_actual_ack_lossless",
+      "passed": true
+    },
+    {
+      "name": "target_original_request_and_timeout_unchanged",
+      "passed": true
+    }
+  ],
+  "target_is_derived_locator_only": true,
+  "actual_deployed_runtime_identity_proven": false,
+  "target_job_existence_proven": false,
+  "target_execution_proven": false,
+  "target_original_unknown_preserved": true
+}

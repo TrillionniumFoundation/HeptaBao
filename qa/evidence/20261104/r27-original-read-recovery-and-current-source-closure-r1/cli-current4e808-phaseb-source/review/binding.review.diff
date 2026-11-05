@@ -1,0 +1,103 @@
+--- before/binding
++++ after/binding
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Explicit NEW R3 binding. No artifact placeholder authorizes prepare or runtime."""
++"""Current 4e808 official 2.7.1 CLI binding; unresolved inputs never authorize runtime."""
+ from __future__ import annotations
+ 
+ import hashlib
+@@ -15,8 +15,8 @@
+ import time
+ 
+ SCHEMA = "heptabao.official271-native-cli-phaseb-r3.binding.v1"
+-COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+-TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
++COMMIT = "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
++TREE = "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+ OBSERVER_PATH = "crates/heptabao-server/src/ha_native_v6_runtime.rs"
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+@@ -37,6 +37,9 @@
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+     "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
++)
++SAME_ROOT_PUBLICATION_TESTS = (
++    "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+ )
+ BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
+ OFFICIAL_SHA = "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+@@ -61,8 +64,8 @@
+         "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+         "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"),
+     "crates/heptabao-server/src/service_native_v6_ha_read.rs": (
+-        "b09e57362d53ce207b255d713d7aa7c126215691",
+-        "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951"),
++        "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
++        "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121"),
+     OBSERVER_PATH: ("3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+                     "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"),
+     "crates/heptabao-server/src/snapshot_archive.rs": (
+@@ -230,7 +233,7 @@
+              and re.fullmatch(r"official271-native-cli-phaseb-r3-live-r[0-9]+", self.work.name) is not None,
+              "owned_work_namespace")
+         need(self.source.parent == BASE
+-             and re.fullmatch(r"normal-cold-h2-validation-source-r[0-9]+", self.source.name) is not None,
++             and re.fullmatch(r"normal-same-root-publication-validation-source-r[0-9]+", self.source.name) is not None,
+              "canonical_source_namespace")
+         need(self.prepare.parent == self.control
+              and re.fullmatch(r"prepare-r[0-9]+", self.prepare.name) is not None, "prepare_namespace")
+@@ -333,7 +336,7 @@
+             "--message-format=json-render-diagnostics"
+         ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
+         need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
+-        need(combined.get("schema") == "heptabao.linux-normal-cold-h2-exact-tests.v1"
++        need(combined.get("schema") == "heptabao.linux-normal-same-root-publication-exact-tests.v1"
+              and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
+              and combined.get("status") == "passed"
+              and combined.get("normal_default_features") is True
+@@ -385,9 +388,7 @@
+              and increment.get("clamped_to_original_outer_deadline") is True
+              and increment.get("actual_test_names") == list(COLD_H2_TESTS)
+              and type(increment.get("tests")) is list and len(increment["tests"]) == 9
+-             and combined.get("original_44_and_ingress_7_status") == "passed"
+-             and combined.get("selected_test_total") == 60
+-             and combined.get("additional_test_counts") == {"ingress_observer": 7, "cold_h2": 9},
++             and combined.get("original_44_and_ingress_7_status") == "passed",
+              "exact_new_cold_h2_nine_regression")
+         for name, observed in zip(COLD_H2_TESTS, increment["tests"]):
+             test = observed["tests"]
+@@ -395,9 +396,30 @@
+                  and test.get("timed_out") is False
+                  and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                  "new_cold_h2_regression_terminal")
++        publication = combined.get("same_root_publication_regression")
++        need(type(publication) is dict
++             and publication.get("schema") == "heptabao.normal-same-root-publication-regression.v1"
++             and publication.get("status") == "passed" and publication.get("test_count") == 1
++             and publication.get("original_44_7_9_denominators_unchanged") is True
++             and publication.get("new_total_group_cap_seconds") == 600
++             and publication.get("clamped_to_original_outer_deadline") is True
++             and publication.get("actual_test_names") == list(SAME_ROOT_PUBLICATION_TESTS)
++             and type(publication.get("tests")) is list and len(publication["tests"]) == 1
++             and combined.get("original_60_status") == "passed"
++             and combined.get("original_60_test_total") == 60
++             and combined.get("selected_test_total") == 61
++             and combined.get("additional_test_counts")
++             == {"ingress_observer": 7, "cold_h2": 9, "same_root_publication": 1},
++             "current_product_61_with_separate_same_root_one")
++        for name, observed in zip(SAME_ROOT_PUBLICATION_TESTS, publication["tests"]):
++            test = observed["tests"]
++            need(observed.get("name") == name and test.get("exit_code") == 0
++                 and test.get("timed_out") is False
++                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
++                 "same_root_publication_regression_terminal")
+         need(combined.get("controller_sha256")
+-             == "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+-             "exact_actual_df026_normal_runner")
++             == "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
++             "exact_current_product_normal61_runner")
+         cleanup = combined.get("cleanup")
+         need(type(cleanup) is list and bool(cleanup)
+              and all(item.get("direct_child_reaped") is True and item.get("remaining") == []

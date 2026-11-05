@@ -1,0 +1,17 @@
+{
+  "idempotency_key": "ha-4e808-normal5-inert-bodies-observation-r1-20261105",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    }
+  }
+}

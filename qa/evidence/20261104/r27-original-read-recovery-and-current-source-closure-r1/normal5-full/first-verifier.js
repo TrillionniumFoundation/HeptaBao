@@ -1,0 +1,30 @@
+function reviewNormal5Full(){
+const raw=load("r27_normal5_inert_full_actual_raw"),audit=load("r27_normal5_inert_full_actual_audit"),old=load("r26_normal5_inert_partial_actual_raw"),tree=load("r27_normal5_inert_full_actual"),u=eval(load("root_utf8_bytes_r1_source")+";utf8Bytes"),bs=eval(load("root_byte_string_r1_source")+";byteString"),h=eval(load("root_sha256_latin1_r1_source")+";sha256Latin1"),b64=eval(load("root_base64_bytes_source")+";unb64"),ll=eval(load("root_json_lossless_integer_parser_source")+";parseLosslessIntegers");
+let count=0,pages=0,oldEqual=0;function need(v,n){count++;if(!v)throw Error(n);}const canon=v=>JSON.stringify(v&&typeof v==="object"?Array.isArray(v)?v.map(x=>JSON.parse(canon(x))):Object.fromEntries(Object.keys(v).sort().map(k=>[k,JSON.parse(canon(v[k]))])):v),j=p=>JSON.parse(raw[p]),sdk=p=>{const x=j(p);need(x.isError!==true&&x.content.length===1,"original SDK "+p);return JSON.parse(x.content[0].text);},record=new Map(audit.records.map(x=>[x.path,x])),treeMap=new Map(tree.tree.filter(x=>x.type==="tree").map(x=>[x.path,x.sha]));
+for(const x of j("manifest.public.json").files){const r=record.get(x.path);need(r&&r.blob===x.git_blob_sha&&r.bytes===x.bytes&&r.sha256===x.sha256,"manifest "+x.path);}
+for(const[p,b]of Object.entries(old)){if(p.startsWith("observations/")||p.startsWith("sources/")||p.startsWith("submission/")||p.startsWith("public/")||p.startsWith("sdk/")||p.startsWith("admission/")||p==="intent.public.json"||p==="dispatch/exact-request.json"){need(raw[p]===b,"prior original exact "+p);oldEqual++;}}
+const idx=j("provenance/closed-read-operations.public.json"),infos=[],dto={};
+need(idx.length===5&&new Set(idx.map(x=>x.operation_id)).size===5,"five original operations");
+for(const x of idx){const b="observations/"+x.key+"/",request=j(b+"start/request.json"),ack=sdk(b+"start/original-sdk.json"),st=sdk(b+"status0/original-sdk.json");
+need(request.operation.tool===x.tool&&request.operation.arguments.host==="desktop"&&ack.operation_id===x.operation_id&&ack.reused===false&&ack.tool_name===x.tool,"exact admitted operation "+x.key);
+need(treeMap.get(b+"start")===x.start_sdk_tree&&treeMap.get(b+"status0")===x.status_sdk_tree,"original start/status Merkle "+x.key);
+need(j(b+"status0/request.json").operation_id===x.operation_id&&st.operation_id===x.operation_id&&st.async_state==="completed"&&st.result_state==="stored_observed"&&st.owned_future_active===false&&st.payload_available===true,"original operation closed "+x.key);
+let bytes=[];for(const p of x.result_pages){const pref=b+"result"+p.offset+"/",q=j(pref+"request.json"),v=sdk(pref+"original-sdk.json"),z=b64(v.data_base64);
+need(treeMap.get(pref.slice(0,-1))===p.external_tree&&q.operation_id===x.operation_id&&q.offset===p.offset,"original same-ID page Merkle "+x.key+"@"+p.offset);
+need(v.operation_id===x.operation_id&&v.offset===bytes.length&&v.offset===p.offset&&v.next_offset===v.offset+z.length&&z.length===p.bytes&&v.immutable_snapshot===true&&v.total_bytes===x.original_payload_bytes&&v.result_sha256===x.original_payload_sha256&&v.eof===(v.next_offset===v.total_bytes),"contiguous immutable page "+x.key+"@"+p.offset);bytes=bytes.concat(z);pages++;}
+const payloadText=raw[b+"payload.original.json"],payloadBytes=u(payloadText);need(bytes.length===x.original_payload_bytes&&h(bs(bytes))===x.original_payload_sha256&&bs(bytes)===bs(payloadBytes),"whole native SDK payload "+x.key);
+const p=JSON.parse(payloadText);need(p.resultType==="complete"&&p.isError===false&&p.content[0].text===raw[b+"native.original.json"],"exact native text "+x.key);dto[x.key]=JSON.parse(p.content[0].text);
+if(x.tool==="file_info"){need(request.operation.arguments.path===dto[x.key].path,"info exact request path "+x.key);infos.push(dto[x.key]);}
+}
+need(pages===9&&infos.length===4,"five observations nine pages four infos");
+const bodies=dto.observe_bodies,request=j("observations/observe_bodies/start/request.json").operation.arguments;
+need(bodies.atomic_snapshot===false&&bodies.truncated===false&&bodies.files.length===4&&request.max_file_bytes===65536&&request.max_response_bytes===131072&&canon(request.paths)===canon(infos.map(x=>x.path)),"bounded original four-path request and non-atomic scope");
+const stdout=ll(raw["public/stdout.original.txt"]);
+for(let i=0;i<4;i++){const a=infos[i],b=bodies.files[i],name=a.path.split("/").at(-1),whole=raw["readback/files/"+name];
+need(a.path===b.path&&a.version===b.version&&a.size===b.size&&a.sha256===b.sha256&&b.eof===true&&whole===b.text&&u(whole).length===a.size&&h(bs(u(whole)))===a.sha256,"body whole equals independent info "+i);
+need(a.mode===384&&a.metadata.uid===1000&&a.metadata.gid===1000&&a.metadata.link_count===1,"private regular file metadata "+i);
+if(i<3){const row=stdout.files[i],id=row.identity.map(x=>typeof x==="object"?x.$exactInteger:String(x));need(whole===raw["sources/admitted/"+name]&&a.path===row.path&&a.size===row.bytes&&a.sha256===row.sha256&&a.version===[id[0],id[1],id[6],id[7],id[8]].join(":"),"source original bytes and lossless full9 "+i);}
+else need(canon(ll(whole))===canon(stdout),"independent receipt losslessly equals original stdout");}
+const a=j("assessment.public.json");need(a.all_five_original_observations_closed===true&&a.relay_submitted===false&&a.relay_go===false&&a.product_qualification===false&&a.explicit_per_fd_ledger_emitted===false,"scope unchanged and no invented FD ledger");
+return{schema:"heptabao.normal5-inert-full-original-read-root-review.r1",status:"PASS_INERT_PUBLICATION_AND_COMPLETE_INDEPENDENT_READBACK",tree:audit.tree,whole:{files:audit.files,bytes:audit.bytes,merkle:audit.merkle},checks:count,prior_root57_preserved:true,prior_original_files_byte_equal:oldEqual,original_observations:5,original_immutable_pages:pages,independent_infos:4,independent_whole_bodies:4,receipt_lossless_equal_to_original_stdout:true,three_admitted_source_files_byte_exact:true,full_independent_readback:true,all_observed_read_futures_inactive:true,artifact_transfer_started:false,relay_go:false,product_or_LAN_runtime_qualification:false,per_FD_ledger_available:false,actual_files:infos};
+}

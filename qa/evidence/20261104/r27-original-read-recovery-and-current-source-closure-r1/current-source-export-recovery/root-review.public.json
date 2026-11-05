@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.current-export-recovered-core-root-review.r1",
+  "status": "PASS_ORIGINAL_READ_CLOSURE_AND_CORE_ONLY",
+  "checks": 93,
+  "core": {
+    "blob": "0109d7597b2754ee665367177ba1cd3e832d4b34",
+    "bytes": 39692,
+    "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+  },
+  "read_operation": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "original_native_read_reissued": false,
+  "prior_two_status_and_one_page_errors_preserved": true,
+  "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "commands": 27,
+  "expected_success_exit0": 25,
+  "expected_missing_partial_config_exit1": 2,
+  "matching_reaped_cleanup": 27,
+  "source_before_after_equal": true,
+  "full_history_reported": 3763,
+  "publisher_bundle": {
+    "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+    "bytes": 22320862,
+    "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+    "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179",
+    "mode": "0600",
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1,
+    "independent_info_observed": false
+  },
+  "source_export_full_qualification": false,
+  "independent_command_files_still_missing": 81,
+  "per_FD_ledger_available": false,
+  "carrier_or_import_go": false,
+  "product_runtime_qualification": false,
+  "limits": [
+    "Core reports individual command bytes and hashes; the independent 81 command record/stream files are not yet archived.",
+    "Bundle identity here is the exact publisher observation, not independent destination/source file-info.",
+    "Controller source has reviewed with/finally close paths and authoritative exit0; no invented per-FD ledger."
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "heptabao.sdk-third-read-author-root-tail-adoption.v1",
+  "root_review_blob": "b17c121f99407014855add6c44b2e6699307a73f",
+  "prior_partial_packet": "df282bad33bae04e947cea7a6d823dc7e1bf18e5",
+  "original_tail_request_blob": "0ef371e0ddecff72e3dbf95e7628f61c56d93df6",
+  "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+  "checks": [
+    {
+      "name": "root_tail_sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "root_tail_sdk_exact_one_text",
+      "passed": true
+    },
+    {
+      "name": "same_original_operation",
+      "passed": true
+    },
+    {
+      "name": "same_original_tail_offset",
+      "passed": true
+    },
+    {
+      "name": "tail_length_and_eof",
+      "passed": true
+    },
+    {
+      "name": "immutable_native_result",
+      "passed": true
+    },
+    {
+      "name": "same_original_payload_hash",
+      "passed": true
+    },
+    {
+      "name": "original_page_0_binding",
+      "passed": true
+    },
+    {
+      "name": "original_page_1_binding",
+      "passed": true
+    },
+    {
+      "name": "original_page_2_binding",
+      "passed": true
+    },
+    {
+      "name": "original_page_3_binding",
+      "passed": true
+    },
+    {
+      "name": "original_page_4_binding",
+      "passed": true
+    },
+    {
+      "name": "prefix_length",
+      "passed": true
+    },
+    {
+      "name": "whole_payload_length_hash",
+      "passed": true
+    },
+    {
+      "name": "root_whole_payload_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "original_sdk_not_error",
+      "passed": true
+    },
+    {
+      "name": "original_sdk_exact_one_text",
+      "passed": true
+    },
+    {
+      "name": "root_native_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "original_binary_path_version",
+      "passed": true
+    },
+    {
+      "name": "original_binary_offset_bounds",
+      "passed": true
+    },
+    {
+      "name": "exact_chunk_length_sha",
+      "passed": true
+    },
+    {
+      "name": "prior_completed_inactive_retained",
+      "passed": true
+    },
+    {
+      "name": "original_error_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_following_start",
+      "passed": true
+    }
+  ],
+  "checks_total": 24,
+  "all_pass": true,
+  "original_payload": {
+    "blob": "117b2a2e861a3d77f257ea67a6b3d74907d1fd20",
+    "bytes": 87803,
+    "sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74"
+  },
+  "native": {
+    "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4",
+    "bytes": 87700,
+    "sha256": "ecd2cb08bfc8dc94aff4dc839f4828b2762b1eb2263f745c6e852a5dc1f8c937"
+  },
+  "chunk": {
+    "offset": 65536,
+    "next_offset": 131072,
+    "bytes": 65536,
+    "sha256": "d3f211c9477cd58343ca6b7fbeb57321157f4734565bd8191a020c86718169dd",
+    "eof": false
+  },
+  "historical_tail_error_preserved": true,
+  "original_native_read_replayed": false,
+  "author_runtime_calls": 0,
+  "root_same_id_tail_call": true,
+  "complete_observations": 3,
+  "total_fixed_observations": 13,
+  "admissions4to13_still_paused": true,
+  "sdk_executed": false,
+  "selected_owner_observed": false
+}

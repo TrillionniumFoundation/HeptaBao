@@ -1,0 +1,7 @@
+# Fixed SDK public body reads — partial original evidence
+
+The fixed 13-request source packet remains 9cc81357deaf49fb277df727a6999c276c4286e8. Only operations 01–03 were submitted once. Every intent was externally saved in a completed call before its unique start. Each original ACK/status/page SDK snapshot and native text was saved before JSON parsing; isError was checked first. Operation 01 loader whole body is verified. Operation 02 selector offset 0 has a verified 65,536-byte chunk. Operation 03 selector offset 65,536 has a prior completed/stored_observed/inactive status and five immutable payload pages covering 0..81919 of 87,803 bytes; its final page request at offset 81,920 returned MCP -32603 timeout. No JSON parse was attempted on that error text. The third binary result is not yet reconstructed. Operations 04–13 were not submitted.
+
+The complete-one helper archived here is the actual in-memory collection helper used for 02 and 03. Operation 01 used the same explicit save-before-parse ordering in separate calls. The helper stops its line on error. Its original retained error record does not reinterpret prior completed status as an unknown worker, and does not infer health of unrelated operations.
+
+No SDK module was imported or executed. No selected-owner conclusion is supported by these partial selector bytes. No AuthBus fixture, capture, credential, provider, service, or original business operation was replayed. A later same-ID immutable-page reconciliation, if separately scheduled, must preserve this partial packet unchanged.

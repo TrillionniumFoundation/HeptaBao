@@ -1,0 +1,151 @@
+{
+  "binder": [
+    {
+      "after": "\"\"\"Current 4e808 official 2.7.1 CLI binding; unresolved inputs never authorize runtime.\"\"\"",
+      "before": "\"\"\"Explicit NEW R3 binding. No artifact placeholder authorizes prepare or runtime.\"\"\"",
+      "count": 1,
+      "label": "docstring"
+    },
+    {
+      "after": "COMMIT = \"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\"",
+      "before": "COMMIT = \"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"",
+      "count": 1,
+      "label": "current_commit"
+    },
+    {
+      "after": "TREE = \"eba5e650bd080b8ad41ea52a2bc68867f541d255\"",
+      "before": "TREE = \"424463ccd2310ddc1e7b2bbcd7b7af29ae58c825\"",
+      "count": 1,
+      "label": "current_tree"
+    },
+    {
+      "after": "SAME_ROOT_PUBLICATION_TESTS = (\n    \"service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors\",\n)\nBASE = Path(\"/home/qian-qi/heptabao-ha-closure-20261103-r1\")",
+      "before": "BASE = Path(\"/home/qian-qi/heptabao-ha-closure-20261103-r1\")",
+      "count": 1,
+      "label": "separate_one_test_tuple"
+    },
+    {
+      "after": "\"2632c4fde7f21ad31efb6cb88ed8c1b6e5538137\",\n        \"bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121\"",
+      "before": "\"b09e57362d53ce207b255d713d7aa7c126215691\",\n        \"298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951\"",
+      "count": 1,
+      "label": "current_read_source_member"
+    },
+    {
+      "after": "r\"normal-same-root-publication-validation-source-r[0-9]+\"",
+      "before": "r\"normal-cold-h2-validation-source-r[0-9]+\"",
+      "count": 1,
+      "label": "current_canonical_namespace"
+    },
+    {
+      "after": "\"heptabao.linux-normal-same-root-publication-exact-tests.v1\"",
+      "before": "\"heptabao.linux-normal-cold-h2-exact-tests.v1\"",
+      "count": 1,
+      "label": "current_combined_schema"
+    },
+    {
+      "after": "             and combined.get(\"original_44_and_ingress_7_status\") == \"passed\",",
+      "before": "             and combined.get(\"original_44_and_ingress_7_status\") == \"passed\"\n             and combined.get(\"selected_test_total\") == 60\n             and combined.get(\"additional_test_counts\") == {\"ingress_observer\": 7, \"cold_h2\": 9},",
+      "count": 1,
+      "label": "move_total_check_to_one_test_gate"
+    },
+    {
+      "after": "        publication = combined.get(\"same_root_publication_regression\")\n        need(type(publication) is dict\n             and publication.get(\"schema\") == \"heptabao.normal-same-root-publication-regression.v1\"\n             and publication.get(\"status\") == \"passed\" and publication.get(\"test_count\") == 1\n             and publication.get(\"original_44_7_9_denominators_unchanged\") is True\n             and publication.get(\"new_total_group_cap_seconds\") == 600\n             and publication.get(\"clamped_to_original_outer_deadline\") is True\n             and publication.get(\"actual_test_names\") == list(SAME_ROOT_PUBLICATION_TESTS)\n             and type(publication.get(\"tests\")) is list and len(publication[\"tests\"]) == 1\n             and combined.get(\"original_60_status\") == \"passed\"\n             and combined.get(\"original_60_test_total\") == 60\n             and combined.get(\"selected_test_total\") == 61\n             and combined.get(\"additional_test_counts\")\n             == {\"ingress_observer\": 7, \"cold_h2\": 9, \"same_root_publication\": 1},\n             \"current_product_61_with_separate_same_root_one\")\n        for name, observed in zip(SAME_ROOT_PUBLICATION_TESTS, publication[\"tests\"]):\n            test = observed[\"tests\"]\n            need(observed.get(\"name\") == name and test.get(\"exit_code\") == 0\n                 and test.get(\"timed_out\") is False\n                 and test.get(\"direct_child_reaped\") is True and test.get(\"remaining\") == [],\n                 \"same_root_publication_regression_terminal\")\n        need(combined.get(\"controller_sha256\")\n             == \"93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be\",\n             \"exact_current_product_normal61_runner\")\n",
+      "before": "        need(combined.get(\"controller_sha256\")\n             == \"1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40\",\n             \"exact_actual_df026_normal_runner\")\n",
+      "count": 1,
+      "label": "current_61_and_exact_runner_gate"
+    }
+  ],
+  "forward_and_reverse_whole_exact": true,
+  "schema": "heptabao.phaseb-4e808-source-transformations.v1",
+  "source_only": true,
+  "templates": {
+    "binding/partial-binding.private.json": [
+      {
+        "after": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+        "before": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3",
+        "count": 12,
+        "label": "fresh_control_prefix_only"
+      },
+      {
+        "after": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4",
+        "before": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r3",
+        "count": 1,
+        "label": "fresh_work_prefix_only"
+      },
+      {
+        "after": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+        "before": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-validation-source-r1",
+        "count": 1,
+        "label": "current_canonical_source"
+      },
+      {
+        "after": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+        "before": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "count": 1,
+        "label": "current_commit"
+      },
+      {
+        "after": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+        "before": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+        "count": 1,
+        "label": "current_tree"
+      },
+      {
+        "after": "\"bytes\": 28134",
+        "before": "\"bytes\": 26563",
+        "count": 1,
+        "label": "binding_source_length"
+      },
+      {
+        "after": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d",
+        "before": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed",
+        "count": 1,
+        "label": "binding_source_sha"
+      }
+    ],
+    "dispatch/requests.template.json": [
+      {
+        "after": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+        "before": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r3",
+        "count": 4,
+        "label": "fresh_control_prefix_only"
+      },
+      {
+        "after": "heptabao.4e808-phaseb-dispatch-template.v1",
+        "before": "heptabao.df026-phaseb-dispatch-template.v1",
+        "count": 1,
+        "label": "current_dispatch_schema"
+      },
+      {
+        "after": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+        "before": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "count": 1,
+        "label": "current_commit"
+      },
+      {
+        "after": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+        "before": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+        "count": 1,
+        "label": "current_tree"
+      },
+      {
+        "after": "Root acceptance of actual 4e808 Linux normal release plus original44, original7, existing9 and separate same-root publication1 as exact sets, authoritative termination and owned cleanup.",
+        "before": "Root acceptance of actual df026 Linux normal release plus original44, original7 and new9 as separate exact sets, authoritative termination and owned cleanup.",
+        "count": 1,
+        "label": "current_61_prerequisite"
+      },
+      {
+        "after": "heptabao-official271-phaseb-4e808-prepare-10816-20261105-r4",
+        "before": "heptabao-official271-phaseb-df026-prepare-10816-20261105-r3",
+        "count": 1,
+        "label": "new_prepare_key"
+      },
+      {
+        "after": "heptabao-official271-phaseb-4e808-live-10816-20261105-r4",
+        "before": "heptabao-official271-phaseb-df026-live-10816-20261105-r3",
+        "count": 1,
+        "label": "new_live_key"
+      }
+    ]
+  }
+}

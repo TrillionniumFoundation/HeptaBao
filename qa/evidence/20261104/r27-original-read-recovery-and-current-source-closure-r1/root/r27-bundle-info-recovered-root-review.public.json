@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.bundle-info-original-operation-recovered-root-review.r1",
+  "status": "ORIGINAL_OPERATION_CLOSED_AND_BUNDLE_METADATA_MATCHED",
+  "original_operation_id": "ff387163112a03be30bf3e34048d805875843353041ebc52525b49c952e28f22",
+  "original_unknown_packet": "adccb091af8195159d3378ed225e5609c5b76d0e",
+  "original_status_sdk": {
+    "name": "r27-bundle-info-root-original-status.sdk.json",
+    "blob": "9f8380d6dce00c82d0ab7f3c9caa6023fded2c8a",
+    "bytes": 932,
+    "sha256": "1cda1bceabfa4562fa0f1eaac76089de8e095da6724bbd6c2f83e39cccf883b1"
+  },
+  "original_result_sdk": {
+    "name": "r27-bundle-info-root-original-result.sdk.json",
+    "blob": "059ba9bd4038c162aeaee931b55a15b236c7ae89",
+    "bytes": 1621,
+    "sha256": "b02821f297a0cb6a9ed14b545d47f8477eed82211ac9243c87cf8aaca5815dd8"
+  },
+  "original_payload": {
+    "name": "r27-bundle-info-original-native-payload.json",
+    "blob": "a08a55cee0a9689de5943f581db31b72c53bc82f",
+    "bytes": 609,
+    "sha256": "bb5a6137b5a82dc824e95c2f3bd76754cfc0f0cd34d407bfbf36bccee963cabc"
+  },
+  "native_metadata": {
+    "name": "r27-bundle-info-original-native.json",
+    "blob": "ec3349a520cb3fc910e9bd61c6641a3fde6b8c5a",
+    "bytes": 492,
+    "sha256": "ae77945f6650802406597342691c525626f3bc6732933cd136b9550027b23c56"
+  },
+  "native_status": {
+    "name": "r27-bundle-info-original-closed-status.json",
+    "blob": "b19e16bc8792914017bf892bb997934189971120",
+    "bytes": 800,
+    "sha256": "678569e7e05c711f3e8f7733cdb200810b241acb4afc1e0fd7128af5a9617ed0"
+  },
+  "checks": [
+    "same_original_operation",
+    "closed_inactive",
+    "original_file_info_payload_stored",
+    "original_single_payload_full",
+    "immutable_snapshot",
+    "exact_bundle_path",
+    "exact_bundle_size",
+    "exact_bundle_sha256",
+    "version_has_five_exact_components",
+    "full_nine_fields_exact",
+    "uid_gid_1000",
+    "mode_0600",
+    "nlink_one",
+    "metadata_platform_linux",
+    "xattrs_empty",
+    "acl_empty_hash"
+  ],
+  "checks_passed": 16,
+  "read_replayed": false,
+  "new_key_used": false,
+  "new_native_file_info": false,
+  "export_reexecuted": false,
+  "original_core": "0109d7597b2754ee665367177ba1cd3e832d4b34",
+  "bundle": {
+    "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+    "bytes": 22320862,
+    "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+    "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179",
+    "full_nine_strings": [
+      "66306",
+      "28091464",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "22320862",
+      "1793885177495300186",
+      "1793885177498300179"
+    ]
+  },
+  "command_log_batches_submitted": 0,
+  "command_log_files_pending": 81,
+  "source_export_qualification": false,
+  "source_import_qualification": false,
+  "product_qualification": false
+}

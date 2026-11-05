@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+    }
+  ],
+  "isError": true
+}

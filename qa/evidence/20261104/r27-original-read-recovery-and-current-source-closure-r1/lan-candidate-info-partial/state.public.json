@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.lan-original-candidate-request-info-partial.r1",
+  "status": "READONLY_ACK_KNOWN_STATUS_OBSERVATION_TIMEOUT",
+  "candidate_job_id": "1a1ac1641eb-fc05-521f",
+  "candidate_identity_bound": false,
+  "operation_id": "db7ae88f198bd69bb3cbde693ce78fdf7618649ebee7096d26e28c478ba28ec1",
+  "admission": {
+    "tool": "file_info",
+    "reused": false,
+    "async_state": "queued",
+    "delivery_proven": false,
+    "whole_tree": "fc0e177e0606cd1eb7abd923094454e9a84b904b"
+  },
+  "first_status_observation": {
+    "isError": true,
+    "code": -32603,
+    "reason": "MCP request timed out",
+    "whole_tree": "127fe7833fcbd2857af90ad4f24014d54dcbaa6f"
+  },
+  "current_tool_calls_inflight": 0,
+  "owned_future_inactive_proven": false,
+  "payload_observed": false,
+  "request_body_reads_submitted": 0,
+  "stdin_metadata_reads_submitted": 0,
+  "original_job_status_reads_submitted": 0,
+  "original_job_stream_reads_submitted": 0,
+  "original_process_start_replayed": false,
+  "new_admissions_paused": true,
+  "next_requires_root_same_id_reconciliation_window": true,
+  "unknown_original_lan_delivery_preserved": true,
+  "normal5_relay_hold": true
+}
