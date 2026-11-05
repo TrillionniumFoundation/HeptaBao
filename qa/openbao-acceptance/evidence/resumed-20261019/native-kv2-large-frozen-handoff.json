@@ -1,0 +1,385 @@
+{
+  "base_commit_before_r1": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+  "base_tree_before_r1": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+  "scope": "frozen; no new feature changes; source candidates require actual Rust compilation and15tests plus8priornativeimporttests",
+  "validation": "All four overlay bytes/content Git SHA1/SHA256 and sequential expected bases verified locally. No local Rust compiler; none of the new15 have executed here.",
+  "apply_order": [
+    "r1",
+    "r2",
+    "r3",
+    "r4"
+  ],
+  "overlays": [
+    {
+      "revision": "r1",
+      "path": "/workspace/scratch/915e5e680008/kv2-full34-r1-20261019/native-kv2-large-r1-overlay.json",
+      "bytes": 1001206,
+      "sha256": "b627fb108bc111d204de4d349c982e92e6d733374483c7772156ec28b5ebf03b",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/engine_kv2_native_import.rs",
+          "mode": "100644",
+          "sha256": "dd78fe53b36795a8b7fa680af899d18096f4b4fbf022805883565d1a05517337",
+          "git_blob": "5504b7bcb040ef7e607ccbb9d2b0ea2e5bbaf558",
+          "size": 4738,
+          "expected_base_git_blob": "4dc1d3952ec5eef240e9ade11c21b399ee35c760",
+          "expected_base_sha256": "a31f56a8828e44095d8dd2d03cb9f31e240470c87eef8b582bbb3f55e0bbec29"
+        },
+        {
+          "path": "crates/heptabao-server/src/engines/kv2_native_import.rs",
+          "mode": "100644",
+          "sha256": "54aa2d0e04042719553c0e03db402b3cef93aa3ade30fe87b6a289f1b268e7de",
+          "git_blob": "5eaf2f9db78290d87cb246775a10d1735ed4e19d",
+          "size": 6170,
+          "expected_base_git_blob": "1afb6a540102311d3aae87b61113836e7e293c72",
+          "expected_base_sha256": "5d58491bb7ecece5ff9522b225902e34b1a5ee443e27bb56a4ebb86758c4ca98"
+        },
+        {
+          "path": "crates/heptabao-server/src/engines/kv_lossless.rs",
+          "mode": "100644",
+          "sha256": "f3462f12751c3e750af95e1c73a7ce772531f2a66147d7465d6006a28ede5ceb",
+          "git_blob": "d7182ed6f2dc39d5bd730de5b307125dfad0bb81",
+          "size": 23937,
+          "expected_base_git_blob": "d9eeb5ae8f6bee66b1d30cba79cbc35d76972534",
+          "expected_base_sha256": "7af8af52a1d5d725ea7b956a4864cd7168c3cdc01d110e5bc0c60afa958ce1e6"
+        },
+        {
+          "path": "crates/heptabao-server/src/engines/kv_lossless_native_large.rs",
+          "mode": "100644",
+          "sha256": "a089834f601882011bc06b89d41d0a4e62c913f1168e192b51d4e8bb634f18c3",
+          "git_blob": "3837db004a47cf868527994ae06bfa1ce98d168e",
+          "size": 6138,
+          "expected_absent": true
+        },
+        {
+          "path": "crates/heptabao-server/src/engines/kv_lossless_native_large_tests.rs",
+          "mode": "100644",
+          "sha256": "6a34485e24bec3cc973b15c8d3f5bef72f08ba5c2d84b0101ac5993347f3d699",
+          "git_blob": "78fd45c2bb4def5fc51b80bd4099266dae4512b7",
+          "size": 3547,
+          "expected_absent": true
+        },
+        {
+          "path": "crates/heptabao-server/src/engines.rs",
+          "mode": "100644",
+          "sha256": "7dfd4de9936a9ffce032d4e6c441f5a7288ada7ff45aaeb38fb9e7634d29301b",
+          "git_blob": "d614594eaa1102806b30a9a86fb7e31c2c7a347e",
+          "size": 149515,
+          "expected_base_git_blob": "65c59f0514414243df4accd7c8c165e17d96102b",
+          "expected_base_sha256": "d4ad46c1f9ce7ebd46b52dc33399a46341a56579ceb69c24f10ca6cc19500403"
+        },
+        {
+          "path": "crates/heptabao-server/src/http.rs",
+          "mode": "100644",
+          "sha256": "c612d55ce0de58c2adedd92d8252b06adbb463b32483e8af246d5394cf2f565f",
+          "git_blob": "d739c31c9c37b4423f3137a12bdda0da9cdbd60d",
+          "size": 218724,
+          "expected_base_git_blob": "bd48633e31ca40492a52445c18dfe98e3ed7a384",
+          "expected_base_sha256": "305bb4fd14f63e631349b5f9a283931c3f4f8b99e5b5123f42cd788d5c5b8171"
+        },
+        {
+          "path": "crates/heptabao-server/src/http_h2.rs",
+          "mode": "100644",
+          "sha256": "0a158f95d8cb80f9e030fa18db4c52ecc7f789f00a112af22fdfc67a968d00b1",
+          "git_blob": "6ec729b935e75c16cb01f3e5fdec2c549faa7a2e",
+          "size": 13415,
+          "expected_base_git_blob": "830bb93e42d1b03b4dbf4d571f6b69515b7b2acb",
+          "expected_base_sha256": "94812fa9f3bb9ea50762e1309ff0463b4958c513204b02cae30fa72c0f8a96f5"
+        },
+        {
+          "path": "crates/heptabao-server/src/http_native_kv2_large.rs",
+          "mode": "100644",
+          "sha256": "0ab04512d4244c17f652dc6b5f03efb0249f13ab5f445bb1a100091a20acde76",
+          "git_blob": "7f0934e2ad340135667802d6878f35a160c30d2c",
+          "size": 3688,
+          "expected_absent": true
+        },
+        {
+          "path": "crates/heptabao-server/src/http_native_kv2_large_tests.rs",
+          "mode": "100644",
+          "sha256": "19270f58628ab39ba86debd073549c5e9b75ae7b843c0ad29f56f1995aa04fbc",
+          "git_blob": "a663de5b81e9c3f1fe3869abfe2a5e1edd241db2",
+          "size": 4211,
+          "expected_absent": true
+        },
+        {
+          "path": "crates/heptabao-server/src/http_snapshot.rs",
+          "mode": "100644",
+          "sha256": "fff6691fed17a8e86d71c2d03fb6f96ca4f657357e32645c55ed72004bdd9785",
+          "git_blob": "b801da57ad951b2242e212297074847f7a51e107",
+          "size": 21038,
+          "expected_base_git_blob": "981333a3fd647e19ec4283ce4b5370f745d42438",
+          "expected_base_sha256": "6ff92fd10ec677ad410a6c473ac55141bd5ff2b1c07e4e0ca9b2feec65f128d5"
+        },
+        {
+          "path": "crates/heptabao-server/src/service.rs",
+          "mode": "100644",
+          "sha256": "6a4f691c27763053791757a6b5288acb16faf4d9c373a7ba2b0863260207b502",
+          "git_blob": "1288316e337b8fac0d23171bea067fe0f9c29ddb",
+          "size": 445227,
+          "expected_base_git_blob": "751162eeb38496a1db29c0366c063b3bdaa3833a",
+          "expected_base_sha256": "fee6509865326557f3d335e2bef4c125d8ab960baab80c40b7507ea7812190d2"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+          "mode": "100644",
+          "sha256": "0088970c76eb4af2fb18a09f10064de2aa10da313cd1fc7830876b4cb1167452",
+          "git_blob": "80d4328f7517e2a09a752218658b22a18b312377",
+          "size": 23695,
+          "expected_base_git_blob": "ae2f168d88aaf50df10dee5dca26cf9ba3e3cb9f",
+          "expected_base_sha256": "bd1f5e0613783bfa2dd8f99b596b7634554ec0e025c829076013b81a93377714"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large.rs",
+          "mode": "100644",
+          "sha256": "95b56a6d18668dcb63e7254d513db0d21078302441696d38bbd61e94bc485425",
+          "git_blob": "a1dbc13bb27ad6eec4113978a91f9401547da6df",
+          "size": 13416,
+          "expected_absent": true
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large_tests.rs",
+          "mode": "100644",
+          "sha256": "343bb733d1df38adea5b5536b82ec917648c9836e2b8e36f2a71d6b6526642e9",
+          "git_blob": "2857d1a28a9a59fdadc048c39adbcaaad192c0b4",
+          "size": 14637,
+          "expected_absent": true
+        },
+        {
+          "path": "docs/native-kv2-large-import-20261019.md",
+          "mode": "100644",
+          "sha256": "467505415fd2da045259acf2fd5cfd13f9607766860900445233880e17e3d8e2",
+          "git_blob": "6da30492277461bdc4ca0b2815eb1d951b05920d",
+          "size": 6694,
+          "expected_absent": true
+        }
+      ]
+    },
+    {
+      "revision": "r2",
+      "path": "/workspace/scratch/915e5e680008/kv2-full34-r2-20261019/native-kv2-large-r2-overlay.json",
+      "bytes": 46098,
+      "sha256": "7f84fa9f89ebd8cc39126b709a7eb5e5241ee085ce9f382dfbadaae5910b6c80",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large.rs",
+          "mode": "100644",
+          "sha256": "13086d90d685193aa3748a64cbaa732a1cbff5dca2a2f675b9a6f3d8edf516b4",
+          "git_blob": "78e62e09760606b9b14b2c8b3589830b24c5b7d5",
+          "size": 17530,
+          "expected_base_git_blob": "a1dbc13bb27ad6eec4113978a91f9401547da6df",
+          "expected_base_sha256": "95b56a6d18668dcb63e7254d513db0d21078302441696d38bbd61e94bc485425"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large_tests.rs",
+          "mode": "100644",
+          "sha256": "6e9c93fbd4014ddf5730551a99072c65f84aad8830c09bda987d23190aba3261",
+          "git_blob": "2bf4ddb53112a537840cfd27246aa923b9c8012e",
+          "size": 20529,
+          "expected_base_git_blob": "2857d1a28a9a59fdadc048c39adbcaaad192c0b4",
+          "expected_base_sha256": "343bb733d1df38adea5b5536b82ec917648c9836e2b8e36f2a71d6b6526642e9"
+        },
+        {
+          "path": "docs/native-kv2-large-terminal-custody-20261019.md",
+          "mode": "100644",
+          "sha256": "ff55f8dd793fca22a60d6fcbf1564e9a4fb5dc3b073921bb0dc06d4017355c8f",
+          "git_blob": "6729d7373dd1c9b2fcccac5b3e8a621b4c410f0a",
+          "size": 3624,
+          "expected_absent": true
+        }
+      ]
+    },
+    {
+      "revision": "r3",
+      "path": "/workspace/scratch/915e5e680008/kv2-full34-r3-20261019/native-kv2-large-r3-overlay.json",
+      "bytes": 235747,
+      "sha256": "313a23a9a0496d3f9e33e6d4fb02cda0017dc36fb857acf05acb9839edb6f7bd",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/http.rs",
+          "mode": "100644",
+          "expected_base_git_blob": "d739c31c9c37b4423f3137a12bdda0da9cdbd60d",
+          "expected_base_sha256": "c612d55ce0de58c2adedd92d8252b06adbb463b32483e8af246d5394cf2f565f",
+          "git_blob": "6d6a52bc87f4a8c954e71391b9638ce73e390d8e",
+          "sha256": "3d108326a722936ef5c81d57d98547acd619368ce8900c57ef7023eb036087e4",
+          "size": 219392
+        },
+        {
+          "path": "crates/heptabao-server/src/http_native_kv2_large_tests.rs",
+          "mode": "100644",
+          "expected_base_git_blob": "a663de5b81e9c3f1fe3869abfe2a5e1edd241db2",
+          "expected_base_sha256": "19270f58628ab39ba86debd073549c5e9b75ae7b843c0ad29f56f1995aa04fbc",
+          "git_blob": "278f6c9efc0af116fca59cef5dd10fc794c9c651",
+          "sha256": "04abc0289fa753455549a7eece6d677e7cc554d7c4e9babab5f8d8b5c5d4d951",
+          "size": 5436
+        }
+      ]
+    },
+    {
+      "revision": "r4",
+      "path": "/workspace/scratch/915e5e680008/kv2-full34-r4-20261019/native-kv2-large-r4-overlay.json",
+      "bytes": 41355,
+      "sha256": "cfc985a7b78738771251d412bd8c3395c651e93b651f42067e148940161d3cdb",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large.rs",
+          "mode": "100644",
+          "expected_base_git_blob": "78e62e09760606b9b14b2c8b3589830b24c5b7d5",
+          "expected_base_sha256": "13086d90d685193aa3748a64cbaa732a1cbff5dca2a2f675b9a6f3d8edf516b4",
+          "git_blob": "85264028aa111fc0e5a95d7f19fa3d4850754848",
+          "sha256": "519b3126bb9bf8f5cf9f3f509543ea333062e93dee0eb00b930d677b4b200336",
+          "size": 18196
+        },
+        {
+          "path": "crates/heptabao-server/src/service_native_kv2_large_tests.rs",
+          "mode": "100644",
+          "expected_base_git_blob": "2bf4ddb53112a537840cfd27246aa923b9c8012e",
+          "expected_base_sha256": "6e9c93fbd4014ddf5730551a99072c65f84aad8830c09bda987d23190aba3261",
+          "git_blob": "b7528dc57db8d79bc2f46e71bdc87d48708f6e5b",
+          "sha256": "deec10bd2c417ebcd65b0b74ad1c5029d935e70d2c99cf345e2c2c4101587e3e",
+          "size": 20594
+        }
+      ]
+    }
+  ],
+  "test_prefix": "native_large_kv2_",
+  "expected_test_count": 15,
+  "test_names": [
+    "native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+    "native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+    "native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+    "native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+    "native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+    "native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+    "native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+    "native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+    "native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+    "native_large_kv2_service_original_actor_expires_after_real_audit",
+    "native_large_kv2_service_original_deadline_survives_body_and_finalization",
+    "native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+    "native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+    "native_large_kv2_service_root_lost_ack_reopens_complete_once",
+    "native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+  ],
+  "composed_files": [
+    {
+      "path": "crates/heptabao-server/src/engine_kv2_native_import.rs",
+      "mode": "100644",
+      "sha256": "dd78fe53b36795a8b7fa680af899d18096f4b4fbf022805883565d1a05517337",
+      "git_blob": "5504b7bcb040ef7e607ccbb9d2b0ea2e5bbaf558",
+      "size": 4738
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "mode": "100644",
+      "sha256": "7dfd4de9936a9ffce032d4e6c441f5a7288ada7ff45aaeb38fb9e7634d29301b",
+      "git_blob": "d614594eaa1102806b30a9a86fb7e31c2c7a347e",
+      "size": 149515
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/kv2_native_import.rs",
+      "mode": "100644",
+      "sha256": "54aa2d0e04042719553c0e03db402b3cef93aa3ade30fe87b6a289f1b268e7de",
+      "git_blob": "5eaf2f9db78290d87cb246775a10d1735ed4e19d",
+      "size": 6170
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/kv_lossless.rs",
+      "mode": "100644",
+      "sha256": "f3462f12751c3e750af95e1c73a7ce772531f2a66147d7465d6006a28ede5ceb",
+      "git_blob": "d7182ed6f2dc39d5bd730de5b307125dfad0bb81",
+      "size": 23937
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/kv_lossless_native_large.rs",
+      "mode": "100644",
+      "sha256": "a089834f601882011bc06b89d41d0a4e62c913f1168e192b51d4e8bb634f18c3",
+      "git_blob": "3837db004a47cf868527994ae06bfa1ce98d168e",
+      "size": 6138
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/kv_lossless_native_large_tests.rs",
+      "mode": "100644",
+      "sha256": "6a34485e24bec3cc973b15c8d3f5bef72f08ba5c2d84b0101ac5993347f3d699",
+      "git_blob": "78fd45c2bb4def5fc51b80bd4099266dae4512b7",
+      "size": 3547
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "mode": "100644",
+      "git_blob": "6d6a52bc87f4a8c954e71391b9638ce73e390d8e",
+      "sha256": "3d108326a722936ef5c81d57d98547acd619368ce8900c57ef7023eb036087e4",
+      "size": 219392
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "mode": "100644",
+      "sha256": "0a158f95d8cb80f9e030fa18db4c52ecc7f789f00a112af22fdfc67a968d00b1",
+      "git_blob": "6ec729b935e75c16cb01f3e5fdec2c549faa7a2e",
+      "size": 13415
+    },
+    {
+      "path": "crates/heptabao-server/src/http_native_kv2_large.rs",
+      "mode": "100644",
+      "sha256": "0ab04512d4244c17f652dc6b5f03efb0249f13ab5f445bb1a100091a20acde76",
+      "git_blob": "7f0934e2ad340135667802d6878f35a160c30d2c",
+      "size": 3688
+    },
+    {
+      "path": "crates/heptabao-server/src/http_native_kv2_large_tests.rs",
+      "mode": "100644",
+      "git_blob": "278f6c9efc0af116fca59cef5dd10fc794c9c651",
+      "sha256": "04abc0289fa753455549a7eece6d677e7cc554d7c4e9babab5f8d8b5c5d4d951",
+      "size": 5436
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "mode": "100644",
+      "sha256": "fff6691fed17a8e86d71c2d03fb6f96ca4f657357e32645c55ed72004bdd9785",
+      "git_blob": "b801da57ad951b2242e212297074847f7a51e107",
+      "size": 21038
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "mode": "100644",
+      "sha256": "6a4f691c27763053791757a6b5288acb16faf4d9c373a7ba2b0863260207b502",
+      "git_blob": "1288316e337b8fac0d23171bea067fe0f9c29ddb",
+      "size": 445227
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+      "mode": "100644",
+      "sha256": "0088970c76eb4af2fb18a09f10064de2aa10da313cd1fc7830876b4cb1167452",
+      "git_blob": "80d4328f7517e2a09a752218658b22a18b312377",
+      "size": 23695
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_large.rs",
+      "mode": "100644",
+      "git_blob": "85264028aa111fc0e5a95d7f19fa3d4850754848",
+      "sha256": "519b3126bb9bf8f5cf9f3f509543ea333062e93dee0eb00b930d677b4b200336",
+      "size": 18196
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_large_tests.rs",
+      "mode": "100644",
+      "git_blob": "b7528dc57db8d79bc2f46e71bdc87d48708f6e5b",
+      "sha256": "deec10bd2c417ebcd65b0b74ad1c5029d935e70d2c99cf345e2c2c4101587e3e",
+      "size": 20594
+    },
+    {
+      "path": "docs/native-kv2-large-import-20261019.md",
+      "mode": "100644",
+      "sha256": "467505415fd2da045259acf2fd5cfd13f9607766860900445233880e17e3d8e2",
+      "git_blob": "6da30492277461bdc4ca0b2815eb1d951b05920d",
+      "size": 6694
+    },
+    {
+      "path": "docs/native-kv2-large-terminal-custody-20261019.md",
+      "mode": "100644",
+      "sha256": "ff55f8dd793fca22a60d6fcbf1564e9a4fb5dc3b073921bb0dc06d4017355c8f",
+      "git_blob": "6729d7373dd1c9b2fcccac5b3e8a621b4c410f0a",
+      "size": 3624
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "actual_passed": 55,
+  "all_raw_argv_matched": true,
+  "artifact_id": 12172707021,
+  "full_openbao_271_replacement_proven": false,
+  "groups": [
+    {
+      "expected": 8,
+      "label": "native-kv2-import",
+      "raw_actual_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "raw_list_count": 8,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 8
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_kv2_graph_import_"
+    },
+    {
+      "expected": 15,
+      "label": "native-kv2-large",
+      "raw_actual_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "raw_list_count": 15,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 15
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_large_kv2_"
+    },
+    {
+      "expected": 1,
+      "label": "forward-original-unseal-veto",
+      "raw_actual_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "completed_forward_original_unseal_owner_vetoes_after_local_audit"
+    },
+    {
+      "expected": 1,
+      "label": "forward-no-second-floor",
+      "raw_actual_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "completed_forward_precise_follower_audits_without_second_floor_or_use"
+    },
+    {
+      "expected": 6,
+      "label": "historical-service",
+      "raw_actual_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "raw_list_count": 6,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 6
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_ha_historical_restore_"
+    },
+    {
+      "expected": 7,
+      "label": "snapshot-service",
+      "raw_actual_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "raw_list_count": 7,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 7
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_ha_snapshot_"
+    },
+    {
+      "expected": 1,
+      "label": "archive-34mib",
+      "raw_actual_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+    },
+    {
+      "expected": 1,
+      "label": "http-repair-admission",
+      "raw_actual_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+    },
+    {
+      "expected": 1,
+      "label": "http-pending-admission",
+      "raw_actual_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+    },
+    {
+      "expected": 1,
+      "label": "private-transport-diagnostic",
+      "raw_actual_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "private_forward_stage_observation_preserves_existing_transport_errors"
+    },
+    {
+      "expected": 1,
+      "label": "private-frame-diagnostic",
+      "raw_actual_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+    },
+    {
+      "expected": 3,
+      "label": "kv2-api-271-numbers",
+      "raw_actual_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "raw_list_count": 3,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 3
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "kv2_api_271_"
+    },
+    {
+      "expected": 5,
+      "label": "native-kv2-storage-witness",
+      "raw_actual_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "raw_list_count": 5,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 5
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "native_kv2_storage_witness_"
+    },
+    {
+      "expected": 1,
+      "label": "lossless-json-private-tags",
+      "raw_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+    },
+    {
+      "expected": 1,
+      "label": "lossless-kv1-conversion",
+      "raw_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+    },
+    {
+      "expected": 1,
+      "label": "lossless-token-equivalence",
+      "raw_actual_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+    },
+    {
+      "expected": 1,
+      "label": "native-raw-private-tags",
+      "raw_actual_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "raw_list_count": 1,
+      "raw_terminal": {
+        "failed": 0,
+        "ignored": 0,
+        "passed": 1
+      },
+      "same_names_as_physical_mac_b24": true,
+      "selector": "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+    }
+  ],
+  "original_group_selectors_and_names_preserved": true,
+  "passed": true,
+  "physical_lan_validation_performed": false,
+  "production_cutover_performed": false,
+  "raw_files_verified": 51,
+  "required": 55,
+  "retrieval_sha256": "cfa396cedf299a904249a88ecfe694bc96bdc4d224ba9a08fdcad393c382f9c8",
+  "run_id": 39220325041,
+  "schema": "heptabao.ci-exact-artifact-and-original55-crosscheck.v1",
+  "scope": "CI synthetic fixtures, independent from physical hosts and real LAN",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "source_unchanged": true,
+  "zip_sha256": "d820206f2951f605fc3af16b9af72695910b504605571801813d2d494200c0ca"
+}

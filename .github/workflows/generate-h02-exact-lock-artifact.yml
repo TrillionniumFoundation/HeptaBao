@@ -1,13 +1,8 @@
 name: generate-h02-exact-lock-artifact
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.2-canonical-gap-closure-v1"
-    paths:
-      - ".github/workflows/generate-h02-exact-lock-artifact.yml"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

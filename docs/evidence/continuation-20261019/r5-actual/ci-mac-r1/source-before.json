@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-19T08:05:55.175307+00:00",
+  "commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "expected_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "status_porcelain": "",
+  "git_diff_check": 0,
+  "ref": "refs/heads/agent/heptabao-continuation-20261018-r2",
+  "run_id": "39220325041",
+  "run_attempt": "1",
+  "workflow_ref": "TrillionniumFoundation/HeptaBao/.github/workflows/native-historical-restore-recovery.yml@refs/heads/agent/heptabao-continuation-20261018-r2",
+  "workflow_sha": "b24c6de7831a7389e39ac069277a9e85e858ef98"
+}

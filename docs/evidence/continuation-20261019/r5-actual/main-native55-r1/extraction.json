@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "bytes": 54396,
+      "local_name": "summary.json",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/summary.json",
+      "sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+      "tool_eof": true,
+      "tool_version": "2050:53907973:54396:1792399145202954598:1792399145207954469"
+    }
+  ],
+  "normalization_performed": false,
+  "retrieval_bytes": 59140,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-main-final-retrieval-r1.json",
+  "retrieval_sha256": "cf5991d3ab331237be82c7791517f4062d62e545d611b4f82cb460cc9dd53ac8",
+  "schema": "heptabao.exact-returned-public-evidence-extraction.v1"
+}

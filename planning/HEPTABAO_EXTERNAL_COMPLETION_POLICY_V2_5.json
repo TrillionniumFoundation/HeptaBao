@@ -6,27 +6,25 @@
     {
       "id": "HB-BLK-CTRL-001",
       "cases": [
-        "branch-delete-denied",
-        "direct-push-admin-denied",
-        "direct-push-member-denied",
+        "deletion-denied",
         "force-push-denied",
-        "insufficient-approvals-denied",
-        "missing-check-merge-denied",
-        "unresolved-conversation-denied"
+        "main-ruleset-enforced",
+        "non-admin-bypass-denied",
+        "required-checks-enforced"
       ],
       "roles": {
-        "control-auditor": 1,
-        "repository-administrator": 1
+        "repository-administrator": 1,
+        "control-auditor": 1
       }
     },
     {
       "id": "HB-BLK-EXT-001",
       "cases": [
-        "critical-findings-zero",
-        "high-findings-zero",
-        "program-review-pass",
-        "security-review-pass",
-        "storage-review-pass"
+        "current-head-binding",
+        "product-security-review",
+        "program-review",
+        "reviewer-independence",
+        "storage-distributed-review"
       ],
       "roles": {
         "program-reviewer": 1,
@@ -37,10 +35,11 @@
     {
       "id": "HB-BLK-EXT-002",
       "cases": [
-        "export-disposition-signed",
-        "license-disposition-signed",
-        "patent-disposition-signed",
-        "trademark-disposition-signed"
+        "clean-room-disposition",
+        "export-control-disposition",
+        "license-disposition",
+        "patent-disposition",
+        "trademark-disposition"
       ],
       "roles": {
         "legal-counsel": 1,
@@ -50,10 +49,11 @@
     {
       "id": "HB-BLK-EXT-003",
       "cases": [
-        "disclosure-channel-operational",
-        "incident-drill-pass",
-        "oncall-coverage-verified",
-        "revocation-drill-pass"
+        "24x7-roster",
+        "credential-revocation-drill",
+        "forensic-retention-drill",
+        "incident-drill",
+        "private-disclosure-channel"
       ],
       "roles": {
         "incident-commander": 1,
@@ -63,43 +63,41 @@
     {
       "id": "HB-BLK-EXT-004",
       "cases": [
-        "emergency-revocation-pass",
-        "hsm-key-generated",
-        "rotation-ceremony-pass",
-        "signer-custody-separated",
-        "transparency-checkpoint-published"
+        "emergency-revocation",
+        "isolated-release-signer",
+        "key-rotation-ceremony",
+        "kms-hsm-custody",
+        "transparency-checkpoint"
       ],
       "roles": {
-        "hsm-custodian": 1,
-        "release-custodian": 1
+        "release-custodian": 1,
+        "hsm-custodian": 1
       }
     },
     {
       "id": "HB-BLK-EXT-005",
       "cases": [
-        "cli-client-covered",
-        "oracle-capture-complete",
-        "sanitized-fixtures-complete",
-        "side-effects-covered",
-        "transfer-signed"
+        "candidate-artifact-rehash",
+        "complete-surface-differential",
+        "deterministic-sanitization",
+        "oracle-artifact-rehash",
+        "restricted-oracle-capture",
+        "role-separated-transfer"
       ],
       "roles": {
-        "compatibility-reviewer": 1,
-        "oracle-custodian": 1
+        "oracle-custodian": 1,
+        "compatibility-reviewer": 1
       }
     },
     {
       "id": "HB-BLK-EXT-006",
       "cases": [
-        "corruption-recovery-pass",
-        "disaster-recovery-pass",
-        "fsync-loss-pass",
-        "linux-amd64-pass",
-        "linux-arm64-pass",
-        "macos-arm64-pass",
-        "power-cut-pass",
-        "rolling-upgrade-pass",
-        "windows-amd64-pass"
+        "disk-stall-campaign",
+        "filesystem-corruption-campaign",
+        "fsync-loss-campaign",
+        "multi-platform-destructive-campaign",
+        "power-cut-campaign",
+        "torn-write-campaign"
       ],
       "roles": {
         "platform-qualifier": 1,
@@ -109,13 +107,32 @@
     {
       "id": "HB-BLK-EXT-007",
       "cases": [
-        "artifact-digest-match",
-        "clean-room-build-a-pass",
-        "clean-room-build-b-pass",
-        "test-reproduction-pass"
+        "exact-output-reproduction",
+        "independent-cache-root",
+        "independent-runner",
+        "independent-signing-root",
+        "independent-source-acquisition",
+        "independent-toolchain"
       ],
       "roles": {
         "independent-reproducer": 2
+      }
+    },
+    {
+      "id": "HB-BLK-EXT-008",
+      "cases": [
+        "authenticated-multiplexed-transport",
+        "destructive-provider-qualification",
+        "linux-sandbox-provider",
+        "macos-sandbox-provider",
+        "process-tree-termination",
+        "provider-connectors",
+        "rolling-plugin-upgrade",
+        "windows-sandbox-provider"
+      ],
+      "roles": {
+        "plugin-qualifier": 1,
+        "provider-reviewer": 1
       }
     }
   ]

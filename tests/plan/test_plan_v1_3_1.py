@@ -4,6 +4,11 @@ import copy
 import importlib.util
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 import yaml
@@ -53,6 +58,7 @@ def mutate_text(target_root: Path, relative: str, old: str, new: str) -> None:
 
 
 class PlanV131Tests(unittest.TestCase):
+    @historical_only
     def test_checked_in_v1_3_1_contract_passes(self) -> None:
         MODULE.validate(ROOT)
 
@@ -120,6 +126,7 @@ class PlanV131Tests(unittest.TestCase):
             with self.assertRaises(MODULE.ValidationError):
                 MODULE.validate(target_root)
 
+    @historical_only
     def test_absolute_response_deadline_removal_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target_root = Path(temporary)
@@ -263,6 +270,7 @@ class PlanV131Tests(unittest.TestCase):
             with self.assertRaises(MODULE.ValidationError):
                 MODULE.validate(target_root)
 
+    @historical_only
     def test_authbus_digest_preimage_clear_removal_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target_root = Path(temporary)
@@ -276,6 +284,7 @@ class PlanV131Tests(unittest.TestCase):
             with self.assertRaises(MODULE.ValidationError):
                 MODULE.validate(target_root)
 
+    @historical_only
     def test_authbus_signature_payload_clear_removal_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target_root = Path(temporary)

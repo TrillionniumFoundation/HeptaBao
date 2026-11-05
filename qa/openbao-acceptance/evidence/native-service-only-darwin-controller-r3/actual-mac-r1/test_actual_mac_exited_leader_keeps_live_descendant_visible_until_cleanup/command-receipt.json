@@ -1,0 +1,70 @@
+{
+  "commands": [
+    {
+      "label": "synthetic-python",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-c",
+        "import subprocess,sys; p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(60)']); print('child='+str(p.pid),flush=True)"
+      ],
+      "started_utc": "2026-10-19T07:30:10.675659+00:00",
+      "status": "failed",
+      "budget_seconds": 10,
+      "log": "synthetic-python.log",
+      "pid": 44801,
+      "pgid": 44801,
+      "sid": 44801,
+      "darwin_leader_identity": {
+        "pid": 44801,
+        "ppid": 44800,
+        "pgid": 44801,
+        "uid": 501,
+        "lstart": "Mon Oct 19 15:30:10 2026"
+      },
+      "cleanup": {
+        "group_before_reap": [
+          {
+            "pid": 44801,
+            "ppid": 44800,
+            "pgid": 44801,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:10 2026"
+          },
+          {
+            "pid": 44803,
+            "ppid": 1,
+            "pgid": 44801,
+            "state": "S",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:10 2026"
+          }
+        ],
+        "signals": [
+          "SIGTERM"
+        ],
+        "unexpected_live_descendants_after_exit": true,
+        "group_before_final_wait": [
+          {
+            "pid": 44801,
+            "ppid": 44800,
+            "pgid": 44801,
+            "state": "Z",
+            "uid": 501,
+            "lstart": "Mon Oct 19 15:30:10 2026"
+          }
+        ],
+        "original_group_observed_without_live_members": true,
+        "leader_reaped": true,
+        "exit_code": 0
+      },
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T07:30:11.050092+00:00",
+      "elapsed_seconds": 0.374,
+      "log_sha256": "d10ea42b055880727fcf44185a4e4c5ebabc5e92218080ecf69c1a9b19b3a85e",
+      "log_bytes": 12,
+      "root_rustc_cfg_observations": [],
+      "root_rustc_cfg_observed": false
+    }
+  ]
+}

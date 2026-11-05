@@ -1,0 +1,10 @@
+{
+  "source_commit": "775872a710931f9ad7cd407ec8fdae26115bae1e",
+  "source_tree": "d8c8796def451371906db3dcf69fc5cf527bfe77",
+  "source_files": 2513,
+  "manifest_sha256": "e87f4df8df32eaf61d73a0c75d50fb5ff064567fb8f007c7f70d4f9a617c1eda",
+  "changed_files": 2,
+  "overlay_path": "/workspace/scratch/d090566e965e/r8c-source-overlay.json.gz",
+  "overlay_size": 158168,
+  "overlay_sha256": "f94922b6915c4ad9b2842caeca4446cd0ce7ad098d0f5dfe89a9e277bd9ca20b"
+}

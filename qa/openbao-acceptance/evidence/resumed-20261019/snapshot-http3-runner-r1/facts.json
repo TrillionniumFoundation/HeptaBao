@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.snapshot-http3-adapter-facts.v1",
+  "status": "frozen_local_adapter_checks_passed_7_actual_Rust_HTTP_execution_pending",
+  "programs": {
+    "qa/openbao-acceptance/native_snapshot_http_exact_run.config.example.json": {
+      "bytes": 1419,
+      "sha256": "ac99ee80c7ee693a17985cf4aca16e8933b229626b06465bee36f904233751db",
+      "git_blob": "6b93df0bd3156a36f2e35bab79931b90982f7533"
+    },
+    "qa/openbao-acceptance/native_snapshot_http_exact_run.py": {
+      "bytes": 17345,
+      "sha256": "53cc6423e54aee23b33e85fb9746042ba3a7a507633ab24525469276db63bd4e",
+      "git_blob": "a6d71b11ba2fc2e3e47a18c90a178990d866f1c5"
+    },
+    "qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py": {
+      "bytes": 11676,
+      "sha256": "0c566800e47b4ed5c46ab31ac63eda19a043aeb50c79e3cc09f9ac4e606248b0",
+      "git_blob": "84844eb671c253ddf3c9ca8ddaf57c3131a3c8c4"
+    }
+  },
+  "dependency_owned_helper": {
+    "bytes": 24473,
+    "sha256": "44468fb6de4eea5ea74852f1e7c7cf86d3326fcae3a67f0ca10409a72db765c4",
+    "git_blob": "530ac880fa01c77f81c8d89f7013d48c5e2b8f75"
+  },
+  "dependency_profile_used_in_local_checks": {
+    "bytes": 17006,
+    "sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+    "git_blob": "0e34e16e2fa7fbc5a0ae19230a1e289d9a939ddf"
+  },
+  "added_Rust_tests": 0,
+  "additional_existing_Rust_cases_to_execute": 3,
+  "original_host_cases": 55,
+  "original_full34_checks": 31,
+  "per_command_seconds": 1800,
+  "Rust_test_threads": 1,
+  "local_check_count": 7,
+  "local_final_receipt": {
+    "bytes": 1295,
+    "sha256": "7907e47f63c1e070c9b18921958f138d18972d9c58e588d7c9ff2138fb6ae655",
+    "git_blob": "67196e4fe33a92cf01adc503ed4a88f1fe7cd9a4"
+  },
+  "actual_Rust_tests_executed_by_author": 0,
+  "remote_operations_by_author": 0,
+  "runtime_source_identity": "explicit input config and completed producer receipts; no embedded future commit",
+  "frozen_HTTP_overlay_unchanged": true,
+  "frozen_Cold_overlay_unchanged": true
+}

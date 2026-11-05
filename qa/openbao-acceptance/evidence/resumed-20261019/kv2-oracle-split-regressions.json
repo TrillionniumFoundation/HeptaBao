@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.kv2-oracle-split-controller-regressions.v1",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/openbao-acceptance/tests",
+    "-p",
+    "test_kv2_271_lossless_native_live.py",
+    "-v"
+  ],
+  "started_utc": "2026-10-19T03:44:37.099810+00:00",
+  "finished_utc": "2026-10-19T03:44:38.045518+00:00",
+  "elapsed_seconds": 0.9457069950003643,
+  "returncode": 0,
+  "tests_passed": 13,
+  "log_sha256": "e567dfc497d5e16f2e8ee748f043b9e34aed160414096aad35da9521faa3e690",
+  "controller_sha256": "376fa19f6aeac5f9f10bcaaafaf3bb8fa06f801973097f79230ab3dcee6ecb57",
+  "tests_sha256": "30a6c7bc4daa113c704cf6ac0b882e9b580441b2e9911f542f929bf2ad1622a5",
+  "actual_local_tls_helper": true,
+  "actual_openbao": false,
+  "actual_heptabao": false,
+  "physical_host_qualified": false,
+  "target_storage_precision_qualified": false,
+  "production_cutover": false
+}

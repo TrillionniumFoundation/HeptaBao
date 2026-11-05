@@ -1,0 +1,56 @@
+--- a/dist/store-DH33UrUj.js
++++ b/dist/store-DH33UrUj.js
+@@ -501,7 +501,10 @@
+ 	});
+ }
+ function pruneAuthProfileStoreReferences(store, keptProfileIds, keptOrderProfileIds = keptProfileIds) {
+-	store.order = store.order ? Object.fromEntries(Object.entries(store.order).map(([provider, profileIds]) => [provider, profileIds.filter((profileId) => keptOrderProfileIds.has(profileId))]).filter(([, profileIds]) => profileIds.length > 0)) : void 0;
++	// Preserve only an explicit empty input. Removing the last invalid profile
++	// reference must retain the existing clear/fallback behavior.
++	const explicitDenies = new Set(Object.entries(store.order ?? {}).filter(([, profileIds]) => Array.isArray(profileIds) && profileIds.length === 0).map(([provider]) => provider));
++	store.order = store.order ? Object.fromEntries(Object.entries(store.order).map(([provider, profileIds]) => [provider, profileIds.filter((profileId) => keptOrderProfileIds.has(profileId))]).filter(([provider, profileIds]) => profileIds.length > 0 || explicitDenies.has(provider))) : void 0;
+ 	store.lastGood = store.lastGood ? Object.fromEntries(Object.entries(store.lastGood).filter(([, profileId]) => keptProfileIds.has(profileId))) : void 0;
+ 	store.usageStats = store.usageStats ? Object.fromEntries(Object.entries(store.usageStats).filter(([profileId]) => keptProfileIds.has(profileId))) : void 0;
+ 	store.runtimePersistedProfileIds = store.runtimePersistedProfileIds?.filter((profileId) => keptProfileIds.has(profileId)).toSorted();
+--- a/dist/source-check-ZSz5NzGW.js
++++ b/dist/source-check-ZSz5NzGW.js
+@@ -259,7 +259,7 @@
+ 		const providerKey = normalizeProviderId(provider);
+ 		if (!providerKey) return acc;
+ 		const list = normalizeTrimmedStringList(value);
+-		if (list.length > 0) acc[providerKey] = list;
++		if (list.length > 0 || value.length === 0) acc[providerKey] = list;
+ 		return acc;
+ 	}, {});
+ 	return Object.keys(normalized).length > 0 ? normalized : void 0;
+--- a/dist/profiles-DyU-YCq2.js
++++ b/dist/profiles-DyU-YCq2.js
+@@ -61,12 +61,27 @@
+ }
+ /** Sets or clears explicit auth profile order for a provider. */
+ async function setAuthProfileOrder(params) {
+-	const providerKey = normalizeProviderId(params.provider);
++	const explicitDeny = params.explicitDeny === true;
++	if (explicitDeny && (!Array.isArray(params.order) || params.order.length !== 0)) throw new Error("Explicit auth deny requires an original empty array");
++	const providerKey = explicitDeny ? resolveProviderIdForAuth(params.provider) : normalizeProviderId(params.provider);
++	if (explicitDeny && !providerKey) throw new Error("Explicit auth deny requires a provider");
+ 	const deduped = dedupeProfileIds(params.order && Array.isArray(params.order) ? normalizeStringEntries(params.order) : []);
+ 	return await updateAuthProfileStoreWithLock({
+ 		agentDir: params.agentDir,
++		...(explicitDeny ? { saveOptions: { filterExternalAuthProfiles: false, syncExternalCli: false } } : {}),
+ 		updater: (store) => {
+ 			store.order = store.order ?? {};
++			if (explicitDeny) {
++				// Touch only this provider's selection metadata in the existing
++				// SQLite transaction. Never rewrite from a caller's stale store.
++				for (const key of Object.keys(store.order)) if (resolveProviderIdForAuth(key) === providerKey) delete store.order[key];
++				store.order[providerKey] = [];
++				if (store.lastGood) {
++					for (const key of Object.keys(store.lastGood)) if (resolveProviderIdForAuth(key) === providerKey) delete store.lastGood[key];
++					if (Object.keys(store.lastGood).length === 0) store.lastGood = void 0;
++				}
++				return true;
++			}
+ 			if (deduped.length === 0) {
+ 				if (!store.order[providerKey]) return false;
+ 				delete store.order[providerKey];

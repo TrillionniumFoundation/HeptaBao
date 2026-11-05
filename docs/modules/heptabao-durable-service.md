@@ -12,13 +12,28 @@ This crate owns the restart-safe single-node mutation boundary: durable intent, 
 
 ### Current API contract and integration boundary
 
-`DurableService<B: Barrier>` owns the exclusive Linux directory guard, injected barrier, current snapshot, non-evicting request ledger and recovery classifications. `create_new(root, barrier, max_retained_requests)` requires an absolute safe empty/new root; `reopen` requires existing compatible files and performs recovery before returning. The capacity is 1–1,000,000 retained mutations. `WriterLocked`, `UnsupportedProfile`, `LegacySchema`, corruption and barrier failures must be handled without initializing over existing state. `Barrier::seal/open(&self, context, bytes)` must authenticate the supplied associated data and protect plaintext; the crate supplies the interface, not its production cryptography.
+`DurableService<B: Barrier>` owns the exclusive Unix directory guard, injected barrier, current snapshot, non-evicting request ledger and recovery classifications. `create_new(root, barrier, max_retained_requests)` requires an absolute safe empty/new root; `reopen` requires existing compatible files and performs recovery before returning. The capacity is 1–1,000,000 retained mutations. `WriterLocked`, `UnsupportedProfile`, `LegacySchema`, corruption and barrier failures must be handled without initializing over existing state. `Barrier::seal/open(&self, context, bytes)` must authenticate the supplied associated data and protect plaintext; the crate supplies the interface, not its production cryptography.
 
 `PutRequest::new` and `DeleteRequest::new` consume an already authenticated principal, namespace, request ID, relative storage resource and nonzero authorization digest. Principal/request IDs are 1–256 ASCII alphanumeric or `-_.:` bytes. Namespace (at most 1024 bytes) and resource (at most 4096 bytes) are nonempty slash-separated paths without leading/trailing slash or traversal segments; segment characters are ASCII alphanumeric or `-_.`. `Secret::new` owns 1 byte through 1 MiB and uses `zeroize` on drop. These representations differ from `heptabao-domain::CanonicalPath` and require deliberate conversion.
 
 `put`/`delete` consume the envelope and return `MutationOutcome::Committed` or an exact retained `Duplicate`, both with generation and recovery reference. The replay key is `(principal, namespace, request_id)`; resource, operation, authorization digest and value digest are part of its immutable binding. Changed bindings return `RequestBindingConflict`. A delete of an absent resource still commits a mutation identity/generation. `*_with_failpoint` exposes the same path with explicit test injection after intent, snapshot publication or commit journal. A failure after the first append attempt returns `ServiceError::OutcomeUnknown { recovery_reference }` and fences the live instance.
 
 `get(namespace, resource)` returns an owned cloned `Option<Secret>`. `list(namespace, prefix)` returns sorted immediate child names, with `/` suffixes for directories and empty prefix selecting the namespace root. Both reject access while recovery is required; neither authenticates or authorizes. `reconcile(reference)` is a read-only lookup returning Committed, Aborted or Unknown, not a method to resolve or unfreeze a writer. Drop the fenced owner and `reopen` after fixing the storage cause, then query the preserved reference. A missing reference is Unknown, never evidence of non-entry.
+
+`capacity_status()` returns the current `CapacityStatus` metadata (generation, summed value bytes, journal usage/limit, retained request count/limit and recovery fence), never values or operation IDs. `put_with_maintenance(request)` consumes the same authorized envelope as `put`; only a proven pre-entry `JournalCapacityExhausted` invokes one authenticated `compact()` and one same-request retry. A full replay ledger, unknown effect or failed maintenance never triggers replay-ID eviction or an automatic retry. All callers must inspect `recovery_required()` on any error to fence their own caches. Tests in `src/capacity.rs` cover small-budget repeated checkpoints, preserved old bindings/references through reopen, retained-ID exhaustion, unresolved publication and real checkpoint publication failure.
+
+`preflight_immutable_publication()` admits all immutable object batches and the
+final root replacement before a caller starts a remote publication. It checks
+the existing snapshot, ledger, replay epoch and every intermediate journal and
+snapshot budget, using cached encoded lengths and the proposed delta. It accepts
+only byte-identical reuse of existing immutable objects and reserves the terminal
+record for each batch. It writes nothing and does not reserve capacity against
+another writer: the caller must hold its authority fence and repeat the check
+after any local durable mutation. A Barrier without a ciphertext-size bound is
+rejected. This API cannot predict disk exhaustion or future I/O failure; unknown
+outcomes still require recovery. Tests include real near-64-MiB publication,
+one-byte-over rejection without changed artifacts, multi-batch staging, replay
+retirement, recovery and backup restoration of the cached ledger length.
 
 `compact()` replaces the journal with an authenticated checkpoint while retaining the full replay ledger and generation; it recovers journal space, not request capacity. `export_backup()` returns the committed snapshot, full ledger and checkpoint in an encrypted bundle with no barrier key. `restore_backup(bytes, allow_rollback)` authenticates and checks the bundle before replacement; an older generation requires explicit `allow_rollback=true`. Replacement is atomic per file, not across all three files: interruption can leave a mixed set that is rejected on reopen. An I/O error from maintenance may leave `recovery_required()` true even when it is not the mutation-specific `OutcomeUnknown` variant. Operators must preserve the original coherent backup and fence traffic through restore and recovery.
 
@@ -68,9 +83,11 @@ Source-bound lexical inventory: `crates/heptabao-durable-service`; Cargo SHA-256
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
+`capacity`, `preflight_new_identity` and `put_with_compaction` are concrete APIs on the current durable owner, not standalone models. Tests in `crates/heptabao-durable-service/src/capacity_tests.rs` cover bounded journal growth, conflict/no-retry, unknown-outcome fencing, retained identity saturation and exact reopen counters.
+
 ## State and data model
 
-The root contains `state.hbs`, append-only `journal.hbj` and replace-by-generation `ledger.hbl`. Linux `ExclusiveDirectory` holds a descriptor-backed process lock; there is no sentinel lock file to survive SIGKILL. Every file operation uses the guarded `/proc/self/fd` directory path. The HBS2/HBP2 snapshot stores each key as **two independently length-prefixed strings, namespace and resource**, and an exact last-commit marker. `(a, b/c)` and `(a/b, c)` are distinct through write, reopen, list and delete. Journal events are intent, commit, abort or a leading authenticated checkpoint with contiguous sequence numbers. Ledger records bind the replay key to the exact operation digest, committed generation and service-generated recovery reference.
+The root contains `state.hbs`, append-only `journal.hbj` and replace-by-generation `ledger.hbl`. Unix `ExclusiveDirectory` holds a descriptor-backed process lock; there is no sentinel lock file to survive SIGKILL. Native `FileBackend` operations use the held directory's relative open, rename, unlink and streaming enumeration methods. They do not require `/proc/self/fd` or fall back to the original pathname. The separate legacy single-node journal/store adapters still require their Linux path interface. The HBS2/HBP2 snapshot stores each key as **two independently length-prefixed strings, namespace and resource**, and an exact last-commit marker. `(a, b/c)` and `(a/b, c)` are distinct through write, reopen, list and delete. Journal events are intent, commit, abort or a leading authenticated checkpoint with contiguous sequence numbers. Ledger records bind the replay key to the exact operation digest, committed generation and service-generated recovery reference.
 
 ## Invariants and authorization
 
@@ -82,7 +99,7 @@ Validation, complete Barrier sealing and resource admission happen before the fi
 
 ## Concurrency and ordering
 
-One service instance holds the Linux process-scoped exclusive directory fence. Kernel descriptor cleanup releases it on abrupt process death, without inspecting PIDs or deleting lock files. Unsupported operating systems, unavailable `/proc` descriptor paths or failed file locking are hard errors with no path-based fallback. The required total order is intent journal, sealed state publication, commit journal, replay ledger, acknowledgement. File and directory synchronization occur before publication is reported. Cancellation, transport loss and process termination after entry preserve uncertainty; later work is fenced until authoritative reopen or reconciliation establishes the outcome.
+One service instance holds the Unix exclusive directory fence. Kernel descriptor cleanup releases it on abrupt process death, without inspecting PIDs or deleting lock files. Unsupported non-Unix operating systems or failed file locking are hard errors with no path-based fallback. Native backend operations do not depend on the Linux-only legacy `/proc` adapter. The required total order is intent journal, sealed state publication, commit journal, replay ledger, acknowledgement. File and directory synchronization occur before publication is reported. Cancellation, transport loss and process termination after entry preserve uncertainty; later work is fenced until authoritative reopen or reconciliation establishes the outcome.
 
 ## Security and privacy
 
@@ -98,14 +115,14 @@ Safe counters include committed, duplicate, rejected-before-entry, outcome-unkno
 
 ## Operations
 
-Create-new requires an empty validated root; reopen requires all authoritative files and completes recovery before traffic. Operators preserve the root before destructive action, never delete one apparently corrupt file as a repair, and use the recovery/rollback-anchor procedures for restore. The service pre-seals and reserves both the intent and terminal journal frames before accepting a mutation. It refuses admission if the journal would exceed 64 MiB or 1,000,000 records, or snapshot/ledger would exceed 64 MiB. Recovery retains enough reserved room for the terminal frame with the fixed-overhead Barrier profile. No replay identity or aborted recovery reference is evicted. Automatic compaction remains deliberately unimplemented: a capacity stop requires a separately designed, validated checkpoint/epoch migration; copying or deleting journal bytes is not a supported workaround.
+Create-new requires an empty validated root; reopen requires all authoritative files and completes recovery before traffic. Operators preserve the root before destructive action, never delete one apparently corrupt file as a repair, and use the recovery/rollback-anchor procedures for restore. The service pre-seals and reserves both the intent and terminal journal frames before accepting a mutation. It refuses admission if the journal would exceed 64 MiB or 1,000,000 records, or snapshot/ledger would exceed 64 MiB. Recovery retains enough reserved room for the terminal frame with the fixed-overhead Barrier profile. No replay identity or aborted recovery reference is evicted. `put_with_compaction` checkpoints only after an explicit before-entry journal-capacity rejection, then retries that exact envelope at most once. `put` itself retains its original strict behavior. Unknown outcomes, I/O errors, conflicts and full identity budgets are never retried. `capacity()` returns non-secret committed local counts, not an admission reservation. `preflight_new_identity()` rejects a known full ledger before an adapter starts a new external/HA effect. Checkpoints retain every committed replay identity: operation-capacity exhaustion still requires a versioned, independently reviewed retirement/epoch protocol, not deleting the ledger.
 
 ## Tests and executable evidence
 
 Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
 
 - [`tests::put_restart_read_and_duplicate_are_durable`](../../crates/heptabao-durable-service/src/lib.rs) checks persisted value and duplicate suppression after reopen.
-- [`tests::genuine_snapshot_and_ledger_io_faults_preserve_recovery_reference`](../../crates/heptabao-durable-service/src/lib.rs) checks actual EISDIR publication faults fence the writer and preserve committed/aborted readback.
+- [`tests::checkpoint_file_faults_do_not_reenter_request_commit_path_and_recover_fail_closed`](../../crates/heptabao-durable-service/src/lib.rs) checks checkpoint-file publication faults remain outside the ordinary delta-commit path and reopen fails closed when checkpoint publication is incomplete.
 - [`tests::journal_budget_reserves_terminal_record_before_entry`](../../crates/heptabao-durable-service/src/lib.rs) checks journal exhaustion rejects before any intent append.
 - [`tests::compaction_checkpoints_complete_ledger_and_allows_future_commits`](../../crates/heptabao-durable-service/src/lib.rs) checks checkpoint shrinkage retains old duplicate protection and accepts later commits/reopen.
 - [`tests::encrypted_backup_restores_exact_generation_and_requires_explicit_rollback`](../../crates/heptabao-durable-service/src/lib.rs) checks older restore refusal, explicit rollback, value and retained duplicate identity.
@@ -143,3 +160,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-durable-service.md).

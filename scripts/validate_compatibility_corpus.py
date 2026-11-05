@@ -15,6 +15,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_PATH = ROOT / "qa/openbao-acceptance/complete_surface_corpus_v1.json"
 ACCEPTANCE_PATH = ROOT / "qa/openbao-acceptance/acceptance.py"
+EXTERNAL_CASE_REGISTRY_PATH = ROOT / "qa/openbao-acceptance/external_fixture_case_registry_v1.json"
 EXPECTED_SCHEMA = "heptabao.compatibility-corpus.v1"
 FALSE_CLAIMS: dict[str, Any] = {
     "complete_fixture_coverage": False,
@@ -23,6 +24,9 @@ FALSE_CLAIMS: dict[str, Any] = {
     "production_authority": False,
     "authority_effect": "NONE",
 }
+# The pinned 2.6.2 product inventory excludes test-only pkiext; its PKI
+# behaviors remain owned by HB-SURFACE-SECRET-PKI. Scope changes are explicit.
+EXPECTED_SURFACE_COUNT = 59
 VALID_FIXTURE_STATES = {"IMPLEMENTED_SCOPED", "DEFINED_NOT_IMPLEMENTED"}
 
 
@@ -60,6 +64,36 @@ def acceptance_cases(path: Path = ACCEPTANCE_PATH) -> set[str]:
                     if case_id in result:
                         raise ValueError(f"acceptance CASES duplicates {case_id}")
                     result.add(case_id)
+            # Live differential acceptance is intentionally kept separate from
+            # provider-specific fixtures that need a disposable issuer/cluster.
+            # Admit those cases through an explicit, source-bound registry so a
+            # corpus row can reference a real executable script without making
+            # the generic OpenBao comparison runner pretend to execute it.
+            registry_path = path.with_name("external_fixture_case_registry_v1.json")
+            if registry_path.is_file():
+                registry = _json_mapping(registry_path, "external fixture case registry")
+                if registry.get("schema") != "heptabao.external-fixture-case-registry.v1":
+                    raise ValueError("external fixture case registry schema is invalid")
+                external = registry.get("cases")
+                if not isinstance(external, dict):
+                    raise ValueError("external fixture case registry cases must be a mapping")
+                for module_name, declaration in external.items():
+                    if not isinstance(module_name, str) or not isinstance(declaration, dict):
+                        raise ValueError("external fixture case registry entry is invalid")
+                    script = declaration.get("script")
+                    names = declaration.get("case_ids")
+                    if not isinstance(script, str) or not isinstance(names, list) or not names:
+                        raise ValueError(f"external fixture case registry entry {module_name} is invalid")
+                    script_path = registry_path.parents[2] / script
+                    if not script_path.is_file():
+                        raise ValueError(f"external fixture script is missing: {script}")
+                    for name in names:
+                        if not isinstance(name, str) or not name:
+                            raise ValueError("external fixture case registry contains an invalid case")
+                        case_id = f"{module_name}.{name}"
+                        if case_id in result:
+                            raise ValueError(f"acceptance CASES duplicates {case_id}")
+                        result.add(case_id)
             return result
     raise ValueError("acceptance.py does not define CASES")
 
@@ -88,6 +122,14 @@ def inventory_surfaces(inventory: dict[str, Any]) -> tuple[dict[str, dict[str, s
                 "category": category["id"],
                 "criticality": criticality,
             }
+    if len(surfaces) != EXPECTED_SURFACE_COUNT:
+        raise ValueError(f"surface inventory must retain {EXPECTED_SURFACE_COUNT} runtime surfaces")
+    coverage = inventory.get("coverage")
+    if not isinstance(coverage, dict):
+        raise ValueError("surface inventory coverage must be a mapping")
+    for key in ("total_items", "identified"):
+        if type(coverage.get(key)) is not int or coverage[key] != len(surfaces):
+            raise ValueError(f"surface inventory coverage {key} differs from exact runtime rows")
     return surfaces, len(categories)
 
 
@@ -230,7 +272,14 @@ def main() -> int:
         for error in errors:
             print(f"compatibility-corpus: ERROR: {error}", file=sys.stderr)
         return 1
-    print("compatibility-corpus: PASS (60 surfaces, 45 scoped cases, 0 exact-head independent surfaces)")
+    corpus = _json_mapping(CORPUS_PATH, "compatibility corpus")
+    summary = corpus["coverage_summary"]
+    print(
+        "compatibility-corpus: PASS "
+        f"({corpus['inventory']['surface_count']} surfaces, "
+        f"{summary['fixture_case_count']} scoped cases, "
+        f"{summary['independently_observed_current_exact_head_surface_count']} exact-head independent surfaces)"
+    )
     return 0
 
 

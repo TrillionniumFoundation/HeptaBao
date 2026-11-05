@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.local-linux-artifact-runner-tests.v1",
+  "finished_utc": "2026-10-19T05:47:25.370821+00:00",
+  "argv": [
+    "python3",
+    "-B",
+    "/workspace/scratch/915e5e680008/continuation-20261019/native-linux-artifact-r1/work/qa/openbao-acceptance/tests/test_native_linux_artifact_run.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "log_sha256": "3fde536149d893f35cd89e29d4925865fabed3461f2f6173ccac6def4b6ef7ba",
+  "driver_sha256": "d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620",
+  "tests_sha256": "47c5a21061b393acf6f05ce894abb042edd5d426574ddf911a8f57b8cc95a241",
+  "test_count": 6,
+  "scope": "local artifact custody and local system /usr/bin/true loader observation only; no HeptaBao or X230 execution",
+  "actual_heptabao_execution": false,
+  "actual_x230_execution": false,
+  "physical_native_tests_added_or_executed": 0
+}

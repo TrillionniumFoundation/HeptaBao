@@ -1,30 +1,86 @@
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use ::hmac::{Hmac, Mac};
+use base64::{
+    Engine as _,
+    engine::general_purpose::{GeneralPurpose, STANDARD as BASE64, URL_SAFE_NO_PAD as BASE64_URL},
+};
+use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
-    aead, digest, hmac,
+    aead,
     rand::{SecureRandom, SystemRandom},
     signature::{self, KeyPair},
 };
+use sha2::{Digest as RustDigest, Sha224, Sha256, Sha384, Sha512};
+use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
+#[path = "transit_asymmetric.rs"]
+mod asymmetric;
+#[path = "transit_asymmetric_byok.rs"]
+mod asymmetric_byok;
+#[path = "transit_backup.rs"]
+mod backup;
+#[path = "transit_byok.rs"]
+mod byok;
+#[path = "transit_byok_export.rs"]
+mod byok_export;
+#[path = "transit_cache.rs"]
+mod cache;
+#[path = "transit_derivation.rs"]
+mod derivation;
+#[path = "transit_external.rs"]
+mod external;
+#[path = "transit_mldsa.rs"]
+mod mldsa;
+#[path = "transit_symmetric.rs"]
+mod symmetric;
 const MAX_BATCH: usize = 256;
 const MAX_ENCRYPTIONS_PER_VERSION: u64 = 1 << 32;
+
+// Match the measured OpenBao 2.7 error envelope at these compatibility gates.
+fn openbao_compatibility_error(message: &str) -> EngineError {
+    error(500, &format!("1 error occurred:\n\t* {message}\n\n"))
+}
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub(super) struct Transit {
     keys: BTreeMap<String, Key>,
     disable_upsert: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    cache_config: Option<cache::Config>,
+    #[serde(skip)]
+    policy_cache: std::sync::Arc<std::sync::Mutex<cache::Runtime>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    wrapping_key: Option<byok::WrappingKey>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    derived_ed_format: Option<derivation::Format>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Key {
     kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    byok: Option<byok::ImportPolicy>,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    derived: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    legacy_counter_kdf: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    allow_plaintext_backup: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    backup_metadata: Option<backup::Metadata>,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    convergent_encryption: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_zero")]
+    convergent_write_min_version: u64,
     latest_version: u64,
     min_decryption_version: u64,
     min_encryption_version: u64,
     deletion_allowed: bool,
     exportable: bool,
+    #[serde(default)]
+    auto_rotate_period: u64,
     deleted: bool,
     versions: BTreeMap<u64, KeyVersion>,
 }
@@ -33,8 +89,16 @@ struct Key {
 struct KeyVersion {
     material: String,
     hmac_material: String,
+    // A canonical public-only projection remains inside this encrypted version.
+    // It is never interpreted as seed or HMAC material.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    public_key_only: Option<String>,
     created_at: u64,
     encryptions: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    external_key_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    heptabao_convergent_version: Option<symmetric::ConvergentMode>,
 }
 
 impl Drop for KeyVersion {
@@ -53,10 +117,14 @@ fn random_bytes(length: usize) -> Result<Zeroizing<Vec<u8>>> {
 }
 
 fn decode(value: &str) -> Result<Zeroizing<Vec<u8>>> {
+    decode_with(value, &BASE64)
+}
+
+fn decode_with(value: &str, encoding: &GeneralPurpose) -> Result<Zeroizing<Vec<u8>>> {
     if value.len() > MAX_INPUT_BYTES * 4 / 3 + 4 {
         return Err(error(413, "cryptographic input exceeds the supported size"));
     }
-    BASE64
+    encoding
         .decode(value)
         .map(Zeroizing::new)
         .map_err(|_| bad("invalid base64 input"))
@@ -76,7 +144,11 @@ impl KeyVersion {
     fn generate(kind: &str, now: u64) -> Result<Self> {
         let material = match kind {
             "aes128-gcm96" => random_bytes(16)?,
-            "aes256-gcm96" | "chacha20-poly1305" | "hmac" => random_bytes(32)?,
+            "mldsa-44" | "mldsa-65" | "mldsa-87" => random_bytes(32)?,
+            "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" | "hmac" => {
+                random_bytes(32)?
+            }
+            kind if asymmetric::is_kind(kind) => asymmetric::generate(kind)?,
             "ed25519" => Zeroizing::new(
                 signature::Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                     .map_err(|_| error(503, "key generation failed"))?
@@ -88,8 +160,11 @@ impl KeyVersion {
         Ok(Self {
             material: BASE64.encode(material),
             hmac_material: BASE64.encode(random_bytes(32)?),
+            public_key_only: None,
             created_at: now,
             encryptions: 0,
+            external_key_ref: None,
+            heptabao_convergent_version: None,
         })
     }
 }
@@ -101,65 +176,231 @@ impl Key {
             .map(|v| v.as_str().ok_or_else(|| bad("key type must be a string")))
             .transpose()?
             .unwrap_or("aes256-gcm96");
-        for flag in ["derived", "convergent_encryption", "allow_plaintext_backup"] {
-            if optional_bool(body, flag)?.unwrap_or(false) {
-                return Err(error(
-                    501,
-                    "derived keys, convergent encryption and plaintext backups are not implemented",
-                ));
-            }
+        let derived = symmetric::flag(body, "derived")?;
+        let convergent_encryption = symmetric::flag(body, "convergent_encryption")?;
+        if convergent_encryption && !derived {
+            return Err(bad("convergent encryption requires key derivation"));
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
+        if (derived || convergent_encryption)
+            && !symmetric::is_kind(kind)
+            && !(kind == "ed25519" && derived && !convergent_encryption)
         {
             return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
+                if kind == "ed25519" && !convergent_encryption {
+                    501
+                } else {
+                    500
+                },
+                "key derivation is unsupported for this key type",
             ));
         }
+        let allow_plaintext_backup =
+            optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false);
+        if allow_plaintext_backup && (!backup::is_kind(kind) || convergent_encryption) {
+            return Err(error(
+                501,
+                "plaintext backups for this key type or protected mode are not implemented",
+            ));
+        }
+        let hmac_size = if kind == "hmac" {
+            let size = match body.get("key_size") {
+                None | Some(Value::Null) => 0,
+                _ => optional_u64(body, "key_size")?.unwrap_or(0),
+            };
+            if size != 0 && !(32..=512).contains(&size) {
+                return Err(bad(&format!("invalid key_size {size}")));
+            }
+            if size == 0 {
+                return Err(openbao_compatibility_error(
+                    "invalid key size for HMAC key, must be between 32 and 512 bytes",
+                ));
+            }
+            Some(size)
+        } else {
+            if optional_u64(body, "key_size")?.is_some_and(|n| n != 0) {
+                return Err(bad("key_size requires type hmac"));
+            }
+            None
+        };
+        let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
-        let version = KeyVersion::generate(kind, now)?;
+        let mut version = if kind == "external-key" {
+            external::new_version(body, now)?
+        } else {
+            if body.get("external_key_ref").is_some() {
+                return Err(bad("external_key_ref requires type external-key"));
+            }
+            if kind == "ed25519" && derived {
+                derivation::generate_ed_version(now)?
+            } else {
+                KeyVersion::generate(kind, now)?
+            }
+        };
+        if kind == "external-key" && (exportable || auto_rotate_period != 0) {
+            return Err(bad(
+                "external keys cannot be exported or automatically rotated",
+            ));
+        }
+        let mode = symmetric::requested_mode(body)?;
+        if mode.is_some()
+            && (!symmetric::is_kind(kind) || !derived || !convergent_encryption || exportable)
+        {
+            return Err(bad(
+                "AAD-bound convergent keys must be derived, convergent, symmetric and non-exportable",
+            ));
+        }
+        version.heptabao_convergent_version = mode;
+        if let Some(size) = hmac_size {
+            version.material = BASE64.encode(random_bytes(size as usize)?.as_slice());
+        }
         Ok(Self {
             kind: kind.into(),
+            byok: None,
+            derived,
+            legacy_counter_kdf: false,
+            allow_plaintext_backup,
+            backup_metadata: hmac_size.map(backup::native_hmac_metadata),
+            convergent_encryption,
+            convergent_write_min_version: if mode.is_some() { 1 } else { 0 },
             latest_version: 1,
             min_decryption_version: 1,
-            min_encryption_version: 0,
+            min_encryption_version: if mode.is_some() { 1 } else { 0 },
             deletion_allowed: false,
             exportable,
+            auto_rotate_period,
             deleted: false,
             versions: BTreeMap::from([(1, version)]),
         })
     }
 
     fn descriptor(&self, name: &str) -> Result<Value> {
+        if self.kind == "external-key" {
+            return external::descriptor(self, name);
+        }
         let mut versions = serde_json::Map::new();
         for (number, version) in &self.versions {
-            let value = if self.kind == "ed25519" {
+            if symmetric::is_kind(&self.kind) && *number < self.min_decryption_version {
+                continue;
+            }
+            let value = if let Some(public) = version
+                .public_key_only
+                .as_ref()
+                .filter(|_| asymmetric_byok::is_kind(&self.kind))
+            {
+                let public =
+                    asymmetric_byok::descriptor_public(&self.kind, &stored_material(public)?)?;
+                json!({"creation_time":timestamp(version.created_at),"public_key":public,
+                    "name":"", "certificate_chain":Value::Null})
+            } else if derivation::is_ed(self) {
+                derivation::validate_ed_master(&stored_material(&version.material)?)?;
+                json!({"creation_time":timestamp(version.created_at),"public_key":"","name":"ed25519","certificate_chain":""})
+            } else if self.kind == "ed25519" {
                 let material = stored_material(&version.material)?;
-                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                    .map_err(|_| error(500, "stored signing key is invalid"))?;
-                json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())})
+                let pair = if self.byok.is_some() || self.backup_metadata.is_some() {
+                    asymmetric_byok::ed25519_pair(&material)?
+                } else {
+                    signature::Ed25519KeyPair::from_pkcs8(&material)
+                        .map_err(|_| error(500, "stored signing key is invalid"))?
+                };
+                let mut value = json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())});
+                if self.byok.is_some() {
+                    value["name"] = json!("");
+                    value["certificate_chain"] = Value::Null;
+                }
+                value
+            } else if asymmetric::is_kind(&self.kind) {
+                json!({"creation_time":timestamp(version.created_at),
+                    "public_key":asymmetric::public(&stored_material(&version.material)?)?,
+                    "name":"", "certificate_chain":Value::Null})
+            } else if mldsa::is_kind(&self.kind) {
+                let public = if let Some(public) = version.public_key_only.as_ref() {
+                    mldsa::public_only(&self.kind, &stored_material(public)?)?
+                } else {
+                    mldsa::public(&self.kind, &stored_material(&version.material)?)?
+                };
+                json!({"creation_time":timestamp(version.created_at),
+                    "public_key":BASE64.encode(public),
+                    "name":"", "certificate_chain":Value::Null})
             } else {
                 json!(version.created_at)
             };
             versions.insert(number.to_string(), value);
         }
+        if asymmetric::is_kind(&self.kind) || (self.kind == "ed25519" && self.byok.is_some()) {
+            let encryption = asymmetric::is_rsa(&self.kind);
+            let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
+                "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
+                "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":self.allow_plaintext_backup,
+                "derived":false,"supports_derivation":self.kind == "ed25519","supports_encryption":encryption,
+                "supports_decryption":encryption,"supports_signing":true,"imported_key":byok::imported_key(self),
+                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":backup::min_available_version(self)});
+            if let Some(allowed) = byok::imported_key_allow_rotation(self) {
+                descriptor["imported_key_allow_rotation"] = json!(allowed);
+            }
+            backup::decorate_descriptor(self, &mut descriptor);
+            return Ok(descriptor);
+        }
         let encryption = matches!(
             self.kind.as_str(),
-            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
         );
-        Ok(
-            json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
+        let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
             "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
-            "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
-            "derived":false,"convergent_encryption":false,"supports_derivation":false,
-            "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519",
-            "supports_hmac":true,"imported_key":false,"auto_rotate_period":0,"soft_deleted":self.deleted,"min_available_version":0}),
-        )
+            "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":self.allow_plaintext_backup,
+            "derived":self.derived,"convergent_encryption":self.convergent_encryption,"supports_derivation":symmetric::is_kind(&self.kind),
+            "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
+            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":backup::min_available_version(self)});
+        descriptor["imported_key"] = json!(byok::imported_key(self));
+        if let Some(allowed) = byok::imported_key_allow_rotation(self) {
+            descriptor["imported_key_allow_rotation"] = json!(allowed);
+        }
+        if derivation::is_ed(self) {
+            descriptor["supports_derivation"] = json!(true);
+            descriptor["kdf"] = json!("hkdf_sha256");
+            if let Some(fields) = descriptor.as_object_mut() {
+                fields.remove("supports_hmac");
+            }
+        }
+        if symmetric::is_kind(&self.kind) {
+            let fields = descriptor
+                .as_object_mut()
+                .ok_or_else(|| error(500, "key descriptor encoding failed"))?;
+            fields.remove("supports_hmac");
+            if !self.derived {
+                fields.remove("convergent_encryption");
+            } else {
+                fields.insert(
+                    "kdf".into(),
+                    json!(if self.legacy_counter_kdf {
+                        "hmac-sha256-counter"
+                    } else {
+                        "hkdf_sha256"
+                    }),
+                );
+                if self.legacy_counter_kdf {
+                    fields.insert("kdf_mode".into(), json!("hmac-sha256-counter"));
+                }
+            }
+            if self.convergent_encryption {
+                fields.insert("convergent_encryption_version".into(), json!(-1));
+            }
+        }
+        if self.convergent_write_min_version != 0 {
+            descriptor["heptabao_convergent_version"] = json!(1);
+            descriptor["heptabao_convergent_min_encryption_version"] =
+                json!(self.convergent_write_min_version);
+            descriptor["heptabao_convergent_versions"] = json!(
+                self.versions
+                    .iter()
+                    .map(|(number, version)| (
+                        number.to_string(),
+                        u8::from(version.heptabao_convergent_version.is_some())
+                    ))
+                    .collect::<BTreeMap<_, _>>()
+            );
+        }
+        backup::decorate_descriptor(self, &mut descriptor);
+        Ok(descriptor)
     }
 
     fn alive(&self) -> Result<()> {
@@ -171,9 +412,16 @@ impl Key {
 
     fn selected_version(&self, body: &Value) -> Result<u64> {
         self.alive()?;
-        let version = optional_u64(body, "key_version")?
-            .filter(|v| *v != 0)
-            .unwrap_or(self.latest_version);
+        let requested = if symmetric::is_kind(&self.kind) {
+            symmetric::version(body)?
+        } else {
+            optional_u64(body, "key_version")?.unwrap_or(0)
+        };
+        let version = if requested == 0 {
+            self.latest_version
+        } else {
+            requested
+        };
         let minimum = self.min_encryption_version.max(1);
         if version < minimum || !self.versions.contains_key(&version) {
             return Err(bad(
@@ -203,9 +451,46 @@ impl Key {
                 "exportable",
                 "allow_plaintext_backup",
                 "auto_rotate_period",
+                // Observed 2.7 configuration accepts this field without restricting ECDH.
+                "min_derivation_version",
             ],
         )?;
+        if self.kind == "external-key"
+            && (optional_bool(body, "exportable")?.unwrap_or(false)
+                || body
+                    .get("auto_rotate_period")
+                    .map(|value| auto_rotate_period(Some(value)))
+                    .transpose()?
+                    .is_some_and(|period| period != 0))
+        {
+            return Err(bad(
+                "external keys cannot be exported or automatically rotated",
+            ));
+        }
+        let requested_auto_rotate_period = body
+            .get("auto_rotate_period")
+            .map(|value| auto_rotate_period(Some(value)))
+            .transpose()?;
+        if self.convergent_write_min_version != 0 {
+            if optional_u64(body, "min_encryption_version")?
+                .is_some_and(|value| value < self.convergent_write_min_version)
+            {
+                return Err(bad(
+                    "AAD-bound convergent encryption floor cannot be lowered",
+                ));
+            }
+            if optional_bool(body, "exportable")?.unwrap_or(false) {
+                return Err(bad(
+                    "AAD-bound convergent keys cannot export unversioned material",
+                ));
+            }
+        }
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
+            if value.max(1) < backup::min_available_version(self) {
+                return Err(bad(
+                    "minimum decryption version cannot be lower than minimum available version",
+                ));
+            }
             self.min_decryption_version = value.max(1);
         }
         if let Some(value) = optional_u64(body, "min_encryption_version")? {
@@ -229,28 +514,252 @@ impl Key {
             }
             self.exportable = value;
         }
-        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
-            return Err(error(501, "plaintext backup is not implemented"));
+        if let Some(value) = optional_bool(body, "allow_plaintext_backup")? {
+            if value
+                && (!backup::is_kind(&self.kind)
+                    || self.convergent_encryption
+                    || self.convergent_write_min_version != 0
+                    || self.versions.values().any(|v| {
+                        v.public_key_only.is_some()
+                            || v.external_key_ref.is_some()
+                            || v.heptabao_convergent_version.is_some()
+                    }))
+            {
+                return Err(bad(
+                    "plaintext backup cannot expose protected or unsupported key material",
+                ));
+            }
+            // The real API accepts false after activation but leaves this permission enabled.
+            self.allow_plaintext_backup |= value;
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
-        {
-            return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
-            ));
+        if let Some(period) = requested_auto_rotate_period {
+            if period != 0 {
+                byok::rotation_allowed(self)?;
+            }
+            backup::configure_rotation_period(self, period)?;
         }
         Ok(())
     }
+
+    fn auto_rotate(&mut self, now: u64) -> Result<bool> {
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| bad("invalid transit rotation clock"))?;
+        self.auto_rotate_precise(at)
+    }
+
+    fn auto_rotate_precise(&mut self, at: crate::auth::Timestamp) -> Result<bool> {
+        let period = backup::rotation_nanoseconds(self)?;
+        if self.deleted || period <= 0 || self.versions.len() >= 10_000 {
+            return Ok(false);
+        }
+        let created = backup::creation_nanoseconds(self, self.latest_version)?;
+        let due = created + period as u128;
+        if at.duration_since_epoch().as_nanos() < due {
+            return Ok(false);
+        }
+        let now = at.seconds();
+        byok::rotation_allowed(self)?;
+        let next = self
+            .latest_version
+            .checked_add(1)
+            .ok_or_else(|| bad("key version limit reached"))?;
+        let mode = self
+            .versions
+            .get(&self.latest_version)
+            .ok_or_else(|| error(500, "latest transit key version is missing"))?
+            .heptabao_convergent_version;
+        let mut version = backup::generate_version(self, now)?;
+        version.heptabao_convergent_version = mode;
+        self.versions.insert(next, version);
+        self.latest_version = next;
+        byok::native_rotation_completed(self);
+        backup::record_rotation_creation(self, next, at)?;
+        Ok(true)
+    }
+}
+
+fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
+    let seconds = match value {
+        None => 0,
+        Some(Value::String(raw)) if raw.len() <= 256 => {
+            crate::auth::transit_rotation_duration(raw)
+                .map_err(|_| bad("invalid auto_rotate_period"))?
+                / 1_000_000_000
+        }
+        Some(value) => value.as_i64().ok_or_else(|| {
+            bad("auto_rotate_period must be integer seconds or a duration string")
+        })?,
+    };
+    let period =
+        u64::try_from(seconds).map_err(|_| bad("auto_rotate_period must be at least 1h or 0"))?;
+    if period != 0 && period < 3600 {
+        return Err(bad("auto_rotate_period must be at least 1h or 0"));
+    }
+    seconds
+        .checked_mul(1_000_000_000)
+        .ok_or_else(|| bad("auto_rotate_period overflow"))?;
+    Ok(period)
 }
 
 impl Transit {
+    pub(super) fn has_aad_bound_convergent_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            key.convergent_write_min_version != 0
+                || key
+                    .versions
+                    .values()
+                    .any(|version| version.heptabao_convergent_version.is_some())
+        })
+    }
+
+    pub(super) fn validate_aad_bound_convergent_state(&self) -> Result<()> {
+        for key in self.keys.values() {
+            let floor = key.convergent_write_min_version;
+            let has_mode = key
+                .versions
+                .values()
+                .any(|version| version.heptabao_convergent_version.is_some());
+            if has_mode != (floor != 0)
+                || floor > key.latest_version
+                || (floor != 0
+                    && (key.min_encryption_version < floor
+                        || !key.versions.contains_key(&floor)
+                        || key.versions.keys().next_back() != Some(&key.latest_version)))
+            {
+                return Err(bad("invalid AAD-bound convergent write floor"));
+            }
+            for (number, version) in &key.versions {
+                symmetric::validate_mode(key, version.heptabao_convergent_version)?;
+                if floor != 0 && *number >= floor && version.heptabao_convergent_version.is_none() {
+                    return Err(bad("AAD-bound convergent versions cannot be downgraded"));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn validate_aad_bound_convergent_restore(
+        &self,
+        target: Option<&Self>,
+    ) -> Result<()> {
+        for (name, current) in &self.keys {
+            if current.convergent_write_min_version == 0 {
+                continue;
+            }
+            let restored = target
+                .and_then(|engine| engine.keys.get(name))
+                .ok_or_else(|| bad("protected convergent key cannot be removed by restore"))?;
+            if restored.kind != current.kind
+                || restored.convergent_write_min_version < current.convergent_write_min_version
+            {
+                return Err(bad(
+                    "protected convergent key mode cannot be downgraded by restore",
+                ));
+            }
+            for (number, version) in &current.versions {
+                if version.heptabao_convergent_version.is_none() {
+                    continue;
+                }
+                let replacement = restored.versions.get(number).ok_or_else(|| {
+                    bad("protected convergent key version cannot be removed by restore")
+                })?;
+                if replacement.heptabao_convergent_version != version.heptabao_convergent_version
+                    || replacement.material != version.material
+                    || replacement.encryptions < version.encryptions
+                {
+                    return Err(bad(
+                        "protected convergent key version cannot be replaced or rewound by restore",
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn has_asymmetric_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            matches!(
+                key.kind.as_str(),
+                "ecdsa-p256" | "ecdsa-p384" | "ecdsa-p521" | "rsa-2048" | "rsa-3072" | "rsa-4096"
+            )
+        })
+    }
+
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
+    }
+
+    pub(super) fn has_auto_rotate_keys(&self) -> bool {
+        self.keys
+            .values()
+            .any(|key| backup::has_positive_rotation_period(key) && !key.deleted)
+    }
+
+    pub(super) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
+        let mut changed = false;
+        for key in self.keys.values_mut() {
+            changed |= key.auto_rotate(now)?;
+        }
+        Ok(changed)
+    }
+
+    pub(super) fn has_rotation_precision_state(&self) -> bool {
+        self.keys.values().any(backup::has_rotation_precision)
+    }
+
+    pub(super) fn validate_rotation_precision_state(&self, previous: Option<&Self>) -> Result<()> {
+        for (name, key) in &self.keys {
+            backup::validate_key(key)?;
+            if previous
+                .and_then(|old| old.keys.get(name))
+                .is_some_and(backup::has_rotation_precision)
+                && !backup::has_rotation_precision(key)
+            {
+                return Err(error(503, "transit rotation precision cannot be erased"));
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn maintain_auto_rotation_precise(
+        &mut self,
+        at: crate::auth::Timestamp,
+    ) -> Result<bool> {
+        if at.duration_since_epoch().subsec_nanos() == 0 {
+            return self.maintain_auto_rotation(at.seconds());
+        }
+        let mut changed = false;
+        for key in self.keys.values_mut() {
+            changed |= key.auto_rotate_precise(at)?;
+        }
+        Ok(changed)
+    }
+
+    pub(super) fn handle_precise(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        at: crate::auth::Timestamp,
+    ) -> Result<EngineResponse> {
+        let before: BTreeMap<_, _> = self
+            .keys
+            .iter()
+            .map(|(name, key)| (name.clone(), key.latest_version))
+            .collect();
+        let response = self.handle(namespace, mount, method, path, body, at.seconds())?;
+        // Restored versions retain their source timestamp; the request clock never replaces it.
+        if response.mutated && path != "restore" && !path.starts_with("restore/") {
+            for (name, key) in &mut self.keys {
+                if before.get(name) != Some(&key.latest_version) {
+                    let number = key.latest_version;
+                    backup::record_rotation_creation(key, number, at)?;
+                }
+            }
+        }
+        Ok(response)
     }
 
     pub(super) fn handle(
@@ -262,6 +771,18 @@ impl Transit {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let Some(output) = path.strip_prefix("derive-key/") {
+            return self.derive_key(method, output, body, now);
+        }
+        if let Some(rest) = path.strip_prefix("byok-export/") {
+            return self.byok_export(method, rest, body);
+        }
+        if path == "wrapping_key" {
+            return self.wrapping(method, body);
+        }
+        if path == "config/cache" {
+            return self.policy_cache_config(method, body);
+        }
         if path == "config/keys" {
             if method == "GET" {
                 return Ok(ok(json!({"disable_upsert":self.disable_upsert}), false));
@@ -272,7 +793,7 @@ impl Transit {
             reject_unknown(body, &["disable_upsert"])?;
             self.disable_upsert = optional_bool(body, "disable_upsert")?
                 .ok_or_else(|| bad("disable_upsert is required"))?;
-            return Ok(empty(true));
+            return Ok(ok(json!({"disable_upsert":self.disable_upsert}), true));
         }
         if path == "keys" || path == "keys/" {
             if method != "LIST" {
@@ -287,8 +808,23 @@ impl Transit {
         if let Some(rest) = path.strip_prefix("keys/") {
             return self.handle_key(method, rest, body, now);
         }
+        if let Some(rest) = path.strip_prefix("backup/") {
+            return self.backup(method, rest, body, now);
+        }
+        if path == "restore" || path.starts_with("restore/") {
+            return self.restore(
+                method,
+                path.strip_prefix("restore/").unwrap_or(""),
+                body,
+                now,
+            );
+        }
         if let Some(rest) = path.strip_prefix("export/") {
-            return self.export(method, rest);
+            return if body.get("format").is_none() {
+                self.export(method, rest)
+            } else {
+                self.export_with_format(method, rest, body)
+            };
         }
         let (operation, rest) = path.split_once('/').unwrap_or((path, ""));
         if !write_method(method) {
@@ -307,11 +843,38 @@ impl Transit {
             return Err(bad("unexpected transit path suffix"));
         }
         if operation == "encrypt" && !self.keys.contains_key(name) {
+            if body.get("heptabao_convergent_version").is_some() {
+                return Err(bad(
+                    "AAD-bound convergent keys require explicit key creation",
+                ));
+            }
             if self.disable_upsert {
                 return Err(bad("key does not exist and upsert is disabled"));
             }
-            reject_context(body)?;
-            self.keys.insert(name.into(), Key::new(body, now)?);
+            let mut creation = SecretJson(body.clone());
+            creation["derived"] = json!(symmetric::upsert_derived(body)?);
+            self.keys.insert(name.into(), Key::new(&creation, now)?);
+        }
+        if matches!(operation, "decrypt" | "hmac" | "sign" | "verify") {
+            let policy = self.cached_policy(name)?;
+            policy.alive()?;
+            let mut policy = (*policy).clone();
+            let response = handle_crypto(
+                &mut policy,
+                namespace,
+                mount,
+                name,
+                operation,
+                algorithm,
+                body,
+            )?;
+            if response.mutated {
+                return Err(error(
+                    503,
+                    "read-only transit policy operation attempted mutation",
+                ));
+            }
+            return Ok(response);
         }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         key.alive()?;
@@ -327,15 +890,19 @@ impl Transit {
     ) -> Result<EngineResponse> {
         let (name, operation) = rest.split_once('/').unwrap_or((rest, ""));
         valid_path(name)?;
+        if matches!(operation, "import" | "import_version") {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return if operation == "import" {
+                self.import(name, body, now)
+            } else {
+                self.import_version(name, body, now)
+            };
+        }
         if operation.is_empty() {
             if method == "GET" {
-                return Ok(ok(
-                    self.keys
-                        .get(name)
-                        .ok_or_else(not_found)?
-                        .descriptor(name)?,
-                    false,
-                ));
+                return Ok(ok(self.cached_policy(name)?.descriptor(name)?, false));
             }
             if method == "DELETE" {
                 let Some(key) = self.keys.get(name) else {
@@ -356,59 +923,108 @@ impl Transit {
                 body,
                 &[
                     "type",
+                    "key_size",
                     "derived",
                     "convergent_encryption",
+                    "heptabao_convergent_version",
                     "exportable",
                     "allow_plaintext_backup",
                     "auto_rotate_period",
+                    "external_key_ref",
                 ],
             )?;
             if let Some(key) = self.keys.get(name) {
                 if body.get("type").is_some_and(|v| v != &key.kind) {
                     return Err(bad("key already exists with a different immutable type"));
                 }
-                for flag in ["derived", "convergent_encryption", "allow_plaintext_backup"] {
-                    if optional_bool(body, flag)?.unwrap_or(false) {
-                        return Err(error(501, "requested key feature is not implemented"));
-                    }
+                if let Some(requested) = symmetric::requested_mode(body)?
+                    && key
+                        .versions
+                        .get(&key.latest_version)
+                        .and_then(|version| version.heptabao_convergent_version)
+                        != Some(requested)
+                {
+                    return Err(bad(
+                        "use explicit rotation to upgrade convergent encryption",
+                    ));
                 }
-                if optional_bool(body, "exportable")?
+                let requested_derived = symmetric::flag(body, "derived")?;
+                let requested_convergent = symmetric::flag(body, "convergent_encryption")?;
+                if requested_convergent && !requested_derived {
+                    return Err(bad("convergent encryption requires key derivation"));
+                }
+                if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false)
+                    && !key.allow_plaintext_backup
+                {
+                    return Err(bad(
+                        "use the key config endpoint to enable plaintext backup",
+                    ));
+                }
+                if symmetric::is_kind(&key.kind) {
+                    symmetric::flag(body, "exportable")?;
+                } else if optional_bool(body, "exportable")?
                     .is_some_and(|exportable| exportable != key.exportable)
                 {
                     return Err(bad("use the key config endpoint to change exportability"));
                 }
-                if body
-                    .get("auto_rotate_period")
-                    .map(duration_seconds)
-                    .transpose()?
-                    .unwrap_or(0)
-                    != 0
+                if let Some(value) = body.get("auto_rotate_period")
+                    && auto_rotate_period(Some(value))? != key.auto_rotate_period
                 {
-                    return Err(error(
-                        501,
-                        "automatic time-based rotation is not implemented",
+                    return Err(bad(
+                        "use the key config endpoint to change auto_rotate_period",
                     ));
+                }
+                if let Some(reference) = body.get("external_key_ref") {
+                    let current = key
+                        .versions
+                        .get(&key.latest_version)
+                        .and_then(|version| version.external_key_ref.as_deref());
+                    if reference.as_str() != current {
+                        return Err(bad("use rotation to change an external key reference"));
+                    }
                 }
                 return Ok(ok(key.descriptor(name)?, false));
             }
-            self.keys.insert(name.into(), Key::new(body, now)?);
-            return Ok(ok(
-                self.keys
-                    .get(name)
-                    .ok_or_else(not_found)?
-                    .descriptor(name)?,
-                true,
-            ));
+            let key = Key::new(body, now)?;
+            let descriptor = key.descriptor(name)?;
+            if derivation::is_ed(&key) {
+                self.derived_ed_format = Some(derivation::Format::V1);
+            }
+            self.keys.insert(name.into(), key);
+            return Ok(ok(descriptor, true));
         }
         if !write_method(method) && !(operation == "soft-delete" && method == "DELETE") {
             return Err(unsupported());
         }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         match operation {
-            "config" => key.configure(body)?,
+            "trim" => {
+                backup::trim(key, body)?;
+                return Ok(ok(key.descriptor(name)?, true));
+            }
+            "config" => {
+                key.configure(body)?;
+                return Ok(ok(key.descriptor(name)?, true));
+            }
             "rotate" => {
-                reject_unknown(body, &[])?;
+                reject_unknown(
+                    body,
+                    if key.kind == "external-key" {
+                        &["external_key_ref"]
+                    } else {
+                        &["heptabao_convergent_version"]
+                    },
+                )?;
                 key.alive()?;
+                byok::rotation_allowed_named(key, name)?;
+                let requested_mode = symmetric::requested_mode(body)?;
+                let previous_mode = key
+                    .versions
+                    .get(&key.latest_version)
+                    .ok_or_else(|| error(500, "latest transit key version is missing"))?
+                    .heptabao_convergent_version;
+                let mode = requested_mode.or(previous_mode);
+                symmetric::validate_mode(key, mode)?;
                 if key.versions.len() >= 10_000 {
                     return Err(bad("key version retention limit reached"));
                 }
@@ -416,9 +1032,28 @@ impl Transit {
                     .latest_version
                     .checked_add(1)
                     .ok_or_else(|| bad("key version limit reached"))?;
-                key.versions
-                    .insert(next, KeyVersion::generate(&key.kind, now)?);
+                let mut version = if key.kind == "external-key" {
+                    if body.get("external_key_ref").is_some() {
+                        external::new_version(body, now)?
+                    } else {
+                        let reference = key
+                            .versions
+                            .get(&key.latest_version)
+                            .and_then(|version| version.external_key_ref.as_deref())
+                            .ok_or_else(|| error(503, "external key reference is unavailable"))?;
+                        external::new_version(&json!({"external_key_ref":reference}), now)?
+                    }
+                } else {
+                    backup::generate_version(key, now)?
+                };
+                version.heptabao_convergent_version = mode;
+                if mode.is_some() && key.convergent_write_min_version == 0 {
+                    key.convergent_write_min_version = next;
+                    key.min_encryption_version = next;
+                }
+                key.versions.insert(next, version);
                 key.latest_version = next;
+                byok::native_rotation_completed(key);
             }
             "soft-delete" => {
                 reject_unknown(body, &[])?;
@@ -438,8 +1073,20 @@ impl Transit {
     }
 
     fn export(&self, method: &str, rest: &str) -> Result<EngineResponse> {
+        self.export_with_format(method, rest, &json!({}))
+    }
+
+    fn export_with_format(&self, method: &str, rest: &str, body: &Value) -> Result<EngineResponse> {
         if method != "GET" {
             return Err(unsupported());
+        }
+        let format = body
+            .get("format")
+            .map(|value| value.as_str().ok_or_else(|| bad("format must be a string")))
+            .transpose()?
+            .unwrap_or("");
+        if !matches!(format, "" | "raw" | "der" | "pem") {
+            return Err(bad("unsupported key export format"));
         }
         let parts: Vec<_> = rest.split('/').collect();
         if !(2..=3).contains(&parts.len()) {
@@ -447,16 +1094,62 @@ impl Transit {
         }
         let kind = parts[0];
         let name = parts[1];
-        let key = self.keys.get(name).ok_or_else(not_found)?;
+        let key = self.cached_policy(name)?;
         key.alive()?;
-        if !key.exportable {
-            return Err(error(403, "key is not exportable"));
+        if key.convergent_write_min_version != 0 {
+            return Err(error(
+                403,
+                "AAD-bound convergent keys cannot export unversioned material",
+            ));
+        }
+        let mldsa_key = mldsa::is_kind(&key.kind);
+        let asymmetric_key = asymmetric::is_kind(&key.kind);
+        let ed25519_key = key.kind == "ed25519";
+        let public_export = (mldsa_key || asymmetric_key || ed25519_key) && kind == "public-key";
+        let standard_asymmetric = (mldsa_key || asymmetric_key || ed25519_key)
+            && kind != "hmac-key"
+            && matches!(format, "der" | "pem");
+        if !key.exportable && !public_export {
+            return Err(if mldsa_key || asymmetric_key || ed25519_key {
+                bad("private key material is not exportable")
+            } else {
+                error(403, "key is not exportable")
+            });
+        }
+        if kind == "hmac-key"
+            && (mldsa_key || asymmetric_key || ed25519_key)
+            && matches!(format, "der" | "pem")
+        {
+            return Err(openbao_compatibility_error(
+                "unknown format for HMAC key; supported values are `` or `raw`",
+            ));
+        }
+        if matches!(format, "der" | "pem") && !standard_asymmetric {
+            return Err(error(
+                501,
+                "standard export is unsupported for this key type",
+            ));
+        }
+        if format == "raw" && asymmetric_key && kind != "hmac-key" {
+            let algorithm = if asymmetric::is_rsa(&key.kind) {
+                "rsa"
+            } else {
+                "ec"
+            };
+            return Err(openbao_compatibility_error(&format!(
+                "unknown key format for {algorithm} key; supported values are ``, `der`, or `pem`"
+            )));
+        }
+        if asymmetric_key && kind == "encryption-key" && !asymmetric::is_rsa(&key.kind) {
+            return Err(bad("key type does not support encryption key export"));
         }
         if kind != "hmac-key"
+            && !(asymmetric_key && matches!(kind, "public-key" | "signing-key" | "encryption-key"))
+            && !((mldsa_key || ed25519_key) && matches!(kind, "public-key" | "signing-key"))
             && !(kind == "encryption-key"
                 && matches!(
                     key.kind.as_str(),
-                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
                 ))
         {
             return Err(error(501, "requested key export format is not implemented"));
@@ -484,16 +1177,55 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                (
-                    version.to_string(),
-                    json!(if kind == "hmac-key" {
-                        &value.hmac_material
+                let encoded = if kind == "hmac-key" {
+                    backup::hmac_material(&key, value).into()
+                } else if derivation::is_ed(&key) {
+                    derivation::export_ed(value, public_export, format)?.to_string()
+                } else if let Some(public) = value.public_key_only.as_ref() {
+                    if public_export {
+                        let der = stored_material(public)?;
+                        if asymmetric_byok::is_kind(&key.kind) {
+                            asymmetric_byok::export_public(&key.kind, &der, format)?
+                        } else if standard_asymmetric {
+                            mldsa::export_public(&key.kind, &der, format)?.to_string()
+                        } else {
+                            BASE64.encode(mldsa::public_only(&key.kind, &der)?)
+                        }
                     } else {
-                        &value.material
-                    }),
-                )
+                        String::new()
+                    }
+                } else if standard_asymmetric {
+                    let material = stored_material(&value.material)?;
+                    if mldsa_key {
+                        mldsa::export_standard(&key.kind, &material, public_export, format)?
+                    } else {
+                        asymmetric::export_standard(&key.kind, &material, public_export, format)?
+                    }
+                    .to_string()
+                } else if ed25519_key && kind != "hmac-key" {
+                    asymmetric::export_ed25519_raw(
+                        &stored_material(&value.material)?,
+                        public_export,
+                    )?
+                    .to_string()
+                } else if asymmetric_key && kind != "hmac-key" {
+                    asymmetric::export(
+                        &key.kind,
+                        &stored_material(&value.material)?,
+                        public_export,
+                    )?
+                    .to_string()
+                } else if public_export {
+                    BASE64.encode(mldsa::public(
+                        &key.kind,
+                        &stored_material(&value.material)?,
+                    )?)
+                } else {
+                    value.material.clone()
+                };
+                Ok((version.to_string(), json!(&*Zeroizing::new(encoded))))
             })
-            .collect();
+            .collect::<Result<serde_json::Map<String, Value>>>()?;
         Ok(ok(
             json!({"name":name,"type":key.kind,"keys":Value::Object(keys)}),
             false,
@@ -521,13 +1253,18 @@ impl Transit {
         if name.contains('/') {
             return Err(bad("transit key names cannot contain path separators"));
         }
-        reject_context(body)?;
         let bits = optional_u64(body, "bits")?.unwrap_or(256);
         if !matches!(bits, 128 | 256 | 512) {
             return Err(bad("data key bits must be 128, 256 or 512"));
         }
-        let plaintext = random_bytes((bits / 8) as usize)?;
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
+        if key.kind == "external-key" {
+            return Err(error(
+                501,
+                "external key data-key generation is not implemented",
+            ));
+        }
+        let plaintext = random_bytes((bits / 8) as usize)?;
         let mut data = encrypt(key, namespace, mount, name, body, &plaintext)?;
         if mode == "plaintext" {
             let encoded = Zeroizing::new(BASE64.encode(plaintext));
@@ -563,6 +1300,12 @@ fn handle_crypto(
     algorithm: &str,
     body: &Value,
 ) -> Result<EngineResponse> {
+    if key.kind == "external-key" {
+        return Err(error(
+            501,
+            "external key operations require the audited external-effect dispatcher",
+        ));
+    }
     let allowed: &[&str] = match operation {
         "encrypt" => &[
             "plaintext",
@@ -599,6 +1342,7 @@ fn handle_crypto(
             "input",
             "key_version",
             "algorithm",
+            "context",
             "reference",
             "batch_input",
             "partial_failure_response_code",
@@ -611,12 +1355,14 @@ fn handle_crypto(
             "prehashed",
             "signature_algorithm",
             "marshaling_algorithm",
+            "salt_length",
             "reference",
             "batch_input",
             "partial_failure_response_code",
         ],
         "verify" => &[
             "input",
+            "key_version",
             "signature",
             "hmac",
             "algorithm",
@@ -625,6 +1371,7 @@ fn handle_crypto(
             "prehashed",
             "signature_algorithm",
             "marshaling_algorithm",
+            "salt_length",
             "reference",
             "batch_input",
             "partial_failure_response_code",
@@ -637,6 +1384,7 @@ fn handle_crypto(
             .as_array()
             .filter(|items| !items.is_empty() && items.len() <= MAX_BATCH)
             .ok_or_else(|| bad("batch_input must contain between 1 and 256 items"))?;
+        symmetric::batch_context(key, operation, items)?;
         let partial_code = optional_u64(body, "partial_failure_response_code")?.unwrap_or(400);
         if !(200..=599).contains(&partial_code) {
             return Err(bad(
@@ -708,7 +1456,7 @@ fn handle_crypto(
             }
             responses.push(value);
         }
-        let status = if failed == 0 {
+        let status = if failed == 0 || (symmetric::is_kind(&key.kind) && operation == "rewrap") {
             200
         } else if failed == items.len() {
             400
@@ -721,7 +1469,44 @@ fn handle_crypto(
             mutated,
         });
     }
-    reject_context(body)?;
+    if (key.kind == "ed25519" || mldsa::is_kind(&key.kind) || asymmetric::is_kind(&key.kind))
+        && (matches!(operation, "sign" | "verify")
+            || (asymmetric::is_rsa(&key.kind)
+                && matches!(operation, "encrypt" | "decrypt" | "rewrap")))
+    {
+        validate_signing_context(body)?;
+        if asymmetric::is_rsa(&key.kind) && matches!(operation, "encrypt" | "decrypt" | "rewrap") {
+            if !associated_data(body)?.is_empty() {
+                return Err(bad("RSA encryption does not support associated data"));
+            }
+            if body
+                .get("nonce")
+                .is_some_and(|value| value.as_str() != Some(""))
+                || optional_bool(body, "convergent_encryption")?.unwrap_or(false)
+            {
+                return Err(error(
+                    501,
+                    "caller-supplied nonces and convergent encryption are not implemented",
+                ));
+            }
+        }
+    } else if symmetric::is_kind(&key.kind)
+        && (operation == "hmac" || (operation == "verify" && body.get("hmac").is_some()))
+    {
+        // HMAC has separate per-version key material and ignores AEAD context.
+        if operation == "verify"
+            && body
+                .get("context")
+                .is_some_and(|value| value.is_array() || value.is_object())
+        {
+            return Err(bad("context must be scalar"));
+        }
+    } else if symmetric::is_kind(&key.kind) && matches!(operation, "encrypt" | "decrypt" | "rewrap")
+    {
+        symmetric::context(key, body)?;
+    } else {
+        reject_context(body)?;
+    }
     let data = match operation {
         "encrypt" => {
             if body.get("type").is_some_and(|kind| kind != &key.kind) {
@@ -748,24 +1533,61 @@ fn handle_crypto(
         "hmac" => {
             let version = key.selected_version(body)?;
             let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-            let material = stored_material(
-                &key.versions
-                    .get(&version)
-                    .ok_or_else(not_found)?
-                    .hmac_material,
-            )?;
-            let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-            let tag = hmac::sign(&mac_key, &decode_field(body, "input")?);
-            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag.as_ref()))})
+            let selected = key.versions.get(&version).ok_or_else(not_found)?;
+            let material = stored_material(backup::hmac_material(key, selected))?;
+            let input = decode_field(body, "input")?;
+            let tag = hmac_tag(algorithm, &material, &input)?;
+            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
         }
         "sign" => {
-            signing_options(key, body, algorithm)?;
-            let version = key.selected_version(body)?;
-            let material =
-                stored_material(&key.versions.get(&version).ok_or_else(not_found)?.material)?;
-            let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                .map_err(|_| error(500, "stored signing key is invalid"))?;
-            json!({"signature":format!("vault:v{version}:{}", BASE64.encode(pair.sign(&decode_field(body, "input")?).as_ref())),"key_version":version})
+            let external_mu = if asymmetric::is_kind(&key.kind) {
+                false
+            } else {
+                signing_options(key, body, algorithm)?
+            };
+            let version = if asymmetric::is_kind(&key.kind) {
+                asymmetric::selected_signing_version(key, body)?
+            } else {
+                key.selected_version(body)?
+            };
+            let selected = key.versions.get(&version).ok_or_else(not_found)?;
+            if selected.public_key_only.is_some() {
+                return Err(openbao_compatibility_error(
+                    "requested version for signing does not contain a private part",
+                ));
+            }
+            let material = stored_material(&selected.material)?;
+            let input = decode_field(body, "input")?;
+            let signature = if asymmetric::is_kind(&key.kind) {
+                asymmetric::sign(&key.kind, &material, body, algorithm, &input)?
+            } else if mldsa::is_kind(&key.kind) {
+                if external_mu {
+                    mldsa::sign_mu(&key.kind, &material, &input)?
+                } else {
+                    mldsa::sign(&key.kind, &material, &input)?
+                }
+            } else {
+                let pair = if derivation::is_ed(key) {
+                    derivation::ed_pair(key, selected, body)?
+                } else if key.byok.is_some() || key.backup_metadata.is_some() {
+                    asymmetric_byok::ed25519_pair(&material)?
+                } else {
+                    signature::Ed25519KeyPair::from_pkcs8(&material)
+                        .map_err(|_| error(500, "stored signing key is invalid"))?
+                };
+                pair.sign(&input).as_ref().to_vec()
+            };
+            let mut result = json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version});
+            if derivation::is_ed(key) {
+                result["public_key"] = json!(
+                    BASE64.encode(
+                        derivation::ed_pair(key, selected, body)?
+                            .public_key()
+                            .as_ref()
+                    )
+                );
+            }
+            result
         }
         "verify" => {
             let input = decode_field(body, "input")?;
@@ -776,20 +1598,57 @@ fn handle_crypto(
                 let (version, tag) =
                     parse_wrapped(mac.as_str().ok_or_else(|| bad("hmac must be a string"))?)?;
                 let version = key.decrypt_version(version)?;
-                let material = stored_material(&version.hmac_material)?;
+                let material = stored_material(backup::hmac_material(key, version))?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-                let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-                hmac::verify(&mac_key, &input, &tag).is_ok()
+                hmac_verify(algorithm, &material, &input, &tag)?
             } else {
-                signing_options(key, body, algorithm)?;
-                let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
+                let external_mu = if asymmetric::is_kind(&key.kind) {
+                    false
+                } else {
+                    signing_options(key, body, algorithm)?
+                };
+                if external_mu {
+                    return Err(bad("ML-DSA external mu is not supported for verification"));
+                }
+                let (version, bytes) =
+                    parse_wrapped_with(string(body, "signature")?, signature_encoding(body)?)?;
                 let version = key.decrypt_version(version)?;
-                let material = stored_material(&version.material)?;
-                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                    .map_err(|_| error(500, "stored signing key is invalid"))?;
-                signature::UnparsedPublicKey::new(&signature::ED25519, pair.public_key().as_ref())
-                    .verify(&input, &bytes)
-                    .is_ok()
+                if let Some(public) = version.public_key_only.as_ref() {
+                    if asymmetric_byok::is_kind(&key.kind) {
+                        asymmetric::verify_public(
+                            &key.kind,
+                            &stored_material(public)?,
+                            body,
+                            algorithm,
+                            &input,
+                            &bytes,
+                        )?
+                    } else {
+                        mldsa::verify_public(&key.kind, &stored_material(public)?, &input, &bytes)?
+                    }
+                } else {
+                    let material = stored_material(&version.material)?;
+                    if asymmetric::is_kind(&key.kind) {
+                        asymmetric::verify(&key.kind, &material, body, algorithm, &input, &bytes)?
+                    } else if mldsa::is_kind(&key.kind) {
+                        mldsa::verify(&key.kind, &material, &input, &bytes)?
+                    } else {
+                        let pair = if derivation::is_ed(key) {
+                            derivation::ed_pair(key, version, body)?
+                        } else if key.byok.is_some() || key.backup_metadata.is_some() {
+                            asymmetric_byok::ed25519_pair(&material)?
+                        } else {
+                            signature::Ed25519KeyPair::from_pkcs8(&material)
+                                .map_err(|_| error(500, "stored signing key is invalid"))?
+                        };
+                        signature::UnparsedPublicKey::new(
+                            &signature::ED25519,
+                            pair.public_key().as_ref(),
+                        )
+                        .verify(&input, &bytes)
+                        .is_ok()
+                    }
+                }
             };
             json!({"valid":valid})
         }
@@ -798,28 +1657,114 @@ fn handle_crypto(
     Ok(ok(data, matches!(operation, "encrypt" | "rewrap")))
 }
 
-fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<()> {
-    if key.kind != "ed25519" {
+// Context describes generic key derivation, not Ed25519/ML-DSA signing.
+// These native keys are not derived. Validate the public API's Base64 field,
+// including its observed numeric-string conversion, before ignoring bytes.
+fn validate_signing_context(body: &Value) -> Result<()> {
+    match body.get("context") {
+        None | Some(Value::Null) => Ok(()),
+        Some(Value::String(value)) => decode(value).map(|_| ()),
+        Some(Value::Number(value)) => decode(&value.to_string()).map(|_| ()),
+        _ => Err(bad("context must be base64")),
+    }
+}
+
+// The API parses RSA-PSS salt options before ignoring them for non-RSA keys.
+// Preserve that syntax check without selecting a different signature scheme.
+fn validate_signing_salt_length(body: &Value) -> Result<()> {
+    let Some(value) = body.get("salt_length") else {
+        return Ok(());
+    };
+    let valid = match value {
+        Value::String(value) => {
+            value.eq_ignore_ascii_case("auto")
+                || value.eq_ignore_ascii_case("hash")
+                || value.parse::<i64>().is_ok_and(|salt| salt >= -1)
+        }
+        Value::Number(value) => value.as_i64().is_some_and(|salt| salt >= -1),
+        Value::Bool(_) => true,
+        _ => false,
+    };
+    if valid {
+        Ok(())
+    } else {
+        Err(bad("invalid signature salt length"))
+    }
+}
+
+// True selects the provider's external-mu API; false preserves pure signing.
+fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<bool> {
+    signature_encoding(body)?;
+    validate_signing_salt_length(body)?;
+    if key.kind != "ed25519" && !mldsa::is_kind(&key.kind) {
         return Err(bad("key does not support Ed25519 signing"));
     }
-    if optional_bool(body, "prehashed")?.unwrap_or(false) {
-        return Err(error(501, "Ed25519ph is not implemented"));
+    let algorithm = signing_hash_algorithm(path_algorithm, body)?;
+    let prehashed = signing_prehashed(body)?;
+    if mldsa::is_kind(&key.kind) && algorithm == "mldsa-mu" {
+        if !prehashed {
+            return Err(bad("ML-DSA external mu requires prehashed=true"));
+        }
+        return Ok(true);
     }
-    if body.get("signature_algorithm").is_some() || body.get("marshaling_algorithm").is_some() {
-        return Err(error(
-            501,
-            "signature algorithm options are not implemented for Ed25519",
-        ));
+    if !matches!(
+        algorithm,
+        "none"
+            | "sha1"
+            | "sha2-224"
+            | "sha2-256"
+            | "sha2-384"
+            | "sha2-512"
+            | "sha3-224"
+            | "sha3-256"
+            | "sha3-384"
+            | "sha3-512"
+    ) {
+        return Err(bad("unsupported hash algorithm"));
     }
-    // Ed25519 owns its hash algorithm; the OpenBao default argument is accepted.
-    let algorithm = select_algorithm(path_algorithm, body, "hash_algorithm", "sha2-256")?;
-    if algorithm != "sha2-256" {
-        return Err(error(
-            501,
-            "explicit hash selection is not implemented for Ed25519",
-        ));
+    // These key types own their pure-message hash. Generic hash/prehashed
+    // arguments do not select Ed25519ph or HashML-DSA. signature_algorithm
+    // selects RSA padding only and is ignored for these non-RSA keys, including
+    // the pkcs1v15 argument sent by the official external PKI consumer.
+    Ok(false)
+}
+
+fn signature_encoding(body: &Value) -> Result<&'static GeneralPurpose> {
+    match body.get("marshaling_algorithm") {
+        None => Ok(&BASE64),
+        Some(Value::String(value)) if value == "asn1" => Ok(&BASE64),
+        Some(Value::String(value)) if value == "jws" => Ok(&BASE64_URL),
+        _ => Err(bad("unsupported signature marshaling algorithm")),
     }
-    Ok(())
+}
+
+// Signing routes capture the path algorithm ahead of the body field. Keep
+// this compatibility rule separate from encryption and HMAC parsing.
+fn signing_hash_algorithm<'a>(path: &'a str, body: &'a Value) -> Result<&'a str> {
+    if !path.is_empty() {
+        return Ok(path);
+    }
+    match body.get("hash_algorithm") {
+        None | Some(Value::Null) => Ok("none"),
+        Some(Value::String(value)) if value.is_empty() => Ok("none"),
+        Some(Value::String(value)) => Ok(value),
+        _ => Err(bad("algorithm must be a string")),
+    }
+}
+
+fn signing_prehashed(body: &Value) -> Result<bool> {
+    match body.get("prehashed") {
+        None | Some(Value::Null) => Ok(false),
+        Some(Value::Bool(value)) => Ok(*value),
+        Some(Value::String(value)) => match value.as_str() {
+            "1" | "t" | "T" | "true" | "TRUE" | "True" => Ok(true),
+            "" | "0" | "f" | "F" | "false" | "FALSE" | "False" => Ok(false),
+            _ => Err(bad("expected a boolean parameter")),
+        },
+        Some(Value::Number(value)) if value.as_f64() == Some(0.0) => Ok(false),
+        Some(Value::Number(value)) if value.as_f64() == Some(1.0) => Ok(true),
+        _ => Err(bad("expected a boolean parameter")),
+    }
 }
 
 fn select_algorithm<'a>(
@@ -851,7 +1796,7 @@ fn aead_algorithm(kind: &str) -> Result<&'static aead::Algorithm> {
     }
 }
 
-fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+fn associated_data(body: &Value) -> Result<Vec<u8>> {
     let associated = body
         .get("associated_data")
         .map(|v| {
@@ -862,9 +1807,14 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
         })
         .transpose()?
         .unwrap_or_default();
+    Ok(associated.to_vec())
+}
+
+fn legacy_aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+    let associated = symmetric::associated_data(body)?;
     // A JSON tuple is unambiguous even when namespace/path contain delimiters.
-    // Domain separation is intentionally stronger than OpenBao opaque ciphertext
-    // portability; moving raw key/ciphertext state requires a decrypt/re-encrypt.
+    // This remains a read-only migration path for pre-OpenBao-compatibility
+    // HeptaBao ciphertexts. New ciphertexts use the raw caller AAD below.
     serde_json::to_vec(&(
         "heptabao-transit-aead-v1",
         namespace,
@@ -875,16 +1825,71 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
     .map_err(|_| error(500, "associated data encoding failed"))
 }
 
+fn xchacha20_encrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+    cipher
+        .encrypt_in_place(XNonce::from_slice(nonce), aad, &mut *ciphertext)
+        .map_err(|_| error(500, "encryption failed"))?;
+    Ok(ciphertext.to_vec())
+}
+
+fn xchacha20_decrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    ciphertext: &mut [u8],
+) -> Result<Zeroizing<Vec<u8>>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut plaintext = ciphertext.to_vec();
+    cipher
+        .decrypt_in_place(XNonce::from_slice(nonce), aad, &mut plaintext)
+        .map_err(|_| bad("ciphertext authentication failed"))?;
+    Ok(Zeroizing::new(plaintext))
+}
+
 fn encrypt(
     key: &mut Key,
-    namespace: &str,
-    mount: &str,
-    name: &str,
+    _namespace: &str,
+    _mount: &str,
+    _name: &str,
     body: &Value,
     plaintext: &[u8],
 ) -> Result<Value> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    if asymmetric::is_rsa(&key.kind) {
+        let number = key.selected_version(body)?;
+        let version = key.versions.get_mut(&number).ok_or_else(not_found)?;
+        if version.encryptions >= MAX_ENCRYPTIONS_PER_VERSION {
+            return Err(bad(
+                "key version reached its encryption limit; rotate the key",
+            ));
+        }
+        let ciphertext = if let Some(public) = version.public_key_only.as_ref() {
+            asymmetric::encrypt_public(&key.kind, &stored_material(public)?, plaintext)?
+        } else {
+            asymmetric::encrypt(&stored_material(&version.material)?, plaintext)?
+        };
+        version.encryptions += 1;
+        return Ok(
+            json!({"ciphertext":format!("vault:v{number}:{}",BASE64.encode(ciphertext)),"key_version":number}),
+        );
+    }
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
+    let context = symmetric::context(key, body)?;
     let version_number = key.selected_version(body)?;
+    if version_number < key.convergent_write_min_version {
+        return Err(bad(
+            "key version is below the AAD-bound convergent write floor",
+        ));
+    }
     let version = key
         .versions
         .get_mut(&version_number)
@@ -894,23 +1899,54 @@ fn encrypt(
             "key version reached its encryption limit; rotate the key",
         ));
     }
-    let material = stored_material(&version.material)?;
-    let key = aead::LessSafeKey::new(
-        aead::UnboundKey::new(algorithm, &material)
-            .map_err(|_| error(500, "stored encryption key is invalid"))?,
-    );
-    let mut nonce_bytes = [0; 12];
-    SystemRandom::new()
-        .fill(&mut nonce_bytes)
-        .map_err(|_| error(503, "system entropy is unavailable"))?;
-    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
-    key.seal_in_place_append_tag(
-        aead::Nonce::assume_unique_for_key(nonce_bytes),
-        aead::Aad::from(aad(namespace, mount, name, body)?),
-        &mut *ciphertext,
-    )
-    .map_err(|_| error(500, "encryption failed"))?;
-    let mut wrapped = nonce_bytes.to_vec();
+    let master = stored_material(&version.material)?;
+    let material = symmetric::material_with_kdf(
+        &key.kind,
+        key.derived,
+        key.convergent_encryption,
+        version.heptabao_convergent_version,
+        &master,
+        &context,
+        key.legacy_counter_kdf,
+    )?;
+    let key_len = symmetric::key_len(&key.kind);
+    let associated = symmetric::associated_data(body)?;
+    let nonce = symmetric::nonce(
+        key.convergent_encryption,
+        version.heptabao_convergent_version,
+        &material,
+        key_len,
+        plaintext,
+        &associated,
+        if xchacha { 24 } else { 12 },
+    )?;
+    let encryption_key = material
+        .get(..key_len)
+        .ok_or_else(|| error(500, "stored encryption key is invalid"))?;
+    let ciphertext = if xchacha {
+        let nonce: [u8; 24] = nonce
+            .as_slice()
+            .try_into()
+            .map_err(|_| error(500, "nonce generation failed"))?;
+        xchacha20_encrypt(encryption_key, &nonce, &associated, plaintext)?
+    } else {
+        let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
+        let cipher = aead::LessSafeKey::new(
+            aead::UnboundKey::new(algorithm, encryption_key)
+                .map_err(|_| error(500, "stored encryption key is invalid"))?,
+        );
+        let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+        cipher
+            .seal_in_place_append_tag(
+                aead::Nonce::try_assume_unique_for_key(&nonce)
+                    .map_err(|_| error(500, "nonce generation failed"))?,
+                aead::Aad::from(associated),
+                &mut *ciphertext,
+            )
+            .map_err(|_| error(500, "encryption failed"))?;
+        ciphertext.to_vec()
+    };
+    let mut wrapped = nonce;
     wrapped.extend_from_slice(&ciphertext);
     version.encryptions += 1;
     Ok(
@@ -925,30 +1961,87 @@ fn decrypt(
     name: &str,
     body: &Value,
 ) -> Result<Zeroizing<Vec<u8>>> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    if asymmetric::is_rsa(&key.kind) {
+        let (number, ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
+        let version = key.decrypt_version(number)?;
+        return asymmetric::decrypt(&stored_material(&version.material)?, &ciphertext);
+    }
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let (version_number, mut ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
     let version = key.decrypt_version(version_number)?;
-    if ciphertext.len() < 28 {
+    let nonce_len = if xchacha { 24 } else { 12 };
+    if ciphertext.len() < nonce_len + 16 {
         return Err(bad("invalid ciphertext"));
     }
-    let material = stored_material(&version.material)?;
-    let key = aead::LessSafeKey::new(
-        aead::UnboundKey::new(algorithm, &material)
+    let context = symmetric::context(key, body)?;
+    if key.legacy_counter_kdf && key.kind == "aes128-gcm96" {
+        return Err(openbao_compatibility_error(
+            "could not derive enc key, length not correct",
+        ));
+    }
+    let master = stored_material(&version.material)?;
+    let material = symmetric::material_with_kdf(
+        &key.kind,
+        key.derived,
+        key.convergent_encryption,
+        version.heptabao_convergent_version,
+        &master,
+        &context,
+        key.legacy_counter_kdf,
+    )?;
+    let encryption_key = material
+        .get(..symmetric::key_len(&key.kind))
+        .ok_or_else(|| error(500, "stored encryption key is invalid"))?;
+    if xchacha {
+        let nonce: [u8; 24] = ciphertext[..24]
+            .try_into()
+            .map_err(|_| bad("invalid ciphertext"))?;
+        return xchacha20_decrypt(
+            encryption_key,
+            &nonce,
+            &symmetric::associated_data(body)?,
+            &mut ciphertext[24..],
+        );
+    }
+    let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
+    let cipher = aead::LessSafeKey::new(
+        aead::UnboundKey::new(algorithm, encryption_key)
             .map_err(|_| error(500, "stored encryption key is invalid"))?,
     );
-    let mut nonce = [0; 12];
-    nonce.copy_from_slice(&ciphertext[..12]);
-    let plaintext = key
+    let nonce = &ciphertext[..12];
+    let associated = symmetric::associated_data(body)?;
+    let mut raw_payload = ciphertext[12..].to_vec();
+    if let Ok(plaintext) = cipher.open_in_place(
+        aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
+        aead::Aad::from(associated),
+        &mut raw_payload,
+    ) {
+        return Ok(Zeroizing::new(plaintext.to_vec()));
+    }
+
+    if key.derived {
+        return Err(bad("ciphertext authentication failed"));
+    }
+
+    // Keep already-persisted HeptaBao ciphertexts readable while all new
+    // ciphertexts follow OpenBao's portable raw-AAD contract.
+    let mut legacy_payload = ciphertext[12..].to_vec();
+    let plaintext = cipher
         .open_in_place(
-            aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(aad(namespace, mount, name, body)?),
-            &mut ciphertext[12..],
+            aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
+            aead::Aad::from(legacy_aad(namespace, mount, name, body)?),
+            &mut legacy_payload,
         )
         .map_err(|_| bad("ciphertext authentication failed"))?;
     Ok(Zeroizing::new(plaintext.to_vec()))
 }
 
 fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
+    parse_wrapped_with(input, &BASE64)
+}
+
+fn parse_wrapped_with(input: &str, encoding: &GeneralPurpose) -> Result<(u64, Zeroizing<Vec<u8>>)> {
     let rest = input
         .strip_prefix("vault:v")
         .ok_or_else(|| bad("invalid versioned cryptographic value"))?;
@@ -963,14 +2056,49 @@ fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
         .ok()
         .filter(|v| *v > 0)
         .ok_or_else(|| bad("invalid cryptographic key version"))?;
-    Ok((version, decode(data)?))
+    Ok((version, decode_with(data, encoding)?))
 }
 
-fn hmac_algorithm(name: &str) -> Result<hmac::Algorithm> {
+fn hmac_tag(name: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.finalize().into_bytes().to_vec())
+        }};
+    }
     match name {
-        "sha2-256" => Ok(hmac::HMAC_SHA256),
-        "sha2-384" => Ok(hmac::HMAC_SHA384),
-        "sha2-512" => Ok(hmac::HMAC_SHA512),
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "HMAC algorithm is not implemented")),
+    }
+}
+
+fn hmac_verify(name: &str, material: &[u8], input: &[u8], tag: &[u8]) -> Result<bool> {
+    macro_rules! verify {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.verify_slice(tag).is_ok())
+        }};
+    }
+    match name {
+        "sha2-224" => verify!(Sha224),
+        "sha2-256" => verify!(Sha256),
+        "sha2-384" => verify!(Sha384),
+        "sha2-512" => verify!(Sha512),
+        "sha3-224" => verify!(Sha3_224),
+        "sha3-256" => verify!(Sha3_256),
+        "sha3-384" => verify!(Sha3_384),
+        "sha3-512" => verify!(Sha3_512),
         _ => Err(error(501, "HMAC algorithm is not implemented")),
     }
 }
@@ -1027,17 +2155,105 @@ fn random(path: &str, body: &Value) -> Result<EngineResponse> {
 
 fn hash(path: &str, body: &Value) -> Result<EngineResponse> {
     reject_unknown(body, &["input", "algorithm", "format"])?;
-    let algorithm = match select_algorithm(path, body, "algorithm", "sha2-256")? {
-        "sha2-256" => &digest::SHA256,
-        "sha2-384" => &digest::SHA384,
-        "sha2-512" => &digest::SHA512,
-        _ => return Err(error(501, "hash algorithm is not implemented")),
-    };
-    let hashed = digest::digest(algorithm, &decode_field(body, "input")?);
+    let algorithm = select_algorithm(path, body, "algorithm", "sha2-256")?;
+    let input = decode_field(body, "input")?;
+    let hashed = hash_digest(algorithm, &input)?;
     let format = body
         .get("format")
         .map(|v| v.as_str().ok_or_else(|| bad("format must be a string")))
         .transpose()?
         .unwrap_or("hex");
-    Ok(ok(json!({"sum":encoded(hashed.as_ref(),format)?}), false))
+    Ok(ok(json!({"sum":encoded(&hashed,format)?}), false))
 }
+
+fn hash_digest(name: &str, input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut digest = <$digest>::new();
+            digest.update(input);
+            Ok(digest.finalize().to_vec())
+        }};
+    }
+    match name {
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "hash algorithm is not implemented")),
+    }
+}
+
+#[cfg(test)]
+mod auto_rotation_tests {
+    use super::*;
+
+    #[test]
+    fn auto_rotation_uses_one_hour_minimum_and_persists_across_restart()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut key = Key::new(
+            &json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
+            100,
+        )?;
+        assert_eq!(key.auto_rotate_period, 3600);
+        assert!(!key.auto_rotate(3_699)?);
+        assert!(key.auto_rotate(3_700)?);
+        assert_eq!(key.latest_version, 2);
+        assert_eq!(key.versions[&2].created_at, 3_700);
+        assert!(!key.auto_rotate(7_299)?);
+        assert!(key.auto_rotate(7_300)?);
+
+        let restored: Key = serde_json::from_value(serde_json::to_value(&key)?)?;
+        assert_eq!(restored.auto_rotate_period, 3600);
+        assert_eq!(restored.latest_version, 3);
+        Ok(())
+    }
+
+    #[test]
+    fn zero_disables_rotation_and_soft_deleted_or_retained_keys_do_not_rotate()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut disabled = Key::new(&json!({"auto_rotate_period":"0"}), 100)?;
+        assert!(!disabled.auto_rotate(10_000)?);
+
+        let mut deleted = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
+        deleted.deleted = true;
+        assert!(!deleted.auto_rotate(10_000)?);
+
+        let mut retained = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
+        for version in 2..=10_000 {
+            retained
+                .versions
+                .insert(version, KeyVersion::generate(&retained.kind, version)?);
+        }
+        retained.latest_version = 10_000;
+        assert!(!retained.auto_rotate(20_000)?);
+        Ok(())
+    }
+
+    #[test]
+    fn auto_rotation_rejects_sub_hour_periods()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        assert!(auto_rotate_period(Some(&json!("3599s"))).is_err());
+        assert_eq!(auto_rotate_period(Some(&json!("0")))?, 0);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "transit_mldsa_tests.rs"]
+mod mldsa_tests;
+
+#[cfg(test)]
+#[path = "transit_asymmetric_tests.rs"]
+mod asymmetric_tests;
+
+#[cfg(test)]
+#[path = "transit_symmetric_tests.rs"]
+mod symmetric_tests;
+
+#[cfg(test)]
+#[path = "transit_convergent_aad_tests.rs"]
+mod convergent_aad_tests;

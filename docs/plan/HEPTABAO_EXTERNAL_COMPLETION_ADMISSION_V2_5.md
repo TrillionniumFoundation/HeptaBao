@@ -99,6 +99,15 @@ recovery. Required signers are the platform and storage qualifiers.
 Required cases cover two clean-room builds, artifact digest equality and test
 reproduction. Two distinct independent reproducer signatures are mandatory.
 
+### `HB-BLK-EXT-008` — plugin sandbox and provider qualification
+
+Required cases cover independently qualified Linux, macOS and Windows sandbox
+providers, process-tree termination, authenticated multiplexed transport, real
+database/cloud provider connectors, rolling plugin upgrades and destructive
+provider qualification. Required signers are distinct plugin and provider
+qualifiers. Contract-only plugin tests or checksum pinning do not satisfy this
+gate.
+
 ## Trust-store boundary
 
 The evidence packet is forbidden from defining its own trust root. The verifier

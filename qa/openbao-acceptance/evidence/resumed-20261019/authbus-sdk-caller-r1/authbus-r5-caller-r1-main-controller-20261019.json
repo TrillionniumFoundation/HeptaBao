@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.authbus-r5-actual-sdk-caller-owned-launch.v1",
+  "source_packet_sha256": "c8f931d9e630660d48afcd39eec8159fbea682e6f2fb39ee33cd59db76013065",
+  "source_manifest_sha256": "b9ebf62849874ea4fe1ee4df0c99a06506b4ed59307fd3dc20731080bea740e3",
+  "node": "/usr/bin/node",
+  "node_version": "v22.23.3",
+  "argv": [
+    "/usr/bin/node",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-caller-r1-source-20261019/qa/openbao-acceptance/authbus/authbus_refresh_sdk_caller_live.mjs",
+    "--openclaw-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "--work-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-caller-r1-actual-20261019-01"
+  ],
+  "started_unix": 1792382304.085984,
+  "source_verified_files": 13,
+  "actual_native_heptabao": false,
+  "real_provider": false,
+  "real_credentials": false,
+  "production_mutation": false,
+  "original_case_contracts_preserved": true,
+  "pid": 1513663,
+  "pgid": 1513663,
+  "return_code": 1,
+  "owned_wait_completed": true,
+  "source_unchanged": true,
+  "finished_unix": 1792382310.4849188,
+  "log_sha256": "5b83b016bf2b7cb6247a1b6c00dbac91c2ec8ca621d491d7d057bff8869bd4b7"
+}

@@ -1,0 +1,11 @@
+test_config_root_rejects_ambiguity_cross_mount_and_missing_salt (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_config_root_rejects_ambiguity_cross_mount_and_missing_salt) ... ok
+test_json_observer_preserves_all_seven_numeric_lexemes (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_json_observer_preserves_all_seven_numeric_lexemes) ... ok
+test_json_observer_rejects_duplicate_and_non_json_numbers (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_json_observer_rejects_duplicate_and_non_json_numbers) ... ok
+test_nested_config_root_replaces_unproven_top_level_salt_assumption (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_nested_config_root_replaces_unproven_top_level_salt_assumption) ... ok
+test_network_gate_rejects_every_mutation_and_get_body (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_network_gate_rejects_every_mutation_and_get_body) ... ok
+test_prior_requires_all_seven_known_outcomes_in_original_order (test_kv2_271_numeric_raw_followup.NumericRawFollowupTests.test_prior_requires_all_seven_known_outcomes_in_original_order) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
