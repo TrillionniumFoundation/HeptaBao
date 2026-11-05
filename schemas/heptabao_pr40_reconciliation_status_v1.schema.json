@@ -18,7 +18,7 @@
       "additionalProperties": false,
       "required": ["repository", "pull_request", "branch", "commit", "tree"],
       "properties": {
-        "repository": {"const": "ProfHepta/HeptaBao"},
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
         "pull_request": {"const": 40},
         "branch": {"const": "codex/plan-v1.2.1-final-gap-closure-v1"},
         "commit": {"const": "cedb6c95a5323f7004551087d75e2f57a1ec484a"},

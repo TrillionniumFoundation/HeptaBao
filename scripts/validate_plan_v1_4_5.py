@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import sys as _contract_sys
+from pathlib import Path as _ContractPath
+_contract_sys.path.insert(0, str(_ContractPath(__file__).resolve().parent))
+from governance_source_contracts import descriptor_guard_errors
+
+
 import argparse
 import sys
 from pathlib import Path
@@ -209,15 +215,20 @@ def validate(root: Path) -> list[str]:
         (
             "fn open_absolute_directory_no_symlinks",
             "for component in components",
-            "O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC",
+            "OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC",
             "intermediate_symlink_is_rejected",
         ),
     )
 
+    errors.extend(descriptor_guard_errors(root))
+
     historical = text(root, ".github/workflows/plan-v1.3.1-head-and-merge-closure.yml")
     expected_scope = "branches:\n      - codex/plan-v1.3-gap-closure-v2"
-    if expected_scope not in historical:
-        errors.append("historical V1.3.1 exact-ratifier workflow is not branch scoped")
+    # The historical ratifier is now manual-only to keep it out of ordinary
+    # PR execution. Preserve its former branch scope as an audit marker when
+    # the workflow is inspected or re-enabled.
+    if expected_scope not in historical and "workflow_dispatch:" not in historical:
+        errors.append("historical V1.3.1 exact-ratifier workflow is neither branch scoped nor manual-only")
 
     workflow = text(root, ".github/workflows/plan-v1.4.5-security-invariant-closure.yml")
     for token in (

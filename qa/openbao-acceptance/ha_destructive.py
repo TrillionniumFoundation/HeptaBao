@@ -7,6 +7,8 @@ full linearizability proof, power-cut evidence, or rolling-version-upgrade evide
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 import hashlib
 import json
 import os
@@ -15,6 +17,7 @@ import secrets
 import shutil
 import socket
 import ssl
+import owned_process
 import subprocess
 import sys
 import time
@@ -24,6 +27,22 @@ import urllib.request
 
 class FixtureError(RuntimeError):
     """A safe fixed classification; never include credential-bearing responses."""
+
+
+MISBOUND_BOOTSTRAP_ERROR = (
+    "heptabao-server: HA bootstrap admission marker binding is invalid"
+)
+
+
+def exact_startup_rejection(returncode: int | None, log_delta: bytes,
+                            expected_line: str) -> bool:
+    """Admit only one exact, terminal fail-closed process rejection."""
+    try:
+        lines = [line.strip() for line in log_delta.decode("utf-8").splitlines()
+                 if line.strip()]
+    except UnicodeDecodeError:
+        return False
+    return returncode == 1 and bool(lines) and lines[-1] == expected_line
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -41,15 +60,33 @@ def private_write(path: Path, value: str | bytes) -> None:
 
 
 def openssl(*arguments: str) -> None:
-    subprocess.run(["openssl", *arguments], check=True, timeout=30,
+    owned_process.run(["openssl", *arguments], check=True, timeout=30,
                    stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL)
+                   stderr=subprocess.DEVNULL, label="ha_destructive.62")
+
+
+def free_ports(count: int) -> tuple[int, ...]:
+    """Select one bounded loopback batch while all selected sockets stay bound.
+
+    This prevents reuse within our own batch, not another process taking a port
+    after release. Actual bind/start failures still fail the campaign; no node
+    initialization or business request is retried.
+    """
+    if type(count) is not int or not 1 <= count <= 64:
+        raise FixtureError("invalid_ephemeral_port_count")
+    with ExitStack() as handles:
+        ports = []
+        for _ in range(count):
+            sock = handles.enter_context(socket.socket())
+            sock.bind(("127.0.0.1", 0))
+            ports.append(int(sock.getsockname()[1]))
+        if len(set(ports)) != count:
+            raise FixtureError("ephemeral_port_collision")
+        return tuple(ports)
 
 
 def free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+    return free_ports(1)[0]
 
 
 def checked_binary(path: Path, expected: str) -> str:
@@ -62,11 +99,16 @@ def checked_binary(path: Path, expected: str) -> str:
 
 
 class Node:
-    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext):
+    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext,
+                 *, ports: tuple[int, int] | None = None):
         self.node_id, self.binary, self.root = node_id, binary, root
         self.context = context
         self.ha_config = root / "ha.json"
-        self.http_port, self.raft_port = free_port(), free_port()
+        selected = free_ports(2) if ports is None else ports
+        if (len(selected) != 2 or len(set(selected)) != 2
+                or any(type(port) is not int or not 1 <= port <= 65535 for port in selected)):
+            raise FixtureError("invalid_node_port_pair")
+        self.http_port, self.raft_port = selected
         self.process = None
         self.log = None
         self.started_pids: list[int] = []
@@ -75,12 +117,17 @@ class Node:
     def data_dir(self) -> Path:
         return self.root / "data"
 
-    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0):
+    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0, wrap_ttl: str | None = None):
         if not path or path.startswith("/") or "://" in path or ".." in path.split("/"):
             raise FixtureError("invalid_fixture_request_path")
-        headers = {"Content-Type": "application/json"}
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if token:
             headers["X-Vault-Token"] = token
+        if wrap_ttl is not None:
+            if not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64 or any(
+                    ord(c) < 33 or ord(c) > 126 for c in wrap_ttl):
+                raise FixtureError("invalid_fixture_wrapping_ttl")
+            headers["X-Vault-Wrap-TTL"] = wrap_ttl
         request = urllib.request.Request(
             f"https://127.0.0.1:{self.http_port}/v1/{path}",
             data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)
@@ -99,7 +146,7 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
-    def start(self, ha: bool = True) -> None:
+    def start(self, ha: bool = True, *, wait: bool = True) -> None:
         if self.process is not None:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
@@ -108,9 +155,25 @@ class Node:
         command = [str(self.binary), "--config", str(self.root / "server.json")]
         if ha:
             command.extend(["--ha-config", str(self.ha_config)])
-        self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
-                                        stdout=self.log, stderr=self.log, start_new_session=True)
-        self.started_pids.append(self.process.pid)
+        self.process = owned_process.popen(command, stdin=subprocess.DEVNULL,
+                                        stdout=self.log, stderr=self.log, start_new_session=True, label="ha_destructive.157", action="KILL", stop_timeout=10)
+        try:
+            self.started_pids.append(self.process.pid)
+            if not wait:
+                return
+            self.wait_ready()
+        except BaseException as error:
+            owned_process.abort(error, [self.stop])
+
+    def wait_ready(self) -> None:
+        """Wait for the HTTPS listener after all peers have had a chance to bind.
+
+        HA bootstrap can need a peer listener while the bootstrap process is
+        starting.  Starting every process first avoids making node 1's startup
+        depend on an incidental process scheduling order.
+        """
+        if self.process is None:
+            raise FixtureError("node_not_running")
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -123,20 +186,44 @@ class Node:
             time.sleep(0.05)
         raise FixtureError("node_listener_timeout")
 
-    def stop(self) -> None:
+    def expect_startup_rejection(self, expected_line: str) -> None:
+        """Require an exact nonzero process rejection before API admission."""
+        if self.process is not None:
+            raise FixtureError("node_already_running")
+        log_path = self.root / "process.log"
+        before = log_path.stat().st_size if log_path.exists() else 0
+        self.start(wait=False)
         try:
-            if self.process is not None:
-                if self.process.poll() is None:
-                    self.process.kill()
-                self.process.wait(timeout=10)
-                self.process = None
+            try:
+                returncode = owned_process.wait(self.process, timeout=10)
+            except subprocess.TimeoutExpired as error:
+                raise FixtureError("misbound_cluster_process_did_not_exit") from error
+            if self.log is None:
+                raise FixtureError("startup_rejection_log_unavailable")
+            self.log.flush()
+            with log_path.open("rb") as stream:
+                stream.seek(before)
+                delta = stream.read(64 * 1024 + 1)
+            if len(delta) > 64 * 1024 or not exact_startup_rejection(
+                    returncode, delta, expected_line):
+                raise FixtureError("unexpected_startup_rejection")
         finally:
-            if self.log is not None:
-                self.log.close()
-                self.log = None
+            self.stop()
+
+    def stop(self) -> None:
+        process, log = self.process, self.log
+        try:
+            owned_process.close_all([
+                lambda: owned_process.stop(process, action="KILL", timeout=10, expected_codes=(-9,)),
+                lambda: log.close() if log is not None and not log.closed else None,
+            ])
+        finally:
+            self.process = None
+            self.log = None
 
 
 class Cluster:
+    NODE_IDS = (1, 2, 3)
     def __init__(self, binary: Path, root: Path):
         if not root.is_absolute() or root.resolve() != root or root.exists() or not root.parent.is_dir():
             raise FixtureError("work_directory_must_be_new_absolute_non_symlink")
@@ -144,6 +231,7 @@ class Cluster:
         self.root, self.binary = root, binary
         self.nodes: list[Node] = []
         self.scenarios: list[str] = []
+        self.fixture_mount_setup: list[dict] = []
         self.root_token = ""
         self.unseal_key = ""
         self.cluster_id = ""
@@ -164,10 +252,11 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
-        for number in (1, 2, 3):
+        ports = iter(free_ports(2 * len(self.NODE_IDS)))
+        for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
-            node = Node(number, self.binary, root, context)
+            node = Node(number, self.binary, root, context, ports=(next(ports), next(ports)))
             self.nodes.append(node)
             key, cert, csr = root / "tls.key", root / "tls.crt", root / "tls.csr"
             openssl("req", "-new", "-newkey", "rsa:2048", "-nodes", "-keyout", str(key),
@@ -186,7 +275,7 @@ class Cluster:
                 "max_connections": 32, "timeout_seconds": 5,
                 "rate_limit_per_second": 1000, "rate_limit_burst": 2000, "rate_limit_entries": 256}))
         ports = [port for node in self.nodes for port in (node.http_port, node.raft_port)]
-        if len(set(ports)) != 6:
+        if len(set(ports)) != 2 * len(self.NODE_IDS):
             raise FixtureError("ephemeral_port_collision")
         self.peers = peers
 
@@ -239,7 +328,9 @@ class Cluster:
                 except (OSError, urllib.error.URLError, TimeoutError):
                     continue
                 if status == 200:
-                    if health.get("ha_active") is not True or health.get("standby") is not False:
+                    if (health.get("ha_active") is not True
+                            or health.get("ha_application_ready") is not True
+                            or health.get("standby") is not False):
                         raise FixtureError("health_success_without_active_authority")
                     active.append(node)
             if len(active) > 1:
@@ -288,7 +379,13 @@ class Cluster:
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError("restart_unseal_failed")
 
-    def run(self) -> None:
+    def provision_seed_mounts(self, seed: Node) -> None:
+        provision_secret_kv2(
+            seed.call, token=self.root_token, error_type=FixtureError)
+        self.fixture_mount_setup.append(completed_kv2_mount_metadata())
+
+    def bootstrap(self) -> None:
+        """Start the synthetic three-voter cluster without unrelated fault cases."""
         seed = self.nodes[0]
         seed.start(ha=False)
         self.check("fresh_seed_uninitialized", seed.call("GET", "sys/health")[0] == 501)
@@ -296,6 +393,7 @@ class Cluster:
         self.check("fresh_seed_initialized", status == 200 and bool(body.get("root_token")) and bool(body.get("keys_base64")))
         self.root_token, self.unseal_key = body["root_token"], body["keys_base64"][0]
         self.check("seed_unsealed_before_ha", seed.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.provision_seed_mounts(seed)
         status, health = seed.call("GET", "sys/health")
         self.check("seed_cluster_identity_read_back", status == 200 and isinstance(health.get("cluster_id"), str) and bool(health["cluster_id"]))
         self.cluster_id = health["cluster_id"]
@@ -303,27 +401,40 @@ class Cluster:
         self.configure_ha()
         for node in self.nodes[1:]:
             shutil.copytree(seed.data_dir, node.data_dir)
-        # Test that a legitimate peer cannot unseal a different application cluster.
+        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
+        # Bootstrap every peer with the same cluster identity before exercising
+        # the hostile misbinding case.  The bootstrap voter may contact its
+        # peers during membership expansion, so bind every listener first.
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.start(wait=False)
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.wait_ready()
+        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
+        self.wait_quorum()
+        for node in self.nodes:
+            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+
+    def assert_misbound_rejection(self, wrong: Node) -> None:
+        # Current candidates must reject the bound durable marker before API
+        # admission. Historical rolling fixtures override only this assertion.
+        wrong.expect_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
+        self.check("misbound_cluster_startup_rejected", True)
+
+    def run(self) -> None:
+        self.bootstrap()
+        # Test that a legitimate peer cannot unseal a different application
+        # cluster after it has already joined the committed three-voter set.
         wrong = self.nodes[2]
+        wrong.stop()
         wrong_config = json.loads((wrong.root / "ha.json").read_text())
         wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
-        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
-        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
-            node.start()
-        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
-        self.wait_quorum()
-        status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
-        self.check("misbound_cluster_unseal_denied", status == 503 and denied.get("errors") == ["HA configuration belongs to a different cluster"])
-        status, health = wrong.call("GET", "sys/health")
-        self.check("misbound_cluster_remains_sealed", status == 503 and health.get("sealed") is True)
-        wrong.stop()
+        self.assert_misbound_rejection(wrong)
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()
-        for node in self.nodes:
-            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.check("restored_peer_unsealed", wrong.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
         leader = self.leader()
         marker = secrets.token_hex(16)
         self.write(leader, "ha-probe", marker)
@@ -372,14 +483,7 @@ class Cluster:
         self.check("all_three_rejoined_after_quorum_recovery", True)
 
     def close(self) -> None:
-        failed = False
-        for node in self.nodes:
-            try:
-                node.stop()
-            except (OSError, subprocess.SubprocessError):
-                failed = True
-        if failed:
-            raise FixtureError("node_cleanup_failed")
+        owned_process.close_all([node.stop for node in self.nodes])
 
 
 def main() -> int:
@@ -411,6 +515,7 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

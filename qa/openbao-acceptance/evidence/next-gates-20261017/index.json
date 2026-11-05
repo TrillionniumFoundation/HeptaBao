@@ -1,0 +1,1380 @@
+{
+  "schema": "heptabao-next-gates-evidence-index-v2",
+  "recorded_at": "2026-10-18T03:13:53.765477+00:00",
+  "production_cutover_completed": false,
+  "legacy_cleanup_completed": false,
+  "historical_status": {
+    "prior_index_sha256": "9b713a7e31762501d263c67028c9e0444441b48f03ba29672e834312bce6f938",
+    "prior_index_bytes": 5561,
+    "prior_index_status": {
+      "schema": "heptabao-next-gates-evidence-index-v1",
+      "recorded_at": "2026-10-17T14:10:22.253745+00:00",
+      "production_cutover_completed": false,
+      "legacy_cleanup_completed": false,
+      "native_physical_ha_89_executed": false,
+      "pocket4_r2_executed": false,
+      "runtime_connection_error": "Tunnel-client has not been seen for 300 seconds",
+      "unreconciled_remote_job": "1a14a0b3e5d-1b6abb-13e",
+      "qualification_rule": "Each receipt retains its own source, binary, denominator and scope. These counts are not a combined production qualification."
+    },
+    "scope": "These fields describe the prior 2026-10-17 index timestamp, not current execution status. Original file records are preserved verbatim as the prefix of files."
+  },
+  "current_status": {
+    "r8g_original_remote_job": {
+      "status": "reconciled_original_compile_failure",
+      "job_id": "1a14a0b3e5d-1b6abb-13e",
+      "job_exit_code": 1,
+      "cargo_exit_codes": [
+        101
+      ],
+      "tests_ran": false,
+      "source_unchanged": true,
+      "source_tree": "b3dc2ac31bb8a601292e49590d59394e45e07317",
+      "source_file_count": 2534,
+      "output_complete": true,
+      "evidence": [
+        "r8g-remote-reconciled-status.json",
+        "r8g-remote-reconciled-stdout.log"
+      ]
+    },
+    "pocket4_r2": {
+      "executed": true,
+      "ok": true,
+      "observed_checks": 141,
+      "passed_checks": 141,
+      "scope": "actual owned Google credential, original plugin and SDK, isolated single-host fixture",
+      "production_cutover": false,
+      "legacy_oauth_migrated": false,
+      "ha_qualification": false,
+      "evidence": [
+        "pocket4-canary-public-r2.json"
+      ],
+      "original_r1_failure_preserved": true
+    },
+    "r8m_mac": {
+      "executed": true,
+      "ok": true,
+      "tests_passed": 4,
+      "groups": [
+        {
+          "group": "repair",
+          "expected_tests": 3,
+          "exit_code": 0,
+          "ok": true,
+          "summaries": [
+            "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2704 filtered out; finished in 22.78s"
+          ]
+        },
+        {
+          "group": "archive34",
+          "expected_tests": 1,
+          "exit_code": 0,
+          "ok": true,
+          "summaries": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2706 filtered out; finished in 21.20s"
+          ]
+        }
+      ],
+      "source_tree": "f8413d46654dde2425260d044f0000ad3a2fda87",
+      "source_before": {
+        "all_sha256_and_modes_verified": true,
+        "bytes": 42703723,
+        "files": 2588,
+        "tree": "f8413d46654dde2425260d044f0000ad3a2fda87"
+      },
+      "source_after": {
+        "all_sha256_and_modes_verified": true,
+        "bytes": 42703723,
+        "files": 2588,
+        "tree": "f8413d46654dde2425260d044f0000ad3a2fda87"
+      },
+      "source_unchanged": true,
+      "base_unchanged": true,
+      "service_http_recovery_enabled": false,
+      "physical_89_executed": false,
+      "production_cutover": false,
+      "evidence": [
+        "r8m-mac-summary.json",
+        "r8m-mac-mac-summary.json",
+        "r8m-mac-repair.log",
+        "r8m-mac-archive34.log",
+        "r8m-source-freeze-receipt.json",
+        "r8m-source-manifest.json"
+      ]
+    },
+    "r8n_shared_mac_01": {
+      "status": "completed_scoped_shared_object_sync_regression",
+      "executed": true,
+      "ok": true,
+      "tests_passed": 13,
+      "groups": [
+        {
+          "group": "checked-existing",
+          "expected_tests": 13,
+          "exit_code": 0,
+          "ok": true,
+          "summaries": [
+            "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 124 filtered out; finished in 0.95s"
+          ]
+        }
+      ],
+      "source_tree": "9277b345ca1f9c1117b03332958b51b7c25ed772",
+      "source_before": {
+        "all_sha256_and_modes_verified": true,
+        "bytes": 42727056,
+        "files": 2590,
+        "tree": "9277b345ca1f9c1117b03332958b51b7c25ed772"
+      },
+      "source_after": {
+        "all_sha256_and_modes_verified": true,
+        "bytes": 42727056,
+        "files": 2590,
+        "tree": "9277b345ca1f9c1117b03332958b51b7c25ed772"
+      },
+      "source_unchanged": true,
+      "base_unchanged": true,
+      "full_performance_qualification": false,
+      "full_http_34mib_chain_qualified": false,
+      "physical_89_executed": false,
+      "production_cutover": false,
+      "evidence": [
+        "r8n-shared-mac-01-summary.json",
+        "r8n-shared-mac-01-mac-summary.json",
+        "r8n-shared-mac-01-checked-existing.log",
+        "r8n-shared-source-freeze-receipt.json",
+        "r8n-shared-source-manifest.json",
+        "r8n-shared-mac-01-start.json"
+      ]
+    },
+    "native_physical_ha_89": {
+      "attempted_runs": 2,
+      "completed": false,
+      "qualified": false,
+      "runs": [
+        {
+          "attempt": "01",
+          "evidence": "r8j-native-physical89-01-summary.json",
+          "status": "failed",
+          "required_check_count": 89,
+          "observed_check_count": 18,
+          "passed_check_count": 18,
+          "qualification": false,
+          "large_http_forwarding_verified": false,
+          "native_ha_backup_verified": false
+        },
+        {
+          "attempt": "02",
+          "evidence": "r8j-native-physical89-02-summary.json",
+          "status": "failed",
+          "required_check_count": 89,
+          "observed_check_count": 35,
+          "passed_check_count": 34,
+          "qualification": false,
+          "large_http_forwarding_verified": false,
+          "native_ha_backup_verified": false
+        }
+      ],
+      "counts_are_not_summed_into_89": true,
+      "native_leader_kill_reelection_cold_restart_completed": false
+    },
+    "authbus_owned_source_r2": {
+      "driver_exit_code": 0,
+      "original_driver_ok": true,
+      "original_wrapper_ok": false,
+      "original_wrapper_contract_passed": false,
+      "status": "reconciled_scoped_evidence_original_wrapper_failed",
+      "events": {
+        "293_unique_cases_claimed": false,
+        "distinct_case_labels": 292,
+        "labels_unique": false,
+        "observed": 293,
+        "passed": 293
+      },
+      "only_failed_wrapper_leaf_predicate": "case_names_unique",
+      "scoped_functional_evidence_supported": true,
+      "excluded_qualification": {
+        "enforced_scheduler_qualified": false,
+        "ha_cluster_qualified": false,
+        "j3160_contacted": false,
+        "oauth_refresh_ownership_qualified": false,
+        "oauth_refreshed": false,
+        "production_coordinator_replacement": false,
+        "production_cutover": false,
+        "production_mutation": false,
+        "provider_called": false,
+        "provider_liveness_verified": false
+      },
+      "evidence": [
+        "authbus-owned-source-actual-r2-public-receipt.json",
+        "authbus-owned-source-r2-controller-public-receipt.json",
+        "authbus-owned-source-r2-reconciliation-r1.json",
+        "authbus-owned-source-r2-reconciliation-r1.md"
+      ]
+    },
+    "four_host_migration_metadata": {
+      "valid_metadata_receipt_count": 4,
+      "ok": true,
+      "host_statuses": [
+        {
+          "host": "main",
+          "status": "metadata_received",
+          "bounds_hit": [],
+          "item_error_class_counts": {
+            "FileNotFoundError": 12
+          }
+        },
+        {
+          "host": "macbook-pro",
+          "status": "metadata_received",
+          "bounds_hit": [
+            "maximum_depth",
+            "per_directory_entries"
+          ],
+          "item_error_class_counts": {}
+        },
+        {
+          "host": "rog",
+          "status": "metadata_received",
+          "bounds_hit": [],
+          "item_error_class_counts": {}
+        },
+        {
+          "host": "pocket4",
+          "status": "metadata_received",
+          "bounds_hit": [],
+          "item_error_class_counts": {}
+        }
+      ],
+      "qualification": {
+        "allClientsAndBackupsMigrated": false,
+        "backupRestoreQualified": false,
+        "legacyCleanupQualified": false,
+        "metadataOnly": true,
+        "productionCutoverQualified": false,
+        "providerLivenessQualified": false
+      },
+      "evidence": [
+        "authbus-migration-gap-v3-r1-controller-public-receipt.json",
+        "authbus-migration-gap-v3-r1-main.public.json",
+        "authbus-migration-gap-v3-r1-macbook-pro.public.json",
+        "authbus-migration-gap-v3-r1-rog.public.json",
+        "authbus-migration-gap-v3-r1-pocket4.public.json"
+      ]
+    }
+  },
+  "file_verification": {
+    "verified_at": "2026-10-18T03:13:53.765477+00:00",
+    "original_record_count": 30,
+    "original_records_exact": 25,
+    "original_records_missing": 5,
+    "original_records_mismatched": 0,
+    "old_record_results": [
+      {
+        "path": "physical-ha-r6-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "physical-ha-r6-receipt.json",
+          "bytes": 13303,
+          "sha256": "054251799c858002eacdb3ab2dc0ec87cd919255feefcec18177fb35636934d4"
+        },
+        "original_record": {
+          "path": "physical-ha-r6-receipt.json",
+          "bytes": 13303,
+          "sha256": "054251799c858002eacdb3ab2dc0ec87cd919255feefcec18177fb35636934d4"
+        }
+      },
+      {
+        "path": "python-authbus-r7-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "python-authbus-r7-receipt.json",
+          "bytes": 15681,
+          "sha256": "26ba974bab3eaa8bacae64957e4194b10908db737be66363f36d68e409ae2637"
+        },
+        "original_record": {
+          "path": "python-authbus-r7-receipt.json",
+          "bytes": 15681,
+          "sha256": "26ba974bab3eaa8bacae64957e4194b10908db737be66363f36d68e409ae2637"
+        }
+      },
+      {
+        "path": "mac-native-matrix-r8c.json",
+        "status": "exact",
+        "actual": {
+          "path": "mac-native-matrix-r8c.json",
+          "bytes": 2561,
+          "sha256": "0f0553a6de88abd75261cd0877b0fc6a950b794750a7825af2ded0851f1aa79b"
+        },
+        "original_record": {
+          "path": "mac-native-matrix-r8c.json",
+          "bytes": 2561,
+          "sha256": "0f0553a6de88abd75261cd0877b0fc6a950b794750a7825af2ded0851f1aa79b"
+        }
+      },
+      {
+        "path": "mac-34mib-tls-r8e-compile-failure.log",
+        "status": "missing_original_record_preserved",
+        "original_record": {
+          "path": "mac-34mib-tls-r8e-compile-failure.log",
+          "bytes": 5515,
+          "sha256": "84b465f4cf971197eac750e4a7e5b571f79e0361ca1ae216fd5643fd74c40c8f"
+        }
+      },
+      {
+        "path": "mac-34mib-tls-r8f.json",
+        "status": "exact",
+        "actual": {
+          "path": "mac-34mib-tls-r8f.json",
+          "bytes": 3060,
+          "sha256": "b02678522dc1411fc55ed1722bb4a8ad21590745b133c92d49c9c86b9791d6e9"
+        },
+        "original_record": {
+          "path": "mac-34mib-tls-r8f.json",
+          "bytes": 3060,
+          "sha256": "b02678522dc1411fc55ed1722bb4a8ad21590745b133c92d49c9c86b9791d6e9"
+        }
+      },
+      {
+        "path": "ha-raft-native-read-pull-batch-validation.json",
+        "status": "exact",
+        "actual": {
+          "path": "ha-raft-native-read-pull-batch-validation.json",
+          "bytes": 3142,
+          "sha256": "fc7346f8194861203e5fc7804efd7bd881c78eaf8c34d4c2f7388c2bb00943fd"
+        },
+        "original_record": {
+          "path": "ha-raft-native-read-pull-batch-validation.json",
+          "bytes": 3142,
+          "sha256": "fc7346f8194861203e5fc7804efd7bd881c78eaf8c34d4c2f7388c2bb00943fd"
+        }
+      },
+      {
+        "path": "ha-raft-native-read-pull-batch-source-final.json",
+        "status": "exact",
+        "actual": {
+          "path": "ha-raft-native-read-pull-batch-source-final.json",
+          "bytes": 12757,
+          "sha256": "fe7e63e6dc932e42ee9e505bb2b500e179e470cdca8ad216e55f6bfb1beee151"
+        },
+        "original_record": {
+          "path": "ha-raft-native-read-pull-batch-source-final.json",
+          "bytes": 12757,
+          "sha256": "fe7e63e6dc932e42ee9e505bb2b500e179e470cdca8ad216e55f6bfb1beee151"
+        }
+      },
+      {
+        "path": "ha-native-v6-ingress-pull-batch-final.log",
+        "status": "missing_original_record_preserved",
+        "original_record": {
+          "path": "ha-native-v6-ingress-pull-batch-final.log",
+          "bytes": 2292,
+          "sha256": "4d63a90955e3d92bd44011e04379930918afd95c6c3082e7b47de8c57207312c"
+        }
+      },
+      {
+        "path": "raft-native-v6-opaque-read-final.log",
+        "status": "missing_original_record_preserved",
+        "original_record": {
+          "path": "raft-native-v6-opaque-read-final.log",
+          "bytes": 12819,
+          "sha256": "53b4b8baf0e9d6b6225912d9280645c722405c7ad7fb052faf72cf0e230980f7"
+        }
+      },
+      {
+        "path": "actual-openclaw-r8-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "actual-openclaw-r8-receipt.json",
+          "bytes": 11151,
+          "sha256": "2bb4cd9b2dc847ed6b867f96adfa46089e72081db1ab8558e73bc6d9e2ce2db6"
+        },
+        "original_record": {
+          "path": "actual-openclaw-r8-receipt.json",
+          "bytes": 11151,
+          "sha256": "2bb4cd9b2dc847ed6b867f96adfa46089e72081db1ab8558e73bc6d9e2ce2db6"
+        }
+      },
+      {
+        "path": "actual-openclaw-r9-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "actual-openclaw-r9-receipt.json",
+          "bytes": 40177,
+          "sha256": "1f8f5c248621ff666867b600f1a7b3f3115060d93cd6959ba350d49e3d252473"
+        },
+        "original_record": {
+          "path": "actual-openclaw-r9-receipt.json",
+          "bytes": 40177,
+          "sha256": "1f8f5c248621ff666867b600f1a7b3f3115060d93cd6959ba350d49e3d252473"
+        }
+      },
+      {
+        "path": "authbus-main-modes-r1-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "authbus-main-modes-r1-receipt.json",
+          "bytes": 82687,
+          "sha256": "4c5ac9900934f0b3af63c5b9b8ec44d28b688aa47c7f40ff940ddd000ee104d2"
+        },
+        "original_record": {
+          "path": "authbus-main-modes-r1-receipt.json",
+          "bytes": 82687,
+          "sha256": "4c5ac9900934f0b3af63c5b9b8ec44d28b688aa47c7f40ff940ddd000ee104d2"
+        }
+      },
+      {
+        "path": "authbus-physical-fleet-r1-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "authbus-physical-fleet-r1-receipt.json",
+          "bytes": 24248,
+          "sha256": "e9f6712051411ef6e18cbca84469f6a28f183c0675b791460fa5c458830e11c2"
+        },
+        "original_record": {
+          "path": "authbus-physical-fleet-r1-receipt.json",
+          "bytes": 24248,
+          "sha256": "e9f6712051411ef6e18cbca84469f6a28f183c0675b791460fa5c458830e11c2"
+        }
+      },
+      {
+        "path": "macbook-pro-canary-public.json",
+        "status": "exact",
+        "actual": {
+          "path": "macbook-pro-canary-public.json",
+          "bytes": 30227,
+          "sha256": "ea6ce6f79e435e0406c2ea0e504539759cb8696656d04103f86082da5b08c754"
+        },
+        "original_record": {
+          "path": "macbook-pro-canary-public.json",
+          "bytes": 30227,
+          "sha256": "ea6ce6f79e435e0406c2ea0e504539759cb8696656d04103f86082da5b08c754"
+        }
+      },
+      {
+        "path": "rog-canary-public.json",
+        "status": "exact",
+        "actual": {
+          "path": "rog-canary-public.json",
+          "bytes": 29995,
+          "sha256": "81fb713ddbb8a7ef3c1ef810f498032c7dc96446b2c060520eb5db4eee624e75"
+        },
+        "original_record": {
+          "path": "rog-canary-public.json",
+          "bytes": 29995,
+          "sha256": "81fb713ddbb8a7ef3c1ef810f498032c7dc96446b2c060520eb5db4eee624e75"
+        }
+      },
+      {
+        "path": "pocket4-canary-public.json",
+        "status": "exact",
+        "actual": {
+          "path": "pocket4-canary-public.json",
+          "bytes": 23831,
+          "sha256": "0d3e8549a94d23977177220d2a30fdf1f23b8d74912c46f8484153fce40de268"
+        },
+        "original_record": {
+          "path": "pocket4-canary-public.json",
+          "bytes": 23831,
+          "sha256": "0d3e8549a94d23977177220d2a30fdf1f23b8d74912c46f8484153fce40de268"
+        }
+      },
+      {
+        "path": "authbus-sdk-explicit-deny-r1-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "authbus-sdk-explicit-deny-r1-receipt.json",
+          "bytes": 21285,
+          "sha256": "491108fa7ea63a161de9ab24e9248a7b1c02b299fd96659024389d26c5b812c5"
+        },
+        "original_record": {
+          "path": "authbus-sdk-explicit-deny-r1-receipt.json",
+          "bytes": 21285,
+          "sha256": "491108fa7ea63a161de9ab24e9248a7b1c02b299fd96659024389d26c5b812c5"
+        }
+      },
+      {
+        "path": "r8g-local-check-source.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8g-local-check-source.json",
+          "bytes": 300,
+          "sha256": "84bdf17e723967f64801e78076863f047a0171d443f17495f1aea35c5c6746b7"
+        },
+        "original_record": {
+          "path": "r8g-local-check-source.json",
+          "bytes": 300,
+          "sha256": "84bdf17e723967f64801e78076863f047a0171d443f17495f1aea35c5c6746b7"
+        }
+      },
+      {
+        "path": "r8g-local-cargo-check.log",
+        "status": "missing_original_record_preserved",
+        "original_record": {
+          "path": "r8g-local-cargo-check.log",
+          "bytes": 13277,
+          "sha256": "f9b9a8a27f5cbac089135877c3f7f896b886ef4bf17f04a2e3abff231328e75d"
+        }
+      },
+      {
+        "path": "r8g-local-cargo-check-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8g-local-cargo-check-receipt.json",
+          "bytes": 873,
+          "sha256": "42709e5a832afc4a811435f8253922a9e6228e3d6eec6d930a125a3767436f2c"
+        },
+        "original_record": {
+          "path": "r8g-local-cargo-check-receipt.json",
+          "bytes": 873,
+          "sha256": "42709e5a832afc4a811435f8253922a9e6228e3d6eec6d930a125a3767436f2c"
+        }
+      },
+      {
+        "path": "r8h-local-check-source.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8h-local-check-source.json",
+          "bytes": 300,
+          "sha256": "4edf47f3903dacc154bb91052278f778170615ff3e7bdd9f70b66ec29d1525f7"
+        },
+        "original_record": {
+          "path": "r8h-local-check-source.json",
+          "bytes": 300,
+          "sha256": "4edf47f3903dacc154bb91052278f778170615ff3e7bdd9f70b66ec29d1525f7"
+        }
+      },
+      {
+        "path": "r8h-local-cargo-check.log",
+        "status": "missing_original_record_preserved",
+        "original_record": {
+          "path": "r8h-local-cargo-check.log",
+          "bytes": 7361,
+          "sha256": "14be741b04256724215c10ef60fce66862acbce6581b77f3bb613dc522947be5"
+        }
+      },
+      {
+        "path": "r8h-local-cargo-check-receipt.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8h-local-cargo-check-receipt.json",
+          "bytes": 882,
+          "sha256": "2b8f9807e442076022801cb8c5ec24dbd63aaf949fccb47d50d0c1075df8ea65"
+        },
+        "original_record": {
+          "path": "r8h-local-cargo-check-receipt.json",
+          "bytes": 882,
+          "sha256": "2b8f9807e442076022801cb8c5ec24dbd63aaf949fccb47d50d0c1075df8ea65"
+        }
+      },
+      {
+        "path": "ha-native-peer-capacity-r8h-freeze.json",
+        "status": "exact",
+        "actual": {
+          "path": "ha-native-peer-capacity-r8h-freeze.json",
+          "bytes": 1087,
+          "sha256": "5fe5f47519f52d709cb6c18d83c99dd8b446e6388e008b7c8a65e3ff674e018f"
+        },
+        "original_record": {
+          "path": "ha-native-peer-capacity-r8h-freeze.json",
+          "bytes": 1087,
+          "sha256": "5fe5f47519f52d709cb6c18d83c99dd8b446e6388e008b7c8a65e3ff674e018f"
+        }
+      },
+      {
+        "path": "ha-native-publication-source-binding-freeze.json",
+        "status": "exact",
+        "actual": {
+          "path": "ha-native-publication-source-binding-freeze.json",
+          "bytes": 509,
+          "sha256": "728f1b3933e3e81d6c27ef7779701c9134e591b8dc95b98ec1f5b3191619c99b"
+        },
+        "original_record": {
+          "path": "ha-native-publication-source-binding-freeze.json",
+          "bytes": 509,
+          "sha256": "728f1b3933e3e81d6c27ef7779701c9134e591b8dc95b98ec1f5b3191619c99b"
+        }
+      },
+      {
+        "path": "r6-source-binding.json",
+        "status": "exact",
+        "actual": {
+          "path": "r6-source-binding.json",
+          "bytes": 2652,
+          "sha256": "d322fdb3d342b34793f21ad43529556a8f2ae7baac187059226a0cd14b74f011"
+        },
+        "original_record": {
+          "path": "r6-source-binding.json",
+          "bytes": 2652,
+          "sha256": "d322fdb3d342b34793f21ad43529556a8f2ae7baac187059226a0cd14b74f011"
+        }
+      },
+      {
+        "path": "r8c-source-binding.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8c-source-binding.json",
+          "bytes": 456,
+          "sha256": "492d12e6025e0c9709facc9a1d768149a8ae2988ca7615a05408af6b9e97f764"
+        },
+        "original_record": {
+          "path": "r8c-source-binding.json",
+          "bytes": 456,
+          "sha256": "492d12e6025e0c9709facc9a1d768149a8ae2988ca7615a05408af6b9e97f764"
+        }
+      },
+      {
+        "path": "r8f-source-binding.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8f-source-binding.json",
+          "bytes": 456,
+          "sha256": "4476e19068ad437f05aed6d3c43881ec3d0770cb0b5e8f2cd1ab89809d2a9806"
+        },
+        "original_record": {
+          "path": "r8f-source-binding.json",
+          "bytes": 456,
+          "sha256": "4476e19068ad437f05aed6d3c43881ec3d0770cb0b5e8f2cd1ab89809d2a9806"
+        }
+      },
+      {
+        "path": "r8g-source-binding.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8g-source-binding.json",
+          "bytes": 457,
+          "sha256": "4bc4742f12b43ff62b7a80f1c7bb68507328d8394da2d46b9a2504e226bdc0b9"
+        },
+        "original_record": {
+          "path": "r8g-source-binding.json",
+          "bytes": 457,
+          "sha256": "4bc4742f12b43ff62b7a80f1c7bb68507328d8394da2d46b9a2504e226bdc0b9"
+        }
+      },
+      {
+        "path": "r8h-source-binding.json",
+        "status": "exact",
+        "actual": {
+          "path": "r8h-source-binding.json",
+          "bytes": 456,
+          "sha256": "88201d1ac3f32c16f89537de03127604fe053a00f3ac9762f18be6612677f850"
+        },
+        "original_record": {
+          "path": "r8h-source-binding.json",
+          "bytes": 456,
+          "sha256": "88201d1ac3f32c16f89537de03127604fe053a00f3ac9762f18be6612677f850"
+        }
+      }
+    ],
+    "present_evidence_file_count_excluding_index": 92,
+    "new_file_record_count": 67,
+    "file_record_count_including_missing_history": 97,
+    "index_itself_included": false,
+    "hashes_are_whole_file_bytes": true,
+    "missing_history_not_recreated": true
+  },
+  "files": [
+    {
+      "path": "physical-ha-r6-receipt.json",
+      "bytes": 13303,
+      "sha256": "054251799c858002eacdb3ab2dc0ec87cd919255feefcec18177fb35636934d4"
+    },
+    {
+      "path": "python-authbus-r7-receipt.json",
+      "bytes": 15681,
+      "sha256": "26ba974bab3eaa8bacae64957e4194b10908db737be66363f36d68e409ae2637"
+    },
+    {
+      "path": "mac-native-matrix-r8c.json",
+      "bytes": 2561,
+      "sha256": "0f0553a6de88abd75261cd0877b0fc6a950b794750a7825af2ded0851f1aa79b"
+    },
+    {
+      "path": "mac-34mib-tls-r8e-compile-failure.log",
+      "bytes": 5515,
+      "sha256": "84b465f4cf971197eac750e4a7e5b571f79e0361ca1ae216fd5643fd74c40c8f"
+    },
+    {
+      "path": "mac-34mib-tls-r8f.json",
+      "bytes": 3060,
+      "sha256": "b02678522dc1411fc55ed1722bb4a8ad21590745b133c92d49c9c86b9791d6e9"
+    },
+    {
+      "path": "ha-raft-native-read-pull-batch-validation.json",
+      "bytes": 3142,
+      "sha256": "fc7346f8194861203e5fc7804efd7bd881c78eaf8c34d4c2f7388c2bb00943fd"
+    },
+    {
+      "path": "ha-raft-native-read-pull-batch-source-final.json",
+      "bytes": 12757,
+      "sha256": "fe7e63e6dc932e42ee9e505bb2b500e179e470cdca8ad216e55f6bfb1beee151"
+    },
+    {
+      "path": "ha-native-v6-ingress-pull-batch-final.log",
+      "bytes": 2292,
+      "sha256": "4d63a90955e3d92bd44011e04379930918afd95c6c3082e7b47de8c57207312c"
+    },
+    {
+      "path": "raft-native-v6-opaque-read-final.log",
+      "bytes": 12819,
+      "sha256": "53b4b8baf0e9d6b6225912d9280645c722405c7ad7fb052faf72cf0e230980f7"
+    },
+    {
+      "path": "actual-openclaw-r8-receipt.json",
+      "bytes": 11151,
+      "sha256": "2bb4cd9b2dc847ed6b867f96adfa46089e72081db1ab8558e73bc6d9e2ce2db6"
+    },
+    {
+      "path": "actual-openclaw-r9-receipt.json",
+      "bytes": 40177,
+      "sha256": "1f8f5c248621ff666867b600f1a7b3f3115060d93cd6959ba350d49e3d252473"
+    },
+    {
+      "path": "authbus-main-modes-r1-receipt.json",
+      "bytes": 82687,
+      "sha256": "4c5ac9900934f0b3af63c5b9b8ec44d28b688aa47c7f40ff940ddd000ee104d2"
+    },
+    {
+      "path": "authbus-physical-fleet-r1-receipt.json",
+      "bytes": 24248,
+      "sha256": "e9f6712051411ef6e18cbca84469f6a28f183c0675b791460fa5c458830e11c2"
+    },
+    {
+      "path": "macbook-pro-canary-public.json",
+      "bytes": 30227,
+      "sha256": "ea6ce6f79e435e0406c2ea0e504539759cb8696656d04103f86082da5b08c754"
+    },
+    {
+      "path": "rog-canary-public.json",
+      "bytes": 29995,
+      "sha256": "81fb713ddbb8a7ef3c1ef810f498032c7dc96446b2c060520eb5db4eee624e75"
+    },
+    {
+      "path": "pocket4-canary-public.json",
+      "bytes": 23831,
+      "sha256": "0d3e8549a94d23977177220d2a30fdf1f23b8d74912c46f8484153fce40de268"
+    },
+    {
+      "path": "authbus-sdk-explicit-deny-r1-receipt.json",
+      "bytes": 21285,
+      "sha256": "491108fa7ea63a161de9ab24e9248a7b1c02b299fd96659024389d26c5b812c5"
+    },
+    {
+      "path": "r8g-local-check-source.json",
+      "bytes": 300,
+      "sha256": "84bdf17e723967f64801e78076863f047a0171d443f17495f1aea35c5c6746b7"
+    },
+    {
+      "path": "r8g-local-cargo-check.log",
+      "bytes": 13277,
+      "sha256": "f9b9a8a27f5cbac089135877c3f7f896b886ef4bf17f04a2e3abff231328e75d"
+    },
+    {
+      "path": "r8g-local-cargo-check-receipt.json",
+      "bytes": 873,
+      "sha256": "42709e5a832afc4a811435f8253922a9e6228e3d6eec6d930a125a3767436f2c"
+    },
+    {
+      "path": "r8h-local-check-source.json",
+      "bytes": 300,
+      "sha256": "4edf47f3903dacc154bb91052278f778170615ff3e7bdd9f70b66ec29d1525f7"
+    },
+    {
+      "path": "r8h-local-cargo-check.log",
+      "bytes": 7361,
+      "sha256": "14be741b04256724215c10ef60fce66862acbce6581b77f3bb613dc522947be5"
+    },
+    {
+      "path": "r8h-local-cargo-check-receipt.json",
+      "bytes": 882,
+      "sha256": "2b8f9807e442076022801cb8c5ec24dbd63aaf949fccb47d50d0c1075df8ea65"
+    },
+    {
+      "path": "ha-native-peer-capacity-r8h-freeze.json",
+      "bytes": 1087,
+      "sha256": "5fe5f47519f52d709cb6c18d83c99dd8b446e6388e008b7c8a65e3ff674e018f"
+    },
+    {
+      "path": "ha-native-publication-source-binding-freeze.json",
+      "bytes": 509,
+      "sha256": "728f1b3933e3e81d6c27ef7779701c9134e591b8dc95b98ec1f5b3191619c99b"
+    },
+    {
+      "path": "r6-source-binding.json",
+      "bytes": 2652,
+      "sha256": "d322fdb3d342b34793f21ad43529556a8f2ae7baac187059226a0cd14b74f011"
+    },
+    {
+      "path": "r8c-source-binding.json",
+      "bytes": 456,
+      "sha256": "492d12e6025e0c9709facc9a1d768149a8ae2988ca7615a05408af6b9e97f764"
+    },
+    {
+      "path": "r8f-source-binding.json",
+      "bytes": 456,
+      "sha256": "4476e19068ad437f05aed6d3c43881ec3d0770cb0b5e8f2cd1ab89809d2a9806"
+    },
+    {
+      "path": "r8g-source-binding.json",
+      "bytes": 457,
+      "sha256": "4bc4742f12b43ff62b7a80f1c7bb68507328d8394da2d46b9a2504e226bdc0b9"
+    },
+    {
+      "path": "r8h-source-binding.json",
+      "bytes": 456,
+      "sha256": "88201d1ac3f32c16f89537de03127604fe053a00f3ac9762f18be6612677f850"
+    },
+    {
+      "path": "authbus-central-actual-r1-public-receipt.json",
+      "bytes": 65491,
+      "sha256": "32d570d5c477ab0451288c7d0302e4ebf612c51e62ea9c7d6fdb63ed13512f65"
+    },
+    {
+      "path": "authbus-current-inventory-r1-macbook-pro.json",
+      "bytes": 24261,
+      "sha256": "4445db0b874b12f27a11f2f9dab2d9d261dc6457acf827623f840e1705a560fd"
+    },
+    {
+      "path": "authbus-current-inventory-r1-main.json",
+      "bytes": 29580,
+      "sha256": "a5083d6c99800054eb50155dafe033fd7429fdec48d8b440569eae5678e62452"
+    },
+    {
+      "path": "authbus-current-inventory-r1-pocket4.json",
+      "bytes": 17586,
+      "sha256": "7282f921223de2fb7ea32a7c39298322e65d22350f0a8e871ed87e3f3a8da293"
+    },
+    {
+      "path": "authbus-current-inventory-r1-public-receipt.json",
+      "bytes": 1155,
+      "sha256": "78f974cda57349a6515081cb7fd6f54d1a0105d63e0a03c8ffea61545f49d31e"
+    },
+    {
+      "path": "authbus-current-inventory-r1-rog.json",
+      "bytes": 22917,
+      "sha256": "0a10171367de4b7588177f750e65bddef9219a5769615667b356ad0c1602440a"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-controller-public-receipt.json",
+      "bytes": 6850,
+      "sha256": "ebbe3b43fed4a0f955de0cc518902fa41dfd7d5c3198e7a693affaf327f45767"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-controller-tests.log",
+      "bytes": 1949,
+      "sha256": "321d25195df9bce75d084fae11541d72ae8e4775b791dc9c91115f067b8dec48"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-freeze.json",
+      "bytes": 6492,
+      "sha256": "2fa315144203f3f55f3dad424a1b9de1a8598997bd6f06d3e8ac681d1a952052"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-macbook-pro.operation.public.json",
+      "bytes": 4916,
+      "sha256": "effa5e81b1f41d6c245b3b7384cc1e2cd6ad7d4332f2fe5b6b70da805d8e1e0f"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-macbook-pro.public.json",
+      "bytes": 194135,
+      "sha256": "7e203aa01ac3c73af5419a6cb24327869e64b21496e14ec1cd185ca8b4efc868"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-main.operation.public.json",
+      "bytes": 4476,
+      "sha256": "20ed62fab1b86b7ece25f555533ad322615572234ae2866f01b8ce9b2cd5a112"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-main.public.json",
+      "bytes": 119093,
+      "sha256": "3e5d8e12636487c08261a826f1dd03c29a5166765352fccdbbe33c640c35c0e9"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-plan-only.json",
+      "bytes": 4486,
+      "sha256": "74c13c6c29cbed59677456cab37e5c786d2b16c15d66577feed060ec37cf56e2"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-pocket4.operation.public.json",
+      "bytes": 4226,
+      "sha256": "1a1c33e67feb5a15465e7220ec0b37b3cde16f0135c5e299f8f55f8bec4c6bd1"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-pocket4.public.json",
+      "bytes": 102812,
+      "sha256": "d0085245623fff5ab94b131dc161e9c9f7357546b8fea954fcc36509a276acd4"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-provenance-tests.log",
+      "bytes": 458,
+      "sha256": "7617fcb55712a4ceb9e90b120e988ab15ad7ced6dea4d52355dfffa696545f12"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-rog.operation.public.json",
+      "bytes": 4047,
+      "sha256": "a6cad6d38e98d54031b9e1ee5d091db846142eee823b3bec941c77d37ae54d57"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-rog.public.json",
+      "bytes": 60402,
+      "sha256": "f6e126f936ffb4f5560a5acb60f826d1c2b88bd72298476a5b7a87d77383f3ea"
+    },
+    {
+      "path": "authbus-migration-gap-v3-r1-scanner-tests.log",
+      "bytes": 2305,
+      "sha256": "a4be317c3e07503c9b1cbead303837b29b1b7449ee99517f404ced35e268d3a7"
+    },
+    {
+      "path": "authbus-owned-source-actual-r2-public-receipt.json",
+      "bytes": 78725,
+      "sha256": "20740bac22ae330a02e573bfe504feec4c5bce8699997eeb3c73377d31d35370"
+    },
+    {
+      "path": "authbus-owned-source-actual-r2-start.json",
+      "bytes": 1692,
+      "sha256": "9416bf17f23d8d7c973040b103f6fa57009a2d6a199da1a4bb01e24566977e88"
+    },
+    {
+      "path": "authbus-owned-source-actual-r2b-start.json",
+      "bytes": 1697,
+      "sha256": "3a253d944df98543461003358d83ed7a60c2fe28e8a4316e8f46184e83625298"
+    },
+    {
+      "path": "authbus-owned-source-r2-controller-public-receipt.json",
+      "bytes": 2115,
+      "sha256": "d0c98be6fcc5e41e6c83f28089fcf1030be808f9d22fba1acbaf049a162439ea"
+    },
+    {
+      "path": "authbus-owned-source-r2-reconciliation-r1.json",
+      "bytes": 33056,
+      "sha256": "c538266b6a3305be6043061a1ee3ae1d58eee4d4c7a27f839b8a44b5c0f24895"
+    },
+    {
+      "path": "authbus-owned-source-r2-reconciliation-r1.md",
+      "bytes": 3665,
+      "sha256": "0fecccb92dd9d85b31abb39fcd912aaa6637ba07d3da2f3389817ef861ece5df"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-node-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-node-check.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-node.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-node.stdout.txt",
+      "bytes": 894,
+      "sha256": "2f620311b667142205bce7f5ffd2a4a726b553de1974a09914ff7b84046b445e"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-python.stderr.txt",
+      "bytes": 1259,
+      "sha256": "4ea196a4ba1acf1ef632e2eb26802bab5556e995d5ed0af49a2af8ce0570af86"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-r1-python.stdout.txt",
+      "bytes": 181,
+      "sha256": "63989dad3a74387d731e4613c6d701a8cf6cb394b0dfebc7e233dd82cc591f22"
+    },
+    {
+      "path": "authbus-owned-source-r2-recovery-validation-r1.json",
+      "bytes": 3907,
+      "sha256": "bdb242393b2662c13b994e921ae436385184d7052c1e9491daed8ddca6fee1d8"
+    },
+    {
+      "path": "native-v6-history-query-merged-local-20261018.json",
+      "bytes": 994,
+      "sha256": "87461d876eff68b99ea7ed6a62e4b510bb371999f2fc00352713dc74b3d7180a"
+    },
+    {
+      "path": "native-v6-history-query-merged-local-20261018.log",
+      "bytes": 292,
+      "sha256": "d35507f0322d74245ba04fae4d43bcdf0cbab1c6ef143d64173962e48ca23061"
+    },
+    {
+      "path": "pocket4-canary-public-r2.json",
+      "bytes": 29962,
+      "sha256": "f471c6f93b0e3008cbf8962137100db7e672e26b2022f07fd5b434f1538378fa"
+    },
+    {
+      "path": "r8g-remote-reconciled-status.json",
+      "bytes": 479,
+      "sha256": "5cf157f5dadba82b2a4da08f1514826b43d9bd8cdfc1637540983394c8a11240"
+    },
+    {
+      "path": "r8g-remote-reconciled-stdout.log",
+      "bytes": 7115,
+      "sha256": "35db309daf2e0cea5cc4a43951a21b6cab08375cc95c8181e5a094eefa7855a6"
+    },
+    {
+      "path": "r8j-linux-native-build-receipt.json",
+      "bytes": 2175,
+      "sha256": "fbe3ef1de04e732e3a36188a464d0814701300c49ded087abba4e45a2ed05509"
+    },
+    {
+      "path": "r8j-mac-native-build-receipt.json",
+      "bytes": 2272,
+      "sha256": "76f186ac9aee20646ecb6bea47cb5c3685f4b746329351e8e707934d6cc58a88"
+    },
+    {
+      "path": "r8j-mac-native-matrix.json",
+      "bytes": 5923,
+      "sha256": "114e38e56a108f24f58b6d6737f8be3077e98ef75bc692fc4dfe1d8bca0367dc"
+    },
+    {
+      "path": "r8j-native-physical89-01-plan.json",
+      "bytes": 3565,
+      "sha256": "7494b6ec4a02d709a0653135d497a859fef0fb70b5a9d1542c9050700fdd4b5e"
+    },
+    {
+      "path": "r8j-native-physical89-01-start.json",
+      "bytes": 4429,
+      "sha256": "80ef1d0fe2f13466a155ee8c9e058b786d6244fc0afad571a2804a1b660f39fc"
+    },
+    {
+      "path": "r8j-native-physical89-01-summary.json",
+      "bytes": 8943,
+      "sha256": "4471bf5f5a839b64f62671da362b39d1dac0627edacd475f1d9b0fcda3667556"
+    },
+    {
+      "path": "r8j-native-physical89-02-controller-report.json",
+      "bytes": 3425,
+      "sha256": "9af0ded8396a9a7a16e1be981dbd96bcd71a5e8800cb5bedcc06911687ae064b"
+    },
+    {
+      "path": "r8j-native-physical89-02-diagnostics-r2.public.json",
+      "bytes": 17557,
+      "sha256": "fd461894c5a3355b0eddabdf331e4e6248ec18312c171673285a984de8a5ceef"
+    },
+    {
+      "path": "r8j-native-physical89-02-diagnostics.public.json",
+      "bytes": 15179,
+      "sha256": "0016c4c18dfd90c15f80a240cc2f656b9d93d418748b2644724ea2fe37ec5243"
+    },
+    {
+      "path": "r8j-native-physical89-02-start.json",
+      "bytes": 12728,
+      "sha256": "b33922db146064a477ea948f2d18e397d6f8d1e626860c436c2abc16c1848220"
+    },
+    {
+      "path": "r8j-native-physical89-02-summary.json",
+      "bytes": 12784,
+      "sha256": "7a2bee4c1db309d0fee320cb8dce88bc03258d7a8022aac134889aa7a5f52f7c"
+    },
+    {
+      "path": "r8j-native-physical89-controller-r2-contract.json",
+      "bytes": 9966,
+      "sha256": "cf4f566d8ca48eb21607a07743418003ed3965f426e76cb68b8d3260e73d55b8"
+    },
+    {
+      "path": "r8j-native-physical89-controller-r2-test.stderr.txt",
+      "bytes": 1996,
+      "sha256": "a97254b6dabba36889602344738f498984aabbefe84eb765dd80b54232240c09"
+    },
+    {
+      "path": "r8j-native-physical89-controller-r2-test.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r8j-native-physical89-query-r1-contract.json",
+      "bytes": 9055,
+      "sha256": "f9eaa03d76e21beb75c26da52cee35022777eee5fb4a81da0b4ff124f7fd3f2e"
+    },
+    {
+      "path": "r8k-recovered-base-manifest.json",
+      "bytes": 512919,
+      "sha256": "b9aea7d507f4f02fe75472429c304d91df3a8f723f642e3d2db0d315eebc683e"
+    },
+    {
+      "path": "r8m-mac-archive34.log",
+      "bytes": 2480,
+      "sha256": "0197464fa089914c6deab1a9da898c875146d3c866216d242115b8ea0523609c"
+    },
+    {
+      "path": "r8m-mac-mac-summary.json",
+      "bytes": 8371,
+      "sha256": "f4b5fa30d8f29f0d22796f1e3b8638c946a2e87ed651e86f1e61f82c3acd8f82"
+    },
+    {
+      "path": "r8m-mac-repair.log",
+      "bytes": 5800,
+      "sha256": "14a699fea13aa004393f613a05106a1ba93af7254660cbf266a378d80bb6eb42"
+    },
+    {
+      "path": "r8m-mac-summary.json",
+      "bytes": 12357,
+      "sha256": "ac250d39bfd4607f9c3e10cfb65c17e624389eefea78dbcfadf84a360618e34e"
+    },
+    {
+      "path": "r8m-source-freeze-receipt.json",
+      "bytes": 2377,
+      "sha256": "4e9030bedc902588a9da8e4c55bc1ea17a1140161ba1ec4cfdce38ee8859de51"
+    },
+    {
+      "path": "r8m-source-manifest.json",
+      "bytes": 513599,
+      "sha256": "22024b1e8a4bebd0fb70943aa18aa21534503131fe106343e75a588bd5cd58be"
+    },
+    {
+      "path": "r8n-shared-mac-01-checked-existing.log",
+      "bytes": 2305,
+      "sha256": "7cfa6ad4efdd2b3b15724490b7f5ffab365297b3092770d0aba288bf36a1a6f4"
+    },
+    {
+      "path": "r8n-shared-mac-01-mac-summary.json",
+      "bytes": 6675,
+      "sha256": "4dcf84b95726b7a1d611e6ea7ceb94f615eae872ad47fe942f375e8d9a5a194c"
+    },
+    {
+      "path": "r8n-shared-mac-01-start.json",
+      "bytes": 2196,
+      "sha256": "13934631423d8b44f1b64705bab53c8c347fc05ffb4d4050dc6669684599c997"
+    },
+    {
+      "path": "r8n-shared-mac-01-summary.json",
+      "bytes": 10230,
+      "sha256": "ce10048ab7c7f7915f3b0d459b3558fc98e4580029b5ad3eb1fbf323478c515d"
+    },
+    {
+      "path": "r8n-shared-source-freeze-receipt.json",
+      "bytes": 1630,
+      "sha256": "4f53e06467b46545f61342e94e1e12b25f1a05a47a51618c6f001600a4b6725f"
+    },
+    {
+      "path": "r8n-shared-source-manifest.json",
+      "bytes": 514043,
+      "sha256": "22a6cd21a6f01ecd5c9ffc49cb5b6457587fc3366395efe2422557c1d0b588bc"
+    },
+    {
+      "path": "runtime-next-gates-start-bindings-r3.json",
+      "bytes": 21538,
+      "sha256": "945c7d174bd696393077a4ef5c4423a4aba30ed9833927872e0ac0ee75310a36"
+    },
+    {
+      "path": "r8-original-component-log-recovery-receipt.json",
+      "bytes": 662,
+      "sha256": "4abf24d6e3b9aceec4c12e7604c5d87e295dda041bfae181488646e82644ffea"
+    },
+    {
+      "path": "r8-original-component-log-recovery-start.json",
+      "bytes": 3546,
+      "sha256": "ecdda651ceea617eddea9bff3ed2870257e167408c700dcdcb59ef542fae0d4b"
+    },
+    {
+      "path": "r8f-mac-34mib-component.log",
+      "bytes": 5318,
+      "sha256": "6b2f36d9aed91c0da49826c927bc54d955857f33b5bf2cf56fcb8d9274f2ae1d"
+    },
+    {
+      "path": "r8k-mac-archive34.log",
+      "bytes": 4533,
+      "sha256": "eed6bd8187854c3780a867b57983c5e515c207021d0d06b4bdf6530d7ccc39a2"
+    },
+    {
+      "path": "r8k-mac-server-matrix.log",
+      "bytes": 1973,
+      "sha256": "671941922915970598c073d86da56ff77dd448a1f071753d3d5d41132658e294"
+    },
+    {
+      "path": "runtime-source-checkpoints-20261018-r1.json",
+      "bytes": 490,
+      "sha256": "77e7e631d6e66de965862ef23f0bba4668414cecd9611bf884b32d665c989652"
+    }
+  ],
+  "operator_artifacts": {
+    "path_base": "../../operators/next_gates_20261018/",
+    "frozen_file_count": 24,
+    "files": [
+      {
+        "path": "authbus_migration_gap_allowlist_v3.json",
+        "bytes": 112920,
+        "sha256": "a9529e978c15c3f6cf578ff55c95ce42174507baaafd9663190af53ecb6476c5"
+      },
+      {
+        "path": "authbus_migration_gap_inventory_v3.py",
+        "bytes": 114576,
+        "sha256": "6e36468e50e6f458cd970779c2a1d7dda7aa761547381edacdb5e1d37e34d2ce"
+      },
+      {
+        "path": "authbus_migration_gap_inventory_v3_tests.py",
+        "bytes": 14482,
+        "sha256": "2457096e0407ca233936dc207cb5611732b317bca3203de6bcf6f84edce00c17"
+      },
+      {
+        "path": "authbus_migration_gap_schema_v3.json",
+        "bytes": 72022,
+        "sha256": "b38acfc637736cb5e0dcf8935882881e3098f0fc4eac630c9ae69423f18e67b4"
+      },
+      {
+        "path": "authbus_migration_gap_source_receipts_v3.json",
+        "bytes": 1105,
+        "sha256": "9aaae531fa476dd930a5425bd03e3f9cbaaae295008547de154bb590b98f6013"
+      },
+      {
+        "path": "authbus_migration_gap_v3.README.md",
+        "bytes": 12993,
+        "sha256": "0f2ad255d5a80f37c3ff5cc32d30d64a905b78903403bc044b36fde384f4ff71"
+      },
+      {
+        "path": "authbus_migration_gap_v3_provenance_tests.py",
+        "bytes": 6846,
+        "sha256": "bb5554664d8bfecde3675ff17aceea18bfa18c1b4eebf1b0c0edd51df4f0c0b7"
+      },
+      {
+        "path": "authbus_owned_source_r2_reconcile.py",
+        "bytes": 25882,
+        "sha256": "57f5f99ed41708945521480c005ed8438161aeda2c7051515d2ad91245e22642"
+      },
+      {
+        "path": "freeze_archive_repair_r8m.py",
+        "bytes": 16384,
+        "sha256": "463cb139c4e1cd93c37fa42bdafc1814ba57b4334fd4174d8a0ab966bfba8c24"
+      },
+      {
+        "path": "freeze_authbus_migration_gap_v3.py",
+        "bytes": 7705,
+        "sha256": "430dbd7528786d50f1989594e7d398e018151774665e573cfcc3160be3bbf5b0"
+      },
+      {
+        "path": "freeze_native_shared_reuse_r8n.py",
+        "bytes": 5134,
+        "sha256": "7ef203b4468186298b008597ca7bb0463c90a4cce0889cdf2764484ec0a641f8"
+      },
+      {
+        "path": "inspect_native_physical02_public.py",
+        "bytes": 7244,
+        "sha256": "27a8ab50dd2b3266ff98f8a3ddc4ed752bf6420b41a7507804994f58b0f656dd"
+      },
+      {
+        "path": "inspect_native_physical02_public_r2.py",
+        "bytes": 7747,
+        "sha256": "f00edf4042e763edfc7d0a437e3c30b888fccf33bb1067d632a6b9f59d6c81f2"
+      },
+      {
+        "path": "r8j_native_build_freeze.py",
+        "bytes": 14613,
+        "sha256": "1f90af9625d8efedf8e15ff42fed599f38b1b068ad968679012dd229b5453e84"
+      },
+      {
+        "path": "r8j_native_physical_control.py",
+        "bytes": 10028,
+        "sha256": "3cd7c522faf091d7fdbd449641b1c45de4f10b9a07661862a3c6a34eeca9f997"
+      },
+      {
+        "path": "r8j_native_physical_control_r2.py",
+        "bytes": 21197,
+        "sha256": "28c32d201b656e5bc68f9420bb72b1e9350c4ab408b18485ae0d1037c0501fef"
+      },
+      {
+        "path": "rebuild_authbus_migration_gap_v3.py",
+        "bytes": 21214,
+        "sha256": "33cd50ea8c59f6d63812ad99dcdc72016af13e6cb3ceae9510a2b828ca03973a"
+      },
+      {
+        "path": "run_archive_repair_r8m.py",
+        "bytes": 32931,
+        "sha256": "7b50253a449cf9815cea87236aed00d12e167de02caef6b2abd29bb59487caa4"
+      },
+      {
+        "path": "run_authbus_migration_gap_v3_r1.py",
+        "bytes": 35285,
+        "sha256": "aec87e40852bf548982c92833eb75ec88ee1ecca108d7c8fe2dc26ee9061354d"
+      },
+      {
+        "path": "run_authbus_migration_gap_v3_r1_tests.py",
+        "bytes": 10210,
+        "sha256": "9bb4dd5758f41a01133d19cadbcae4c8e3dc2e94e02aea42be809ee5b2e6a563"
+      },
+      {
+        "path": "run_authbus_owned_source_actual_r2.py",
+        "bytes": 9395,
+        "sha256": "a5eb681bc5049693207a7583695883e870e1e88ce4acd69b516fd8b706d5995b"
+      },
+      {
+        "path": "run_authbus_owned_source_actual_r2b.py",
+        "bytes": 10329,
+        "sha256": "e499bd67cae460aa1895805043194d22141f8890d6a08806fd3d9c93770d92db"
+      },
+      {
+        "path": "run_native_shared_reuse_r8n_01.py",
+        "bytes": 32770,
+        "sha256": "e6bb00b8ce298a273b591e467a7352e10443cf9046f28473a9a61d4cce65a250"
+      },
+      {
+        "path": "test_r8j_native_physical_control_r2.py",
+        "bytes": 13429,
+        "sha256": "a89d2f878d0f4bedbb355380ea699badf677c6b918b0323d001364cad03b3124"
+      }
+    ],
+    "readme": {
+      "path": "../../operators/next_gates_20261018/README.md",
+      "bytes": 11054,
+      "sha256": "a3ad16939ad0689a3a4cb5d6f5c8f66b14ff0b55bc2145b29bfc4477b76b793f"
+    },
+    "original_secret_candidate_included": false,
+    "tests_or_operators_executed_by_index_refresh": false
+  },
+  "related_migration_documents": [
+    {
+      "path": "../../../../docs/migration/authbus-owned-source-migration-20261018.json",
+      "bytes": 486495,
+      "sha256": "6cf40be5a7fad654e970c77d62901c13f46ea752e2986506479fe3a335eb5f6c"
+    },
+    {
+      "path": "../../../../docs/migration/authbus-owned-source-migration-20261018.md",
+      "bytes": 18725,
+      "sha256": "56b714a037ca22f57ad448b062eefd79fc8d9a0504999a4546e03da6cc482df9"
+    }
+  ],
+  "execution_document_review": {
+    "path": "../../../../docs/operations/HEPTABAO_NEXT_GATES_EXECUTION_20261017.md",
+    "sha256_at_review": "a37b2356ae26631c0f839509925e6d6366104175708422a32e1448599eb02f1c",
+    "valid_local_links": 13,
+    "invalid_local_links": [],
+    "document_modified_by_reviewer": false,
+    "core_current_receipt_claims_checked": [
+      "R8g job 1 / Cargo 101 / original source unchanged",
+      "Pocket4 R2 141 actual checks",
+      "R8m actual repair 3 and archive34 1",
+      "physical89 attempts 2 and incomplete",
+      "AuthR2 driver 0, original wrapper false, 293 events / 292 labels",
+      "four-host metadata 4 valid and qualification false"
+    ],
+    "newer_scoped_result_for_author_update": "R8n shared Mac 13-test result completed after the execution document was drafted; it does not prove full performance, HTTP 34 MiB or physical HA.",
+    "historical_evidence_limitations": [
+      "R8f 14092 ms suboperation timing is not present in current indexed raw files; retained R8f summary proves one passing test but does not contain this suboperation measurement.",
+      "R8k archive 21.23-second result has no separate matching raw result in the current evidence directory; the preserved R8k manifest is source evidence, not a test result."
+    ],
+    "evidence_limitations_to_report": [],
+    "original_log_recovery": {
+      "tests_rerun": false,
+      "r8f_14092_ms_confirmed_in_original": "r8f-mac-34mib-component.log",
+      "r8k_21_23_seconds_confirmed_in_original": "r8k-mac-archive34.log",
+      "all_recovered_hashes_equal_prior_bound_log_sha256": true
+    },
+    "author_update_after_review": {
+      "sha256": "14c533e46268d69972606435807cdbe5023ae97ee5fc346e1cd1a874ff7dbfc4",
+      "scope": "Added separately qualified R8n shared Mac 13-test result and same-tree source checkpoint; prior independent review hash retained."
+    }
+  },
+  "qualification_rule": "Each receipt retains its own source, binary, denominator and scope. These counts are not a combined production qualification.",
+  "updated_at": "2026-10-18T03:29:19.053611+00:00",
+  "supplemental_current_file_count": 98,
+  "supplemental_original_record_count": 103,
+  "supplemental_operator_artifacts": [
+    {
+      "path": "../../operators/next_gates_20261018/recover_original_component_logs_r1.py",
+      "bytes": 2415,
+      "sha256": "27f2fd0adca2bcd00765064a72ce49bd755f0ad072ea48a06f58e0ef8332390a",
+      "scope": "readonly original log retrieval under exact source SHA; no tests rerun"
+    }
+  ]
+}

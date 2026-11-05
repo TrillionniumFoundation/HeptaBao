@@ -1,0 +1,13 @@
+{
+  "scope": "local Python adapter checks only; no Rust tests or remote operations",
+  "argv": [
+    "python3",
+    "/workspace/scratch/915e5e680008/compatibility-review-20261019/snapshot-http3-runner-r1/work/qa/openbao-acceptance/native_snapshot_http_exact_run_checks.py"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.466,
+  "log_bytes": 1600,
+  "log_sha256": "81809cdf7e49a0079dc5d75f3877b2b927acea3f118c9c40154df472961731a0",
+  "finished_utc": "2026-10-19T07:54:49.626397+00:00",
+  "permission_context": "same checks with escalation after sandbox ps lookup-self failure; assertions unchanged"
+}

@@ -1,10 +1,8 @@
 name: HeptaBao V1.4.6 authoritative recovery closure
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - integration/v1.4.4-technical-candidate
+  # Superseded V1.4.6 closure; current qualification owns PR execution.
+  workflow_dispatch:
 
 permissions:
   contents: read

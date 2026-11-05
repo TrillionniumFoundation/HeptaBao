@@ -1,0 +1,14 @@
+{
+  "actual_artifact_qualification_performed": false,
+  "actual_host_execution_performed": false,
+  "child_processes_started": 0,
+  "embedded_python_compiled": [
+    "preflight",
+    "remote"
+  ],
+  "network_calls_performed": 0,
+  "original_producer_groups": 17,
+  "original_selected_tests": 55,
+  "producer_runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "schema": "heptabao.r5-handoff-local-static-validation.v1"
+}

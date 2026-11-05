@@ -1,0 +1,15 @@
+{"argv": ["/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "private_forward_stage_observation_preserves_existing_transport_errors", "--", "--nocapture", "--test-threads=1", "--color=never"]}
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.05s
+     Running unittests src/lib.rs (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/target/debug/deps/heptabao_ha_service-07ac00223532e21e)
+
+running 1 test
+test tests::private_forward_stage_observation_preserves_existing_transport_errors ... HBHA-PRIVATE-STAGE phase=tcp_connect category=Transport io_kind=ConnectionRefused
+HBHA-PRIVATE-STAGE phase=deadline_after_response category=Transport io_kind=TimedOut
+HBHA-PRIVATE-STAGE phase=tls_frame_read category=Transport io_kind=UnexpectedEof
+HBHA-PRIVATE-STAGE phase=tls_frame_read category=InvalidFrame
+HBHA-PRIVATE-STAGE phase=tls_frame_write category=Transport
+HBHA-PRIVATE-STAGE phase=receiver_tls_handshake category=PeerAuthenticationFailed io_kind=InvalidData
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 28 filtered out; finished in 0.00s
+

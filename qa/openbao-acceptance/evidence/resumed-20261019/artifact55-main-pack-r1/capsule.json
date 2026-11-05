@@ -1,0 +1,1317 @@
+{
+  "artifacts": {
+    "peer": {
+      "bytes": 137407632,
+      "name": "peer",
+      "producer_abi": {
+        "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "application_entry_point_executed": false,
+        "dependencies": [
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "identity": [
+              2050,
+              36447697,
+              183024,
+              1766093810000000000,
+              1775979777506397869,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+            "soname": "libgcc_s.so.1"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "identity": [
+              2050,
+              36477739,
+              952616,
+              1788444912000000000,
+              1789164861220238588,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+            "soname": "libm.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "identity": [
+              2050,
+              36477736,
+              2129424,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "soname": "libc.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "identity": [
+              2050,
+              36477733,
+              236616,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib64/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "soname": "ld-linux-x86-64.so.2"
+          }
+        ],
+        "file_log_sha256": "ede2228537dda8ce34a14db817c65654ac2b8ac435a14a0890c97b3d97e25688",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2",
+        "libc_observation": [
+          "glibc",
+          "2.39"
+        ],
+        "loader_identity": {
+          "bytes": 236616,
+          "identity": [
+            2050,
+            36477733,
+            236616,
+            1788444912000000000,
+            1789164861220238588,
+            493,
+            0,
+            1
+          ],
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+        },
+        "loader_log_sha256": "67e873c68e6e3653e87eefb7f72326cfe5c98fa0b1aba61186de14a26a63e749",
+        "loader_resolution_exit_code": 0,
+        "native_abi": "x86_64-unknown-linux-gnu",
+        "needed": [
+          "libgcc_s.so.1",
+          "libm.so.6",
+          "libc.so.6",
+          "ld-linux-x86-64.so.2"
+        ],
+        "readelf_log_sha256": "f83772c80e4d8ae6e632477de8587260a4399c31598b346ef4acb3c09efe949e"
+      },
+      "producer_file_identity": [
+        2050,
+        53528979,
+        137407632,
+        1792387083835523120,
+        1792387083857522529,
+        448,
+        1000,
+        1
+      ],
+      "producer_path": "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577",
+      "sha256": "edd35c31f9147c16a0181b5bdef3163595b18c41ca6274653e6d62c9a4737b5d"
+    },
+    "server": {
+      "bytes": 1086680200,
+      "name": "server",
+      "producer_abi": {
+        "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "application_entry_point_executed": false,
+        "dependencies": [
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2.2",
+            "bytes": 338696,
+            "identity": [
+              2050,
+              36441523,
+              338696,
+              1787231245000000000,
+              1789692316067903528,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libgssapi_krb5.so.2",
+            "sha256": "c7aa00cf51646f7c32f196d329a562bc873ff32906c9caf6554ca489dd657507",
+            "soname": "libgssapi_krb5.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "identity": [
+              2050,
+              36447697,
+              183024,
+              1766093810000000000,
+              1775979777506397869,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+            "soname": "libgcc_s.so.1"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "identity": [
+              2050,
+              36477739,
+              952616,
+              1788444912000000000,
+              1789164861220238588,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+            "soname": "libm.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "identity": [
+              2050,
+              36477736,
+              2129424,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "soname": "libc.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "identity": [
+              2050,
+              36477733,
+              236616,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib64/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "soname": "ld-linux-x86-64.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5.so.3.3",
+            "bytes": 823488,
+            "identity": [
+              2050,
+              36449538,
+              823488,
+              1787231245000000000,
+              1789692316468893278,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkrb5.so.3",
+            "sha256": "fad617a72b5839d30143e7db03281279089def6f18788cbb0b7f86385301bf04",
+            "soname": "libkrb5.so.3"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libk5crypto.so.3.1",
+            "bytes": 178648,
+            "identity": [
+              2050,
+              36441559,
+              178648,
+              1787231245000000000,
+              1789692317168875384,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libk5crypto.so.3",
+            "sha256": "b37407fb2930939bf78b47267019cd201a8af1f4b6a3852249c849cf3a985798",
+            "soname": "libk5crypto.so.3"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libcom_err.so.2.1",
+            "bytes": 18504,
+            "identity": [
+              2050,
+              36449514,
+              18504,
+              1714347886000000000,
+              1775979291334547376,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libcom_err.so.2",
+            "sha256": "022943b3b11c860b049bce41342f1c2594941b7b401d95dfdf235521099fee08",
+            "soname": "libcom_err.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5support.so.0.1",
+            "bytes": 47904,
+            "identity": [
+              2050,
+              36441548,
+              47904,
+              1787231245000000000,
+              1789692316653888549,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkrb5support.so.0",
+            "sha256": "936bae947a838bd47676a419dfcfb036d0163249215b58ec706ec7d46b7497aa",
+            "soname": "libkrb5support.so.0"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkeyutils.so.1.10",
+            "bytes": 22600,
+            "identity": [
+              2050,
+              36449772,
+              22600,
+              1712592056000000000,
+              1775979297058510389,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkeyutils.so.1",
+            "sha256": "f48214417757f18793ed6e180cc14ee1d6f04252a518fc7270e8ca1d0b4260fe",
+            "soname": "libkeyutils.so.1"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libresolv.so.2",
+            "bytes": 64008,
+            "identity": [
+              2050,
+              36477751,
+              64008,
+              1788444912000000000,
+              1789164861221238559,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libresolv.so.2",
+            "sha256": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f",
+            "soname": "libresolv.so.2"
+          }
+        ],
+        "file_log_sha256": "e3151e519efdbd0c5566c359aa3da53a652ff967f65d0e0474990bb6b500ea23",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2",
+        "libc_observation": [
+          "glibc",
+          "2.39"
+        ],
+        "loader_identity": {
+          "bytes": 236616,
+          "identity": [
+            2050,
+            36477733,
+            236616,
+            1788444912000000000,
+            1789164861220238588,
+            493,
+            0,
+            1
+          ],
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+        },
+        "loader_log_sha256": "15d6ff6b7980814b3c984d99ae7095afbb58727fc1f00e2b2d0ba3395b4f3366",
+        "loader_resolution_exit_code": 0,
+        "native_abi": "x86_64-unknown-linux-gnu",
+        "needed": [
+          "libgssapi_krb5.so.2",
+          "libgcc_s.so.1",
+          "libm.so.6",
+          "libc.so.6",
+          "ld-linux-x86-64.so.2"
+        ],
+        "readelf_log_sha256": "1bb53dd8a0d05039e77b3b36c3c06e1e6b0e3cd556e4d5c4a50428d3b3593654"
+      },
+      "producer_file_identity": [
+        2050,
+        53528580,
+        1086680200,
+        1792386914581002830,
+        1792386914718999235,
+        448,
+        1000,
+        1
+      ],
+      "producer_path": "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_server-c2b13f8f8869a962",
+      "sha256": "ba8316997f9cc015e466a74d8d05896aacd7f59d52f5386bbd8ac8f5680fb4b0"
+    },
+    "server-bin": {
+      "bytes": 776397280,
+      "name": "server-bin",
+      "producer_abi": {
+        "actual_loader_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "application_entry_point_executed": false,
+        "dependencies": [
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2.2",
+            "bytes": 338696,
+            "identity": [
+              2050,
+              36441523,
+              338696,
+              1787231245000000000,
+              1789692316067903528,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libgssapi_krb5.so.2",
+            "sha256": "c7aa00cf51646f7c32f196d329a562bc873ff32906c9caf6554ca489dd657507",
+            "soname": "libgssapi_krb5.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "identity": [
+              2050,
+              36447697,
+              183024,
+              1766093810000000000,
+              1775979777506397869,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+            "soname": "libgcc_s.so.1"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "identity": [
+              2050,
+              36477739,
+              952616,
+              1788444912000000000,
+              1789164861220238588,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libm.so.6",
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+            "soname": "libm.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "identity": [
+              2050,
+              36477736,
+              2129424,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "soname": "libc.so.6"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "identity": [
+              2050,
+              36477733,
+              236616,
+              1788444912000000000,
+              1789164861220238588,
+              493,
+              0,
+              1
+            ],
+            "loader_path": "/lib64/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "soname": "ld-linux-x86-64.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5.so.3.3",
+            "bytes": 823488,
+            "identity": [
+              2050,
+              36449538,
+              823488,
+              1787231245000000000,
+              1789692316468893278,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkrb5.so.3",
+            "sha256": "fad617a72b5839d30143e7db03281279089def6f18788cbb0b7f86385301bf04",
+            "soname": "libkrb5.so.3"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libk5crypto.so.3.1",
+            "bytes": 178648,
+            "identity": [
+              2050,
+              36441559,
+              178648,
+              1787231245000000000,
+              1789692317168875384,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libk5crypto.so.3",
+            "sha256": "b37407fb2930939bf78b47267019cd201a8af1f4b6a3852249c849cf3a985798",
+            "soname": "libk5crypto.so.3"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libcom_err.so.2.1",
+            "bytes": 18504,
+            "identity": [
+              2050,
+              36449514,
+              18504,
+              1714347886000000000,
+              1775979291334547376,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libcom_err.so.2",
+            "sha256": "022943b3b11c860b049bce41342f1c2594941b7b401d95dfdf235521099fee08",
+            "soname": "libcom_err.so.2"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkrb5support.so.0.1",
+            "bytes": 47904,
+            "identity": [
+              2050,
+              36441548,
+              47904,
+              1787231245000000000,
+              1789692316653888549,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkrb5support.so.0",
+            "sha256": "936bae947a838bd47676a419dfcfb036d0163249215b58ec706ec7d46b7497aa",
+            "soname": "libkrb5support.so.0"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libkeyutils.so.1.10",
+            "bytes": 22600,
+            "identity": [
+              2050,
+              36449772,
+              22600,
+              1712592056000000000,
+              1775979297058510389,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libkeyutils.so.1",
+            "sha256": "f48214417757f18793ed6e180cc14ee1d6f04252a518fc7270e8ca1d0b4260fe",
+            "soname": "libkeyutils.so.1"
+          },
+          {
+            "actual_path": "/usr/lib/x86_64-linux-gnu/libresolv.so.2",
+            "bytes": 64008,
+            "identity": [
+              2050,
+              36477751,
+              64008,
+              1788444912000000000,
+              1789164861221238559,
+              420,
+              0,
+              1
+            ],
+            "loader_path": "/lib/x86_64-linux-gnu/libresolv.so.2",
+            "sha256": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f",
+            "soname": "libresolv.so.2"
+          }
+        ],
+        "file_log_sha256": "29c38e90bcf63a4e8db3833fc609321ef50e994d2723a0f2f1ee78dc5765572c",
+        "interpreter": "/lib64/ld-linux-x86-64.so.2",
+        "libc_observation": [
+          "glibc",
+          "2.39"
+        ],
+        "loader_identity": {
+          "bytes": 236616,
+          "identity": [
+            2050,
+            36477733,
+            236616,
+            1788444912000000000,
+            1789164861220238588,
+            493,
+            0,
+            1
+          ],
+          "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+        },
+        "loader_log_sha256": "269b6f5481b8a64b494801def462421e344c0bad259e244eb518337f58e4ea6d",
+        "loader_resolution_exit_code": 0,
+        "native_abi": "x86_64-unknown-linux-gnu",
+        "needed": [
+          "libgssapi_krb5.so.2",
+          "libgcc_s.so.1",
+          "libm.so.6",
+          "libc.so.6",
+          "ld-linux-x86-64.so.2"
+        ],
+        "readelf_log_sha256": "2e4a4d4437a00eb6ac63ae3d7eeea6ff65eecf964aee0564d7b742c30d4f76b0"
+      },
+      "producer_file_identity": [
+        2050,
+        53529014,
+        776397280,
+        1792388185798619769,
+        1792388186685594363,
+        448,
+        1000,
+        1
+      ],
+      "producer_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server",
+      "sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2"
+    }
+  },
+  "compiler_invocations_by_pack": 0,
+  "created_utc": "2026-10-19T05:51:04.056838+00:00",
+  "executor_tests_performed_by_pack": false,
+  "files": [
+    {
+      "bytes": 137407632,
+      "mode": 448,
+      "name": "peer",
+      "sha256": "edd35c31f9147c16a0181b5bdef3163595b18c41ca6274653e6d62c9a4737b5d"
+    },
+    {
+      "bytes": 2989,
+      "mode": 384,
+      "name": "producer-archive-34mib-list.log",
+      "sha256": "5fd368b8da137ad2f7967a0a44cbc35d10fa759cae667f4d419b8040d1e2fc8f"
+    },
+    {
+      "bytes": 3276,
+      "mode": 384,
+      "name": "producer-archive-34mib.log",
+      "sha256": "045d1f61c696a4a03417bce830536d1210faa93984398bc92ae70df79f0b3cde"
+    },
+    {
+      "bytes": 2365,
+      "mode": 384,
+      "name": "producer-build-server.log",
+      "sha256": "e76d037bd7566ce9da6d0dd91d9788730477777967cdf556093bca027daf993a"
+    },
+    {
+      "bytes": 2117,
+      "mode": 384,
+      "name": "producer-compile-peer-tests.log",
+      "sha256": "be1e80d8283d61cdbf3e647e5c9a10924ec3c9500c9ab297e21f9b195597e7a8"
+    },
+    {
+      "bytes": 14326,
+      "mode": 384,
+      "name": "producer-compile-server-tests.log",
+      "sha256": "2433da7948f0108f1679eeebae8d3fd18504e735b235edf4e85b6f47a696a94a"
+    },
+    {
+      "bytes": 2975,
+      "mode": 384,
+      "name": "producer-forward-no-second-floor-list.log",
+      "sha256": "1cc2f5b8041f94098601699bb4c1a40ad950501167c5bfaf3b9c7bb807e0b3a2"
+    },
+    {
+      "bytes": 3327,
+      "mode": 384,
+      "name": "producer-forward-no-second-floor.log",
+      "sha256": "0949d9a2693b6945e6f15b1e46cc814ad55864303b62f35be8b9e447a81bc03a"
+    },
+    {
+      "bytes": 2965,
+      "mode": 384,
+      "name": "producer-forward-original-unseal-veto-list.log",
+      "sha256": "1b090a65d9dc00c1184327eac6af0cc76d85154ce4a4cdfc2ec65e1aff70d5b0"
+    },
+    {
+      "bytes": 3381,
+      "mode": 384,
+      "name": "producer-forward-original-unseal-veto.log",
+      "sha256": "fcd9993263251b2b252b7fcee648544de4b74df0f6433d7a676c8697a1ab8c7f"
+    },
+    {
+      "bytes": 3776,
+      "mode": 384,
+      "name": "producer-historical-service-list.log",
+      "sha256": "1ded5f03a51370845b9535687476946c72a2facea564dc39ad5b210820e6b9b4"
+    },
+    {
+      "bytes": 59591,
+      "mode": 384,
+      "name": "producer-historical-service.log",
+      "sha256": "2da8a2418c2a9c1e991a5ad080669cbd3abef539755252885db95989ac436ed7"
+    },
+    {
+      "bytes": 2990,
+      "mode": 384,
+      "name": "producer-http-pending-admission-list.log",
+      "sha256": "2b8577db886a9407e7ac47ed4d33d4b5dd9321a82a149966b4a574f28f5d20d3"
+    },
+    {
+      "bytes": 3114,
+      "mode": 384,
+      "name": "producer-http-pending-admission.log",
+      "sha256": "d3b919c7c06a83268ccea825946b8132630a3209a441cb027b66855441b5cb2a"
+    },
+    {
+      "bytes": 2972,
+      "mode": 384,
+      "name": "producer-http-repair-admission-list.log",
+      "sha256": "05b96cccae286dff8c4c08c5f1eec66b9b10725750166487e3dde57f1a60df7a"
+    },
+    {
+      "bytes": 3096,
+      "mode": 384,
+      "name": "producer-http-repair-admission.log",
+      "sha256": "15390366debce1f4a368c2e02c4e0be2d0f3b2107698e46870e47b45e172ce8d"
+    },
+    {
+      "bytes": 3134,
+      "mode": 384,
+      "name": "producer-kv2-api-271-numbers-list.log",
+      "sha256": "beb57b544cecf8c571bded8cba637b34d25756a236b44adb76e4ab11b2df2426"
+    },
+    {
+      "bytes": 3270,
+      "mode": 384,
+      "name": "producer-kv2-api-271-numbers.log",
+      "sha256": "36c330d9a2aca2fcf3209c0ff28cc93dd2658b5a7488a567f8790ada58061292"
+    },
+    {
+      "bytes": 3013,
+      "mode": 384,
+      "name": "producer-lossless-json-private-tags-list.log",
+      "sha256": "d5bc04b6785ed5ea76bb2e2c4974dfd576ac24c83a60aef8c38159aad46c2b91"
+    },
+    {
+      "bytes": 3137,
+      "mode": 384,
+      "name": "producer-lossless-json-private-tags.log",
+      "sha256": "3af87ee5f71bc9a202a66dc5319804e9cac91de05f72d964e7bfb09c73dc816d"
+    },
+    {
+      "bytes": 2989,
+      "mode": 384,
+      "name": "producer-lossless-kv1-conversion-list.log",
+      "sha256": "791fa476b24f4a4c8f64133cf3addce9cb80a9c404595658e7c3d0e1300bc69f"
+    },
+    {
+      "bytes": 3113,
+      "mode": 384,
+      "name": "producer-lossless-kv1-conversion.log",
+      "sha256": "aaa1ca71093db662f17658b03c9920190131f29e6b73b3d7e23ddb972cf48229"
+    },
+    {
+      "bytes": 3009,
+      "mode": 384,
+      "name": "producer-lossless-token-equivalence-list.log",
+      "sha256": "77a330e006910c4205f3baaa7306b452c17d0fac599ab7af432c6b8703ced7a9"
+    },
+    {
+      "bytes": 3133,
+      "mode": 384,
+      "name": "producer-lossless-token-equivalence.log",
+      "sha256": "d266fadb8fdd80f748c54a3bbee26af0efb03c005dc60bd0db5c98d7408a521b"
+    },
+    {
+      "bytes": 3795,
+      "mode": 384,
+      "name": "producer-native-kv2-import-list.log",
+      "sha256": "b736726db62dfa6a06a49a8591c8df8eb9803508cbd7a9ce434b8b4cf134cddb"
+    },
+    {
+      "bytes": 6769,
+      "mode": 384,
+      "name": "producer-native-kv2-import.log",
+      "sha256": "717eeac8daf07134621e75a1dd519c03e7e81eee60a405e5e9384290b991a45a"
+    },
+    {
+      "bytes": 4609,
+      "mode": 384,
+      "name": "producer-native-kv2-large-list.log",
+      "sha256": "bb7775a73604901551d3780b8b46087ef1871afaa3290f6b66d7963708bc87cb"
+    },
+    {
+      "bytes": 7559,
+      "mode": 384,
+      "name": "producer-native-kv2-large.log",
+      "sha256": "e44e4d37ded9d6091c7d1fd193e430992ccd7e61fc9cda6b7986611dc1a69e12"
+    },
+    {
+      "bytes": 3514,
+      "mode": 384,
+      "name": "producer-native-kv2-storage-witness-list.log",
+      "sha256": "6395beaad1dc01ded1908033390d65f5ec2e3bc95f4235c65964741e85ec31a6"
+    },
+    {
+      "bytes": 5180,
+      "mode": 384,
+      "name": "producer-native-kv2-storage-witness.log",
+      "sha256": "554004dd3098c05d0032a95e62a6d6fd9cd9a7e4386477a531c507eb6f6abb23"
+    },
+    {
+      "bytes": 3017,
+      "mode": 384,
+      "name": "producer-native-raw-private-tags-list.log",
+      "sha256": "3d1e88e92830adb13ef58a9739273316efbfea5af3e39af4e90c8f664be9a1dc"
+    },
+    {
+      "bytes": 3141,
+      "mode": 384,
+      "name": "producer-native-raw-private-tags.log",
+      "sha256": "6e817d83d42a2f810e51a5bb1f71576475055650637f3298fa4eaa5fdc907c4c"
+    },
+    {
+      "bytes": 363,
+      "mode": 384,
+      "name": "producer-peer-file.log",
+      "sha256": "ede2228537dda8ce34a14db817c65654ac2b8ac435a14a0890c97b3d97e25688"
+    },
+    {
+      "bytes": 448,
+      "mode": 384,
+      "name": "producer-peer-loader.log",
+      "sha256": "67e873c68e6e3653e87eefb7f72326cfe5c98fa0b1aba61186de14a26a63e749"
+    },
+    {
+      "bytes": 10088,
+      "mode": 384,
+      "name": "producer-peer-readelf.log",
+      "sha256": "f83772c80e4d8ae6e632477de8587260a4399c31598b346ef4acb3c09efe949e"
+    },
+    {
+      "bytes": 665,
+      "mode": 384,
+      "name": "producer-private-frame-diagnostic-list.log",
+      "sha256": "07dbdf628c090390c28097530265b194c8e4f7d24d4de1ac422f41622cdc5f50"
+    },
+    {
+      "bytes": 1267,
+      "mode": 384,
+      "name": "producer-private-frame-diagnostic.log",
+      "sha256": "bd13516b4282205a3f85e9a1829c93958b15c975dfbd04e2aa307a573b24a0f3"
+    },
+    {
+      "bytes": 673,
+      "mode": 384,
+      "name": "producer-private-transport-diagnostic-list.log",
+      "sha256": "3bd117ee6a93b0408cc51778ba69cb213f92a39e399b97d8374d806bb2e8f806"
+    },
+    {
+      "bytes": 1267,
+      "mode": 384,
+      "name": "producer-private-transport-diagnostic.log",
+      "sha256": "41482183e81b00e68ed333fdcee4cc4860408f6ceaa0f1ca3144e5505a75e0f8"
+    },
+    {
+      "bytes": 369,
+      "mode": 384,
+      "name": "producer-server-bin-file.log",
+      "sha256": "29c38e90bcf63a4e8db3833fc609321ef50e994d2723a0f2f1ee78dc5765572c"
+    },
+    {
+      "bytes": 1019,
+      "mode": 384,
+      "name": "producer-server-bin-loader.log",
+      "sha256": "269b6f5481b8a64b494801def462421e344c0bad259e244eb518337f58e4ea6d"
+    },
+    {
+      "bytes": 12090,
+      "mode": 384,
+      "name": "producer-server-bin-readelf.log",
+      "sha256": "2e4a4d4437a00eb6ac63ae3d7eeea6ff65eecf964aee0564d7b742c30d4f76b0"
+    },
+    {
+      "bytes": 365,
+      "mode": 384,
+      "name": "producer-server-file.log",
+      "sha256": "e3151e519efdbd0c5566c359aa3da53a652ff967f65d0e0474990bb6b500ea23"
+    },
+    {
+      "bytes": 1015,
+      "mode": 384,
+      "name": "producer-server-loader.log",
+      "sha256": "15d6ff6b7980814b3c984d99ae7095afbb58727fc1f00e2b2d0ba3395b4f3366"
+    },
+    {
+      "bytes": 12481,
+      "mode": 384,
+      "name": "producer-server-readelf.log",
+      "sha256": "1bb53dd8a0d05039e77b3b36c3c06e1e6b0e3cd556e4d5c4a50428d3b3593654"
+    },
+    {
+      "bytes": 3848,
+      "mode": 384,
+      "name": "producer-snapshot-service-list.log",
+      "sha256": "0935bec4354a9ff193d52b5d956c0b60d3ca8c996c75af1b4fc69e06367f4fbf"
+    },
+    {
+      "bytes": 11237,
+      "mode": 384,
+      "name": "producer-snapshot-service.log",
+      "sha256": "1ae0440553927bd7eda74ce34733ae6629d8269dcb9b9f66b74cb3a5944d6896"
+    },
+    {
+      "bytes": 54172,
+      "mode": 384,
+      "name": "producer-summary.json",
+      "sha256": "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9"
+    },
+    {
+      "bytes": 537210,
+      "mode": 384,
+      "name": "product-source-manifest.json",
+      "sha256": "907f00844a01412f1779466b62888f5651ee0ab34f6fef6ff9914acd7d9f06a3"
+    },
+    {
+      "bytes": 1086680200,
+      "mode": 448,
+      "name": "server",
+      "sha256": "ba8316997f9cc015e466a74d8d05896aacd7f59d52f5386bbd8ac8f5680fb4b0"
+    },
+    {
+      "bytes": 776397280,
+      "mode": 448,
+      "name": "server-bin",
+      "sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2"
+    }
+  ],
+  "groups": [
+    [
+      "native-kv2-import",
+      "server",
+      "native_kv2_graph_import_",
+      8
+    ],
+    [
+      "native-kv2-large",
+      "server",
+      "native_large_kv2_",
+      15
+    ],
+    [
+      "forward-original-unseal-veto",
+      "server",
+      "completed_forward_original_unseal_owner_vetoes_after_local_audit",
+      1
+    ],
+    [
+      "forward-no-second-floor",
+      "server",
+      "completed_forward_precise_follower_audits_without_second_floor_or_use",
+      1
+    ],
+    [
+      "historical-service",
+      "server",
+      "native_ha_historical_restore_",
+      6
+    ],
+    [
+      "snapshot-service",
+      "server",
+      "native_ha_snapshot_",
+      7
+    ],
+    [
+      "archive-34mib",
+      "server",
+      "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs",
+      1
+    ],
+    [
+      "http-repair-admission",
+      "server",
+      "current_root_repair_retains_binary_header_admission_and_bounded_json_lane",
+      1
+    ],
+    [
+      "http-pending-admission",
+      "server",
+      "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes",
+      1
+    ],
+    [
+      "private-transport-diagnostic",
+      "peer",
+      "private_forward_stage_observation_preserves_existing_transport_errors",
+      1
+    ],
+    [
+      "private-frame-diagnostic",
+      "peer",
+      "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes",
+      1
+    ],
+    [
+      "kv2-api-271-numbers",
+      "server",
+      "kv2_api_271_",
+      3
+    ],
+    [
+      "native-kv2-storage-witness",
+      "server",
+      "native_kv2_storage_witness_",
+      5
+    ],
+    [
+      "lossless-json-private-tags",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion",
+      1
+    ],
+    [
+      "lossless-kv1-conversion",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads",
+      1
+    ],
+    [
+      "lossless-token-equivalence",
+      "server",
+      "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent",
+      1
+    ],
+    [
+      "native-raw-private-tags",
+      "server",
+      "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects",
+      1
+    ]
+  ],
+  "original_command_deadline_seconds": 1800,
+  "packer_sha256": "d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620",
+  "producer_compiler_resource_profile": {
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "incremental": null,
+    "low_memory_requested": false,
+    "test_debug": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "producer_hostname": "qian-qi",
+  "producer_machine": "x86_64",
+  "producer_original_status": "failed_or_blocked",
+  "producer_platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "producer_role": "main",
+  "producer_runner_sha256": "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+  "producer_source_after_pack": {
+    "commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "verified_at_utc": "2026-10-19T05:50:57.736882+00:00",
+    "verified_files": 2882
+  },
+  "producer_source_before_pack": {
+    "commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "verified_at_utc": "2026-10-19T05:50:31.934849+00:00",
+    "verified_files": 2882
+  },
+  "producer_summary_sha256": "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+  "producer_target_shared_lock_held": true,
+  "product_manifest_sha256": "907f00844a01412f1779466b62888f5651ee0ab34f6fef6ff9914acd7d9f06a3",
+  "production_authority": false,
+  "required_test_count": 55,
+  "schema": "heptabao.native-linux-artifact-capsule.v1",
+  "selections": [
+    {
+      "expected_count": 8,
+      "label": "native-kv2-import",
+      "owner": "server",
+      "producer_list_log_sha256": "b736726db62dfa6a06a49a8591c8df8eb9803508cbd7a9ce434b8b4cf134cddb",
+      "producer_run_log_sha256": "717eeac8daf07134621e75a1dd519c03e7e81eee60a405e5e9384290b991a45a",
+      "producer_selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "producer_test_exit_code": 101,
+      "producer_test_status": "failed",
+      "selector": "native_kv2_graph_import_"
+    },
+    {
+      "expected_count": 15,
+      "label": "native-kv2-large",
+      "owner": "server",
+      "producer_list_log_sha256": "bb7775a73604901551d3780b8b46087ef1871afaa3290f6b66d7963708bc87cb",
+      "producer_run_log_sha256": "e44e4d37ded9d6091c7d1fd193e430992ccd7e61fc9cda6b7986611dc1a69e12",
+      "producer_selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "native_large_kv2_"
+    },
+    {
+      "expected_count": 1,
+      "label": "forward-original-unseal-veto",
+      "owner": "server",
+      "producer_list_log_sha256": "1b090a65d9dc00c1184327eac6af0cc76d85154ce4a4cdfc2ec65e1aff70d5b0",
+      "producer_run_log_sha256": "fcd9993263251b2b252b7fcee648544de4b74df0f6433d7a676c8697a1ab8c7f",
+      "producer_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "completed_forward_original_unseal_owner_vetoes_after_local_audit"
+    },
+    {
+      "expected_count": 1,
+      "label": "forward-no-second-floor",
+      "owner": "server",
+      "producer_list_log_sha256": "1cc2f5b8041f94098601699bb4c1a40ad950501167c5bfaf3b9c7bb807e0b3a2",
+      "producer_run_log_sha256": "0949d9a2693b6945e6f15b1e46cc814ad55864303b62f35be8b9e447a81bc03a",
+      "producer_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "completed_forward_precise_follower_audits_without_second_floor_or_use"
+    },
+    {
+      "expected_count": 6,
+      "label": "historical-service",
+      "owner": "server",
+      "producer_list_log_sha256": "1ded5f03a51370845b9535687476946c72a2facea564dc39ad5b210820e6b9b4",
+      "producer_run_log_sha256": "2da8a2418c2a9c1e991a5ad080669cbd3abef539755252885db95989ac436ed7",
+      "producer_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "native_ha_historical_restore_"
+    },
+    {
+      "expected_count": 7,
+      "label": "snapshot-service",
+      "owner": "server",
+      "producer_list_log_sha256": "0935bec4354a9ff193d52b5d956c0b60d3ca8c996c75af1b4fc69e06367f4fbf",
+      "producer_run_log_sha256": "1ae0440553927bd7eda74ce34733ae6629d8269dcb9b9f66b74cb3a5944d6896",
+      "producer_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "native_ha_snapshot_"
+    },
+    {
+      "expected_count": 1,
+      "label": "archive-34mib",
+      "owner": "server",
+      "producer_list_log_sha256": "5fd368b8da137ad2f7967a0a44cbc35d10fa759cae667f4d419b8040d1e2fc8f",
+      "producer_run_log_sha256": "045d1f61c696a4a03417bce830536d1210faa93984398bc92ae70df79f0b3cde",
+      "producer_selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+    },
+    {
+      "expected_count": 1,
+      "label": "http-repair-admission",
+      "owner": "server",
+      "producer_list_log_sha256": "05b96cccae286dff8c4c08c5f1eec66b9b10725750166487e3dde57f1a60df7a",
+      "producer_run_log_sha256": "15390366debce1f4a368c2e02c4e0be2d0f3b2107698e46870e47b45e172ce8d",
+      "producer_selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+    },
+    {
+      "expected_count": 1,
+      "label": "http-pending-admission",
+      "owner": "server",
+      "producer_list_log_sha256": "2b8577db886a9407e7ac47ed4d33d4b5dd9321a82a149966b4a574f28f5d20d3",
+      "producer_run_log_sha256": "d3b919c7c06a83268ccea825946b8132630a3209a441cb027b66855441b5cb2a",
+      "producer_selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+    },
+    {
+      "expected_count": 1,
+      "label": "private-transport-diagnostic",
+      "owner": "peer",
+      "producer_list_log_sha256": "3bd117ee6a93b0408cc51778ba69cb213f92a39e399b97d8374d806bb2e8f806",
+      "producer_run_log_sha256": "41482183e81b00e68ed333fdcee4cc4860408f6ceaa0f1ca3144e5505a75e0f8",
+      "producer_selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "private_forward_stage_observation_preserves_existing_transport_errors"
+    },
+    {
+      "expected_count": 1,
+      "label": "private-frame-diagnostic",
+      "owner": "peer",
+      "producer_list_log_sha256": "07dbdf628c090390c28097530265b194c8e4f7d24d4de1ac422f41622cdc5f50",
+      "producer_run_log_sha256": "bd13516b4282205a3f85e9a1829c93958b15c975dfbd04e2aa307a573b24a0f3",
+      "producer_selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+    },
+    {
+      "expected_count": 3,
+      "label": "kv2-api-271-numbers",
+      "owner": "server",
+      "producer_list_log_sha256": "beb57b544cecf8c571bded8cba637b34d25756a236b44adb76e4ab11b2df2426",
+      "producer_run_log_sha256": "36c330d9a2aca2fcf3209c0ff28cc93dd2658b5a7488a567f8790ada58061292",
+      "producer_selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "kv2_api_271_"
+    },
+    {
+      "expected_count": 5,
+      "label": "native-kv2-storage-witness",
+      "owner": "server",
+      "producer_list_log_sha256": "6395beaad1dc01ded1908033390d65f5ec2e3bc95f4235c65964741e85ec31a6",
+      "producer_run_log_sha256": "554004dd3098c05d0032a95e62a6d6fd9cd9a7e4386477a531c507eb6f6abb23",
+      "producer_selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "producer_test_exit_code": 101,
+      "producer_test_status": "failed",
+      "selector": "native_kv2_storage_witness_"
+    },
+    {
+      "expected_count": 1,
+      "label": "lossless-json-private-tags",
+      "owner": "server",
+      "producer_list_log_sha256": "d5bc04b6785ed5ea76bb2e2c4974dfd576ac24c83a60aef8c38159aad46c2b91",
+      "producer_run_log_sha256": "3af87ee5f71bc9a202a66dc5319804e9cac91de05f72d964e7bfb09c73dc816d",
+      "producer_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+    },
+    {
+      "expected_count": 1,
+      "label": "lossless-kv1-conversion",
+      "owner": "server",
+      "producer_list_log_sha256": "791fa476b24f4a4c8f64133cf3addce9cb80a9c404595658e7c3d0e1300bc69f",
+      "producer_run_log_sha256": "aaa1ca71093db662f17658b03c9920190131f29e6b73b3d7e23ddb972cf48229",
+      "producer_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+    },
+    {
+      "expected_count": 1,
+      "label": "lossless-token-equivalence",
+      "owner": "server",
+      "producer_list_log_sha256": "77a330e006910c4205f3baaa7306b452c17d0fac599ab7af432c6b8703ced7a9",
+      "producer_run_log_sha256": "d266fadb8fdd80f748c54a3bbee26af0efb03c005dc60bd0db5c98d7408a521b",
+      "producer_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+    },
+    {
+      "expected_count": 1,
+      "label": "native-raw-private-tags",
+      "owner": "server",
+      "producer_list_log_sha256": "3d1e88e92830adb13ef58a9739273316efbfea5af3e39af4e90c8f664be9a1dc",
+      "producer_run_log_sha256": "6e817d83d42a2f810e51a5bb1f71576475055650637f3298fa4eaa5fdc907c4c",
+      "producer_selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "producer_test_exit_code": 0,
+      "producer_test_status": "passed",
+      "selector": "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+    }
+  ],
+  "source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60"
+}

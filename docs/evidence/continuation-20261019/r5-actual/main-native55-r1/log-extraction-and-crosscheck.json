@@ -1,0 +1,639 @@
+{
+  "files": [
+    {
+      "bytes": 450,
+      "header_argv_matches_original_summary": true,
+      "label": "cargo-version",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/cargo-version.log",
+      "sha256": "8195cc2272f684fff66e8df1aa9bedb38d806b4f27da52944a8fe8088b27f199",
+      "tool_eof": true,
+      "tool_version": "2050:53907617:450:1792397960955529856:1792397960955529856"
+    },
+    {
+      "bytes": 311,
+      "header_argv_matches_original_summary": true,
+      "label": "rustc-version",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/rustc-version.log",
+      "sha256": "027ab4b8a0fade23232f801c101a4307c0b3311d2287102f9e7035f758ed2fc8",
+      "tool_eof": true,
+      "tool_version": "2050:53907616:311:1792397960999528494:1792397960999528494"
+    },
+    {
+      "bytes": 2869,
+      "header_argv_matches_original_summary": true,
+      "label": "compile-server-tests",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/compile-server-tests.log",
+      "sha256": "7580a8e3cab9e7a6fc07662d9e66d11db2bfa7b5df25e9b18f6764fca9508dd8",
+      "tool_eof": true,
+      "tool_version": "2050:53907618:2869:1792398452387503887:1792398452387503887"
+    },
+    {
+      "bytes": 474,
+      "header_argv_matches_original_summary": true,
+      "label": "compile-peer-tests",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/compile-peer-tests.log",
+      "sha256": "a95ce0ad243ba08427ab076f9404f6bec6a6cceb3340a7a756323d4fe7cbcdd1",
+      "tool_eof": true,
+      "tool_version": "2050:53900823:474:1792398452763492492:1792398452763492492"
+    },
+    {
+      "bytes": 2367,
+      "header_argv_matches_original_summary": true,
+      "label": "build-server",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/build-server.log",
+      "sha256": "2bce076ce2b4a794071c88be430377edf6f14a07e77f9223cbe155c5b669e3e5",
+      "tool_eof": true,
+      "tool_version": "2050:53907970:2367:1792399122208546670:1792399122208546670"
+    },
+    {
+      "bytes": 435,
+      "header_argv_matches_original_summary": true,
+      "label": "built-binary-format",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/built-binary-format.log",
+      "sha256": "e7040a6ac64cd882f6b3dc32e820d86fde8a37009c007c46d27aadef0ad307cb",
+      "tool_eof": true,
+      "tool_version": "2050:53907972:435:1792399130462334540:1792399130462334540"
+    },
+    {
+      "bytes": 6231,
+      "expected_count": 8,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-import",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "8",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-import.log",
+      "sha256": "ca4f8ef1c1d938fc71ff30c363b11ae5d670cdb8bf8e1c57deedd4e3074ae4dd",
+      "tool_eof": true,
+      "tool_version": "2050:53907785:6231:1792398470020969579:1792398470020969579"
+    },
+    {
+      "bytes": 7626,
+      "expected_count": 15,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-large",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "15",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-large.log",
+      "sha256": "76409aee956c04dd537f0788965473461baabbe7798b0611dbe3ddbbb48fc054",
+      "tool_eof": true,
+      "tool_version": "2050:53907938:7626:1792398512901671212:1792398512901671212"
+    },
+    {
+      "bytes": 3381,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-original-unseal-veto",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/forward-original-unseal-veto.log",
+      "sha256": "010bf0ce593ef85ad108de01e04064c308958407515fe494b577d86aaa94022b",
+      "tool_eof": true,
+      "tool_version": "2050:53907939:3381:1792398515374596375:1792398515374596375"
+    },
+    {
+      "bytes": 3326,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-no-second-floor",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/forward-no-second-floor.log",
+      "sha256": "4dfc34213b8145c3cdfb1d30a0b71ee2ed7e71f226a6304141920fcb356e7c88",
+      "tool_eof": true,
+      "tool_version": "2050:53907941:3326:1792398518174511647:1792398518174511647"
+    },
+    {
+      "bytes": 58386,
+      "expected_count": 6,
+      "header_argv_matches_original_summary": true,
+      "label": "historical-service",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "6",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/historical-service.log",
+      "sha256": "f9fb69254112ac4471504dbca661694cb3e4438e40dcffd260c08ed6a5b49877",
+      "tool_eof": true,
+      "tool_version": "2050:53907943:58386:1792398672537847966:1792398672537847966"
+    },
+    {
+      "bytes": 18313,
+      "expected_count": 7,
+      "header_argv_matches_original_summary": true,
+      "label": "snapshot-service",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "7",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/snapshot-service.log",
+      "sha256": "c1b5f5d12888bc1eaabf76fc46611cef1e9b6d8ecf3394fc1e19da87b62393f5",
+      "tool_eof": true,
+      "tool_version": "2050:53907945:18313:1792398742928725503:1792398742928725503"
+    },
+    {
+      "bytes": 3276,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "archive-34mib",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/archive-34mib.log",
+      "sha256": "2da7ff3afb343c24db701bb218b144866b29da666c7b63cadd6d524194914545",
+      "tool_eof": true,
+      "tool_version": "2050:53907947:3276:1792398799799397142:1792398799799397142"
+    },
+    {
+      "bytes": 3096,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-repair-admission",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/http-repair-admission.log",
+      "sha256": "86edaf9248115071b10723f61101dc0a112bf06e2423632754dc15fe9f69aed9",
+      "tool_eof": true,
+      "tool_version": "2050:53907949:3096:1792398800823373875:1792398800823373875"
+    },
+    {
+      "bytes": 3114,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-pending-admission",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/http-pending-admission.log",
+      "sha256": "30d1216b0bf5f914052a021e8ec8572ca0eb2c9f5b2d306b0aa6670ddda0eae5",
+      "tool_eof": true,
+      "tool_version": "2050:53907951:3114:1792398801877349912:1792398801877349912"
+    },
+    {
+      "bytes": 1267,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-transport-diagnostic",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/private-transport-diagnostic.log",
+      "sha256": "def6c78994d159fc46b05351aebdbe2a8a0698abd5bef0016e94eb1a32cd8022",
+      "tool_eof": true,
+      "tool_version": "2050:53907953:1267:1792398802582333876:1792398802582333876"
+    },
+    {
+      "bytes": 1267,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-frame-diagnostic",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/private-frame-diagnostic.log",
+      "sha256": "7787d4939289598fd0e8a31dec15f795fa2b704a062f4bd7df03a3db319648d5",
+      "tool_eof": true,
+      "tool_version": "2050:53907955:1267:1792398804020301150:1792398804020301150"
+    },
+    {
+      "bytes": 3270,
+      "expected_count": 3,
+      "header_argv_matches_original_summary": true,
+      "label": "kv2-api-271-numbers",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "3",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/kv2-api-271-numbers.log",
+      "sha256": "11df018eceec5fc91904717e948000bce5cd445776c14016e0b7a0554360f460",
+      "tool_eof": true,
+      "tool_version": "2050:53907957:3270:1792398806033255294:1792398806033255294"
+    },
+    {
+      "bytes": 5368,
+      "expected_count": 5,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-storage-witness",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "5",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-storage-witness.log",
+      "sha256": "a6c1d0e65ac605033d16c01be44a3bba116aa8b1906be127ebe6b80d7dea3e35",
+      "tool_eof": true,
+      "tool_version": "2050:53907959:5368:1792398848260282221:1792398848260282221"
+    },
+    {
+      "bytes": 3137,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-json-private-tags",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-json-private-tags.log",
+      "sha256": "cd1aa911191235e930e8bd92446fde691bfcf755e5a939f770ec8cdea98b0313",
+      "tool_eof": true,
+      "tool_version": "2050:53907961:3137:1792398849264258835:1792398849264258835"
+    },
+    {
+      "bytes": 3113,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-kv1-conversion",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-kv1-conversion.log",
+      "sha256": "922779269d7d73158faab5de4245eb4a364c1db9e7ebdafa69bfaeda64198c33",
+      "tool_eof": true,
+      "tool_version": "2050:53907963:3113:1792398850265235507:1792398850265235507"
+    },
+    {
+      "bytes": 3133,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-token-equivalence",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-token-equivalence.log",
+      "sha256": "1a353d9e2476ebb6ec1960d8b5717f6a7dcc7564a199a504387e442659088b97",
+      "tool_eof": true,
+      "tool_version": "2050:53907965:3133:1792398851257212378:1792398851257212378"
+    },
+    {
+      "bytes": 3141,
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "native-raw-private-tags",
+      "raw_terminal_summaries": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-raw-private-tags.log",
+      "sha256": "8cb522ef0196507e4f479944af7dbd8f19528abee5c47d90a3e1235a9f69298c",
+      "tool_eof": true,
+      "tool_version": "2050:53907967:3141:1792398852347186952:1792398852347186952"
+    },
+    {
+      "bytes": 3795,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "expected_count": 8,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-import-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-import-list.log",
+      "sha256": "73baae2f4d7997af2f29f9a389e7fbbc6fcdf26aeb4b7edab651fdc9b2401018",
+      "tool_eof": true,
+      "tool_version": "2050:53907620:3795:1792398453244477915:1792398453244477915"
+    },
+    {
+      "bytes": 4609,
+      "exact_selected_test_names": [
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_enforces_record_bundle_structure_and_original_check",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_opens_only_explicit_profile_above_legacy_byte_bound",
+        "engines::kv::lossless::native_large::tests::native_large_kv2_codec_rejects_duplicate_tokens_and_keeps_private_name_objects",
+        "http::native_kv2_large::tests::native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits",
+        "http::native_kv2_large::tests::native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation",
+        "http::native_kv2_large::tests::native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_full34_history_snapshot_and_cold_recovery",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_locator_lost_ack_reopens_pristine_then_retries",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_one_admitted_upload_and_cancel_releases_own_slot",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_actor_expires_after_real_audit",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_original_deadline_survives_body_and_finalization",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rechecks_actual_actor_and_source_after_transfer",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_rejects_unadmitted_replayed_and_nonpristine_before_body",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_root_lost_ack_reopens_complete_once",
+        "service::native_kv2_import::tests::large::native_large_kv2_service_terminal_clock_self_write_keeps_actual_finite_actor"
+      ],
+      "expected_count": 15,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-large-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-large-list.log",
+      "sha256": "a5c3067e3e201af449db10923ac248e374a62c4beb44880ab909c6f8b8c4c067",
+      "tool_eof": true,
+      "tool_version": "2050:53907933:4609:1792398470490955342:1792398470490955342"
+    },
+    {
+      "bytes": 2965,
+      "exact_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_original_unseal_owner_vetoes_after_local_audit"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-original-unseal-veto-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/forward-original-unseal-veto-list.log",
+      "sha256": "3b142de7c63e1d60dcc4e2301f25e98358b592f8125e8da1c77d71a6ba335dc7",
+      "tool_eof": true,
+      "tool_version": "2050:53907940:2965:1792398513403656020:1792398513403656020"
+    },
+    {
+      "bytes": 2975,
+      "exact_selected_test_names": [
+        "service::forward_delivery::tests::completed_forward_precise_follower_audits_without_second_floor_or_use"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "forward-no-second-floor-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/forward-no-second-floor-list.log",
+      "sha256": "1cc2f5b8041f94098601699bb4c1a40ad950501167c5bfaf3b9c7bb807e0b3a2",
+      "tool_eof": true,
+      "tool_version": "2050:53907942:2975:1792398515861581638:1792398515861581638"
+    },
+    {
+      "bytes": 3776,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "expected_count": 6,
+      "header_argv_matches_original_summary": true,
+      "label": "historical-service-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/historical-service-list.log",
+      "sha256": "b60d773d4cd9ef49ececb3c7456590eead6dccd6c259799277c5b7d35d3ca944",
+      "tool_eof": true,
+      "tool_version": "2050:53907944:3776:1792398518660496941:1792398518660496941"
+    },
+    {
+      "bytes": 3848,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_changed_source_after_upload_and_cancel_drops_custody",
+        "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_rejects_historical_archive_and_preserves_corrupt_registered_leaf",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_root",
+        "service::native_v6_ha_pipeline_tests::snapshot_tests::native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor_b"
+      ],
+      "expected_count": 7,
+      "header_argv_matches_original_summary": true,
+      "label": "snapshot-service-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/snapshot-service-list.log",
+      "sha256": "67c8c6e2fbe504d49aecce7c1fd3ee2437f5732332890725f5cb0b98ae0561d8",
+      "tool_eof": true,
+      "tool_version": "2050:53907946:3848:1792398673083831494:1792398673083831494"
+    },
+    {
+      "bytes": 2989,
+      "exact_selected_test_names": [
+        "service::native_v6_ha_objects::tests::backup_tests::native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "archive-34mib-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/archive-34mib-list.log",
+      "sha256": "a078258a689abd3c732fb04282e91aa1ce88031cc6159403b331fbbe10ef5d3e",
+      "tool_eof": true,
+      "tool_version": "2050:53907948:2989:1792398743520707663:1792398743520707663"
+    },
+    {
+      "bytes": 2972,
+      "exact_selected_test_names": [
+        "http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-repair-admission-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/http-repair-admission-list.log",
+      "sha256": "6e1555755969803fcd8110e9c6f6ddd38f64877e4afcf722ed9aec79f5cd4d99",
+      "tool_eof": true,
+      "tool_version": "2050:53907950:2972:1792398800329385101:1792398800329385101"
+    },
+    {
+      "bytes": 2990,
+      "exact_selected_test_names": [
+        "http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "http-pending-admission-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/http-pending-admission-list.log",
+      "sha256": "3dfa1a59118d8e91bc537a08e183c1dabb9bd212eb4572de301a8856a4f4fe46",
+      "tool_eof": true,
+      "tool_version": "2050:53907952:2990:1792398801350361895:1792398801350361895"
+    },
+    {
+      "bytes": 673,
+      "exact_selected_test_names": [
+        "tests::private_forward_stage_observation_preserves_existing_transport_errors"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-transport-diagnostic-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/private-transport-diagnostic-list.log",
+      "sha256": "ae3b4e322e0feb0582331cf9a6d27f80c70d6532fe4f3efe5755c52b2739275e",
+      "tool_eof": true,
+      "tool_version": "2050:53907954:673:1792398802241341633:1792398802241341633"
+    },
+    {
+      "bytes": 665,
+      "exact_selected_test_names": [
+        "tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "private-frame-diagnostic-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/private-frame-diagnostic-list.log",
+      "sha256": "e03a56d8281f4527f018e4079dd059fd4befc72b5f5de9a85f3dd21c1537e154",
+      "tool_eof": true,
+      "tool_version": "2050:53907956:665:1792398803422314762:1792398803422314762"
+    },
+    {
+      "bytes": 3134,
+      "exact_selected_test_names": [
+        "engines::kv::api_numbers::tests::kv2_api_271_overflow_write_is_atomic_while_imported_storage_stays_exact",
+        "engines::kv::api_numbers::tests::kv2_api_271_rounds_response_numbers_without_changing_stored_tokens",
+        "engines::kv::api_numbers::tests::kv2_api_271_uses_go_float_notation_and_keeps_metadata_integers_exact"
+      ],
+      "expected_count": 3,
+      "header_argv_matches_original_summary": true,
+      "label": "kv2-api-271-numbers-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/kv2-api-271-numbers-list.log",
+      "sha256": "8dd619955f34d574bb6f720602124e5d91354d48d492384ec3c563633579dc6d",
+      "tool_eof": true,
+      "tool_version": "2050:53907958:3134:1792398805067277305:1792398805067277305"
+    },
+    {
+      "bytes": 3514,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_canonical_profile_matches_independent_python_vector",
+        "engines::kv::native_records::paged::storage_witness::tests::native_kv2_storage_witness_reads_retained_soft_delete_and_rejects_torn_payload",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloads",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_original_actor_expiry_after_audit_withholds_hash",
+        "service::native_kv2_storage_witness::tests::native_kv2_storage_witness_service_rejects_scope_parameters_and_terminal_owner_change"
+      ],
+      "expected_count": 5,
+      "header_argv_matches_original_summary": true,
+      "label": "native-kv2-storage-witness-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-kv2-storage-witness-list.log",
+      "sha256": "6395beaad1dc01ded1908033390d65f5ec2e3bc95f4235c65964741e85ec31a6",
+      "tool_eof": true,
+      "tool_version": "2050:53907960:3514:1792398806932234799:1792398806932234799"
+    },
+    {
+      "bytes": 3013,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-json-private-tags-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-json-private-tags-list.log",
+      "sha256": "1a51911ff996bd1ec2951d58c8747c0dbc3bd8a1b87e686ae75abed6459a3f5c",
+      "tool_eof": true,
+      "tool_version": "2050:53907962:3013:1792398848779270134:1792398848779270134"
+    },
+    {
+      "bytes": 2989,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-kv1-conversion-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-kv1-conversion-list.log",
+      "sha256": "3aae0a9004120439dd3f850480e0402f8b008470937c6aa8a4ea98a8427e73db",
+      "tool_eof": true,
+      "tool_version": "2050:53907964:2989:1792398849776246905:1792398849776246905"
+    },
+    {
+      "bytes": 3009,
+      "exact_selected_test_names": [
+        "engines::kv::lossless_tests::kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "lossless-token-equivalence-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/lossless-token-equivalence-list.log",
+      "sha256": "77a330e006910c4205f3baaa7306b452c17d0fac599ab7af432c6b8703ced7a9",
+      "tool_eof": true,
+      "tool_version": "2050:53907966:3009:1792398850761223944:1792398850761223944"
+    },
+    {
+      "bytes": 3017,
+      "exact_selected_test_names": [
+        "engines::kv::native_records::tests::native_raw_owner_and_payloads_preserve_exact_user_transport_tag_objects"
+      ],
+      "expected_count": 1,
+      "header_argv_matches_original_summary": true,
+      "label": "native-raw-private-tags-list",
+      "remote_path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/native-raw-private-tags-list.log",
+      "sha256": "d7da998db1564bf712b7df000dabf42f5fdff8cf5c87522fb2d02aa31b1a8a06",
+      "tool_eof": true,
+      "tool_version": "2050:53907968:3017:1792398851739201136:1792398851739201136"
+    }
+  ],
+  "host": "main",
+  "new_test_execution_performed": false,
+  "original_result_files_rewritten": false,
+  "raw_exact_selector_groups": 17,
+  "raw_failed_test_total": 0,
+  "raw_ignored_test_total": 0,
+  "raw_log_bytes": 188284,
+  "raw_log_files": 40,
+  "raw_passed_test_total": 55,
+  "retrieval_bytes": 204198,
+  "retrieval_file": "/workspace/scratch/915e5e680008/continuation-20261019/r5-physical-followthrough-r1/main-40-raw-logs-retrieval.json",
+  "retrieval_sha256": "2900e3a0eeae7d5a8b5afcad6dd74d61aa85d09206a6311095d2077fcaff1271",
+  "schema": "heptabao.exact-r5-native55-raw-log-crosscheck.v1",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "summary_sha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73"
+}
