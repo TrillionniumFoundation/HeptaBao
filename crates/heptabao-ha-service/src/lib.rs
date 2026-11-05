@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 #![deny(missing_debug_implementations)]
+#![recursion_limit = "256"]
 
 //! Authenticated service-level HA composition.
 //!
