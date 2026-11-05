@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.local-evidence-packager-invocation.v1",
+  "status": "failed",
+  "reason": "packager expected log_bytes[key] to be a scalar, but actual API uses seen/stored fields; original evidence unchanged",
+  "result": {
+    "chunk_id": "33ff4c",
+    "wall_time_seconds": 0.034863705,
+    "exit_code": 1,
+    "original_token_count": 141,
+    "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/d1dc83a5698d/r5_kv2_protocol_evidence_publish/validate_and_package.py\", line 91, in <module>\n    full_terminal = verified_terminal(full[\"terminal\"], full[\"read\"], job=full_job,\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/d1dc83a5698d/r5_kv2_protocol_evidence_publish/validate_and_package.py\", line 67, in verified_terminal\n    assert status[\"log_bytes\"][key] == expected\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "products_started": false,
+  "qualification_granted": false
+}

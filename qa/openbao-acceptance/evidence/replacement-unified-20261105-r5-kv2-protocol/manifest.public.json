@@ -1,0 +1,160 @@
+{
+  "files": [
+    {
+      "bytes": 1016,
+      "path": "archive-validation-attempt1.public.json",
+      "sha256": "fcbd58f7c78dbae9ead7e7ea059cd8d2a051e0cdbcb39075bbe0042bbb9c8e14"
+    },
+    {
+      "bytes": 16736,
+      "path": "diagnose_generic_tls_eof.py",
+      "sha256": "b4bb913b86079876271e866eb54c39ba4ceb2af400ff96159b6caf58d93d8316"
+    },
+    {
+      "bytes": 1971,
+      "path": "independent-readback.public.json",
+      "sha256": "71d7d1d071417418f63a9af901405c0c7949056fb0e7861b62d3508316155101"
+    },
+    {
+      "bytes": 155209,
+      "path": "kv2-full31/original-readback.json",
+      "sha256": "6c14a8e11077dc43afd2092f7d2f2fbcddf752a567e7eafcffbab431cbd38f34"
+    },
+    {
+      "bytes": 6070,
+      "path": "kv2-full31/result.public.json",
+      "sha256": "97fd1ed150dfe79ef18fa71c0bf3c3e1f1bc23ee4f77cfd80b99400346891f85"
+    },
+    {
+      "bytes": 90935,
+      "path": "kv2-full31/summary.public.json",
+      "sha256": "aeecd65ae734182531930c797371693c699197062477d1ccb307cf5eebf9f095"
+    },
+    {
+      "bytes": 8282,
+      "path": "matched27-failure/comparison.public.json",
+      "sha256": "14770f8c2339f0aaf1408a890a5e3cb7b20a1a94b7e97cdd48ba8c3e4b4dc5f4"
+    },
+    {
+      "bytes": 2415,
+      "path": "matched27-failure/custody.public.json",
+      "sha256": "03d0b50d8f472009292d8fe4ebb0efd29a3e81b747ec11ab15bb54cd7ff22a83"
+    },
+    {
+      "bytes": 836,
+      "path": "matched27-failure/driver-exit.public.json",
+      "sha256": "f26a6ad3af350432726c19bcaed67b0db01bcbe9440c2f8675cf12b491e63ca0"
+    },
+    {
+      "bytes": 1548,
+      "path": "matched27-failure/extraction-manifest.public.json",
+      "sha256": "a2c673727e26e54fb1693af588f80c19ffebc5eb34073a91daba87557ff22f23"
+    },
+    {
+      "bytes": 27464,
+      "path": "matched27-failure/original-root-tool-records.json",
+      "sha256": "eafc51b1f7ff9c1462b0d2919fa768a5ec0c46162eef502d65f1891e2417ea43"
+    },
+    {
+      "bytes": 1978,
+      "path": "matched27-failure/result.public.json",
+      "sha256": "f162abd92642a4894a5e4d95ac5eda9d3c8f29517df39325c6e7900dc5f643e9"
+    },
+    {
+      "bytes": 1480,
+      "path": "tls-readonly-diagnostic/complete-read.api.json",
+      "sha256": "421a25c4735235b8713f8577a6fb75941204a9830177daf0768c3f89698fa174"
+    },
+    {
+      "bytes": 973,
+      "path": "tls-readonly-diagnostic/custody.public.json",
+      "sha256": "4d49779c18e4501b6418086fb28df4f182ec65e55ad9c5753539b889014543ff"
+    },
+    {
+      "bytes": 2828,
+      "path": "tls-readonly-diagnostic/manifest.public.json",
+      "sha256": "04c45891dfd46902ac9c8caee4a0f6f4aa03f589af506ede28829c6351669899"
+    },
+    {
+      "bytes": 6113,
+      "path": "tls-readonly-diagnostic/observation.public.json",
+      "sha256": "cafe91e2d2e767cf8151af89a666749e3fdcf8822d867459d2d6531cda11ec2c"
+    },
+    {
+      "bytes": 208,
+      "path": "tls-readonly-diagnostic/original-start-timeout.api.json",
+      "sha256": "ad8e093469e58fdb8edfb6e90d1d24a35c13edb8e7ad043a398885e574056dca"
+    },
+    {
+      "bytes": 733,
+      "path": "tls-readonly-diagnostic/raw-response.api.json",
+      "sha256": "8285c72b4007334b6e34feba8130b8d21bea99877159c71e9470f57d70459ff1"
+    },
+    {
+      "bytes": 2117,
+      "path": "tls-readonly-diagnostic/reconciled-start.api.json",
+      "sha256": "a86c915c000813f329cd1bdaf7c6fa5e989dac9fa1aa7808014e8010f0322263"
+    },
+    {
+      "bytes": 954,
+      "path": "tls-readonly-diagnostic/request.json",
+      "sha256": "cb9c59935585897148167444e4978ee73855d45ada201c13e76f6a6972a6822d"
+    },
+    {
+      "bytes": 204,
+      "path": "tls-readonly-diagnostic/response.raw-http",
+      "sha256": "1670003b763b9252f9f5692d4dc7f2abeb093122f84daf8e82222a45683c0419"
+    },
+    {
+      "bytes": 35490,
+      "path": "tls-readonly-diagnostic/result-files-read.api.json",
+      "sha256": "eb5df26ab8f9b609c39b84a9f8fa2fbc37315f409b309fcb8651f0aba00af5a8"
+    },
+    {
+      "bytes": 1298,
+      "path": "tls-readonly-diagnostic/result.public.json",
+      "sha256": "8eff1e610354b59b0b831c3d7a363e635161926a864cbb64d1e0b32ade74bb68"
+    },
+    {
+      "bytes": 1403,
+      "path": "tls-readonly-diagnostic/server-launch.public.json",
+      "sha256": "6799a696173873733df174ce3c7e455df934240afb7b15fa48d268c6f663c3c4"
+    },
+    {
+      "bytes": 59,
+      "path": "tls-readonly-diagnostic/server.log",
+      "sha256": "06525a594f05824b68a3c70db0144fa41673cd75cb0150e04d5fe7dd44314768"
+    },
+    {
+      "bytes": 15571,
+      "path": "tls-readonly-diagnostic/source-review.public.json",
+      "sha256": "072692de810e3817cffd695563dea07d6d32aeda294ba0a5b38a2f46b5e2b7cb"
+    },
+    {
+      "bytes": 270,
+      "path": "tls-readonly-diagnostic/started.json",
+      "sha256": "614a5bfb0d00ae9088e4ff86d3d4a23e9a3286d50df9f7257b77830824f8f6f2"
+    },
+    {
+      "bytes": 372,
+      "path": "tls-readonly-diagnostic/submitted-request.public.json",
+      "sha256": "13cfedec235c180b2d7bd34308d5e4b7cbc66da3ca05fcb99150dad3dfc26d15"
+    },
+    {
+      "bytes": 911,
+      "path": "tls-readonly-diagnostic/terminal-status.api.json",
+      "sha256": "d12e26366e5198b25523e6ea830bb00ef34f0293d186009b2be3c8e2b01968db"
+    },
+    {
+      "bytes": 283,
+      "path": "tls-readonly-diagnostic/worker-birth.public.json",
+      "sha256": "4a95095cf682321dc8d627b49570f5161ee29dad61bd9676f1dec3a0847aac6c"
+    },
+    {
+      "bytes": 14343,
+      "path": "validate_and_package.py",
+      "sha256": "72d7e3fb6c8f0a645d9ca6fee6fc29723dae2b7fec380f85992293a001e86bc5"
+    }
+  ],
+  "schema": "heptabao.immutable-evidence-file-manifest.v1"
+}

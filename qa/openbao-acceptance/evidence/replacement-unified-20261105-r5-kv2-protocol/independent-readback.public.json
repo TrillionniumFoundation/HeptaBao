@@ -1,0 +1,48 @@
+{
+  "authbus_qualified": false,
+  "binary_sha256": "8b42f0a6bc2de0647e558c065f517b52736c208b619902943663fe4a768f44d0",
+  "formal_recovery25_executed": false,
+  "full31": {
+    "actual_original_worker_and_full_terminal_output_checked": true,
+    "job_id": "1a1ab90bddc-fc05-4ead",
+    "launch_nonce": "065621cb73a39ac232021250c8229024",
+    "passed": 31,
+    "required": 31,
+    "result_sha256": "97fd1ed150dfe79ef18fa71c0bf3c3e1f1bc23ee4f77cfd80b99400346891f85",
+    "summary_exact_original_binary_chunks_checked": true
+  },
+  "matched27": {
+    "actual_terminal_and_full_output_checked": true,
+    "job_id": "1a1abaa7b24-fc05-4f84",
+    "launch_nonce": "198ef7c28aa985dc8d82d4947613b7fc",
+    "missing": 21,
+    "original_mount_outcome": "unknown_not_retried",
+    "passed_guards": 6,
+    "positive_stage_admission_granted": false,
+    "resource_or_performance_winner_established": false,
+    "status": "failed",
+    "worker_request_and_started_local_readback_complete": false
+  },
+  "old_service_cleanup": false,
+  "physical_ha_qualified": false,
+  "production_changed": false,
+  "production_credentials_tested": false,
+  "replacement_qualified": false,
+  "schema": "heptabao.r5-kv2-protocol-independent-archive-review.v1",
+  "scope": "actual synthetic normal-file KV2 pass and actual protocol failures; not production migration admission",
+  "source_commit": "1f188df0f2affebb92702222e9fe5dfb4712194c",
+  "source_tree": "74bcb2b2af2fc9d349f007cd847fc2f16c08c01a",
+  "tls_diagnostic": {
+    "actual_original_worker_and_full_terminal_output_checked": true,
+    "earlier_mount_effect_inferred": false,
+    "finding": "complete_204_then_ragged_TLS_EOF",
+    "http_status": 204,
+    "job_id": "1a1abc19672-fc05-504e",
+    "launch_nonce": "49672b57e26640515982d2a39b702fd0",
+    "new_readonly_health_request_count": 1,
+    "raw_http_bytes": 204,
+    "same_key_reconciled_after_original_start_timeout": true,
+    "transport_accepted": false
+  },
+  "traffic_cutover": false
+}
