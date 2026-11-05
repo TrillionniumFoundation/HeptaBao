@@ -305,7 +305,13 @@ fn load_cold_native_ha_inner(
     .map_err(|_| unavailable())?
     .digest()
         != committed.published().root_digest()
+        || NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
+            .matches_current(&committed)
+            .is_err()
     {
+        // Equal root content can recur after intervening publications. The
+        // authenticated covered cursor still needs the actual current
+        // publication before this cold owner may materialize a current read.
         // The local HA cursor proves which prior root this real barrier owner
         // selected. A cold catch-up installs the actual current closure without
         // needing readable obsolete payloads or a fabricated warm State.

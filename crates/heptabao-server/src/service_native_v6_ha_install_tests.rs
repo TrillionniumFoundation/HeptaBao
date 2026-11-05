@@ -20,6 +20,9 @@ mod archive_repair_tests;
 #[path = "service_native_v6_ha_paged_read_tests.rs"]
 mod paged_read_tests;
 
+#[path = "service_native_v6_ha_same_root_republication_tests.rs"]
+mod same_root_republication_tests;
+
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const REQUEST_BUDGET: Duration = Duration::from_secs(15);
 

@@ -1135,6 +1135,30 @@ impl Service {
         result
     }
 
+    // A same-content root can still belong to an older publication. Only an
+    // exact-current local cursor may enter the read-only witness continuation;
+    // a required local installation must retain the original one-shot result.
+    fn native_v6_same_root_continuation_is_current(
+        &self,
+        committed: &CommittedNativeV6Read,
+    ) -> Result<bool, Response> {
+        if self.current_state_identity()?
+            != StateIdentity::RecordsV6(committed.published().root_digest())
+        {
+            return Ok(false);
+        }
+        let bytes = self
+            .durable
+            .as_ref()
+            .ok_or_else(unavailable)?
+            .get("system", HA_CURSOR_RESOURCE)
+            .map_err(storage_rejected)?
+            .ok_or_else(unavailable)?;
+        Ok(NativeHaCursor::decode(bytes.expose())?
+            .matches_current(committed)
+            .is_ok())
+    }
+
     fn sync_native_v6_after_migration_checked(
         &mut self,
         ha: &Arc<Mutex<HaProcess>>,
@@ -1149,8 +1173,7 @@ impl Service {
         // a repair/publication, changed environment or recovery fence cannot
         // be adopted by this continuation. Publisher and cold paths stay exact.
         let continuation = if published_plan.is_none()
-            && self.current_state_identity()?
-                == StateIdentity::RecordsV6(committed.published().root_digest())
+            && self.native_v6_same_root_continuation_is_current(&committed)?
         {
             let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
             Some((
@@ -1325,7 +1348,13 @@ impl Service {
             // An exact-current warm root reopens its typed metadata and every
             // real payload locator. Selected point reads retain AEAD/address
             // authentication; cold loads and new-root installs remain full.
-            if old_identity == StateIdentity::RecordsV6(committed.published().root_digest()) {
+            if old_identity == StateIdentity::RecordsV6(committed.published().root_digest())
+                && NativeHaCursor::decode(
+                    selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose(),
+                )?
+                .matches_current(committed)
+                .is_ok()
+            {
                 let root = selected.native.as_ref().ok_or_else(unavailable)?;
                 NativeHaCursor::decode(
                     selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose(),
