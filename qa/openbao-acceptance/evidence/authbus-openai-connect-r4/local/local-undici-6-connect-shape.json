@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.undici-connect-public-shape-probe.v1",
+  "actualSdkExecution": false,
+  "actualNativeHeptaBao": false,
+  "externalProviderConnection": false,
+  "credentialInput": false,
+  "upstreamSocketsCreated": 0,
+  "nodeVersion": "v24.19.0",
+  "library": {
+    "name": "undici",
+    "version": "6.28.0",
+    "packageSha256": "f529aa8b145f6e270a72700ceb6c8dd3b87f742313078ea9f774a9d2ce8c865d"
+  },
+  "observations": [
+    {
+      "phase": "ProxyAgent",
+      "methodIsConnect": true,
+      "targetExact": true,
+      "host": "target-without-default-port",
+      "contentLength": "absent",
+      "transferEncodingPresent": false,
+      "headBytes": 0
+    },
+    {
+      "phase": "EnvHttpProxyAgent",
+      "methodIsConnect": true,
+      "targetExact": true,
+      "host": "target-without-default-port",
+      "contentLength": "absent",
+      "transferEncodingPresent": false,
+      "headBytes": 0
+    }
+  ]
+}

@@ -1,0 +1,777 @@
+//! Ordinary KV and actual immutable AppRole read admissions share one affine
+//! Actor/Clock, mandatory audit, and final delivery contract. Other non-KV
+//! operations retain their separate completion contracts.
+use super::records::RecordPlan;
+use super::*;
+
+// A negative storage observation is not delivery authority. Its constructor
+// accepts the durable primitive's typed error; JSON/status/fence flags cannot
+// populate it. The binding belongs to the original affine request capsule.
+#[derive(PartialEq, Eq)]
+struct OrdinaryKvRequestBinding {
+    started: std::time::Instant,
+    namespace: String,
+    path: String,
+    method: String,
+    activation_nonce: String,
+}
+
+// Only the actual legacy proposal/commit branches produce this negative
+// observation. It is not completion authority and never releases a KV body.
+pub(super) enum LegacyUpgradePublicationFailure {
+    ProposalUncertain,
+    CommittedLocalIncomplete,
+}
+struct LegacyUpgradeFailureNotice {
+    binding: OrdinaryKvRequestBinding,
+    failure: LegacyUpgradePublicationFailure,
+}
+
+struct IndeterminateCommitNotice {
+    binding: OrdinaryKvRequestBinding,
+    error: &'static str,
+    recovery_reference: String,
+}
+
+#[derive(Clone, Copy)]
+enum OrdinaryKvVetoReason {
+    DeadlineBefore,
+    RecoveryBefore,
+    SealedBefore,
+    PrivateOwnerBefore,
+    HaSync,
+    RecoveryAfter,
+    LegacyReplica,
+    PrivateOwnerAfter,
+    AppRoleAudit,
+    SealedBeforeActor,
+    ActorFinal,
+}
+
+impl OrdinaryKvVetoReason {
+    fn code(self) -> &'static str {
+        match self {
+            Self::DeadlineBefore => "deadline_before",
+            Self::RecoveryBefore => "recovery_before",
+            Self::SealedBefore => "sealed_before",
+            Self::PrivateOwnerBefore => "private_owner_before",
+            Self::HaSync => "ha_sync",
+            Self::RecoveryAfter => "recovery_after",
+            Self::LegacyReplica => "legacy_replica",
+            Self::PrivateOwnerAfter => "private_owner_after",
+            Self::AppRoleAudit => "approle_audit",
+            Self::SealedBeforeActor => "sealed_before_actor",
+            Self::ActorFinal => "actor_final",
+        }
+    }
+}
+
+// Passive timing only: no Principal, path, fingerprint, response body, new
+// deadline, or authority is retained. A missing/skipped remaining value is -1.
+struct OrdinaryKvVetoTiming {
+    started: std::time::Instant,
+    remaining_at_delivery_us: i64,
+    remaining_before_sync_us: i64,
+    remaining_after_sync_us: i64,
+    sync_attempted: bool,
+    sync_elapsed_us: u64,
+}
+
+impl OrdinaryKvVetoTiming {
+    fn remaining(deadline: Option<std::time::Instant>, now: std::time::Instant) -> i64 {
+        deadline.map_or(-1, |deadline| {
+            i64::try_from(deadline.saturating_duration_since(now).as_micros()).unwrap_or(i64::MAX)
+        })
+    }
+
+    fn elapsed(duration: std::time::Duration) -> u64 {
+        u64::try_from(duration.as_micros()).unwrap_or(u64::MAX)
+    }
+
+    fn new(deadline: Option<std::time::Instant>) -> Self {
+        let started = std::time::Instant::now();
+        Self {
+            started,
+            remaining_at_delivery_us: Self::remaining(deadline, started),
+            remaining_before_sync_us: -1,
+            remaining_after_sync_us: -1,
+            sync_attempted: false,
+            sync_elapsed_us: 0,
+        }
+    }
+
+    fn emit_veto(
+        &self,
+        reason: OrdinaryKvVetoReason,
+        status: u16,
+        veto_audit_sequence: Option<u64>,
+        authority: &OrdinaryKvAuthority,
+    ) {
+        use std::io::Write as _;
+
+        let now = std::time::Instant::now();
+        // Only the failed delivery branch calls this, after erasing the body.
+        // Some(sequence) comes directly after the existing veto audit succeeds;
+        // failure or a skipped audit never borrows the preceding audit's index.
+        // Diagnostic I/O is best effort and cannot replace the original veto.
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBV6-KV-DELIVERY reason_code={} status={} veto_audit_seq_valid={} veto_audit_seq={} request_elapsed_us={} delivery_elapsed_us={} sync_attempted={} sync_elapsed_us={} original_remaining_at_delivery_us={} original_remaining_before_sync_us={} original_remaining_after_sync_us={} original_remaining_us={} original_expired={}",
+            reason.code(),
+            status,
+            veto_audit_sequence.is_some(),
+            veto_audit_sequence.unwrap_or(0),
+            Self::elapsed(now.saturating_duration_since(authority.started)),
+            Self::elapsed(now.saturating_duration_since(self.started)),
+            self.sync_attempted,
+            self.sync_elapsed_us,
+            self.remaining_at_delivery_us,
+            self.remaining_before_sync_us,
+            self.remaining_after_sync_us,
+            Self::remaining(authority.deadline, now),
+            authority.deadline.is_some_and(|deadline| now >= deadline),
+        );
+    }
+}
+
+// Temporarily carries only the negative observation while the original
+// capsule is moved into the existing before-Publish closure. It conveys no
+// Principal, clock, deadline, admission or right to release a private body.
+pub(super) struct OrdinaryKvCommitNoticeCapture {
+    binding: OrdinaryKvRequestBinding,
+    notice: Option<IndeterminateCommitNotice>,
+}
+
+enum OrdinaryReadOwner {
+    Kv {
+        mount_path: String,
+        mount_incarnation: u64,
+        mount_revision: u64,
+    },
+    AppRole(Box<approle_lookup::AppRoleReadOwner>),
+}
+
+/// One original admission capability; neither this capsule nor Principal is
+/// cloned, serialized or reconstructed from a bearer after dispatch.
+pub(super) struct OrdinaryKvAuthority {
+    principal: Principal,
+    namespace: String,
+    namespace_incarnation: Option<u64>,
+    // Trusted ingress contract; HTTP and forwarded ingress require catalog
+    // membership. Historical native calls can own an uncataloged namespace,
+    // but still bind its actual Auth/Engine and the exact None/Some incarnation.
+    namespace_catalog_required: bool,
+    owner: OrdinaryReadOwner,
+    cluster_id: String,
+    activation_nonce: String,
+    path: String,
+    method: String,
+    parameters: Value,
+    capability: &'static str,
+    admitted_at: u64,
+    token_clock: Option<RequestClock>,
+    started: std::time::Instant,
+    deadline: Option<std::time::Instant>,
+    indeterminate_commit: Option<IndeterminateCommitNotice>,
+    legacy_upgrade_failure: Option<LegacyUpgradeFailureNotice>,
+    audited_fingerprint: Option<String>,
+    legacy_replica: Option<Box<legacy_immutable_kv::LegacyReplicaRead>>,
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) native_response_wrapping:
+        Option<Box<native_response_wrapping::NativeWrappedKvDelivery>>,
+}
+
+impl Drop for OrdinaryKvAuthority {
+    fn drop(&mut self) {
+        erase_json(&mut self.parameters);
+    }
+}
+
+impl OrdinaryKvAuthority {
+    pub(super) fn new(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        activation_nonce: &str,
+    ) -> Result<Self, Response> {
+        let (mount_path, mount_incarnation, mount_revision) = state
+            .engines
+            .ordinary_kv_mount_binding(request.namespace, request.path)
+            .ok_or_else(|| Response::error(503, "ordinary KV owner is unavailable"))?;
+        let method = kv_authorization_method(request.method, request.body);
+        let capability = state
+            .engines
+            .required_capability(request.namespace, method, request.path)
+            .ok_or_else(|| Response::error(503, "ordinary KV capability is unavailable"))?;
+        Self::from_owner(
+            principal,
+            state,
+            request,
+            activation_nonce,
+            method,
+            capability,
+            OrdinaryReadOwner::Kv {
+                mount_path: mount_path.to_owned(),
+                mount_incarnation,
+                mount_revision,
+            },
+        )
+    }
+
+    pub(super) fn new_approle_lookup(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        activation_nonce: &str,
+        owner: approle_lookup::AppRoleReadOwner,
+    ) -> Result<Self, Response> {
+        Self::from_owner(
+            principal,
+            state,
+            request,
+            activation_nonce,
+            request.method,
+            "update",
+            OrdinaryReadOwner::AppRole(Box::new(owner)),
+        )
+    }
+
+    fn from_owner(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        activation_nonce: &str,
+        method: &str,
+        capability: &'static str,
+        owner: OrdinaryReadOwner,
+    ) -> Result<Self, Response> {
+        let mut authority = Self {
+            principal,
+            namespace: request.namespace.to_owned(),
+            namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_catalog_required: request.enforce_namespace,
+            owner,
+            cluster_id: state.cluster_id.clone(),
+            activation_nonce: activation_nonce.to_owned(),
+            path: request.path.to_owned(),
+            method: method.to_owned(),
+            parameters: request.body.clone(),
+            capability,
+            admitted_at: request.now,
+            token_clock: request.token_clock,
+            started: request.admission_started,
+            deadline: crate::request_deadline::current(),
+            indeterminate_commit: None,
+            legacy_upgrade_failure: None,
+            audited_fingerprint: None,
+            legacy_replica: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_response_wrapping: None,
+        };
+        authority.check(state, &state.auth, activation_nonce)?;
+        Ok(authority)
+    }
+
+    pub(super) fn is_approle_lookup(&self) -> bool {
+        matches!(&self.owner, OrdinaryReadOwner::AppRole(_))
+    }
+    pub(super) fn check_private_read_owner(&self, service: &Service) -> Result<(), Response> {
+        match &self.owner {
+            OrdinaryReadOwner::Kv { .. } => Ok(()),
+            OrdinaryReadOwner::AppRole(owner) => owner.check(service),
+        }
+    }
+
+    pub(super) fn bind_legacy_replica(&mut self, replica: legacy_immutable_kv::LegacyReplicaRead) {
+        self.legacy_replica = Some(Box::new(replica));
+    }
+
+    fn request_binding(&self) -> OrdinaryKvRequestBinding {
+        OrdinaryKvRequestBinding {
+            started: self.started,
+            namespace: self.namespace.clone(),
+            path: self.path.clone(),
+            method: self.method.clone(),
+            activation_nonce: self.activation_nonce.clone(),
+        }
+    }
+
+    pub(super) fn mark_response_audited(&mut self, fingerprint: &str) {
+        self.audited_fingerprint = Some(fingerprint.to_owned());
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn check_native_control_group(
+        &mut self,
+        state: &State,
+        owner: &crate::auth::control_groups::DeferredRequest,
+        clock: RequestClock,
+    ) -> Result<(), Response> {
+        native_controlgroups::check_inner_action(state, owner, &mut self.principal, clock)
+    }
+
+    pub(super) fn principal(&self) -> &Principal {
+        &self.principal
+    }
+
+    fn deadline_expired(&self) -> bool {
+        self.deadline
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+    }
+
+    fn token_time(&self, auth: &AuthState) -> Result<AuthorityTime, Response> {
+        let time = match self.token_clock {
+            Some(clock) => clock
+                .with_seconds_floor(self.admitted_at)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable"))?,
+            None => AuthorityTime::Coarse(
+                std::time::Duration::from_secs(self.admitted_at)
+                    .saturating_add(self.started.elapsed())
+                    .as_secs(),
+            ),
+        };
+        Ok(auth.token_api_observed_time(time))
+    }
+
+    pub(super) fn observe_candidate(&self, state: &mut State) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(owner) = self.native_response_wrapping.as_ref() {
+            // Composition already performed this original observation before
+            // binding its exact Auth successor. Later time has the existing
+            // distinct terminal-clock writer; do not mutate the bound capsule.
+            return owner.admit_candidate(state);
+        }
+        let time = self.token_time(&state.auth)?;
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(())
+    }
+
+    /// Authorize the original operation, rather than classify a newly created
+    /// key as an update and ask the admitted create-only actor for a new grant.
+    /// The caller supplies the exact publication candidate and, at the existing
+    /// pre-Publish hook, its current authoritative AuthState.
+    pub(super) fn check(
+        &mut self,
+        state: &State,
+        auth: &AuthState,
+        activation_nonce: &str,
+    ) -> Result<(), Response> {
+        if self.deadline_expired()
+            || activation_nonce != self.activation_nonce
+            || state.cluster_id != self.cluster_id
+            || self.namespace_catalog_required && !state.namespace_exists(&self.namespace)
+            || state.namespace_is_sealed(&self.namespace)
+            || state.namespace_is_tainted(&self.namespace)
+            || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
+            || match &self.owner {
+                OrdinaryReadOwner::Kv {
+                    mount_path,
+                    mount_incarnation,
+                    mount_revision,
+                } => {
+                    state
+                        .engines
+                        .ordinary_kv_mount_binding(&self.namespace, &self.path)
+                        != Some((mount_path.as_str(), *mount_incarnation, *mount_revision))
+                }
+                OrdinaryReadOwner::AppRole(owner) => owner.check_mount(auth).is_err(),
+            }
+        {
+            return Err(Response::error(
+                503,
+                "ordinary KV delivery owner or deadline changed",
+            ));
+        }
+        Service::bind_identity_principal(state, &mut self.principal, &self.namespace)?;
+        let time = self.token_time(auth)?;
+        auth.authorize_request_parameters_observed(
+            &self.principal,
+            &self.namespace,
+            &self.method,
+            &self.path,
+            &self.parameters,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        auth.authorize_request_observed(
+            &self.principal,
+            &self.namespace,
+            &self.path,
+            self.capability,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        if self.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "ordinary KV delivery deadline exceeded",
+            ));
+        }
+        Ok(())
+    }
+}
+
+impl Service {
+    pub(super) fn capture_legacy_upgrade_publication_failure(
+        &mut self,
+        failure: LegacyUpgradePublicationFailure,
+    ) {
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.legacy_upgrade_failure = Some(LegacyUpgradeFailureNotice {
+                binding: authority.request_binding(),
+                failure,
+            });
+        }
+    }
+
+    pub(super) fn capture_ordinary_kv_outcome_unknown(
+        &mut self,
+        error: &ServiceError,
+        record_owner: bool,
+    ) {
+        let ServiceError::OutcomeUnknown { recovery_reference } = error else {
+            return;
+        };
+        let error = if record_owner {
+            "record durable outcome unknown; do not blindly retry"
+        } else {
+            "durable outcome unknown; do not blindly retry"
+        };
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.indeterminate_commit = Some(IndeterminateCommitNotice {
+                binding: authority.request_binding(),
+                error,
+                recovery_reference: recovery_reference.clone(),
+            });
+        } else if let Some(capture) = self.pending_ordinary_kv_commit_notice.as_mut() {
+            capture.notice = Some(IndeterminateCommitNotice {
+                binding: OrdinaryKvRequestBinding {
+                    started: capture.binding.started,
+                    namespace: capture.binding.namespace.clone(),
+                    path: capture.binding.path.clone(),
+                    method: capture.binding.method.clone(),
+                    activation_nonce: capture.binding.activation_nonce.clone(),
+                },
+                error,
+                recovery_reference: recovery_reference.clone(),
+            });
+        }
+    }
+
+    /// Keep the original request deadline through the existing publication
+    /// hook. The capsule remains owned until mandatory response audit/stamping
+    /// has finished; this method does not discharge delivery authority.
+    pub(super) fn commit_ordinary_kv_record_plan(
+        &mut self,
+        state: &State,
+        plan: RecordPlan,
+    ) -> Result<(), Response> {
+        if self.pending_ordinary_kv_commit_notice.is_some() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ordinary KV commit observation is unavailable",
+            ));
+        }
+        let mut authority = self.pending_ordinary_kv_authority.take();
+        let token_authority = self.pending_token_api_authority.take();
+        self.pending_ordinary_kv_commit_notice =
+            authority
+                .as_ref()
+                .map(|authority| OrdinaryKvCommitNoticeCapture {
+                    binding: authority.request_binding(),
+                    notice: None,
+                });
+        let mut result = if let Some(authority) = authority.as_mut() {
+            let activation_nonce = self.unseal_nonce.clone();
+            self.commit_record_plan_with_before_publish(
+                state,
+                plan,
+                |auth| authority.check(state, auth, &activation_nonce),
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )
+        } else if let Some(authority) = token_authority.as_ref() {
+            let activation = self.unseal_nonce.clone();
+            self.commit_record_plan_with_before_publish(
+                state,
+                plan,
+                |auth| authority.check_token_api_candidate(state, auth, &activation),
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )
+        } else {
+            self.commit_record_plan(state, plan)
+        };
+        let capture = self.pending_ordinary_kv_commit_notice.take();
+        match (authority.as_mut(), capture) {
+            (Some(authority), Some(capture)) if capture.binding == authority.request_binding() => {
+                authority.indeterminate_commit = capture.notice;
+            }
+            (None, None) => {}
+            _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                result = Err(Response::error(
+                    503,
+                    "ordinary KV commit observation was lost",
+                ));
+            }
+        }
+        self.pending_ordinary_kv_authority = authority;
+        self.pending_token_api_authority = token_authority;
+        result
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn commit_ordinary_native_kv_plan(
+        &mut self,
+        state: &mut State,
+        plan: v6_records::NativeRootMigrationPlan,
+    ) -> Result<(), Response> {
+        if self.pending_ordinary_kv_commit_notice.is_some() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ordinary KV commit observation is unavailable",
+            ));
+        }
+        let mut authority = self.pending_ordinary_kv_authority.take();
+        let token_authority = self.pending_token_api_authority.take();
+        self.pending_ordinary_kv_commit_notice =
+            authority
+                .as_ref()
+                .map(|authority| OrdinaryKvCommitNoticeCapture {
+                    binding: authority.request_binding(),
+                    notice: None,
+                });
+        let candidate_result = if let Some(authority) = authority.as_mut() {
+            let activation_nonce = self.unseal_nonce.clone();
+            self.commit_native_root_plan(state, plan, false, "resource", &mut |auth| {
+                authority.check(state, auth, &activation_nonce)?;
+                if let Some(owner) = authority.native_response_wrapping.as_ref() {
+                    owner.check_publish_source(state, auth)?;
+                }
+                Ok(())
+            })
+        } else if let Some(authority) = token_authority.as_ref() {
+            let activation = self.unseal_nonce.clone();
+            self.commit_native_root_plan(state, plan, false, "resource", &mut |auth| {
+                authority.check_token_api_candidate(state, auth, &activation)
+            })
+        } else {
+            Err(Response::error(
+                503,
+                "native mutation requires original request authority",
+            ))
+        };
+        let mut result = candidate_result.map(|installed| {
+            *state = installed;
+        });
+        let capture = self.pending_ordinary_kv_commit_notice.take();
+        match (authority.as_mut(), capture) {
+            (Some(authority), Some(capture)) if capture.binding == authority.request_binding() => {
+                authority.indeterminate_commit = capture.notice;
+            }
+            (None, None) => {}
+            _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                result = Err(Response::error(
+                    503,
+                    "ordinary KV commit observation was lost",
+                ));
+            }
+        }
+        self.pending_ordinary_kv_authority = authority;
+        self.pending_token_api_authority = token_authority;
+        result
+    }
+
+    pub(super) fn complete_ordinary_kv_delivery(
+        &mut self,
+        mut authority: OrdinaryKvAuthority,
+        mut response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        if let Some(notice) = authority.legacy_upgrade_failure.take() {
+            erase_json(&mut response.body);
+            response.response_headers = Default::default();
+            response.consistency_index = None;
+            let message = if notice.binding != authority.request_binding()
+                || authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                "ordinary KV publication failure notice was not audited"
+            } else {
+                match notice.failure {
+                    LegacyUpgradePublicationFailure::ProposalUncertain => {
+                        "HA publication outcome unknown; reopen and reconcile; do not blindly retry"
+                    }
+                    LegacyUpgradePublicationFailure::CommittedLocalIncomplete => {
+                        "HA state committed but local persistence incomplete; authoritative reconciliation required"
+                    }
+                }
+            };
+            // Retain only the original typed negative effect observation after
+            // mandatory audit. Expiry/fencing can never turn it into success or
+            // relabel an already proposed/committed effect as safe to retry.
+            return Response {
+                status: 503,
+                body: json!({"errors":[message],"recovery_required":true,"retry_allowed":false}),
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+            };
+        }
+        if let Some(notice) = authority.indeterminate_commit.take() {
+            erase_json(&mut response.body);
+            response.consistency_index = None;
+            if notice.binding != authority.request_binding()
+                || authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                return Response::error(503, "ordinary KV indeterminate notice was not audited");
+            }
+            // This is exclusively a public negative storage observation. Never
+            // reuse the handler/audit body or stamp an index; it proves no grant.
+            return Response {
+                unwrapped_json: None,
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: 503,
+                body: json!({"errors":[notice.error],
+                             "recovery_reference":notice.recovery_reference}),
+            };
+        }
+        let planned_success = (200..300).contains(&response.status);
+        #[cfg(feature = "native-v6-storage")]
+        let response_wrapping = authority.native_response_wrapping.take();
+        let _deadline_scope = authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        let mut timing = OrdinaryKvVetoTiming::new(authority.deadline);
+        let mut veto_reason = OrdinaryKvVetoReason::DeadlineBefore;
+        let checked = (|| {
+            let deadline_expired = authority.deadline_expired();
+            if deadline_expired || self.recovery_required || self.state.is_none() {
+                if !deadline_expired {
+                    veto_reason = if self.recovery_required {
+                        OrdinaryKvVetoReason::RecoveryBefore
+                    } else {
+                        OrdinaryKvVetoReason::SealedBefore
+                    };
+                }
+                return Err(Response::error(503, "ordinary KV delivery is fenced"));
+            }
+            veto_reason = OrdinaryKvVetoReason::PrivateOwnerBefore;
+            authority.check_private_read_owner(self)?;
+            // Install actual HA state, including revocations or namespace/mount
+            // retirement committed while audit or publication was blocking.
+            if self.ha.is_some() {
+                veto_reason = OrdinaryKvVetoReason::HaSync;
+                timing.sync_attempted = true;
+                let started = std::time::Instant::now();
+                timing.remaining_before_sync_us =
+                    OrdinaryKvVetoTiming::remaining(authority.deadline, started);
+                let synchronization_failed = self.sync_from_ha_with_anchor(false).is_err();
+                let finished = std::time::Instant::now();
+                timing.sync_elapsed_us =
+                    OrdinaryKvVetoTiming::elapsed(finished.saturating_duration_since(started));
+                timing.remaining_after_sync_us =
+                    OrdinaryKvVetoTiming::remaining(authority.deadline, finished);
+                if synchronization_failed {
+                    return Err(Response::error(
+                        503,
+                        "ordinary KV delivery synchronization failed",
+                    ));
+                }
+            }
+            if self.recovery_required {
+                veto_reason = OrdinaryKvVetoReason::RecoveryAfter;
+                return Err(Response::error(503, "ordinary KV delivery is fenced"));
+            }
+            if let Some(replica) = authority.legacy_replica.as_ref() {
+                veto_reason = OrdinaryKvVetoReason::LegacyReplica;
+                replica.check(self)?;
+            }
+            veto_reason = OrdinaryKvVetoReason::PrivateOwnerAfter;
+            authority.check_private_read_owner(self)?;
+            if authority.is_approle_lookup()
+                && authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                veto_reason = OrdinaryKvVetoReason::AppRoleAudit;
+                return Err(Response::error(
+                    503,
+                    "AppRole immutable read was not audited",
+                ));
+            }
+            // All quorum/durable work precedes this final observation of the
+            // original affine Actor/Clock and current ACL/namespace/mount owner.
+            veto_reason = OrdinaryKvVetoReason::SealedBeforeActor;
+            let state = self
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "ordinary KV delivery is sealed"))?;
+            veto_reason = OrdinaryKvVetoReason::ActorFinal;
+            authority.check(state, &state.auth, &self.unseal_nonce)?;
+            #[cfg(feature = "native-v6-storage")]
+            if let Some(owner) = response_wrapping.as_ref() {
+                owner.check_delivery(self, &mut authority, &response)?;
+            }
+            Ok(())
+        })();
+        if let Err(error) = checked {
+            erase_json(&mut response.body);
+            response.consistency_index = None;
+            let now = self.state.as_ref().map_or(authority.admitted_at, |state| {
+                authority
+                    .token_time(&state.auth)
+                    .map_or(authority.admitted_at, AuthorityTime::seconds)
+            });
+            if planned_success
+                && self
+                    .audit_event(
+                        "ordinary-kv-delivery-veto",
+                        fingerprint,
+                        now,
+                        Some(error.status),
+                    )
+                    .is_err()
+            {
+                // This records a negative delivery observation after the private
+                // body was erased. Failure cannot deliver data, extend the
+                // original deadline or initiate another KV effect.
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                timing.emit_veto(veto_reason, 503, None, &authority);
+                return Response::error(
+                    503,
+                    "ordinary KV delivery veto audit failed; authoritative recovery required",
+                );
+            }
+            let veto_audit_sequence = if planned_success {
+                Some(self.audit_sequence)
+            } else {
+                None
+            };
+            timing.emit_veto(veto_reason, error.status, veto_audit_sequence, &authority);
+            return error;
+        }
+        response
+    }
+}
+
+#[cfg(test)]
+#[path = "service_ordinary_kv_delivery_tests.rs"]
+mod tests;

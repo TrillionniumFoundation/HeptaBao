@@ -152,8 +152,10 @@ impl FaultCluster {
     }
 }
 
-fn operation_delay(seed: u64, salt: u32) -> Duration {
-    Duration::from_millis(seed.rotate_left(salt) % 11)
+// Reproducible scheduling jitter: rotation_bits is a bit count, not a
+// cryptographic salt. This preserves the seeded fault-lab schedule.
+fn operation_delay(seed: u64, rotation_bits: u32) -> Duration {
+    Duration::from_millis(seed.rotate_left(rotation_bits) % 11)
 }
 
 struct WriteOperation {

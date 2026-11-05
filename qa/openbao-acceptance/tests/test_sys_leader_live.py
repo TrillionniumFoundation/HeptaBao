@@ -1,0 +1,219 @@
+import unittest
+import sys_leader_live as fixture
+
+
+class FakeLifecycle:
+    address='https://127.0.0.1:8200'
+    def __init__(self,ha):self.ha=ha;self.sealed=True;self.calls=[]
+    def raw_call(self,method,path,body=None,*,headers=None,timeout=15):
+        for name,wanted_method,query,wanted_headers,wanted_body,expected in fixture.HTTP_EDGE_CASES:
+            if (method,path,headers,body)==(wanted_method,'sys/leader'+('?' + query if query else ''),wanted_headers,wanted_body):
+                self.calls.append((method,path,'',headers))
+                if expected!=200:return expected,{} if method=='HEAD' else {'errors':[]}
+                if self.ha and self.sealed:return 503,{'errors':['Vault is sealed']}
+                return 200,{'ha_enabled':False}
+        raise AssertionError('unexpected raw leader request')
+    def raw_method_status(self,method):
+        if method not in {case[1] for case in fixture.HTTP_INVALID_METHODS}:
+            raise AssertionError('unexpected malformed method')
+        self.calls.append((method,'sys/leader','',None))
+        return 400
+    def call(self,method,path='sys/leader',body=None,*,token='',headers=None):
+        self.calls.append((method,path,token,headers))
+        if path=='sys/leader':
+            if method=='HEAD':return 405,{}
+            if method!='GET':return 405,{'errors':[]}
+            if not self.ha:return 200,{'ha_enabled':False}
+            if self.sealed:return 503,{'errors':['Vault is sealed']}
+            return 200,{'ha_enabled':True,'is_self':True,'leader_address':self.address,
+                'raft_committed_index':10,'raft_applied_index':10}
+        if path=='sys/init':return 200,{'root_token':'synthetic-root','keys_base64':['synthetic-share']}
+        if path=='sys/unseal':self.sealed=False;return 200,{}
+        if path=='sys/seal':self.sealed=True;return 204,{}
+        if path=='sys/health':return 503 if self.sealed else 200,{}
+        if path=='auth/token/create':return 200,{'auth':{'client_token':'synthetic-finite'}}
+        if path=='auth/token/lookup':return 200,{'data':{'num_uses':2}}
+        raise AssertionError('unexpected path')
+
+
+class LeaderGuards(unittest.TestCase):
+    def test_non_ha_exact_shape_including_sealed(self):
+        self.assertTrue(fixture.shape(200,{'ha_enabled':False},ha=False,sealed=True))
+        self.assertFalse(fixture.shape(200,{'ha_enabled':False,'is_self':True},ha=False))
+        self.assertFalse(fixture.shape(503,{'errors':['server is sealed']},ha=False,sealed=True))
+
+    def test_sealed_and_method_shapes_are_not_generic_unavailability(self):
+        self.assertTrue(fixture.shape(503,{'errors':['Vault is sealed']},ha=True,sealed=True))
+        self.assertFalse(fixture.shape(500,{'errors':['Vault is sealed']},ha=True,sealed=True))
+        self.assertFalse(fixture.shape(503,{'errors':['forwarding unavailable']},ha=True,sealed=True))
+
+    def test_standby_cannot_pass_forwarded_leader_shape_or_fabricated_indexes(self):
+        body={'ha_enabled':True,'is_self':False,'leader_address':'https://127.0.0.1:8200',
+            'raft_committed_index':10,'raft_applied_index':9}
+        self.assertTrue(fixture.shape(200,body,ha=True,is_self=False,address=body['leader_address']))
+        self.assertFalse(fixture.shape(200,{**body,'is_self':True},ha=True,is_self=False))
+        self.assertFalse(fixture.shape(200,{k:v for k,v in body.items() if k!='is_self'},ha=True,is_self=False))
+        self.assertFalse(fixture.shape(200,{**body,'is_self':0},ha=True,is_self=False))
+        self.assertFalse(fixture.shape(200,{**body,'raft_applied_index':11},ha=True))
+        self.assertFalse(fixture.shape(200,{**body,'raft_committed_index':True},ha=True))
+        self.assertFalse(fixture.shape(200,{**body,'auth':{'token':'sentinel'}},ha=True))
+
+    def test_active_time_requires_valid_utc_event_on_candidate_local_active_node(self):
+        body={'ha_enabled':True,'is_self':True,'active_time':'2026-01-01T00:00:00Z',
+            'leader_cluster_address':'https://127.0.0.1:8201'}
+        self.assertTrue(fixture.shape(200,body,ha=True,official=True))
+        self.assertTrue(fixture.shape(200,body,ha=True))
+        self.assertFalse(fixture.shape(200,{**body,'is_self':False},ha=True))
+        for invalid in (None,False,1,'','0001-01-01T00:00:00Z','2026-02-30T00:00:00Z',
+                '2026-01-01T00:00:00','2026-01-01T00:00:00+08:00',
+                '2026-01-01T00:00:00.1234567890Z','2026-01-01T00:00:00Z\n'):
+            self.assertFalse(fixture.shape(200,{**body,'active_time':invalid},ha=True))
+        self.assertTrue(fixture.shape(200,{**body,'active_time':'2026-01-01T00:00:00.123456789Z'},ha=True))
+
+    def test_cluster_address_must_be_the_explicit_leader_forwarding_origin(self):
+        body={'ha_enabled':True,'is_self':False,'leader_address':'https://127.0.0.1:8200',
+            'leader_cluster_address':'https://127.0.0.1:8201'}
+        expected=body['leader_cluster_address']
+        self.assertTrue(fixture.shape(200,body,ha=True,is_self=False,cluster_address=expected))
+        self.assertFalse(fixture.shape(200,{**body,'leader_cluster_address':body['leader_address']},
+            ha=True,cluster_address=expected))
+        self.assertFalse(fixture.shape(200,{k:v for k,v in body.items() if k!='leader_cluster_address'},
+            ha=True,cluster_address=expected))
+        for invalid in (None,False,8201,'http://127.0.0.1:8201','https://user@127.0.0.1:8201',
+                'https://127.0.0.1:8201?token=secret','https://127.0.0.1:8201\r\nheader:x',
+                'https://127.0.0.1:0','https://127.0.0.1:65536','https://127.0.0.1',
+                'https://127.0.0.1:8201/path','https://127.0.0.1:8201#fragment'):
+            self.assertFalse(fixture.shape(200,{**body,'leader_cluster_address':invalid},ha=True))
+
+    def test_actual_lifecycle_generates_unique_complete_phase_names_without_credentials_in_rows(self):
+        rows=[];observations=[]
+        def check(name,condition):
+            self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
+        for name,ha in [('official_pebbledb',False),('official_raft',True)]:
+            endpoint=FakeLifecycle(ha)
+            fixture.lifecycle(endpoint,name,ha,check,observations)
+            self.assertTrue(any(token=='' for method,path,token,headers in endpoint.calls if path=='sys/leader'))
+            self.assertTrue(any(token=='synthetic-finite' for method,path,token,headers in endpoint.calls if path=='sys/leader'))
+        rows.append({'case':'complete','passed':True})
+        self.assertTrue(fixture.complete(rows,oracle_only=True))
+        self.assertNotIn('synthetic-root',repr(observations))
+        self.assertNotIn('synthetic-finite',repr(observations))
+        self.assertFalse(fixture.complete(rows,oracle_only=False))
+        self.assertFalse(fixture.complete([r for r in rows if r['case']!='official_raft_sealed'],oracle_only=True))
+        self.assertFalse(fixture.complete(rows+[rows[-1]],oracle_only=True))
+        self.assertFalse(fixture.complete([],oracle_only=True))
+
+    def test_actual_edge_phase_is_required_and_cannot_hide_global_selector_rejection(self):
+        rows=[];observations=[]
+        def check(name,condition):
+            self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
+        endpoint=FakeLifecycle(False)
+        fixture.http_edges(endpoint,'official_pebbledb',False,check,observations)
+        self.assertEqual({row['case'] for row in observations},
+            {'official_pebbledb_http_'+case[0] for case in fixture.HTTP_EDGE_CASES+fixture.HTTP_INVALID_METHODS})
+        self.assertEqual(len(rows),len(set(row['case'] for row in rows)))
+        self.assertTrue(any(query=='sys/leader?list=%GG&list=true&scan=true' for _,query,_,_ in endpoint.calls))
+        class Wrong(FakeLifecycle):
+            def raw_call(self,method,path,body=None,**kwargs):
+                if path=='sys/leader?list=true&scan=true':return 200,{'ha_enabled':False}
+                return super().raw_call(method,path,body,**kwargs)
+        with self.assertRaises(AssertionError):
+            fixture.http_edges(Wrong(False),'official_pebbledb',False,check,[])
+        all_rows=[]
+        for prefix,ha in [('official_pebbledb',False),('official_raft',True)]:
+            fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
+        all_rows.append({'case':'complete','passed':True})
+        self.assertTrue(fixture.complete(all_rows,oracle_only=True))
+        self.assertFalse(fixture.complete([row for row in all_rows if row['case']!='official_raft_http_first_empty'],oracle_only=True))
+
+    def test_actual_method_phase_distinguishes_legal_405_from_malformed_400(self):
+        rows=[];observations=[]
+        def check(name,condition):
+            self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
+        endpoint=FakeLifecycle(False)
+        fixture.http_edges(endpoint,'official_pebbledb',False,check,observations)
+        observed={row['case']:row['status'] for row in observations}
+        self.assertEqual(observed['official_pebbledb_http_method_options'],405)
+        self.assertEqual(observed['official_pebbledb_http_method_punctuation'],405)
+        self.assertEqual(observed['official_pebbledb_http_method_tab'],400)
+        self.assertEqual(observed['official_pebbledb_http_method_empty'],400)
+        self.assertTrue(any(method==b'BAD\xc3\xa9' for method,_,_,_ in endpoint.calls))
+        class RejectedLegal(FakeLifecycle):
+            def raw_call(self,method,path,body=None,**kwargs):
+                if method=='OPTIONS':return 400,{'errors':[]}
+                return super().raw_call(method,path,body,**kwargs)
+        class AdmittedInvalid(FakeLifecycle):
+            def raw_method_status(self,method):return 405
+        for wrong in (RejectedLegal(False),AdmittedInvalid(False)):
+            with self.assertRaises(AssertionError):
+                fixture.http_edges(wrong,'official_pebbledb',False,check,[])
+        all_rows=[]
+        for prefix,ha in [('official_pebbledb',False),('official_raft',True)]:
+            fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
+        all_rows.append({'case':'complete','passed':True})
+        self.assertTrue(fixture.complete(all_rows,oracle_only=True))
+        for missing in ('official_raft_http_method_options','official_pebbledb_http_method_tab'):
+            self.assertFalse(fixture.complete([row for row in all_rows if row['case']!=missing],oracle_only=True))
+
+
+    def test_exact_release_is_required_at_reference_readiness(self):
+        class Health:
+            def __init__(self, version):
+                self.version = version
+                self.calls = 0
+            def call(self, method, path):
+                self.calls += 1
+                return 501, {"version": self.version}
+        self.assertEqual(fixture.ORACLE_VERSION, "2.7.0")
+        accepted = Health("2.7.0")
+        fixture.ready(accepted, 501, expected_version=fixture.ORACLE_VERSION)
+        self.assertEqual(accepted.calls, 1)
+        rejected = Health("2.6.2")
+        with self.assertRaisesRegex(fixture.FixtureError, "official_health_version_mismatch"):
+            fixture.ready(rejected, 501, expected_version=fixture.ORACLE_VERSION)
+        self.assertEqual(rejected.calls, 1)
+
+    def test_cli_rejects_other_oracle_versions_before_any_fixture_access(self):
+        from unittest.mock import patch
+        for version in ("2.6.2", "latest", "2.7.1"):
+            argv = ["sys-leader", "--oracle-only", "--work-parent", "/synthetic/private",
+                    "--output", "/synthetic/private/report.json", "--oracle-version", version]
+            with patch("sys.argv", argv), patch.object(fixture, "private_parent") as parent, \
+                    patch.object(fixture, "verify_inputs") as verify:
+                with self.assertRaises(SystemExit) as error:
+                    fixture.main()
+                self.assertEqual(error.exception.code, 2)
+                parent.assert_not_called()
+                verify.assert_not_called()
+
+    def test_cli_explicit_and_default_oracle_use_exact_artifact_verification(self):
+        from pathlib import Path
+        from unittest.mock import patch
+        for selection in ([], ["--oracle-version", "2.7.0"]):
+            argv = ["sys-leader", "--oracle-only", "--work-parent", "/synthetic/private",
+                    "--output", "/synthetic/private/report.json", *selection]
+            with patch("sys.argv", argv), \
+                    patch.object(fixture, "private_parent", return_value=Path("/synthetic/private")), \
+                    patch.object(fixture, "admit_output"), \
+                    patch.object(fixture, "verify_inputs", side_effect=RuntimeError("artifact-admission")) as verify, \
+                    patch.object(fixture.tempfile, "mkdtemp") as allocate:
+                with self.assertRaisesRegex(RuntimeError, "artifact-admission"):
+                    fixture.main()
+                verify.assert_called_once_with(version="2.7.0")
+                allocate.assert_not_called()
+
+    def test_current_non_ha_reference_uses_pebbledb_not_removed_file_storage(self):
+        from pathlib import Path
+        import json
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "official"
+            with patch.object(fixture, "certificates"), patch.object(fixture, "Endpoint") as endpoint,                     patch.object(fixture, "free_port", return_value=54322):
+                endpoint.return_value.port = 54321
+                endpoint.return_value.address = "https://127.0.0.1:54321"
+                fixture.Official(Path("/synthetic/bao"), root, False)
+            config = json.loads((root / "server.json").read_text())
+            self.assertEqual(config["storage"], {"pebbledb": {"path": str(root / "data")}})
+
+if __name__=='__main__':unittest.main()

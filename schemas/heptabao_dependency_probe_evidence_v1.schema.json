@@ -22,7 +22,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["repository","branch","commit_sha","tree_sha","clean_tree"],
       "properties": {
-        "repository": {"const": "ProfHepta/HeptaBao"},
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
         "branch": {"type": "string", "minLength": 1},
         "commit_sha": {"$ref": "#/$defs/sha40"},
         "tree_sha": {"$ref": "#/$defs/sha40"},

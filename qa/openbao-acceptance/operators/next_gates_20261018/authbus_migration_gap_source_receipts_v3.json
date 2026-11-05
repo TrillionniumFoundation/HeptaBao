@@ -1,0 +1,33 @@
+{
+  "receipts": [
+    {
+      "bytes": 29580,
+      "created_at": "2026-10-17T14:19:44.727681+00:00",
+      "host": "main",
+      "name": "authbus-current-inventory-r1-main.json",
+      "sha256": "a5083d6c99800054eb50155dafe033fd7429fdec48d8b440569eae5678e62452"
+    },
+    {
+      "bytes": 24261,
+      "created_at": "2026-10-17T14:19:44.679989+00:00",
+      "host": "macbook-pro",
+      "name": "authbus-current-inventory-r1-macbook-pro.json",
+      "sha256": "4445db0b874b12f27a11f2f9dab2d9d261dc6457acf827623f840e1705a560fd"
+    },
+    {
+      "bytes": 22917,
+      "created_at": "2026-10-17T14:19:45.018027+00:00",
+      "host": "rog",
+      "name": "authbus-current-inventory-r1-rog.json",
+      "sha256": "0a10171367de4b7588177f750e65bddef9219a5769615667b356ad0c1602440a"
+    },
+    {
+      "bytes": 17586,
+      "created_at": "2026-10-17T14:19:45.110303+00:00",
+      "host": "pocket4",
+      "name": "authbus-current-inventory-r1-pocket4.json",
+      "sha256": "7282f921223de2fb7ea32a7c39298322e65d22350f0a8e871ed87e3f3a8da293"
+    }
+  ],
+  "schema": "authbus-migration-gap-source-receipts-v3"
+}

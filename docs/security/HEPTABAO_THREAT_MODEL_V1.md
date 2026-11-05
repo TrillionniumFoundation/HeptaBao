@@ -25,6 +25,7 @@ root/barrier/recovery/namespace keys、unseal shares、tokens、leases、dynamic
 | auth/policy → dispatch | bypass、TOCTOU、stale cache | revision/epoch binding、deny default |
 | core → storage | plaintext leak、rollback、corruption | barrier、authenticated envelope、generation |
 | core → provider/plugin | duplicate effect、credential leak、hang | fenced intent、mTLS、sandbox、bounds |
+| core → HTTP audit collector | SSRF、redirect exfiltration、collector impersonation、hang、silent audit loss | process-owned origin/address/CA/path allowlist、TLS、no redirect、absolute deadline、local fsync before one no-retry delivery、fail-closed fencing |
 | active ↔ standby | split brain、stale security read | quorum、epoch fence、freshness proof |
 | CI → source/evidence | self-modification、token exfiltration、false attestation | read-only exact SHA、OIDC provenance、separate signer |
 | Oracle → implementation | source contamination、secret fixture leak | clean-room ACL、sanitization、signed transfer |

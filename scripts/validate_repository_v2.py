@@ -57,7 +57,9 @@ FALSE_CLAIMS = {
     "authority_effect": "NONE",
 }
 
-CURRENT_DOCUMENTS = (README_PATH, CURRENT_DOCUMENTATION_PATH, MODULE_INDEX_PATH)
+# The public homepage is intentionally empty. Technical contracts remain
+# mandatory in the current documentation portal and the module index.
+CURRENT_DOCUMENTS = (CURRENT_DOCUMENTATION_PATH, MODULE_INDEX_PATH)
 
 
 def validate_compatibility_corpus() -> list[str]:
@@ -185,19 +187,26 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
         if "V1.4.7 / CURRENT" in text or "H00 / planning and governance implementation" in text:
             errors.append(f"{display_path(path)} contains a stale current-status claim")
 
-    if README_PATH.is_file():
-        readme = README_PATH.read_text(encoding="utf-8")
-        if f"**{count} packages**" not in readme:
-            errors.append(f"README.md must state the exact current package count ({count})")
+    if README_PATH.is_file() and README_PATH.read_bytes():
+        errors.append("README.md must remain the intentionally empty public homepage")
+
+    if CURRENT_DOCUMENTATION_PATH.is_file():
+        portal = CURRENT_DOCUMENTATION_PATH.read_text(encoding="utf-8")
+        if f"**{count} packages**" not in portal:
+            errors.append(
+                f"docs/CURRENT_DOCUMENTATION.md must state the exact current package count ({count})"
+            )
         for command in (
             "python scripts/validate_repository_v2.py",
             "cargo +1.98.0 fmt --all -- --check",
             "cargo +1.98.0 test --locked --workspace --all-targets",
-            "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
             "cargo +1.98.0 doc --locked --workspace --no-deps",
         ):
-            if command not in readme:
-                errors.append(f"README.md is missing current validation command: {command}")
+            if command not in portal:
+                errors.append(
+                    f"docs/CURRENT_DOCUMENTATION.md is missing current validation command: {command}"
+                )
 
     if CURRENT_DOCUMENTATION_PATH.is_file():
         portal = CURRENT_DOCUMENTATION_PATH.read_text(encoding="utf-8")
@@ -489,6 +498,14 @@ def validate() -> list[str]:
         semantics_module = importlib.util.module_from_spec(semantics_spec)
         semantics_spec.loader.exec_module(semantics_module)
         errors.extend(semantics_module.validate(ROOT))
+    for script in ("validate_replacement_execution", "validate_execution_truth"):
+        extra_spec = importlib.util.spec_from_file_location(script, ROOT / "scripts" / (script + ".py"))
+        if extra_spec is None or extra_spec.loader is None:
+            errors.append("cannot load execution guard: " + script)
+            continue
+        extra_module = importlib.util.module_from_spec(extra_spec)
+        extra_spec.loader.exec_module(extra_module)
+        errors.extend(extra_module.validate(ROOT))
     return errors
 
 

@@ -1,0 +1,65 @@
+{
+  "ReadIndex_checks_removed": 0,
+  "actual_failure_input": {
+    "embedded_summary_bytes": 20674,
+    "embedded_summary_sha256": "bc0454c269f8781ad200b66c58870f54583768f9590f3f6f87c736155ec4a36f",
+    "failure_preserved": true,
+    "passed_cases": 48,
+    "path": "continuation-20261019/lan98-private-seed-logs-r1/actual-b24-overlay-lan98-r1/actual-final-retrieval.json",
+    "required_cases": 98
+  },
+  "base_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "base_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "compile_state": "not compiled locally: rustc/rustfmt were not available in the local executable path; root must format and compile the exact delta before physical execution",
+  "feature": "private-ha-forward-diagnostic",
+  "field_semantics": {
+    "bytes": "logical retained KV2 payload bytes for Service spans; declared ciphertext bytes for quorum/install spans; zero where not yet selected",
+    "completed": "the observed nested phase returned without its own error; never a mutation or HTTP pass claim",
+    "generation": "current selected local source generation, or prior Raft generation for publication; zero at source-enrollment phase means not yet selected",
+    "objects": "candidate staged objects for Service spans; whole declared ciphertext closure objects for quorum/install spans",
+    "original_deadline_expired": "observation at phase end, before diagnostic output; not a new deadline or final success guarantee"
+  },
+  "fields": [
+    "phase",
+    "elapsed_us",
+    "completed",
+    "original_deadline_expired",
+    "generation",
+    "objects",
+    "bytes"
+  ],
+  "fsync_calls_removed": 0,
+  "logging": "one public line on a phase finish or error unwind; stderr failure is ignored",
+  "nested_spans": "service_ha_publication includes publication subphases; service_local_install includes install subphases; do not sum parent plus children",
+  "original_checks_removed": 0,
+  "performance_optimization_claim": false,
+  "phase_labels": {
+    "crates/heptabao-server/src/ha_native_v6_publication.rs": [
+      "publication_source_enrollment",
+      "publication_previous_closure",
+      "publication_typed_prepare",
+      "publication_intent_admission",
+      "publication_fsync_quorum",
+      "publication_root_cas",
+      "publication_committed_readback"
+    ],
+    "crates/heptabao-server/src/service_native_v6_ha_install.rs": [
+      "install_received_graph",
+      "install_local_objects",
+      "install_locator_batches",
+      "install_pre_cas_local_graph",
+      "install_local_root_cas",
+      "install_post_cas_local_graph"
+    ],
+    "crates/heptabao-server/src/service_native_v6_ha_writer.rs": [
+      "service_staged_candidate",
+      "service_ha_publication",
+      "service_local_install"
+    ]
+  },
+  "runtime_actions_performed": 0,
+  "schema": "heptabao.native-ha-phase-observation-scope.v1",
+  "test_selectors_changed": 0,
+  "timeouts_changed": 0,
+  "typed_graph_reads_removed": 0
+}

@@ -1,6 +1,8 @@
 //! RFC 6238 provider and generator. HMAC is supplied by ring. Successful
 //! validation advances a persisted counter before the service releases `valid`.
 use super::*;
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use qrcode::{Color, QrCode};
 use ring::{
     hmac,
     rand::{SecureRandom, SystemRandom},
@@ -35,6 +37,13 @@ impl Drop for Key {
 }
 
 impl Totp {
+    #[cfg(all(test, feature = "native-v6-storage"))]
+    pub(super) fn native_replay_observation(&self, name: &str) -> Option<(Option<u64>, u64, u32)> {
+        self.keys
+            .get(name)
+            .map(|key| (key.last_accepted_counter, key.failed_window, key.failures))
+    }
+
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
     }
@@ -158,11 +167,9 @@ impl Totp {
         if generated && (body.get("key").is_some() || body.get("url").is_some()) {
             return Err(bad("generated TOTP keys cannot also import a key"));
         }
-        if generated && exported && optional_u64(body, "qr_size")?.unwrap_or(200) != 0 {
-            return Err(error(
-                501,
-                "QR image generation is not implemented; set qr_size=0 for an otpauth URL",
-            ));
+        let qr_size = optional_u64(body, "qr_size")?.unwrap_or(200);
+        if qr_size > 4096 {
+            return Err(bad("TOTP qr_size must be between 0 and 4096 pixels"));
         }
         let algorithm = parameters
             .get("algorithm")
@@ -234,12 +241,125 @@ impl Totp {
                 period,
                 *encoded_secret
             ));
-            ok(json!({"url":&*url}), true)
+            let mut response = json!({"url":&*url});
+            if qr_size != 0 {
+                response["barcode"] = json!(Self::generate_barcode(&url, qr_size as u32)?);
+            }
+            ok(response, true)
         } else {
             empty(true)
         };
         self.keys.insert(name.into(), key);
         Ok(response)
+    }
+
+    fn generate_barcode(url: &str, size: u32) -> Result<String> {
+        let code = QrCode::new(url.as_bytes())
+            .map_err(|_| bad("TOTP URL is too long to encode as a QR code"))?;
+        let width = code.width();
+        let modules = width + 8;
+        let size_usize = size as usize;
+        let mut pixels = vec![255u8; size_usize * size_usize];
+        let colors = code.to_colors();
+        for y in 0..size_usize {
+            let source_y = (y * modules) / size_usize;
+            if !(4..modules - 4).contains(&source_y) {
+                continue;
+            }
+            for x in 0..size_usize {
+                let source_x = (x * modules) / size_usize;
+                if !(4..modules - 4).contains(&source_x) {
+                    continue;
+                }
+                pixels[y * size_usize + x] =
+                    if colors[(source_y - 4) * width + source_x - 4] == Color::Dark {
+                        0
+                    } else {
+                        255
+                    };
+            }
+        }
+        let png = Self::grayscale_png(size, &pixels)?;
+        Ok(BASE64.encode(png))
+    }
+
+    /// Encode the QR pixels as a grayscale PNG without a native image dependency.
+    /// The zlib stream uses stored DEFLATE blocks, which keeps this small encoder
+    /// deterministic and bounded while remaining valid for every requested size.
+    fn grayscale_png(size: u32, pixels: &[u8]) -> Result<Vec<u8>> {
+        let width = usize::try_from(size).map_err(|_| bad("TOTP QR size is too large"))?;
+        let expected = width
+            .checked_mul(width)
+            .ok_or_else(|| bad("TOTP QR size is too large"))?;
+        if pixels.len() != expected {
+            return Err(error(500, "TOTP QR image dimensions are inconsistent"));
+        }
+        let row_bytes = width
+            .checked_add(1)
+            .ok_or_else(|| bad("TOTP QR size is too large"))?;
+        let raw_len = row_bytes
+            .checked_mul(width)
+            .ok_or_else(|| bad("TOTP QR size is too large"))?;
+        let mut raw = Vec::with_capacity(raw_len);
+        for row in pixels.chunks_exact(width) {
+            raw.push(0); // PNG filter type: none.
+            raw.extend_from_slice(row);
+        }
+
+        let mut zlib = Vec::with_capacity(raw.len() + raw.len() / 65_535 * 5 + 16);
+        zlib.extend_from_slice(&[0x78, 0x01]); // zlib, deflate, no compression.
+        for (index, block) in raw.chunks(65_535).enumerate() {
+            let final_block = index == raw.len().div_ceil(65_535) - 1;
+            zlib.push(if final_block { 0x01 } else { 0x00 });
+            let length = u16::try_from(block.len())
+                .map_err(|_| error(500, "TOTP QR deflate block is too large"))?;
+            zlib.extend_from_slice(&length.to_le_bytes());
+            zlib.extend_from_slice(&(!length).to_le_bytes());
+            zlib.extend_from_slice(block);
+        }
+        zlib.extend_from_slice(&Self::adler32(&raw).to_be_bytes());
+
+        let mut png = Vec::with_capacity(zlib.len() + 64);
+        png.extend_from_slice(b"\x89PNG\r\n\x1a\n");
+        let mut ihdr = Vec::with_capacity(13);
+        ihdr.extend_from_slice(&size.to_be_bytes());
+        ihdr.extend_from_slice(&size.to_be_bytes());
+        ihdr.extend_from_slice(&[8, 0, 0, 0, 0]); // 8-bit grayscale, no interlace.
+        Self::png_chunk(&mut png, b"IHDR", &ihdr);
+        Self::png_chunk(&mut png, b"IDAT", &zlib);
+        Self::png_chunk(&mut png, b"IEND", &[]);
+        Ok(png)
+    }
+
+    fn png_chunk(output: &mut Vec<u8>, kind: &[u8; 4], data: &[u8]) {
+        output.extend_from_slice(&(data.len() as u32).to_be_bytes());
+        output.extend_from_slice(kind);
+        output.extend_from_slice(data);
+        output.extend_from_slice(&Self::crc32(&[kind.as_slice(), data].concat()).to_be_bytes());
+    }
+
+    fn adler32(bytes: &[u8]) -> u32 {
+        let (mut a, mut b) = (1u32, 0u32);
+        for &byte in bytes {
+            a = (a + u32::from(byte)) % 65_521;
+            b = (b + a) % 65_521;
+        }
+        (b << 16) | a
+    }
+
+    fn crc32(bytes: &[u8]) -> u32 {
+        let mut crc = !0u32;
+        for &byte in bytes {
+            crc ^= u32::from(byte);
+            for _ in 0..8 {
+                crc = if crc & 1 == 1 {
+                    (crc >> 1) ^ 0xedb8_8320
+                } else {
+                    crc >> 1
+                };
+            }
+        }
+        !crc
     }
 
     fn validate(&mut self, name: &str, body: &Value, now: u64) -> Result<EngineResponse> {
@@ -299,7 +419,21 @@ fn hmac_algorithm(algorithm: &str) -> Result<hmac::Algorithm> {
 }
 
 fn code(key: &Key, counter: u64) -> Result<String> {
-    let key_bytes = hmac::Key::new(hmac_algorithm(&key.algorithm)?, &key.secret);
+    rfc6238_code(&key.secret, &key.algorithm, key.digits, counter)
+}
+
+/// Parameterized native RFC6238 primitive shared with Identity MFA. It does not
+/// sample time or mutate the independent TOTP secret-engine replay owner.
+pub(crate) fn rfc6238_code(
+    secret: &[u8],
+    algorithm: &str,
+    digits: u32,
+    counter: u64,
+) -> Result<String> {
+    if secret.is_empty() || !matches!(digits, 6 | 8) {
+        return Err(bad("invalid RFC6238 parameters"));
+    }
+    let key_bytes = hmac::Key::new(hmac_algorithm(algorithm)?, secret);
     let tag = hmac::sign(&key_bytes, &counter.to_be_bytes());
     let bytes = tag.as_ref();
     let offset = usize::from(bytes[bytes.len() - 1] & 15);
@@ -309,8 +443,8 @@ fn code(key: &Key, counter: u64) -> Result<String> {
         | u32::from(bytes[offset + 3]);
     Ok(format!(
         "{:0width$}",
-        truncated % 10u32.pow(key.digits),
-        width = key.digits as usize
+        truncated % 10u32.pow(digits),
+        width = digits as usize
     ))
 }
 
@@ -452,6 +586,39 @@ fn parse_url(url: &str) -> Result<Value> {
         params["account_name"] = json!(&*label);
     }
     Ok(std::mem::take(&mut params.0))
+}
+
+/// Enrollment rendering is independent of validation/replay ownership.
+pub(crate) fn mfa_totp_enrollment(
+    secret: &[u8],
+    issuer: &str,
+    account: &str,
+    algorithm: &str,
+    digits: u32,
+    period: u64,
+    qr_size: u32,
+) -> Result<(Zeroizing<String>, Zeroizing<String>)> {
+    if secret.is_empty() || period == 0 || qr_size > 4096 || !matches!(digits, 6 | 8) {
+        return Err(bad("invalid TOTP enrollment parameters"));
+    }
+    hmac_algorithm(algorithm)?;
+    let encoded = Zeroizing::new(encode_base32(secret));
+    let url = Zeroizing::new(format!(
+        "otpauth://totp/{}:{}?algorithm={}&digits={}&issuer={}&period={}&secret={}",
+        percent_encode(issuer),
+        percent_encode(account),
+        algorithm,
+        digits,
+        percent_encode(issuer),
+        period,
+        encoded.as_str(),
+    ));
+    let barcode = if qr_size == 0 {
+        String::new()
+    } else {
+        Totp::generate_barcode(&url, qr_size)?
+    };
+    Ok((url, Zeroizing::new(barcode)))
 }
 
 #[cfg(test)]

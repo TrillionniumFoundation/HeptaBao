@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "sourceTree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "sourceFiles": 3142,
+  "sourceManifestPath": "/home/qian-qi/heptabao-next-gates-20261017/source-b24c6de-manifest.json",
+  "sourceManifestBytes": 663186,
+  "sourceManifestSha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "buildReceiptPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/summary.json",
+  "buildReceiptBytes": 54396,
+  "buildReceiptSha256": "39c4990b541f8ca827791088c1ef1e669a6cc7f45f000728aa664e22b0765d73",
+  "buildScopedTestsPassed": 55,
+  "buildScopedTestsTotal": 55,
+  "binaryPath": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-b24c6de-main-r1/heptabao-server",
+  "binarySha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "binaryBytes": 779962728,
+  "priorNativeR4RunInherited": false
+}

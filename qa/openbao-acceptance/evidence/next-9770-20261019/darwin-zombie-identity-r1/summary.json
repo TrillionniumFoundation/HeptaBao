@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.owned-darwin-zombie-observation.v1",
+  "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "started_utc": "2026-10-19T07:05:16.469445+00:00",
+  "signal_count": 0,
+  "production_mutation": false,
+  "waitid_constants": {
+    "P_PID": 1,
+    "WEXITED": 4,
+    "WNOHANG": 1,
+    "WNOWAIT": 32
+  },
+  "before": {
+    "pid": 42250,
+    "getpgid": 42250,
+    "getsid": 42250,
+    "ps": {
+      "exit_code": 0,
+      "stdout": "42250 42247 42250 Ss   \u4e00 10\u6708/19 15:05:16 2026",
+      "stderr": ""
+    }
+  },
+  "waitid_observations": [
+    [
+      42250,
+      0,
+      20,
+      0,
+      1
+    ],
+    [
+      42250,
+      0,
+      20,
+      0,
+      1
+    ]
+  ],
+  "returncode_before_reap": null,
+  "after_exit_before_reap": {
+    "pid": 42250,
+    "getpgid": {
+      "errno": 3,
+      "type": "ProcessLookupError"
+    },
+    "getsid": {
+      "errno": 3,
+      "type": "ProcessLookupError"
+    },
+    "ps": {
+      "exit_code": 0,
+      "stdout": "42250 42247 42250 Z    \u4e00 10\u6708/19 15:05:16 2026",
+      "stderr": ""
+    }
+  },
+  "original_group_rows": [
+    "42250 42247 42250 Z"
+  ],
+  "original_popen_wait_exit_code": 0,
+  "original_popen_reaped": true,
+  "finished_utc": "2026-10-19T07:05:16.512568+00:00"
+}

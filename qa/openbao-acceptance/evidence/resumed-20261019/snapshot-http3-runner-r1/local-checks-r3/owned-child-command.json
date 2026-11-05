@@ -1,0 +1,48 @@
+[
+  {
+    "label": "synthetic-python-child",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-I",
+      "-c",
+      "print('synthetic owned child; no Rust test executed')"
+    ],
+    "started_utc": "2026-10-19T07:58:45.986820+00:00",
+    "status": "passed",
+    "budget_seconds": 15,
+    "log": "synthetic-python-child.log",
+    "pid": 199525,
+    "pgid": 199525,
+    "sid": 199525,
+    "cleanup": {
+      "group_before_reap": [
+        {
+          "pid": 199525,
+          "ppid": 199514,
+          "pgid": 199525,
+          "state": "Zs"
+        }
+      ],
+      "signals": [],
+      "unexpected_live_descendants_after_exit": false,
+      "group_before_final_wait": [
+        {
+          "pid": 199525,
+          "ppid": 199514,
+          "pgid": 199525,
+          "state": "Zs"
+        }
+      ],
+      "original_group_observed_without_live_members": true,
+      "leader_reaped": true,
+      "exit_code": 0
+    },
+    "exit_code": 0,
+    "finished_utc": "2026-10-19T07:58:46.204757+00:00",
+    "elapsed_seconds": 0.216,
+    "log_sha256": "9d1a17870b656559ea56ba7500ecab6584dc510bff833c76c5670f720f1d668e",
+    "log_bytes": 45,
+    "root_rustc_cfg_observations": [],
+    "root_rustc_cfg_observed": false
+  }
+]

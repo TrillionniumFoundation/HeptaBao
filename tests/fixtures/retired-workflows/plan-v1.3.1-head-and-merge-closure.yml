@@ -1,0 +1,1577 @@
+name: plan-v1.3.1-head-and-merge-closure
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - codex/plan-v1.3-gap-closure-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Epoch v2 retires the predecessor group whose cancelled matrix could still
+  # enqueue the aggregate job through always() and keep the successor pending.
+  group: plan-v1.3.1-head-and-merge-closure-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-technical-matrix:
+    name: full-technical-matrix (${{ matrix.source_kind }})
+    # The workflow-level group cancels stale PR runs; this job-level key also
+    # arbitrates duplicate lane executions for one immutable head SHA.
+    concurrency:
+      group: plan-v1.3.1-lane-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.source_kind }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      # Keep the head and merge receipts distinct while admitting only one
+      # heavy Rust/H02 lane at a time on constrained hosted-runner capacity.
+      max-parallel: 1
+      matrix:
+        source_kind: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+    env:
+      SOURCE_KIND: ${{ matrix.source_kind }}
+      SOURCE_SHA: ${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+      EXPECTED_REPOSITORY_ID: "1349115072"
+      EXPECTED_REPOSITORY: TrillionniumFoundation/HeptaBao
+      EXPECTED_HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
+      EXPECTED_RATIFIER_LOGIN: ProfHepta
+      EXPECTED_RATIFIER_ID: "102159240"
+      ARBITRATION_KEY: "${{ github.event.pull_request.number || 'workflow_dispatch' }}:${{ github.event.pull_request.head.sha || github.sha }}:${{ matrix.source_kind }}"
+      HEPTABAO_P0_BIND: 127.0.0.1:0
+      HEPTABAO_P0_DEV_TOKEN: v1-3-1-final-development-root-token-000001
+      HEPTABAO_P0_DEV_UNSEAL_KEY: v1-3-1-final-development-unseal-key-00001
+    steps:
+      - name: Checkout exact head or GitHub synthetic merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source, ancestry and ordinary owner ratification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND"
+          mkdir -p "$evidence/root" "$evidence/p0" "$evidence/h02"
+
+          ratification_subject="$(git show -s --format=%s "$HEAD_SHA")"
+          test "$ratification_subject" = "chore(provenance): owner-ratify V1.3.1 canonical source tree"
+          ratification_author="$(git show -s --format='%an <%ae>' "$HEAD_SHA")"
+          ratification_committer="$(git show -s --format='%cn <%ce>' "$HEAD_SHA")"
+          case "$ratification_author" in
+            *github-actions*|*"[bot]"*)
+              echo "owner ratification was authored by a bot: $ratification_author" >&2
+              exit 1
+              ;;
+          esac
+          case "$ratification_committer" in
+            *github-actions*|*"[bot]"*)
+              echo "owner ratification was committed by a bot: $ratification_committer" >&2
+              exit 1
+              ;;
+          esac
+          read -r ratified_commit ratified_parent ratified_extra <<<"$(git rev-list --parents -n 1 "$HEAD_SHA")"
+          test "$ratified_commit" = "$HEAD_SHA"
+          test -n "$ratified_parent"
+          test -z "${ratified_extra:-}"
+          test "$(git rev-parse "$HEAD_SHA^{tree}")" = "$(git rev-parse "$ratified_parent^{tree}")"
+
+          if [[ "$SOURCE_KIND" == "merge" ]]; then
+            test "$SOURCE_SHA" != "$HEAD_SHA"
+            test "${GITHUB_EVENT_NAME}" = "pull_request"
+            read -r merge_commit parent_one parent_two parent_extra <<<"$(git rev-list --parents -n 1 HEAD)"
+            test "$merge_commit" = "$SOURCE_SHA"
+            test -n "$parent_one"
+            test -n "$parent_two"
+            test -z "${parent_extra:-}"
+            test "$parent_one" = "$BASE_SHA"
+            test "$parent_two" = "$HEAD_SHA"
+          else
+            test "$SOURCE_SHA" = "$HEAD_SHA"
+          fi
+
+          # Git metadata is necessary but not sufficient for source ratification:
+          # bind the stable repository ID/current owner separately from the
+          # designated accountable ratifier. Signature verification is recorded,
+          # not required; a repository transfer must not silently redefine either role.
+          # signing custody remains the external EXT-004 control boundary.
+          umask 077
+          api_tmp="$RUNNER_TEMP/v1.3.1-api-$SOURCE_KIND"
+          mkdir -p "$api_tmp"
+          commit_api="$api_tmp/commit.json"
+          pr_api="$api_tmp/pr.json"
+          trap 'rm -f "$commit_api" "$pr_api"' EXIT
+          curl --fail --silent --show-error --retry 3 --retry-delay 2 \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA" \
+            >"$commit_api"
+          if [[ -n "$PR_NUMBER" ]]; then
+            curl --fail --silent --show-error --retry 3 --retry-delay 2 \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" \
+              >"$pr_api"
+          else
+            printf '{"event":"workflow_dispatch","head_owner":%s}\n' \
+              "$(python3 -c 'import json,os; print(json.dumps(os.environ["EXPECTED_HEAD_OWNER"]))')" \
+              >"$pr_api"
+          fi
+          python3 - "$commit_api" "$pr_api" "$evidence/root/github-identity-verification.json" <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise SystemExit(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          def strict_json(path):
+              try:
+                  return json.loads(
+                      path.read_text(encoding="utf-8"),
+                      object_pairs_hook=unique_pairs,
+                      parse_constant=reject_constant,
+                  )
+              except (OSError, ValueError, json.JSONDecodeError) as error:
+                  raise SystemExit(f"ambiguous JSON input {path}: {error}") from error
+
+          commit_path, pr_path, output_path = map(Path, sys.argv[1:])
+          commit = strict_json(commit_path)
+          pr = strict_json(pr_path)
+          expected_repository_id = int(os.environ["EXPECTED_REPOSITORY_ID"])
+          expected_repository = os.environ["EXPECTED_REPOSITORY"]
+          expected_owner = os.environ["EXPECTED_HEAD_OWNER"]
+          expected_ratifier_login = os.environ["EXPECTED_RATIFIER_LOGIN"]
+          expected_ratifier_id = int(os.environ["EXPECTED_RATIFIER_ID"])
+          head_sha = os.environ["HEAD_SHA"]
+          if os.environ.get("GITHUB_REPOSITORY") != expected_repository:
+              raise SystemExit(
+                  f"workflow repository drift: event={os.environ.get('GITHUB_REPOSITORY')!r} "
+                  f"policy={expected_repository!r}"
+              )
+          if commit.get("sha") != head_sha:
+              raise SystemExit("GitHub commit API returned a different SHA")
+
+          if os.environ.get("PR_NUMBER"):
+              head = pr.get("head")
+              if not isinstance(head, dict) or head.get("sha") != head_sha:
+                  raise SystemExit("GitHub PR API head SHA does not match HEAD_SHA")
+              head_repo = head.get("repo")
+              if not isinstance(head_repo, dict):
+                  raise SystemExit("GitHub PR API head repository is unavailable")
+              repository_id = head_repo.get("id")
+              repository_full_name = head_repo.get("full_name")
+              owner = head_repo.get("owner")
+              if not isinstance(owner, dict) or not isinstance(owner.get("login"), str):
+                  raise SystemExit("GitHub PR API head owner login is unavailable")
+              api_head_owner = owner["login"]
+              if repository_id != expected_repository_id:
+                  raise SystemExit(
+                      f"PR head repository ID drift: api={repository_id!r} "
+                      f"policy={expected_repository_id!r}"
+                  )
+              if repository_full_name != expected_repository:
+                  raise SystemExit(
+                      f"PR head repository full-name drift: api={repository_full_name!r} "
+                      f"policy={expected_repository!r}"
+                  )
+              if api_head_owner != expected_owner:
+                  raise SystemExit(
+                      f"PR head owner drift: event={expected_owner!r} api={api_head_owner!r}"
+                  )
+          else:
+              repository_id = expected_repository_id
+              repository_full_name = expected_repository
+              api_head_owner = expected_owner
+
+          author = commit.get("author")
+          committer = commit.get("committer")
+          if not isinstance(author, dict) or not isinstance(committer, dict):
+              raise SystemExit("GitHub commit API omitted author or committer identity")
+          author_login = author.get("login")
+          committer_login = committer.get("login")
+          author_id = author.get("id")
+          committer_id = committer.get("id")
+          if (
+              author_login != expected_ratifier_login
+              or committer_login != expected_ratifier_login
+              or author_id != expected_ratifier_id
+              or committer_id != expected_ratifier_id
+          ):
+              raise SystemExit(
+                  "GitHub commit API identity does not match designated ratifier: "
+                  f"author={author_login!r}/{author_id!r} "
+                  f"committer={committer_login!r}/{committer_id!r} "
+                  f"ratifier={expected_ratifier_login!r}/{expected_ratifier_id!r}"
+              )
+
+          commit_verification = commit.get("commit", {}).get("verification", {})
+          if not isinstance(commit_verification, dict):
+              raise SystemExit("GitHub commit verification object is unavailable")
+          result = {
+              "source_sha": head_sha,
+              "repository_id": repository_id,
+              "repository_full_name": repository_full_name,
+              "expected_head_owner": expected_owner,
+              "head_owner": api_head_owner,
+              "expected_ratifier_login": expected_ratifier_login,
+              "expected_ratifier_id": expected_ratifier_id,
+              "author_login": author_login,
+              "committer_login": committer_login,
+              "author_id": author_id,
+              "committer_id": committer_id,
+              "verification": {
+                  "verified": commit_verification.get("verified"),
+                  "reason": commit_verification.get("reason"),
+              },
+              "identity_verified": True,
+              "signature_required": False,
+          }
+          if not isinstance(result["verification"]["verified"], bool):
+              raise SystemExit("GitHub commit verification.verified is not boolean")
+          for identity_field in (
+              "repository_full_name",
+              "expected_head_owner",
+              "head_owner",
+              "expected_ratifier_login",
+              "author_login",
+              "committer_login",
+          ):
+              if not isinstance(result[identity_field], str) or not result[identity_field].strip():
+                  raise SystemExit(f"GitHub identity {identity_field} is unavailable")
+          output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+          read -r api_author_login api_author_id api_signature_verified < <(
+            python3 - "$evidence/root/github-identity-verification.json" <<'PY'
+          import json
+          import sys
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          value = json.loads(
+              open(sys.argv[1], encoding="utf-8").read(),
+              object_pairs_hook=unique_pairs,
+              parse_constant=reject_constant,
+          )
+          print(value["author_login"], value["author_id"], str(value["verification"]["verified"]).lower())
+          PY
+          )
+          rm -f "$commit_api" "$pr_api"
+          trap - EXIT
+          printf 'repository=%s\nrepository_id=%s\nrepository_owner=%s\ndesignated_ratifier=%s\ndesignated_ratifier_id=%s\nsource_kind=%s\narbitration_key=%s\ncommit=%s\ntree=%s\nhead=%s\nbase=%s\nevent_merge=%s\nratification_author=%s\nratification_committer=%s\nratification_parent=%s\ngithub_api_identity_verified=true\ngithub_api_author_login=%s\ngithub_api_author_id=%s\ngithub_api_verification.verified=%s\n' \
+            "$GITHUB_REPOSITORY" "$EXPECTED_REPOSITORY_ID" "$EXPECTED_HEAD_OWNER" "$EXPECTED_RATIFIER_LOGIN" "$EXPECTED_RATIFIER_ID" \
+            "$SOURCE_KIND" "$ARBITRATION_KEY" "$SOURCE_SHA" "$(git rev-parse 'HEAD^{tree}')" \
+            "$HEAD_SHA" "$BASE_SHA" "$GITHUB_SHA" "$ratification_author" "$ratification_committer" "$ratified_parent" \
+            "$api_author_login" "$api_author_id" "$api_signature_verified" \
+            | tee "$evidence/root/source-binding.txt"
+
+      - name: Install exact Python dependencies
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Validate Gate A inherited contracts and Python regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/root"
+          python3 -m pip install --disable-pip-version-check --requirement requirements-plan.txt \
+            >"$evidence/pip.log" 2>&1
+          # This is the single consolidated Gate-A validator invocation.  The
+          # list is the union of the V1.1/V1.2/V1.2.1/V1.2.2/V1.3 active
+          # workflows; keep each script exactly once to avoid drift between
+          # parallel legacy workflows and this exact-head lane.
+          validators=(
+            scripts/validate_plan_v2.py
+            scripts/validate_plan_v2_extensions.py
+            scripts/validate_plan_v1_2.py
+            scripts/validate_plan_v1_2_1.py
+            scripts/validate_plan_v1_2_2.py
+            scripts/validate_plan_v1_3.py
+            scripts/validate_plan_v1_3_1.py
+            scripts/validate_v1_3_1_final_closure_v1.py
+            scripts/validate_provenance_v1.py
+            scripts/validate_evidence_objects_v1.py
+            scripts/validate_oracle_foundation_v1.py
+            scripts/validate_repository_identity_v1.py
+            scripts/validate_dependency_bakeoff_v1.py
+            scripts/validate_dependency_execution_profiles_v1.py
+            scripts/validate_dependency_registry_evidence_v1.py
+            scripts/validate_dependency_research_captures_v1.py
+            scripts/validate_h01_h02_next_v1.py
+            scripts/validate_h02_seeded_behavior_plan_v1.py
+            scripts/validate_h02_candidate_adapters_v1.py
+            scripts/validate_h02_openraft_inmemory_cluster_v1.py
+            scripts/validate_h02_openraft_fault_lab_v1.py
+            scripts/validate_h02_blocker_closure_v1.py
+            scripts/validate_h02_exact_head_matrix_contract_v1.py
+            scripts/validate_h02_pr40_reconciliation_v1.py
+          )
+          test "${#validators[@]}" -eq 24
+          declare -A seen_validators=()
+          for script in "${validators[@]}"; do
+            test -f "$script"
+            test -z "${seen_validators[$script]+present}"
+            seen_validators[$script]=1
+            python3 "$script" | tee -a "$evidence/validators.log"
+          done
+          python3 scripts/validate_rust_source_surface_v1.py \
+            crates/heptabao-protocol/src/lib.rs \
+            crates/heptabao-authbus-contracts/src/lib.rs \
+            crates/heptabao-p0-server/src/lib.rs \
+            crates/heptabao-p0-server/src/main.rs \
+            --output "$evidence/rust-source-surface.json" \
+            | tee -a "$evidence/validators.log"
+          for suite in oracle platform plan; do
+            python3 -m unittest discover -s "tests/$suite" -p 'test_*.py' -v \
+              >"$evidence/tests-$suite.log" 2>&1
+          done
+          python3 -m compileall -q scripts tests
+          python3 - "$evidence/gate-a-static.json" <<'PY'
+          from __future__ import annotations
+
+          import json
+          import re
+          import subprocess
+          from pathlib import Path
+
+          import yaml
+          from jsonschema import Draft202012Validator
+
+          root = Path.cwd()
+          output = Path(__import__("sys").argv[1])
+
+          class UniqueKeyLoader(yaml.SafeLoader):
+              pass
+
+          def construct_unique_mapping(loader, node, deep=False):
+              # SafeLoader requires merge-key expansion before constructing
+              # ``<<``.  Flattening also lets the duplicate-key guard inspect
+              # the effective mapping instead of rejecting every valid alias.
+              loader.flatten_mapping(node)
+              mapping = {}
+              for key_node, value_node in node.value:
+                  key = loader.construct_object(key_node, deep=deep)
+                  if key in mapping:
+                      raise SystemExit(f"duplicate YAML mapping key: {key}")
+                  mapping[key] = loader.construct_object(value_node, deep=deep)
+              return mapping
+
+          UniqueKeyLoader.add_constructor(
+              yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+              construct_unique_mapping,
+          )
+
+          def strict_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise SystemExit(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          def strict_json(text, label):
+              try:
+                  return json.loads(
+                      text,
+                      object_pairs_hook=strict_pairs,
+                      parse_constant=reject_constant,
+                  )
+              except (ValueError, json.JSONDecodeError) as error:
+                  raise SystemExit(f"{label}: ambiguous JSON: {error}") from error
+
+          tracked = subprocess.check_output(
+              ["git", "ls-files", "-z", "--", "*.yaml", "*.yml", "*.json"],
+              text=False,
+          ).split(b"\0")
+          yaml_count = 0
+          json_count = 0
+          schema_count = 0
+          for raw in tracked:
+              if not raw:
+                  continue
+              path = root / raw.decode("utf-8")
+              if path.suffix in {".yaml", ".yml"}:
+                  yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeyLoader)
+                  yaml_count += 1
+              elif path.suffix == ".json":
+                  parsed = strict_json(path.read_text(encoding="utf-8"), str(path))
+                  json_count += 1
+                  if path.name.endswith(".schema.json"):
+                      Draft202012Validator.check_schema(parsed)
+                      schema_count += 1
+
+          workflow_root = root / ".github/workflows"
+          forbidden = (
+              re.compile(r"(?mi)^\s*contents\s*:\s*write\s*$"),
+              re.compile(r"(?mi)^\s*persist-credentials\s*:\s*true\s*$"),
+              re.compile(r"(?mi)^\s*git\s+(?:commit|push|rebase|merge)\b"),
+          )
+          workflow_count = 0
+          checkout_count = 0
+          checkout_marker = "uses: actions/" + "checkout@"
+          for path in sorted(workflow_root.glob("*.y*ml")):
+              text = path.read_text(encoding="utf-8")
+              workflow_count += 1
+              for pattern in forbidden:
+                  if pattern.search(text):
+                      raise SystemExit(
+                          f"{path.relative_to(root)}: forbidden write-capable workflow marker"
+                      )
+              file_checkout_count = text.count(checkout_marker)
+              checkout_count += file_checkout_count
+              if text.count("persist-credentials: false") < file_checkout_count:
+                  raise SystemExit(
+                      f"{path.relative_to(root)}: checkout credentials are not explicitly disabled"
+                  )
+
+          authority = yaml.load(
+              (root / "planning/AUTHORITY_FLAGS_V2.yaml").read_text(encoding="utf-8"),
+              Loader=UniqueKeyLoader,
+          )
+          if not isinstance(authority, dict) or authority.get("active_grants") != []:
+              raise SystemExit("active authority grant exists")
+          expected_flags = {
+              "implementation_started": True,
+              "h00_qualified": False,
+              "compatibility_claim": False,
+              "production_authority": False,
+              "migration_authority": False,
+              "release_authority": False,
+              "mixed_cluster_allowed": False,
+              "openbao_physical_storage_read_allowed": False,
+              "openbao_physical_storage_write_allowed": False,
+              "real_secret_fixture_allowed": False,
+              "root_token_fixture_allowed": False,
+              "automatic_stage_promotion": False,
+          }
+          if authority.get("flags") != expected_flags:
+              raise SystemExit("authority flag set or value drift")
+
+          canonical_paths = (
+              "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V1.yaml",
+              "planning/HEPTABAO_CANONICAL_PROJECT_STATE_V1_3.yaml",
+              "planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml",
+              "planning/HEPTABAO_V1_3_1_GAP_CLOSURE_STATUS.yaml",
+          )
+          for relative in canonical_paths:
+              value = yaml.load(
+                  (root / relative).read_text(encoding="utf-8"),
+                  Loader=UniqueKeyLoader,
+              )
+              claims = value.get("claims", value)
+              if not isinstance(claims, dict):
+                  raise SystemExit(f"{relative}: claims mapping is unavailable")
+              if claims.get("qualification") is not False:
+                  raise SystemExit(f"{relative}: qualification must remain false")
+              if claims.get("compatibility_claim") is not False:
+                  raise SystemExit(f"{relative}: compatibility_claim must remain false")
+              if claims.get("selected_candidates") != []:
+                  raise SystemExit(f"{relative}: selected_candidates must remain empty")
+              if claims.get("authority_effect") != "NONE":
+                  raise SystemExit(f"{relative}: authority_effect must remain NONE")
+              if relative in {
+                  "planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml",
+                  "planning/HEPTABAO_V1_3_1_GAP_CLOSURE_STATUS.yaml",
+              }:
+                  for key in ("production_authority", "migration_authority", "release_authority"):
+                      if claims.get(key) is not False:
+                          raise SystemExit(f"{relative}: {key} must remain false")
+                  if claims.get("selection_effect") != "NONE":
+                      raise SystemExit(f"{relative}: selection_effect must remain NONE")
+              else:
+                  for key in ("production_authority", "migration_authority", "release_authority"):
+                      if key in claims and claims[key] is not False:
+                          raise SystemExit(f"{relative}: {key} must remain false")
+                  if "selection_effect" in claims and claims["selection_effect"] != "NONE":
+                      raise SystemExit(f"{relative}: selection_effect must remain NONE")
+
+          output.write_text(
+              json.dumps(
+                  {
+                      "schema": "heptabao.v1-3-1-gate-a-static-evidence.v1",
+                      "yaml_documents_parsed": yaml_count,
+                      "json_documents_parsed": json_count,
+                      "draft2020_12_schemas_meta_validated": schema_count,
+                      "workflows_scanned": workflow_count,
+                      "checkout_steps_scanned": checkout_count,
+                      "authority_effect": "NONE",
+                      "qualification": False,
+                      "compatibility_claim": False,
+                      "selected_candidates": [],
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+          print(
+              f"Gate A static checks PASS: yaml={yaml_count} json={json_count} "
+              f"schemas={schema_count} workflows={workflow_count} checkouts={checkout_count}"
+          )
+          PY
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Resolve active canonical project state from exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/root"
+          if [[ "$SOURCE_KIND" == "merge" ]]; then
+            # Preserve GitHub's actual pull-request merge ref in the derived
+            # state rather than inventing a branch-name suffix.
+            resolved_ref="$GITHUB_REF"
+          else
+            resolved_ref="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          fi
+          python3 scripts/render_canonical_project_state_v1.py \
+            --root . \
+            --state-input planning/HEPTABAO_V1_3_1_FINAL_CLOSURE_INPUT.yaml \
+            --manifest planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_3_1.yaml \
+            --repository "$GITHUB_REPOSITORY" \
+            --ref "$resolved_ref" \
+            --commit "$SOURCE_SHA" \
+            --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --environment-id "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${SOURCE_KIND}" \
+            --runner-id "$RUNNER_NAME" \
+            --runner-name "$RUNNER_NAME" \
+            --job-id "$GITHUB_JOB" \
+            --run-id "$GITHUB_RUN_ID" \
+            --require-clean \
+            --output "$evidence/canonical-project-state.resolved.json" \
+            | tee "$evidence/canonical-state-resolution.log"
+          python3 -m json.tool "$evidence/canonical-project-state.resolved.json" >/dev/null
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs \
+              -o "$RUNNER_TEMP/rustup-init.sh"
+            sh "$RUNNER_TEMP/rustup-init.sh" -y --profile minimal --default-toolchain none
+            echo "$HOME/.cargo/bin" >>"$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          for toolchain in 1.88.0 1.98.0; do
+            rustup toolchain install "$toolchain" --profile minimal --component rustfmt,clippy
+          done
+
+      - name: Format, test and strictly lint root workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/root"
+          cargo +1.98.0 fmt --all -- --check >"$evidence/rust-fmt.log" 2>&1
+          cargo +1.98.0 test --locked --workspace --all-targets \
+            >"$evidence/rust-test.log" 2>&1
+          cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings \
+            >"$evidence/rust-clippy.log" 2>&1
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Execute and classify P0 socket and audit evidence
+        if: ${{ always() }}
+        shell: bash
+        env:
+          HEPTABAO_P0_AUDIT_PATH: ${{ runner.temp }}/p0-audit-${{ matrix.source_kind }}.log
+        run: |
+          # Keep the machine-readable failure report even when the server or
+          # one of the bounded probes fails.  The final status remains
+          # non-zero; this only prevents diagnostics from being lost at the
+          # first failing command.
+          set +e
+          set -u
+          set -o pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/p0"
+          # Keep raw/classified diagnostics writable even when an earlier
+          # setup step was skipped or failed before creating the evidence
+          # tree.  The step still exits non-zero on any failed probe below.
+          mkdir -p "$evidence"
+          stderr="$evidence/server.stderr"
+          cargo +1.98.0 run --quiet --locked -p heptabao-p0-server \
+            >"$evidence/server.stdout" 2>"$stderr" &
+          server_pid=$!
+          cleanup() {
+            kill "$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          python3 scripts/p0_transport_exact_v1.py \
+            --stderr "$stderr" --audit "$HEPTABAO_P0_AUDIT_PATH" \
+            --repository "$GITHUB_REPOSITORY" --commit "$SOURCE_SHA" \
+            --tree "$(git rev-parse 'HEAD^{tree}')" \
+            >"$evidence/raw-result.json"
+          p0_rc=$?
+
+          classify_rc=1
+          if [[ -s "$evidence/raw-result.json" ]]; then
+            python3 scripts/classify_p0_transport_evidence_v1.py \
+              --input "$evidence/raw-result.json" \
+              --output "$evidence/classified-result.json" \
+              >"$evidence/classification.log" 2>&1
+            classify_rc=$?
+          else
+            printf '%s\n' 'raw P0 result was not produced' >"$evidence/classification.log"
+          fi
+
+          validate_rc=1
+          if [[ -s "$evidence/classified-result.json" ]]; then
+            python3 scripts/validate_p0_transport_evidence_v2.py \
+              --input "$evidence/classified-result.json" \
+              --expected-commit "$SOURCE_SHA" \
+              --expected-tree "$(git rev-parse 'HEAD^{tree}')" \
+              --expected-repository "$GITHUB_REPOSITORY" \
+              >"$evidence/validation.log" 2>&1
+            validate_rc=$?
+          else
+            printf '%s\n' 'classified P0 result was not produced' >"$evidence/validation.log"
+          fi
+
+          audit_rc=0
+          if [[ -s "$HEPTABAO_P0_AUDIT_PATH" ]]; then
+            cp "$HEPTABAO_P0_AUDIT_PATH" "$evidence/audit.log"
+          else
+            printf '%s\n' 'P0 audit log was not produced' >"$evidence/audit.log"
+            audit_rc=1
+          fi
+          clean_rc=0
+          if [[ -n "$(git status --porcelain=v1 --untracked-files=all)" ]]; then
+            clean_rc=1
+          fi
+          printf 'p0=%s\nclassify=%s\nvalidate=%s\naudit=%s\nclean=%s\n' \
+            "$p0_rc" "$classify_rc" "$validate_rc" "$audit_rc" "$clean_rc" \
+            >"$evidence/exits.txt"
+          if [[ "$p0_rc" -ne 0 || "$classify_rc" -ne 0 || "$validate_rc" -ne 0 || \
+                "$audit_rc" -ne 0 || "$clean_rc" -ne 0 ]]; then
+            exit 1
+          fi
+          exit 0
+
+      - name: Compile, lint and execute all H02 entries without early evidence loss
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set +e
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/h02"
+          # This step is deliberately always-run.  Checkout/bind/setup can
+          # fail before the normal evidence bootstrap, so create its own
+          # durable diagnostics root before any redirection.  Otherwise an
+          # infrastructure failure would erase the very failure artifact the
+          # aggregate job needs to classify.
+          mkdir -p "$evidence" "$evidence/matrix"
+          manifest=probes/h02/openraft-tokio/Cargo.toml
+          cargo +1.88.0 metadata --locked --format-version 1 --manifest-path "$manifest" \
+            >"$evidence/metadata.json" 2>"$evidence/metadata.stderr"
+          metadata_rc=$?
+          cargo +1.98.0 fmt --manifest-path "$manifest" --all -- --check \
+            >"$evidence/fmt.log" 2>&1
+          fmt_rc=$?
+          compile_rc=0
+          for toolchain in 1.88.0 1.98.0; do
+            export CARGO_TARGET_DIR="$RUNNER_TEMP/h02-$SOURCE_KIND-compile-$toolchain"
+            cargo +"$toolchain" test --locked --all-targets --manifest-path "$manifest" \
+              >"$evidence/test-$toolchain.log" 2>&1 || compile_rc=1
+            cargo +"$toolchain" clippy --locked --all-targets --manifest-path "$manifest" -- -D warnings \
+              >"$evidence/clippy-$toolchain.log" 2>&1 || compile_rc=1
+            rm -rf "$CARGO_TARGET_DIR"
+          done
+          python3 scripts/h02_exact_head_matrix_v1.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --ref "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}-$SOURCE_KIND" \
+            --commit "$SOURCE_SHA" \
+            --tree "$(git rev-parse 'HEAD^{tree}')" \
+            --manifest "$manifest" \
+            --output-dir "$evidence/matrix" \
+            --cargo-target-root "$RUNNER_TEMP/h02-$SOURCE_KIND-matrix-target" \
+            --entry-timeout-seconds 240 \
+            >"$evidence/matrix-runner.log" 2>&1
+          matrix_rc=$?
+          printf 'metadata=%s\nfmt=%s\ncompile=%s\nmatrix=%s\n' \
+            "$metadata_rc" "$fmt_rc" "$compile_rc" "$matrix_rc" \
+            >"$evidence/exits.txt"
+          rm -rf "$RUNNER_TEMP/h02-$SOURCE_KIND-matrix-target-1.88.0" \
+            "$RUNNER_TEMP/h02-$SOURCE_KIND-matrix-target-1.98.0"
+          if [[ "$metadata_rc" -ne 0 || "$fmt_rc" -ne 0 || "$compile_rc" -ne 0 || "$matrix_rc" -ne 0 ]]; then
+            exit 1
+          fi
+          exit 0
+
+      - name: Upload complete diagnostics before final H02 gate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: v1.3.1-${{ matrix.source_kind }}-pre-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1.3.1-${{ matrix.source_kind }}/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require complete H02 24-entry PASS
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/h02"
+          grep -qx 'metadata=0' "$evidence/exits.txt"
+          grep -qx 'fmt=0' "$evidence/exits.txt"
+          grep -qx 'compile=0' "$evidence/exits.txt"
+          grep -qx 'matrix=0' "$evidence/exits.txt"
+          python3 - "$evidence/matrix/matrix-summary.json" <<'PY'
+          import json
+          import sys
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise AssertionError(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          summary = json.loads(
+              open(sys.argv[1], encoding="utf-8").read(),
+              object_pairs_hook=unique_pairs,
+              parse_constant=reject_constant,
+          )
+          assert summary["result"] == "PASS", summary
+          assert summary["matrix"]["executed_entry_count"] == 24, summary
+          assert summary["matrix"]["missing_entry_ids"] == [], summary
+          assert summary["matrix"]["unexpected_entry_ids"] == [], summary
+          assert summary["matrix"]["duplicate_entry_ids"] == [], summary
+          assert summary["runner_errors"] == [], summary
+          assert summary["counts"] == {
+              "pass": 24,
+              "fail": 0,
+              "blocked": 0,
+              "unknown": 0,
+              "unexecuted": 0,
+          }, summary
+          assert summary["qualification"] is False
+          assert summary["compatibility_claim"] is False
+          assert summary["selection_effect"] == "NONE"
+          assert summary["authority_effect"] == "NONE"
+          PY
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Capture numeric GitHub job/runner identity and step outcomes
+        if: ${{ always() }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND"
+          mkdir -p "$evidence/root" "$evidence/p0" "$evidence/h02/matrix"
+          api="$evidence/root/github-job-api.json"
+          identity="$evidence/root/github-job-identity.json"
+          log_manifest="$evidence/root/raw-log-manifest.json"
+          endpoint="https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100"
+          collected=0
+          for retry in 1 2 3 4 5 6 7 8; do
+            rm -f "$identity" "$log_manifest"
+            if curl --fail --silent --show-error --retry 2 --retry-delay 1 \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "$endpoint" >"$api"; then
+              if python3 scripts/collect_github_job_identity_v1.py \
+                --input "$api" \
+                --output "$identity" \
+                --log-root "$evidence" \
+                --log-manifest "$log_manifest" \
+                --expected-run-id "$GITHUB_RUN_ID" \
+                --expected-run-attempt "$GITHUB_RUN_ATTEMPT" \
+                --expected-job "$GITHUB_JOB" \
+                --expected-job-name "full-technical-matrix ($SOURCE_KIND)" \
+                --expected-source-kind "$SOURCE_KIND" \
+                --expected-head-sha "$HEAD_SHA" \
+                --expected-workflow-name "plan-v1.3.1-head-and-merge-closure" \
+                --expected-runner-name "$RUNNER_NAME" \
+                --expected-runner-os "$RUNNER_OS" \
+                --expected-runner-arch "$RUNNER_ARCH"; then
+                collected=1
+                break
+              fi
+            fi
+            sleep 2
+          done
+          test "$collected" -eq 1
+
+      - name: Emit exact-source technical completion receipt
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND"
+          mkdir -p "$evidence/root" "$evidence/p0" "$evidence/h02/matrix"
+          python3 - "$evidence" <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          p0_path = root / "p0/classified-result.json"
+          h02_path = root / "h02/matrix/matrix-summary.json"
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise AssertionError(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          def strict_json(raw, label):
+              try:
+                  return json.loads(raw, object_pairs_hook=unique_pairs, parse_constant=reject_constant)
+              except (ValueError, json.JSONDecodeError) as error:
+                  raise AssertionError(f"{label} is ambiguous JSON: {error}") from error
+
+          p0 = strict_json(p0_path.read_text(encoding="utf-8"), "P0 artifact")
+          h02 = strict_json(h02_path.read_text(encoding="utf-8"), "H02 artifact")
+          assert p0["counts"]["executed_pass"] == 11
+          assert p0["counts"]["source_bound_pass"] == 2
+          assert p0["counts"]["best_effort_source_bound_pass"] == 1
+          assert h02["matrix"]["executed_entry_count"] == 24
+          assert h02["counts"]["pass"] == 24
+
+          arbitration_pr = os.environ.get("PR_NUMBER") or "workflow_dispatch"
+          arbitration_key = os.environ["ARBITRATION_KEY"]
+          expected_arbitration_key = (
+              f"{arbitration_pr}:{os.environ['HEAD_SHA']}:{os.environ['SOURCE_KIND']}"
+          )
+          assert arbitration_key == expected_arbitration_key
+          required_lanes = ["head", "merge"] if arbitration_pr != "workflow_dispatch" else ["head"]
+
+          def digest(path: Path) -> str:
+              return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+          identity_path = root / "root/github-identity-verification.json"
+          job_identity_path = root / "root/github-job-identity.json"
+          identity_raw = identity_path.read_bytes()
+          job_identity_raw = job_identity_path.read_bytes()
+          identity = strict_json(identity_raw, "GitHub identity artifact")
+          job_identity = strict_json(job_identity_raw, "GitHub job identity artifact")
+          if not isinstance(identity, dict):
+              raise AssertionError("GitHub identity artifact must be one object")
+          if not isinstance(job_identity, dict):
+              raise AssertionError("GitHub job identity artifact must be one object")
+          identity_fields = {
+              "source_sha",
+              "repository_id",
+              "repository_full_name",
+              "expected_head_owner",
+              "head_owner",
+              "expected_ratifier_login",
+              "expected_ratifier_id",
+              "author_login",
+              "committer_login",
+              "author_id",
+              "committer_id",
+              "verification",
+              "identity_verified",
+              "signature_required",
+          }
+          if set(identity) != identity_fields:
+              raise AssertionError("GitHub identity artifact fields drift")
+          if identity.get("source_sha") != os.environ["HEAD_SHA"]:
+              raise AssertionError("GitHub identity artifact source SHA does not match event head")
+          if identity.get("repository_id") != int(os.environ["EXPECTED_REPOSITORY_ID"]):
+              raise AssertionError("GitHub identity repository ID drift")
+          if identity.get("repository_full_name") != os.environ["EXPECTED_REPOSITORY"]:
+              raise AssertionError("GitHub identity repository full-name drift")
+          if (
+              identity.get("expected_head_owner") != os.environ["EXPECTED_HEAD_OWNER"]
+              or identity.get("head_owner") != os.environ["EXPECTED_HEAD_OWNER"]
+          ):
+              raise AssertionError("GitHub identity repository-owner fields drift")
+          if (
+              identity.get("expected_ratifier_login") != os.environ["EXPECTED_RATIFIER_LOGIN"]
+              or identity.get("expected_ratifier_id") != int(os.environ["EXPECTED_RATIFIER_ID"])
+          ):
+              raise AssertionError("GitHub identity ratifier policy drift")
+          if (
+              identity.get("author_login") != identity.get("expected_ratifier_login")
+              or identity.get("committer_login") != identity.get("expected_ratifier_login")
+              or identity.get("author_id") != identity.get("expected_ratifier_id")
+              or identity.get("committer_id") != identity.get("expected_ratifier_id")
+          ):
+              raise AssertionError("GitHub identity author/committer do not match ratifier")
+          verification = identity.get("verification")
+          if not isinstance(verification, dict):
+              raise AssertionError("GitHub identity verification object is unavailable")
+          if type(verification.get("verified")) is not bool:
+              raise AssertionError("GitHub identity verification flag is not boolean")
+          if verification.get("reason") is not None and not isinstance(verification.get("reason"), str):
+              raise AssertionError("GitHub identity verification reason is malformed")
+          if identity.get("identity_verified") is not True:
+              raise AssertionError("GitHub identity artifact was not verified")
+          if identity.get("signature_required") is not False:
+              raise AssertionError("GitHub identity signature sentinel drift")
+          required_job_identity_fields = {
+              "schema",
+              "run_id",
+              "run_attempt",
+              "job",
+              "job_id",
+              "job_name",
+              "workflow_name",
+              "job_status",
+              "job_conclusion",
+              "runner_id",
+              "runner_name",
+              "runner_labels",
+              "runner_group_id",
+              "runner_group",
+              "os",
+              "arch",
+              "head_sha",
+              "source_kind",
+              "job_started_at",
+              "job_completed_at",
+              "required_step_names",
+              "steps",
+              "step_outcomes_digest",
+              "api_response_digest",
+              "raw_log_manifest_digest",
+          }
+          if set(job_identity) != required_job_identity_fields:
+              raise AssertionError("GitHub job identity artifact fields drift")
+          if job_identity["schema"] != "heptabao.github-actions-job-identity.v1":
+              raise AssertionError("GitHub job identity schema drift")
+          for field, expected in (
+              ("run_id", os.environ["GITHUB_RUN_ID"]),
+              ("run_attempt", os.environ["GITHUB_RUN_ATTEMPT"]),
+              ("job", os.environ["GITHUB_JOB"]),
+              ("job_name", f"full-technical-matrix ({os.environ['SOURCE_KIND']})"),
+              ("workflow_name", "plan-v1.3.1-head-and-merge-closure"),
+              ("head_sha", os.environ["HEAD_SHA"]),
+              ("source_kind", os.environ["SOURCE_KIND"]),
+              ("runner_name", os.environ["RUNNER_NAME"]),
+              ("os", os.environ["RUNNER_OS"]),
+              ("arch", os.environ["RUNNER_ARCH"]),
+          ):
+              if job_identity.get(field) != expected:
+                  raise AssertionError(f"GitHub job identity {field} does not match workflow context")
+          for field in ("job_id", "runner_id"):
+              if not isinstance(job_identity.get(field), str) or not job_identity[field].isdigit() or int(job_identity[field]) < 1:
+                  raise AssertionError(f"GitHub job identity {field} is not a positive decimal")
+          if not isinstance(job_identity.get("runner_group_id"), str) or not job_identity["runner_group_id"].isdigit():
+              raise AssertionError("GitHub runner group ID is malformed")
+          if not isinstance(job_identity.get("runner_group"), str) or not job_identity["runner_group"].strip():
+              raise AssertionError("GitHub runner group is unavailable")
+          labels = job_identity.get("runner_labels")
+          if (
+              not isinstance(labels, list)
+              or not labels
+              or len(labels) != len(set(labels))
+              or any(not isinstance(label, str) or not label.strip() for label in labels)
+              or "ubuntu-24.04" not in labels
+          ):
+              raise AssertionError("GitHub runner labels are missing or non-canonical")
+          if job_identity.get("job_status") not in {"in_progress", "completed"}:
+              raise AssertionError("GitHub job status is not executable")
+          if job_identity.get("job_status") == "completed" and job_identity.get("job_conclusion") != "success":
+              raise AssertionError("completed GitHub job did not pass")
+
+          tree = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          receipt = {
+              "schema": "heptabao.v1-3-1-technical-completion-receipt.v1",
+              "source": {
+                  "repository": os.environ["GITHUB_REPOSITORY"],
+                  "kind": os.environ["SOURCE_KIND"],
+                  "commit": os.environ["SOURCE_SHA"],
+                  "tree": tree,
+                  "head": os.environ["HEAD_SHA"],
+                  "base": os.environ.get("BASE_SHA", ""),
+                  "event_merge": os.environ["GITHUB_SHA"],
+              },
+              "runner": {
+                  "run_id": os.environ["GITHUB_RUN_ID"],
+                  "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "job": os.environ["GITHUB_JOB"],
+                  "job_id": job_identity["job_id"],
+                  "job_name": job_identity["job_name"],
+                  "workflow_name": job_identity["workflow_name"],
+                  "job_status": job_identity["job_status"],
+                  "job_conclusion": job_identity["job_conclusion"],
+                  "name": job_identity["runner_name"],
+                  "runner_labels": job_identity["runner_labels"],
+                  "runner_id": job_identity["runner_id"],
+                  "runner_group_id": job_identity["runner_group_id"],
+                  "runner_group": job_identity["runner_group"],
+                  "os": job_identity["os"],
+                  "arch": job_identity["arch"],
+                  "head_sha": job_identity["head_sha"],
+                  "source_kind": job_identity["source_kind"],
+                  "job_started_at": job_identity["job_started_at"],
+                  "job_completed_at": job_identity["job_completed_at"],
+                  "required_step_names": job_identity["required_step_names"],
+                  "steps": job_identity["steps"],
+                  "step_outcomes_digest": job_identity["step_outcomes_digest"],
+                  "api_response_digest": job_identity["api_response_digest"],
+                  "raw_log_manifest_digest": job_identity["raw_log_manifest_digest"],
+                  "artifact_digest": digest(job_identity_path),
+              },
+              "arbitration": {
+                  "key": arbitration_key,
+                  "pull_request_number": arbitration_pr,
+                  "head_sha": os.environ["HEAD_SHA"],
+                  "source_kind": os.environ["SOURCE_KIND"],
+                  "required_lanes": required_lanes,
+              },
+              "gates": {
+                  "plan_python": "PASS",
+                  "root_rust_1_98": "PASS",
+                  "p0": {
+                      "runtime_socket_observed": 11,
+                      "exact_head_compiled_source_bound": 2,
+                      "best_effort_source_bound": 1,
+                      "artifact_digest": digest(p0_path),
+                  },
+                  "h02": {
+                      "executed_entries": 24,
+                      "pass": 24,
+                      "artifact_digest": digest(h02_path),
+                  },
+              },
+              "github_identity": {
+                  **identity,
+                  "artifact_digest": digest(identity_path),
+              },
+              "independent_review": False,
+              "qualification": False,
+              "compatibility_claim": False,
+              "selected_candidates": [],
+              "selection_effect": "NONE",
+              "production_authority": False,
+              "migration_authority": False,
+              "release_authority": False,
+              "authority_effect": "NONE",
+          }
+          output = root / "technical-completion-receipt.json"
+          output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Verify technical receipt remains non-authoritative
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND/technical-completion-receipt.json"
+          python3 - "$receipt" <<'PY'
+          import json
+          import os
+          import sys
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, item in pairs:
+                  if key in result:
+                      raise AssertionError(f"duplicate JSON object member: {key}")
+                  result[key] = item
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          def strict_json(raw, label):
+              try:
+                  return json.loads(raw, object_pairs_hook=unique_pairs, parse_constant=reject_constant)
+              except (ValueError, json.JSONDecodeError) as error:
+                  raise AssertionError(f"{label} is ambiguous JSON: {error}") from error
+
+          value = strict_json(open(sys.argv[1], encoding="utf-8").read(), "technical receipt")
+          assert value["source"]["commit"] == os.environ["SOURCE_SHA"]
+          assert value["source"]["kind"] == os.environ["SOURCE_KIND"]
+          arbitration = value["arbitration"]
+          assert arbitration["key"] == os.environ["ARBITRATION_KEY"]
+          assert arbitration["head_sha"] == value["source"]["head"]
+          assert arbitration["source_kind"] == value["source"]["kind"]
+          expected_pr = os.environ.get("PR_NUMBER") or "workflow_dispatch"
+          assert arbitration["pull_request_number"] == expected_pr
+          assert arbitration["required_lanes"] == (
+              ["head", "merge"] if expected_pr != "workflow_dispatch" else ["head"]
+          )
+          identity = value["github_identity"]
+          assert identity["source_sha"] == value["source"]["head"]
+          assert identity["repository_id"] == int(os.environ["EXPECTED_REPOSITORY_ID"])
+          assert identity["repository_full_name"] == os.environ["EXPECTED_REPOSITORY"]
+          assert identity["expected_head_owner"] == os.environ["EXPECTED_HEAD_OWNER"]
+          assert identity["head_owner"] == identity["expected_head_owner"]
+          assert identity["expected_ratifier_login"] == os.environ["EXPECTED_RATIFIER_LOGIN"]
+          assert identity["expected_ratifier_id"] == int(os.environ["EXPECTED_RATIFIER_ID"])
+          assert identity["author_login"] == identity["expected_ratifier_login"]
+          assert identity["committer_login"] == identity["expected_ratifier_login"]
+          assert identity["author_id"] == identity["expected_ratifier_id"]
+          assert identity["committer_id"] == identity["expected_ratifier_id"]
+          assert identity["identity_verified"] is True
+          assert identity["signature_required"] is False
+          job_identity = strict_json(open(
+              os.path.join(os.path.dirname(sys.argv[1]), "root/github-job-identity.json"),
+              encoding="utf-8",
+          ).read(), "GitHub job identity artifact")
+          runner = value["runner"]
+          assert runner["name"] == job_identity["runner_name"], "runner_name"
+          for field in (
+              "run_id", "run_attempt", "job", "job_id", "job_name", "workflow_name",
+              "job_status", "job_conclusion", "runner_id", "runner_group_id", "runner_group",
+              "runner_labels",
+              "os", "arch", "head_sha", "source_kind", "job_started_at",
+              "job_completed_at", "required_step_names", "steps", "step_outcomes_digest",
+              "api_response_digest", "raw_log_manifest_digest",
+          ):
+              assert runner[field] == job_identity[field], field
+          expected_identity_digest = "sha256:" + __import__("hashlib").sha256(
+              open(os.path.join(os.path.dirname(sys.argv[1]), "root/github-job-identity.json"), "rb").read()
+          ).hexdigest()
+          assert runner["artifact_digest"] == expected_identity_digest
+          assert runner["job_id"].isdigit() and int(runner["job_id"]) > 0
+          assert runner["runner_id"].isdigit() and int(runner["runner_id"]) > 0
+          assert value["gates"]["p0"]["runtime_socket_observed"] == 11
+          assert value["gates"]["h02"]["pass"] == 24
+          assert value["independent_review"] is False
+          assert value["qualification"] is False
+          assert value["compatibility_claim"] is False
+          assert value["selected_candidates"] == []
+          assert value["selection_effect"] == "NONE"
+          assert value["production_authority"] is False
+          assert value["migration_authority"] is False
+          assert value["release_authority"] is False
+          assert value["authority_effect"] == "NONE"
+          PY
+
+      - name: Validate digest-bound technical completion receipt
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/v1.3.1-$SOURCE_KIND"
+          read -r expected_job_id expected_runner_id expected_runner_group_id expected_runner_group < <(
+            python3 - "$evidence/root/github-job-identity.json" <<'PY'
+          import json
+          import sys
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          value = json.loads(
+              open(sys.argv[1], encoding="utf-8").read(),
+              object_pairs_hook=unique_pairs,
+              parse_constant=reject_constant,
+          )
+          if not isinstance(value, dict):
+              raise ValueError("job identity is not an object")
+          print(value["job_id"], value["runner_id"], value["runner_group_id"], value["runner_group"])
+          PY
+          )
+          python3 scripts/validate_v1_3_1_technical_completion_receipt_v1.py \
+            --input "$evidence/technical-completion-receipt.json" \
+            --expected-source-kind "$SOURCE_KIND" \
+            --expected-commit "$SOURCE_SHA" \
+            --expected-tree "$(git rev-parse 'HEAD^{tree}')" \
+            --expected-head "$HEAD_SHA" \
+            --expected-base "$BASE_SHA" \
+            --expected-event-merge "$GITHUB_SHA" \
+            --expected-arbitration-key "$ARBITRATION_KEY" \
+            --expected-head-owner "$EXPECTED_HEAD_OWNER" \
+            --expected-run-id "$GITHUB_RUN_ID" \
+            --expected-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --expected-job "$GITHUB_JOB" \
+            --expected-job-id "$expected_job_id" \
+            --expected-job-name "full-technical-matrix ($SOURCE_KIND)" \
+            --expected-workflow-name "plan-v1.3.1-head-and-merge-closure" \
+            --expected-runner-name "$RUNNER_NAME" \
+            --expected-runner-id "$expected_runner_id" \
+            --expected-runner-group-id "$expected_runner_group_id" \
+            --expected-runner-group "$expected_runner_group" \
+            --expected-runner-os "$RUNNER_OS" \
+            --expected-runner-arch "$RUNNER_ARCH" \
+            --p0-artifact "$evidence/p0/classified-result.json" \
+            --h02-artifact "$evidence/h02/matrix/matrix-summary.json" \
+            --h02-evidence-dir "$evidence/h02/matrix" \
+            --github-identity-artifact "$evidence/root/github-identity-verification.json" \
+            --github-job-artifact "$evidence/root/github-job-identity.json" \
+            --github-job-api "$evidence/root/github-job-api.json" \
+            --raw-log-manifest "$evidence/root/raw-log-manifest.json" \
+            | tee "$evidence/root/technical-receipt-validation.log"
+
+      - name: Upload final technical receipt
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: v1.3.1-${{ matrix.source_kind }}-technical-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/v1.3.1-${{ matrix.source_kind }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  arbitrate-head-and-merge-evidence:
+    name: arbitrate-head-and-merge-evidence
+    # Selection basis is EXACT_HEAD_AND_SYNTHETIC_MERGE_ONLY; no ancestor or
+    # superseded artifact is eligible for a technical PASS.
+    needs: full-technical-matrix
+    # Aggregate every technical success/failure, but do not start new checkout
+    # work after a workflow-level cancellation. This prevents a superseded run
+    # from retaining the concurrency group while its replacement stays pending.
+    if: ${{ !cancelled() }}
+    concurrency:
+      group: plan-v1.3.1-arbitration-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || 'workflow_dispatch' }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEAD_OWNER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      SYNTHETIC_MERGE_SHA: ${{ github.sha }}
+      RUN_ID: ${{ github.run_id }}
+      RUN_ATTEMPT: ${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact workflow source for arbitration
+        if: ${{ always() }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install arbitration Python dependencies
+        if: ${{ always() }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+
+      - name: Verify arbitration dependency lock
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          python3 -c 'import jsonschema, yaml; print("arbitration dependencies ready")'
+
+      - name: Download current-run technical receipts
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v6.0.0
+        with:
+          pattern: v1.3.1-*-technical-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1.3.1-arbitration/receipts
+          merge-multiple: false
+
+      - name: Bind final GitHub job states and lane Git trees
+        if: ${{ always() }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          arbitration="$RUNNER_TEMP/v1.3.1-arbitration"
+          mkdir -p "$arbitration"
+          binding_errors="$arbitration/binding-errors.txt"
+          : >"$binding_errors"
+          binding_rc=0
+          endpoint="https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/$GITHUB_RUN_ATTEMPT/jobs?per_page=100"
+          jobs_candidate="$arbitration/final-jobs-api.candidate.json"
+          jobs_bound="$arbitration/final-jobs-api.json"
+          jobs_valid=1
+          # The Actions API is eventually consistent immediately after the
+          # matrix completes.  Poll a bounded window for the exact lane jobs
+          # to become completed, retaining the last raw response for audit.
+          for poll in $(seq 1 30); do
+            rm -f "$jobs_candidate"
+            curl --fail --silent --show-error --retry 3 --retry-delay 2 \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "$endpoint" >"$jobs_candidate"
+            curl_rc=$?
+            if [[ "$curl_rc" -eq 0 ]]; then
+              python3 - "$jobs_candidate" "$PR_NUMBER" <<'PY' >>"$binding_errors" 2>&1
+          import json
+          import sys
+
+          path, pr_number = sys.argv[1:]
+          with open(path, encoding="utf-8") as handle:
+              payload = json.load(handle)
+          jobs = payload.get("jobs")
+          if not isinstance(jobs, list) or payload.get("total_count") != len(jobs):
+              raise SystemExit("jobs API response is not a complete single-page list")
+          expected = ["full-technical-matrix (head)"]
+          if pr_number != "workflow_dispatch":
+              expected.append("full-technical-matrix (merge)")
+          by_name = {}
+          for job in jobs:
+              if isinstance(job, dict) and isinstance(job.get("name"), str):
+                  by_name.setdefault(job["name"], []).append(job)
+          for name in expected:
+              matches = by_name.get(name, [])
+              if len(matches) != 1:
+                  raise SystemExit(f"expected exactly one lane job {name!r}, found {len(matches)}")
+              if matches[0].get("status") != "completed":
+                  raise SystemExit(f"lane job {name!r} is not completed yet")
+          PY
+              probe_rc=$?
+              if [[ "$probe_rc" -eq 0 ]]; then
+                cp "$jobs_candidate" "$jobs_bound"
+                jobs_valid=0
+                break
+              fi
+            else
+              echo "jobs API curl failed on poll $poll (rc=$curl_rc)" >>"$binding_errors"
+            fi
+            if [[ "$poll" -lt 30 ]]; then
+              sleep 2
+            fi
+          done
+          if [[ ! -s "$jobs_bound" ]]; then
+            if [[ -s "$jobs_candidate" ]]; then
+              cp "$jobs_candidate" "$jobs_bound"
+            else
+              printf '{}\n' >"$jobs_bound"
+            fi
+          fi
+          if [[ "$jobs_valid" -ne 0 ]]; then
+            echo "timed out waiting for completed head/merge jobs" >>"$binding_errors"
+            binding_rc=1
+          fi
+
+          git rev-parse "$HEAD_SHA^{tree}" >"$arbitration/head-tree.txt"
+          head_tree_rc=$?
+          if [[ "$head_tree_rc" -ne 0 ]]; then
+            echo "unable to resolve head tree for $HEAD_SHA" >>"$binding_errors"
+            binding_rc=1
+          fi
+          git rev-parse "$SYNTHETIC_MERGE_SHA^{tree}" >"$arbitration/merge-tree.txt"
+          merge_tree_rc=$?
+          if [[ "$merge_tree_rc" -ne 0 ]]; then
+            echo "unable to resolve synthetic merge tree for $SYNTHETIC_MERGE_SHA" >>"$binding_errors"
+            binding_rc=1
+          fi
+          exit "$binding_rc"
+
+      - name: Aggregate exact head and synthetic merge receipts
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/v1.3.1-arbitration"
+          head_tree="$(tr -d '[:space:]' <"$RUNNER_TEMP/v1.3.1-arbitration/head-tree.txt" 2>/dev/null || true)"
+          merge_tree="$(tr -d '[:space:]' <"$RUNNER_TEMP/v1.3.1-arbitration/merge-tree.txt" 2>/dev/null || true)"
+          python3 scripts/arbitrate_v1_3_1_lanes_v1.py \
+            --input-root "$RUNNER_TEMP/v1.3.1-arbitration/receipts" \
+            --output "$RUNNER_TEMP/v1.3.1-arbitration/lane-arbitration.json" \
+            --repository "$GITHUB_REPOSITORY" \
+            --pull-request-number "$PR_NUMBER" \
+            --head-sha "$HEAD_SHA" \
+            --expected-head-owner "$HEAD_OWNER" \
+            --base-sha "$BASE_SHA" \
+            --synthetic-merge-sha "$SYNTHETIC_MERGE_SHA" \
+            --expected-run-id "$RUN_ID" \
+            --expected-run-attempt "$RUN_ATTEMPT" \
+            --expected-head-tree "$head_tree" \
+            --expected-merge-tree "$merge_tree" \
+            --git-root "$GITHUB_WORKSPACE" \
+            --require-git-tree-binding \
+            --require-merge-parent-binding \
+            --final-jobs-api "$RUNNER_TEMP/v1.3.1-arbitration/final-jobs-api.json" \
+            --require-final-jobs-api
+          rc=$?
+          arbitration_output="$RUNNER_TEMP/v1.3.1-arbitration/lane-arbitration.json"
+          arbitration_schema="$GITHUB_WORKSPACE/schemas/heptabao_v1_3_1_lane_arbitration_v1.schema.json"
+          arbitration_valid=1
+          if [[ -s "$arbitration_output" ]]; then
+            # A non-empty file is not automatically an evidence receipt:
+            # validate strict JSON and the checked-in schema before allowing
+            # it to be uploaded.  A killed interpreter can otherwise leave a
+            # truncated object that looks present to artifact upload.
+            python3 - "$arbitration_output" "$arbitration_schema" <<'PY' >>"$RUNNER_TEMP/v1.3.1-arbitration/arbitration-validation.log" 2>&1
+          from __future__ import annotations
+
+          import json
+          import sys
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          def unique_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON object member: {key}")
+                  result[key] = value
+              return result
+
+          def reject_constant(value):
+              raise ValueError(f"non-standard JSON constant: {value}")
+
+          output_path, schema_path = sys.argv[1:]
+          with open(schema_path, encoding="utf-8") as handle:
+              schema = json.load(
+                  handle,
+                  object_pairs_hook=unique_pairs,
+                  parse_constant=reject_constant,
+              )
+          Draft202012Validator.check_schema(schema)
+          with open(output_path, encoding="utf-8") as handle:
+              value = json.load(
+                  handle,
+                  object_pairs_hook=unique_pairs,
+                  parse_constant=reject_constant,
+              )
+          errors = sorted(
+              Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+              key=lambda error: list(error.path),
+          )
+          if errors:
+              raise SystemExit(f"lane arbitration schema violation: {errors[0].message}")
+          PY
+            arbitration_valid=$?
+          fi
+          if [[ "$arbitration_valid" -ne 0 ]]; then
+            # A missing/empty/invalid aggregate is a hard failure even when
+            # the interpreter happened to return zero after a partial write.
+            # Preserve the malformed bytes for audit, then emit a
+            # schema-shaped diagnostic so the failure path remains machine
+            # readable even if checkout/dependency setup failed.
+            if [[ -s "$arbitration_output" ]]; then
+              mv "$arbitration_output" "$arbitration_output.invalid.json"
+            fi
+            python3 - "$RUNNER_TEMP/v1.3.1-arbitration/lane-arbitration.json" <<'PY' || true
+          import json
+          import os
+          import re
+          import sys
+
+          def sha(value, fallback):
+              return value if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) else fallback
+
+          pr = os.environ.get("PR_NUMBER", "workflow_dispatch")
+          if not re.fullmatch(r"(?:[1-9][0-9]*|workflow_dispatch)", pr):
+              pr = "workflow_dispatch"
+          head = sha(os.environ.get("HEAD_SHA"), "0" * 40)
+          if pr == "workflow_dispatch":
+              base = ""
+              merge = head
+              lanes = ["head"]
+          else:
+              base = sha(os.environ.get("BASE_SHA"), "0" * 40)
+              merge = sha(os.environ.get("SYNTHETIC_MERGE_SHA"), "0" * 40)
+              lanes = ["head", "merge"]
+          value = {
+              "schema": "heptabao.v1-3-1-lane-arbitration.v1",
+              "repository": "TrillionniumFoundation/HeptaBao",
+              "pull_request_number": pr,
+              "head_sha": head,
+              "head_tree": "0" * 40,
+              "merge_tree": "0" * 40,
+              "base_sha": base,
+              "synthetic_merge_sha": merge,
+              "required_lanes": lanes,
+              "status": "FAIL",
+              "failure_class": "MALFORMED",
+              "receipts": [],
+              "failure_reasons": ["arbitration implementation or checkout was unavailable"],
+              "supersession": {
+                  "policy": "CANCEL_OLDER_RUN_AND_RETAIN_HISTORY",
+                  "duplicate_keys": [],
+                  "superseded_receipts": [],
+                  "ancestor_only_rejected": True,
+                  "selection_basis": "EXACT_HEAD_AND_SYNTHETIC_MERGE_ONLY",
+              },
+              "qualification": False,
+              "compatibility_claim": False,
+              "selected_candidates": [],
+              "selection_effect": "NONE",
+              "production_authority": False,
+              "migration_authority": False,
+              "release_authority": False,
+              "authority_effect": "NONE",
+          }
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(value, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+            rc=1
+          fi
+          exit "$rc"
+
+      - name: Upload lane arbitration evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: v1.3.1-lane-arbitration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1.3.1-arbitration/
+          if-no-files-found: error
+          retention-days: 30

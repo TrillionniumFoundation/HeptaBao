@@ -1,0 +1,7 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes", "--nocapture", "--test-threads=1", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+
+running 1 test
+test http::snapshot::tests::native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2927 filtered out; finished in 0.00s
+

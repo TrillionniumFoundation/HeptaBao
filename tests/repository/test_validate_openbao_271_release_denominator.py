@@ -1,0 +1,160 @@
+"""Negative controls for the OpenBao 2.7.x release denominator validator."""
+from __future__ import annotations
+import contextlib
+import copy
+import io
+import json
+from pathlib import Path
+import sys
+import unittest
+
+ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT/'scripts'))
+import validate_openbao_271_release_denominator as validator
+
+
+class DenominatorControls(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.original=json.loads(validator.MANIFEST.read_text())
+
+    def fresh(self):
+        return copy.deepcopy(self.original)
+
+    def test_manifest_covers_declared_ids_but_is_not_qualified(self):
+        doc=self.fresh()
+        self.assertEqual([],validator.validate(doc))
+        self.assertFalse(doc['replacement_authority'])
+
+    def test_missing_openbao_270_security_entry_rejected(self):
+        doc=self.fresh()
+        doc['security_delta']=[x for x in doc['security_delta'] if x['id']!='sdk_malformed_audit_redaction']
+        self.assertTrue(any('sdk_malformed_audit_redaction' in x for x in validator.validate(doc)))
+
+    def test_duplicate_security_entry_rejected(self):
+        doc=self.fresh()
+        doc['security_delta'].append(copy.deepcopy(doc['security_delta'][0]))
+        self.assertTrue(any('duplicate' in x for x in validator.validate(doc)))
+
+    def test_unwitnessed_admitted_security_entry_rejected(self):
+        doc=self.fresh()
+        doc['security_delta'][0]['status']='ADMITTED'
+        self.assertTrue(any('admitted without evidence receipt' in x for x in validator.validate(doc)))
+
+    def test_missing_271_change_entry_rejected(self):
+        doc=self.fresh()
+        doc['feature_and_correctness_delta']=[x for x in doc['feature_and_correctness_delta'] if x['id']!='barrier_rotation_disabled_field_persistence']
+        self.assertTrue(any('barrier_rotation_disabled_field_persistence' in x for x in validator.validate(doc)))
+
+    def test_each_openbao_270_feature_entry_is_required(self):
+        # These reviewed 2.7.0 baseline entries must not disappear while the
+        # two supplemental 2.7.1 changes still make the document look complete.
+        for missing_id in (
+            'postgresql_horizontal_scale',
+            'external_kms_hsm_pki_transit',
+            'pqc_tls_mldsa',
+            'pebble_storage',
+            'indexed_consistency',
+            'control_groups_second_party_approval',
+            'grpc_invalidation',
+            'raft_auto_join_provider_port',
+            'sdk_lifetime_watcher_backoff',
+        ):
+            with self.subTest(missing_id=missing_id):
+                doc=self.fresh()
+                doc['feature_and_correctness_delta']=[
+                    row for row in doc['feature_and_correctness_delta']
+                    if row['id']!=missing_id
+                ]
+                self.assertTrue(any(
+                    'missing required ids' in error and missing_id in error
+                    for error in validator.validate(doc)
+                ))
+
+    def test_control_groups_cannot_be_replaced_by_equal_count_metadata(self):
+        doc=self.fresh()
+        rows=doc['feature_and_correctness_delta']
+        original_count=len(rows)
+        rows[:]=[row for row in rows if row['id']!=validator.CONTROL_GROUPS_ID]
+        rows.append({'id':'unrelated_runtime_probe','status':'OPEN',
+                     'scenario':'Count-preserving synthetic metadata','receipt':None})
+        self.assertEqual(original_count,len(rows))
+        self.assertTrue(any(
+            'missing required ids' in error and validator.CONTROL_GROUPS_ID in error
+            for error in validator.validate(doc)
+        ))
+
+    def test_control_groups_primary_source_binding_is_required(self):
+        defects=(('introduced_in','2.6.2'),
+                 ('source_url',None),
+                 ('source_url','https://openbao.org.example/community/release-notes/2-7-0/#features'),
+                 ('source_change_url','https://github.com/openbao/openbao/pull/1'))
+        for field,value in defects:
+            with self.subTest(field=field,value=value):
+                doc=self.fresh()
+                row=next(row for row in doc['feature_and_correctness_delta']
+                         if row['id']==validator.CONTROL_GROUPS_ID)
+                row[field]=value
+                self.assertTrue(any(
+                    validator.CONTROL_GROUPS_ID in error and 'primary-source binding mismatch' in error
+                    for error in validator.validate(doc)
+                ))
+
+    def test_control_groups_remains_open_and_declares_missing_executable_evidence(self):
+        doc=self.fresh()
+        row=next(row for row in doc['feature_and_correctness_delta']
+                 if row['id']==validator.CONTROL_GROUPS_ID)
+        self.assertEqual('OPEN',row['status'])
+        self.assertIsNone(row['receipt'])
+        row['evidence_requirements']=[]
+        self.assertTrue(any(
+            validator.CONTROL_GROUPS_ID in error and 'missing runtime/API evidence requirements' in error
+            for error in validator.validate(doc)
+        ))
+
+    def test_cli_reports_structural_coverage_without_compatibility_authority(self):
+        stream=io.StringIO()
+        with contextlib.redirect_stdout(stream):
+            result=validator.main()
+        output=stream.getvalue()
+        self.assertEqual(0,result)
+        self.assertIn('admission coverage structure',output)
+        self.assertIn('not exhaustive upstream coverage or executable compatibility',output)
+        self.assertIn('replacement authority=false',output)
+        self.assertNotIn('structurally complete',output)
+
+    def test_missing_271_packaged_default_entry_rejected(self):
+        doc=self.fresh()
+        doc['feature_and_correctness_delta']=[
+            row for row in doc['feature_and_correctness_delta']
+            if row['id']!='linux_package_default_pebbledb'
+        ]
+        self.assertTrue(any(
+            'missing required ids' in error and 'linux_package_default_pebbledb' in error
+            for error in validator.validate(doc)
+        ))
+
+    def test_unwitnessed_admitted_gate_rejected(self):
+        doc=self.fresh()
+        doc['required_gates'][0]['status']='ADMITTED'
+        self.assertTrue(any('admitted without exact candidate receipt' in x for x in validator.validate(doc)))
+
+    def test_missing_required_gate_rejected(self):
+        doc=self.fresh()
+        doc['required_gates']=[x for x in doc['required_gates'] if x['id']!='full_asset_migration']
+        self.assertTrue(any('full_asset_migration' in x for x in validator.validate(doc)))
+
+    def test_premature_release_authority_rejected(self):
+        doc=self.fresh()
+        doc['replacement_authority']=True
+        doc['authority']='ADMITTED'
+        self.assertTrue(any('cannot authorize replacement' in x for x in validator.validate(doc)))
+
+    def test_baseline_commit_drift_rejected(self):
+        doc=self.fresh()
+        doc['baseline']['commit']='0'*40
+        self.assertTrue(any('baseline mismatch' in x for x in validator.validate(doc)))
+
+
+if __name__=='__main__':
+    unittest.main()

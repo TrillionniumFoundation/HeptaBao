@@ -1,0 +1,124 @@
+--- a/qa/openbao-acceptance/native_service_only_compile.py
++++ b/qa/openbao-acceptance/native_service_only_compile.py
+@@ -116,23 +116,35 @@
+         raise
+ 
+ 
+-def process_rows(pid=None, timeout=2):
++def process_rows(pid=None, timeout=2, with_start=False):
+     command = ["/bin/ps", "-A" if pid is None else "-p"]
+     if pid is not None:
+         command.append(str(pid))
+-    command += ["-o", "pid=,ppid=,pgid=,stat="]
++    command += ["-o", "pid=,ppid=,pgid=,stat=" + (",lstart=" if with_start else "")]
++    # lstart is an opaque, stable identity component. Keep ps's rendering
++    # independent of the controller account's locale (the actual Mac uses zh).
++    observation_env = os.environ.copy()
++    observation_env.update(LC_ALL="C", LANG="C")
+     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+-                            timeout=timeout, check=False)
++                            timeout=timeout, check=False,
++                            env=observation_env if with_start else None)
+     if result.returncode != 0:
+         raise RuntimeError("owned process observation failed: exit=" + str(result.returncode)
+                            + " stderr=" + result.stderr[:1024].decode(errors="replace"))
+     rows = []
+     for line in result.stdout.decode("ascii", errors="strict").splitlines():
+-        fields = line.split()
+-        if len(fields) != 4:
++        fields = line.split(None, 4) if with_start else line.split()
++        if len(fields) != (5 if with_start else 4):
+             raise RuntimeError("owned process observation framing differs")
+         rows.append({"pid": int(fields[0]), "ppid": int(fields[1]),
+                      "pgid": int(fields[2]), "state": fields[3]})
++        if with_start:
++            stamp = " ".join(fields[4].split())
++            if not re.fullmatch(r"(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) "
++                                r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) "
++                                r"\d{1,2} \d{2}:\d{2}:\d{2} \d{4}", stamp):
++                raise RuntimeError("owned process start identity is unavailable")
++            rows[-1]["lstart"] = stamp
+     return rows
+ 
+ 
+@@ -151,9 +163,66 @@
+     return rows[0]["state"].startswith("Z")
+ 
+ 
++def darwin_owned_group(process, timeout=2):
++    """Keep custody of our unreaped Popen when Darwin rejects zombie syscalls."""
++    original = getattr(process, "_heptabao_darwin_leader_identity", None)
++
++    def observe():
++        rows = process_rows(timeout=timeout, with_start=True)
++        leaders = [row for row in rows if row["pid"] == process.pid]
++        if len(leaders) != 1:
++            raise RuntimeError("owned Darwin leader disappeared before reaping")
++        leader = leaders[0]
++        identity = {key: leader[key] for key in ("pid", "ppid", "pgid", "lstart")}
++        if (identity["pid"], identity["ppid"], identity["pgid"]) != (
++                process.pid, os.getpid(), process.pid):
++            raise RuntimeError("owned Darwin leader parent or group identity differs")
++        if original is not None and original != identity:
++            raise RuntimeError("owned Darwin leader start identity differs")
++        return rows, leader, identity
++
++    def wait_event():
++        if not all(hasattr(os, key) for key in (
++                "waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT")):
++            raise RuntimeError("owned Darwin zombie requires WNOWAIT custody")
++        event = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
++        if (event is None or event.si_pid != process.pid or event.si_uid != os.getuid()
++                or event.si_signo != signal.SIGCHLD
++                or event.si_code not in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED)):
++            raise RuntimeError("owned Darwin zombie has no matching child exit event")
++        return tuple(event)
++
++    rows, leader, identity = observe()
++    if not leader["state"].startswith("Z"):
++        try:
++            if os.getpgid(process.pid) != process.pid or os.getsid(process.pid) != process.pid:
++                raise RuntimeError("owned leader no longer binds its original PGID and SID")
++        except ProcessLookupError:
++            # It can exit between ps and the live-child syscalls. ESRCH is
++            # never evidence of an empty group: reobserve and require Z plus
++            # the original child's unchanged, non-reaping exit event below.
++            rows, leader, changed = observe()
++            if changed != identity or not leader["state"].startswith("Z"):
++                raise RuntimeError("owned Darwin live leader identity became unresolved")
++    if leader["state"].startswith("Z"):
++        before = wait_event()
++        rows, leader, changed = observe()
++        after = wait_event()
++        if (before != after or changed != identity or not leader["state"].startswith("Z")
++                or process.returncode is not None):
++            raise RuntimeError("owned Darwin zombie custody changed before group observation")
++    # Bind on the original Popen object, including fast children first seen as
++    # zombies. No poll/wait has occurred; WNOWAIT proves this is our child and
++    # its reserved PID continues to identify the original process group.
++    process._heptabao_darwin_leader_identity = identity
++    return [row for row in rows if row["pgid"] == process.pid]
++
++
+ def owned_group(process, timeout=2):
+     if process.returncode is not None:
+         raise RuntimeError("owned leader was reaped before group observation")
++    if sys.platform == "darwin":
++        return darwin_owned_group(process, timeout=timeout)
+     if os.getpgid(process.pid) != process.pid or os.getsid(process.pid) != process.pid:
+         raise RuntimeError("owned leader no longer binds its original PGID and SID")
+     return [row for row in process_rows(timeout=timeout) if row["pgid"] == process.pid]
+@@ -248,6 +317,13 @@
+                                        stderr=subprocess.STDOUT, start_new_session=True)
+             record.update(pid=process.pid, pgid=process.pid, sid=process.pid)
+             save()
++            if sys.platform == "darwin":
++                remaining = deadline - time.monotonic()
++                if remaining <= 0:
++                    raise TimeoutError("owned Darwin capture reached the original command deadline")
++                owned_group(process, timeout=min(2, remaining))
++                record["darwin_leader_identity"] = process._heptabao_darwin_leader_identity
++                save()
+             while True:
+                 remaining = deadline - time.monotonic()
+                 if remaining <= 0:

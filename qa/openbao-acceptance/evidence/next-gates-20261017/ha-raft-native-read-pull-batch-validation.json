@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao-native-ha-pull-batch-validation-v1",
+  "recorded_utc": "2026-10-17T13:08:20.555926+00:00",
+  "component_files_sha256": "276dc8f3e1cdd778c1fee2d27cff6087ff4fc224ebd6067a1abc6fa5aeac4fe8",
+  "component_file_count": 62,
+  "source_unchanged_across_final_verification": true,
+  "source_manifest": "ha-raft-native-read-pull-batch-source-freeze.json",
+  "scope": "Actual durable Raft with in-process consensus RPC, actual TCP pinned mTLS, actual immutable file/directory fsync. Does not claim physical-host HA, Service Actor integration, production traffic or cutover.",
+  "rustfmt_check_exit": 0,
+  "test_results": [
+    {
+      "log": "ha-native-v6-ingress-pull-batch-final.log",
+      "sha256": "4d63a90955e3d92bd44011e04379930918afd95c6c3082e7b47de8c57207312c",
+      "terminal_result": "ok. 4 passed; 0 failed; 0 ignored; 0 measured; 24 filtered out; finished in 20.49s"
+    },
+    {
+      "log": "raft-native-v6-opaque-read-final.log",
+      "sha256": "53b4b8baf0e9d6b6225912d9280645c722405c7ad7fb052faf72cf0e230980f7",
+      "terminal_result": "ok. 125 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 30.66s"
+    }
+  ],
+  "binaries": [
+    {
+      "path": "/workspace/scratch/d090566e965e/cargo-target-local/debug/deps/heptabao_ha_service-31334156a8040b3f",
+      "bytes": 135159288,
+      "sha256": "9ae30d2b16b57a29086f7abb7b7f695998e126363ee0d8fa30aa410f63cb905d"
+    },
+    {
+      "path": "/workspace/scratch/d090566e965e/cargo-target-local/debug/deps/heptabao_raft_runtime-58d35e1d7496d755",
+      "bytes": 140687024,
+      "sha256": "9c9075e0c538e3493e2fbb1135859d6859251f8eb836793fca4fa6c1ce03bdb6"
+    }
+  ],
+  "operation_budgets_ms": {
+    "original_each_operation": 15000,
+    "existing_each_native_readindex_max": 8000
+  },
+  "observed_34mib_durations_ms": {
+    "first_batch_quorum_cas": 2931,
+    "first_cold_missing_leader_pull": 5379,
+    "final_batch_quorum_cas": 3830,
+    "final_cold_missing_leader_pull": 2705
+  },
+  "negative_evidence": [
+    "Real accepted TCP blackhole coexists with healthy pinned donor; no local implicit quorum vote.",
+    "Bad server leaf and expired original operation stage no target leaves.",
+    "Every actual per-leaf fsync is retained under original admission; final closure receipt is mandatory.",
+    "Root pull preserves exact root/full LogIds/local generation and submits no Raft write.",
+    "Old V5 application witness is fenced atomically after native activation; cold handle cannot reuse warm runtime identity."
+  ],
+  "remaining_integration": "Root owns actual Service native writer/local install/read dispatch and Mac/ROG/Pocket4 physical rollout gates.",
+  "final_formatted_component_files_sha256": "7ac02927737aaa9df06500a76c83353111f1bdc51f784ec61cb28776e68f60d1",
+  "final_formatted_source_manifest": "ha-raft-native-read-pull-batch-source-final.json",
+  "post_test_format_only": {
+    "path": "crates/heptabao-raft-runtime/src/lib.rs",
+    "fixed_rustfmt_replay_exact": true,
+    "rustfmt_check_exit": 0,
+    "description": "Only reorders native re-export declarations; no source logic or test changes after real final runs."
+  }
+}

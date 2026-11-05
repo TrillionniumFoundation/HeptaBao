@@ -1,0 +1,328 @@
+{
+  "schema": "heptabao-ha-raft-local-source-manifest-v1",
+  "recorded_utc": "2026-10-17T13:09:13.870533+00:00",
+  "scope": "Cargo.toml, Cargo.lock, and every regular file in heptabao-filesystem-guard, heptabao-raft-runtime, heptabao-ha-service; excludes server/auth work and is not a whole-repository release hash",
+  "file_count": 62,
+  "files_sha256": "7ac02927737aaa9df06500a76c83353111f1bdc51f784ec61cb28776e68f60d1",
+  "files": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 100299,
+      "sha256": "b6c3bca88b92e690a32af02e792c523f92333ad34248ee5777436d1b5f8791a4"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 615,
+      "sha256": "ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/Cargo.toml",
+      "bytes": 330,
+      "sha256": "b607d463be7303589954370438b25f2ee351c506fb874c26c51e97b3dbd61895"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/immutable.rs",
+      "bytes": 27475,
+      "sha256": "c2f83804cdb1ef038981f65a8d27a8361242765128503342a0e257806b3c1ff0"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/immutable_tests.rs",
+      "bytes": 27753,
+      "sha256": "b083a479617713357c479f42b63cd21ed2d5542af4d2c7e75e46fad0b81408bb"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/lib.rs",
+      "bytes": 21452,
+      "sha256": "7c412f11998a5991d323e861aa0c1904bf66d8fc56e6ae84605072a51bddf921"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/relative.rs",
+      "bytes": 8019,
+      "sha256": "be660bea286be359f4883615c4982f2ebfc4e021b929e13dc133d5cae3017a91"
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/relative_tests.rs",
+      "bytes": 9640,
+      "sha256": "b14f9f2e371d8d0c13777101e5a3414885c759cbe75e3ebea16bfabfd423f9d0"
+    },
+    {
+      "path": "crates/heptabao-ha-service/Cargo.toml",
+      "bytes": 1257,
+      "sha256": "23b12086175b7171655f1fe28ad565e2270d7f5b2ca075d7b8300562c1666f72"
+    },
+    {
+      "path": "crates/heptabao-ha-service/examples/v6_replica_multihost_private.rs",
+      "bytes": 13058,
+      "sha256": "05f6191601b408c9652a818186b844a79ecb36f7e1ec834aceaf4d6523732ee4"
+    },
+    {
+      "path": "crates/heptabao-ha-service/examples/v6_replica_two_peers_private.rs",
+      "bytes": 7241,
+      "sha256": "de14a05c7db666043f439e9d4128498eba1c3ed3d262c7395f5ededff879b9d4"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "bytes": 3695,
+      "sha256": "93263f2382e5f80a5f396cb042f895aaa13cecf68b7c45e2c6b33166c013aa1b"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "bytes": 74982,
+      "sha256": "64f10f2ea30ccac5629ba494c3f7952f86fa08b5bc7a628e5281a404f23bdb98"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_batch.rs",
+      "bytes": 6056,
+      "sha256": "abf2df28b087ffe47596786bc8fafc2b52c602d9e983c322c7420c82c55ecc10"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_ingress.rs",
+      "bytes": 1414,
+      "sha256": "e3234ad86fae1de1d1328d157e796cf997598b0b5ff70f4f96b5b6903a67b6ec"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "bytes": 27803,
+      "sha256": "6fc69f40666bf906a564fab0b38f3e83e4f49e3e340060c2fc2a13d8919da69d"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum_tests.rs",
+      "bytes": 36738,
+      "sha256": "7ee5a9f35562806c4d54407858a39d48a0bef6cd23a01e44f07ee4f417d6c681"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum_wire.rs",
+      "bytes": 11859,
+      "sha256": "41cf67e78ca373047fef5cd1c51a0648a530e6fca9b66c4c6e3d7236fa753825"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "bytes": 21979,
+      "sha256": "74217436fb163ae5ec1e1496a980de4400ee5ea3507ee253d929cedba8d23136"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_tests.rs",
+      "bytes": 14478,
+      "sha256": "2acc18f5ebcf0287bf613574c6b687c6e7f0f8f56af4a91556125072947ee03b"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_wire.rs",
+      "bytes": 5979,
+      "sha256": "a0986159a208593270c18471d8e2adbbb04f166d6f0643c5c4db9f8faa685618"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_replica_fanout.rs",
+      "bytes": 44648,
+      "sha256": "5d687b463e30d797e21dec74b1ba4d460cbfe23b5748b9c66c001bcd502d3575"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_replica_ingress.rs",
+      "bytes": 29701,
+      "sha256": "6efcad3665fb5089cfaf72fb05d614b704dcd3862a700d3e352c9fb9c586a881"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/Cargo.toml",
+      "bytes": 1067,
+      "sha256": "1fc0c3588c4e6660257c0e80a0998f5e312f7536f29b0b2c7d38b47b20d00819"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/V6_ROOT_PUBLICATION.md",
+      "bytes": 7424,
+      "sha256": "bcd9f720a815c99732a2c1198b43666d2f0b84790eba01a71d7368dc4aeb5708"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/cluster.rs",
+      "bytes": 22341,
+      "sha256": "577d3e9376c9b558e519d382bdd17249184e9a631d76c965a7a74753976a21fc"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/lib.rs",
+      "bytes": 18778,
+      "sha256": "81c2d023cfe1cf21d47df575878c68ba527d363c8f288c020b99c85cfd74301f"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/network.rs",
+      "bytes": 6309,
+      "sha256": "67ef06a29a4ce18f73b3a0d675aaaca0ce1768bcffe16165f97050c82e2deb9e"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process.rs",
+      "bytes": 949,
+      "sha256": "cb4100d63ed9787937c4b73b04c280b6df43fe4bec10233cc9c574f6e04f437c"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/admin.rs",
+      "bytes": 12255,
+      "sha256": "3ac586ed5cd59ee211f5b4b5e3b1e718ce12e19b44a28efdc80e47ec2190fe77"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/follower_read.rs",
+      "bytes": 12298,
+      "sha256": "0f05d5c6af1679ec7f02b935043ff825494e0c741b2e5b2628cebe888cecf5cf"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/leader_status.rs",
+      "bytes": 1507,
+      "sha256": "b07f6f0037a81211ede4439ec6e5a865662adf534bedac6ecbfc93f3aef4e01d"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/network.rs",
+      "bytes": 29956,
+      "sha256": "8f8a26c29201cd2d95c175925106026a933faa78f4a6c37db051d3140091cacf"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/node.rs",
+      "bytes": 56347,
+      "sha256": "bcd5d708ded708c581c99d0a823a7aa02e43fea9506f387e9494d830ec94c70a"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/read_deadline.rs",
+      "bytes": 2497,
+      "sha256": "ce80e074ebbab67ea49d00d9f463b3f36b3992b622f5c6bb4e2fdc16cfd7802d"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/read_index_tests.rs",
+      "bytes": 38263,
+      "sha256": "82e56327660389f25cf9188e96d3cbe68e9da9e7fe56919e4535a2fe0725ebec"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/replication_tests.rs",
+      "bytes": 40848,
+      "sha256": "f3e9e49f7564664fb0145aaf8eee4646250ac43c94c1891b16e1c380d33de9d9"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/rpc_observation.rs",
+      "bytes": 2059,
+      "sha256": "3fd331d382295309518218ece3177ba59108848588497d2285a2c26ee7cb16f2"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/snapshot.rs",
+      "bytes": 1738,
+      "sha256": "336922a4f48e0e5e91e0490464d759f37e312e50b905584a04c8d4d56884b258"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/snapshot_observation_tests.rs",
+      "bytes": 12385,
+      "sha256": "1d5796feedea64a18ffd92da178de5b337e27366290c4bf99d6a6fdfb1e2eefd"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/snapshot_receive_tests.rs",
+      "bytes": 6742,
+      "sha256": "66860bf249d75eb92155245be86e937c284872ec8cd057a0aefa7af754b15b7e"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/upgrade_campaign.rs",
+      "bytes": 6646,
+      "sha256": "8fe447dda316741a4858ebe3aa907132eee61b360d8f42e9c845a91b0397a4d3"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/upgrade_campaign_tests.rs",
+      "bytes": 13281,
+      "sha256": "393bff92554ffe60c763df62374c561bb4889fa7ef8038d9db64533525868d8a"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/v6_closure_admission.rs",
+      "bytes": 9397,
+      "sha256": "57e7af78da086f944e3d7014fe65a82c4e6f9c5d745b6cb16e152ecd966d5fd1"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/v6_committed_root_read.rs",
+      "bytes": 5170,
+      "sha256": "a462cc0b4f81a1bf501400dfaa95e9b294544d045c4c035e726d091b83631745"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/v6_intent_tests.rs",
+      "bytes": 17295,
+      "sha256": "b62402a6bf5748eff7f2fcdd8b01a87e17dab3135b0a28549f3f6f74f65c171b"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/v6_root_tests.rs",
+      "bytes": 28917,
+      "sha256": "88394140ae4ebe38aaa7a1b692f419d4d18cb60928e58ade30a98b96a2c4d33a"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/record_store_tests.rs",
+      "bytes": 21314,
+      "sha256": "1b73e3cb55a4ea6e75d427fc3d98ee729253baeadbb708898fea68458243abd4"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/records.rs",
+      "bytes": 40376,
+      "sha256": "3aa15caaac5cc347eccc3dc28ad69f9d06a6c628b17eccde8eb2762dba034698"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/records_tests.rs",
+      "bytes": 31971,
+      "sha256": "8c89366618e908b8b3c094cad6cfcec13cbb9837ab900a09b159cd73efa098bd"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/replication_bounds.rs",
+      "bytes": 4598,
+      "sha256": "a397303633fb0b7fb63ae569558034d5008e02872dd61dd5746e5237f7a41101"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/snapshot_encoding_tests.rs",
+      "bytes": 13659,
+      "sha256": "a4942fff551421318eab44bb05597549aa62bce5ff4b2bdbeceaade37c671139"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/state_machine.rs",
+      "bytes": 27070,
+      "sha256": "86fb2b2b41b3023f4f6a6c8b7f4e7c47f52b98b6318bbc089a3f6210ee2d38af"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/store.rs",
+      "bytes": 123116,
+      "sha256": "f87eb7bde463810b5e02a276000ea1547fa3697724af2696a9be43655e446701"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/store_io.rs",
+      "bytes": 4966,
+      "sha256": "456887ac2bf2d6a82911dd6d83d71021dbc6b5f58c6cd6c7180dc3eaeda52231"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/store_snapshot_test_gate.rs",
+      "bytes": 3228,
+      "sha256": "8fdf73ec1790c3f7c9a88552b0839060404cdbe6c5047b92676d4e8ee2881196"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_closure_manifest.rs",
+      "bytes": 8521,
+      "sha256": "4a05dd0f3aab9118cac8835991be0258019bf076b08c079d478a6c1382df0e25"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_commit_intent.rs",
+      "bytes": 10350,
+      "sha256": "3e244d343596c5757bdc7113d3ef78e2a2ec57afaf6aadd5380a9055353ee063"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_replica_blobs.rs",
+      "bytes": 27983,
+      "sha256": "29b7a4c8c0e2523d55dcedc744955427376ef5d3c04132ab92d4a373dd0a1a53"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_replica_blobs_checked.rs",
+      "bytes": 3090,
+      "sha256": "300c53fb6d9fcb19e4a00464d13718e81491e2376233233c1c73d9d6752f53d4"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_replica_blobs_checked_tests.rs",
+      "bytes": 2890,
+      "sha256": "57046abf500f27aec72a2c28898f7c6ba0eea3cf7a0a46ec5e56f8c532f6307f"
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/v6_root_publication.rs",
+      "bytes": 23827,
+      "sha256": "04a423e17364fb4562f246b6a79cca015465f5739c2a4a32b705b4360ceeebb7"
+    }
+  ],
+  "semantic_change_scope": "Opaque committed native root factory, same-lock legacy read fence, actual authenticated frame custody, committed-root repair, and at-most-three-leaf TLS batching.",
+  "hash_algorithm": "SHA256 of UTF-8 JSON files array with sort_keys=true and separators comma/colon",
+  "compiled_source_files_sha256": "276dc8f3e1cdd778c1fee2d27cff6087ff4fc224ebd6067a1abc6fa5aeac4fe8",
+  "post_test_format_only": {
+    "path": "crates/heptabao-raft-runtime/src/lib.rs",
+    "fixed_rustfmt_replay_exact": true,
+    "rustfmt_check_exit": 0,
+    "description": "Only reorders native re-export declarations; no source logic or test changes after real final runs."
+  }
+}

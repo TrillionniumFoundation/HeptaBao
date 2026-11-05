@@ -1,0 +1,84 @@
+{
+  "cases": [
+    {
+      "case": "native-auth",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_auth",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 196.021,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8c-server-native-auth.log",
+      "log_sha256": "5d604a36da2f98b723491cff6ae9d6716d7b39426aaebfd5cfbc05f03bc847c8",
+      "summaries": [
+        "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 2671 filtered out; finished in 57.26s"
+      ]
+    },
+    {
+      "case": "native-migration-recovery",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_v6_writer::migration_tests",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 14.382,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8c-server-native-migration-recovery.log",
+      "log_sha256": "6f0c5881393f470205aa0016a7f6321cf6789df0dbbc51ec5f8f90e02979cf17",
+      "summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2693 filtered out; finished in 13.84s"
+      ]
+    },
+    {
+      "case": "native-ha-objects",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 40.437,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8c-server-native-ha-objects.log",
+      "log_sha256": "0da0babce92834dca7c46c824f110c50923d7be78bb566fcfa1e6698c310751c",
+      "summaries": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2689 filtered out; finished in 40.28s"
+      ]
+    }
+  ],
+  "host_abi": "aarch64-apple-darwin",
+  "ok": true,
+  "production_cutover": false,
+  "schema": "heptabao.r8c-native-service-matrix.v1",
+  "source_commit": "775872a710931f9ad7cd407ec8fdae26115bae1e",
+  "source_files": 2513,
+  "source_tree": "d8c8796def451371906db3dcf69fc5cf527bfe77",
+  "source_unchanged_after_tests": true
+}

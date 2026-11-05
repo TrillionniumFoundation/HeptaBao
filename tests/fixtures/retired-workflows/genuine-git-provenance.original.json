@@ -1,0 +1,57 @@
+{
+  "current_trigger_authority": false,
+  "domain": "AUTHENTICATED_RETIRED_HISTORY_ONLY",
+  "retirement_commit": "0aba287dd7d0d013de006210d20749dbe39d8945",
+  "source_parent": "9843e5667b2e3f8f43dd86c9d966839add636747",
+  "workflows": {
+    ".github/workflows/export-exact-audit-source.yml": {
+      "SHA256": "5e13898b4ea5c5c5f6f676f3c6eb6663cb995e66b156b4520aeaf5fd5ac4ff7c",
+      "bytes": 2185,
+      "commit": "676a3e68af340b2cb7439dbc99c69dee550e5db9",
+      "fixture": "tests/fixtures/retired-workflows/export-exact-audit-source.yml",
+      "git_blob": "e2f77807e5248ed34d6c3bb5ee8605f1c0b564f2"
+    },
+    ".github/workflows/plan-v1.3.1-head-and-merge-closure.yml": {
+      "SHA256": "738b38909dc8bc44a8e848252bf7dc30c3a540a7641da8f6002c9a263b39017d",
+      "bytes": 74825,
+      "commit": "936cb5599d206cea895de2ae04a1289a0b3a0326",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.3.1-head-and-merge-closure.yml",
+      "git_blob": "66acfbd8d844109a3a39237d400f33dcffd1d91f"
+    },
+    ".github/workflows/plan-v1.4.2-anchored-recovery.yml": {
+      "SHA256": "2a8e9e5b1391345fcd51dc58b4c953d815e1e8978c5c584b0e6b59dc9593d9b8",
+      "bytes": 6258,
+      "commit": "34e8dc0caceb84288d4ef61f79cd7ca062718b63",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.4.2-anchored-recovery.yml",
+      "git_blob": "c516124667116c94f92810f97f5287ffb4f4d0ef"
+    },
+    ".github/workflows/plan-v1.4.3-descriptor-fencing.yml": {
+      "SHA256": "09033e5ebd8e5ccf393068b112bb64196d57c610cf7b1a57f8045575dd19a199",
+      "bytes": 6564,
+      "commit": "676a3e68af340b2cb7439dbc99c69dee550e5db9",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.4.3-descriptor-fencing.yml",
+      "git_blob": "120189f1e3d3012d51272d8431514e31d3295ffd"
+    },
+    ".github/workflows/plan-v1.4.4-module-documentation.yml": {
+      "SHA256": "df7c2a396094efa6b9afc5257e998c651a11ce38824f5f51567548a4858ea6a9",
+      "bytes": 2021,
+      "commit": "a926d10f658c536b12c857658d2b27b7c56a8baa",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.4.4-module-documentation.yml",
+      "git_blob": "0f47b7535ae813ec26efda610a2b41f235d99f69"
+    },
+    ".github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml": {
+      "SHA256": "12d2ca16641e08485aefa0ee85c48186f1183e0235f04d258b43ff228d8a9b51",
+      "bytes": 2924,
+      "commit": "676a3e68af340b2cb7439dbc99c69dee550e5db9",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.4.6-authoritative-recovery-closure.yml",
+      "git_blob": "c2ea49508e039429ba1037093185d3f46bc3759b"
+    },
+    ".github/workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml": {
+      "SHA256": "ae38272ccdd97e412e412339e236ee824214da81c1be072e94b8eb38c8fe6496",
+      "bytes": 4495,
+      "commit": "a926d10f658c536b12c857658d2b27b7c56a8baa",
+      "fixture": "tests/fixtures/retired-workflows/plan-v1.4.7-post-merge-truth-and-external-admission.yml",
+      "git_blob": "c355f6e3741929c4a89fc18545bae298e10e635e"
+    }
+  }
+}

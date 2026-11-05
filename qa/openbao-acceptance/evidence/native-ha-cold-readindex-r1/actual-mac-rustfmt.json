@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.actual-mac-isolated-rustfmt.v1",
+  "status": "passed",
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+    "--edition",
+    "2024",
+    "--config",
+    "skip_children=true",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/cold-readindex-r1-rustfmt-20261019/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/cold-readindex-r1-rustfmt-20261019/crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs"
+  ],
+  "rustfmt_version": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)",
+  "started_utc": "2026-10-19T07:44:34.527830+00:00",
+  "finished_utc": "2026-10-19T07:44:34.555654+00:00",
+  "format_exit": 0,
+  "check_exit": 0,
+  "before": [
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 16453,
+      "sha256": "b7612cf081a2aebacf12c99dc8c27174a1f8a0cc6997669bdedaa3fa21967780"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "bytes": 21586,
+      "sha256": "203639404c932f6d671da1f35fc18177129e72a313ddb6d241b6248567f56d4a"
+    }
+  ],
+  "after": [
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 16590,
+      "sha256": "56b53b8cc9064cfe1899ad040dfbe6407b37956609ea049b01b05e2e5b0f0899",
+      "git_blob": "f569738ce12a67a0bc9bf539148ca39b7791e7c7"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "bytes": 23398,
+      "sha256": "162d02f64aa177eaccc8e9751a404827ee58dee2ea038fd46d17687b8f4fd538",
+      "git_blob": "26897662a968abfc839fea5774c5b2405e8b63e9"
+    }
+  ],
+  "production_source_modified": false
+}

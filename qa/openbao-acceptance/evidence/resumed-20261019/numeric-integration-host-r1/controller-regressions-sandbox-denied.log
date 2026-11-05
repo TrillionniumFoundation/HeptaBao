@@ -1,0 +1,32 @@
+test_api_success_without_all_native_storage_stages_cannot_qualify_full34 (test_kv2_271_lossless_native_live.ControllerRegression.test_api_success_without_all_native_storage_stages_cannot_qualify_full34) ... ok
+test_api_token_comparison_preserves_numeric_representation (test_kv2_271_lossless_native_live.ControllerRegression.test_api_token_comparison_preserves_numeric_representation) ... ok
+test_cleanup_failure_still_stops_other_owner_and_publishes_failed_summary (test_kv2_271_lossless_native_live.ControllerRegression.test_cleanup_failure_still_stops_other_owner_and_publishes_failed_summary) ... ok
+test_diagnostic_profiles_do_not_shrink_full34 (test_kv2_271_lossless_native_live.ControllerRegression.test_diagnostic_profiles_do_not_shrink_full34) ... ok
+test_json_exact_decimal_wide_integer_and_unicode (test_kv2_271_lossless_native_live.ControllerRegression.test_json_exact_decimal_wide_integer_and_unicode) ... ok
+test_native_storage_canonical_cross_language_vector (test_kv2_271_lossless_native_live.ControllerRegression.test_native_storage_canonical_cross_language_vector) ... ok
+test_non_tls_leaf_rejected_without_secret_diagnostic (test_kv2_271_lossless_native_live.ControllerRegression.test_non_tls_leaf_rejected_without_secret_diagnostic) ... ok
+test_real_pinned_tls_leaf_roundtrips_two_mib_once_and_captures_get_bytes (test_kv2_271_lossless_native_live.ControllerRegression.test_real_pinned_tls_leaf_roundtrips_two_mib_once_and_captures_get_bytes) ... ERROR
+test_secret_in_failed_diagnostic_is_redacted_and_never_qualified (test_kv2_271_lossless_native_live.ControllerRegression.test_secret_in_failed_diagnostic_is_redacted_and_never_qualified) ... ok
+test_seed_captures_observed_api_before_deletion_without_rounding_raw_fixture (test_kv2_271_lossless_native_live.ControllerRegression.test_seed_captures_observed_api_before_deletion_without_rounding_raw_fixture) ... ok
+test_source_raw_bundle_rejects_api_rounded_numbers (test_kv2_271_lossless_native_live.ControllerRegression.test_source_raw_bundle_rejects_api_rounded_numbers) ... ok
+test_storage_witness_requires_precise_payload_and_retained_deleted_destroyed_semantics (test_kv2_271_lossless_native_live.ControllerRegression.test_storage_witness_requires_precise_payload_and_retained_deleted_destroyed_semantics) ... ok
+test_unknown_mutation_has_one_owned_http_leaf_and_is_not_retried (test_kv2_271_lossless_native_live.ControllerRegression.test_unknown_mutation_has_one_owned_http_leaf_and_is_not_retried) ... ok
+
+======================================================================
+ERROR: test_real_pinned_tls_leaf_roundtrips_two_mib_once_and_captures_get_bytes (test_kv2_271_lossless_native_live.ControllerRegression.test_real_pinned_tls_leaf_roundtrips_two_mib_once_and_captures_get_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/numeric-integration-host-r1/work/qa/openbao-acceptance/tests/test_kv2_271_lossless_native_live.py", line 257, in test_real_pinned_tls_leaf_roundtrips_two_mib_once_and_captures_get_bytes
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 453, in __init__
+    self.socket = socket.socket(self.address_family,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 233, in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+PermissionError: [Errno 1] Operation not permitted
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.764s
+
+FAILED (errors=1)
