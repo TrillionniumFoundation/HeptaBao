@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.root.linux-offline-controller-review.v1",
+  "source_commit": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "source_tree": "667ae96b264c5e7f4b9290933612125d883b9e69",
+  "controller_bytes": 540381,
+  "controller_sha256": "a98a6bcc3de2b115e5a1e58ec374f260b1c64466a6213818dd696adfc5781cb1",
+  "driver_bytes": 47078,
+  "driver_sha256": "1b7612f40601bdc60d4be40b812746d1e7f78cd1542804d9d67ed1d1365070f9",
+  "input_bytes": 491973,
+  "input_sha256": "fe779d53a053b365214cdbe80df363fbcc7e2d3056c7a5c7e80fdf65ee1b4b8c",
+  "embedded_driver_and_input_match_exact_files": true,
+  "OwnedRunner_class_exact_to_reviewed_baseline": true,
+  "three_owner_helpers_only_change_uid_501_to_1000": true,
+  "source_payload_files": 33,
+  "source_payload_total_bytes": 1607590,
+  "source_payload_gzip_bytes": 321912,
+  "source_payload_blobs_match_combined_tree": true,
+  "critical_tests_unique_names": 19,
+  "critical_tests_exact_function_positions_and_hashes_verified": true,
+  "actual_libtest_list_still_required": true,
+  "AST_parse_and_compile_only_passed": true,
+  "driver_executed": false,
+  "execution_enabled": false,
+  "bootstrap": null,
+  "process_request": null,
+  "original_unknown_job": "1a1a93e525e-fc05-3335",
+  "original_unknown_closure": null,
+  "successful_current_preflight": null,
+  "current_toolchain_pins": null,
+  "current_resource_and_ownership_review": null,
+  "root_review_fixes": [
+    "Original job3335 closure is mandatory and separate from successful current preflight; later job cannot replace its closure.",
+    "Both terminal exit assertions require actual integer exit values; boolean false cannot qualify as0."
+  ],
+  "preserved_controls": [
+    "Original compiler guard fragment and resource floor; same normal Cargo profile.",
+    "Fresh attempt/output and explicit source branch retain base7071 ref; complete33-file stage must produce667 tree.",
+    "Formatting can change only reviewed22 Rust paths, producing recorded actual source/tree/diff before build.",
+    "Each compile/test phase repeats appropriate admission; single exact test execution; normal link requires19 actual passes and original deadline.",
+    "OwnedRunner preserves unreaped original-child identity, group cleanup then reap; no unknown-action resume or foreign signalling."
+  ],
+  "scope_limits": [
+    "Disabled review package only; no executable request, actual deadline or remote stage.",
+    "Full workspace, normal-server HTTP, Mac regression, physical LAN HA, X230 rerun, AuthBus and production cutover remain unqualified."
+  ],
+  "full_replacement_qualified": false
+}

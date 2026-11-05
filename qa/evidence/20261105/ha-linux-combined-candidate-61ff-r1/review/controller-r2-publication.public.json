@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.linux.disabled-controller-publication.v2",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-ha-mac-snapshot-61ff-20261104-r1",
+  "commit": "b4842bd3c447808969e6f411be17f94e35dec7b5",
+  "tree": "07b11554eca0ec20f4bd5cf50b1d0eed1a79c4a7",
+  "prefix": "qa/evidence/20261105/ha-linux-combined-candidate-61ff-r1",
+  "prior_input_commit": "16d0e8a4f0aa637effecad82fcc2d9e328d33f19",
+  "readback": [
+    {
+      "path": "README-controller-r2.md",
+      "bytes": 4809,
+      "sha256": "47c25256f7daf4fd34b0bfd800ad70f1841cb11bc18ecb84c50d220dcb6d835d",
+      "git_blob": "3596624529451f3fd66d97164a81d0e35d5c6839",
+      "exact": true
+    },
+    {
+      "path": "control/run_linux_candidate_r1.py",
+      "bytes": 47078,
+      "sha256": "1b7612f40601bdc60d4be40b812746d1e7f78cd1542804d9d67ed1d1365070f9",
+      "git_blob": "ee944c9067647f7a5e57cc4b4fe3f231ff918318",
+      "exact": true
+    },
+    {
+      "path": "control/linux_candidate_tail.py",
+      "bytes": 30244,
+      "sha256": "4b99ba96a8cf74b8bd83b7abb643324d683fcddb491e9fdf16ef61e1c700e175",
+      "git_blob": "5a917dc6491df9a2cc5172bc777602ac9f9862c1",
+      "exact": true
+    },
+    {
+      "path": "control/candidate-input-r2.draft.public.json",
+      "bytes": 491973,
+      "sha256": "fe779d53a053b365214cdbe80df363fbcc7e2d3056c7a5c7e80fdf65ee1b4b8c",
+      "git_blob": "70375b7241a2c33f81d1aae11108c818351b4ae5",
+      "exact": true
+    },
+    {
+      "path": "control/candidate-controller.draft.public.json",
+      "bytes": 540381,
+      "sha256": "a98a6bcc3de2b115e5a1e58ec374f260b1c64466a6213818dd696adfc5781cb1",
+      "git_blob": "a723ced440c661240ba556246bf0cfd766a4bedd",
+      "exact": true
+    },
+    {
+      "path": "review/controller-local-syntax.public.json",
+      "bytes": 4864,
+      "sha256": "ca17d3e376197a57e4a3658811811b23b32d1f6b97c7a23b92ac6d8eb5c2b606",
+      "git_blob": "19c7177cdc1f018824297fdbe15a020465a30389",
+      "exact": true
+    },
+    {
+      "path": "review/controller-static-review-r2.public.json",
+      "bytes": 12096,
+      "sha256": "0ef04b3bec62d4bf8764a6f8d5aafd771162dd0736592ffca580a6dcdfdd8c80",
+      "git_blob": "2c8d849ab558056ce94f7bcfec4f4586eefd0c17",
+      "exact": true
+    },
+    {
+      "path": "compose_driver_local.py",
+      "bytes": 7824,
+      "sha256": "0d7fd4e3984c3ea77da2cc9e4e0201ed97463f59819020eb198f45a43df2cd24",
+      "git_blob": "9b7705c68e2a63f7822f82c493fcb3532499f44d",
+      "exact": true
+    },
+    {
+      "path": "review_controller_local.py",
+      "bytes": 9032,
+      "sha256": "d13d4ffda4632943af6404ff2c2ad47357795565dc61a508229fac7f45d156b1",
+      "git_blob": "10496a3727eb561e1994207ef99ee5797400522b",
+      "exact": true
+    },
+    {
+      "path": "review/mac-r5-driver-baseline.py",
+      "bytes": 52001,
+      "sha256": "6e1ba63d18d6133c4912228b2c1bc5662465155b578017c3278c8a008834477c",
+      "git_blob": "04c69ba938d92396f983db91f82ccb952259f9d4",
+      "exact": true
+    },
+    {
+      "path": "review/package-r2-manifest.public.json",
+      "bytes": 2855,
+      "sha256": "4ad7f042d6f05b4311700ffaacf30234ca9c1d37426b30ec6b17fceeff5c0acb",
+      "git_blob": "61af5789a09592dfe4a329583ba8eae6242b2fb7",
+      "exact": true
+    }
+  ],
+  "all_exact": true,
+  "files_verified": 11,
+  "execution_enabled": false,
+  "process_request": null,
+  "bootstrap": null,
+  "original_unknown_preflight_job": "1a1a93e525e-fc05-3335",
+  "original_unknown_preflight_resolution": null,
+  "successful_current_preflight": null,
+  "current_toolchain_resource_ownership": null,
+  "remote_actions_submitted": false,
+  "product_tests_executed": 0,
+  "product_compiled": false,
+  "full_replacement_qualified": false
+}

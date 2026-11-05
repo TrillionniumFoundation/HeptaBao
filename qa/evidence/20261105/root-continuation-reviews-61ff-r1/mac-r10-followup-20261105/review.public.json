@@ -1,0 +1,248 @@
+{
+  "schema": "heptabao.mac-r10-followup-limited-fs-review.v1",
+  "reviewer": "/root/ha_tls_review",
+  "record_date": "2026-11-05",
+  "record_kind": "manual structured summary of already-displayed tool observations; not an original SDK payload",
+  "fixed_archive_reference": {
+    "commit": "4357328b3b4b1547d8ad77d28a1f422ee6d8d448",
+    "ownership_path": "qa/evidence/20261105/ha-mac-snapshot-api-attempt-61ff-r5/ownership",
+    "review_git_blob": "8fa020992c49077b76fbf4c85defa675c1f9917b",
+    "archived_review_already_marked_outer_terminal_unconfirmed": true
+  },
+  "expected_fixture_identity": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1",
+    "run_id": "e70cd7fda3c928604cd82e8c1a157502",
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "binary_sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+    "last_observed_launch_id": "4271539909f9d4924e8d5a7e2ecd9b1a"
+  },
+  "listing": {
+    "tool": "heptaruntime_mac_controller_view",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1",
+    "call_count": 1,
+    "max_depth": 1,
+    "entry_cap_method": "27 exact basenames at depth one; view has no explicit max_entries parameter. This is a filtered listing, not a complete directory inventory.",
+    "exact_basenames": [
+      "result.json",
+      "result.public.json",
+      "terminal.json",
+      "terminal.public.json",
+      "controller.json",
+      "controller.public.json",
+      "controller-result.json",
+      "controller-result.public.json",
+      "controller-terminal.json",
+      "controller-terminal.public.json",
+      "outer-result.json",
+      "outer-result.public.json",
+      "outer-terminal.json",
+      "outer-terminal.public.json",
+      "status.json",
+      "status.public.json",
+      "summary.json",
+      "summary.public.json",
+      "report.json",
+      "report.public.json",
+      "index.json",
+      "index.public.json",
+      "run.json",
+      "run.public.json",
+      "native-ha-fixture.json",
+      "direct-peer-preflight-manifest.json",
+      "pids.log"
+    ],
+    "pattern": "result.json|result.public.json|terminal.json|terminal.public.json|controller.json|controller.public.json|controller-result.json|controller-result.public.json|controller-terminal.json|controller-terminal.public.json|outer-result.json|outer-result.public.json|outer-terminal.json|outer-terminal.public.json|status.json|status.public.json|summary.json|summary.public.json|report.json|report.public.json|index.json|index.public.json|run.json|run.public.json|native-ha-fixture.json|direct-peer-preflight-manifest.json|pids.log",
+    "maximum_matching_basenames": 27,
+    "observed_entries": [
+      {
+        "name": "direct-peer-preflight-manifest.json",
+        "lines": 1,
+        "approximate_tokens": 36
+      },
+      {
+        "name": "native-ha-fixture.json",
+        "lines": 1,
+        "approximate_tokens": 93
+      },
+      {
+        "name": "pids.log",
+        "lines": 12,
+        "approximate_tokens": 204
+      }
+    ],
+    "result": {
+      "isError": false,
+      "structuredContent": null
+    },
+    "limits": [
+      "Only the exact listed names were selected; other basenames may exist.",
+      "Depth was limited to one. No global registry or filesystem search was performed.",
+      "The tool is gitignore/hidden-aware. No completeness or absence inference is made.",
+      "No public outer result/terminal/controller/index appeared among these selected entries."
+    ]
+  },
+  "small_file_reads": [
+    {
+      "relative_path": "direct-peer-preflight-manifest.json",
+      "observed_line_count": 1,
+      "observed_first_line_id": "1:c4",
+      "observations": {
+        "allow_production": false,
+        "cluster_id": "6b2193b8-223d-0437-4fe0-93bc50b23196",
+        "synthetic_only": true,
+        "v6_ha_admitted": false
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/direct-peer-preflight-manifest.json",
+      "size_bytes": null,
+      "sha256": null,
+      "version": null,
+      "file_metadata_limit": "The view SDK returned line-id text, not file byte size, a full-file SHA256 or an immutable version token. Line IDs are not promoted to any of those fields.",
+      "original_sdk_payload_saved": false
+    },
+    {
+      "relative_path": "native-ha-fixture.json",
+      "observed_line_count": 1,
+      "observed_first_line_id": "1:ee",
+      "observations": {
+        "schema": "heptabao.native-v6-fixture-owner.v1",
+        "node_id": 1,
+        "production_authority": false,
+        "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1",
+        "root_device": 16777244,
+        "root_inode": 72546627,
+        "run_id": "e70cd7fda3c928604cd82e8c1a157502"
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/native-ha-fixture.json",
+      "size_bytes": null,
+      "sha256": null,
+      "version": null,
+      "file_metadata_limit": "The view SDK returned line-id text, not file byte size, a full-file SHA256 or an immutable version token. Line IDs are not promoted to any of those fields.",
+      "original_sdk_payload_saved": false
+    },
+    {
+      "relative_path": "pids.log",
+      "observed_line_count": 12,
+      "observed_first_line_id": "1:0a",
+      "observations": {
+        "last_line_id": "12:7d",
+        "last_line": "1793837651.2434912 12531 stopped 4271539909f9d4924e8d5a7e2ecd9b1a",
+        "recorded_recent_launches": [
+          {
+            "pid": 12062,
+            "launch_id": "fd9d1c35650ca868bcdd8f9403fb5736",
+            "recorded_start_and_stop": true
+          },
+          {
+            "pid": 12531,
+            "launch_id": "4271539909f9d4924e8d5a7e2ecd9b1a",
+            "recorded_start_and_stop": true
+          }
+        ],
+        "live_process_inventory_observed": false
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/pids.log",
+      "size_bytes": null,
+      "sha256": null,
+      "version": null,
+      "file_metadata_limit": "The view SDK returned line-id text, not file byte size, a full-file SHA256 or an immutable version token. Line IDs are not promoted to any of those fields.",
+      "original_sdk_payload_saved": false
+    },
+    {
+      "relative_path": "foreground-watchdog/4271539909f9d4924e8d5a7e2ecd9b1a/terminal.json",
+      "observed_line_count": 1,
+      "observed_first_line_id": "1:6f",
+      "observations": {
+        "schema": "heptabao.native-ha-foreground-owner.v1",
+        "run_id": "e70cd7fda3c928604cd82e8c1a157502",
+        "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+        "binary_sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+        "launch_id": "4271539909f9d4924e8d5a7e2ecd9b1a",
+        "owner_pid": 12518,
+        "owner_ppid": 12517,
+        "child_identity": {
+          "pid": 12531,
+          "ppid": 12518,
+          "pgid": 12531,
+          "uid": 501,
+          "start": "Thu Nov  5 08:13:01 2026    "
+        },
+        "automatic_restart": false,
+        "submission_count": 1,
+        "ready": true,
+        "ok": false,
+        "stopped": true,
+        "stop_reason": "explicit_original_sigkill",
+        "production_authority": false,
+        "qualification_scope": "cleanup-observed-only; stop budget requires live controller delivery",
+        "terminal_within_original_stop_deadline": null,
+        "cleanup": {
+          "leader_exit_code": -9,
+          "leader_pid": 12531,
+          "leader_reaped": true,
+          "owned_live_group_empty": true,
+          "ownership_verified": true,
+          "within_original_deadline": true,
+          "signals_recorded_in_existing_receipt": [
+            "SIGKILL"
+          ]
+        }
+      },
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/foreground-watchdog/4271539909f9d4924e8d5a7e2ecd9b1a/terminal.json",
+      "size_bytes": null,
+      "sha256": null,
+      "version": null,
+      "file_metadata_limit": "The view SDK returned line-id text, not file byte size, a full-file SHA256 or an immutable version token. Line IDs are not promoted to any of those fields.",
+      "original_sdk_payload_saved": false
+    }
+  ],
+  "read_budget": {
+    "live_directory_list_calls": 1,
+    "live_small_file_reads": 4,
+    "additional_remote_query_after_review": false,
+    "reads_are_not_an_atomic_cross_file_snapshot": true
+  },
+  "identity_comparison": {
+    "fixture_run_id_matches_expected": true,
+    "latest_terminal_run_source_tree_binary_and_nonce_fields_match_expected": true,
+    "pid_log_latest_nonce_matches_read_terminal_path": true,
+    "comparison_is_of_stored_receipt_fields_not_live_process_identity": true,
+    "current_file_hash_equality_to_archive_proven": false
+  },
+  "interpretation": {
+    "child_cleanup_scope_only": true,
+    "child_cleanup_receipt_observed": true,
+    "outer_controller_job_identified": false,
+    "outer_controller_terminal_confirmed": false,
+    "mac_validation_window_released": false,
+    "outer_controller_current_execution_state": "unknown",
+    "not_a_claim_outer_still_running": true,
+    "not_a_claim_outer_finished": true,
+    "reason": "The latest stored child receipt explicitly limits qualification to cleanup-observed-only and leaves terminal_within_original_stop_deadline null. Its child reaped/group-empty fields do not identify or confirm the outer controller job, terminal state, or cancellation coordination.",
+    "pid_absence_used_as_release_evidence": false,
+    "old_child_stop_or_empty_group_used_as_outer_completion_evidence": false
+  },
+  "provenance": {
+    "raw_original_sdk_payloads_saved": [],
+    "raw_original_sdk_payloads_missing": true,
+    "raw_originals_missing_reason": "Filesystem SDK replies were displayed in the session but were not persisted as original payload files. This record summarizes those observations; it does not reconstruct or label any file as an original SDK reply.",
+    "size_sha256_version_for_current_mac_files_not_returned": true,
+    "archived_file_sha256_not_substituted_for_current_reads": true,
+    "local_review_hash_does_not_authenticate_remote_file_bytes": true
+  },
+  "actions": {
+    "purpose_built_filesystem_reads_only_on_mac": true,
+    "known_fixed_git_archive_reads": true,
+    "process_start": false,
+    "direct_ssh_command": false,
+    "signal_sent": false,
+    "registry_inventory": false,
+    "full_disk_search": false,
+    "mac_file_or_source_modified": false,
+    "rog_rpc_called": false,
+    "new_remote_query_for_this_receipt": false,
+    "local_evidence_write_only": true
+  },
+  "next_step": "No further search was performed. Retain unknown outer ownership and do not release the Mac validation window without separate authoritative outer control/terminal evidence."
+}

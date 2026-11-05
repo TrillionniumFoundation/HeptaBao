@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.full-replacement-gate-decision.v1",
+  "record_utc_date": "2026-11-05",
+  "candidate_source": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "candidate_tree": "667ae96b264c5e7f4b9290933612125d883b9e69",
+  "full_replacement_qualified": false,
+  "candidate_compiled": false,
+  "candidate_rust_tests_executed": 0,
+  "candidate_component_inventory": 19,
+  "python_guard_tests_observed_passed": 3,
+  "python_guard_scope": "full imported modules; synthetic bytes; no physical host or real TLS",
+  "python_external_sdk_original_retained": false,
+  "historical_x230_formal34": {
+    "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "checks_passed": 31,
+    "checks_total": 31,
+    "live_payload_bytes": 35651584,
+    "qualifies_current_candidate": false
+  },
+  "gates": {
+    "kv2_current_candidate": false,
+    "physical_mac_rog_pocket4_ha": false,
+    "authbus_single_writer": false,
+    "per_host_cutover": false,
+    "legacy_retirement": false
+  },
+  "current_candidate_cutover_qualified_hosts": [],
+  "legacy_paths_qualified_for_deletion": [],
+  "fleet_candidate_path_count": 144,
+  "fleet_configured_agent_entries": 21,
+  "fleet_count_is_not_completed_migration_count": true,
+  "execution_blockers": {
+    "rog_original_preflight_job": "1a1a93e525e-fc05-3335",
+    "rog_terminal_confirmed": false,
+    "rog_last_status_query_utc": "2026-11-05 01:34:49 UTC",
+    "mac_outer_run": "e70cd7fda3c928604cd82e8c1a157502",
+    "mac_outer_terminal_confirmed": false
+  },
+  "controller_package_source": "b337f1013ef78c7842356539d986eadda04425dc",
+  "controller_execution_enabled": false,
+  "controller_process_request": null,
+  "ordinary_kv_transport_and_authbus_fixed_writer_prior_automatic_review_block_retained": true,
+  "production_cutover_performed_in_this_continuation": false,
+  "legacy_retirement_performed_in_this_continuation": false
+}

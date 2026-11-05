@@ -1,0 +1,529 @@
+{
+  "schema": "heptabao.linux.combined-source-input.v1",
+  "review_commit": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "expected_tree": "667ae96b264c5e7f4b9290933612125d883b9e69",
+  "base_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "changed_files": [
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "0a188b04716d7c69696acdabcc047f36a8e7b00c",
+        "bytes": 32387
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "07e5587d47632a9a693bbbfad1d16d5bcdfbd2af",
+        "bytes": 38808,
+        "sha256": "1319fa425aaa656f266e3b4e3bb064b7b3326272c8d3794744e2d1dc656f1d47"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "7c401cb1bd161f507fc8d0722770aa3bf364007c",
+        "bytes": 231097
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3801150b71e68d75afb46136e31dce05841fe081",
+        "bytes": 231872,
+        "sha256": "98ecbfc23750153e99a48b017c2235d6bcfbfd57160a7e0fc9c8dcdd29dfcb58"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e6d243427873b61b1a69f1a0ac63ddad27c4d0cd",
+        "bytes": 14970
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ed64b70e48cb8d549597e0102cf9003e0c1e606f",
+        "bytes": 16843,
+        "sha256": "d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "23b857ac3de38b87a08f01d2abfe1423ff725894",
+        "bytes": 11930,
+        "sha256": "82678e7b4307f8aad853d16c5491c198863b057d70aa72e634ee7f962f0681b0"
+      },
+      "status": "added"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ed4983b4d8b8527fed8f699284a9244eecbfe81d",
+        "bytes": 33910
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "a9e9eec6c0ab556ccfba0ebdd5f7789c1068d7fc",
+        "bytes": 34800,
+        "sha256": "b50420191e33cc286169daac1bca884ff5f59bf77ca70c17915b01513bf95dcd"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b1e2ecea4c3edc3d6094e0166fe58eb78799fbcb",
+        "bytes": 27730
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b0deb47b370d19bbb85bb300b70610d635b95be0",
+        "bytes": 29130,
+        "sha256": "05c27d93d924b328d800506e5c1838c5bc2e36dddcf4d75a1d4831167b3a3198"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "166665836a0ac82c10f4fd95d1d8f88cc7e0c280",
+        "bytes": 519749
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "f3e539af7d1b935264964ed9aaaf343e2b6125bc",
+        "bytes": 520771,
+        "sha256": "c86dc9f11399d546d30ccbf39603cfcd1694065e0575c3fe36fde59adb6e32cd"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "7fa470d3fb30be4958b008166fe775fd577fcb81",
+        "bytes": 25521
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "4953a421615ea06980284819f53be0ef603c8d88",
+        "bytes": 26293,
+        "sha256": "2763e39946aaa67b340bddec60bd703a5f17531166cbc6acd704790381bb86b8"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6695870075eac9ec5d6183828b4e168db6264f0e",
+        "bytes": 33721
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6a2c2940afe460843738fe938ced2a26a409182f",
+        "bytes": 34048,
+        "sha256": "16bbb285164867c1afb3fd97428455ce6e3d68b503981c4df2d1eec275034233"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e5b89de07763968c517665152b1f3744c06e85cf",
+        "bytes": 7773,
+        "sha256": "d2128db04e062b186ec3e04bdabd39fcf759ef576447a65d92c8f866931e0240"
+      },
+      "status": "added"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "db5e59da68aa0a829967ed1a4fa234de3608eaa0",
+        "bytes": 70664
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ea282af1c03e61961c91b9b127a73accd1936f77",
+        "bytes": 72052,
+        "sha256": "a269af3e4f35efaed11a9b7726c6d04ab581bb9c53d4fa97993325efbdb9f500"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "229f05cebe26228e10f259da0a58fe2da8c41b25",
+        "bytes": 20816,
+        "sha256": "4ee7bd13ab42a82934b97eb6be65d9944849f21303f71a7d3a57a904b689ffa5"
+      },
+      "status": "added"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "eaa7c7ad9a7db00cc911d69349dea8130ae71ff9",
+        "bytes": 15520
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3f3d70ced4c9e137b7ff61a1b4668822e737ac59",
+        "bytes": 18430,
+        "sha256": "5e9ba6230ba492bd7f25bee095d8c5bd1f6361375cef95041eeea772f5b417d4"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_clock.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b21252f6e07066c54e1454b3c208937d3d314ea5",
+        "bytes": 10466
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ed85659b2480759ba88301dede9fe9028cd61751",
+        "bytes": 14207,
+        "sha256": "3d540aaf346b91ee45ef1f9d63c09ca2c3f05d5904953864a370027d57b18ed0"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_denial.rs",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "d19daa78b09a443fa1fcb55447e256b8372ba41f",
+        "bytes": 14526,
+        "sha256": "9524a08f9636b9e068ffaa156acbc8081314454698bb71fa2c07b01209d3f522"
+      },
+      "status": "added"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "56f983ba633e12ac180fcc0a20e45c9bf7204b72",
+        "bytes": 60342
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "cb0beb3468790706cdb899d9c3cce37e1df13b69",
+        "bytes": 65168,
+        "sha256": "99b3ecc1e736f1f5aa55d52447f3fc0824012fd39234e6dbba7f91a4e44c2a51"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer_tests.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e239d8e7d3b88df0899265fa39d796745505e6d6",
+        "bytes": 37933
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "c8da97f6f9c605486e39344705d6f54a8b1d6062",
+        "bytes": 47510,
+        "sha256": "44f7271b76ee8a9ad662ab4c23c06262024207317b99abd4a6ea15ba12965cc6"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "f27834a54ebed4aacc47b16d40899ce81ae9720d",
+        "bytes": 27769
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+        "bytes": 27950,
+        "sha256": "4bc682d4565942e10d93a72ea48de4e1e9c44f7d7891750899cebaa0cb0b65f0"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "2055d5255dccf242520bab7cb5634ca72aaf388f",
+        "bytes": 21767
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "5c4b8a99208ddfed8585067ebdbbd9b374c22804",
+        "bytes": 22940,
+        "sha256": "439777e663ca6812c39eba52c8bdc420ad5c570bd39befe4dfd3b3ed1bf2a92a"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "0a94044292493853c7770cb36aa69544c1488aca",
+        "bytes": 43899
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
+        "bytes": 44113,
+        "sha256": "7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6828ae88590184830da949001b13abd82a4f9b10",
+        "bytes": 14013
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "9bcf3bed174ebaaa0583b184ea50bf281f0dd01e",
+        "bytes": 15244,
+        "sha256": "c5445383810f272cdcb5a711946c5f4e8a861645ed546769cafb66861dd8d109"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "8d9c19f65828db5d9e68b8dbf808617b63f93386",
+        "bytes": 16467
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9",
+        "bytes": 16786,
+        "sha256": "98d3215819659dce42213be41215827cb19110311221ea460a09cacb63576414"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/README.md",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6916c5f14af6d8cd63492b5ce78a9771406ad24d",
+        "bytes": 5995,
+        "sha256": "ca82602f42d0fc9feca68c8cefba5d772a882c6ae38016981d4e8a8d1ab6c5b2"
+      },
+      "status": "added"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/candidate-manifest.public.json",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "a122052cdc93eb964bd64c4fe33e5bfd2e03b6ba",
+        "bytes": 11995,
+        "sha256": "a777bbd32459928e7bb9363be591e2765abb9e7648c6325d5f5cce85b8983bc7"
+      },
+      "status": "added"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/product.patch",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e2205286e8072a61f0bdb3c27393f9d96d90fb47",
+        "bytes": 84576,
+        "sha256": "4de10395d9c41a868619a4c6af0d8f8ccb59c404f7c927e367221cc7fecf3e37"
+      },
+      "status": "added"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision2-review-and-tests.public.json",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "700f865b63687d2d838d5a9a23dbbbb90ff68bf2",
+        "bytes": 1454,
+        "sha256": "b52b5dd618f714a0e33df822b6461c28eb5f3854d4dbceaddcaa1eee47024e63"
+      },
+      "status": "added"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision3-routing.patch",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "599717d3677579c2294bf00bc8886f674d1930e1",
+        "bytes": 9952,
+        "sha256": "9bc2687355e319a6e0ffdd35895d5c353c2616067eb8c7521e92ecb6efdd3c65"
+      },
+      "status": "added"
+    },
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+        "bytes": 49393
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e72d59cf2c269d3c5aa891c1757e182f03543174",
+        "bytes": 50304,
+        "sha256": "15cc68f3bd2442e4e4d3047f4fb30eecf826d8c4f54258732f97090005f542d4"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "625f1a1be89e49fd5e6d996086dcd7663099874e",
+        "bytes": 38355
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "328078b1b8ab6fb85cfaeb0731d739a4b4413143",
+        "bytes": 38855,
+        "sha256": "d11d83113be42bcc14ed34f7d7c4b09623e5abb20786568aa4bbf392a07c8c35"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "f1912ba143123ce29b2e51c8ee846357b88e21d7",
+        "bytes": 24715
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "c2a5b6e5892ed08f255cb6507ebe1e36ebd59853",
+        "bytes": 27202,
+        "sha256": "53eba5a69fb7b870fa5ee051237994b5fe8073879f1ce3f9b77656b75dedbda4"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_redirect_live.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b469815c0649ab8a0b5e2506242c834b7aa82eca",
+        "bytes": 16840
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ec83e5bb194b7072c9e8ec5ca8428844c80b9fe1",
+        "bytes": 17027,
+        "sha256": "82c50662c141bf38bb97b3a1508130e32cb636be29671da0bc9ebbf60676183f"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "304297073ebf7e464fbfb0384ad93e5461457992",
+        "bytes": 7507
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "8625f999540cebae970f524e2bb88bc5836a610f",
+        "bytes": 11629,
+        "sha256": "156f32843f6f0090eb067dd52b5d76c1dc7070cb553a49464bc42788bcbc76db"
+      },
+      "status": "modified"
+    },
+    {
+      "path": "tools/migration/openbao271_kv2_native_large_migrate.py",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6778b602c3a02d56874249fcf873f241846a346f",
+        "bytes": 16505
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6f1e114e545c1f292c696f4cd881a982db95114b",
+        "bytes": 16591,
+        "sha256": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a"
+      },
+      "status": "modified"
+    }
+  ],
+  "read_source": "immutable GitHub f80d, full UTF8 contents plus exact Git blob and byte count; full Git blob recomputation pending offline assembly",
+  "compiled": false,
+  "remote_process_submitted": false,
+  "full_replacement_qualified": false
+}

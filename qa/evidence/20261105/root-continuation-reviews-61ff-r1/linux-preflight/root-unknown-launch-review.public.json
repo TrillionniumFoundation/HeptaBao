@@ -33,6 +33,14 @@
       "remote_error_class": "FileNotFoundError",
       "missing_job_directory": "1a1a93e525e-fc05-3335",
       "evidence_scope": "observed tool result in root conversation; original SDK not separately captured"
+    },
+    {
+      "sequence": 3,
+      "query_clock_utc": "2026-11-05 01:34:49 UTC",
+      "result": "INVALID_ARGUMENT",
+      "remote_error_class": "FileNotFoundError",
+      "missing_job_directory": "1a1a93e525e-fc05-3335",
+      "original_receipt": "preflight-reconcile-status-final.original-sdk.json"
     }
   ],
   "authoritative_terminal_confirmed": false,
@@ -69,6 +77,12 @@
       "path": "preflight-idempotent-reconcile.original-sdk.json",
       "bytes": 2902,
       "sha256": "2793c992ad4ff2746422c663f0e7d7909fd9fbf53ea697e8a8f3b1d78132c624"
+    },
+    {
+      "path": "preflight-reconcile-status-final.original-sdk.json",
+      "bytes": 502,
+      "sha256": "ad14b40d05506feccb0ab18542c21af1bce834291b51f79b0718f7c5461529bb"
     }
-  ]
+  ],
+  "latest_status_query_time_utc": "2026-11-05 01:34:49 UTC"
 }
