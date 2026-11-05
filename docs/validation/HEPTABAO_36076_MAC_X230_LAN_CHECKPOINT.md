@@ -1,5 +1,40 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R20 检查点：导入核心证据闭合；X230 运输保留 UNKNOWN；QA 元数据完成
+
+更新于 2026-11-05T06:29:38Z。**全量替代 OpenBao 2.7.1 仍未达标，尚未正式切流，也没有删除旧版。** 主机实际验证仍绑定 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`／树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。本轮进一步区分已核实的导入、发布和元数据事实，与尚不能取得权威结论的 X230 运输；没有把成功的准备步骤当成业务资格。
+
+[完整状态](../../qa/evidence/20261104/r20-source-core-x230-unknown-qa-metadata-wal-r1/root-review/current-state.public.json)及[证据清单](../../qa/evidence/20261104/r20-source-core-x230-unknown-qa-metadata-wal-r1/root-review/packet-manifest.public.json)固定本轮截止时点。新增 6 个完整包，共 192 个文件条目、2,867,636 字节、40 个包内 Merkle 目录；另有 25 个根审查、完整 CI 日志及索引文件。R19 的正文、原始索引大整数文本、既有证据和历史失败／未知均保留。R19 的全树复算证明和两次 recursive fetch 传输失败原件也随本轮保存；没有把失败的 recursive fetch 写成成功读取。
+
+| 工作线 | 已取得的实际证据 | 当前边界及下一步 |
+|---|---|---|
+| desktop 正式源码导入 R2 | 原作业 `1a1aa422e15-fc05-3ffa` 权威 exit0、完整持久输出。42件核心包的4个原生读取操作、12页不可变原SDK、完整27,827字节末流均根审通过。21个命令对应21个已回收进程组，均无残留；3个输入文件、4个输入目录及新源码目录FD均有关闭账本。 | 原核心报告52.567秒／300秒；零前置bundle、3,757提交、完整fsck、3,913文件实体化。**63份原始command/stdout/stderr日志仍在最终归档核验**，本检查点不授LAN prepare。 |
+| X230 7文件源码与惰性发布 | 实际绑定源34件完整包已核；inert原作业 `1a1aa4fa1ba-fc05-40c1` exit0、完整持久输出；3份源码与回执的整字节及独立9字段身份一致。根独立运行原remote-command纯函数和receiver实际5个参数guard，正确实参通过，缺失／错误／多余参数均拒绝。 | 此阶段只发布和compile-check，未执行传输或产品。原sender90秒、receiver／relay300秒、clone90秒、Git60秒、outer360秒及5+5秒清理预算均保持。 |
+| X230 实际运输 | 唯一提交 `1a1aa57458d-fc05-4156` 返回 `launch_unknown`；首次及06:19:41以后原job状态查询均在private-job-directory处报该job的FileNotFoundError。四个固定公共intent/result逐路径读取均为通用读取错误；desktop、X230健康检查均可认证连接。31件完整有限对账包已根读回。 | **仍为UNKNOWN，没有权威终态或all-owned-stopped证明。** 文件读取错误不等于明确不存在，健康不等于执行成功。没有重派、换key或signal；7目标产物、X230正式34MiB及69比较均未取得本版本资格。 |
+| H2 QA 前置元数据 | 六个固定只读操作全部闭合；47件／419,215字节、8个Merkle的完整包通过42项根检查。四工具及machine-id哈希元数据、原preflight和normal60两收据均保留；normal60的48,188字节与已合格原件逐字相同。 | target五字段来自原preflight，仅为历史身份；后续builder须在Cargo之前核对当前身份。实际QA inert、构建、6组件和H2协议用例尚未执行。 |
+| Mac 当前注册库 WAL | 新registry-only只读路径的设计和固定SQLite 3.53.4参考源码已核。W03明确区分SHM数据打开被拒的CANTOPEN路径，以及可打开但索引不可靠时的READONLY_CANTINIT heap-index路径。 | 仅授实现及10个公开合成case／4组ledger组件的源码准备，尚无host执行或新的私有采集。旧采集失败及库内关闭账本缺失仍保留为UNKNOWN。 |
+| LAN 与官方 CLI | 既有9份实际LAN控制源的惰性发布资格保持；98项原序列、独列12项及原32个证据围栏不变。Phase B原B01–B05源码保持。 | LAN prepare等待正式导入全部原日志；真实断主、自然选举、ReadIndex、持久化／重启和官方CLI后继仍待执行。两个旧B01 UNKNOWN不被替代。 |
+
+### X230 的恢复边界
+
+原job缺少权威终态，不能通过重发相同运输或换一个key解决。当前仅审查一个**create-only目录占位**方案：绑定原控制源与父目录真实身份，在原工作目录确实不存在时用原子mkdir争取唯一目录入口；若任何条目已存在即拒绝，不读取或改动旧工作目录。根据已固定relay源码，必须先成功创建该ROOT才可能进入运输子进程；占位若先成功，可以阻止迟到的运输越过这个入口。
+
+这只是待完成的源码方案，**没有创建占位，也没有授予新运输请求**。它不能补造原job终态或清理证明，不能保证其他写者今后不删／改名目录；原relay异常收尾还可能调用一次ps，因此也不能宣称“旧作业此后不再执行任何子进程”。后续必须分别取得实际元数据、占位的权威结果、持续命名空间条件和新验证自身的目标准入。
+
+### AuthBus 只读 WAL 与失败账本
+
+新路线只针对固定installed-plugin注册库，计划使用 `mode=ro&cache=private&vfs=unix-posix&readonly_shm=1`，并将该路线WAL容量明确限定为5,969,912字节。原五代理零WAL路线、1MiB单行、8MiB显式读取／返回总量、3秒单查询和45秒capture预算保持。不会将SQLite的底层页读取量冒称为已计量的8MiB范围，也不会把内部C调用或WAL重试当作可逐调用硬中断。
+
+W03只是SHM读取依赖的否定对照，单独不能证明参数被识别；还需实际sqlite_source_id、固定可用VFS和W01在实际拒写沙箱内的成功读取。当前没有新的runtime资格。新失败envelope须在异常路径也返回已登记FD与已返回连接的关闭账本；连接未确认关闭时，不提前关闭同inode的held FD来释放POSIX锁。原immutable函数若connect未返回handle，其内部连接尝试和FD不能从外部补记为“0”或“已全部关闭”；旧未知不会被新账本追溯改写。
+
+### CI 与完整 2.7.1 分母
+
+PR153的exact head和prospective merge现均已完成：完整locked Rust workspace步骤通过，strict Clippy均因 `service_native_v6_ha_read.rs:464:68` 的最后一次冗余借用失败，后续门槛跳过。新取得的head原始日志为2,946,416字节。PR154的merge也已完成workspace并在同一Clippy处失败，完整原日志2,867,575字节；其head以及PR155两条通道在06:24:17快照仍在workspace。已审单hunk修复候选PR156（`19ba09ab5c494f25a3531749b0b99fc5c651d56c`）两条通道当时仍queued。没有取消、重定向或重跑原run，也没有将df026的主机结果重标为后继版本资格。
+
+当前CI中名为OpenBao 2.7.1的官方比较通道明确执行bounded corpus，并断言 `full_openbao_compatibility=false` 和 `production_qualified=false`。它本身不能关闭全量替代。15项安全、11项功能／正确性及11项必要gate仍须逐项取得当前候选证据；既有59-surface／472-fixture表仍属于2.6.2。2.7.1的route × operation × configuration × lifecycle证据、全部真实客户端与备份路径迁移、每台凭证读写／续期撤销／重启／回滚、真实生产目标绑定和正式切流均未被本轮宣布完成。旧OpenBao和旧HeptaBao资产保留至这些条件真实满足。
+
+---
+
 ## 当前 R19 检查点：ROG 正常 60 项闭合；Mac 当前采集保留失败与未知；正式源码及产物运输推进
 
 更新于 2026-11-05T05:57:12Z。**全量替代 OpenBao 2.7.1 仍未达标，尚未正式切流，也没有清理旧版。** 主机验证继续严格绑定 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`／树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。Mac 与 ROG 的正常默认特性构建均已通过原 44 项、既有 7 项和新增 9 项，共 60 项。这个范围不替代真实多机 HA、当前凭证、正式迁移、官方 CLI 或完整 2.7.1 验证。

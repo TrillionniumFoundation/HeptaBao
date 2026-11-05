@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.df026.root-source-transfer-closure-and-import-go.r1",
+  "as_of_utc": "2026-11-05 05:39:47 UTC",
+  "status": "actual_public_source_transfer_closed__one_source_import_go",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "actual": {
+    "tree": "5602bd95365a2c551d818e306fc6bfe0192af455",
+    "files": 57,
+    "bytes": 229382,
+    "merkle_trees": 8,
+    "job": "1a1aa2cac47-fc05-3ead",
+    "authority_blob": "462c8d35af3d7f7fb1f3856dd4ea5126bddd11c4",
+    "result_blob": "eb7e8e373864c72a0a3c5715b62cea8aa148afd2",
+    "root_independent_whole_checks": [
+      "all packet leaf bytes/SHA256/Git SHA1/path/mode and all Merkle trees",
+      "6 completed operations; 7 immutable contiguous pages fully reconstruct all native SDK strings",
+      "6 SDK native payload original text exact; launch ACK original exact",
+      "unique job, exact original request ACK, exit0/full/durable/no retry/timeout/cancel",
+      "349-byte stdout and empty stderr fully match hex, EOF and authority counts",
+      "10 raw control files whole hash/size/EOF and exact source copies",
+      "3 original command records and both endpoint stderr receipts match result exactly",
+      "3 owned direct children exit0/reaped/empty, no unknown remote cleanup",
+      "300/90/10/5/5 original budgets; publication within300; no Git/product/compiler",
+      "source identities before/after original exact decimal tokens",
+      "2 receiver nine-field identities match independent file_info exact decimal tokens",
+      "sender original bytes, stream digest and receiver same-FD readback all equal qualified source",
+      "receiver create-only/0400/fsync, directory0500/fsync, export provenance",
+      "relay/sender/receiver actual identities match prior inert receipt",
+      "trust and original HA controller full before/after equal",
+      "transfer file_info whole path/size/SHA/version matches complete log row and terminal receipt"
+    ]
+  },
+  "import_source": {
+    "tree": "7a041cb9135d44d51988d4b6b743cb03e305e635",
+    "files": 14,
+    "bytes": 229164,
+    "merkle_trees": 6,
+    "base_blob": "52ccb5a5ff15c456216e382e4392c5beca751b09",
+    "candidate_blob": "7019ca391f5832cb04a7703ddcb4365558661f81",
+    "candidate_bytes": 32923,
+    "candidate_sha256": "fbbb2f85dc18876218ce013f8ca75412aa09dfff164263f84dbd884dbfa62331",
+    "strict_diff_blob": "5788764e4114f92f1addbddcc89eb28115a32647",
+    "strict_hunks": 3,
+    "root_verified_only_changes": "two actual target versions; actual transfer bytes/SHA256/version; ready False to True; reconstructed complete candidate exact",
+    "all_existing_function_bodies_preserved_by_whole_reconstruction": true
+  },
+  "go": {
+    "request_blob": "33ee17df22f1e2ce377a434f9848fd4bd48c6171",
+    "request_bytes": 33961,
+    "request_sha256": "118bfe810445853e40c3e7f0bb8fd4af8bca57c5996da70ecb198a150789720f",
+    "host": "desktop",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "idempotency_key": "heptabao-df026-standalone-import-fbbb2f85-20261105-r1",
+    "timeout_seconds": 330,
+    "scope": "single standalone canonical source import, full fsck/history/materialized tree; no compiler/product/live LAN",
+    "requires_actual_terminal_closure_before_lan_prepare": true
+  },
+  "local_review_rejection_retained": {
+    "scope": "local read-only verification before dispatch",
+    "error": "exact import request",
+    "cause": "root assumed cwd /home/qian-qi before inspecting actual full request; will inspect documented cwd and retain original request, not change it",
+    "request": "33ee17df22f1e2ce377a434f9848fd4bd48c6171",
+    "host_dispatched": false
+  },
+  "full_openbao_replacement_authorized": false,
+  "production_changes_authorized": false
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.df026.importer-r1-failure-root-closure-and-request-r2-go.r1",
+  "as_of_utc": "2026-11-05 05:49:08 UTC",
+  "status": "known_first_guard_failure_closed__single_corrected_source_import_go",
+  "packet": {
+    "tree": "1c9ca3cf3d48d1f03051663260712c95b22965a7",
+    "files": 30,
+    "bytes": 290693,
+    "merkle_trees": 8
+  },
+  "actual_checks": [
+    "unique failed native ACK",
+    "actual request host",
+    "actual request cwd",
+    "actual request executable",
+    "actual request args",
+    "actual request idempotency_key",
+    "known failure authority",
+    "whole stdout",
+    "authority stream stdout",
+    "whole stderr",
+    "authority stream stderr",
+    "exact first guard failed",
+    "actual zero input/root FDs and children",
+    "failure publication timely",
+    "root exact AST contract passed"
+  ],
+  "original_operations": "All3 SDK originals reconstructed from complete immutable base64 pages. Authority/streams operations completed; original batch-read operation failed with stored_observed payload, owned_future_active=false. All3 native texts exact. ACK original is bare native, not content-wrapper.",
+  "original_failure": {
+    "job": "1a1aa39910d-fc05-3f68",
+    "authority": "3a7a468bdc36f50dbf3cc02b5a8b295d27940754",
+    "stderr": "41f9eff11bdc8af7018bb3b25fdd0977d85d25d4",
+    "status": "FAILED exit1/full/durable",
+    "actual_first_guard_line": 519,
+    "actual_opened_inputs_or_source_root": 0,
+    "owned_children": 0,
+    "scope": "no input/root read or creation by this attempt; current ROOT/SOURCE absence not independently lstat-proven",
+    "responsibility": "Author constructed request without self SHA. Root admission verified frozen request consistency but missed the source argv contract."
+  },
+  "guard_proof": {
+    "verifier": {
+      "name": "r19_import_request_r2_root_guard_verifier.py",
+      "blob": "e7f2b28e31657cf57965a09b993ab6612c4d486e",
+      "bytes": 1711,
+      "sha256": "ca96902da592c66c3b4799963bff46d4063e05f907886bf46974a9a22d03d462"
+    },
+    "execution": {
+      "name": "r19_import_request_r2_root_guard_exec",
+      "blob": "a53767d1a67f62d2c631d6074d02b79648fb39a0",
+      "bytes": 443,
+      "sha256": "93ac2ad096d7a7aaa78fe68ade76bf5221556b7ed8c6c82cf51a70decf9aef84"
+    },
+    "only_selected_original_ast_lines": [
+      519,
+      520,
+      521,
+      522,
+      523
+    ],
+    "full_module_executed": false,
+    "old_request_fails_519": true,
+    "new_request_passes": true
+  },
+  "go": {
+    "request_blob": "44d6e3dc9773637744d1805f3f57f32540fc168d",
+    "bytes": 34033,
+    "sha256": "4dda4bb35d402ea30481a36e3b8e5dac9b5f43176f43faed22bd43698e34d006",
+    "host": "desktop",
+    "idempotency_key": "heptabao-df026-standalone-import-fbbb2f85-20261105-r2",
+    "outer_seconds": 330,
+    "only_changes": [
+      "append original full-source SHA argument",
+      "fresh r2 key"
+    ],
+    "original_source_root_cwd_caps_guards_unchanged": true,
+    "fresh_absence_checks_required_at_runtime": true,
+    "scope": "single source import, full canonical/history/fsck/materialization; no product/compiler/LAN live"
+  },
+  "root_local_checker_assumptions_corrected": [
+    {
+      "scope": "local evidence verification, no host dispatch",
+      "error": "closed op core",
+      "cause": "root initially required async_state completed for the deliberately preserved failed batch-read operation; actual immutable failure terminal schema is inspected next",
+      "candidate_changed": false
+    },
+    {
+      "scope": "local read-only verifier",
+      "error": "Cannot read properties of undefined (reading 0)",
+      "cause": "actual start-original is inspected as its actual native shape instead of assumed content wrapper",
+      "host_dispatched": false
+    }
+  ],
+  "success_not_claimed": true
+}

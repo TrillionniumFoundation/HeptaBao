@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal.synthetic-dispatch-plan.r1",
+  "kind": "NONEXECUTABLE_PLAN_NOT_A_PROCESS_START_REQUEST",
+  "ready": false,
+  "requiresBeforeAnyRequest": [
+    "root_acceptance_of_design",
+    "whole_new_source_and_policy_diff",
+    "exact_create_only_carrier_and_payload",
+    "source_and_runtime_pins",
+    "root_single_dispatch_GO"
+  ],
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "cwd": "/Users/qianqi",
+  "interpreterFlags": [
+    "-I",
+    "-S",
+    "-B"
+  ],
+  "ownedRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1",
+  "timeoutSeconds": 60,
+  "sharedControllerSeconds": 45,
+  "originalDiskutilSeconds": 30,
+  "querySeconds": 3,
+  "sourceSha256": null,
+  "payloadSha256": null,
+  "idempotencyKey": null,
+  "sourceHashBoundKeyPrefix": "heptabao-mac-registry-readonly-wal-owned-synthetic",
+  "noProductionData": true,
+  "noCurrentCapture": true,
+  "noConsumer": true,
+  "noServiceAction": true,
+  "noCommitOrRefPublication": true,
+  "actualProcessStartSubmitted": false,
+  "note": "The executable source, exact stdin and key are deliberately not invented. The separate immutable implementation/request packet must bind them before any GO. This plan cannot be dispatched."
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.native-h2-qa.df026.fixed-readonly-metadata-plan.r1",
+  "status": "source_only_not_dispatched",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "normal_qualification": {
+    "packet_tree": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+    "root_review_blob": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+    "combined_blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+    "combined_bytes": 48188,
+    "combined_sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b"
+  },
+  "purpose": "Bind the already-reviewed standalone QA builder to actual ROG native tools, machine and target; no command invocation, source import, compiler, package lock generation or HTTP request.",
+  "scope": {
+    "closed_native_read_operations": 6,
+    "concurrency_at_most": 3,
+    "paths": [
+      "/usr/bin/python3.12",
+      "/usr/bin/git",
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "/etc/machine-id",
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/build-control-r3/launch-preflight.public.json",
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json"
+    ],
+    "directory_scan": false,
+    "symlink_following_not_authorized": true,
+    "machine_id_body_requested": false,
+    "file_info_whole_file_hashing": true,
+    "read_multiple_files_max_file_bytes": 65536,
+    "read_multiple_files_max_response_bytes": 262144,
+    "metadata_or_read_error_retained_no_substitution": true
+  },
+  "binding_rules": {
+    "ready_stays_false_until_all_actual_inputs_verified": true,
+    "tool_fields": [
+      "path",
+      "sha256",
+      "bytes",
+      "uid",
+      "mode"
+    ],
+    "tool_nlink_required": 1,
+    "tool_owners": [
+      0,
+      1000
+    ],
+    "tool_mode_must_not_be_group_or_other_writable": true,
+    "target_from": "exact original launch-preflight.public.json fresh_target_preparation.target_identity_after; decode original integer tokens losslessly",
+    "target_fields": [
+      "device",
+      "inode",
+      "uid",
+      "gid",
+      "mode"
+    ],
+    "target_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "target_identity_source_is_past_actual_preflight_not_current_stat": true,
+    "builder_rechecks_actual_target_before_cargo": true,
+    "normal_result_must_equal_complete_qualified_raw_bytes": true,
+    "machine_id_uses_file_info_sha256_only": true,
+    "absent_or_unexpected_schema_refuses_and_reports_missing_field": true
+  },
+  "budgets": {
+    "new_metadata_execution_budget": false,
+    "contract": "Closed native APIs retain their existing configured-host read semantics and byte ceilings. This proposal supplies no arbitrary executable, sleep or new timeout. No claim of one shared wall-clock deadline is made for six independent metadata operations.",
+    "future_inert_outer_seconds": 60,
+    "future_qa_build_internal_seconds": 600,
+    "future_qa_build_outer_seconds": 660
+  },
+  "future_stages": "After these actual reads, derive one exact ready binding and fresh source/inert request; root reviews it before publication. QA Cargo/components remain a separate explicit GO after inert actual qualification.",
+  "no_host_operation_dispatched": true,
+  "product_runtime_qualification": false
+}

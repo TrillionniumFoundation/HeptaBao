@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.df026.x230-normal7-inert-once-intent.r1",
+  "created_utc": "2026-11-05T06:04:05.787Z",
+  "source_packet_tree": "d5460c30c762171eec0b4abb8e5387d6504c33a9",
+  "request_blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396",
+  "request_bytes": 85331,
+  "request_sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a",
+  "root_go_blob": "e577341c355fcef270e14e5282eb133e88fb14bb",
+  "root_go_sha256": "67a6b400ef62e600222666d466e343136d4758095f95ef1ab9d1db64c7d4a335",
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "argv_prefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "carrier": {
+    "bytes": 5029,
+    "sha256": "0eeac473e4cce47f6596a7c54380a0b3b0125256478d53bfe529b3d381cf8c0a",
+    "blob": "0f2da42f4f9d6e508146b18c53e3d0623586c024"
+  },
+  "stdin": {
+    "bytes": 79906,
+    "sha256": "dd2d6e8ebaf98d1425a1ae24049328b44d57f35116e4e05650c0162dd3e78e82",
+    "blob": "577005369cc2d3f0e113b38450ae4e79807fa088"
+  },
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-df026-x230-controls-inert-r1-0eeac473",
+  "timeout_seconds": 60,
+  "scope": "create-only three public controls and compile-only; no relay/product/Git/Cargo",
+  "unknown_stops_chain": true
+}

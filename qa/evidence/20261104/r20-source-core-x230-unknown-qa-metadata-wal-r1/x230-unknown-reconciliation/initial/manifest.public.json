@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.public-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "root-go.original.json",
+      "bytes": 3745,
+      "sha256": "d0ecee2e0267abe1b11b5609d33d84f09694c84060639dc360455a640ad6135a",
+      "blob": "5191ba54298cd9494b78d6e09b62ce807e1cc417"
+    },
+    {
+      "path": "request.original.json",
+      "bytes": 324,
+      "sha256": "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280",
+      "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 1290,
+      "sha256": "6745f6815427da11aada2ae1811743741e701941a4910c8c3d0d5d0f986c618b",
+      "blob": "a1bd804cd7bf9faea99a374b90019a2605852c63"
+    },
+    {
+      "path": "ack.original.json",
+      "bytes": 1256,
+      "sha256": "e07f7eca9d96c86d622339ba7f6e764691db6d25dec7ced39be18fa401562021",
+      "blob": "411945876e968db03983dda973ea84dd1613f1e6"
+    },
+    {
+      "path": "status-error.text",
+      "bytes": 265,
+      "sha256": "69d8ffcf8a0295596e0244dc15e71bc326be0b9831826a16e9ed4db246e79ff6",
+      "blob": "d7b22f86861e9a6ec16b1971faf0c6c33662bd00"
+    },
+    {
+      "path": "status-error.tool-result.json",
+      "bytes": 436,
+      "sha256": "5619a5cf7de5621439f770798b6f5fa2628dfa09c29684e8beab70fac602d57d",
+      "blob": "3efa75ca33abf1a418769bb9cec8783a90cac219"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 1926,
+      "sha256": "4442a69b22520e09877ed1fdcf0a95059c68f2a40da1d5f639ef483c0455f6ce",
+      "blob": "2d1a021131d9a83cd73b96bf392c12fa8ce1b5bb"
+    }
+  ]
+}

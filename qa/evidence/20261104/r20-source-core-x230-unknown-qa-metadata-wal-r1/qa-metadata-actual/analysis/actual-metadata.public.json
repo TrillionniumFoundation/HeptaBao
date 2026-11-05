@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.native-h2-qa.df026.actual-fixed-readonly-metadata.r1",
+  "status": "six_fixed_read_operations_completed__binding_not_yet_dispatched",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "requests": [
+    {
+      "label": "python",
+      "operation_id": "1721a62cad3cb356c061ecf1400859d4c1d9c72eef53f790fb8726c6e171c516",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/python-original.json",
+        "bytes": 522,
+        "sha256": "6175d602b811cabb466a510468873d50f2db361cf269391d0e0de5b2b80a5131",
+        "blob": "b7cd7eed8044e28708622cd8b35645fadbdb56de"
+      }
+    },
+    {
+      "label": "git",
+      "operation_id": "910f4ea3133fbb963323f36fba1690aab0ff6121cf14d9d1853327bef1ea051b",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/git-original.json",
+        "bytes": 515,
+        "sha256": "59caa38a5025babf08de24952e670ae68e61a4df44d240548f94a9d78c8d038a",
+        "blob": "9e18f0c152210141c7ccc2a76a7669a7ee4ad98b"
+      }
+    },
+    {
+      "label": "cargo",
+      "operation_id": "94f6a9059fde00ad8c3b30d3626f9013bec6ac9d664d193afb43c59758514654",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/cargo-original.json",
+        "bytes": 585,
+        "sha256": "62bc1ed095b6dc77a05457c84681165d78a31d3e312b0aab3e816a8f9cf28aa3",
+        "blob": "2f05538f4e9a8adeccd02f173ce8bc1937832e21"
+      }
+    },
+    {
+      "label": "rustc",
+      "operation_id": "708ebdd9853036f60f6ebdfcdcff473775cc5b0b0de557985f2c74f932963e28",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/rustc-original.json",
+        "bytes": 581,
+        "sha256": "89d5e498aafc67e77105c48c8b5228a80994aa720b13077d8d8535ad39d92f11",
+        "blob": "4e42a9e8c83c5009b47b53df72f25bf50dee8058"
+      }
+    },
+    {
+      "label": "machine-id",
+      "operation_id": "7ac344995a4b97a90d7365dc3346269784c6800fb5ac3e0e9d1db6ff1c946bd8",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/machine-id-original.json",
+        "bytes": 508,
+        "sha256": "ba08d5946c264f2e292ae54afe27000b06e80b1d879a9923829a7dab98f14c3c",
+        "blob": "db5f30166d4c112e231379903390d7fdac1c4df1"
+      }
+    },
+    {
+      "label": "normal-preflight",
+      "operation_id": "eb7096820466aef486c6b11512b1fac0a7b621cf989a31704135ee21cce89602",
+      "async_state": "completed",
+      "owned_future_active": false,
+      "original_sdk": {
+        "path": "sdk/normal-preflight-original.json",
+        "bytes": 90967,
+        "sha256": "134647b25e679fdbcf8dcedfdf1f55ac0fdc0c87145be5b8b48302c1de9d2b57",
+        "blob": "d65d36f1573d11fb8fdc163bba8a5b5f0730f429"
+      }
+    }
+  ],
+  "tool_metadata": {
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "bytes": 8020928,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "uid": 0,
+      "mode": 493,
+      "link_count": 1,
+      "version": "66306:17175553:8020928:1788171506000000000:1789080129938955247"
+    },
+    "git": {
+      "path": "/usr/bin/git",
+      "bytes": 4547768,
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+      "uid": 0,
+      "mode": 493,
+      "link_count": 1,
+      "version": "66306:17187334:4547768:1792159905000000000:1792577051798065774"
+    },
+    "cargo": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "bytes": 40688400,
+      "sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+      "uid": 1000,
+      "mode": 493,
+      "link_count": 1,
+      "version": "66306:28970595:40688400:1791677518879180933:1791677518982180473"
+    },
+    "rustc": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "bytes": 645016,
+      "sha256": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+      "uid": 1000,
+      "mode": 493,
+      "link_count": 1,
+      "version": "66306:28970693:645016:1791677530537128895:1791677533756422548"
+    },
+    "machine-id": {
+      "path": "/etc/machine-id",
+      "bytes": 33,
+      "sha256": "c67efd30ee6bcef9fbbdedce3e127151262d01a4ee23068cdf9c4136d9b9421b",
+      "uid": 0,
+      "mode": 292,
+      "link_count": 1,
+      "version": "66306:41157019:33:1776905803136690898:1776905803136690898"
+    }
+  },
+  "actual_public_files": [
+    {
+      "path": "actual/launch-preflight.public.json",
+      "bytes": 28000,
+      "sha256": "9d8fc768b35116a2404bc31d4d9d924a6bce1b7d90f911c77fbc510c080bf076",
+      "blob": "2a78cef6be77ea3d2efe31f425f168109d2e35b8",
+      "version": "66306:31606591:28000:1793852862548082526:1793852862548082526",
+      "host_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/build-control-r3/launch-preflight.public.json"
+    },
+    {
+      "path": "actual/normal60.public.json",
+      "bytes": 48188,
+      "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+      "blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+      "version": "66306:31618802:48188:1793855417596045434:1793855417596045434",
+      "host_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json"
+    }
+  ],
+  "normal_48188_whole_bytes_equal_root_qualified_bff111": true,
+  "preflight_schema": "heptabao.cold-h2-normal-target-admission.v1",
+  "target_identity_source": "Original past launch-preflight; not a current target stat. Candidate QA builder must verify live target identity before Cargo.",
+  "unsafe_integer_handling": "All original SDK/file texts and version strings are retained byte-exact. No nanosecond values are used in the five-field target binding.",
+  "no_machine_id_body_requested": true,
+  "no_process_start_requested": true,
+  "no_cargo_or_product_requested": true,
+  "qa_runtime_qualification": false
+}

@@ -1,0 +1,295 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal.design-contract.r1",
+  "ready": false,
+  "sourceImplementationFrozen": false,
+  "hostDispatchAuthorized": false,
+  "privateCaptureAuthorized": false,
+  "priorEvidence": {
+    "metadata": {
+      "tree": "d851530bf16d6bde7ef4c8c0246009b2d46428ad",
+      "stdout": "be19181c81f081d935a601460c76d305c31ebadf",
+      "rootReview": "49a0bfa8265d634b393670a908e26116df438a52"
+    },
+    "failedCurrent": {
+      "tree": "304926750268d0718d695146742de6d9c576df70",
+      "job": "1a1aa2ac597-fc05-3e8f",
+      "outcomeUnknownRetained": true,
+      "failedLeafRetrospectivelyIdentified": false
+    },
+    "oldImmutableProof": {
+      "stdout": {
+        "bytes": 16228,
+        "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+        "git_blob": "781d085d4fdc52ada91ea796572099137c87cd55"
+      },
+      "newWalBehaviorQualified": false
+    }
+  },
+  "baselineCapture": {
+    "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+    "bytes": 23578,
+    "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+  },
+  "explicitRoute": {
+    "scope": "installed_registry_only",
+    "main": "/Users/qianqi/.openclaw/state/openclaw.sqlite",
+    "key": "installed-plugin-index",
+    "columnCount": 13,
+    "rowCount": 1,
+    "selectLimit": 2,
+    "uriParameters": {
+      "mode": "ro",
+      "cache": "private",
+      "vfs": "unix-posix",
+      "readonly_shm": "1"
+    },
+    "forbiddenParameters": [
+      "immutable",
+      "nolock"
+    ],
+    "applicationFallbacks": [],
+    "applicationRetries": 0,
+    "oldFiveAgentWalMaximumBytes": 0,
+    "oldDatabaseAndImmutableQueryBodiesRemainReferences": true,
+    "proposedNewRegistryWalEligibility": {
+      "minimumBytes": 32,
+      "maximumBytes": 5969912,
+      "status": "REQUIRES_ROOT_SOURCE_ACCEPTANCE",
+      "source": "actual finite metadata, not a generic cap increase"
+    },
+    "mainMinimumBytes": 512,
+    "mainMaximumBytes": null,
+    "shmRequired": true,
+    "shmMaximumBytes": 8388608,
+    "journalRequiredAbsent": true,
+    "fullIdentityFields": [
+      "dev",
+      "ino",
+      "uid",
+      "gid",
+      "mode",
+      "nlink",
+      "size",
+      "mtime_ns",
+      "ctime_ns"
+    ],
+    "parentAndLeafIdentityMustHoldAcrossWholeQuery": true,
+    "sqlNamedReopenIsAtomic": false
+  },
+  "budgets": {
+    "rowBytes": 1048576,
+    "explicitReadAndReturnedAggregateBytes": 8388608,
+    "querySeconds": 3,
+    "captureSeconds": 45,
+    "syntheticOverallSeconds": 45,
+    "syntheticOuterSeconds": 60,
+    "wholeDatabaseCopyBytes": 0,
+    "privateWholeDatabaseHashBytes": 0,
+    "privateWholeWalCopyBytes": 0
+  },
+  "queryDeadlineIncludes": [
+    "connect",
+    "schema_and_plan",
+    "fixed_key_select",
+    "rollback",
+    "connection_close",
+    "query_closure_ledger",
+    "same_absolute_deadline_final_check"
+  ],
+  "synchronousCallHardPreemptionClaimed": false,
+  "newWatchdogThread": false,
+  "newQuerySubprocess": false,
+  "sql": {
+    "queryOnly": true,
+    "tempStore": "MEMORY",
+    "busyTimeoutSeconds": 0,
+    "extensionsEnabled": false,
+    "authorizer": "finite_select_read_and_rollback_only",
+    "dataScanAllowed": false,
+    "keySearchRequired": true,
+    "fullPrivateTableEnumeration": false
+  },
+  "ledger": {
+    "attemptRegisteredBeforeConnect": true,
+    "returnedConnectionHandleClosedOnce": true,
+    "heldFdClosedOnce": true,
+    "noExplicitCloseRetry": true,
+    "publicFailureEnvelopeRequired": true,
+    "internalSqliteFdEnumerationClaimed": false,
+    "privateFailureKeepsObservationUnknown": true,
+    "receiptFileAloneSufficient": false
+  },
+  "synthetic": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1",
+    "oldFixturePathsUsed": false,
+    "writerReaderDifferentProcesses": true,
+    "readerFreshPerCase": true,
+    "actualRuntime": {
+      "pythonExecutable": {
+        "bytes": 34640,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+      },
+      "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "sqliteExtension": {
+        "bytes": 165632,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+        "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+      },
+      "sqliteVersion": "3.53.4",
+      "sqliteVersionInfo": [
+        3,
+        53,
+        4
+      ]
+    },
+    "referenceSourceUuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "sameInstalledRuntimeBeforeAfterRequired": true,
+    "exactSqliteSourceIdRequired": true,
+    "sqliteDylibFullDependencyClosureClaimed": false,
+    "caseCount": 10,
+    "cases": [
+      {
+        "id": "W01",
+        "name": "wal_only_sentinel_and_write_denials",
+        "requiredResult": "PASS_READONLY_OBSERVATION",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W02",
+        "name": "required_shm_absent",
+        "requiredResult": "REFUSED_BEFORE_CONNECT",
+        "maxQueryConnections": 0,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W03",
+        "name": "engine_shm_read_denied",
+        "requiredResult": "REFUSED_ENGINE_DEPENDENCY",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W04",
+        "name": "journal_present",
+        "requiredResult": "REFUSED_BEFORE_CONNECT",
+        "maxQueryConnections": 0,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W05",
+        "name": "concurrent_wal_commit",
+        "requiredResult": "REFUSED_FULL_IDENTITY_DRIFT",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W06",
+        "name": "main_metadata_drift",
+        "requiredResult": "REFUSED_FULL_IDENTITY_DRIFT",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W07",
+        "name": "shm_metadata_drift",
+        "requiredResult": "REFUSED_FULL_IDENTITY_DRIFT",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W08",
+        "name": "parent_metadata_drift",
+        "requiredResult": "REFUSED_FULL_IDENTITY_DRIFT",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W09",
+        "name": "missing_key_index",
+        "requiredResult": "REFUSED_BEFORE_DATA_SELECT",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      },
+      {
+        "id": "W10",
+        "name": "oversize_registry_row",
+        "requiredResult": "REFUSED_ORIGINAL_ROW_CAP",
+        "maxQueryConnections": 1,
+        "queriesWithinOriginal3Seconds": true,
+        "privateInputs": false
+      }
+    ],
+    "originalFourKernelRefusals": true,
+    "newExistingSidecarWriteChecks": 2,
+    "additionalSelectedPureComponents": [
+      "connect_failure_without_handle",
+      "close_exception_once_unknown",
+      "late_completion_refused",
+      "identity_field_change_refused"
+    ],
+    "privateBodiesRead": 0,
+    "privateDbSqlCalls": 0,
+    "networkAllowed": false,
+    "mutationSynchronization": "two bounded anonymous pipes; one fixed writer action per drift case; original query deadline; no sleeps or retries",
+    "samePolicyMappingRequired": true,
+    "onlyNegativePolicyDifference": "W03 adds SHM read denial; no grant",
+    "exactRequests": [],
+    "dispatchReady": false
+  },
+  "implementationMap": [
+    {
+      "file": "new_capture_library.py",
+      "changes": [
+        "explicit_registry_wal_bundle",
+        "named_readonly_query",
+        "key_search_precondition",
+        "failure_envelope"
+      ]
+    },
+    {
+      "file": "new_capture_entry.py",
+      "changes": [
+        "exact_new_library_binding",
+        "typed_failure_envelope_consumer"
+      ]
+    },
+    {
+      "file": "new_outer.py",
+      "changes": [
+        "source_and_actual_synthetic_pins",
+        "typed_complete_attempt_gate"
+      ]
+    },
+    {
+      "file": "new_public_synthetic_controller.py",
+      "changes": [
+        "fixed_ten_owned_cases",
+        "actual_runtime_and_policy_proof",
+        "complete_once_ledgers"
+      ]
+    },
+    {
+      "file": "new_create_only_carrier_and_requests",
+      "changes": [
+        "fresh_paths",
+        "whole_source_payload_pins",
+        "original_45_30_60_bounds"
+      ]
+    }
+  ],
+  "productBudgetChanges": [],
+  "sourceEditsExecuted": false,
+  "hostOperationsExecuted": false,
+  "syntheticExecuted": false
+}

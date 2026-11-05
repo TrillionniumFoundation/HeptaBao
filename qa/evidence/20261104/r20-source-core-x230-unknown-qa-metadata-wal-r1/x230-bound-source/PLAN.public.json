@@ -1,0 +1,210 @@
+{
+  "schema": "heptabao.df026-x230-normal7-bound-source-plan.r1",
+  "status": "SOURCE_ONLY_ACTUAL_INPUTS_BOUND_AWAIT_ROOT_REVIEW",
+  "base_unbound_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+  "base_carrier": {
+    "blob": "80622b0c8cc46c910ec8919d9806638ee432bc3b",
+    "bytes": 5034,
+    "sha256": "adc1bd362b326378f1dc8d8804c846744108f3507c0811beef38753fe50e846a"
+  },
+  "candidate_source_pins": {
+    "sender": {
+      "bytes": 8862,
+      "sha256": "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742",
+      "blob": "5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4"
+    },
+    "receiver": {
+      "bytes": 29900,
+      "sha256": "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d",
+      "blob": "4a302b89c1de1473844b4e364cb44e51d1310a1a"
+    },
+    "relay": {
+      "bytes": 21085,
+      "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+      "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+    }
+  },
+  "candidate_carrier": {
+    "bytes": 5029,
+    "sha256": "0eeac473e4cce47f6596a7c54380a0b3b0125256478d53bfe529b3d381cf8c0a",
+    "blob": "0f2da42f4f9d6e508146b18c53e3d0623586c024"
+  },
+  "strict_diffs": {
+    "sender": {
+      "hunks": 1,
+      "whole_reconstruction": true
+    },
+    "receiver": {
+      "hunks": 1,
+      "whole_reconstruction": true
+    },
+    "relay": {
+      "hunks": 1,
+      "whole_reconstruction": true
+    },
+    "carrier": {
+      "hunks": 3,
+      "whole_reconstruction": true
+    }
+  },
+  "actual_bindings": {
+    "schema": "heptabao.df026.x230-normal7-actual-desktop-binding.r1",
+    "binding_ready": true,
+    "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "normal5_actual_tree": "4727b2c9331fe4ac6f62c7f88e98a00edbf2a495",
+    "normal5_root_review": "264e900dfc4cc6ea114d6815dad45b96ed63aa92",
+    "source2_actual_tree": "5602bd95365a2c551d818e306fc6bfe0192af455",
+    "source2_root_review": "8fcd38a4ee3221a684a8e65a9300e248897670aa",
+    "file_info_blobs": [
+      "9148d337701d85f7a8ef07ec50712d83bd52ee0d",
+      "f790361fd4d3bf73d5a42d02d021f213b9d48def",
+      "4362e74b17b95c0041073dcf94ebc6294c157c57",
+      "7ee1668f4acf16ce6954736406cee5e8a528c690",
+      "d6e5fed9d23372d05c5a3c3229372bea6401b866",
+      "bdf0de1636e3ac50c619a5530f88a384318df810",
+      "a837d69ce806cdef8e531de8a125c86dcb880953"
+    ],
+    "files": [
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+        "name": "heptabao-server",
+        "bytes": 110339520,
+        "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+        "source_mode": 320,
+        "target_mode": 320,
+        "version": "2050:5019547:110339520:1793857530819632046:1793857530819632046"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+        "name": "native-build.public.json",
+        "bytes": 772,
+        "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019549:772:1793857533118564089:1793857533118564089"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+        "name": "result.public.json",
+        "bytes": 3137,
+        "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019550:3137:1793857533123563941:1793857533123563941"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+        "name": "canonical-df026-full.bundle",
+        "bytes": 23429893,
+        "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019525:23429893:1793856420289823382:1793856420289823382"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+        "name": "source-export.result.public.json",
+        "bytes": 38783,
+        "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019527:38783:1793856420629814207:1793856420629814207"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+        "name": "normal60-result.public.json",
+        "bytes": 48188,
+        "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019551:48188:1793857533128563794:1793857533128563794"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
+        "name": "groups.json",
+        "bytes": 6249,
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+        "source_mode": 256,
+        "target_mode": 256,
+        "version": "2050:5019552:6249:1793857533133563646:1793857533133563646"
+      }
+    ],
+    "total_bytes": 133866542,
+    "actual_x230_destinations_verified": false,
+    "host_request_submitted": false
+  },
+  "changes": [
+    "Each of the three FILES tables replaces only bytes/SHA256/version placeholders with the seven independent actual desktop file_info results, preserving path/name/mode/order exactly.",
+    "BINDING_READY changes from False to True in the three fixed source candidates.",
+    "Relay HELPERS binds the exact complete newly bound sender and receiver SHA256.",
+    "The already executed normal5 inert carrier changes only BASE, its two schema literals, and three source pins."
+  ],
+  "preserved": {
+    "all_58_candidate_definition_nodes_byte_identical": true,
+    "all_5_carrier_definition_nodes_byte_identical": true,
+    "original_all_other_top_level_ast": true,
+    "original_normal60_44_plus7_plus9_requirements": true,
+    "all_native_build_and_export_receipt_checks": true,
+    "source_clone_full_fsck_3913_bytes_materialization": true,
+    "canonical_history_3757_and_sole_parent_6304": true,
+    "full_bundle_zero_prerequisites": true,
+    "strict_x230_ts_transport_and_trust": true,
+    "original_stop_and_unknown_semantics": true
+  },
+  "limits": {
+    "inert_stdin_max_bytes": 262144,
+    "inert_outer_seconds": 60,
+    "relay_parent_seconds": 300,
+    "relay_outer_seconds": 360,
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "ssh_config_seconds": 90,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "term_seconds": 5,
+    "kill_seconds": 5
+  },
+  "validation": {
+    "offline_script": "verification/verify.py",
+    "actual_local_executor": "verification/executor.original.json",
+    "local_python_exit_code": 0,
+    "checks_passed": 129,
+    "whole_definition_counts": {
+      "sender": 11,
+      "receiver": 29,
+      "relay": 18,
+      "carrier": 5
+    },
+    "module_execution": false,
+    "selected_pure_functions": [
+      "remote_command",
+      "need",
+      "verify_normal60"
+    ],
+    "receiver_original_entry_assertions": 4,
+    "positive_and_missing_wrong_extra_argument_cases": true,
+    "actual_original_normal60_receipts_accepted_by_unchanged_checker": true,
+    "host_operations": 0,
+    "product_operations": 0
+  },
+  "requests": {
+    "inert": {
+      "bytes": 85331,
+      "sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a",
+      "blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396"
+    },
+    "future_relay": {
+      "bytes": 324,
+      "sha256": "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280",
+      "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935"
+    }
+  },
+  "scope": "Three public control sources may only be staged after root exact inert GO. Relay would transfer these seven fixed public inputs and materialize independent X230 canonical source only after a separate GO; it does not execute a product, compiler, provider or acceptance suite.",
+  "qualifications_not_transferred": [
+    "No X230 destination existence, source materialization, transfer success or product qualification is claimed by this source package.",
+    "The source-carrier's former importer argv failure is preserved; these already completed two-file transport versions remain independently valid.",
+    "Desktop canonical import and LAN preparation remain separately gated."
+  ],
+  "host_requests_submitted": 0
+}

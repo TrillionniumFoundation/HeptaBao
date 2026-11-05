@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.df026-x230-normal7-inert-actual-assessment.v1",
+  "scope": "three public controls and receipt; no relay/product execution",
+  "qualification": "PASS_INERT_PUBLICATION_ONLY",
+  "source_package_tree": "d5460c30c762171eec0b4abb8e5387d6504c33a9",
+  "admission": {
+    "blob": "e577341c355fcef270e14e5282eb133e88fb14bb",
+    "bytes": 6431,
+    "sha256": "67a6b400ef62e600222666d466e343136d4758095f95ef1ab9d1db64c7d4a335"
+  },
+  "request": {
+    "blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396",
+    "bytes": 85331,
+    "sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a"
+  },
+  "job_id": "1a1aa4fa1ba-fc05-40c1",
+  "idempotency_key": "heptabao-df026-x230-controls-inert-r1-0eeac473",
+  "submit_count": 1,
+  "retry_count": 0,
+  "host": "desktop",
+  "outer_seconds": 60,
+  "rows": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/sender.py",
+      "bytes": 8862,
+      "sha256": "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742",
+      "blob": "5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4",
+      "version": "2050:7241099:8862:1793858713962971085:1793858714190585728",
+      "mode": 384,
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/receiver.py",
+      "bytes": 29900,
+      "sha256": "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d",
+      "blob": "4a302b89c1de1473844b4e364cb44e51d1310a1a",
+      "version": "2050:7241100:29900:1793858714295334682:1793858714469539590",
+      "mode": 384,
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py",
+      "bytes": 21085,
+      "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+      "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548",
+      "version": "2050:7241101:21085:1793858714562990517:1793858714706622260",
+      "mode": 384,
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/inert-stage.result.public.json",
+      "bytes": 1882,
+      "sha256": "6e003773158e45dad682dbdcce6b0d6b2351b699acea15602fe954b4b7d82ace",
+      "blob": "f4c768eb0487c0612c82f049a1ab743053ecb436",
+      "version": "2050:7241102:1882:1793858714785857287:1793858714902211157",
+      "mode": 384,
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    }
+  ],
+  "body_elapsed_ns": "947234726",
+  "body_elapsed_seconds": 0.947234726,
+  "stdout_receipt_lossless_equal": true,
+  "authority_exit0_full_durable": true,
+  "terminal_hex_text_exact": true,
+  "candidate_whole_exact": true,
+  "all_file_info_versions_exact": true,
+  "no_product_or_transport": true,
+  "body_elapsed_scope": "carrier started_ns to terminal_ns before receipt publication; not full supervisor elapsed",
+  "authority": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false,
+    "stdout_bytes": 1472,
+    "stderr_bytes": 0
+  },
+  "future_relay": {
+    "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+    "submitted": false,
+    "requires_separate_admission": true
+  },
+  "qualification_does_not_include": [
+    "artifact transport",
+    "X230 source import",
+    "X230 product qualification",
+    "LAN preparation",
+    "LAN live"
+  ]
+}

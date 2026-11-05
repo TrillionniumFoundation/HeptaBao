@@ -1,0 +1,18 @@
+{
+  "sender": {
+    "hunks": 1,
+    "whole_reconstruction": true
+  },
+  "receiver": {
+    "hunks": 1,
+    "whole_reconstruction": true
+  },
+  "relay": {
+    "hunks": 1,
+    "whole_reconstruction": true
+  },
+  "carrier": {
+    "hunks": 3,
+    "whole_reconstruction": true
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "remote helper on desktop-ts failed with 1\nstdout:\n\nstderr:\nTraceback (most recent call last):\n  File \"<string>\", line 6, in <module>\n  File \"<string>\", line 25, in private_job_directory\nFileNotFoundError: [Errno 2] No such file or directory: '1a1aa57458d-fc05-4156'"
+    }
+  ],
+  "structuredContent": {
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "isError": true
+}

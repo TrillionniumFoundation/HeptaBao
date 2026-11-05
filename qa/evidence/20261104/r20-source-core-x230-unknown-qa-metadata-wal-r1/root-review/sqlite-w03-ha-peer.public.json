@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.sqlite-readonly-wal-w03-limited-peer-review.v1",
+  "reviewer": "ha_validation",
+  "decision": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_W03_BRANCH",
+  "scope": "Only the fresh-reader SHM-open-denial and CANTINIT fallback source branch; not full WAL design or runtime admission",
+  "design": {
+    "bytes": 21151,
+    "sha256": "1041c5c4ed3d797afe8ea4ab039ff7adec24fae647776d03f41c2e67c97bd5a8",
+    "blob": "630aee179bda1f8d043238224f78aa90d3008f39"
+  },
+  "reference_index": {
+    "bytes": 7804,
+    "sha256": "8491c5ba8da2be9a3660c2a908ea7987566f6055182b613a304a24403219fc11",
+    "blob": "5110c4a1c8313b88cba41196c52acc51e65985d1"
+  },
+  "reference": {
+    "repository": "https://github.com/sqlite/sqlite",
+    "commit": "b09c88c14082339b66c7b7158d609a771e64ca69",
+    "tag": "version-3.53.4",
+    "fossil_manifest_uuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "os_unix": {
+      "bytes": 295468,
+      "sha256": "bad02ce9e25e3842c116a9f9bb13128b74f965692c5987202103423c86f62475",
+      "blob": "927b8ebfcbce355934dbf3671497057f67ba9cb2"
+    },
+    "wal": {
+      "bytes": 177747,
+      "sha256": "0c0467f7c4de773512b3327b0d3973fc31d50cf74603d6aec0e3b3e1c787e217",
+      "blob": "33fa038dba32b388c0662f34102ff4b96edd0b5a"
+    },
+    "whole_reference_bytes_recomputed": true,
+    "reference_bytes_match_supplied_source_index": true,
+    "installed_runtime_or_dynamic_library_identity_verified_by_this_review": false,
+    "independent_upstream_commit_tree_membership_rechecked": false
+  },
+  "required_preconditions": [
+    "A fresh independent reader process, so no pShm or per-inode pShmNode from an already-open connection is reused.",
+    "Fixed unix-posix VFS and ordinary WAL mode; no preselected heap/no-SHM/exclusive path.",
+    "The query requires the WAL-only committed sentinel; denial reaches the engine rather than an earlier metadata guard.",
+    "The SHM read-denial policy actually denies the fixed SHM path."
+  ],
+  "source_chain": [
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        4966,
+        4973
+      ],
+      "finding": "A process-local existing pShmNode can be reused; the fresh-reader condition is material."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5031,
+        5043
+      ],
+      "finding": "readonly_shm=1 skips the SHM O_RDWR|O_CREAT open. Failure of the subsequent O_RDONLY|O_NOFOLLOW open sets SQLITE_CANTOPEN_BKPT and branches to shm_open_err."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5080,
+        5084
+      ],
+      "finding": "The error label purges/free resources and returns the same rc."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5120,
+        5123
+      ],
+      "finding": "unixShmMap returns any non-OK unixOpenSharedMemory result immediately."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        778,
+        814
+      ],
+      "finding": "Ordinary WAL calls sqlite3OsShmMap. Only READONLY-family codes get the readOnly flag, and only plain SQLITE_READONLY becomes OK; CANTOPEN is returned unchanged."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        2669,
+        2686
+      ],
+      "finding": "Only SQLITE_READONLY_CANTINIT selects the unreliable-SHM heap path here. All other non-OK results, including this CANTOPEN, return as errors."
+    }
+  ],
+  "limitations": [
+    "W03 is a dependency-negative control, not proof that readonly_shm was recognized: default O_RDWR denial followed by O_RDONLY denial can also fail.",
+    "Actual installed sqlite_source_id, the fixed available VFS and positive W01 remain independent gates.",
+    "A writable-open attempt is still possible for the WAL: wal.c1725 uses READWRITE|CREATE and os_unix.c6684-6702 may downgrade after denial. This review does not claim zero write attempts.",
+    "No host calls, private input access, SQLite execution, synthetic case execution, new retry or deadline change occurred.",
+    "No broader statement is made about every WAL fallback or engine error path."
+  ]
+}

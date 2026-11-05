@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-df026-h2-qa-binding-machine-id-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/etc/machine-id"
+    }
+  }
+}

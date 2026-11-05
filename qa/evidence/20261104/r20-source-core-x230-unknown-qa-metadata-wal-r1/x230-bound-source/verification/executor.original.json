@@ -1,0 +1,7 @@
+{
+  "chunk_id": "2ed63b",
+  "wall_time_seconds": 0.191218939,
+  "exit_code": 0,
+  "original_token_count": 166,
+  "output": "{\"checks_passed\": 129, \"definition_counts\": {\"carrier\": 5, \"receiver\": 29, \"relay\": 18, \"sender\": 11}, \"host_operations\": 0, \"module_execution\": false, \"source_pins\": {\"receiver\": {\"blob\": \"4a302b89c1de1473844b4e364cb44e51d1310a1a\", \"bytes\": 29900, \"sha256\": \"fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d\"}, \"relay\": {\"blob\": \"b076da8a629694e0dc988c57c13e03fa1b2ec548\", \"bytes\": 21085, \"sha256\": \"732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f\"}, \"sender\": {\"blob\": \"5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4\", \"bytes\": 8862, \"sha256\": \"c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742\"}}, \"status\": \"passed\"}\n"
+}

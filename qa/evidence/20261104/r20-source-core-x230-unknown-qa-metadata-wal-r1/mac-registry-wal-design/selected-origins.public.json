@@ -1,0 +1,264 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal.origin-projection.r1",
+  "exactMetadataStdout": {
+    "blob": "be19181c81f081d935a601460c76d305c31ebadf",
+    "bytes": 54451,
+    "sha256": "eb7a7d87ed65c2c7377a5410e0f7074d15ae64b7ca2d87f70559f0ebe580047d"
+  },
+  "scope": "SELECTED_PUBLIC_METADATA_PROJECTION_NOT_RESERIALIZED_ORIGINAL",
+  "registry": [
+    {
+      "directLeafStatPerformed": true,
+      "fdOpened": true,
+      "heldIdentity": [
+        "16777233",
+        "179621675",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "202899456",
+        "1793852372881414114",
+        "1793857254126174201"
+      ],
+      "heldIdentityAfter": [
+        "16777233",
+        "179621675",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "202899456",
+        "1793852372881414114",
+        "1793857254126174201"
+      ],
+      "identityAfter": [
+        "16777233",
+        "179621675",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "202899456",
+        "1793852372881414114",
+        "1793857254126174201"
+      ],
+      "identityBefore": [
+        "16777233",
+        "179621675",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "202899456",
+        "1793852372881414114",
+        "1793857254126174201"
+      ],
+      "label": "installed_registry",
+      "linkCount": "1",
+      "metadataFdClosed": true,
+      "modeOctal": "0o600",
+      "originalCaptureCustodyMatches": true,
+      "originalDatabaseMinimum512Met": true,
+      "originalMaximumBytes": null,
+      "originalOptional": false,
+      "originalPrivateModeRule": true,
+      "ownerGid": "20",
+      "ownerUid": "501",
+      "parentFullIdentityStable": true,
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite",
+      "presentJournalForbiddenByOriginalContract": false,
+      "role": "database_main",
+      "sizeBytes": "202899456",
+      "sizeWithinOriginalMaximum": null,
+      "status": "stable_regular_metadata",
+      "type": "regular"
+    },
+    {
+      "directLeafStatPerformed": true,
+      "fdOpened": true,
+      "heldIdentity": [
+        "16777233",
+        "567262007",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "5969912",
+        "1793850637805252427",
+        "1793857254126244994"
+      ],
+      "heldIdentityAfter": [
+        "16777233",
+        "567262007",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "5969912",
+        "1793850637805252427",
+        "1793857254126244994"
+      ],
+      "identityAfter": [
+        "16777233",
+        "567262007",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "5969912",
+        "1793850637805252427",
+        "1793857254126244994"
+      ],
+      "identityBefore": [
+        "16777233",
+        "567262007",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "5969912",
+        "1793850637805252427",
+        "1793857254126244994"
+      ],
+      "label": "installed_registry_wal",
+      "linkCount": "1",
+      "metadataFdClosed": true,
+      "modeOctal": "0o600",
+      "originalCaptureCustodyMatches": true,
+      "originalDatabaseMinimum512Met": null,
+      "originalMaximumBytes": 0,
+      "originalOptional": true,
+      "originalPrivateModeRule": true,
+      "ownerGid": "20",
+      "ownerUid": "501",
+      "parentFullIdentityStable": true,
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-wal",
+      "presentJournalForbiddenByOriginalContract": false,
+      "role": "database_wal",
+      "sizeBytes": "5969912",
+      "sizeWithinOriginalMaximum": false,
+      "status": "stable_regular_metadata",
+      "type": "regular"
+    },
+    {
+      "directLeafStatPerformed": true,
+      "fdOpened": true,
+      "heldIdentity": [
+        "16777233",
+        "567262008",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "32768",
+        "1793768310368681435",
+        "1793857254126315120"
+      ],
+      "heldIdentityAfter": [
+        "16777233",
+        "567262008",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "32768",
+        "1793768310368681435",
+        "1793857254126315120"
+      ],
+      "identityAfter": [
+        "16777233",
+        "567262008",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "32768",
+        "1793768310368681435",
+        "1793857254126315120"
+      ],
+      "identityBefore": [
+        "16777233",
+        "567262008",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "32768",
+        "1793768310368681435",
+        "1793857254126315120"
+      ],
+      "label": "installed_registry_shm",
+      "linkCount": "1",
+      "metadataFdClosed": true,
+      "modeOctal": "0o600",
+      "originalCaptureCustodyMatches": true,
+      "originalDatabaseMinimum512Met": null,
+      "originalMaximumBytes": 8388608,
+      "originalOptional": true,
+      "originalPrivateModeRule": true,
+      "ownerGid": "20",
+      "ownerUid": "501",
+      "parentFullIdentityStable": true,
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-shm",
+      "presentJournalForbiddenByOriginalContract": false,
+      "role": "database_shm",
+      "sizeBytes": "32768",
+      "sizeWithinOriginalMaximum": true,
+      "status": "stable_regular_metadata",
+      "type": "regular"
+    },
+    {
+      "directLeafStatPerformed": true,
+      "fdOpened": false,
+      "heldParentIdentity": [
+        "16777233",
+        "179621674",
+        "501",
+        "20",
+        "16832",
+        "8",
+        "256",
+        "1791172096379196120",
+        "1793857254126083491"
+      ],
+      "label": "installed_registry_journal",
+      "originalMaximumBytes": 0,
+      "originalOptional": true,
+      "originalPrivateModeRule": true,
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-journal",
+      "role": "database_journal",
+      "status": "absent",
+      "twoEnoent": true
+    }
+  ],
+  "installedRuntime": {
+    "pythonExecutable": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "sqliteExtension": {
+      "bytes": 165632,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+      "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+    },
+    "sqliteVersion": "3.53.4",
+    "sqliteVersionInfo": [
+      3,
+      53,
+      4
+    ]
+  },
+  "originalRawMetadataRootReview": {
+    "bytes": 9772,
+    "sha256": "a682a637939aca90838118c52836644d85251a2b04d1762b5031b50f9c52a3fd",
+    "git_blob": "49a0bfa8265d634b393670a908e26116df438a52"
+  },
+  "originalRawImmutableProof": {
+    "bytes": 16228,
+    "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+    "git_blob": "781d085d4fdc52ada91ea796572099137c87cd55"
+  }
+}

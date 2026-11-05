@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.x230-df026-normal7-finite-launch-reconciliation.v1",
+  "decision": "UNKNOWN_REMAINS_NO_REPLAY",
+  "job_id": "1a1aa57458d-fc05-4156",
+  "idempotency_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+  "initial_unknown_packet_tree": "e836f3d7ef058cf539daaa9030025151a6f27fde",
+  "original_request_blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+  "root_scope": "Four exact public file reads separately, max concurrency two; one host_health each for desktop and x230; one original process_status no earlier than 2026-11-05 06:19:39 UTC.",
+  "file_reads": [
+    {
+      "index": 0,
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/control/intent.public.json",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "call_count": 1,
+      "outcome": "tool_error_generic_multifile_read_failure",
+      "file_absence_proven": false,
+      "body_obtained": false
+    },
+    {
+      "index": 1,
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/control/result.public.json",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "call_count": 1,
+      "outcome": "tool_error_generic_multifile_read_failure",
+      "file_absence_proven": false,
+      "body_obtained": false
+    },
+    {
+      "index": 2,
+      "host": "x230",
+      "path": "/home/qian/heptabao-cold-h2-normal-20261105-r1/control/intent.public.json",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "call_count": 1,
+      "outcome": "tool_error_generic_multifile_read_failure",
+      "file_absence_proven": false,
+      "body_obtained": false
+    },
+    {
+      "index": 3,
+      "host": "x230",
+      "path": "/home/qian/heptabao-cold-h2-normal-20261105-r1/artifacts/transfer.result.public.json",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "call_count": 1,
+      "outcome": "tool_error_generic_multifile_read_failure",
+      "file_absence_proven": false,
+      "body_obtained": false
+    }
+  ],
+  "health": [
+    {
+      "host": "desktop",
+      "call_count": 1,
+      "authenticated": true,
+      "reachable": true,
+      "status": "healthy",
+      "ssh_roundtrip_ms": 601.2664159999999,
+      "timeout_ms": 10000
+    },
+    {
+      "host": "x230",
+      "call_count": 1,
+      "authenticated": true,
+      "reachable": true,
+      "status": "healthy",
+      "ssh_roundtrip_ms": 578.923708,
+      "timeout_ms": 10000
+    }
+  ],
+  "late_status": {
+    "call_count": 1,
+    "clock_before_call": "2026-11-05 06:19:41 UTC",
+    "earliest_required_utc": "2026-11-05 06:19:39 UTC",
+    "isError": true,
+    "error_code": "INVALID_ARGUMENT",
+    "error": "Remote helper private_job_directory FileNotFoundError for the exact original job id.",
+    "authoritative_terminal_obtained": false
+  },
+  "limits": {
+    "business_process_start_calls_total": 1,
+    "additional_process_start_calls": 0,
+    "signals": 0,
+    "replays": 0,
+    "alternate_keys_or_roots": 0,
+    "maximum_concurrent_file_calls": 2,
+    "additional_host_calls_after_late_status": 0
+  },
+  "conclusions": {
+    "launch_or_nonlaunch_proven": false,
+    "current_child_custody_or_cleanup_proven": false,
+    "destination_artifacts_or_source_qualification_proven": false,
+    "earlier_normal5_transport_and_inert_success_unchanged": true,
+    "original_495_and_production_mutation_not_claimed": true
+  },
+  "controller_identity": {
+    "observed_execution_mode": "operator",
+    "observed_system_jobctl": false,
+    "observed_request_digest": "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47",
+    "installed_controller_source_commit_or_binary_sha_available_in_this_evidence": false,
+    "root_supplied_reference_jobs_rs_blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+    "reference_claimed_as_installed": false
+  },
+  "evidence_representation": {
+    "read_and_status_error_texts": "exact returned single text block, no added LF",
+    "tool_result_envelopes": "JSON serialization of returned structured tool objects; not claimed as wire serialization",
+    "health_payloads": "exact original returned JSON text",
+    "initial_packet": "all eight initial unknown packet bytes unchanged"
+  },
+  "next": "Chain remains stopped. No conclusion of nonexecution, no replay, no product qualification."
+}

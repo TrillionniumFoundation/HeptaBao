@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-df026-h2-qa-binding-git-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/usr/bin/git"
+    }
+  }
+}

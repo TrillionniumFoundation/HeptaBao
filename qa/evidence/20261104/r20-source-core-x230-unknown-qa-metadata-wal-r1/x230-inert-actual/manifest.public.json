@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.public-evidence-manifest.v1",
+  "scope": "df026 X230 controls inert actual; originals and complete text byte readbacks",
+  "files": [
+    {
+      "path": "actual/inert-stage.result.public.json",
+      "bytes": 1882,
+      "sha256": "6e003773158e45dad682dbdcce6b0d6b2351b699acea15602fe954b4b7d82ace",
+      "blob": "f4c768eb0487c0612c82f049a1ab743053ecb436"
+    },
+    {
+      "path": "actual/receiver.py",
+      "bytes": 29900,
+      "sha256": "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d",
+      "blob": "4a302b89c1de1473844b4e364cb44e51d1310a1a"
+    },
+    {
+      "path": "actual/relay.py",
+      "bytes": 21085,
+      "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+      "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+    },
+    {
+      "path": "actual/sender.py",
+      "bytes": 8862,
+      "sha256": "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742",
+      "blob": "5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4"
+    },
+    {
+      "path": "admission/root-go.original.json",
+      "bytes": 6431,
+      "sha256": "67a6b400ef62e600222666d466e343136d4758095f95ef1ab9d1db64c7d4a335",
+      "blob": "e577341c355fcef270e14e5282eb133e88fb14bb"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 4495,
+      "sha256": "da2301d040e7f136a28a114f344dbb65643aaba19ff182752efddbd5b76f8fb5",
+      "blob": "11a4a6ec914e24c4bf20afcc7777d39c0c5a1a1b"
+    },
+    {
+      "path": "dispatch/intent.public.json",
+      "bytes": 1255,
+      "sha256": "02c7e8a31d10e4e183e00db542180d45c9e10c4b3a1aeea2f5f18afee588ff68",
+      "blob": "b3727001d97e8e0689273bc3e7f49ecc2a252f58"
+    },
+    {
+      "path": "dispatch/request.original.json",
+      "bytes": 85331,
+      "sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a",
+      "blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396"
+    },
+    {
+      "path": "sdk/inert-stage.result.public.json.file-info.original.json",
+      "bytes": 501,
+      "sha256": "88287174217ff2d552e09a987e9cc4f4fa1e2df5a6073cb64de67c61ec2e1408",
+      "blob": "b308c37ae6b43de72a07155182a19fbd14e26a79"
+    },
+    {
+      "path": "sdk/process-read.original.json",
+      "bytes": 4832,
+      "sha256": "c73948edec4a053dba353410e496e7343ac307a2995ce1ec484fdf212b070a37",
+      "blob": "c7f24d71622fa6981a70846752c02f81cc852a77"
+    },
+    {
+      "path": "sdk/process-start.original.json",
+      "bytes": 6222,
+      "sha256": "082679cdccd1733d78cfc944d7e881c735ca722aa52a4e40461ae801612699b2",
+      "blob": "72a9bee0c30540b4ea7fa532288300bd7dd22edc"
+    },
+    {
+      "path": "sdk/process-status.original.json",
+      "bytes": 731,
+      "sha256": "ef12d12ab3a18c7e8c6205fbb7742e824dc8633f2352a41a55ba631a32b4f6f8",
+      "blob": "0a447a3cffc62e655fe2fd3620ba4e4c2fd66705"
+    },
+    {
+      "path": "sdk/read-multiple-files.original.json",
+      "bytes": 64851,
+      "sha256": "2cfb1f58a065e406b13bb03da589c7ccc8dbf813b4f89dbf3155ca0f8e5e57b8",
+      "blob": "43b0fc33c5303a1fe27cbc0b045b425318f7bdfe"
+    },
+    {
+      "path": "sdk/receiver.py.file-info.original.json",
+      "bytes": 484,
+      "sha256": "01198af32ef3805f3ff71ba66d434680ec0e44cc893a8be25fccc0a460f9e51e",
+      "blob": "2c14f90bde2b8af253ca9e146201ffe6fd08d8f2"
+    },
+    {
+      "path": "sdk/relay.py.file-info.original.json",
+      "bytes": 481,
+      "sha256": "08931f02ea5c43baa48a0548ff56dc9ec48978b0526107edfabbd6e375334b73",
+      "blob": "6c4d8354386184d18506041d632aedb63e5ae0f1"
+    },
+    {
+      "path": "sdk/sender.py.file-info.original.json",
+      "bytes": 480,
+      "sha256": "529c696af0e98ee43299dfc218529246cc4bccae4349cfdf386f1e0ebb6150ef",
+      "blob": "89a4c8d9dd1123c4ff879bb1b2f7028ca03bbca1"
+    },
+    {
+      "path": "source/inert_carrier.py",
+      "bytes": 5029,
+      "sha256": "0eeac473e4cce47f6596a7c54380a0b3b0125256478d53bfe529b3d381cf8c0a",
+      "blob": "0f2da42f4f9d6e508146b18c53e3d0623586c024"
+    },
+    {
+      "path": "source/stdin.original.json",
+      "bytes": 79906,
+      "sha256": "dd2d6e8ebaf98d1425a1ae24049328b44d57f35116e4e05650c0162dd3e78e82",
+      "blob": "577005369cc2d3f0e113b38450ae4e79807fa088"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 1472,
+      "sha256": "e36ecddf7f216b999587f97000897a6b06fad803a63784f3f403daa5418e1614",
+      "blob": "dc8e44a7098d36dafdcf0ec2fc5ebc8afd8c6175"
+    }
+  ]
+}

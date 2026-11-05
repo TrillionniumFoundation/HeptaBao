@@ -1,0 +1,111 @@
+--- reference/relay.py
++++ candidate/relay.py
+@@ -14,73 +14,73 @@
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+ HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+ TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-BINDING_READY=False
++BINDING_READY=True
+ FILES=[
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+     "name": "heptabao-server",
+-    "bytes": None,
+-    "sha256": None,
++    "bytes": 110339520,
++    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+     "source_mode": 320,
+     "target_mode": 320,
+-    "version": None
++    "version": "2050:5019547:110339520:1793857530819632046:1793857530819632046"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+     "name": "native-build.public.json",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 772,
++    "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019549:772:1793857533118564089:1793857533118564089"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+     "name": "result.public.json",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 3137,
++    "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019550:3137:1793857533123563941:1793857533123563941"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+     "name": "canonical-df026-full.bundle",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 23429893,
++    "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019525:23429893:1793856420289823382:1793856420289823382"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+     "name": "source-export.result.public.json",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 38783,
++    "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019527:38783:1793856420629814207:1793856420629814207"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+     "name": "normal60-result.public.json",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 48188,
++    "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019551:48188:1793857533128563794:1793857533128563794"
+   },
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
+     "name": "groups.json",
+-    "bytes": None,
+-    "sha256": None,
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": None
++    "bytes": 6249,
++    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": "2050:5019552:6249:1793857533133563646:1793857533133563646"
+   }
+ ]
+-HELPERS={"sender.py":None,"receiver.py":None}
++HELPERS={"sender.py":"c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742","receiver.py":"fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',

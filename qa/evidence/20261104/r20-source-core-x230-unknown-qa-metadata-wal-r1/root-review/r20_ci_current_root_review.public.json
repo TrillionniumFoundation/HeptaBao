@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.root.current-ci-062417.r20",
+  "observed_by_utc": "2026-11-05T06:24:17Z",
+  "pr153": {
+    "head": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "head_job": 127037102268,
+    "merge_job": 127037102573,
+    "full_workspace_both": "PASS",
+    "strict_clippy_both": "FAIL",
+    "later_gates": "SKIPPED",
+    "root_review": "20d816b908ac55117dfc496c171e7921ff63bf16"
+  },
+  "pr154": {
+    "head": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "merge": "b5b96921176b7595856b2e7e3965d2f54ade5b56",
+    "merge_job": 127052736696,
+    "merge_workspace": "PASS",
+    "merge_clippy": "FAIL",
+    "merge_log": {
+      "name": "r20_ci_pr154_merge_full_log",
+      "blob": "aa632359e8056ab715ae5720bdf4cb63b98e1427",
+      "bytes": 2867575,
+      "sha256": "fc275bd9f28eb7026b702068b36d4b21609671d6a35e848b64b2a89250a0aeba"
+    },
+    "head_job": 127052736848,
+    "head_status": "workspace_in_progress"
+  },
+  "pr155": {
+    "head": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "jobs": [
+      127062153929,
+      127062154166
+    ],
+    "status": "both_workspace_in_progress"
+  },
+  "pr156": {
+    "head": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "merge": "f03d524a83968adb88e5d3713dd584e6a1743deb",
+    "run": 41976736304,
+    "jobs": [
+      127077220873,
+      127077221194
+    ],
+    "status": "both_queued"
+  },
+  "observed_clippy_failure": "needless_borrows_for_generic_args at service_native_v6_ha_read.rs:464:68; 19ba source successor addresses this one call",
+  "full_replacement_qualified": false,
+  "no_rerun_retarget_or_cancel_requested": true
+}

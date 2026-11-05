@@ -1,0 +1,32 @@
+{
+  "original_job": "1a1aa57458d-fc05-4156",
+  "files": [
+    {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/control/intent.public.json"
+    },
+    {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/control/result.public.json"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cold-h2-normal-20261105-r1/control/intent.public.json"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cold-h2-normal-20261105-r1/artifacts/transfer.result.public.json"
+    }
+  ],
+  "per_path_max_file_bytes": 65536,
+  "per_path_max_response_bytes": 131072,
+  "max_concurrency": 2,
+  "health_once_each": [
+    "desktop",
+    "x230"
+  ],
+  "status_once_after_utc": "2026-11-05T06:19:39Z",
+  "no_process_start": true,
+  "no_signals": true,
+  "no_alternate_root": true
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.root.ci-df026-terminal-r20",
+  "as_of_utc": "2026-11-05 06:14:15 UTC",
+  "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "pr": 153,
+  "run": 41964140419,
+  "head_job": 127037102268,
+  "head_full_log": {
+    "name": "r20_ci_pr153_head_full_log",
+    "blob": "882d2ad3782973b0995588ff5aac69f859ce206b",
+    "bytes": 2946416,
+    "sha256": "f442525a766fceeb11fe668c5574bd91e40fd5e57b73567fd3abef233ff3aaa1"
+  },
+  "merge_job": 127037102573,
+  "merge_full_log": {
+    "blob": "356dde085d91e86ed61e97c8924917d5e081eb86",
+    "bytes": 2889750,
+    "sha256": "9925cf0e3e7b82c94630a981fabd0eacd87c80ef2b388d908e1e530b73289db7"
+  },
+  "both_complete_locked_workspace": "PASS",
+  "both_strict_clippy": "FAIL_needless_borrows_for_generic_args_service_native_v6_ha_read_rs_464_68",
+  "later_gates": "SKIPPED",
+  "full_replacement_qualified": false,
+  "successor": {
+    "commit": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "pr": 156,
+    "run": 41976736304,
+    "jobs": [
+      127077220873,
+      127077221194
+    ],
+    "observed": "queued"
+  },
+  "no_rerun_or_cancel_requested": true
+}

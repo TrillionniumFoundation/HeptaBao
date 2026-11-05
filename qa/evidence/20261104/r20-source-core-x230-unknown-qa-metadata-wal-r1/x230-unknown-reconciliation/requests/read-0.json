@@ -1,0 +1,8 @@
+{
+  "host": "desktop",
+  "paths": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/control/intent.public.json"
+  ],
+  "max_file_bytes": 65536,
+  "max_response_bytes": 131072
+}

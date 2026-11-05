@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root-r19-complete-tree-review.v1",
+  "tree": "5a75008a74521860370c90bf588ace5f52804dd1",
+  "parent_tree": "4cfad028fef8d4aceb0f7f606972d2e3077996a2",
+  "merkle": {
+    "root_sha": "5a75008a74521860370c90bf588ace5f52804dd1",
+    "trees_verified": 1592
+  },
+  "before_blobs": 10813,
+  "after_blobs": 11777,
+  "prior_non_document_leaves_whole_unchanged": 10811,
+  "prior_files_deleted": 0,
+  "document_files_updated": 2,
+  "new_files": 964,
+  "all_new_paths_modes_blob_ids_sizes_equal_verified_originals": true,
+  "all_packet_merkle_roots_exact": true,
+  "original_index_raw_tokens_except_top_asof_preserved": true,
+  "prior_document_body_preserved_exact": true,
+  "verification_method": "Full Merkle reconstruction from the previously independently verified complete R18 tree, 26 whole-verified packet leaf sets, 45 verified root leaves, and two exact document replacements; resulting root SHA and all26 immediate children match actual nonrecursive Git tree retrieval.",
+  "recursive_fetch_failure": {
+    "attempts": 2,
+    "observed_error": "Transport closed",
+    "mutation_resubmitted": false,
+    "no_third_recursive_fetch": true
+  },
+  "full_replacement_qualified": false,
+  "production_changed": false,
+  "old_assets_deleted": false
+}

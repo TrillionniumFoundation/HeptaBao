@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root.x230-unknown-limited-reconciliation.r20",
+  "status": "UNKNOWN_RETAINED_NO_REPLAY_NO_TERMINATION_CLAIM",
+  "as_of_utc": "2026-11-05 06:24:15 UTC",
+  "packet": {
+    "tree": "a6ac5db43375143d877da029da353807bf13600f",
+    "files": 31,
+    "bytes": 26851,
+    "merkle_trees": 4
+  },
+  "original_job": "1a1aa57458d-fc05-4156",
+  "original_request": {
+    "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+    "key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7"
+  },
+  "root_initial_checks": [
+    "ACK exact request args",
+    "ACK exact request host",
+    "ACK exact request executable",
+    "ACK exact request cwd",
+    "ACK exact request idempotency_key",
+    "ACK unique job unknown not retry"
+  ],
+  "observations": {
+    "ack": "unique launch_unknown / no auto retry / record persisted; full request equality verified",
+    "first_status": "FileNotFoundError within private_job_directory for exact original job, no authoritative result",
+    "four_fixed_public_reads": "Each singleton request failed with generic read error, not an explicit ENOENT; no file contents obtained",
+    "two_fixed_health_reads": "desktop and x230 authenticated reachable healthy; this is not execution/termination evidence",
+    "late_status": "Original job checked after 2026-11-05 06:19:41 UTC; same FileNotFoundError and no authoritative result"
+  },
+  "claim_limits": {
+    "original_effect_outcome": "UNKNOWN",
+    "all_owned_stopped": "UNKNOWN",
+    "source_or_seven_artifact_transfer_qualified": false,
+    "retry_allowed": false,
+    "old_495_or_production_changes_authorized": false,
+    "reference_controller_source_is_actual_deployment_identity": false
+  },
+  "next_source_only_review": "Consider an original-source-specific create-only atomic directory reservation that refuses any existing root and fences late transfer start. This is not permission to replay, erase historical unknown, signal or modify any existing artifact."
+}

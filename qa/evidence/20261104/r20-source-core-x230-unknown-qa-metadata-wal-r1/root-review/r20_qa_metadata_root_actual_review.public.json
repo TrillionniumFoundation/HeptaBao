@@ -1,0 +1,505 @@
+{
+  "schema": "heptabao.root.qa-six-read-metadata-closure.r20",
+  "status": "SIX_READS_ROOT_CLOSED_SOURCE_BINDING_ALLOWED_NO_QA_EXECUTION",
+  "as_of_utc": "2026-11-05 06:12:40 UTC",
+  "packet": {
+    "tree": "1282c1e2e6f4eaf90e231e899aaa816cb8652ac4",
+    "files": 47,
+    "bytes": 419215,
+    "merkle": {
+      "root_sha": "1282c1e2e6f4eaf90e231e899aaa816cb8652ac4",
+      "trees_verified": 8
+    },
+    "records": [
+      {
+        "path": "actual/launch-preflight.public.json",
+        "blob": "2a78cef6be77ea3d2efe31f425f168109d2e35b8",
+        "bytes": 28000,
+        "sha256": "9d8fc768b35116a2404bc31d4d9d924a6bce1b7d90f911c77fbc510c080bf076",
+        "mode": "100644"
+      },
+      {
+        "path": "actual/normal60.public.json",
+        "blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "bytes": 48188,
+        "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+        "mode": "100644"
+      },
+      {
+        "path": "analysis/actual-metadata.public.json",
+        "blob": "83fd19f105308a07e551cfbfe8df2d8a23cd584e",
+        "bytes": 6120,
+        "sha256": "7d50175cf42895b2293c5aedb8624ad37fae6d6761167947f74f3946e6f5230c",
+        "mode": "100644"
+      },
+      {
+        "path": "manifest.public.json",
+        "blob": "83fdef953a5e21bfe839628e90a282f266ee61ce",
+        "bytes": 10342,
+        "sha256": "0f51c37098a4d259d0702a95d6a5f9dfa2d74cf460ee0fd74919e5856377cdc3",
+        "mode": "100644"
+      },
+      {
+        "path": "native/cargo.json",
+        "blob": "59c01b2daffaf7d054acc968a90315328029027d",
+        "bytes": 468,
+        "sha256": "0a33306ddcc550794b86a4676aa78b105575af651a1a33672e032485bff9e429",
+        "mode": "100644"
+      },
+      {
+        "path": "native/git.json",
+        "blob": "f1a61dbfece26bc030dd1bf042daccc52039cf08",
+        "bytes": 398,
+        "sha256": "1ad27a0f355725bf9a93c530525e7546afb2189f5d2f2ee6487a0144ba5d9cda",
+        "mode": "100644"
+      },
+      {
+        "path": "native/machine-id.json",
+        "blob": "642f396123a5a5dcbfa45fb1d3d5651730a8c757",
+        "bytes": 391,
+        "sha256": "47b93b0f40f0f883aaddb09ac19ffba0d66060b842d184f42137ac83259f777f",
+        "mode": "100644"
+      },
+      {
+        "path": "native/normal-preflight.json",
+        "blob": "5ce25aaa8526eaa58ac070cee1f016c0bcaedce9",
+        "bytes": 82233,
+        "sha256": "9655e05367c34f8420ff93d3ca30cb86349dd8b81cb32f5df8c63ed17b9ce2bf",
+        "mode": "100644"
+      },
+      {
+        "path": "native/python.json",
+        "blob": "75d960f3e99c66dd8f337e1a51c943f5e3dc167e",
+        "bytes": 405,
+        "sha256": "9edb40431246bfdb49124e5fd5c6170e64d7ebd119d39c301dc8c0ef0bde85f3",
+        "mode": "100644"
+      },
+      {
+        "path": "native/rustc.json",
+        "blob": "1f773401aa6c562ff0a3c90ac7bc7dfdcfcc37cc",
+        "bytes": 464,
+        "sha256": "8f805e830b6a6a26c1979e8cb9553046811b01ec4a879c18cfd9886c71609713",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/cargo-admission.txt",
+        "blob": "1cc9a772861bafa8ca2b4792651614669185ce19",
+        "bytes": 543,
+        "sha256": "c579e4bfd9f651a3b6caeaa895489e9216c97815f4f4a394871e4cf25f6f0f03",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/cargo-page-000000.txt",
+        "blob": "0e4dfb8b23d11e0dc514e513d081128a73f92f20",
+        "bytes": 1461,
+        "sha256": "e93144eacf9fd4358a3378cbd2d40e18aea941c405ff6b716f223d41e48318ec",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/cargo-status.txt",
+        "blob": "75057ca9e66b0a4f066664398526a4df567614d8",
+        "bytes": 800,
+        "sha256": "45ad2f9782b458e153621d051b05ef81011c6510591e6dc6a8ac3809bdcf1507",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/git-admission.txt",
+        "blob": "35b6a77c719816a855c11f7aa60fb28cae5652e7",
+        "bytes": 543,
+        "sha256": "1df970d82df2f17c0c4c55a69e9e8e3633d4a67a25efdaab297c8e57443c95c2",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/git-page-000000.txt",
+        "blob": "643f09ca256b677917e8f3c01c9447ea3408aabf",
+        "bytes": 1369,
+        "sha256": "4516d71a4f7d079f55551b13596e0444a5e06568987ba4174285e85850f5b46e",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/git-status.txt",
+        "blob": "d1f4f8750293d74cb79e1d2bca6629dc8147dbba",
+        "bytes": 800,
+        "sha256": "ff82beda63fdba28a7c156259a2bbaf8c96c6aecb452a76eddfd0c25fffd2b3f",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/machine-id-admission.txt",
+        "blob": "04bbaf41bf20a782547867369dc7245a85bf68a1",
+        "bytes": 543,
+        "sha256": "0660aa3fbd0128c1864f0840f0dcbda1296858b35607e0e2d30d6ca5522b6112",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/machine-id-page-000000.txt",
+        "blob": "52c42faa479aa68a29a725d6ce78b850225258af",
+        "bytes": 1361,
+        "sha256": "ee76accab706b5fb6058d669a5fcb76651379627c9c009346fb71d177f7a4871",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/machine-id-status.txt",
+        "blob": "9aedffcce472f2d746fd69892ae14c3598c32dda",
+        "bytes": 800,
+        "sha256": "8ec2438b585708ba0b48d51ecac13e89cfa22992220c77c838e885cc9e302535",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-admission.txt",
+        "blob": "cf18f1ac0dfdf2a807ed799a07458b5dfc0b1371",
+        "bytes": 553,
+        "sha256": "f730b8717d08d6acc353359b7e2fac7eb8edb10d0022bda84fea4ebcb85be9fb",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-000000.txt",
+        "blob": "69807faf122f758642344161433c5c915a3191d5",
+        "bytes": 22534,
+        "sha256": "b5c0b276ad5197c668ce6249f544ce4767975d1c6885e3b6f87fcb131e87c5e7",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-016384.txt",
+        "blob": "3000c4c2011b0c80ff764a8b0f5af35f033b0902",
+        "bytes": 22538,
+        "sha256": "90d9fc3df1c4862bc59166c4073481d8c90495fa6a05379fb754542680ca911c",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-032768.txt",
+        "blob": "361a48126a7d1413e4077432476ee0b41d117844",
+        "bytes": 22538,
+        "sha256": "aa0d4d55114f49643bd86607b0b28099a96478070e9bef66cb17589bea74d728",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-049152.txt",
+        "blob": "050f9e898307a396b5d35719a3c19be3ffaf5a84",
+        "bytes": 22538,
+        "sha256": "1ec5c8dc676d92c10a5c47b156b4c9910413a652b09a574b7f132a29fca997bd",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-065536.txt",
+        "blob": "830abd750d0dd78c568a5a47babfcfee5b08a0ac",
+        "bytes": 22538,
+        "sha256": "bdbbf7b632c44708fda9b60fb7194085734ffb81abc839abacedda6dbf7306ce",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-page-081920.txt",
+        "blob": "138c17d1aa44a8c450cdea34201ea0892a159bce",
+        "bytes": 12753,
+        "sha256": "a1bac56b2ef95f48490163d16297520b0d09f1090924523d5ed3825d91814173",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/normal-preflight-status.txt",
+        "blob": "4080d48b0820abfb2827fa3a3e73d1a097d1fe2a",
+        "bytes": 810,
+        "sha256": "261e67d874444d76de07f3fc48e616b91109b440aa7151647a9fa61b5a88eb28",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/python-admission.txt",
+        "blob": "4d74996507b69cfaabd1a3b19c197be54c6cb0dc",
+        "bytes": 543,
+        "sha256": "d8d87585c8be5827f21778d81296daf940b0fc87c9dcaeff0e54baf3540502e6",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/python-page-000000.txt",
+        "blob": "3be07381bd36ebf120e1682a85f23c61b4fb882f",
+        "bytes": 1377,
+        "sha256": "9d6feebce8fbb5003d093af1fd7e5ef19560c5ebf043967bb9d528376d78b068",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/python-status.txt",
+        "blob": "82904d9859ec3621d0a2ab578a98cb9bfd327f37",
+        "bytes": 800,
+        "sha256": "071d9cc8c6958d3613c24f1f9c02353c52ba583cc20bf001c8970eaadd097d44",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/rustc-admission.txt",
+        "blob": "17ce9f9f48dd4cacd4a1973fa99bb32571baf629",
+        "bytes": 543,
+        "sha256": "27f833344496c695b07bfe1df784a6e8582cd833cbfea1db4c330268043a9397",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/rustc-page-000000.txt",
+        "blob": "046baf5ab8a1a058817d738b063d8905e0008ed0",
+        "bytes": 1457,
+        "sha256": "5a4ccbe0cedeacccd4125a64a0a1e7fad922cbb0148c4071f49bf094691e127b",
+        "mode": "100644"
+      },
+      {
+        "path": "operations/rustc-status.txt",
+        "blob": "c3ed93c2c3f46b15be29fbea4cc1829cd412409d",
+        "bytes": 800,
+        "sha256": "369834385f2bbf3455b8e2a12b1bd808e51beea31d573eefe91c27a656cfe001",
+        "mode": "100644"
+      },
+      {
+        "path": "reference/plan.public.json",
+        "blob": "32608dcd7d20f1f395066b4ae4e919a6121db9d8",
+        "bytes": 3450,
+        "sha256": "e728eac59dc58a8ab0e4cf86dcd07d84d5855a472ceacfe044c3a07b1fc6a5a5",
+        "mode": "100644"
+      },
+      {
+        "path": "reference/root-go.public.json",
+        "blob": "232cea21b185727054fcaa4929ada701733f111c",
+        "bytes": 2928,
+        "sha256": "cf1e6af69e61e27b9ba2140c6806bcdafe9af5247139e3e351362c4b9d645792",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/cargo.json",
+        "blob": "31e9750f1763b7a9832979462b11b14ca38115d1",
+        "bytes": 258,
+        "sha256": "774f9468b9d922574c5bdad04eb6e4b6c5041cb307edca3ad3b51463cf8d5853",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/git.json",
+        "blob": "bc23f94afb0dbe1d85fc32a4987297b206f824b9",
+        "bytes": 194,
+        "sha256": "44c0fc28b0446caa478838e54da256ae31df64a9b8ffa38bfc5a3c2e4be315a6",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/machine-id.json",
+        "blob": "077d21829b3c7f498a9e573d0c6c4a95e14ec88e",
+        "bytes": 204,
+        "sha256": "ce26831a110d7c7520c226ab8154252ea95e518e89aa62dee51d64e5d794754d",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/normal-preflight.json",
+        "blob": "f9cd5f3c70834f66f1df738928a98a4ad1579386",
+        "bytes": 490,
+        "sha256": "a645bb8f95f98490d8f8a4c9d3b13839cde76adb70b296bb1d9d28c514007b95",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/python.json",
+        "blob": "0d7487eb6cefd53d0d1b1e2c5d4d96b1d512670c",
+        "bytes": 204,
+        "sha256": "e02bce00aa51bc488e2f502d2e25e4178a3561778f33ef5bdc82bbc1dd7d5c9f",
+        "mode": "100644"
+      },
+      {
+        "path": "requests/rustc.json",
+        "blob": "991c081d6b2b097cb730839b910ccf3a36b2f6be",
+        "bytes": 258,
+        "sha256": "73312e089379b9834fa23f4714a58d7016c97971c44b3c09caedf9032c6becc6",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/cargo-original.json",
+        "blob": "2f05538f4e9a8adeccd02f173ce8bc1937832e21",
+        "bytes": 585,
+        "sha256": "62bc1ed095b6dc77a05457c84681165d78a31d3e312b0aab3e816a8f9cf28aa3",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/git-original.json",
+        "blob": "9e18f0c152210141c7ccc2a76a7669a7ee4ad98b",
+        "bytes": 515,
+        "sha256": "59caa38a5025babf08de24952e670ae68e61a4df44d240548f94a9d78c8d038a",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/machine-id-original.json",
+        "blob": "db5f30166d4c112e231379903390d7fdac1c4df1",
+        "bytes": 508,
+        "sha256": "ba08d5946c264f2e292ae54afe27000b06e80b1d879a9923829a7dab98f14c3c",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/normal-preflight-original.json",
+        "blob": "d65d36f1573d11fb8fdc163bba8a5b5f0730f429",
+        "bytes": 90967,
+        "sha256": "134647b25e679fdbcf8dcedfdf1f55ac0fdc0c87145be5b8b48302c1de9d2b57",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/python-original.json",
+        "blob": "b7cd7eed8044e28708622cd8b35645fadbdb56de",
+        "bytes": 522,
+        "sha256": "6175d602b811cabb466a510468873d50f2db361cf269391d0e0de5b2b80a5131",
+        "mode": "100644"
+      },
+      {
+        "path": "sdk/rustc-original.json",
+        "blob": "4e42a9e8c83c5009b47b53df72f25bf50dee8058",
+        "bytes": 581,
+        "sha256": "89d5e498aafc67e77105c48c8b5228a80994aa720b13077d8d8535ad39d92f11",
+        "mode": "100644"
+      }
+    ]
+  },
+  "root_checks": [
+    "python unique closed operation",
+    "python native original SDK equality",
+    "python immutable page0",
+    "python pages exact SDK bytes",
+    "python toolmetadata matches fixed actual",
+    "python exact executable owner and mode",
+    "git unique closed operation",
+    "git native original SDK equality",
+    "git immutable page0",
+    "git pages exact SDK bytes",
+    "git toolmetadata matches fixed actual",
+    "git exact executable owner and mode",
+    "cargo unique closed operation",
+    "cargo native original SDK equality",
+    "cargo immutable page0",
+    "cargo pages exact SDK bytes",
+    "cargo toolmetadata matches fixed actual",
+    "cargo exact executable owner and mode",
+    "rustc unique closed operation",
+    "rustc native original SDK equality",
+    "rustc immutable page0",
+    "rustc pages exact SDK bytes",
+    "rustc toolmetadata matches fixed actual",
+    "rustc exact executable owner and mode",
+    "machine-id unique closed operation",
+    "machine-id native original SDK equality",
+    "machine-id immutable page0",
+    "machine-id pages exact SDK bytes",
+    "machine-id toolmetadata matches fixed actual",
+    "normal-preflight unique closed operation",
+    "normal-preflight native original SDK equality",
+    "normal-preflight immutable page0",
+    "normal-preflight immutable page16384",
+    "normal-preflight immutable page32768",
+    "normal-preflight immutable page49152",
+    "normal-preflight immutable page65536",
+    "normal-preflight immutable page81920",
+    "normal-preflight pages exact SDK bytes",
+    "two complete public files only",
+    "actual/launch-preflight.public.json exact full bytes",
+    "actual/normal60.public.json exact full bytes",
+    "exact normal public evidence already qualified"
+  ],
+  "closed_operations": 6,
+  "immutable_pages": 11,
+  "tool_metadata": {
+    "python": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 0,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 493,
+        "uid": 0,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "size": 8020928,
+      "version": "66306:17175553:8020928:1788171506000000000:1789080129938955247"
+    },
+    "git": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 0,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 493,
+        "uid": 0,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/usr/bin/git",
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+      "size": 4547768,
+      "version": "66306:17187334:4547768:1792159905000000000:1792577051798065774"
+    },
+    "cargo": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 493,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+      "size": 40688400,
+      "version": "66306:28970595:40688400:1791677518879180933:1791677518982180473"
+    },
+    "rustc": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 493,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+      "size": 645016,
+      "version": "66306:28970693:645016:1791677530537128895:1791677533756422548"
+    },
+    "machine-id": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 0,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 292,
+        "uid": 0,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 292,
+      "path": "/etc/machine-id",
+      "sha256": "c67efd30ee6bcef9fbbdedce3e127151262d01a4ee23068cdf9c4136d9b9421b",
+      "size": 33,
+      "version": "66306:41157019:33:1776905803136690898:1776905803136690898"
+    }
+  },
+  "historical_target_identity": [
+    66306,
+    31606588,
+    1000,
+    1000,
+    16832,
+    3,
+    4096,
+    {
+      "$exactInteger": "1793852862522711011"
+    },
+    {
+      "$exactInteger": "1793852862522711011"
+    }
+  ],
+  "historical_builder_binding": {
+    "dev": 66306,
+    "ino": 31606588,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": 448
+  },
+  "claim_limits": [
+    "Target identity is from original preflight, not a current stat; builder must recheck before Cargo.",
+    "Machine-id contents were not requested; only whole file digest/metadata.",
+    "No process, Cargo, QA binary or product test executed."
+  ]
+}

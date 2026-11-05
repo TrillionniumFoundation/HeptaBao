@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.root.sqlite3534-w03-source-branch-review.r20",
+  "status": "SOURCE_ONLY_W03_EXPECTATION_CONFIRMED_NO_INSTALLED_RUNTIME_QUALIFICATION",
+  "as_of_utc": "2026-11-05 06:14:14 UTC",
+  "reference": {
+    "sqlite_git_commit": "b09c88c14082339b66c7b7158d609a771e64ca69",
+    "fossil_uuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "os_unix": {
+      "blob": "927b8ebfcbce355934dbf3671497057f67ba9cb2",
+      "bytes": 295468,
+      "sha256": "bad02ce9e25e3842c116a9f9bb13128b74f965692c5987202103423c86f62475"
+    },
+    "wal": {
+      "blob": "33fa038dba32b388c0662f34102ff4b96edd0b5a",
+      "bytes": 177747,
+      "sha256": "0c0467f7c4de773512b3327b0d3973fc31d50cf74603d6aec0e3b3e1c787e217"
+    }
+  },
+  "reviewed_branches": [
+    {
+      "file": "os_unix.c",
+      "lines": [
+        5031,
+        5044
+      ],
+      "observation": "readonly_shm skips initial RW|CREATE SHM open. Failed O_RDONLY|O_NOFOLLOW sets SQLITE_CANTOPEN and exits."
+    },
+    {
+      "file": "os_unix.c",
+      "lines": [
+        5120,
+        5124
+      ],
+      "observation": "unixShmMap returns a non-OK unixOpenSharedMemory result without conversion."
+    },
+    {
+      "file": "wal.c",
+      "lines": [
+        2667,
+        2687
+      ],
+      "observation": "Only SQLITE_READONLY_CANTINIT enables heap WAL-index fallback; other errors, including CANTOPEN, return directly."
+    },
+    {
+      "file": "os_unix.c",
+      "lines": [
+        8501,
+        8525
+      ],
+      "observation": "unix-posix registration is compile conditional; it is explicit, with no runtime alternate VFS permitted."
+    }
+  ],
+  "W03_preconditions": [
+    "New independent reader process.",
+    "Exact explicitly selected unix-posix VFS is present.",
+    "Ordinary WAL, no immutable or exclusive/heap mode and no existing in-process SHM handle.",
+    "Existing SHM file permitted for metadata/preguards but kernel denies SHM file-read-data."
+  ],
+  "W03_expected": "Actual SHM data-open denial and SQLite CANTOPEN; no captured row. READONLY_CANTINIT fallback is a different branch and is not prohibited or misclassified by this case.",
+  "recognition_limit": "W03 alone does not prove readonly_shm recognition, because an unknown parameter plus a rejected RW open could also reach the same denied read. Combine exact installed sqlite_source_id, required VFS and W01 successful read under actual write-denying sandbox.",
+  "scope": "Source implementation and fixed synthetic case sources allowed. No host execution, production read, capture replay, cap inflation or weaker guards approved."
+}

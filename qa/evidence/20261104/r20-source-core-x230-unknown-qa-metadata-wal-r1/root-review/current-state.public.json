@@ -1,0 +1,474 @@
+{
+  "schema": "heptabao.36076-continuation.r20-current-evidence.v1",
+  "as_of_utc": "2026-11-05T06:29:38Z",
+  "full_openbao_271_replacement_qualified": false,
+  "production_cutover_performed": false,
+  "production_config_changed": false,
+  "old_assets_deleted": false,
+  "host_candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "tracked_files": 3913,
+    "source_bytes": 62212769,
+    "leaf_index_sha256": "e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54",
+    "later_ci_sources_do_not_inherit_host_execution": true
+  },
+  "evidence": {
+    "prefix": "qa/evidence/20261104/r20-source-core-x230-unknown-qa-metadata-wal-r1",
+    "packets": 6,
+    "file_entries": 192,
+    "bytes": 2867636,
+    "packet_merkle_trees": 40,
+    "manifest": "qa/evidence/20261104/r20-source-core-x230-unknown-qa-metadata-wal-r1/root-review/packet-manifest.public.json",
+    "previous_checkpoint": "ca5f3066f3c432ee1c3dff913be47a70e1ba63db",
+    "previous_full_tree": "5a75008a74521860370c90bf588ace5f52804dd1",
+    "previous_document_and_raw_index_tokens_preserved": true,
+    "post_previous_tree_proof": "3e2bfa027890a8bef7faba3fcd91d7552414e9c5"
+  },
+  "normal_builds": {
+    "mac": {
+      "status": "ROOT_COMPLETE_R18_NORMAL60",
+      "job": "1a1a9eb00ff-fc05-39a5",
+      "full_packet": "80c21ef4cf857c1f927da5daf6665662bbd05104",
+      "root_review": "1d9d9d72e687c68a7424af786d9ed0d960e3c697",
+      "tests": 60,
+      "server_bytes": 92408592,
+      "server_sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+    },
+    "rog": {
+      "status": "ROOT_COMPLETE_NORMAL60",
+      "job": "1a1a9f65382-fc05-3a6c",
+      "full_packet": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+      "packet_files": 182,
+      "packet_bytes": 2365325,
+      "root_review": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+      "tests": {
+        "original": 44,
+        "ingress": 7,
+        "cold_h2": 9,
+        "total": 60,
+        "listing_count": 22,
+        "actual_groups": 22,
+        "failed": 0,
+        "ignored": 0
+      },
+      "all_46_owned_children_reaped_empty": true,
+      "cargo_release_events": 445,
+      "cargo_libtest_events": 443,
+      "release_seconds": 1333.762321196,
+      "libtest_seconds": 1154.930052526,
+      "original_budgets_unchanged": true,
+      "server": {
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+        "bytes": 110339520,
+        "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2"
+      },
+      "combined_result": {
+        "blob": "bff1113f7c5b91d9eb0bcd4befd95a20a6812051",
+        "bytes": 48188,
+        "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b"
+      },
+      "not_full_workspace_or_lan_or_current_consumer_qualification": true
+    }
+  },
+  "mac_current_credentials": {
+    "status": "FAILED_CAPTURE_OBSERVATION_UNKNOWN",
+    "source_packet": "20ac9d5b0d79577e107b1d202dced02ead300721",
+    "source_root_review": "725783e8df43dc9e59a2ff14a7debdbdf5e40d6e",
+    "inert_packet": "14e9f3157b7fc6054dd400ac2573c73c6c66c11b",
+    "actual_job": "1a1aa2ac597-fc05-3e8f",
+    "actual_packet": "304926750268d0718d695146742de6d9c576df70",
+    "root_failure_review": "ef8659aabe424844e312f83b6f19ffef0752a12d",
+    "authority": "exit1 complete durable, no timeout/cancel/retry",
+    "outer_error": "actual_sandbox_capture_child_terminal",
+    "child_error": "CaptureRefused/current_input_size_bound",
+    "production_read_attempted": true,
+    "library_returned_capsule": false,
+    "capture_outcome_unknown": true,
+    "exact_failed_leaf_unobserved": true,
+    "all_three_process_children_naturally_ended_reaped_empty": true,
+    "native_kernel_refusal_checks": {
+      "count": 4,
+      "all_eperm": true
+    },
+    "library_internal_failure_fd_connection_ledger_not_returned": true,
+    "entry_and_outer_descriptor_closure_does_not_substitute_library_ledger": true,
+    "five_agent_consumer_or_launchd_phase_started": false,
+    "provider_or_j3160_called": false,
+    "original_deadlines_and_credential_semantics_unchanged": true
+  },
+  "mac_current_metadata": {
+    "status": "ROOT_COMPLETE_FINITE_SEQUENTIAL_METADATA_ONLY",
+    "job": "1a1aa3a3d6c-fc05-3f7d",
+    "source_packet": "4267fd57a9771fb8217c15b2e236da9888706b90",
+    "actual_packet": "d851530bf16d6bde7ef4c8c0246009b2d46428ad",
+    "root_review": "49a0bfa8265d634b393670a908e26116df438a52",
+    "leaf_count": 46,
+    "directory_count": 22,
+    "regular_leaves": 25,
+    "direct_absent": 18,
+    "parent_absent": 3,
+    "held_directories": 21,
+    "absent_directories": 1,
+    "metadata_calls": 354,
+    "maximum_metadata_calls": 452,
+    "registered_and_closed_fds": 46,
+    "elapsed_seconds": 0.0027581253089010715,
+    "shared_success_seconds": 5,
+    "outer_seconds": 60,
+    "file_body_bytes_read": 0,
+    "sql_or_child_or_network_or_write": false,
+    "current_size_precondition_mismatches": [
+      {
+        "label": "installed_registry_wal",
+        "bytes": 5969912,
+        "original_maximum": 0
+      }
+    ],
+    "main_database_original_maximum": null,
+    "no_claim_new_metadata_identifies_previous_failed_leaf": true,
+    "original_failed_capture_unknown_retained": true,
+    "next": "Source review and isolated public proof for a bounded genuine read-only WAL path; preserve 1MiB row/8MiB aggregate/3s query/45s capture, failure closure ledger, and no production writes. No new private capture yet."
+  },
+  "public_source": {
+    "export": {
+      "status": "ROOT_COMPLETE",
+      "job": "1a1aa13e7fd-fc05-3c99",
+      "packet": "7c617428645a23e18e6ffb3854708e0b210fc676",
+      "files": 166,
+      "bytes": 835130,
+      "root_review": "ec240fd9b97c6b75582a271981498f19276922d7",
+      "full_history_commits": 3757,
+      "tracked_files": 3913,
+      "full_fsck": true,
+      "prerequisites": [],
+      "bundle": {
+        "bytes": 23429893,
+        "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71"
+      },
+      "all_27_owned_children_reaped_empty": true
+    },
+    "desktop_transfer": {
+      "status": "ROOT_COMPLETE",
+      "job": "1a1aa2cac47-fc05-3ead",
+      "packet": "5602bd95365a2c551d818e306fc6bfe0192af455",
+      "root_review": "8fcd38a4ee3221a684a8e65a9300e248897670aa",
+      "fixed_files": 2,
+      "whole_versions_and_nine_field_identities_verified": true,
+      "all_three_owned_children_reaped_empty": true
+    },
+    "desktop_import_r1": {
+      "status": "KNOWN_FAILED_BEFORE_INPUT_OR_ROOT_ACCESS",
+      "job": "1a1aa39910d-fc05-3f68",
+      "packet": "1c9ca3cf3d48d1f03051663260712c95b22965a7",
+      "root_review": "7b93f6f77019d942e992db3289863143348e6555",
+      "cause": "request omitted the source-required self SHA argument; actual first guard line519",
+      "owned_children": 0,
+      "input_file_fds": 0,
+      "input_directory_fds": 0,
+      "source_directory_fd_opened": false,
+      "no_current_path_absence_inferred_from_generic_read_error": true,
+      "author_and_root_request_contract_review_gap_retained": true
+    },
+    "desktop_import_r2": {
+      "status": "ACTUAL_CORE_STREAMS_AND_CUSTODY_ROOT_CLOSED__ALL63_ORIGINAL_COMMAND_LOGS_PENDING",
+      "job": "1a1aa422e15-fc05-3ffa",
+      "request": "44d6e3dc9773637744d1805f3f57f32540fc168d",
+      "root_go": "7b93f6f77019d942e992db3289863143348e6555",
+      "source_blob_unchanged": "7019ca391f5832cb04a7703ddcb4365558661f81",
+      "actual_authority": "b6f7ea1d7fbfa3c328516c799e419ca5ed664ef7",
+      "actual_core": "db8fc8982977ced35666ade66e7272bdda38c601",
+      "reported_core_seconds": 52.5671915,
+      "reported_owned_children": 21,
+      "full_root_qualification": false,
+      "source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-validation-source-r1",
+      "corrected_request_only_changes": [
+        "append exact full-source SHA argument",
+        "fresh r2 key"
+      ],
+      "root_independent_selected_original_ast_guards_passed": true,
+      "core_packet": "bed2beff8b824ffc0b6c92e32450217ca8d9eab8",
+      "core_root_review": "faf8cac3f7aa46bcf238e863703bde9ae984385b",
+      "core_root_checks": 39,
+      "original_native_read_operations_closed": 4,
+      "immutable_original_sdk_pages": 12,
+      "complete_terminal_stderr_bytes": 27827,
+      "actual_owned_children": 21,
+      "all_owned_children_reaped_empty": true,
+      "input_file_fds_closed": 3,
+      "input_directory_fds_closed": 4,
+      "created_source_directory_fd_closed": true,
+      "full_original_command_log_qualification": false,
+      "lan_prepare_authorized": false
+    }
+  },
+  "normal5_transport": {
+    "status": "ROOT_COMPLETE",
+    "job": "1a1aa3d9c57-fc05-3fc0",
+    "full_packet": "4727b2c9331fe4ac6f62c7f88e98a00edbf2a495",
+    "root_review": "264e900dfc4cc6ea114d6815dad45b96ed63aa92",
+    "files": 5,
+    "total_bytes": 110397866,
+    "publication_seconds": 4.216759545,
+    "all_three_owned_children_reaped_empty": true,
+    "five_independent_target_file_infos_verified": true,
+    "four_full_target_receipts_equal_qualified_source": true,
+    "remote_cleanup_unknown": false,
+    "original_300_90_10_5_5_360_unchanged": true
+  },
+  "x230": {
+    "status": "BOUND_AND_INERT_ROOT_COMPLETE__RELAY_START_UNKNOWN__NO_REPLAY",
+    "bound_source_packet": "d5460c30c762171eec0b4abb8e5387d6504c33a9",
+    "fixed_files": 7,
+    "artifact_total_bytes": 133866542,
+    "inert_job": "1a1aa4fa1ba-fc05-40c1",
+    "inert_packet": "64281e8618156b19b818d00082755724d66f38b3",
+    "inert_authority": "exit0 complete durable",
+    "inert_three_sources_byte_and_nine_field_identity_verified": true,
+    "root_inert_and_relay_go": "5191ba54298cd9494b78d6e09b62ce807e1cc417",
+    "original_receiver_actual_five_argv_guard_nodes_independently_evaluated": true,
+    "original_sender90_receiver300_relay300_clone90_git60_outer360_and_5plus5_preserved": true,
+    "relay_start_requested_once": true,
+    "relay_actual_execution": "UNKNOWN",
+    "relay_job": "1a1aa57458d-fc05-4156",
+    "relay_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+    "unknown_packet": "a6ac5db43375143d877da029da353807bf13600f",
+    "root_unknown_review": "c56edd186b2eea7c4714a2a7b71e6927ac65924e",
+    "late_status_after": "2026-11-05T06:19:41Z",
+    "late_status": "FileNotFoundError in private_job_directory; no authoritative terminal",
+    "four_singleton_public_reads": "Generic read error; no explicit absence or contents",
+    "host_health": "desktop and x230 authenticated reachable, not execution evidence",
+    "all_owned_stopped": "UNKNOWN",
+    "transfer_qualified": false,
+    "no_replay_no_signal_no_new_key": true,
+    "current_full34_or_comparison69_dispatched": false,
+    "old_495_results_not_relabelled": true,
+    "next_source_only": "Review a create-only original-work-root reservation that refuses any existing entry and fences late transport effects; still needs exact metadata and independent root review. No fence executed or retry authorized."
+  },
+  "lan": {
+    "status": "BOUND_SOURCE_AND_ACTUAL_INERT_ROOT_COMPLETE__PREPARE_PENDING_IMPORT",
+    "bound_packet": "86d2dd3a3d7e8473ba8cdf67b26243e12fb9097f",
+    "inert_job": "1a1aa2be86c-fc05-3e9f",
+    "inert_packet": "d49b83351ff46b57d8366317c45ea9e9de6c132a",
+    "root_review": "c64db77d3ce05195cf1333a13ace65ceca1d1d9e",
+    "fixed_sources": 9,
+    "original_ordered_checks": 98,
+    "separate_postrecovery_checks": 12,
+    "original_evidence_fences": 32,
+    "prepare_dispatched": false,
+    "live_dispatched": false,
+    "forced_election_or_unknown_replay": false,
+    "original_controller_seconds": 2400,
+    "post_cold_seconds": 300,
+    "role_prepare_seconds": 60,
+    "http_seconds": 15,
+    "admission_seconds": 8,
+    "outer_seconds": 3000
+  },
+  "h2_qa": {
+    "status": "SIX_FIXED_METADATA_READS_ROOT_CLOSED__BINDING_PREPARATION_NO_BUILD",
+    "source_packet_r18": "1262d0c035246c05bbab3a630be8c658a86901a4",
+    "metadata_source_packet": "5cdec9d4097ec4cd70567084ca066b7f9c0d9fa5",
+    "metadata_root_go": "232cea21b185727054fcaa4929ada701733f111c",
+    "fixed_read_operations": 6,
+    "max_concurrency": 3,
+    "normal60_prerequisite_root_complete": true,
+    "qa_builder_run": false,
+    "component_tests_run": false,
+    "http2_protocol_run": false,
+    "original_15s_query_8MiB_response_single_connection_and_eos_contract_unchanged": true,
+    "metadata_actual_packet": "1282c1e2e6f4eaf90e231e899aaa816cb8652ac4",
+    "metadata_root_review": "b1cf6bcdc6a50800702ea80fe4cb8c9cad9a4c3c",
+    "metadata_root_checks": 42,
+    "metadata_closed_operations": 6,
+    "immutable_original_sdk_pages": 11,
+    "normal60_whole_bytes_equal_prior_qualified_receipt": true,
+    "historical_target_binding": {
+      "device": 66306,
+      "inode": 31606588,
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448
+    },
+    "historical_target_not_current_stat": true,
+    "builder_must_recheck_live_target_before_cargo": true,
+    "qa_inert_dispatched": false
+  },
+  "official_cli_phase_b": {
+    "status": "SOURCE_REVIEW_ONLY",
+    "source_packet_r18": "f3f268581b6efe14d7f8e8e6981ff4e1498802c4",
+    "root_review": "8c1d4f0499d76cfc50fb6989933af52738d9dc3c",
+    "new_dispatch": false,
+    "original_B01_to_B05_and_budgets_preserved": true,
+    "both_old_B01_unknowns_retained": true
+  },
+  "ci": {
+    "snapshot_053840": {
+      "observed_at": "2026-11-05T05:38:40Z",
+      "pr153": {
+        "head": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "run": 41964140419,
+        "head_job": 127037102268,
+        "head_status": "workspace_in_progress",
+        "merge": "576ae7c31deee7ca6349380588bd353c26f3027f",
+        "merge_job": 127037102573,
+        "merge_status": "FAILED_STRICT_CLIPPY_AFTER_COMPLETE_WORKSPACE_PASS",
+        "failure": "service_native_v6_ha_read.rs:464:68 needless_borrows_for_generic_args",
+        "full_merge_log": "356dde085d91e86ed61e97c8924917d5e081eb86",
+        "log_bytes": 2889750,
+        "later_gates_skipped": true
+      },
+      "pr154": {
+        "head": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+        "run": 41969050046,
+        "status": "both_workspace_in_progress"
+      },
+      "pr155": {
+        "head": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+        "run": 41971995724,
+        "status": "both_workspace_in_progress",
+        "source_scope": "test-only donor dispatch order observation; old failure not reclassified"
+      }
+    },
+    "pr156": {
+      "observed_at": "2026-11-05T05:53:31Z",
+      "status": "DRAFT_OPEN__BOTH_QUEUED",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/156",
+      "head": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82",
+      "parent": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "merge": "f03d524a83968adb88e5d3713dd584e6a1743deb",
+      "base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+      "run": 41976736304,
+      "trust_run": 41976736244,
+      "root_review": "8b626adc9921b90e517439bee4283402fc4d3aa5",
+      "source_delta": {
+        "files": 1,
+        "hunks": 1,
+        "bytes": -14,
+        "unchanged_files": 3912,
+        "verified_merkle_trees": 358
+      },
+      "semantics": "final-use gate passed by value to existing FnOnce; preceding borrows and cold owner/ReadIndex/deadline/error checks remain exact",
+      "no_compile_or_runtime_success_inferred": true,
+      "observed_by_utc": "2026-11-05T06:24:17Z",
+      "jobs": [
+        127077220873,
+        127077221194
+      ]
+    },
+    "no_run_cancelled_retargeted_or_unknown_replayed": true,
+    "current_snapshot": {
+      "schema": "heptabao.root.current-ci-062417.r20",
+      "observed_by_utc": "2026-11-05T06:24:17Z",
+      "pr153": {
+        "head": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "head_job": 127037102268,
+        "merge_job": 127037102573,
+        "full_workspace_both": "PASS",
+        "strict_clippy_both": "FAIL",
+        "later_gates": "SKIPPED",
+        "root_review": "20d816b908ac55117dfc496c171e7921ff63bf16"
+      },
+      "pr154": {
+        "head": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+        "merge": "b5b96921176b7595856b2e7e3965d2f54ade5b56",
+        "merge_job": 127052736696,
+        "merge_workspace": "PASS",
+        "merge_clippy": "FAIL",
+        "merge_log": {
+          "name": "r20_ci_pr154_merge_full_log",
+          "blob": "aa632359e8056ab715ae5720bdf4cb63b98e1427",
+          "bytes": 2867575,
+          "sha256": "fc275bd9f28eb7026b702068b36d4b21609671d6a35e848b64b2a89250a0aeba"
+        },
+        "head_job": 127052736848,
+        "head_status": "workspace_in_progress"
+      },
+      "pr155": {
+        "head": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+        "jobs": [
+          127062153929,
+          127062154166
+        ],
+        "status": "both_workspace_in_progress"
+      },
+      "pr156": {
+        "head": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+        "merge": "f03d524a83968adb88e5d3713dd584e6a1743deb",
+        "run": 41976736304,
+        "jobs": [
+          127077220873,
+          127077221194
+        ],
+        "status": "both_queued"
+      },
+      "observed_clippy_failure": "needless_borrows_for_generic_args at service_native_v6_ha_read.rs:464:68; 19ba source successor addresses this one call",
+      "full_replacement_qualified": false,
+      "no_rerun_retarget_or_cancel_requested": true
+    }
+  },
+  "full_271_denominator": {
+    "status": "OPEN",
+    "admission_manifest_blob": "4025a4a770bc9312308d3346632edfa354939745",
+    "security_obligations": 15,
+    "feature_correctness_obligations": 11,
+    "required_gates": 11,
+    "declaration_validator_not_exhaustive_runtime_evidence": true,
+    "complete_surface_corpus_blob": "aaf511acf1408e229ae6b3fc5a6992668baf2162",
+    "corpus_version": "2.6.2",
+    "surface_count": 59,
+    "fixture_cases": 472,
+    "independent_exact_current_cases": 0,
+    "full271_route_operation_configuration_lifecycle_ledger_still_required": true,
+    "workflow_blob": "bf0af24f427ea212f2c52f623984eda0b701ed55",
+    "current_official271_ci_lane_explicitly_scoped_not_complete": true
+  },
+  "migration_and_cleanup": {
+    "all_clients_and_backup_paths_migrated": false,
+    "each_host_real_credential_restart_rollback_passed": false,
+    "production_destination_binding_complete": false,
+    "traffic_switched": false,
+    "old_openbao_deleted": false,
+    "old_heptabao_deleted": false,
+    "latest_only_service_state_reached": false
+  },
+  "historical_failures_and_unknowns_preserved": {
+    "r10_B2_original_98": "91/98, separate12 0/12",
+    "r10_B2_missing": 7,
+    "phase_b_two_old_B01": "UNKNOWN",
+    "old_nested_pid11754": "historical UNKNOWN",
+    "no_timeout_budget_inflation": true,
+    "no_fixture_production_substitution": true,
+    "no_j3160_dependency": true
+  },
+  "mac_registry_wal": {
+    "status": "BOUNDED_REGISTRY_ONLY_DESIGN_SOURCE_REVIEW__IMPLEMENTATION_IN_PREPARATION",
+    "design_packet": "3ca90e98f2dd69b250f07993844bc6b59cef499c",
+    "design_blob": "630aee179bda1f8d043238224f78aa90d3008f39",
+    "source_implementation_authorized_only": true,
+    "host_or_private_capture_authorized": false,
+    "original_five_agent_zero_wal_route_unchanged": true,
+    "new_registry_only_wal_maximum": 5969912,
+    "original_row_maximum": 1048576,
+    "original_aggregate_maximum": 8388608,
+    "original_query_seconds": 3,
+    "original_capture_seconds": 45,
+    "proposed_uri": "mode=ro&cache=private&vfs=unix-posix&readonly_shm=1",
+    "immutable_or_nolock_named_fallback": false,
+    "reference_source_version": "SQLite 3.53.4",
+    "installed_runtime_new_path_qualified": false,
+    "root_w03_source_review": "f618de9fbd4c22571a5f23ddc8618d7464c55926",
+    "peer_w03_source_review": "1e2064192f1da5ad8fbceb2a68a65e7e30a07323",
+    "w03_expectation": "Fresh independent ordinary unix-posix reader, SHM file-read-data denial: CANTOPEN propagates. READONLY_CANTINIT heap-index path is distinct. W03 alone does not prove readonly_shm recognized.",
+    "planned_synthetic_cases": 10,
+    "planned_ledger_component_families": 4,
+    "synthetic_executed": false,
+    "failure_envelope_required": true,
+    "returned_connections_closed_before_held_same_inode_fds": true,
+    "legacy_connect_no_returned_handle_attempts_not_observed": true,
+    "internal_sqlite_fd_closure_after_failed_connect_not_claimed": true,
+    "no_cross_database_atomicity_or_all_ABA_proof": true,
+    "old_capture_unknown_retained": true
+  }
+}

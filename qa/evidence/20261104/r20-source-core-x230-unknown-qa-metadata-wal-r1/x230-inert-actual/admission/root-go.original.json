@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.df026.x230-normal7-bound.root-inert-go.r1",
+  "as_of_utc": "2026-11-05 06:03:14 UTC",
+  "status": "BOUND_SOURCE_REVIEW_COMPLETE__ONLY_INERT_GO",
+  "packet": {
+    "tree": "d5460c30c762171eec0b4abb8e5387d6504c33a9",
+    "files": 34,
+    "bytes": 750844,
+    "merkle_trees": 7
+  },
+  "source_root_refs": {
+    "original_unbound_peer": "3e41e88ee3e3490799b2c519e6a03904638d2ab9",
+    "source2_actual_root": "8fcd38a4ee3221a684a8e65a9300e248897670aa",
+    "normal5_actual_root": "264e900dfc4cc6ea114d6815dad45b96ed63aa92",
+    "normal60_root": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5"
+  },
+  "checks": [
+    "actual source metadata heptabao-server",
+    "actual source metadata native-build.public.json",
+    "actual source metadata result.public.json",
+    "actual source metadata canonical-df026-full.bundle",
+    "actual source metadata source-export.result.public.json",
+    "actual source metadata normal60-result.public.json",
+    "actual source metadata groups.json",
+    "whole strict binding diff sender",
+    "exact seven literal files sender",
+    "only literals and readiness changed sender",
+    "whole strict binding diff receiver",
+    "exact seven literal files receiver",
+    "only literals and readiness changed receiver",
+    "whole strict binding diff relay",
+    "exact seven literal files relay",
+    "only literals and readiness changed relay",
+    "exact helper cascading SHA",
+    "whole carrier strict3",
+    "carrier exact pin sender.py",
+    "carrier exact pin receiver.py",
+    "carrier exact pin relay.py",
+    "carrier only BASE schema and pins changed",
+    "exact inert request contract",
+    "fixed bounded stdin",
+    "exact base64 source sender.py",
+    "exact base64 source receiver.py",
+    "exact base64 source relay.py"
+  ],
+  "root_compile_only": {
+    "verifier": {
+      "name": "r20_x230_bound_root_compile_verifier.py",
+      "blob": "d91ef4ff4722c480ab954991ddcab4b803289604",
+      "bytes": 763,
+      "sha256": "6d8b8d4aaabec624b2bc00a4f2c6652f4bc8fa7e37450ba681b1de69efc88d3d"
+    },
+    "execution": {
+      "name": "r20_x230_bound_root_compile",
+      "blob": "80cea401df51ca05f15120f060ff2894d110e331",
+      "bytes": 709,
+      "sha256": "9ffb3d46d89c550d744f321c018ce10e155b36cbf29d0c28db2c064717ab4eb6"
+    },
+    "modules_executed": false
+  },
+  "literal_only_changes": "three exact seven-file tables and ready flags; relay sender/receiver whole hashes; inert BASE/two schemas/three source pins",
+  "strict_diff_hunks": {
+    "sender": 1,
+    "receiver": 1,
+    "relay": 1,
+    "inert": 3
+  },
+  "all_other_source_bytes_unchanged": true,
+  "actual_files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 110339520,
+      "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "2050:5019547:110339520:1793857530819632046:1793857530819632046"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 772,
+      "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019549:772:1793857533118564089:1793857533118564089"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "name": "result.public.json",
+      "bytes": 3137,
+      "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019550:3137:1793857533123563941:1793857533123563941"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+      "name": "canonical-df026-full.bundle",
+      "bytes": 23429893,
+      "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019525:23429893:1793856420289823382:1793856420289823382"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+      "name": "source-export.result.public.json",
+      "bytes": 38783,
+      "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019527:38783:1793856420629814207:1793856420629814207"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "name": "normal60-result.public.json",
+      "bytes": 48188,
+      "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019551:48188:1793857533128563794:1793857533128563794"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:5019552:6249:1793857533133563646:1793857533133563646"
+    }
+  ],
+  "go": {
+    "request_blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396",
+    "bytes": 85331,
+    "sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a",
+    "host": "desktop",
+    "idempotency_key": "heptabao-df026-x230-controls-inert-r1-0eeac473",
+    "timeout_seconds": 60,
+    "stdin_bytes": 79906,
+    "stdin_limit": 262144,
+    "scope": "create-only publish and compile-only three public controller files; no import or execution of those modules",
+    "required_actual_evidence": "unique ACK, full authoritative terminal, full stdout/stderr, three complete sources plus receipt and four exact file_info identities"
+  },
+  "relay_request_not_yet_authorized": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+  "x230_product_tests_authorized": false,
+  "production_or_cutover_or_cleanup_authorized": false
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-df026-h2-qa-binding-cargo-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.df026-x230-transport-unbound-source-plan.r1",
+  "status": "SOURCE_ONLY_UNBOUND_NOT_EXECUTABLE",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+  "history": 3757,
+  "tracked_files": 3913,
+  "source_pins": {
+    "receiver": {
+      "name": "r19_x230_transport_unbound_receiver",
+      "blob": "693d0abbe27a92872f47ae43be75d4179874e658",
+      "bytes": 29062,
+      "sha256": "8366ef1a1f055f84de8ed50b3298cd740ad95c799fd9d8c369186d0cb08c0223"
+    },
+    "sender": {
+      "name": "r19_x230_transport_unbound_sender",
+      "blob": "2aa87f531ff6cb78d9f866fc3a0e8227cae52272",
+      "bytes": 8024,
+      "sha256": "e7a18f3091fcd7d40d9419e8aff53a3e2e008c85c3c391b4b88e5e3f058fa41b"
+    },
+    "relay": {
+      "name": "r19_x230_transport_unbound_relay",
+      "blob": "d7163507d1dc6966658ed08ed983ee019102b5c0",
+      "bytes": 20123,
+      "sha256": "09cbddf04a617959c1c777f577b348f6d7d2a7e29c964731683d97efeea70999"
+    }
+  },
+  "planned_files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "name": "result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+      "name": "canonical-df026-full.bundle",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+      "name": "source-export.result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "name": "normal60-result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
+      "name": "groups.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": null
+    }
+  ],
+  "binding_ready": false,
+  "actual_desktop_file_metadata_bound": false,
+  "relay_helper_pins_bound": false,
+  "any_request_created_or_submitted": false,
+  "new_x230_root": "/home/qian/heptabao-cold-h2-normal-20261105-r1",
+  "new_desktop_controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1",
+  "new_desktop_relay_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1",
+  "retained": {
+    "strict_x230_ts_ssh_trust": true,
+    "connection_attempts": 1,
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "relay_seconds": 300,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "term_seconds": 5,
+    "kill_seconds": 5,
+    "old_repository_not_opened": true,
+    "network_git_protocols_disabled": true,
+    "all_existing_source_fsck_materialization_fsync_identity_and_cleanup_checks": true
+  },
+  "added": {
+    "normal60_original44_and7_and9_complete_status": true,
+    "fixed_linux_runner_sha": true,
+    "exact_7_and9_names": true,
+    "original_groups_whole_pin": true,
+    "combined_native_receipt_whole_binding": true,
+    "original_outer12000_and_groups600": true,
+    "closed_child_cleanup": true,
+    "unbound_rejection_before_owned_writes_or_transfer": true
+  },
+  "validation": {
+    "three_full_inverse_source_constructions_exact": true,
+    "three_python_ast_compiles_no_module_execution": true,
+    "changed_original_functions": {
+      "receiver": [
+        "verify_receipts adds one qualification call"
+      ],
+      "sender": [
+        "send adds initial binding guard"
+      ],
+      "relay": []
+    },
+    "all_other_original_functions_ast_equal": true,
+    "initial_builder_inverse_failure": "Initial local source-construction inverse check failed before any AST or candidate execution because literal reversals also changed a newly inserted FILES block. Reordered the explicit FILES-block substitution last; all three full inverse reconstructions now match their original sources. No host request or product execution occurred."
+  },
+  "scope": "Public source and binary transport preparation only. Future exact file identities and whole hashes must come from accepted Linux normal60/export and actual desktop receiver/file_info. No source, host, service or credentials are touched by this source package."
+}

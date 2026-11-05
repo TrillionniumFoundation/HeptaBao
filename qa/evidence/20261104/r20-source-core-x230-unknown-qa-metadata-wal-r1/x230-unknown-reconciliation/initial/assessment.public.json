@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.x230-df026-normal7-relay-launch-unknown.v1",
+  "qualification": "UNKNOWN_LAUNCH_NO_AUTHORITATIVE_TERMINAL",
+  "job_id": "1a1aa57458d-fc05-4156",
+  "idempotency_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+  "request_blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+  "admission_blob": "5191ba54298cd9494b78d6e09b62ce807e1cc417",
+  "prior_inert_accepted_tree": "64281e8618156b19b818d00082755724d66f38b3",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "process_start_calls": 1,
+  "process_status_calls": 1,
+  "ack": {
+    "reused": false,
+    "state": "launch_unknown",
+    "outcome": "unknown",
+    "launch_error": "Remote launch outcome unavailable",
+    "automatic_retry": false,
+    "status_authoritative": false,
+    "local_record_pending": false
+  },
+  "status_error": {
+    "isError": true,
+    "error_code": "INVALID_ARGUMENT",
+    "exact_text_sha256": "69d8ffcf8a0295596e0244dc15e71bc326be0b9831826a16e9ed4db246e79ff6",
+    "description": "Remote status helper private_job_directory returned FileNotFoundError for this exact job id."
+  },
+  "conclusions": {
+    "actual_launch_known": false,
+    "actual_not_started_proven": false,
+    "authoritative_exit_known": false,
+    "owned_cleanup_proven": false,
+    "seven_destination_files_verified": false,
+    "canonical_import_verified": false
+  },
+  "actions_after_error": {
+    "replayed": false,
+    "new_key": false,
+    "signals_sent": false,
+    "new_host_calls": false,
+    "chain_stopped": true
+  },
+  "evidence_representation": {
+    "error_text": "exact concatenation of the single returned text block, no added LF",
+    "error_envelope": "JSON serialization of returned structured tool object, not claimed to be original wire bytes"
+  },
+  "next_requires": "Read-only reconciliation of this original job or a separate explicit disposition; do not infer safe replay from missing job directory."
+}

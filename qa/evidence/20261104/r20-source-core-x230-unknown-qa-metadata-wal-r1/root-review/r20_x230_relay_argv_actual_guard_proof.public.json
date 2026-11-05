@@ -1,0 +1,7 @@
+{
+  "chunk_id": "0137e6",
+  "wall_time_seconds": 0.164733455,
+  "exit_code": 0,
+  "original_token_count": 87,
+  "output": "{\"actual_remote_command_roundtrip\": true, \"exact_original_guard_lines\": [486, 487, 488, 489, 490], \"missing_wrong_extra_negative\": 3, \"receiver_sha256\": \"fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d\", \"sender_and_relay_no_self_sha_contract\": true, \"status\": \"passed\", \"valid_actual_call\": true, \"whole_modules_executed\": false}\n"
+}

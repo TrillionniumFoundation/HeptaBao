@@ -1,0 +1,224 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal.reference-index.r1",
+  "status": "SOURCE_REFERENCE_ONLY_NOT_INSTALLED_BUILD_PROOF",
+  "repository": "https://github.com/sqlite/sqlite",
+  "tag": "version-3.53.4",
+  "commit": "b09c88c14082339b66c7b7158d609a771e64ca69",
+  "fossilManifestUuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+  "sourceFiles": {
+    "src/wal.c": {
+      "bytes": 177747,
+      "sha256": "0c0467f7c4de773512b3327b0d3973fc31d50cf74603d6aec0e3b3e1c787e217",
+      "git_blob": "33fa038dba32b388c0662f34102ff4b96edd0b5a",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/src/wal.c"
+    },
+    "manifest.uuid": {
+      "bytes": 65,
+      "sha256": "c613b5f6581cba368618c41ccfc16e476f65efa963c9c7c9fc3b4519daea71d9",
+      "git_blob": "2570b7b5368b85b393e6a1053429565026f1f794",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/manifest.uuid"
+    },
+    "VERSION": {
+      "bytes": 7,
+      "sha256": "632cf989f3b8c2925dc35a67d06535db480cb97d53f78c14bb159f3de4e9bb04",
+      "git_blob": "40933c0822f4e6bb6ade0c5088d6bf27ed555d29",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/VERSION"
+    },
+    "test/walro.test": {
+      "bytes": 8201,
+      "sha256": "5dc4e9626d8e148afc36416dbfab39446be9606ded7b8f30bc230cce768b2a55",
+      "git_blob": "a39b844d9dd0121e64e62c91fc15608afb87d5d3",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/test/walro.test"
+    },
+    "src/os_unix.c": {
+      "bytes": 295468,
+      "sha256": "bad02ce9e25e3842c116a9f9bb13128b74f965692c5987202103423c86f62475",
+      "git_blob": "927b8ebfcbce355934dbf3671497057f67ba9cb2",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/src/os_unix.c"
+    },
+    "test/walro2.test": {
+      "bytes": 11573,
+      "sha256": "9d6fde9c65466d8d1e9dcdb38b19e94c0cbf808f4ac541069bb88a5dbe6eccf7",
+      "git_blob": "1eb9d1c3ee32ae10ec7f731027626164e82deda8",
+      "url": "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/test/walro2.test"
+    }
+  },
+  "anchors": [
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        66,
+        72
+      ],
+      "claim": "Apple reference defaults SQLITE_ENABLE_LOCKING_STYLE to 1 unless the build overrides it; this is not an installed-build guarantee."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        712,
+        722
+      ],
+      "claim": "robustFchown is a no-op for a non-root effective UID in the reference implementation."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        4846,
+        4914
+      ],
+      "claim": "Read-only SHM takes read locks; missing live DMS ownership may return SQLITE_READONLY_CANTINIT."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5031,
+        5050
+      ],
+      "claim": "readonly_shm=1 skips the SHM O_RDWR|O_CREAT attempt; the reference opens existing SHM O_RDONLY|O_NOFOLLOW."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5200,
+        5209
+      ],
+      "claim": "Read-only SHM mapping uses PROT_READ."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        5962,
+        6024
+      ],
+      "claim": "The Apple unix VFS can auto-select a locking style; it is not an unconditional POSIX-locking alias."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        6661,
+        6708
+      ],
+      "claim": "Unix open uses O_NOFOLLOW; a denied read/write open can downgrade to O_RDONLY. This is engine-internal behavior, not an application retry."
+    },
+    {
+      "path": "src/os_unix.c",
+      "lines": [
+        8501,
+        8525
+      ],
+      "claim": "unix-posix is registered only under the reference build's locking-style/VxWorks condition; absence must fail, without another VFS."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        1724,
+        1734
+      ],
+      "claim": "The WAL opener initially requests READWRITE|CREATE and records WAL_RDONLY after the VFS returns a read-only handle."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        2660,
+        2740
+      ],
+      "claim": "Read-only SHM may require heap WAL-index reconstruction; existing SHM alone does not prove a ready shared WAL-index."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        2792,
+        2920
+      ],
+      "claim": "The read-only heap WAL-index path validates WAL changes and can retry; the design does not claim zero WAL-index/page I/O."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        3032,
+        3076
+      ],
+      "claim": "Internal WAL retry sleeps may cumulatively approach ten seconds. timeout=0 is not a hard preemption of these C calls."
+    },
+    {
+      "path": "src/wal.c",
+      "lines": [
+        3182,
+        3208
+      ],
+      "claim": "A read-only SHM connection cannot update read marks and may refuse if no usable mark is available."
+    },
+    {
+      "path": "test/walro.test",
+      "lines": [
+        34,
+        46
+      ],
+      "claim": "The reference readonly-WAL tests explicitly skip same-process multiple connections."
+    },
+    {
+      "path": "test/walro.test",
+      "lines": [
+        57,
+        87
+      ],
+      "claim": "Reference tests read with readonly_shm=1 while another process writes; write/checkpoint attempts on the read-only connection fail."
+    },
+    {
+      "path": "test/walro.test",
+      "lines": [
+        139,
+        169
+      ],
+      "claim": "Reference tests distinguish readonly_shm option handling, automatic read-only fallback, and absent/existing SHM."
+    }
+  ],
+  "officialDocuments": [
+    {
+      "url": "https://www.sqlite.org/wal.html#read_only_databases",
+      "claim": "Existing readable WAL and SHM allow read-only WAL under documented conditions; the existing files and exact runtime still need qualification."
+    },
+    {
+      "url": "https://www.sqlite.org/uri.html",
+      "claim": "mode=ro retains normal locking/change detection; immutable=1 disables those mechanisms."
+    },
+    {
+      "url": "https://www.sqlite.org/c3ref/open.html",
+      "claim": "Unknown URI parameters are not themselves errors. Unknown VFS is an error; a version string does not prove readonly_shm behavior."
+    },
+    {
+      "url": "https://www.sqlite.org/c3ref/progress_handler.html",
+      "claim": "The progress callback is a VM progress mechanism, not a hard deadline for every internal syscall or WAL lock loop."
+    }
+  ],
+  "observedRuntimeOrigin": {
+    "stdout": {
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "git_blob": "781d085d4fdc52ada91ea796572099137c87cd55"
+    },
+    "job": "1a1a918c6cf-fc05-3143",
+    "qualifiedScope": "OLD_OWNED_IMMUTABLE_SEVEN_CASES_ONLY",
+    "runtime": {
+      "pythonExecutable": {
+        "bytes": 34640,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+      },
+      "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "sqliteExtension": {
+        "bytes": 165632,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+        "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+      },
+      "sqliteVersion": "3.53.4",
+      "sqliteVersionInfo": [
+        3,
+        53,
+        4
+      ]
+    }
+  },
+  "newWalRuntimeQualified": false,
+  "installedDylibFullClosureClaimed": false
+}
