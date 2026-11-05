@@ -87,6 +87,52 @@ class MultiHostHaContractTests(unittest.TestCase):
             ):
                 MODULE.parse_binary_source(value)
 
+    def test_verified_mac_aliases_keep_t5_storage_scope(self):
+        root = "/Volumes/T5/heptabao-private-run"
+        for alias in ("mac-ts", "macbook-pro", "hepta-mac-local"):
+            with self.subTest(alias=alias):
+                node = MODULE.parse_node(
+                    f"{alias},192.168.0.8,{root}", 1, 46230, 46231,
+                    allow_private_lan=True,
+                )
+                self.assertEqual((node.alias, node.root), (alias, root))
+                self.assertEqual(
+                    MODULE.parse_binary_source(f"{alias}:{root}/heptabao-server"),
+                    (alias, f"{root}/heptabao-server"),
+                )
+                with self.assertRaises(argparse.ArgumentTypeError):
+                    MODULE.parse_node(
+                        f"{alias},192.168.0.8,{root}", 1, 46230, 46231
+                    )
+        node = MODULE.parse_node(
+            f"hepta-mac-local,100.77.61.24,{root}", 1, 46230, 46231
+        )
+        self.assertEqual(node.alias, "hepta-mac-local")
+
+    def test_mac_local_alias_does_not_broaden_storage_or_hosts(self):
+        invalid = (
+            ("hepta-mac-local", "/home/qianqi/heptabao-private-run"),
+            ("hepta-mac-local", "/Users/qianqi/heptabao-private-run"),
+            ("hepta-mac-local", "/Volumes/T5-other/heptabao-private-run"),
+            ("hepta-mac-local", "/Volumes/T5/../heptabao-private-run"),
+            ("hepta-mac-local", "/Volumes/T5//heptabao-private-run"),
+            ("hepta-mac-local", "/Volumes/T5"),
+            ("hepta-mac-local", "/Volumes/T5/heptabao private-run"),
+            ("hepta-mac-local", "/Volumes/T5/heptabao\x01private-run"),
+            ("local", "/Volumes/T5/heptabao-private-run"),
+            ("host-a", "/Volumes/T5/heptabao-private-run"),
+            ("hepta-mac-local-extra", "/Volumes/T5/heptabao-private-run"),
+        )
+        for alias, path in invalid:
+            with self.subTest(alias=alias, path=path):
+                with self.assertRaises(argparse.ArgumentTypeError):
+                    MODULE.parse_node(
+                        f"{alias},192.168.0.8,{path}", 1, 46230, 46231,
+                        allow_private_lan=True,
+                    )
+                with self.assertRaises(argparse.ArgumentTypeError):
+                    MODULE.parse_binary_source(f"{alias}:{path}")
+
     def test_local_copy_and_deterministic_compression_preserve_candidate_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             # macOS exposes /var through /private/var. Use the canonical owner-

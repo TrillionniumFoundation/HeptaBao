@@ -1312,6 +1312,20 @@ impl ExternalEffectResult {
             Self::SnapshotTransfer(Ok(snapshot_transfer::Observation::Upload(_)))
         )
     }
+
+    pub(crate) fn is_native_pending_restore_observation(&self) -> bool {
+        #[cfg(feature = "native-v6-ha")]
+        {
+            matches!(
+                self,
+                Self::SnapshotTransfer(Ok(snapshot_transfer::Observation::PendingRestore))
+            )
+        }
+        #[cfg(not(feature = "native-v6-ha"))]
+        {
+            false
+        }
+    }
 }
 
 pub(crate) struct PendingExternalRequest {

@@ -60,6 +60,7 @@ pub(super) struct NativeRequest {
 
 pub(super) enum NativeReply {
     Json(Response),
+    PendingRestore(PendingRestoreReply),
     Ui(super::ui::Reply),
     HttpBadRequest,
     File(SnapshotFile),
@@ -70,6 +71,29 @@ pub(super) enum NativeReply {
         target: RedirectTarget,
         headers: crate::service::ResponseHeaders,
     },
+}
+
+// Only execute's typed PendingRestore observation, after successful Service
+// finalization, constructs this custody. Ordinary logical JSON cannot select it.
+pub(super) struct PendingRestoreReply {
+    response: Response,
+}
+
+pub(super) fn take_pending_restore_reply(reply: &mut NativeReply) -> Option<Response> {
+    if !matches!(reply, NativeReply::PendingRestore(_)) {
+        return None;
+    }
+    let owned = std::mem::replace(
+        reply,
+        NativeReply::Json(Response::error(
+            503,
+            "snapshot reconciliation projection incomplete",
+        )),
+    );
+    let NativeReply::PendingRestore(pending) = owned else {
+        unreachable!("private reconciliation custody was just checked");
+    };
+    Some(pending.response)
 }
 impl NativeReply {
     #[cfg(test)]
@@ -92,6 +116,10 @@ impl NativeReply {
             Self::Json(response) => {
                 write_response_with_namespace(writer, response, head, namespace)
             }
+            Self::PendingRestore(_) => Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "snapshot reconciliation requires logical projection",
+            )),
             Self::Ui(reply) => reply.write(writer, head),
             Self::File(file) => write_file_response(writer, file, head, namespace),
             #[cfg(feature = "native-v6-storage")]
@@ -416,6 +444,9 @@ pub(super) fn execute(
     let uploaded_archive = public_snapshot_upload
         && file.is_none()
         && observation.is_native_snapshot_upload_observation();
+    let pending_restore = public_snapshot_upload
+        && file.is_none()
+        && observation.is_native_pending_restore_observation();
     // No network/body I/O occurs under the service writer. The final request
     // audit must succeed before this file capability can reach the socket.
     let mut response = match lock_until(service, deadline) {
@@ -464,6 +495,8 @@ pub(super) fn execute(
             return NativeReply::LosslessFile(file);
         }
         NativeReply::File(file)
+    } else if pending_restore && response.status == 200 {
+        NativeReply::PendingRestore(PendingRestoreReply { response })
     } else {
         NativeReply::Json(response)
     }
@@ -954,5 +987,196 @@ mod tests {
             .is_err()
         );
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod reconciliation_projection_tests {
+    use super::*;
+
+    const PATH: &str = "sys/storage/raft/snapshot";
+
+    fn logical_response(status: u16, body: Value) -> Response {
+        Response {
+            status,
+            body,
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
+        }
+    }
+
+    fn reconciliation_body(cancelled_reference: bool) -> Value {
+        let reference = format!("native-v6-restore-{}", "a".repeat(64));
+        let mut body = json!({
+            "data": {
+                "state": if cancelled_reference { "committed" } else { "not_pending" },
+                "cancelled": false,
+                "restore_performed": false,
+                "replay_epoch": 1,
+                "selected_root": "b".repeat(64),
+                "recovery_reference": if cancelled_reference { json!(reference) } else { Value::Null },
+            },
+            "restore_performed": false,
+            "retry_allowed": false,
+            "unrelated_top_level": "must not acquire transport custody",
+        });
+        if cancelled_reference {
+            body["recovery_reference"] = json!(reference);
+        }
+        body
+    }
+
+    fn pending_reply(status: u16, body: Value) -> NativeReply {
+        NativeReply::PendingRestore(PendingRestoreReply {
+            response: logical_response(status, body),
+        })
+    }
+
+    fn projected_response(reply: &NativeReply) -> &Response {
+        let NativeReply::Json(response) = reply else {
+            panic!("logical projection must consume private reconciliation custody");
+        };
+        response
+    }
+
+    #[test]
+    fn native_pending_restore_projection_keeps_standard_envelope_and_exact_markers()
+    -> io::Result<()> {
+        for cancelled_reference in [false, true] {
+            let original = reconciliation_body(cancelled_reference);
+            let expected_data = original["data"].clone();
+            let mut reply = pending_reply(200, original);
+            super::super::logical::project_in_namespace(&mut reply, &[0x6d; 16], PATH, "team/");
+            let response = projected_response(&reply);
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"], expected_data);
+            assert_eq!(response.body["restore_performed"], false);
+            assert_eq!(response.body["retry_allowed"], false);
+            assert!(response.body.get("recovery_reference").is_none());
+            assert!(response.body.get("unrelated_top_level").is_none());
+            assert_eq!(response.body["lease_id"], "");
+            assert_eq!(response.body["lease_duration"], 0);
+            assert_eq!(response.body["renewable"], false);
+            assert!(response.body["wrap_info"].is_null());
+            assert!(
+                response.body["request_id"]
+                    .as_str()
+                    .is_some_and(|id| id.len() == 36)
+            );
+            assert_eq!(response.body.as_object().unwrap().len(), 10);
+
+            let mut output = Vec::new();
+            reply.write_with_namespace(&mut output, false, "team/")?;
+            assert!(output.starts_with(b"HTTP/1.1 200 OK\r\n"));
+            let boundary = output
+                .windows(4)
+                .position(|part| part == b"\r\n\r\n")
+                .unwrap()
+                + 4;
+            let headers = std::str::from_utf8(&output[..boundary]).unwrap();
+            assert!(headers.contains("X-Vault-Namespace: team/\r\n"));
+            let body: Value = serde_json::from_slice(&output[boundary..])?;
+            assert_eq!(body["data"], expected_data);
+            assert_eq!(body["restore_performed"], false);
+            assert_eq!(body["retry_allowed"], false);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn native_pending_restore_projection_rejects_forged_plain_json() {
+        for path in [PATH, "secret/data/synthetic"] {
+            let mut body = reconciliation_body(true);
+            body["native_pending_restore"] = json!(true);
+            let expected_data = body["data"].clone();
+            let mut reply = NativeReply::Json(logical_response(200, body));
+            super::super::logical::project(&mut reply, &[0x6e; 16], path);
+            let response = projected_response(&reply);
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"], expected_data);
+            for key in [
+                "restore_performed",
+                "retry_allowed",
+                "recovery_reference",
+                "native_pending_restore",
+                "unrelated_top_level",
+            ] {
+                assert!(
+                    response.body.get(key).is_none(),
+                    "ordinary JSON retained {key}"
+                );
+            }
+            assert_eq!(response.body.as_object().unwrap().len(), 8);
+        }
+    }
+
+    #[test]
+    fn native_pending_restore_projection_keeps_non200_and_wrapped_paths() {
+        for status in [204, 307, 403, 503] {
+            let body = json!({"data":{"state":"not_pending"}});
+            let mut reply = pending_reply(status, body.clone());
+            super::super::logical::project(&mut reply, &[0x6f; 16], PATH);
+            let response = projected_response(&reply);
+            assert_eq!(response.status, status);
+            assert_eq!(response.body, body);
+            assert!(response.body.get("restore_performed").is_none());
+            assert!(response.body.get("retry_allowed").is_none());
+        }
+        let data = json!({"state":"not_pending","replay_epoch":1});
+        let wrap_info = json!({"token":"synthetic-wrapped-reference"});
+        let mut reply = pending_reply(200, json!({"data":data,"wrap_info":wrap_info}));
+        super::super::logical::project(&mut reply, &[0x70; 16], PATH);
+        let response = projected_response(&reply);
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"], data);
+        assert_eq!(response.body["wrap_info"], wrap_info);
+        assert!(response.body.get("restore_performed").is_none());
+        assert!(response.body.get("retry_allowed").is_none());
+    }
+
+    #[test]
+    fn native_pending_restore_projection_rejects_changed_markers_or_reference() {
+        let mut cases = Vec::new();
+        for (pointer, value) in [
+            ("/restore_performed", json!(true)),
+            ("/retry_allowed", json!("false")),
+            ("/data/restore_performed", Value::Null),
+            ("/data/recovery_reference", json!("foreign-reference")),
+            ("/data/recovery_reference", json!(42)),
+            (
+                "/recovery_reference",
+                json!(format!("native-v6-restore-{}", "c".repeat(64))),
+            ),
+        ] {
+            let mut body = reconciliation_body(true);
+            *body.pointer_mut(pointer).unwrap() = value;
+            cases.push(body);
+        }
+        let mut missing = reconciliation_body(false);
+        missing.as_object_mut().unwrap().remove("retry_allowed");
+        cases.push(missing);
+        for body in cases {
+            let mut reply = pending_reply(200, body);
+            super::super::logical::project(&mut reply, &[0x71; 16], PATH);
+            let response = projected_response(&reply);
+            assert_eq!(response.status, 503);
+            assert!(response.body.get("data").is_none());
+            assert!(response.body.get("restore_performed").is_none());
+        }
+        let mut wrong_route = pending_reply(200, reconciliation_body(false));
+        super::super::logical::project(&mut wrong_route, &[0x72; 16], "secret/data/synthetic");
+        assert_eq!(projected_response(&wrong_route).status, 503);
+    }
+
+    #[test]
+    fn native_pending_restore_writer_refuses_unprojected_custody() {
+        for head in [false, true] {
+            let reply = project_local_redirect(pending_reply(200, reconciliation_body(false)));
+            let mut output = Vec::new();
+            let error = reply.write(&mut output, head).unwrap_err();
+            assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+            assert!(output.is_empty());
+        }
     }
 }

@@ -1153,7 +1153,7 @@ fn canonical_seal_digest_matches_its_fixed_versioned_wire_vector() -> TestResult
     Ok(())
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 #[test]
 fn native_seal_reader_rejects_linked_nonprivate_and_oversized_metadata() -> TestResult {
     use std::os::unix::{fs::PermissionsExt, fs::symlink};

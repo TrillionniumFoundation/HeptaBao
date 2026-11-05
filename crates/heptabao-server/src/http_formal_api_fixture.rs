@@ -17,7 +17,7 @@ pub(crate) struct FormalApiListener {
 
 struct RequestWorker {
     thread: Option<JoinHandle<io::Result<()>>>,
-    client: TcpStream,
+    client: Option<TcpStream>,
     server: TcpStream,
 }
 
@@ -27,13 +27,20 @@ impl RequestWorker {
             .thread
             .take()
             .ok_or("formal TLS worker already joined")?;
+        // The response (including the actual 204 EOF) is already consumed.
+        // Darwin can reject shutdown after the peer half-closes; release the
+        // last client descriptor before waiting for the server's raw drain.
+        drop(self.client.take());
         thread.join().map_err(|_| "formal TLS worker panicked")??;
         Ok(())
     }
 }
 impl Drop for RequestWorker {
     fn drop(&mut self) {
-        let _ = self.client.shutdown(Shutdown::Both);
+        if let Some(client) = self.client.take() {
+            let _ = client.shutdown(Shutdown::Both);
+            drop(client);
+        }
         let _ = self.server.shutdown(Shutdown::Both);
         if let Some(thread) = self.thread.take() {
             // The worker owns the original request deadline. It must actually
@@ -107,6 +114,17 @@ impl FormalApiListener {
         deadline: Instant,
         missing_forward: bool,
     ) -> FixtureResult<Zeroizing<Vec<u8>>> {
+        let started = Instant::now();
+        let observe = move |stage: &'static str| {
+            eprintln!(
+                "HBFORMAL-TLS-STAGE stage={} elapsed_us={} original_remaining_us={}",
+                stage,
+                started.elapsed().as_micros(),
+                deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_micros(),
+            );
+        };
         let remaining = || {
             deadline
                 .checked_duration_since(Instant::now())
@@ -168,6 +186,7 @@ impl FormalApiListener {
                         .map(|certificate| certificate.as_ref().to_vec())
                         .collect()
                 });
+                observe("server_dispatch_begin");
                 let (reply, head, namespace) = process_parsed_request(
                     &service,
                     None,
@@ -179,14 +198,18 @@ impl FormalApiListener {
                     settings,
                     deadline,
                 );
+                observe("server_dispatch_complete");
                 let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
                 let no_content = matches!(
                     &reply,
                     snapshot::NativeReply::Json(response) if response.status == 204
                 );
                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                observe("server_reply_written");
                 if redirect {
+                    observe("server_redirect_close_begin");
                     snapshot::finish_redirect_connection(&mut stream);
+                    observe("server_redirect_close_complete");
                 } else if no_content {
                     stream.conn.send_close_notify();
                     stream.flush()?;
@@ -195,7 +218,7 @@ impl FormalApiListener {
             })?;
         let worker = RequestWorker {
             thread: Some(thread),
-            client: close_client,
+            client: Some(close_client),
             server: close_server,
         };
         let connection = rustls::ClientConnection::new(
@@ -209,8 +232,10 @@ impl FormalApiListener {
                 deadline,
             },
         );
+        observe("client_request_begin");
         client.write_all(request)?;
         client.flush()?;
+        observe("client_request_written");
         if client.conn.alpn_protocol() != Some(b"http/1.1".as_slice())
             || client
                 .conn
@@ -230,6 +255,7 @@ impl FormalApiListener {
             client.read_exact(&mut byte)?;
             output.push(byte[0]);
         }
+        observe("client_headers_complete");
         let headers = std::str::from_utf8(&output)?;
         let mut lines = headers[..headers.len() - 4].split("\r\n");
         let status = lines.next().ok_or("formal API response status absent")?;
@@ -272,7 +298,9 @@ impl FormalApiListener {
                 .ok_or("formal API length overflow")?,
             0,
         );
+        observe("client_body_read_begin");
         client.read_exact(&mut output[header_length..])?;
+        observe("client_body_read_complete");
         remaining()?;
         if status_code == 204 && client.read(&mut byte)? != 0 {
             return Err("formal API 204 response has unexpected body bytes".into());
@@ -282,10 +310,14 @@ impl FormalApiListener {
         // actual socket before joining the 307 response-side drain; a cloned
         // cleanup descriptor must not keep that drain open until the deadline.
         client.conn.send_close_notify();
+        observe("client_close_flush_begin");
         let _ = client.flush();
+        observe("client_close_flush_complete");
         let _ = client.sock.stream.shutdown(Shutdown::Both);
         drop(client);
+        observe("client_socket_shutdown");
         worker.join()?;
+        observe("server_worker_joined");
         remaining()?;
         Ok(output)
     }

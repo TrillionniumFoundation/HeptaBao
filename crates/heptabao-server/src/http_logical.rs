@@ -57,6 +57,96 @@ pub(super) fn project_in_namespace(
     path: &str,
     namespace: &str,
 ) {
+    let Some(response) = snapshot::take_pending_restore_reply(reply) else {
+        project_standard_in_namespace(reply, random, path, namespace);
+        return;
+    };
+    *reply = snapshot::NativeReply::Json(response);
+    let snapshot::NativeReply::Json(response) = reply else {
+        unreachable!("reconciliation custody was consumed into ordinary JSON");
+    };
+    // Preserve the existing non-success, wrapped and stored-origin paths.
+    // Only an actual unwrapped successful PendingRestore reply gets markers.
+    if response.status != 200
+        || response.unwrapped_json.is_some()
+        || response
+            .body
+            .get("wrap_info")
+            .is_some_and(|value| !value.is_null())
+    {
+        project_standard_in_namespace(reply, random, path, namespace);
+        return;
+    }
+    let data = response.body.get("data").cloned();
+    let reference = data
+        .as_ref()
+        .and_then(|data| data.get("recovery_reference"));
+    let reference_valid = reference.is_some_and(|value| {
+        value.is_null()
+            || value.as_str().is_some_and(|reference| {
+                reference
+                    .strip_prefix("native-v6-restore-")
+                    .is_some_and(|hex| {
+                        hex.len() == 64
+                            && hex
+                                .bytes()
+                                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+                    })
+            })
+    });
+    let top_reference_matches = response
+        .body
+        .get("recovery_reference")
+        .is_none_or(|value| value.is_string() && reference == Some(value));
+    if path != "sys/storage/raft/snapshot"
+        || response.body.get("restore_performed") != Some(&Value::Bool(false))
+        || response.body.get("retry_allowed") != Some(&Value::Bool(false))
+        || data.as_ref().and_then(|data| data.get("restore_performed")) != Some(&Value::Bool(false))
+        || !reference_valid
+        || !top_reference_matches
+    {
+        *reply = snapshot::NativeReply::Json(Response::error(
+            503,
+            "native snapshot reconciliation markers changed",
+        ));
+        return;
+    }
+    // The closed standard envelope still owns request ID, leases, wrapping and
+    // every Data field. This typed extension cannot inject arbitrary JSON keys.
+    project_standard_in_namespace(reply, random, path, namespace);
+    let snapshot::NativeReply::Json(response) = reply else {
+        return;
+    };
+    if response.status != 200 {
+        return;
+    }
+    if response.unwrapped_json.is_some()
+        || response.body.get("wrap_info") != Some(&Value::Null)
+        || response.body.get("data") != data.as_ref()
+    {
+        *reply = snapshot::NativeReply::Json(Response::error(
+            503,
+            "native snapshot reconciliation envelope changed",
+        ));
+        return;
+    }
+    let Some(body) = response.body.as_object_mut() else {
+        *reply = snapshot::NativeReply::Json(Response::error(
+            503,
+            "native snapshot reconciliation envelope absent",
+        ));
+        return;
+    };
+    body.insert("restore_performed".into(), Value::Bool(false));
+    body.insert("retry_allowed".into(), Value::Bool(false));
+}
+
+fn project_standard_in_namespace(
+    reply: &mut snapshot::NativeReply,
+    random: &[u8; 16],
+    path: &str,
+    namespace: &str,
+) {
     let snapshot::NativeReply::Json(response) = reply else {
         return;
     };

@@ -87,6 +87,15 @@ fn standby_fixture() -> Result<StandbyFixture, Box<dyn std::error::Error>> {
     drop(local);
     let cluster = Cluster::new(&root.0.join("raft"), &cluster_id)?;
     cluster.configure_api_address(1, "https://[::1]:18200/")?;
+    // This legacy transport fixture intentionally has no native committed-root
+    // owner. Redirecting an unread archive must not require a native read.
+    #[cfg(feature = "native-v6-ha")]
+    assert!(
+        !cluster.processes[1]
+            .lock()
+            .map_err(|_| "HA poisoned")?
+            .native_v6_enabled()
+    );
     let mut standby = Service::new_with_ha(data, &audit, Arc::clone(&cluster.processes[1]))?;
     assert_eq!(
         standby

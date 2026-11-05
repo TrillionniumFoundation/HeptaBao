@@ -639,6 +639,20 @@ impl Service {
         {
             return Ok(StandbySnapshotAdmission::Redirect);
         }
+        // Legacy HA has no native committed-root owner. Its transport-only
+        // redirect must not try to reconcile a native read or inspect a token.
+        // A configured native process may still have a local V5 root during
+        // cold admission, so select by the actual backend, not native_root.
+        let native_selected = match self.ha.as_ref() {
+            Some(ha) => ha
+                .lock_for_request()
+                .map_err(|_| Response::error(503, "HA control state is unavailable"))?
+                .native_v6_enabled(),
+            None => false,
+        };
+        if !native_selected {
+            return Ok(StandbySnapshotAdmission::Redirect);
+        }
         // Actual synchronization and ReadIndex precede token inspection.
         // A routing hint cannot select stale credentials or spend a use.
         self.sync_from_ha_with_anchor(false)?;
