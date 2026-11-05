@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root-X230-relay-semantic-peer-intake-and-independent-receipt-match.r32.v1",
+  "status": "PASS_REPORTED_CORE_AND_INDEPENDENT_RECEIPT_MATCH_ONLY",
+  "checks_passed": 7,
+  "checks": [
+    "all-ten-peer-inputs-exact-root-whole-pins",
+    "actual-pure-verifier-result-whole-identities",
+    "286-pure-data-predicates-not-product-cases",
+    "prior-frozen-source-and-3local21remote-seven-input-scope",
+    "independent35212-receiver-body-lossless-equals-embedded-minus-source-publication-fields",
+    "actual-receiver-body-descriptor-and-old-UNKNOWN-retained",
+    "peer-limited-scope-not-promoted-to-full-qualification"
+  ],
+  "peer_packet": "57cb069d0249babe220e9544d9a306a7df4ca3de",
+  "peer_review": {
+    "path": "PEER.public.json",
+    "blob": "e3a7d53b0b67acbd1efb4030d19a7fc6de452940",
+    "bytes": 7123,
+    "sha256": "d43d41692322410fbf6f62c9416c4412966897f0ae407d83069868c40ad8a623",
+    "mode": "100644"
+  },
+  "peer_actual_verifier": {
+    "blob": "6193cca76e8e5153a9fd027de687c941e51591a5",
+    "bytes": 27546,
+    "sha256": "d397179acdf6dd182b1890c69ad2803dc44609761b807a4a27a3769b1752a955"
+  },
+  "peer_actual_result": {
+    "blob": "ae0a9a02a627c3af9f192c7bb7c60b997518d3de",
+    "bytes": 16763,
+    "sha256": "1e274f2400f48cf914437a0810fde3c49282e00c98fedc6ed1219f46793855c0"
+  },
+  "peer_pure_predicates": 286,
+  "root_did_not_rerun_identical_peer_verifier": true,
+  "root_verified_inputs": {
+    "core": {
+      "blob": "33f31d57e93545fd15c93600748d8d138f772b7f",
+      "bytes": 58370,
+      "sha256": "b442f1ed6a5b3254aae79096c1a02d09895564a460a7f6333b809791109725b5"
+    },
+    "info": {
+      "blob": "96761101a4960795af741933ac58a0f0ea0a38fc",
+      "bytes": 504,
+      "sha256": "d83a4078525c1770e3f5ed7da3fb1eb84e579a79536b5ec8b151552619b08c85"
+    },
+    "go": {
+      "blob": "0de9e52cff21d0827a584387e178559c73d93a04",
+      "bytes": 13197,
+      "sha256": "cf5a34ffe4bbe5280b934892945f23747a6ce67a1021eb53daf5bcc945bdc293"
+    },
+    "intent": {
+      "blob": "3101506b954a8326b8b93192d281af079b6a8b1b",
+      "bytes": 4090,
+      "sha256": "7cfa373a48afb764afe0fac1c47cdd9510622fa93e405e13e56e00db7028f01e"
+    },
+    "ack-sdk": {
+      "blob": "6d33209e0b75ba65c78b7246121508dbaac25c48",
+      "bytes": 1398,
+      "sha256": "c2fec811685e73af11ac9a54349a8ca6bcf88a3b2c81edb306651448419ebb94"
+    },
+    "authority": {
+      "blob": "094c1fb53c2b59aad284423fc65d2ce519f9f6e9",
+      "bytes": 729,
+      "sha256": "98cbbd93055188f8f33aabd1b30fa1c66415b634ef400f261137ed9b42618de2"
+    },
+    "relay": {
+      "blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f"
+    },
+    "sender": {
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    },
+    "receiver": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "request": {
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+    }
+  },
+  "independent_receiver_body": {
+    "blob": "6d8690b485c81eec0018b40da8de52fffe2f3279",
+    "bytes": 35212,
+    "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f"
+  },
+  "all_known_raw_observer_chain_and_destination_infos_and_commands_pending": true,
+  "source_import_qualified": false,
+  "X230_runtime_qualified": false,
+  "full_OpenBao271_replacement": false,
+  "root_Runtime_calls": 0
+}

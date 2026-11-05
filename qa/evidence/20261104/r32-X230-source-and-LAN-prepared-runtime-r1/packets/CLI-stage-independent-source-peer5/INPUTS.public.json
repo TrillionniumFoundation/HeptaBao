@@ -1,0 +1,174 @@
+{
+  "source_tree": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+  "whole_read_inputs": [
+    {
+      "path": "before/stage.original.py",
+      "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+      "bytes": 22935,
+      "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+    },
+    {
+      "path": "candidate/stage_current4e808_r4.py",
+      "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+      "bytes": 23638,
+      "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+    },
+    {
+      "path": "review/stage.review.diff",
+      "blob": "263098ed555e9f3e9bd0c4ce1fda460d5c1bf914",
+      "bytes": 5445,
+      "sha256": "3f969dbaf6b8ba9ceb019f220069fd11c16b6da875dd34f0492451dc958d2124"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "ef96b54f5c1e852de120c37898f5fe6c4fc4c929",
+      "bytes": 3249,
+      "sha256": "51f369881ab5de8b0b6ac5fef4324d9e6204ecd72d89091927ab816b1e20b2e3"
+    },
+    {
+      "path": "MANIFEST.public.json",
+      "blob": "e0bca3c78ed2ca3f1f69b501cc89fd3e7f684f2a",
+      "bytes": 11705,
+      "sha256": "16d54149b01deeddd2b7ca5c548da6948ff5d30a74039e4a8df15d26b4ff5137"
+    },
+    {
+      "path": "references/current-CLI44-plan.original.json",
+      "blob": "dcbb90f71766b7bdc01e5426ac2d9be029c41d98",
+      "bytes": 2724,
+      "sha256": "5b11dcb43f054703bcee29ca2e09532bdb67eca877d6df2e85d76888bb3caa2f"
+    },
+    {
+      "path": "references/normal5-actual-table.original.json",
+      "blob": "795c92856119c5a2f8c73130f5772d82f3dfc295",
+      "bytes": 5741,
+      "sha256": "ab19bf4c72c2e92df78a0c3ef8a8d20004bfc5db38af4fdd35b6f704f3067cd0"
+    },
+    {
+      "path": "candidate/binding.partially-resolved.json",
+      "blob": "728f4c6dd801310de3f05b4b54ff2ea26bb2d331",
+      "bytes": 6945,
+      "sha256": "cb4fd6c0ef9708f5bde5bd01cabc67273f3a2e24db5abe37660606e965bf0ee6"
+    },
+    {
+      "path": "references/root-template-binding.original.json",
+      "blob": "a6975b58d29499d65c5ada5f454fdb19b67c92aa",
+      "bytes": 9389,
+      "sha256": "8079182cb8440c9a40eb19afea1651dc5a5c8cb0b81e6b982dca10c7c515decd"
+    },
+    {
+      "path": "review/constant-derivation.public.json",
+      "blob": "cfb2025865b93f463338ebec14eb3708ee8344b9",
+      "bytes": 18186,
+      "sha256": "21e416a477a54f39d83c0edeb2ae180aeed053444c77828ae7b551a9ddc4c4bc"
+    },
+    {
+      "path": "before/source-carrier.original.public.json",
+      "blob": "ecad1df703f911f44e74dd57a5ea3ae245189f3a",
+      "bytes": 257060,
+      "sha256": "ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34"
+    },
+    {
+      "path": "candidate/source-carrier.public.json",
+      "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+      "bytes": 302459,
+      "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+    },
+    {
+      "path": "requests/STAGE.REVIEW-ONLY.public.json",
+      "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+      "bytes": 346000,
+      "sha256": "bff45cc8f5ee4ca1dc2b6b6515bbb38e68cb61b02cd2f3d2ca34e323042b075f"
+    },
+    {
+      "path": "payload/groups.json",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    {
+      "path": "payload/native_fixture_reference_r8.py",
+      "blob": "7e465b3ea72814726ed2e01355ab91412190a747",
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"
+    },
+    {
+      "path": "payload/normal-release-tests-result.public.json",
+      "blob": "162336b81e26f391b12d2e6c860c6eb9cc2a9c71",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+    },
+    {
+      "path": "payload/official_cli_reference_r4.py",
+      "blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    },
+    {
+      "path": "payload/phaseb_binding_r3.py",
+      "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+      "bytes": 28134,
+      "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+    },
+    {
+      "path": "payload/phaseb_controller_r3.py",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    {
+      "path": "payload/phaseb_evidence_r3.py",
+      "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024"
+    },
+    {
+      "path": "references/canonical-trees/root.json",
+      "blob": "d84759b462aa64baa4a3cddc42ddfb7720ae31ed",
+      "bytes": 6009,
+      "sha256": "f0e8cea5313f1aa420cc2f65d4cbc52819731e02aada87cc1ab3ecfea5e85c55"
+    },
+    {
+      "path": "references/canonical-trees/crates.json",
+      "blob": "1985a178b8d115ac8e3cd743e2022352aea2ceff",
+      "bytes": 11560,
+      "sha256": "b2a7ef72fc9a7c030614fda84548b0fe3ebdccc33a55447f676e1d238cd90034"
+    },
+    {
+      "path": "references/canonical-trees/heptabao-server.json",
+      "blob": "d451557bdb42dd1f72e58908ff0a16d2cb70e619",
+      "bytes": 2044,
+      "sha256": "9c8e26c3e0db8b610605c4eab0b6cf4137a8a8aa2da9da55f78226dfc4adadcf"
+    },
+    {
+      "path": "references/canonical-trees/src.json",
+      "blob": "3699af29d93cd62df4ab05bb9aca8e81c5f68d25",
+      "bytes": 196638,
+      "sha256": "31f42f6ae1fe14a1e787dea28aca513e97d6ad580ba199795d31b2483cd51b24"
+    },
+    {
+      "path": "references/canonical/crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "blob": "052e96ae3b6d1d8d58c4013c07d28a2adf0af9d8",
+      "bytes": 16516,
+      "sha256": "e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8"
+    },
+    {
+      "path": "references/canonical/crates/heptabao-server/src/http_h2.rs",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"
+    },
+    {
+      "path": "references/canonical/crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "bytes": 31855,
+      "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121"
+    },
+    {
+      "path": "references/canonical/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+    }
+  ],
+  "additional_tree_membership": "ce236663c9969af8d7e00cf598a6594666c5d0fc"
+}

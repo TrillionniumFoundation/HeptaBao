@@ -1,0 +1,42 @@
+[
+  {
+    "name": "original streams job",
+    "pass": true
+  },
+  {
+    "name": "stdout exact original byte text",
+    "pass": true
+  },
+  {
+    "name": "stdout full offsets/EOF/authority",
+    "pass": true
+  },
+  {
+    "name": "stdout UTF8 original equality",
+    "pass": true
+  },
+  {
+    "name": "stderr exact original byte text",
+    "pass": true
+  },
+  {
+    "name": "stderr full offsets/EOF/authority",
+    "pass": true
+  },
+  {
+    "name": "stderr UTF8 original equality",
+    "pass": true
+  },
+  {
+    "name": "prepare terminal exact field set",
+    "pass": true
+  },
+  {
+    "name": "prepare terminal fixed output/no fixture",
+    "pass": true
+  },
+  {
+    "name": "no stderr",
+    "pass": true
+  }
+]

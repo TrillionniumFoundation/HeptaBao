@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.current4e808.LAN-prepare.fixed-observation-intent.v1",
+  "root_GO": {
+    "blob": "8378661df80442329b793a4dd73b1661a53dd80f",
+    "bytes": 10779,
+    "sha256": "e34f7e0075b0b0edbccc8afa7c37ccf5843cf4a9190c2a9c7f12d451dc1b6ab4"
+  },
+  "execution_intent_tree": "2eebd739e5dc865f1fb18eafcf05dc8555a85f6b",
+  "ACK_tree": "91d23c8075543ca43fe1dfbbea5742e65f7744e6",
+  "job_id": "1a1ad1383c9-fc05-5863",
+  "observation": "output1_body0",
+  "request": {
+    "idempotency_key": "ha-4e808-postcold-prepare-output1-body0-r1-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+        "offset": 0,
+        "limit": 3192,
+        "expected_version": "2050:7401918:3192:1793905103902942062:1793905103902942062"
+      }
+    }
+  },
+  "one_native_future": true,
+  "original_immutable_page_limit": 8192,
+  "SDK_external_before_parse": true,
+  "on_error": "Stop new admissions; preserve error and original operation identity",
+  "product_replay": false
+}

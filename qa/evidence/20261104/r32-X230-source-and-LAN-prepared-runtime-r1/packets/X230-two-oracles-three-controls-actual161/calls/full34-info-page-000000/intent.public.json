@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "full34-info-page-000000",
+  "method": "operation_result",
+  "request_blob": "39a07bb427d562856630d46c746b9fedf937bd15",
+  "request_bytes": 121,
+  "request_sha256": "84d7053e8bcba8e5c7b755a5c88a30ff3a7d60d647813a07f3e1a301c9150d91",
+  "request": {
+    "operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326",
+    "offset": 0,
+    "limit": 8192
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326",
+  "original_call_only": true
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "454ac3",
+  "wall_time_seconds": 0.033340966,
+  "exit_code": 0,
+  "original_token_count": 49,
+  "output": "{\"status\": \"PASS_ORIGINAL_TRANSPORT_AND_SOURCE_IMPORT_EVIDENCE\", \"checks_passed\": 1013, \"report_bytes\": 78822, \"report_sha256\": \"4e12bdbde14c3d8cc343787669ca83932e0c91d109743c34d4b7eaf2ec13cf91\"}\n"
+}

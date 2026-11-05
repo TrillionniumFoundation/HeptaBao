@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.compatibility-peer.lan-prepare-original-observation-chains.v1",
+  "reviewer": "/root/compatibility_audit",
+  "status": "PASS_WITHIN_ORIGINAL_CHAIN_SCOPE",
+  "source": {
+    "repository": "TrillionniumFoundation/HeptaBao",
+    "tree": "f799faca211d7c34db5f386c948509e1d6219faa",
+    "manifest_blob": "4c12fb92dbd41bef27c98324f15e9adb750b64fc",
+    "state_blob": "0e564f5a7f2d60affb4c79bd8d43d6227aeb267d",
+    "whole_files": 213,
+    "unique_blobs": 166,
+    "whole_bytes": 594588,
+    "Merkle_directories_including_root": 92
+  },
+  "independent_execution": {
+    "verifier": {
+      "bytes": 19032,
+      "sha256": "0059951413541f7d839a5d04d96f3fec378ffa6d0e11b51df0ef7b52f069cba5",
+      "blob": "c4990c23f335bb789cc40707a4250625908f6372"
+    },
+    "actual_result": {
+      "bytes": 11818,
+      "sha256": "b0b164d27722cb5146d8b7ee6d9843c504efff5c97f0850f971b8807f00c7de1",
+      "blob": "b78d6c4cc8538341f15821ea62a8c12c61a3eef1"
+    },
+    "executor_exit_code": 0,
+    "checks_passed": 852,
+    "HA_author_68_verifier_executed": false,
+    "candidate_executed": false,
+    "Runtime_calls": 0
+  },
+  "original_prepare": {
+    "request_blob": "483231efe2016a8bd72b8aa205fb589b13513f6e",
+    "intent_blob": "f681f2da372c8be9f466c5d2ceeae72e31e95f69",
+    "ACK_SDK_blob": "d5e99034a4d53cbf4c8029759fd35203d16fa9c6",
+    "authority_blob": "c4a2cb47892cbf6af27a0f48614c77d2d1d37c1c",
+    "host": "desktop",
+    "job_id": "1a1ad1383c9-fc05-5863",
+    "request_digest": "da7f3e7686a98e37b8d0aad6ac917c53d1e3cc2f7022d25c3cb3940ed206ed82",
+    "request_fingerprint_decimal": "15744371501096865335",
+    "request_digest_independently_recomputed": true,
+    "fingerprint_scope": "Exact decimal equality across preserved native ACK, intent and GO; no independent SipHash implementation was used.",
+    "authority": {
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true,
+      "durable": true,
+      "terminal_confirmed": true
+    },
+    "complete_original_streams": {
+      "stdout_bytes": 297,
+      "stderr_bytes": 0,
+      "stdout_blob": "39388a78d17fa9808580cce1b8d4200982e9a760"
+    }
+  },
+  "observations": {
+    "returned_original_operations": 13,
+    "immutable_pages": 20,
+    "completed": 12,
+    "known_failed": 1,
+    "all_stored_observed": true,
+    "all_owned_future_active": false,
+    "evidence_chain": [
+      "exact original request and intent",
+      "admission and same-ID status",
+      "original immutable page request and SDK",
+      "continuous ranges, total size, whole SHA and EOF",
+      "payload-to-native extraction without suppressing isError"
+    ]
+  },
+  "original_failure_and_separate_recovery": {
+    "old_operation_id": "9f8eb82a15916661a8e424e4e4b74a2b6b4b27931886284c64fe025100940a0d",
+    "old_state": "failed / stored_observed / owned_future_active=false",
+    "complete_error_payload": {
+      "bytes": 183,
+      "sha256": "5427c6345f5256d4b857421176675d1c1dda08db0504e937fbf95611ba90b67b",
+      "blob": "67106e298f5f87845aae09b23d30f7bf97c07ecf"
+    },
+    "error_scope": "Preserved remote-helper exit255/connection-closed transport error, not a successful binary body and not an unresolved running future.",
+    "explicit_GO": "aa0064627e0fce8d7b1d7f32b50a0056782ef1e5",
+    "recovery_request": "e32243a9b93650019fd75d096d2d769b16c2a1d9",
+    "new_operation_id": "804b063ef1ec7b8f6701b88fde95d4106385d597180e13e7a7c3ec15e2feacfa",
+    "recovery_state": "completed / stored_observed / owned_future_active=false",
+    "exact_same_parameters_except_key": true,
+    "unchanged_range": {
+      "offset": 0,
+      "limit": 3192
+    },
+    "old_failure_and_seven_history_copies_retained": true,
+    "business_request_replayed": false,
+    "earlier_historical_UNKNOWN_reclassified": false
+  },
+  "five_actual_files": {
+    "count": 5,
+    "complete_bytes": 52030,
+    "version_and_full9_as_decimal_strings": true,
+    "actual_archive_paths": [
+      {
+        "path": "actual/linux-native-build.public.json",
+        "bytes": 786,
+        "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+      },
+      {
+        "path": "actual/linux-normal-release-result.public.json",
+        "bytes": 3192,
+        "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+      },
+      {
+        "path": "actual/mac-native-build.public.json",
+        "bytes": 814,
+        "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49"
+      },
+      {
+        "path": "actual/mac-normal-release-result.public.json",
+        "bytes": 3386,
+        "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571"
+      },
+      {
+        "path": "actual/prepared.public.json",
+        "bytes": 43852,
+        "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+      }
+    ],
+    "proof": "Each fixed file_info matches its own expected-version binary read; decoded complete body equals the archived file, with exact length, SHA, full9/version, offset and EOF. No cross-file atomic snapshot is asserted."
+  },
+  "findings": {
+    "new_blocker_in_scope": false,
+    "summary": "All original request/ACK/status/page/payload/native and five extraction chains close within this stated scope."
+  },
+  "limitations": [
+    "Prepared contract semantics and old nine-source AST are explicitly excluded and remain with root.",
+    "No candidate module, product, Runtime tool, business request or HA author 68-check verifier was executed for this peer.",
+    "No new proof of external-intent temporal ordering beyond the preserved binding record is added.",
+    "The original known failed read and previous historical UNKNOWN records remain distinct from the authorized recovery.",
+    "This peer issues no prepare/live GO and creates no additional product or compatibility qualification."
+  ]
+}

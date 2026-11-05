@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 384,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "mode": 384,
+  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+  "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1",
+  "size": 307292,
+  "version": "2050:7874221:307292:1793908086830161920:1793908086830161920",
+  "full9_decimal": [
+    "2050",
+    "7874221",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "307292",
+    "1793908086830161920",
+    "1793908086830161920"
+  ]
+}

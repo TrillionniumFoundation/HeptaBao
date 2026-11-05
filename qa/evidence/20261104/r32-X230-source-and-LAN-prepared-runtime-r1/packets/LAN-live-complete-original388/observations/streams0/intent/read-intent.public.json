@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.current4e808.LAN-live.fixed-observation-intent.v1",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "execution_intent_tree": "a6f7a7483f604c839ab870a7c68c5c670261df66",
+  "ACK_tree": "4307353612e9a9a5580bd096307470917fa0ed8d",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "observation": "streams0",
+  "request": {
+    "idempotency_key": "ha-4e808-postcold-live-streams0-r1-20261105",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1ad3a6dd4-fc05-5919",
+        "limit": 16384,
+        "stdout_offset": 0,
+        "stderr_offset": 0
+      }
+    }
+  },
+  "one_native_future": true,
+  "original_immutable_page_limit": 8192,
+  "SDK_external_before_parse": true,
+  "on_error": "Stop new admissions; preserve error and original operation identity",
+  "product_replay": false
+}

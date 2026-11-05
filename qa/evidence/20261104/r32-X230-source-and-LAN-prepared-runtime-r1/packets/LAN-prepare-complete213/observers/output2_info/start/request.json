@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-postcold-prepare-output2-info-r1-20261105",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json"
+    }
+  }
+}

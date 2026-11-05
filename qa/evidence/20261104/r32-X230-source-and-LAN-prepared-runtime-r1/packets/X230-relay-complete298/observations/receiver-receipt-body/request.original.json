@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-relay-receiver-receipt-body-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+      "expected_version": "2053:3062409:35212:1793904542416660532:1793904542416660532",
+      "offset": 0,
+      "limit": 65536
+    }
+  }
+}

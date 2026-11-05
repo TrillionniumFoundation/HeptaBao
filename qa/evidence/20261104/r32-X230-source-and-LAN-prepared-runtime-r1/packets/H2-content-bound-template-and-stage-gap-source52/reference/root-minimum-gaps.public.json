@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.current4e808.cli-h2-minimum-binding-gaps.v1",
+  "scope": "Source-only next-input map based on already accepted current normal5, fixed fixture sources and instrument provenance. No new matrix or Runtime request.",
+  "product": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "normal_groups": [
+      44,
+      7,
+      9,
+      1
+    ],
+    "normal_count": 61,
+    "runner_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+    "normal5_actual_table_blob": "795c92856119c5a2f8c73130f5772d82f3dfc295",
+    "normal5_root_review_blob": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+    "incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming"
+  },
+  "shared_source": {
+    "target": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "bound_importer_source_tree": "6d0930af9a38361fe6ab2740bb54452f556ef560",
+    "request_blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "root_go_blob": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+    "execution_owner": "ha_validation",
+    "state_at_this_report": "Root GO delegated; no actual imported receipt is included here.",
+    "no_second_importer_owner": true
+  },
+  "CLI": {
+    "binder": {
+      "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+      "bytes": 28134,
+      "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+    },
+    "controller": {
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    "template": {
+      "blob": "2352421bf5952ad22ce62c5dace8f810533beadf",
+      "bytes": 6692,
+      "sha256": "f3c3cdd09d3c4d22d26cddee2c1c4265f29dc7b9104b8eb95ac2a21bc0e5609d"
+    },
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4",
+    "official_cli": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+      "bytes": 181760103,
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "mode": "0500",
+      "qualification_scope": "Existing fixed official 2.7.1 Linux instrument. Current freshness is rechecked by original admission."
+    },
+    "source_template_gaps": [
+      "Four current product content slots remain null in the frozen template; the accepted normal5 source table now supplies those bytes/SHA. Five target artifacts are still future create-only copies.",
+      "The five QA controls have exact source bytes/SHA but need actual publication into this fresh control root.",
+      "Inherited three utility pins and six old-result fences already exist in the CLI source template. Preserve those fixed guards and the old B01 UNKNOWN outcomes.",
+      "Local stage must produce actual target binding digest. Original readonly prepare must produce its own accepted receipt before a separately authorized unique live."
+    ],
+    "cases": [
+      {
+        "id": "B01",
+        "operation": "Leader official CLI snapshot save A",
+        "success_gate": "Known CLI/server boundary, exit0, status200 and complete independently verified native archive."
+      },
+      {
+        "id": "B02",
+        "operation": "Mutate then leader official CLI restore A",
+        "success_gate": "Known terminal plus exact baseline version/value/metadata on all nodes, then original cold restart/readback."
+      },
+      {
+        "id": "B03",
+        "operation": "Independent leader official CLI snapshot save B",
+        "success_gate": "Qualified native archive distinct from A; this is B05 input and never substitutes a retry of B04."
+      },
+      {
+        "id": "B04",
+        "operation": "Default standby official CLI save",
+        "success_gate": "Original default redirect behavior and no controller retry/manual redirect; qualify only from actual complete status200 archive."
+      },
+      {
+        "id": "B05",
+        "operation": "Mutate then default standby official CLI restore B",
+        "success_gate": "Known terminal plus exact actual restoration and second original cold restart/readback."
+      }
+    ],
+    "terminal_distinction": "A known rejection can yield a completed compatibility failure; full pass requires all five actual qualifications and both cold results. Unknown forbids all subsequent mutation, CLI and restart.",
+    "budgets": {
+      "outer_live": 3000,
+      "outer_prepare": 330,
+      "http": 15,
+      "cli": 15,
+      "action": 300,
+      "readiness": 45,
+      "election": 60,
+      "peer_ms": 1500,
+      "forward_ms": 8000,
+      "TERM": 5,
+      "KILL": 5
+    },
+    "ready_in_frozen_template": false,
+    "current_actual_five_window_qualification": false
+  },
+  "H2": {
+    "binder": {
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    "corrected_template": {
+      "blob": "8d3002682ea54f648a3a5312f126747978444484",
+      "bytes": 8093,
+      "sha256": "6f67ad14ffda5bb3a30e283a45fdec9a66e3dc57031c1082a4a80dfe3f2733e1"
+    },
+    "corrected_dispatch_template": {
+      "blob": "2eabf1e692ca5f64b2bf553af78f02204c3516f5",
+      "bytes": 1858,
+      "sha256": "8df14e936412fa559cfec18fb70c2ccbde5bd6950f5956122c7692faba737387"
+    },
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-live-r2",
+    "instrument_build": {
+      "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "normal60_sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+      "instrument_bytes": 4616576,
+      "instrument_sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+      "actual_full190_root_review": "81a7931599ec85df94d8eb9afe42879d20a0367b",
+      "six_components_do_not_qualify_actual_TLS": true,
+      "no_rebuild_proposed": true
+    },
+    "source_template_gaps": [
+      "Same five current product sources as CLI, with four content placeholders now resolvable from accepted normal5; new control destinations remain unobserved.",
+      "Twelve instrument roles remain tied strictly to the accepted df026 QA build. The source template already pins their content; exact accepted desktop QA12 metadata is needed in the create-only staging carrier. This report does not claim that transport failed or that a new transfer is needed.",
+      "Three utilities and old_fences are placeholders in this frozen H2 template. Use the existing fixed desktop observations/fences already carried by the accepted CLI/source lineage; do not invent metadata or weaken guards.",
+      "Publish five QA controls, five current product copies and twelve instrument copies into the independent control root, with executable0500 and owned non-executable0600 distinct from incoming0400.",
+      "Obtain actual binding/readonly prepare and separate fresh fixture GO; current source/product/instrument identities are three independent proof inputs."
+    ],
+    "cases": [
+      {
+        "id": "H01",
+        "operation": "Normal H1 leader native archive control",
+        "success_gate": "Actual complete status200, correct native archive and selected body limit."
+      },
+      {
+        "id": "H02",
+        "operation": "One explicit TLS h2 native KV2 version2 GET",
+        "success_gate": "CA/hostname/leaf/selected ALPN h2, exact content type/status/value/version, complete body/Content-Length, data+trailers+receive EOS, owned driver completion and original deadline."
+      },
+      {
+        "id": "H03",
+        "operation": "One explicit TLS h2 leader native snapshot GET",
+        "success_gate": "Same transport conjunction, exact status/content type and independently decompressed validated native archive."
+      }
+    ],
+    "body_limit_bytes": 8388608,
+    "not_proven": [
+      "Official CLI ALPN",
+      "CLI restore",
+      "34MiB snapshot",
+      "Full OpenBao2.7.1 surface",
+      "Late reset absence or bidirectional connection success beyond complete received message"
+    ],
+    "budgets": {
+      "http": 15,
+      "h2_client": 15,
+      "action": 300,
+      "readiness": 45,
+      "election": 60,
+      "peer_ms": 1500,
+      "forward_ms": 8000,
+      "TERM": 5,
+      "KILL": 5
+    },
+    "ready_in_frozen_template": false,
+    "current_actual_H2_fixture_qualification": false
+  },
+  "shared_copy_rule": "Use accepted incoming historical versions as source fences. Fresh target identities arise only from actual create-only publication; do not label planned target copies as observed.",
+  "new_Runtime_calls": 0,
+  "new_Cargo_or_product_runs": 0,
+  "old_unknowns_replayed": false,
+  "priority": "X230 ready source and root scheduling first; this map does not change that priority."
+}

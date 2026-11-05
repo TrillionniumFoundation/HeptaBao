@@ -1,0 +1,50 @@
+[
+  {
+    "name": "one original external intent",
+    "pass": true
+  },
+  {
+    "name": "exact host",
+    "pass": true
+  },
+  {
+    "name": "exact executable",
+    "pass": true
+  },
+  {
+    "name": "exact args",
+    "pass": true
+  },
+  {
+    "name": "exact cwd",
+    "pass": true
+  },
+  {
+    "name": "exact idempotency key",
+    "pass": true
+  },
+  {
+    "name": "empty requested environment",
+    "pass": true
+  },
+  {
+    "name": "exact digest",
+    "pass": true
+  },
+  {
+    "name": "lossless fingerprint",
+    "pass": true
+  },
+  {
+    "name": "actual original fresh launch",
+    "pass": true
+  },
+  {
+    "name": "actual job ID",
+    "pass": true
+  },
+  {
+    "name": "audit persisted",
+    "pass": true
+  }
+]

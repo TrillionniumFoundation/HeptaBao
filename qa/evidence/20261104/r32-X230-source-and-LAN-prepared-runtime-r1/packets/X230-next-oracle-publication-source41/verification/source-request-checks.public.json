@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.x230-existing-contract-publication-source-checks.v1",
+  "checks_passed": 37,
+  "checks": [
+    "complete tree index 7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+    "all leaf modes retained 7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+    "reconstructed tree 7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+    "complete tree index 49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+    "all leaf modes retained 49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+    "reconstructed tree 49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+    "complete tree index oldcontrols",
+    "all leaf modes retained oldcontrols",
+    "reconstructed tree 1b3ef14fccc9b137ef33fd0ae799ca5205b366f5",
+    "complete tree index oldactual",
+    "all leaf modes retained oldactual",
+    "reconstructed tree dc1b7f2f07072c8252bbd8a0c35580ddcf24e46f",
+    "complete tree index olddraft",
+    "all leaf modes retained olddraft",
+    "reconstructed tree a84333e715168946cfde93c4387f34bebaa5a5ba",
+    "historical driver member oldcontrols",
+    "historical driver member olddraft",
+    "publication at most 1MiB full34",
+    "create only full34",
+    "whole base64 inverse full34",
+    "not published full34",
+    "publication at most 1MiB comparison69",
+    "create only comparison69",
+    "whole base64 inverse comparison69",
+    "not published comparison69",
+    "publication at most 1MiB comparison-driver",
+    "create only comparison-driver",
+    "whole base64 inverse comparison-driver",
+    "not published comparison-driver",
+    "oracle unresolved oracle-binary",
+    "oracle unresolved oracle-archive",
+    "original actual contract full34",
+    "original native outer1800 full34",
+    "original NEW outer provenance full34",
+    "original actual contract comparison69",
+    "original native outer1800 comparison69",
+    "original NEW outer provenance comparison69"
+  ],
+  "tree_indices": [
+    {
+      "tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+      "files": 17,
+      "index_Merkle_verified": true,
+      "all_leaf_contents_claimed_revalidated": false
+    },
+    {
+      "tree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+      "files": 36,
+      "index_Merkle_verified": true,
+      "all_leaf_contents_claimed_revalidated": false
+    },
+    {
+      "tree": "1b3ef14fccc9b137ef33fd0ae799ca5205b366f5",
+      "files": 18,
+      "index_Merkle_verified": true,
+      "all_leaf_contents_claimed_revalidated": false
+    },
+    {
+      "tree": "dc1b7f2f07072c8252bbd8a0c35580ddcf24e46f",
+      "files": 27,
+      "index_Merkle_verified": true,
+      "all_leaf_contents_claimed_revalidated": false
+    },
+    {
+      "tree": "a84333e715168946cfde93c4387f34bebaa5a5ba",
+      "files": 13,
+      "index_Merkle_verified": true,
+      "all_leaf_contents_claimed_revalidated": false
+    }
+  ],
+  "source_bytes_changed": false,
+  "base64_whole_roundtrips": 3,
+  "historical_typed_request_digests_recomputed": 2,
+  "candidate_modules_executed": 0,
+  "Runtime_calls": 0,
+  "product_requests": 0,
+  "new_test_matrix": false
+}

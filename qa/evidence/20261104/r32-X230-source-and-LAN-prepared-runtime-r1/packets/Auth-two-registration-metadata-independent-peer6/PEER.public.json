@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.ha-independent-auth-metadata2-peer-review.v1",
+  "reviewer": "/root/ha_validation",
+  "source_tree": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "scope": "Two exact public file_info original observer chains and their four finite same-version binary_read SOURCE proposals only.",
+  "verifier": {
+    "blob": "b451645071ceceeaf7308e46c1843450223e1f0f",
+    "bytes": 13050,
+    "sha256": "e36e47a664ad3f6a50fa1d281bcc564a9730d9217241f2ab94f8daa91c3aeecf"
+  },
+  "actual_result": {
+    "blob": "07a267e62bff9d678555ab0b61ba75643e8bf330",
+    "bytes": 19771,
+    "sha256": "dc67f684dca9e3dfdc65405d3a0c696f388d59f3507700fe02ea9d4e71cc77f9"
+  },
+  "input_index": {
+    "blob": "3b70e20e8c4ace5c8b5eaf327e7acbc207950328",
+    "bytes": 24991,
+    "sha256": "fd5dc7777047dd97ba28840f65ef5ac59ca9195a7a3ebec53c21ab4acf232fc5"
+  },
+  "status": "PASS_NO_NEW_SOURCE_OR_OBSERVER_CHAIN_BLOCKER",
+  "checks": 189,
+  "whole": {
+    "files": 36,
+    "bytes": 53998,
+    "merkle_nodes": 15
+  },
+  "original_chains": {
+    "operations": 2,
+    "immutable_pages": 2,
+    "payload_bytes": 1155,
+    "completed_stored_inactive": 2,
+    "returned_IDs": [
+      "7a88b1d0144ee83cdc64bc2717c7c1b2f622fc487cad20da2b60ed8608ffd7b4",
+      "921e9ebd9f85ea4b118698312ce295b313aced33538f1edd4d1d04a7ad5fb7d2"
+    ],
+    "original_errors_in_this_packet": 0,
+    "reconciliations_in_this_packet": 0
+  },
+  "verified": [
+    "Exact root GO/request and external intent references, including the second intent's reference to the first closed binding.",
+    "Each original SDK's isError=false and exact text/native preservation, same operation ID ACK/status/result request, completed/stored_observed/owned_future_active=false.",
+    "Each base64 immutable page reconstructs the complete original SDK payload byte-for-byte and its SHA; native text byte-for-byte equals retained original.",
+    "Full9 projections keep version components as decimal strings; original permissions/uid/gid/nlink agree. Regular-file mode reconstruction is explicitly described in the result.",
+    "Four proposal requests preserve exact source paths, original versions and whole SHA; offsets are contiguous with exact EOF and no overlapping or omitted range.",
+    "The previous 140664 B body scope remains consumed; new 213025 B is separately proposed, not reused or reset. The resulting 353689 B is conditional cumulative accounting."
+  ],
+  "body_proposal": {
+    "blob": "38cb45d78de86306e215adf64b8905e949fd2050",
+    "chunks": [
+      31444,
+      65536,
+      65536,
+      50509
+    ],
+    "total_new_bytes": 213025,
+    "max_chunk": 65536,
+    "old_bytes": 140664,
+    "conditional_cumulative_bytes": 353689,
+    "submitted": 0,
+    "new_GO_required": true
+  },
+  "limitations": [
+    "Confirms immutable raw-chain consistency and closed original observer statuses; does not independently timestamp external call completion order.",
+    "Source bodies are not retrieved by this metadata packet; exact body proposals still require separate root authorization.",
+    "Known native metadata and whole SHA are historical observations, not a new host stat; no SDK factory/winner inference."
+  ],
+  "not_done": {
+    "Runtime_calls": 0,
+    "host_body_reads": 0,
+    "author_checker_executions": 0,
+    "SDK_execution": 0,
+    "candidate_changes": 0,
+    "body_dispatch_authorized": false,
+    "actual_selected_owner_qualification": false
+  }
+}

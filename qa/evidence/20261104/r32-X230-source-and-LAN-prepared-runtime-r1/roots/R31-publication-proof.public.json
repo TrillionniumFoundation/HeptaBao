@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.immutable-checkpoint-publication-proof.r31.v1",
+  "published": true,
+  "commit": "d2bfaab64364d07ba339ce96b74a844cdbf40781",
+  "tree": "61dcc46248119a4aa8b3f9248221e132b4ca6cd4",
+  "sole_parent": "cd57cb6709f6185295b1ea154415aab50d8c7a2f",
+  "branch": "codex/heptabao-validation-20261104",
+  "expected_sha": "cd57cb6709f6185295b1ea154415aab50d8c7a2f",
+  "force": false,
+  "conditional_CAS_succeeded": true,
+  "branch_reread_exact": true,
+  "commit_parent_and_tree_readback_exact": true,
+  "root26_entries_exact": true,
+  "freeze_time": "2026-11-05T19:02:41Z",
+  "all21671_prior_nondocument_leaves_preserved": true,
+  "new_evidence_leaves": 644,
+  "deleted_leaves": 0,
+  "packet_totals": {
+    "packets": 12,
+    "files": 609,
+    "bytes": 5901788,
+    "merkle": 221,
+    "root_before_state_manifest": 33
+  },
+  "updated_documents": [
+    {
+      "name": "r31-checkpoint.md",
+      "blob": "d02226534c06152be44d6b55691bb6e5120b44db",
+      "bytes": 303221,
+      "sha256": "8eafdf01b2bd4b7a2cf3b306291af9da27d2db660c5219667a2b637e9de2a1d4",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "d27e5de2bb4065b1680b4407c85809bc7539f90d"
+    },
+    {
+      "name": "r31-checkpoint-index.public.json",
+      "blob": "d82a2259b405bb72e6f5f53fb347b553ed42dc22",
+      "bytes": 864829,
+      "sha256": "8d961c15865dcfc61877a8a5b38fc98e1a7390be45a1574162862bd89139bf76",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "ba23a377a930ea9867f39cbeee6f43ad7698fed4"
+    }
+  ],
+  "original_raw_int64_not_reserialized": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "publication_proofs_saved_in_next_checkpoint": true
+}

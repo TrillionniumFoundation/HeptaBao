@@ -1,0 +1,14 @@
+{
+  "request": {
+    "cmd": "python3 - <<'PY'\nimport ast,difflib,json\nfrom pathlib import Path\nv=json.loads(Path('/workspace/scratch/f86faac821c4/x230_wrappers_bound_source_input.json').read_text())\nout={}; rows=[]\nfor name in ('full34','comparison69'):\n b=v['files']['before/'+name+'.py'];a=v['files']['candidate/'+name+'.py']\n before=ast.parse(b);after=ast.parse(a)\n bd={x.name:ast.get_source_segment(b,x) for x in before.body if isinstance(x,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef))}\n ad={x.name:ast.get_source_segment(a,x) for x in after.body if isinstance(x,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef))}\n assert bd==ad\n diff=''.join(difflib.unified_diff(b.splitlines(keepends=True),a.splitlines(keepends=True),fromfile='before/'+name+'.py',tofile='candidate/'+name+'.py'))\n out['diff/'+name+'.binding.diff']=diff\n rows.append({'name':name,'unchanged_full_definition_count':len(bd),'definition_names':list(bd),'unified_hunks':sum(x.startswith('@@ ') for x in diff.splitlines()),'candidate_executed':False})\nout['verification/definition-identity.public.json']=json.dumps({'schema':'heptabao.existing-X230-two-wrapper-definition-identity.v1','rows':rows,'Runtime_calls':0,'candidate_execution':False,'new_product_tests':0},indent=2,sort_keys=True)+'\\n'\nPath('/workspace/scratch/f86faac821c4/x230_wrappers_bound_source_derived.json').write_text(json.dumps(out))\nprint(json.dumps(rows))\nPY",
+    "workdir": "/workspace/scratch/f86faac821c4",
+    "max_output_tokens": 2000
+  },
+  "result": {
+    "chunk_id": "7fc75b",
+    "wall_time_seconds": 0.000029424,
+    "exit_code": 0,
+    "original_token_count": 103,
+    "output": "[{\"name\": \"full34\", \"unchanged_full_definition_count\": 8, \"definition_names\": [\"need\", \"sha\", \"save\", \"enc\", \"git\", \"source\", \"normal61_admission\", \"main\"], \"unified_hunks\": 1, \"candidate_executed\": false}, {\"name\": \"comparison69\", \"unchanged_full_definition_count\": 7, \"definition_names\": [\"need\", \"sha\", \"save\", \"git\", \"source\", \"normal61_admission\", \"main\"], \"unified_hunks\": 1, \"candidate_executed\": false}]\n"
+  }
+}

@@ -1,0 +1,349 @@
+{
+  "schema": "heptabao.root-X230-two-oracles-three-createonly-controls-exact-GO.r32.v1",
+  "status": "GO_FIXED_SOURCE_PUBLICATION_AND_READBACK_ONLY",
+  "owner": "/root/compatibility_audit",
+  "Runtime_lane": "B",
+  "lane_handoff": {
+    "name": "r32-line-B-Auth-four-bodies-to-X230-handoff.public.json",
+    "blob": "df23520f3d0af5b0f881e1b1bf3a686b217f6bbc",
+    "bytes": 2732,
+    "sha256": "a84711dddcdeed84eddefba8c1097185ada27c3c096f8d76474fc42ea69696c0"
+  },
+  "source_review": {
+    "name": "r32-X230-oracle-source-publication-root-review.public.json",
+    "blob": "f9595204738ff47a0c806f492ff85dc447136223",
+    "bytes": 9763,
+    "sha256": "456ee80605d57a56c169e848adb844ae8cc21eb0bc0b4ee7ab0fab764e7bf148"
+  },
+  "source_packet": "af115fddab06b90935b58a653ce0a05e669f0c89",
+  "source_transfer_qualification": {
+    "name": "r32-X230-source-transfer-complete-root-qualification.public.json",
+    "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+    "bytes": 10556,
+    "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+  },
+  "sequence": "Close oracle-binary file_info, then oracle-archive file_info; both exact whole hashes must match. Then, for each of the three fixed controls in order: single create-only binary_write, fixed independent file_info, deterministic version-bound exact whole body read; each original observation and all immutable pages must close before advancing.",
+  "oracle_requests": [
+    {
+      "role": "oracle-binary",
+      "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "request": {
+        "path": "requests/oracle-1-oracle-binary.operation_start.json",
+        "blob": "3ee943d9c009b760b78e3bd6630e04749dd49b2e",
+        "bytes": 243,
+        "sha256": "f8f5b62906a0d751972bc9c1ee1b778f46973b0c56a6318453640e08258c2ab4",
+        "mode": "100644"
+      },
+      "value": {
+        "idempotency_key": "heptabao-4e808-x230-oracle-binary-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao"
+          }
+        }
+      }
+    },
+    {
+      "role": "oracle-archive",
+      "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "request": {
+        "path": "requests/oracle-2-oracle-archive.operation_start.json",
+        "blob": "95070d68f5508654393973c968af80f11cd5c271",
+        "bytes": 282,
+        "sha256": "7fb6667a4e2df25f300e06d19aa0cf1ad5a2448417104d1ab9584f2fe0607066",
+        "mode": "100644"
+      },
+      "value": {
+        "idempotency_key": "heptabao-4e808-x230-oracle-archive-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz"
+          }
+        }
+      }
+    }
+  ],
+  "publication_requests": [
+    {
+      "order": 1,
+      "role": "full34",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+      "request": {
+        "path": "requests/publication-1-full34.binary_write.json",
+        "blob": "8565b7b336905361a84ee68f1224fb01b2176cac",
+        "bytes": 13693,
+        "sha256": "8a3605714b8b116a30577c41ab630f7b3c6ac3d8aa072b9660265a1ca44b226d",
+        "mode": "100644"
+      },
+      "source": {
+        "path": "source/full34_controller.py",
+        "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+        "bytes": 10142,
+        "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+        "mode": "100644"
+      },
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_binary_write",
+      "expected_version": "absent",
+      "exact_bytes_in_source_packet": true
+    },
+    {
+      "order": 2,
+      "role": "comparison69",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+      "request": {
+        "path": "requests/publication-2-comparison69.binary_write.json",
+        "blob": "afeca569bb8e1e6d9d9f5cd4fa1c3352e5659c39",
+        "bytes": 15799,
+        "sha256": "e9865bc30e1e718ad92427756185e9e44616a3cb35c68fb8fe990778687e57c7",
+        "mode": "100644"
+      },
+      "source": {
+        "path": "source/comparison69_controller.py",
+        "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+        "bytes": 11716,
+        "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+        "mode": "100644"
+      },
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_binary_write",
+      "expected_version": "absent",
+      "exact_bytes_in_source_packet": true
+    },
+    {
+      "order": 3,
+      "role": "comparison-driver",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+      "request": {
+        "path": "requests/publication-3-comparison-driver.binary_write.json",
+        "blob": "9571811215e1777b6e91ba8eb4f2e5e019c64870",
+        "bytes": 12529,
+        "sha256": "bf50fc2dfdbb216d5cf24c14f85f35cd6d54132baabf22ac598aa04992fbac4f",
+        "mode": "100644"
+      },
+      "source": {
+        "path": "source/native271_comparison_final_r1.py",
+        "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+        "bytes": 9261,
+        "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+        "mode": "100644"
+      },
+      "tool": "mcp__codex_apps__heptaruntime_mac_controller_binary_write",
+      "expected_version": "absent",
+      "exact_bytes_in_source_packet": true
+    }
+  ],
+  "postpublication_file_info_requests": [
+    {
+      "role": "full34",
+      "request": {
+        "name": "r32-X230-postpublication-full34-info-operation-request.public.json",
+        "blob": "66bdde5b5dfc1a12b31982f9b0ae46f057a92bf2",
+        "bytes": 271,
+        "sha256": "5e915a7221e1aad1b4d7340cddac470f901a5220402963495486ff6698ea9347"
+      },
+      "value": {
+        "idempotency_key": "heptabao-4e808-x230-publish-full34-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+          }
+        }
+      }
+    },
+    {
+      "role": "comparison69",
+      "request": {
+        "name": "r32-X230-postpublication-comparison69-info-operation-request.public.json",
+        "blob": "e9b471546477c65ea6402ef2424c200bfbed51db",
+        "bytes": 283,
+        "sha256": "dfde41ac41bae4efe56a4c73a95c37836c19fba2758068d1b0693ee16c69dcff"
+      },
+      "value": {
+        "idempotency_key": "heptabao-4e808-x230-publish-comparison69-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+          }
+        }
+      }
+    },
+    {
+      "role": "comparison-driver",
+      "request": {
+        "name": "r32-X230-postpublication-comparison-driver-info-operation-request.public.json",
+        "blob": "6d37dfc74f9ce5d860e181a75b593ff9ffbdba03",
+        "bytes": 294,
+        "sha256": "b47d57c1470127e2919c3d3d1ce12e158c20414c26adb7f6d8e939bcc47c39b9"
+      },
+      "value": {
+        "idempotency_key": "heptabao-4e808-x230-publish-comparison-driver-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py"
+          }
+        }
+      }
+    }
+  ],
+  "conditional_three_body_read_requests": [
+    {
+      "role": "full34",
+      "source": {
+        "path": "source/full34_controller.py",
+        "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+        "bytes": 10142,
+        "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+        "mode": "100644"
+      },
+      "request_derivation": {
+        "idempotency_key": "heptabao-4e808-x230-publish-full34-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+            "expected_version": "EXACT_ORIGINAL_SUCCESSFUL_POSTPUBLICATION_FILE_INFO_VERSION",
+            "offset": 0,
+            "limit": 10142
+          }
+        }
+      },
+      "prerequisites": [
+        "The immediately preceding successful original binary_write is fully saved before parsing.",
+        "The fixed postpublication file_info original operation and pages are completed/stored/inactive and expose this exact path, whole size and source SHA256.",
+        "The actual version is copied verbatim from that file_info; regular file, operator uid/gid1000, link_count1 and no group/other write bits are confirmed. Mode is recorded as observed, not guessed.",
+        "Persist the fully instantiated exact request and intent externally before its one operation_start."
+      ],
+      "expected_next_offset": 10142,
+      "expected_eof": true,
+      "expected_whole_sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+      "maximum_native_body_submissions": 1
+    },
+    {
+      "role": "comparison69",
+      "source": {
+        "path": "source/comparison69_controller.py",
+        "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+        "bytes": 11716,
+        "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+        "mode": "100644"
+      },
+      "request_derivation": {
+        "idempotency_key": "heptabao-4e808-x230-publish-comparison69-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+            "expected_version": "EXACT_ORIGINAL_SUCCESSFUL_POSTPUBLICATION_FILE_INFO_VERSION",
+            "offset": 0,
+            "limit": 11716
+          }
+        }
+      },
+      "prerequisites": [
+        "The immediately preceding successful original binary_write is fully saved before parsing.",
+        "The fixed postpublication file_info original operation and pages are completed/stored/inactive and expose this exact path, whole size and source SHA256.",
+        "The actual version is copied verbatim from that file_info; regular file, operator uid/gid1000, link_count1 and no group/other write bits are confirmed. Mode is recorded as observed, not guessed.",
+        "Persist the fully instantiated exact request and intent externally before its one operation_start."
+      ],
+      "expected_next_offset": 11716,
+      "expected_eof": true,
+      "expected_whole_sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+      "maximum_native_body_submissions": 1
+    },
+    {
+      "role": "comparison-driver",
+      "source": {
+        "path": "source/native271_comparison_final_r1.py",
+        "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+        "bytes": 9261,
+        "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+        "mode": "100644"
+      },
+      "request_derivation": {
+        "idempotency_key": "heptabao-4e808-x230-publish-comparison-driver-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "x230",
+            "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+            "expected_version": "EXACT_ORIGINAL_SUCCESSFUL_POSTPUBLICATION_FILE_INFO_VERSION",
+            "offset": 0,
+            "limit": 9261
+          }
+        }
+      },
+      "prerequisites": [
+        "The immediately preceding successful original binary_write is fully saved before parsing.",
+        "The fixed postpublication file_info original operation and pages are completed/stored/inactive and expose this exact path, whole size and source SHA256.",
+        "The actual version is copied verbatim from that file_info; regular file, operator uid/gid1000, link_count1 and no group/other write bits are confirmed. Mode is recorded as observed, not guessed.",
+        "Persist the fully instantiated exact request and intent externally before its one operation_start."
+      ],
+      "expected_next_offset": 9261,
+      "expected_eof": true,
+      "expected_whole_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "maximum_native_body_submissions": 1
+    }
+  ],
+  "budgets": {
+    "binary_write_submissions": 3,
+    "decoded_write_bytes": 31119,
+    "oracle_file_info_submissions": 2,
+    "postpublication_file_info_submissions": 3,
+    "native_body_read_submissions": 3,
+    "native_body_read_bytes": 31119,
+    "immutable_result_page_limit": 8192,
+    "maximum_active_Runtime_call_or_owned_native_future": 1,
+    "source_modules_executed": 0,
+    "file_info_hash_IO": "Whole-file hashes are required and not bounded by the 31,119-byte native body budget."
+  },
+  "protocol": {
+    "external_completed_exact_intent_before_each_submission": true,
+    "original_whole_SDK_before_isError_or_parse": true,
+    "read_observers_original_ID_only": true,
+    "every_fixed_observer_and_all_immutable_pages_closed": true,
+    "no_automatic_retries": true,
+    "no_silent_path_key_version_or_timeout_changes": true,
+    "no_write_replay_on_missing_or_ambiguous_ACK": true,
+    "if_write_ACK_ambiguous": "Save original error/SDK, preserve mutation UNKNOWN, pause later admissions; a separately reviewed fixed-path read-only reconciliation may be considered. Never repeat the write.",
+    "on_any_failure_or_identity_mismatch": "Preserve original evidence and stop subsequent admissions for review; do not overwrite, refresh metadata silently, broaden target paths or execute products."
+  },
+  "fixture": {
+    "host": "x230",
+    "root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "all_three_controls_outside_canonical_source": true,
+    "no_git_worktree_changes": true,
+    "no_new_directory_or_Python_publisher_layer": true,
+    "no_chmod_or_privilege_change": true,
+    "HA_hosts_exclusive_to_lane_A": [
+      "mac-ts",
+      "rog-ts",
+      "pocket4-ts"
+    ]
+  },
+  "scope": {
+    "current_source_bytes_unchanged": true,
+    "comparison_driver_unchanged": true,
+    "cross_file_atomicity_claim": false,
+    "historical_relay_UNKNOWN_preserved": true,
+    "historical_relay_termination_not_proven": true,
+    "no_continuous_atomic_namespace_claim": true,
+    "process_start_authorized": false,
+    "full34_execution_authorized": false,
+    "comparison69_execution_authorized": false,
+    "production_changed": false,
+    "full_OpenBao271_replacement": false
+  },
+  "following": "Return current oracle and all three exact published source body/version/full9 original chains. Separate root GO remains required for full34; comparison69 follows current full34 terminal and cleanup.",
+  "root_Runtime_calls": 0
+}

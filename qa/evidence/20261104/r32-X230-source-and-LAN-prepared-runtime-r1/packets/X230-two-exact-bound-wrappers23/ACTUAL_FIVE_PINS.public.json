@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.4e808.x230-existing-wrapper-actual-five-pin-binding.v1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "unique_relay_job": "desktop/1a1ad0a9524-fc05-5839",
+  "actual_relay_packet": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+  "base_source_tree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+  "bindings": {
+    "NORMAL61_SHA": {
+      "index": 5,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "version": "2053:3057883:57532:1793904530487651687:1793904530487651687",
+      "mode": 256,
+      "full9_decimal": [
+        "2053",
+        "3057883",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "57532",
+        "1793904530487651687",
+        "1793904530487651687"
+      ],
+      "native": {
+        "path": "observations/dest-info-5/native.original.json",
+        "bytes": 484,
+        "sha256": "9ef0507bd6a502b7b628211a9f0e0c54c86b8a01fb88b39cbda0e683ac185216",
+        "blob": "a9c0b437062c883d771fd95f11085bdfd084c471",
+        "carrier_tree": "6013b584971af7e7a03ff3434c085679c53ac97a"
+      }
+    },
+    "NORMAL_NATIVE_SHA": {
+      "index": 1,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2053:3057879:786:1793904528451650178:1793904528451650178",
+      "mode": 256,
+      "full9_decimal": [
+        "2053",
+        "3057879",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "786",
+        "1793904528451650178",
+        "1793904528451650178"
+      ],
+      "native": {
+        "path": "observations/dest-info-1/native.original.json",
+        "bytes": 477,
+        "sha256": "96a841ffa54906c44182bd5a51f47105661ab4b242cf2dd4b13eb442df3f9055",
+        "blob": "d24758a19970ab5f4d4482a2ac103245f8c9cce4",
+        "carrier_tree": "be4048424e9ae4abe50426e8c17f2cca5cf49383"
+      }
+    },
+    "NORMAL_RELEASE_SHA": {
+      "index": 2,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2053:3057880:3192:1793904528452650179:1793904528452650179",
+      "mode": 256,
+      "full9_decimal": [
+        "2053",
+        "3057880",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "3192",
+        "1793904528452650179",
+        "1793904528452650179"
+      ],
+      "native": {
+        "path": "observations/dest-info-2/native.original.json",
+        "bytes": 473,
+        "sha256": "a7482302b84d9f0c245ec926e3a9c45224bccc0daa739c94cf3456ededc5e3ba",
+        "blob": "78c7231663c5ec4332e781a0b93b07e4f46d9581",
+        "carrier_tree": "7fc42b6a356ddb31c9deee42972fd4259361be6a"
+      }
+    },
+    "TRANSFER_SHA": {
+      "bytes": 35212,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+      "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f",
+      "version": "2053:3062409:35212:1793904542416660532:1793904542416660532",
+      "full9_decimal": [
+        "2053",
+        "3062409",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "35212",
+        "1793904542416660532",
+        "1793904542416660532"
+      ],
+      "native": {
+        "path": "observations/receiver-receipt-info/native.original.json",
+        "bytes": 484,
+        "sha256": "cc11a806febf73e3c70f6721afd1d0f1d184f5f699ec9335a1493ace9bc8ab7c",
+        "blob": "32e6bfb79b21f1a15fc4b3edff8ef16a4135ebbb",
+        "carrier_tree": "0518b81d74b563b8825e7b55549fbf4f4c9f32b6"
+      }
+    },
+    "server": {
+      "index": 0,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "version": "2053:3057878:110219600:1793904527474649454:1793904527474649454",
+      "mode": 320,
+      "full9_decimal": [
+        "2053",
+        "3057878",
+        "1000",
+        "1000",
+        "33088",
+        "1",
+        "110219600",
+        "1793904527474649454",
+        "1793904527474649454"
+      ],
+      "native": {
+        "path": "observations/dest-info-0/native.original.json",
+        "bytes": 480,
+        "sha256": "25c1546d77c3f7904873d65f5f4113b09d64560c20c44e2964bb18215b3396e8",
+        "blob": "776d730027bb223b10b08888f830a6cca43cde81",
+        "carrier_tree": "5a52c755adf5697e250fb5b274d13cd5db2e59c1"
+      }
+    }
+  },
+  "BINDING_READY_semantics": "The five exact normal61 and transport SHA literals have actual independent destination/receipt observations. It does not authorize deployment or execution and does not claim current independent oracle metadata or comparison driver publication.",
+  "root_full_actual_review_still_required": true,
+  "Runtime_calls": 0,
+  "product_calls": 0
+}

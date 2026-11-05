@@ -1,0 +1,253 @@
+{
+  "schema": "heptabao.auth.actual-next-three-dependency-body-proposal.v1",
+  "status": "SOURCE_PROPOSAL_NO_BODY_GO",
+  "actual_metadata_operations": 3,
+  "all_metadata_completed_stored_inactive": true,
+  "body_submitted": 0,
+  "SDK_executed": 0,
+  "requests": [
+    {
+      "sequence": 1,
+      "id": "runtime-policy",
+      "request_path": "body-proposal/requests/01-runtime-policy-0.json",
+      "request": {
+        "blob": "92bf9032438f6ad25d3e54666c7e0f150f02c361",
+        "bytes": 424,
+        "sha256": "8ca3ad248e0adf52c9dc8345d3feee5debfb728a92f6b4279d340258695cf649"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-runtime-policy-58c0bac3-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+            "expected_version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+            "offset": 0,
+            "limit": 6918
+          }
+        }
+      },
+      "expected_next_offset": 6918,
+      "expected_eof": true,
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+        "bytes": 6918,
+        "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+        "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+        "full9_decimal": [
+          "16777233",
+          "405237709",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "6918",
+          "1784843459540531789",
+          "1784843459540531789"
+        ]
+      },
+      "actual_metadata": {
+        "blob": "80cfc9f2b6bcb94b2192b3392aca9f00c29febe1",
+        "bytes": 465,
+        "sha256": "3ae1f3be6f57408cd03748cffbd08ec76ab1a6a92f93f085c53718bb1c2e19aa"
+      },
+      "original_metadata_operation_id": "c7327362f8e218d312a444eba43c95929cf415e02735255f87258d8b5773bae2",
+      "submitted": false
+    },
+    {
+      "sequence": 2,
+      "id": "openai-routing",
+      "request_path": "body-proposal/requests/02-openai-routing-0.json",
+      "request": {
+        "blob": "cd54a82e49ad9f6bbf38ac5f82ad23e33323d7be",
+        "bytes": 418,
+        "sha256": "8f10e2d4b7a06ac91464be9a2af3caa0194a15cc22ece7994a1c3252637b0c98"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-openai-routing-31d71606-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+            "expected_version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+            "offset": 0,
+            "limit": 3497
+          }
+        }
+      },
+      "expected_next_offset": 3497,
+      "expected_eof": true,
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+        "bytes": 3497,
+        "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6",
+        "version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+        "full9_decimal": [
+          "16777233",
+          "405238041",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "3497",
+          "1784843459992420263",
+          "1784843459992420263"
+        ]
+      },
+      "actual_metadata": {
+        "blob": "ae7b9389a5a6f75aeca838e33a905ee6396fe8fc",
+        "bytes": 459,
+        "sha256": "e13a60650b4e97849ad86e097bff42ce67c85e11e9f55d10362322fa2fd0891d"
+      },
+      "original_metadata_operation_id": "65e7a4a57c530d009e9032d953584cb89eacde6258bbe853c075a000a805e4b8",
+      "submitted": false
+    },
+    {
+      "sequence": 3,
+      "id": "plugin-loader",
+      "request_path": "body-proposal/requests/03-plugin-loader-0.json",
+      "request": {
+        "blob": "9ecb58d868a67d0d1c0d3129e5b0173520f15e7f",
+        "bytes": 412,
+        "sha256": "cb8708d5ac19f2d870588c720bd00e42837e35f1f8ce67fa22cbc6a93124f673"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+            "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+            "offset": 0,
+            "limit": 65536
+          }
+        }
+      },
+      "expected_next_offset": 65536,
+      "expected_eof": false,
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+        "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+        "full9_decimal": [
+          "16777233",
+          "405237358",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "116680",
+          "1784843458968424711",
+          "1784843458968424711"
+        ]
+      },
+      "actual_metadata": {
+        "blob": "e7e553238612f91d7e8fd00332347508dbf6050e",
+        "bytes": 455,
+        "sha256": "85075b89184153ff1622cf0b3213ddad65c518df972301f7eae20e8c4288b71b"
+      },
+      "original_metadata_operation_id": "f79243c6590b65e5ddf97c648cd0355ed0aa9c528794dfc4d75c2c380325a616",
+      "submitted": false
+    },
+    {
+      "sequence": 4,
+      "id": "plugin-loader",
+      "request_path": "body-proposal/requests/04-plugin-loader-65536.json",
+      "request": {
+        "blob": "d43b196e131771e248f7b726703914e44f859c99",
+        "bytes": 420,
+        "sha256": "392d34608f1c8bf8e8a92556eef22bfb6af16214ca2fc90ffd007ced91d1401a"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-65536-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+            "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+            "offset": 65536,
+            "limit": 51144
+          }
+        }
+      },
+      "expected_next_offset": 116680,
+      "expected_eof": true,
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+        "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+        "full9_decimal": [
+          "16777233",
+          "405237358",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "116680",
+          "1784843458968424711",
+          "1784843458968424711"
+        ]
+      },
+      "actual_metadata": {
+        "blob": "e7e553238612f91d7e8fd00332347508dbf6050e",
+        "bytes": 455,
+        "sha256": "85075b89184153ff1622cf0b3213ddad65c518df972301f7eae20e8c4288b71b"
+      },
+      "original_metadata_operation_id": "f79243c6590b65e5ddf97c648cd0355ed0aa9c528794dfc4d75c2c380325a616",
+      "submitted": false
+    }
+  ],
+  "accounting": {
+    "scope": "This new dependency readset plus the immediately prior closed harness-policy/support-context/Codex readset; other historical source readsets remain separately archived.",
+    "prior_consumed": {
+      "files": 3,
+      "native_body_chunks": 3,
+      "body_bytes": 13569,
+      "root_actual_review": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+      "original_maximum_chunks": 5,
+      "original_maximum_body_bytes": 265740,
+      "remaining_authorization_reused": 0
+    },
+    "proposed_new": {
+      "files": 3,
+      "native_body_chunks": 4,
+      "body_bytes": 127095,
+      "max_chunk": 65536,
+      "immutable_result_page_limit": 8192
+    },
+    "cumulative_if_separately_approved_and_completed": {
+      "files": 6,
+      "native_body_chunks": 7,
+      "body_bytes": 140664
+    },
+    "file_info_hash_work": "The completed metadata calls performed full-file hashes under file_info; the body byte limits did not bound that work. New body accounting does not retroactively reclassify metadata hash I/O.",
+    "all_fixture_timeouts_and_guards_unchanged": true
+  },
+  "protocol": [
+    "Separate root exact GO and line handoff are required before any request in this proposal is submitted.",
+    "Retain this exact order. Each exact intent must be externally saved in a completed call before its single operation_start; save original SDK before isError and parsing.",
+    "At most one Runtime call and one original native future. Require completed/stored_observed/inactive plus all immutable original pages and exact expected_version/offset/limit before the next operation.",
+    "For the two loader chunks, retain the same observed version; first chunk must stop at 65536 with eof=false and second at 116680 with eof=true. Join complete bytes and verify actual whole SHA before interpreting complete source.",
+    "Any error, missing ACK, version/size/hash/EOF drift or incomplete closure stops new admissions. Do not change key/path/version or silently reread metadata.",
+    "Only retrieve these three public source files. No import, supports, factory, SDK execution, credentials, Google manifest guess, directory traversal or automatic import following."
+  ],
+  "qualification": {
+    "actual_selected_owner": null,
+    "source_code_retrieved_by_this_plan": false,
+    "actual_registry_instance_observed": false,
+    "AuthBus_credentials_qualified": false,
+    "production_changes_authorized": false
+  },
+  "remaining_gaps": [
+    "Actual code semantics of these three files await separately authorized bodies and whole hashes.",
+    "All enabled candidates, registration ownerPluginId versus harness.pluginId, configured options, and the five actual selection calls must remain visible; static provider names are not a winner proof.",
+    "No Google manifest filename or further dependency path is invented. Any new public read needs exact import evidence and separate scope.",
+    "Future credential-free SDK diagnostic is an execution task requiring a separately reviewed sandbox and exact request; this plan does not authorize it."
+  ]
+}

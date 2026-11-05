@@ -1,0 +1,293 @@
+{
+  "schema": "heptabao.root-current4e808-X230-source-artifact-transfer-qualified.r32.v1",
+  "status": "PASS_COMPLETE_SOURCE_AND_SEVEN_ARTIFACT_TRANSFER_ONLY",
+  "source_import_qualified": true,
+  "seven_artifact_transfer_qualified": true,
+  "original_job": "desktop/1a1ad0a9524-fc05-5839",
+  "original_terminal": "exit0/full/durable/confirmed",
+  "execution_submissions": 1,
+  "request_blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+  "request_digest": "8a40eb0744827fbc9a290b8c541be147c062539004cf7990412cc465549d3a9b",
+  "request_fingerprint_decimal": "9962220792190238652",
+  "packet": {
+    "tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+    "files": 298,
+    "bytes": 2716199,
+    "Merkle": 52
+  },
+  "peer_packet": {
+    "tree": "f06eb7341dbe768ca2f848e9d2e136d19dde6f89",
+    "files": 13,
+    "bytes": 351753,
+    "Merkle": 3
+  },
+  "peer_review": {
+    "path": "PEER.public.json",
+    "blob": "6e857a4d250bb81295b8a008cd7dc4749090bf53",
+    "bytes": 5112,
+    "sha256": "8494df262b7333da212fe8646cd8369ca8dbee29e47badce7581e30c6a231d63",
+    "mode": "100644"
+  },
+  "peer_actual_verifier": {
+    "path": "verification/verify-read-chains.js",
+    "blob": "db732c0a0252cd8a6761409cd1d04ce3698d4034",
+    "bytes": 25044,
+    "sha256": "5ca80e90628c76701e50aa1066d211ac7753abde8abe5566b75fc511c89e06ac",
+    "mode": "100644"
+  },
+  "peer_actual_result": {
+    "path": "verification/result.public.json",
+    "blob": "bc40086dbeb45e2c67752652f5a7bae38ece05aa",
+    "bytes": 121064,
+    "sha256": "072f61bf7e46cffad7f783e2a3f80b7e76f67def95af0577fcb228f94c5924b9",
+    "mode": "100644"
+  },
+  "original_chain_peer_pure_predicates": 1164,
+  "intake_checks_passed": 15,
+  "intake_checks": [
+    "whole-peer13-and3-Merkle",
+    "exact-root-whole298-subject",
+    "all298-peer-subject-leaves-exact-root",
+    "all283-selected-input-pins-exact-root",
+    "actual-peer-pin:verification/verify-read-chains.js",
+    "actual-peer-pin:verification/result.public.json",
+    "actual-peer-pin:verification/executor.original.json",
+    "actual-peer-pin:verification/input-index.public.json",
+    "actual-once-independent-pure1164-execution",
+    "20-original-chains28-pages-and69-extractions-closed",
+    "inherited2-current-NUL-chains18-original-pins-exact-root27",
+    "exact-new-X230-reuse-GO-and-no-host-body-read-claim",
+    "accepted-distinct-core286-semantic-peer-and-root7-intake",
+    "root24-actual8-infos-and-root196-final69-content-complete",
+    "historical-UNKNOWN-and-pre-verifier-local-error-preserved"
+  ],
+  "root_did_not_rerun_identical_peer_verifier": true,
+  "accepted_core_semantic_peer_pure_predicates": 286,
+  "root_core_peer_intake": {
+    "name": "r32-X230-relay-core-peer-and-receiver-match-root-review.public.json",
+    "blob": "a96bff2a7c1fab48143fdbea05bf1ded63299b70",
+    "bytes": 3700,
+    "sha256": "80441041d0b425cfdf3f800e0dbeafb2f4f63743853ae8817a7216f585666b7c"
+  },
+  "root_eight_infos_review": {
+    "name": "r32-X230-eight-independent-infos-root-review.public.json",
+    "blob": "a2c1cd9a7731ba4b029e739decec29375ad1c1c0",
+    "bytes": 6986,
+    "sha256": "73f3ac8d322f7c6401aaaf9922b70d3802e654bc4211326ca41966f403d3ac45"
+  },
+  "root_final69_review": {
+    "name": "r32-X230-final69-command-content-root-review.public.json",
+    "blob": "91547d01e1c690c60a8c936361293168f1537db2",
+    "bytes": 15852,
+    "sha256": "0f4bdcb5dcc3247f6dfdcaf6e3fc14f4d64737a827e38c6ba3cb023cac046818"
+  },
+  "root_NUL_current_info_review": {
+    "name": "r32-X230-current-two-NUL-info-root-review.public.json",
+    "blob": "71591cba75f3e978f82579524d6ab3163cd2450e",
+    "bytes": 3953,
+    "sha256": "bb44ebcb81030167f9eceda1f0058565286ae8d03ec101d7fd618ee97b05161d"
+  },
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "history": 3763,
+    "root": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "leaves": 3914,
+    "full_fsck_passed": true,
+    "clean_independent_source": true,
+    "source_directory": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "actual_git_blob_bytes_verified": true
+  },
+  "actual_seven_files": [
+    {
+      "name": "heptabao-server",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "version": "2053:3057878:110219600:1793904527474649454:1793904527474649454",
+      "full9_decimal": [
+        "2053",
+        "3057878",
+        "1000",
+        "1000",
+        "33088",
+        "1",
+        "110219600",
+        "1793904527474649454",
+        "1793904527474649454"
+      ],
+      "info_blob": "776d730027bb223b10b08888f830a6cca43cde81"
+    },
+    {
+      "name": "native-build.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2053:3057879:786:1793904528451650178:1793904528451650178",
+      "full9_decimal": [
+        "2053",
+        "3057879",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "786",
+        "1793904528451650178",
+        "1793904528451650178"
+      ],
+      "info_blob": "d24758a19970ab5f4d4482a2ac103245f8c9cce4"
+    },
+    {
+      "name": "result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2053:3057880:3192:1793904528452650179:1793904528452650179",
+      "full9_decimal": [
+        "2053",
+        "3057880",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "3192",
+        "1793904528452650179",
+        "1793904528452650179"
+      ],
+      "info_blob": "78c7231663c5ec4332e781a0b93b07e4f46d9581"
+    },
+    {
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "version": "2053:3057881:22320862:1793904530197651472:1793904530197651472",
+      "full9_decimal": [
+        "2053",
+        "3057881",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "22320862",
+        "1793904530197651472",
+        "1793904530197651472"
+      ],
+      "info_blob": "bbe3311d6119ff5e2a704ad106a825e1e42e32df"
+    },
+    {
+      "name": "source-export.result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "version": "2053:3057882:39692:1793904530486651686:1793904530486651686",
+      "full9_decimal": [
+        "2053",
+        "3057882",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "39692",
+        "1793904530486651686",
+        "1793904530486651686"
+      ],
+      "info_blob": "b193b76c026e5f24a5c46663fd385f42bdd5ab19"
+    },
+    {
+      "name": "normal61-result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "version": "2053:3057883:57532:1793904530487651687:1793904530487651687",
+      "full9_decimal": [
+        "2053",
+        "3057883",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "57532",
+        "1793904530487651687",
+        "1793904530487651687"
+      ],
+      "info_blob": "a9c0b437062c883d771fd95f11085bdfd084c471"
+    },
+    {
+      "name": "groups.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "version": "2053:3057884:6249:1793904530488651688:1793904530488651688",
+      "full9_decimal": [
+        "2053",
+        "3057884",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "6249",
+        "1793904530488651688",
+        "1793904530488651688"
+      ],
+      "info_blob": "f171a71b942f41633e27c0ca9ca73f25468194a6"
+    }
+  ],
+  "actual_total_artifact_bytes": 132647913,
+  "receiver_receipt": {
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+    "bytes": 35212,
+    "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f",
+    "version": "2053:3062409:35212:1793904542416660532:1793904542416660532",
+    "full9_decimal": [
+      "2053",
+      "3062409",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "35212",
+      "1793904542416660532",
+      "1793904542416660532"
+    ],
+    "info_blob": "32e6bfb79b21f1a15fc4b3edff8ef16a4135ebbb",
+    "content_blob": "6d8690b485c81eec0018b40da8de52fffe2f3279"
+  },
+  "original_observers": 20,
+  "immutable_pages": 28,
+  "all_known_original_observers_closed": true,
+  "command_contents": {
+    "receiver_commands": 21,
+    "desktop_commands": 3,
+    "native_small_files": 69,
+    "native_bytes": 59783,
+    "canonical_NUL_files": 2,
+    "canonical_NUL_bytes": 889176,
+    "total_representations": 71,
+    "total_bytes": 948959,
+    "current_host_NUL_body_RPC": 0,
+    "NUL_reuse_GO": "200c32f98fe0bf5885a2cb90e7f407119bdbef92"
+  },
+  "cleanup": {
+    "all_owned_stopped": true,
+    "local_owned_stopped": true,
+    "remote_endpoint_completion_verified": true,
+    "remote_cleanup_unknown": false,
+    "three_held_fence_descriptors_closed": true,
+    "universal_FD_close_ledger_claimed": false
+  },
+  "fence_scope": "Three finite stable-namespace observations and once-close held descriptors, not continuous atomic proof or termination of the historical relay.",
+  "original_relay_state": "UNKNOWN",
+  "original_relay_termination_proven": false,
+  "old_failure_and_local_peer_error_preserved": true,
+  "elapsed_seconds": 25.97583101200871,
+  "original_overall_seconds": 300,
+  "compiler_started": false,
+  "server_started": false,
+  "product_tests_executed": 0,
+  "X230_full34_qualified": false,
+  "X230_comparison69_qualified": false,
+  "full_OpenBao271_replacement": false,
+  "production_changed": false,
+  "root_Runtime_calls": 0
+}

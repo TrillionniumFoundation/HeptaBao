@@ -1,0 +1,33 @@
+{
+  "role": "oracle-archive",
+  "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+  "bytes": 74865426,
+  "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+  "version": "2053:4484524:74865426:1793293199950500560:1793293199950500560",
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "full9_decimal": [
+    "2053",
+    "4484524",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "74865426",
+    "1793293199950500560",
+    "1793293199950500560"
+  ],
+  "original_native": {
+    "path": "observations/oracle-archive/native.original.json",
+    "bytes": 484,
+    "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022",
+    "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+    "carrier_tree": "5459f2d7db8441e8f12b660d8d802e71796e51fc"
+  },
+  "original_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+  "original_closed": true,
+  "regular_file_basis": "successful purpose-built file_info contract",
+  "source_role_guard": false
+}

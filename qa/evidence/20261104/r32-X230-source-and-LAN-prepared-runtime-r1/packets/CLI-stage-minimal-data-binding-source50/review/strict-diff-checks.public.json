@@ -1,0 +1,6 @@
+{
+  "forward_whole": true,
+  "reverse_whole": true,
+  "hunks": 3,
+  "entire_functions_main_unchanged": true
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.auth.dependency-body4.exact-intent.v1",
+  "sequence": 2,
+  "id": "openai-routing",
+  "root_GO": {
+    "blob": "89d02183f27a783b27dd9d4a976529dcc32045dc",
+    "bytes": 9280,
+    "sha256": "5525d55fafc956f523f43f6342e62cde03d318ad25ccb0abed27539e53b53d50"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-body-openai-routing-31d71606-0-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+        "expected_version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+        "offset": 0,
+        "limit": 3497
+      }
+    }
+  },
+  "request": {
+    "blob": "cd54a82e49ad9f6bbf38ac5f82ad23e33323d7be",
+    "bytes": 418,
+    "sha256": "8f10e2d4b7a06ac91464be9a2af3caa0194a15cc22ece7994a1c3252637b0c98"
+  },
+  "expected_file": {
+    "id": "openai-routing",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+    "bytes": 3497,
+    "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6",
+    "version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+    "full9_decimal": [
+      "16777233",
+      "405238041",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "3497",
+      "1784843459992420263",
+      "1784843459992420263"
+    ],
+    "original_operation": "65e7a4a57c530d009e9032d953584cb89eacde6258bbe853c075a000a805e4b8",
+    "native_info_blob": "ae7b9389a5a6f75aeca838e33a905ee6396fe8fc"
+  },
+  "expected_next_offset": 3497,
+  "expected_eof": true,
+  "previous_body_operations_completed": 1,
+  "previous_body_closed_and_whole": {
+    "operation_id": "759c24c999725828c6258057aec668fc43aef8305f5149a8542703aacb122996",
+    "status": {
+      "blob": "cd36160cedb13eb3dc19b5db998387e825206231",
+      "bytes": 802,
+      "sha256": "92ebb1784f669c9abece6d51bb588ebe41e538fd1fbb742cb719883dc432e0e6"
+    },
+    "payload": {
+      "blob": "30a57ee83d478d17c5e8ecde436ca12d38a42cb6",
+      "bytes": 9643,
+      "sha256": "e61db03d8f418c922c18ef7085354006242bb77af2be6d929ac9275496f8db89"
+    },
+    "native": {
+      "blob": "90091c4d74beb65606be6c2837263c51d0e28dc1",
+      "bytes": 9540,
+      "sha256": "3be62bb53608e612725f608da04b84e861df93225d7ef7f8b289b399217550cf"
+    },
+    "binding": {
+      "blob": "c2569d47e8e903431f38f52c521581fba401d64d",
+      "bytes": 2052,
+      "sha256": "6928e2dfbf5690100a565a97ba1277c7bd9262c51c1380da7b59b4593ff900ba"
+    }
+  },
+  "new_submissions_before_this_intent": 0,
+  "maximum_inflight_call": 1,
+  "maximum_owned_native_future": 1,
+  "immutable_result_page_limit": 8192,
+  "SDK_execution": false,
+  "stop_on_error_without_replay": true
+}

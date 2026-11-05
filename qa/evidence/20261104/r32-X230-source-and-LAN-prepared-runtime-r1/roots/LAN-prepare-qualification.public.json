@@ -1,0 +1,334 @@
+{
+  "schema": "heptabao.root-current4e808-LAN-prepare-complete-qualification.r32.v1",
+  "status": "PASS_COMPLETE_PREPARE_ONLY",
+  "prepare_qualified": true,
+  "packet": {
+    "tree": "f799faca211d7c34db5f386c948509e1d6219faa",
+    "files": 213,
+    "bytes": 594588,
+    "Merkle": 92
+  },
+  "original_job": "desktop/1a1ad1383c9-fc05-5863",
+  "original_terminal": "exit0/full/durable/confirmed",
+  "original_request_digest": "da7f3e7686a98e37b8d0aad6ac917c53d1e3cc2f7022d25c3cb3940ed206ed82",
+  "original_fingerprint_decimal": "15744371501096865335",
+  "peer_packet": {
+    "tree": "63b2ad933c1443e09da31931eee44ad4abd3be3c",
+    "files": 8,
+    "bytes": 136555,
+    "Merkle": 3
+  },
+  "peer_review": {
+    "path": "REVIEW.public.json",
+    "blob": "ad71f0aed277bef39ab883abab480b5b85459f6c",
+    "bytes": 5851,
+    "sha256": "77799495de7478b6f55165a79263de77c3fa690a89cf14f9e619041c75a782b4",
+    "mode": "100644"
+  },
+  "peer_verifier": {
+    "path": "verification/verify_original_chains.py",
+    "blob": "c4990c23f335bb789cc40707a4250625908f6372",
+    "bytes": 19032,
+    "sha256": "0059951413541f7d839a5d04d96f3fec378ffa6d0e11b51df0ef7b52f069cba5",
+    "mode": "100644"
+  },
+  "peer_actual_result": {
+    "path": "verification/actual-result.public.json",
+    "blob": "b78d6c4cc8538341f15821ea62a8c12c61a3eef1",
+    "bytes": 11818,
+    "sha256": "b0b164d27722cb5146d8b7ee6d9843c504efff5c97f0850f971b8807f00c7de1",
+    "mode": "100644"
+  },
+  "peer_pure_predicates": 852,
+  "root_did_not_rerun_identical_peer_verifier": true,
+  "root_semantic_review": {
+    "name": "r32-LAN-prepare-independent-semantic-root-review.public.json",
+    "blob": "4d3419a504cf4d0c068276904364f620df35d854",
+    "bytes": 13674,
+    "sha256": "1adbae1dde24a47d19e11289ae6dfa74cf1d0a51b805ae4e7cc89ed0a49bd7e5"
+  },
+  "root_semantic_predicates": 55,
+  "intake_checks_passed": 12,
+  "intake_checks": [
+    "whole-peer8-and3-Merkle",
+    "exact-whole213-subject",
+    "all213-input-paths-exact-root-whole-audit",
+    "peer-actual-identity:verification/verify_original_chains.py",
+    "peer-actual-identity:verification/actual-result.public.json",
+    "actual-once-pure-peer852-execution",
+    "all13-original-observers20-pages-closed-error-inclusive",
+    "known-closed-error-and-unique-exact-read-recovery-distinct",
+    "same-original-prepare-job-exit0-full-durable-confirmed",
+    "five-actual-bodies-identical-to-root-semantic-review",
+    "independent-root55-source-contract-semantics-accepted",
+    "current-standalone-desktop-source-qualified"
+  ],
+  "actual_outputs": [
+    {
+      "name": "linux-native-build.public.json",
+      "blob": "9e8a896dddf88bb1623981022568074fdc1ddab7",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2050:7401917:786:1793905103897983088:1793905103897983088",
+      "full9_decimal": [
+        "2050",
+        "7401917",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "786",
+        "1793905103897983088",
+        "1793905103897983088"
+      ]
+    },
+    {
+      "name": "linux-normal-release-result.public.json",
+      "blob": "8817820102da001912a8ad5188dfbab01444f6cb",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2050:7401918:3192:1793905103902942062:1793905103902942062",
+      "full9_decimal": [
+        "2050",
+        "7401918",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3192",
+        "1793905103902942062",
+        "1793905103902942062"
+      ]
+    },
+    {
+      "name": "mac-native-build.public.json",
+      "blob": "27dbe301526370817252d0540006d801eddccad0",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "version": "2050:7401919:814:1793905103904979860:1793905103904979860",
+      "full9_decimal": [
+        "2050",
+        "7401919",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "814",
+        "1793905103904979860",
+        "1793905103904979860"
+      ]
+    },
+    {
+      "name": "mac-normal-release-result.public.json",
+      "blob": "b011605fe037ff7aa764808ce402e69559150646",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "version": "2050:7401920:3386:1793905103906606614:1793905103906606614",
+      "full9_decimal": [
+        "2050",
+        "7401920",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3386",
+        "1793905103906606614",
+        "1793905103906606614"
+      ]
+    },
+    {
+      "name": "prepared.public.json",
+      "blob": "0b664e254c69bb57fec34eb29c2bedec5b44151e",
+      "bytes": 43852,
+      "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1",
+      "version": "2050:7363112:43852:1793905105749942399:1793905105749942399",
+      "full9_decimal": [
+        "2050",
+        "7363112",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "43852",
+        "1793905105749942399",
+        "1793905105749942399"
+      ]
+    }
+  ],
+  "source_import_qualification": "3859911145a8bd8b947935bc038d501e143a5d63",
+  "retained_build_identity8": [
+    {
+      "platform": "linux",
+      "name": "artifacts/heptabao-seed",
+      "bytes": 102145376,
+      "sha256": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+      "identity8_decimal": [
+        "66306",
+        "35799525",
+        "102145376",
+        "1000",
+        "320",
+        "1793878962612899835",
+        "1793878962748899164",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "identity8_decimal": [
+        "66306",
+        "35799524",
+        "110219600",
+        "1000",
+        "320",
+        "1793878962288901433",
+        "1793878962422900772",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "identity8_decimal": [
+        "66306",
+        "35799527",
+        "786",
+        "1000",
+        "384",
+        "1793878962882813897",
+        "1793878962882813897",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "normal-release-build.stdout",
+      "bytes": 390609,
+      "sha256": "064a4de5bc8a6dd76faddd9bcac7e444b27c1f7128000fdf9638695e6ecc9e24",
+      "identity8_decimal": [
+        "66306",
+        "35799520",
+        "390609",
+        "1000",
+        "384",
+        "1793878962089902414",
+        "1793878962089902414",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "identity8_decimal": [
+        "66306",
+        "35799526",
+        "3192",
+        "1000",
+        "384",
+        "1793878962880898513",
+        "1793878962880898513",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "artifacts/heptabao-seed",
+      "bytes": 86761216,
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+      "identity8_decimal": [
+        "16777244",
+        "72626765",
+        "86761216",
+        "501",
+        "320",
+        "1793876826766527617",
+        "1793876826790237905",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "artifacts/heptabao-server",
+      "bytes": 92398928,
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "identity8_decimal": [
+        "16777244",
+        "72626763",
+        "92398928",
+        "501",
+        "320",
+        "1793876826299674364",
+        "1793876826322472740",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "native-build.public.json",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "identity8_decimal": [
+        "16777244",
+        "72626768",
+        "814",
+        "501",
+        "384",
+        "1793876826903716038",
+        "1793876826903716038",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "normal-release-build.stdout",
+      "bytes": 440534,
+      "sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+      "identity8_decimal": [
+        "16777244",
+        "72626337",
+        "440534",
+        "501",
+        "384",
+        "1793876825836663089",
+        "1793876825836663089",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "normal-release-result.public.json",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "identity8_decimal": [
+        "16777244",
+        "72626767",
+        "3386",
+        "501",
+        "384",
+        "1793876826902261004",
+        "1793876826902261004",
+        "1"
+      ]
+    }
+  ],
+  "original_observers": 13,
+  "immutable_pages": 20,
+  "known_failed_read_preserved": true,
+  "unique_closed_read_recovery_GO": "aa0064627e0fce8d7b1d7f32b50a0056782ef1e5",
+  "old_UNKNOWN_preserved": true,
+  "original98": 98,
+  "separate12": 12,
+  "product_tests_executed": 0,
+  "HA_live_submitted": false,
+  "HA_live_qualified": false,
+  "full_OpenBao271_replacement": false,
+  "production_changed": false,
+  "root_Runtime_calls": 0
+}

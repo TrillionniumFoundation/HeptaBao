@@ -1,0 +1,223 @@
+{
+  "Runtime_calls": 0,
+  "changed_constants": [
+    "CONTROL",
+    "WORK",
+    "SOURCE",
+    "INCOMING",
+    "HEAD",
+    "TREE",
+    "PAYLOAD_SHA",
+    "PAYLOAD_BYTES",
+    "FILES",
+    "COPY",
+    "SOURCE_PINS",
+    "OLD_FENCES"
+  ],
+  "check_count": 44,
+  "checks": [
+    {
+      "name": "whole_ast_compile_only_no_module_execution",
+      "passed": true
+    },
+    {
+      "name": "only_twelve_allowed_data_constants",
+      "passed": true
+    },
+    {
+      "name": "all_other_module_nodes_ast_equal",
+      "passed": true
+    },
+    {
+      "name": "all_ordered_function_segments_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_00_need",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_01_remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_02_sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_03_unique",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_04_identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_05_directory_identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_06_absent",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_07_open_source",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_08_finish_source",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_09_capture",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_10_main",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_11___init__",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_12_check",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_13_create",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_14_write",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_15_copy",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_16_close",
+      "passed": true
+    },
+    {
+      "name": "unchanged_function_17_bind",
+      "passed": true
+    },
+    {
+      "name": "entire_UNTIL_to_EOF_identical",
+      "passed": true
+    },
+    {
+      "name": "fixed_BASE_path_CONTROL",
+      "passed": true
+    },
+    {
+      "name": "CONTROL_exact_r4",
+      "passed": true
+    },
+    {
+      "name": "fixed_BASE_path_WORK",
+      "passed": true
+    },
+    {
+      "name": "WORK_exact_r4",
+      "passed": true
+    },
+    {
+      "name": "fixed_BASE_path_SOURCE",
+      "passed": true
+    },
+    {
+      "name": "SOURCE_exact_qualified_desktop",
+      "passed": true
+    },
+    {
+      "name": "fixed_BASE_path_INCOMING",
+      "passed": true
+    },
+    {
+      "name": "INCOMING_exact_current_normal5",
+      "passed": true
+    },
+    {
+      "name": "HEAD_TREE_current",
+      "passed": true
+    },
+    {
+      "name": "payload_bytes_SHA",
+      "passed": true
+    },
+    {
+      "name": "FILES_only_json_literal",
+      "passed": true
+    },
+    {
+      "name": "all_eight_payload_pins_exact",
+      "passed": true
+    },
+    {
+      "name": "three_COPY_exact_order_mode_content",
+      "passed": true
+    },
+    {
+      "name": "eight_canonical_SOURCE_PINS_exact",
+      "passed": true
+    },
+    {
+      "name": "all_old_SOURCE_members_retained",
+      "passed": true
+    },
+    {
+      "name": "all_six_OLD_FENCES_exact_order",
+      "passed": true
+    },
+    {
+      "name": "four_old_fences_unchanged",
+      "passed": true
+    },
+    {
+      "name": "both_B01_fences_present",
+      "passed": true
+    },
+    {
+      "name": "template_still_not_ready",
+      "passed": true
+    },
+    {
+      "name": "old_300_deadline_and_no_new_process",
+      "passed": true
+    },
+    {
+      "name": "candidate_expected_bytes_SHA",
+      "passed": true
+    }
+  ],
+  "diff_hunks": 3,
+  "function_names": [
+    "need",
+    "remaining",
+    "sha",
+    "unique",
+    "identity",
+    "directory_identity",
+    "absent",
+    "open_source",
+    "finish_source",
+    "capture",
+    "main",
+    "__init__",
+    "check",
+    "create",
+    "write",
+    "copy",
+    "close",
+    "bind"
+  ],
+  "local_process": "Python standard library AST/compile/difflib only",
+  "ordered_unchanged_function_count": 18,
+  "product_cases": 0,
+  "schema": "heptabao.current4e808.cli-stage.local-AST-source-review.r1",
+  "source_modules_executed": 0,
+  "status": "PASS_SOURCE_ONLY"
+}

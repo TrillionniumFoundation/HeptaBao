@@ -1,0 +1,9 @@
+{
+  "scope": "Offline checker field-name correction only; candidate template/diff/data and all original H2 source remain unchanged.",
+  "attempt1_failure": "Error: original deadlines retained",
+  "before": "term_seconds / kill_seconds",
+  "after": "cleanup_term_seconds / cleanup_kill_seconds",
+  "basis": "Original template exact budgets use cleanup_term_seconds/cleanup_kill_seconds, each 5.",
+  "candidate_changed": false,
+  "Runtime_calls": 0
+}

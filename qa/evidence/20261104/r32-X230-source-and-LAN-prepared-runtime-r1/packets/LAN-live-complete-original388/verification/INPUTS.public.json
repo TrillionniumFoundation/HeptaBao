@@ -1,0 +1,18 @@
+{
+  "summary": "actual/summary.original.json",
+  "launch": "actual/launch.original.json",
+  "exit": "actual/exit.original.json",
+  "authority": "actual/authority.original.json",
+  "prepared": "references/prepared.original.json",
+  "observers": "STATE.public.json#observers",
+  "small_checks": "actual/small-output12-checks.public.json",
+  "source_snippets": {
+    "numeric": "references/qualified-numeric-helper.py",
+    "cipher": "references/qualified-cipher-helper.py",
+    "launcher": "references/qualified-launcher.py",
+    "native": "references/qualified-native-controller.py"
+  },
+  "execution": "Pure V8 evaluation of verification/closure-verifier.js with these cached evidence inputs; no product module execution, no Runtime or local OS calls.",
+  "actual_checks": 240,
+  "first_attempt_selector_failure_preserved": true
+}

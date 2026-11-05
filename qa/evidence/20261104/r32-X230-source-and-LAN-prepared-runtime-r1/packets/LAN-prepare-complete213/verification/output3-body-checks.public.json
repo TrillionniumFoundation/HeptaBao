@@ -1,0 +1,30 @@
+[
+  {
+    "name": "body original operation closed/full",
+    "pass": true
+  },
+  {
+    "name": "independent info already verified",
+    "pass": true
+  },
+  {
+    "name": "fixed path/version/size",
+    "pass": true
+  },
+  {
+    "name": "whole single bounded chunk",
+    "pass": true
+  },
+  {
+    "name": "chunk + independent whole SHA",
+    "pass": true
+  },
+  {
+    "name": "UTF8 bytes roundtrip",
+    "pass": true
+  },
+  {
+    "name": "exact prior qualified public receipt Git blob",
+    "pass": true
+  }
+]

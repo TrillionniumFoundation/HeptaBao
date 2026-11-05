@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.current4e808.HA-chain-peer.exact-input-interface.v1",
+  "function": "verifyHAObservationChainIncrement(input, sha256, gitSha1)",
+  "execution": "Pure V8 function evaluation on already whole-read immutable Git contents. No host, SDK, module or author verifier execution.",
+  "files_source": {
+    "tree": "625df69e7dbe4407686253564ccd607a3b60b939",
+    "files": 390,
+    "bytes": 3012088,
+    "merkle_trees": 149,
+    "shape": "input.files[path] = {raw: exact UTF-8 original text, blob: exact Git SHA1, bytes: UTF-8 byte count, sha256: SHA256 of UTF-8 bytes}",
+    "additional": {
+      "peer-preparation/prepared-result.public.json": {
+        "blob": "c5040a809dfaec32f5bd739248ba1598c11e6065",
+        "bytes": 30083,
+        "sha256": "df8a94f767766ef4bb6f863d9b0a537a43da7fd78ef56ab572de69e6bce13efb"
+      }
+    }
+  },
+  "pin_maps": {
+    "running35_pins": {
+      "tree": "de76952ade1b7d754e18836f31a05ea2f2150c80",
+      "files": 35
+    },
+    "bodyplan11_pins": {
+      "tree": "edae3e790e037ea3f5cbb0a800d8689bf17bf986",
+      "files": 11
+    },
+    "original388_pins": {
+      "tree": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+      "files": 388
+    },
+    "final390_pins": {
+      "tree": "625df69e7dbe4407686253564ccd607a3b60b939",
+      "files": 390
+    }
+  },
+  "pin_map_shape": "Each immutable tree's blob leaves mapped by exact path to {blob,bytes,sha256}; SHA256 is recomputed from whole bytes, not inferred from Git tree metadata.",
+  "exact_consumed_paths": "result.public.json.used_files contains all 326 exact read paths and their full pins. All raw files are in the corrected390 tree except the explicit prior result path above.",
+  "hash_interface": "Both helpers take an 8-bit byte string (each code point 0..255). UTF-8 text is encoded with unescape(encodeURIComponent(raw)); Git blob hash includes 'blob '+byteLength+'\\0'+bytes.",
+  "prior_adoption": {
+    "preparation_tree": "bdb2a3338c513bfa8846626157b00609de34a662",
+    "checks": 187,
+    "observers": 2,
+    "pages": 2,
+    "rerun": false
+  },
+  "actual_increment": {
+    "checks": 1800,
+    "new_observers": 13,
+    "new_pages": 60,
+    "total_observers": 15,
+    "total_pages": 62,
+    "author_verifier_run": false,
+    "Runtime_calls": 0
+  },
+  "result_pin": {
+    "blob": "daf97b1107eb9ff65a6c7bb1252a219858eaa9df",
+    "bytes": 73572,
+    "sha256": "63974d02e77279da1f82f56c36fac58e85baa37da8b496d8b4c088f28e68cc54"
+  },
+  "verifier_pin": {
+    "blob": "7791ece5427758ae42774a6b66e10affaae3a385",
+    "bytes": 16066,
+    "sha256": "a5684ecb9e028e812f63a70ddfa7c7dc86926fd10dab822e123ba0614d98a426"
+  }
+}

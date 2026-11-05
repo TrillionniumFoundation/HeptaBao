@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-publish-full34-body0-r1-20261105",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+      "expected_version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+      "offset": 0,
+      "limit": 10142
+    }
+  }
+}

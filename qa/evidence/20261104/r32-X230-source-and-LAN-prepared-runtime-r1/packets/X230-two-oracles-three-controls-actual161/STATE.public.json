@@ -1,0 +1,147 @@
+{
+  "runtime_call_inflight": null,
+  "active_operation_id": null,
+  "step": "all_publication_and_readback_closed",
+  "halted": false,
+  "submitted_requests": [
+    "oracle-binary-admission",
+    "oracle-binary-status",
+    "oracle-binary-page-000000",
+    "oracle-archive-admission",
+    "oracle-archive-status",
+    "oracle-archive-page-000000",
+    "full34-write",
+    "full34-info-admission",
+    "full34-info-status",
+    "full34-info-page-000000",
+    "full34-body-admission",
+    "full34-body-status",
+    "full34-body-page-000000",
+    "full34-body-page-008192",
+    "comparison69-write",
+    "comparison69-info-admission",
+    "comparison69-info-status",
+    "comparison69-info-page-000000",
+    "comparison69-body-admission",
+    "comparison69-body-status",
+    "comparison69-body-page-000000",
+    "comparison69-body-page-008192",
+    "comparison-driver-write",
+    "comparison-driver-info-admission",
+    "comparison-driver-info-status",
+    "comparison-driver-info-page-000000",
+    "comparison-driver-body-admission",
+    "comparison-driver-body-status",
+    "comparison-driver-body-page-000000",
+    "comparison-driver-body-page-008192"
+  ],
+  "closed_observers": [
+    {
+      "label": "oracle-binary",
+      "operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "pages": 1,
+      "ok": true
+    },
+    {
+      "label": "oracle-archive",
+      "operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "pages": 1,
+      "ok": true
+    },
+    {
+      "label": "full34-info",
+      "operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326",
+      "pages": 1,
+      "ok": true
+    },
+    {
+      "label": "full34-body",
+      "operation_id": "352a0a3b7062b5ddb9e091b9ccb98312c04af2864e8a530e0bdb2aaacb09cecc",
+      "pages": 2,
+      "ok": true
+    },
+    {
+      "label": "comparison69-info",
+      "operation_id": "e2ecc3dee3549a5a9bf467d65bf34ee85832c662ac22cd69478c51f4fd498d85",
+      "pages": 1,
+      "ok": true
+    },
+    {
+      "label": "comparison69-body",
+      "operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+      "pages": 2,
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info",
+      "operation_id": "eb4d59a4f07722d8ed4871a3634c6960afa0e3dcbea0938b26772d94d498024e",
+      "pages": 1,
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body",
+      "operation_id": "1258d09b34e5230111962b1d351a50d426e089289ead3cb59c8bc9f5a5d74416",
+      "pages": 2,
+      "ok": true
+    }
+  ],
+  "writes": [
+    {
+      "role": "full34",
+      "ok": true,
+      "sdk": {
+        "path": "calls/full34-write/result.original.sdk.json",
+        "bytes": 325,
+        "sha256": "b6933e867c7c6d03da10ed4e353733e675f81ad7e991d39e9da48e4ec35aab6b",
+        "blob": "4ef44bd6fc1d01591c51b9727ce65898dcd532bc",
+        "carrier_tree": "67994214789622f2ec6490aa8c4306a93ffe5070"
+      },
+      "native": {
+        "path": "calls/full34-write/result.original.json",
+        "bytes": 188,
+        "sha256": "3a3f50d52e136f26f87fdf832a82506034d221a946ebcb88cffcc8b9cde32bfd",
+        "blob": "e6f45812a6ae1c4397fa1cd7a15cac448610a749",
+        "carrier_tree": "69992f44cf2ed12b0e5d2002fb55851fa3e620b0"
+      },
+      "version": "2053:3062745:10142:1793908417811750782:1793908417813750783"
+    },
+    {
+      "role": "comparison69",
+      "ok": true,
+      "sdk": {
+        "path": "calls/comparison69-write/result.original.sdk.json",
+        "bytes": 325,
+        "sha256": "b75bc1daf19ce3e3b2d694cc2e91220fa2a15b106a366486ad21eb164102f42c",
+        "blob": "095e9b4caa9baff5f44ac1ab65ad9d7c35fd8fe5",
+        "carrier_tree": "6d5ccd474e7825e436b1f73a27d08858c85d65e1"
+      },
+      "native": {
+        "path": "calls/comparison69-write/result.original.json",
+        "bytes": 188,
+        "sha256": "6cdb3002998f969beb95aaf8483f2a63c5fd1d2fbd62452014f60ea2bbb25d59",
+        "blob": "d1520306171e858ad5328a1be5904158b48f6363",
+        "carrier_tree": "a89a215aff91c23d1981245309670f3718c43e8e"
+      },
+      "version": "2053:3062747:11716:1793908604961815054:1793908604962815054"
+    },
+    {
+      "role": "comparison-driver",
+      "ok": true,
+      "sdk": {
+        "path": "calls/comparison-driver-write/result.original.sdk.json",
+        "bytes": 322,
+        "sha256": "a94dfad9e83c38c66bdde09ac833abd2ac10c92ac68f153019cfbb895a3a5a88",
+        "blob": "93bebf7391599d2dc0c5a54820a791ec8b0ec967",
+        "carrier_tree": "4efe5aceb8fbed3aebf07f1fa0021fb96bddf1e5"
+      },
+      "native": {
+        "path": "calls/comparison-driver-write/result.original.json",
+        "bytes": 185,
+        "sha256": "f4c3739bcf20703aff2b6ae1ee6b737e58823dc274f1fe1c370c5a19badc3369",
+        "blob": "829136f726c3f565928335442cfc33bd8b08cab4",
+        "carrier_tree": "f5e1c64fbbe1a37eb15516f3e7ecc280ee6178ff"
+      },
+      "version": "2053:3062749:9261:1793908920065966649:1793908920066966649"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Current X230 two-wrapper binding — SOURCE only
+
+The two existing current4e808 wrappers now contain the five hashes proven by the completed seven-file relay and independent X230 destination/receipt observations. Per file, only six literal assignments change: the ready flag and five SHA values. The resulting full34 and comparison69 bytes exactly equal root's independent predictions. The full34 eight definitions and comparison69 seven definitions are byte-identical to their reviewed predecessors; neither candidate was executed.
+
+`BINDING_READY=True` means the existing normal61/transport hash slots are filled. It is not execution approval. The current original 44+7+9 and separate A-to-B-to-A1 qualification checks, ordinary build flags, original driver predicates, full34 31 cases, HTTP15/migration360 and prior outer1800 remain unchanged. The old relay remains UNKNOWN; this packet changes neither its request nor its effect fence.
+
+The fixed X230 official OpenBao 2.7.1 binary and archive paths are known from the original wrapper contract, but this seven-file relay did not perform independent current file-info observations on them. They remain the two exact metadata gaps. The full34 driver belongs to the imported canonical repository. The comparison driver at the fresh ROOT/native271_comparison_final_r1.py path is external to that repository/transfer and has not been published by this work. The two wrappers are also Git SOURCE only. Those concrete publication/read-only admission steps and their exact requests remain for root review; no new execution layer is added here.
+
+The actual five input identities and complete relevant public receipts are included for review. `PLAN.remaining-boundaries.public.json` states the remaining fixed paths and deliberately carries no dispatch request. Neither X230 product qualification nor full OpenBao replacement is asserted.

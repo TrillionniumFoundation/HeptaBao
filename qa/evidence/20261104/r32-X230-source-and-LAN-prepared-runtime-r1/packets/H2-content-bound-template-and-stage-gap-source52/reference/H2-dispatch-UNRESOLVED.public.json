@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.normal-native-h2-gate.dispatch-templates.v2",
+  "ready": false,
+  "requests_authorized": false,
+  "source_bundle_only": true,
+  "precondition": "No dispatch authorized. Product 4e808 normal61, source import, twelve instrument transports and create-only local stage must be actually closed before a concrete binding; prepare and live each need a separate exact root authorization.",
+  "templates": {
+    "prepare": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3.12",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+        "--binding-sha256",
+        "UNRESOLVED_ACTUAL_FIXTURE_BINDING_SHA256",
+        "--prepare-only"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "idempotency_key": "heptabao-native-h2-gate-prepare-4e808-20261105-r2",
+      "timeout_seconds": 330
+    },
+    "live": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3.12",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/qa/native_h2_gate_r1.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r2/binding.private.json",
+        "--binding-sha256",
+        "UNRESOLVED_ACTUAL_FIXTURE_BINDING_SHA256",
+        "--run",
+        "--prepare-result-sha256",
+        "UNRESOLVED_ACTUAL_PREPARE_RESULT_SHA256"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "idempotency_key": "heptabao-native-h2-gate-live-4e808-20261105-r2",
+      "timeout_seconds": 2400
+    }
+  }
+}

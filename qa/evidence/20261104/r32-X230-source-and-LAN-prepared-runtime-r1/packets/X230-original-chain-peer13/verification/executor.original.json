@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.pure-V8-original-read-chain-verifier-execution.r1",
+  "executor": "functions.exec V8 isolate; eval one new scoped verifier function on cached public Git bytes only",
+  "verifier": {
+    "bytes": 25044,
+    "sha256": "5ca80e90628c76701e50aa1066d211ac7753abde8abe5566b75fc511c89e06ac",
+    "blob": "db732c0a0252cd8a6761409cd1d04ce3698d4034"
+  },
+  "subject_tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+  "Runtime_calls": 0,
+  "product_cases": 0,
+  "author_verifier_executed": false,
+  "exit_status": 0,
+  "checks_passed": 1164,
+  "result_sha256": "072f61bf7e46cffad7f783e2a3f80b7e76f67def95af0577fcb228f94c5924b9"
+}

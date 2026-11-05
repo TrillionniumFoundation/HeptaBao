@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.auth.next3metadata.exact-intent.v1",
+  "sequence": 2,
+  "id": "openai-routing",
+  "root_GO": {
+    "blob": "05401409ea379379875c69ffb04e6688f310d555",
+    "bytes": 5126,
+    "sha256": "18afd37048d51261d1c4c289fe91d63519649a74e18fde8fc97852852aa722e7"
+  },
+  "handoff": {
+    "blob": "e1edf77fc54e891486a5c4a16efb3042dcc51ca4",
+    "bytes": 1175,
+    "sha256": "9f61d7c223ec201e884ef692fe79e427427d6efac70fe48dd744fcd5d64d3b44"
+  },
+  "request": {
+    "blob": "4cc79fa9c859cd6384633c02a9d70120f7fce442",
+    "bytes": 272,
+    "sha256": "ff9abe56a12402f74571af85de2951ddb7abb91e6c00518a8875b427c35580e0"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-info-openai-routing-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js"
+      }
+    }
+  },
+  "prior_completed_operations": 1,
+  "previous_original_closed": {
+    "operation_id": "c7327362f8e218d312a444eba43c95929cf415e02735255f87258d8b5773bae2",
+    "status": {
+      "blob": "2bccff1d554814abd9e771a68966433cf8150e89",
+      "bytes": 800,
+      "sha256": "9775b37223e95ff6d15082164ab54c96294c8b528f6f9332bbc01147f987b9b3"
+    },
+    "payload": {
+      "blob": "7be4bfaf35bdbbc09c376f47b78993eeffaf414f",
+      "bytes": 582,
+      "sha256": "a75c7b6abb925598155f7d8a73800234e092cc319813c5b415c37d54caec56a2"
+    },
+    "native": {
+      "blob": "80cfc9f2b6bcb94b2192b3392aca9f00c29febe1",
+      "bytes": 465,
+      "sha256": "3ae1f3be6f57408cd03748cffbd08ec76ab1a6a92f93f085c53718bb1c2e19aa"
+    },
+    "whole_verified": true
+  },
+  "maximum_native_futures": 1,
+  "immutable_page_limit": 8192,
+  "metadata_only": true,
+  "body_reads_authorized": 0,
+  "SDK_execution_authorized": false,
+  "new_submission_before_this_intent": 0,
+  "on_error": "Preserve original SDK and stop new admissions; no key/path change or inferred absence."
+}

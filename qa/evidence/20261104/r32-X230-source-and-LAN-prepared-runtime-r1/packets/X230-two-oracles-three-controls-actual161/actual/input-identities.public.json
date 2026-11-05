@@ -1,0 +1,218 @@
+{
+  "schema": "heptabao.x230-current-oracles-and-published-controls.v1",
+  "host": "x230",
+  "full9_order": [
+    "dev",
+    "ino",
+    "uid",
+    "gid",
+    "mode_with_regular_type_bits",
+    "nlink",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "integer_representation": "decimal strings derived exactly from original version and integer metadata; no ns Number conversion",
+  "inputs": [
+    {
+      "role": "oracle-binary",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "bytes": 181760103,
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "version": "2053:4484525:181760103:1793293201917498566:1793293202538497931",
+      "mode": 448,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal": [
+        "2053",
+        "4484525",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "181760103",
+        "1793293201917498566",
+        "1793293202538497931"
+      ],
+      "original_native": {
+        "path": "observations/oracle-binary/native.original.json",
+        "bytes": 448,
+        "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810",
+        "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+        "carrier_tree": "a833abc98be80cdae40b2144306faf978b4c0855"
+      },
+      "original_operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "original_closed": true,
+      "regular_file_basis": "successful purpose-built file_info contract",
+      "source_role_guard": false,
+      "bindingPin": {
+        "path": "actual/oracle-binary.binding.public.json",
+        "bytes": 1040,
+        "sha256": "44be5f4bc542e4ff3e78c9e911cdabcb2ac052f289e697c58a72cb9b77f234c6",
+        "blob": "5d520903ef88499e8afb8a67088c2d06c403153f",
+        "carrier_tree": "ba3b478f6aeacbe7f073ee616b664bdd35ab5a45"
+      }
+    },
+    {
+      "role": "oracle-archive",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "bytes": 74865426,
+      "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "version": "2053:4484524:74865426:1793293199950500560:1793293199950500560",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal": [
+        "2053",
+        "4484524",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "74865426",
+        "1793293199950500560",
+        "1793293199950500560"
+      ],
+      "original_native": {
+        "path": "observations/oracle-archive/native.original.json",
+        "bytes": 484,
+        "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022",
+        "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+        "carrier_tree": "5459f2d7db8441e8f12b660d8d802e71796e51fc"
+      },
+      "original_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "original_closed": true,
+      "regular_file_basis": "successful purpose-built file_info contract",
+      "source_role_guard": false,
+      "bindingPin": {
+        "path": "actual/oracle-archive.binding.public.json",
+        "bytes": 1077,
+        "sha256": "d9f1c84a267917ec95141937ceaabbd1420c5e6ebb5b3730f47a2a1ff454cb93",
+        "blob": "8d0cb88bad4421da91c5a83e889669f1f85e4bbf",
+        "carrier_tree": "6342bb8950bda7e8ca3630584f284a2364c22d72"
+      }
+    },
+    {
+      "role": "full34-info",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+      "bytes": 10142,
+      "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+      "version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal": [
+        "2053",
+        "3062745",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "10142",
+        "1793908417811750782",
+        "1793908417813750783"
+      ],
+      "original_native": {
+        "path": "observations/full34-info/native.original.json",
+        "bytes": 467,
+        "sha256": "a822a097b3b0373a4519832dd8c41b384dd5c7b38cea1e5d252861022fcdf447",
+        "blob": "7c1a47d703be2115a49879ad1b62b3b4d1b78d7e",
+        "carrier_tree": "7a0c60a9e7487a98398a8e0bae8996bdfb466fc0"
+      },
+      "original_operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326",
+      "original_closed": true,
+      "regular_file_basis": "successful purpose-built file_info contract",
+      "source_role_guard": true,
+      "bindingPin": {
+        "path": "actual/full34-info.binding.public.json",
+        "bytes": 1050,
+        "sha256": "09aeff49cf450844f9e7c6df12e4935e67c7e4f51780b99e00f9b0854607c3e5",
+        "blob": "8c1b5c1aeabff00d7dbfa133ded94afe63c99a74",
+        "carrier_tree": "3ed31e32c86b9232df700028e3c79810e261c347"
+      }
+    },
+    {
+      "role": "comparison69-info",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+      "bytes": 11716,
+      "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+      "version": "2053:3062747:11716:1793908604961815054:1793908604962815054",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal": [
+        "2053",
+        "3062747",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "11716",
+        "1793908604961815054",
+        "1793908604962815054"
+      ],
+      "original_native": {
+        "path": "observations/comparison69-info/native.original.json",
+        "bytes": 473,
+        "sha256": "9fc06630c78d54e199972b38e9bc91694bcc21afe6b15c5bc8e8eafa89e53598",
+        "blob": "810d58c915bbf08d106fda56aa3b372d2c2f5a42",
+        "carrier_tree": "a363601e1f7bf4feaf748bf4b977612b25fea936"
+      },
+      "original_operation_id": "e2ecc3dee3549a5a9bf467d65bf34ee85832c662ac22cd69478c51f4fd498d85",
+      "original_closed": true,
+      "regular_file_basis": "successful purpose-built file_info contract",
+      "source_role_guard": true,
+      "bindingPin": {
+        "path": "actual/comparison69-info.binding.public.json",
+        "bytes": 1068,
+        "sha256": "a2b9bd122d25e0f5c65ddcfb90691c707fd0cb82be3c1cdf83e66103a1004f01",
+        "blob": "5f144f94dc1a60d09520029f5c215c6a537b56ea",
+        "carrier_tree": "ccf8b2153658a711c11c4612fa5d0a0a976d3364"
+      }
+    },
+    {
+      "role": "comparison-driver-info",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+      "bytes": 9261,
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "version": "2053:3062749:9261:1793908920065966649:1793908920066966649",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal": [
+        "2053",
+        "3062749",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "9261",
+        "1793908920065966649",
+        "1793908920066966649"
+      ],
+      "original_native": {
+        "path": "observations/comparison-driver-info/native.original.json",
+        "bytes": 477,
+        "sha256": "083b9da39563fd7bbe8491d79df903a7033a80238421a4b3dd8f04a2450d1794",
+        "blob": "91ec40a76d4220b86dbad979afe476722432bb8e",
+        "carrier_tree": "d994f52f8c8537965b2d7bce857404a8281cf2b5"
+      },
+      "original_operation_id": "eb4d59a4f07722d8ed4871a3634c6960afa0e3dcbea0938b26772d94d498024e",
+      "original_closed": true,
+      "regular_file_basis": "successful purpose-built file_info contract",
+      "source_role_guard": true,
+      "bindingPin": {
+        "path": "actual/comparison-driver-info.binding.public.json",
+        "bytes": 1081,
+        "sha256": "97b605d754a7b1b6a6350507c7eed96e517023480836e3fc1e2de508a5544592",
+        "blob": "2fa59df7c1ca576a7ed5557ad9edec23b51b139e",
+        "carrier_tree": "cda8c0052c6a9c4276296316a0d22d6dca817212"
+      }
+    }
+  ]
+}

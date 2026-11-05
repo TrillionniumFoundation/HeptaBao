@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-loader-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js"
+    }
+  }
+}

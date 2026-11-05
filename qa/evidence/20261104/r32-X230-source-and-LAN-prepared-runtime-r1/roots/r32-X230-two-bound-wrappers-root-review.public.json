@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.root-X230-two-existing-wrappers-six-literal-binding-review.r32.v1",
+  "status": "PASS_SOURCE_ONLY_EXACT_MINIMAL_BINDING",
+  "packet": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50",
+  "checks_passed": 18,
+  "checks": [
+    "whole-bound23-and6-Merkle",
+    "current-X230-source-and-actual-inputs-qualified",
+    "whole-independent-six-literal-prediction:full34",
+    "exact-six-lines-only:full34",
+    "exact-bound-literal:full34:BINDING_READY=False",
+    "exact-bound-literal:full34:NORMAL61_SHA=None",
+    "exact-bound-literal:full34:NORMAL_NATIVE_SHA=None",
+    "exact-bound-literal:full34:NORMAL_RELEASE_SHA=None",
+    "exact-bound-literal:full34:TRANSFER_SHA=None",
+    "only-server-SHA-literal:full34",
+    "whole-independent-six-literal-prediction:comparison69",
+    "exact-six-lines-only:comparison69",
+    "exact-bound-literal:comparison69:BINDING_READY=False",
+    "exact-bound-literal:comparison69:NORMAL61_SHA=None",
+    "exact-bound-literal:comparison69:NORMAL_NATIVE_SHA=None",
+    "exact-bound-literal:comparison69:NORMAL_RELEASE_SHA=None",
+    "exact-bound-literal:comparison69:TRANSFER_SHA=None",
+    "only-server-SHA-literal:comparison69"
+  ],
+  "source_transfer_qualification": {
+    "name": "r32-X230-source-transfer-complete-root-qualification.public.json",
+    "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+    "bytes": 10556,
+    "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+  },
+  "wrappers": [
+    {
+      "role": "full34",
+      "before": {
+        "path": "before/full34.py",
+        "blob": "2ad457fd40fc30154934671868e347898150b59e",
+        "bytes": 9833,
+        "sha256": "adc3117c8ff7e27e3e88bed13793c38c9e6037665f2e63b363e7692dd1dfa38b",
+        "mode": "100644"
+      },
+      "after": {
+        "path": "candidate/full34.py",
+        "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+        "bytes": 10142,
+        "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+        "mode": "100644"
+      },
+      "changes": [
+        {
+          "line": 6,
+          "before": "BINDING_READY=False",
+          "after": "BINDING_READY=True"
+        },
+        {
+          "line": 7,
+          "before": "NORMAL61_SHA=None",
+          "after": "NORMAL61_SHA='7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475'"
+        },
+        {
+          "line": 8,
+          "before": "NORMAL_NATIVE_SHA=None",
+          "after": "NORMAL_NATIVE_SHA='3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a'"
+        },
+        {
+          "line": 9,
+          "before": "NORMAL_RELEASE_SHA=None",
+          "after": "NORMAL_RELEASE_SHA='78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22'"
+        },
+        {
+          "line": 10,
+          "before": "TRANSFER_SHA=None",
+          "after": "TRANSFER_SHA='dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f'"
+        },
+        {
+          "line": 13,
+          "before": "PIN=None;DRIVER='383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581'",
+          "after": "PIN='cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0';DRIVER='383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581'"
+        }
+      ],
+      "all_other_source_bytes_unchanged": true
+    },
+    {
+      "role": "comparison69",
+      "before": {
+        "path": "before/comparison69.py",
+        "blob": "06a56edbdff787f0a7c89c019f84b1f6b6b882d8",
+        "bytes": 11407,
+        "sha256": "eaa93bfd0f802f92b43efce9f07a92f2078208133b2e1a155da4af947f97a40b",
+        "mode": "100644"
+      },
+      "after": {
+        "path": "candidate/comparison69.py",
+        "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+        "bytes": 11716,
+        "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+        "mode": "100644"
+      },
+      "changes": [
+        {
+          "line": 4,
+          "before": "BINDING_READY=False",
+          "after": "BINDING_READY=True"
+        },
+        {
+          "line": 5,
+          "before": "NORMAL61_SHA=None",
+          "after": "NORMAL61_SHA='7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475'"
+        },
+        {
+          "line": 6,
+          "before": "NORMAL_NATIVE_SHA=None",
+          "after": "NORMAL_NATIVE_SHA='3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a'"
+        },
+        {
+          "line": 7,
+          "before": "NORMAL_RELEASE_SHA=None",
+          "after": "NORMAL_RELEASE_SHA='78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22'"
+        },
+        {
+          "line": 8,
+          "before": "TRANSFER_SHA=None",
+          "after": "TRANSFER_SHA='dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f'"
+        },
+        {
+          "line": 12,
+          "before": "BINARY_SHA=None",
+          "after": "BINARY_SHA='cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0'"
+        }
+      ],
+      "all_other_source_bytes_unchanged": true
+    }
+  ],
+  "source_definitions_and_existing_guards_unchanged": true,
+  "original31_full34_and69_scoped_comparison_unchanged": true,
+  "root_did_not_execute_author_AST_or_candidate_modules": true,
+  "Runtime_calls": 0,
+  "host_sources_published": false,
+  "two_actual_oracle_infos_pending": true,
+  "comparison_driver_host_publication_pending": true,
+  "new_runtime_GO": false,
+  "full_OpenBao271_replacement": false
+}

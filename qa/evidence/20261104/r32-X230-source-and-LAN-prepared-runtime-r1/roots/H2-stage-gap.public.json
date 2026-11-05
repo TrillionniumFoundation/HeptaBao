@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.current4e808.h2.existing-stage-compatibility-gap.v1",
+  "status": "DATA_ONLY_TEMPLATE_COMPLETE_STAGE_NOT_ADAPTABLE_BY_CONSTANTS_ONLY",
+  "reviewed_existing_sources": {
+    "h2_source_tree": "5ece6708768a38b53eb77aed35064618134f045f",
+    "h2_original_plan": {
+      "blob": "54d6737924a6e99914669eb79753e97bfd83b463",
+      "bytes": 8705,
+      "sha256": "01c02ac54352029f725bccea34379e3db4dfab438e6c421c947e9f11656b03b9"
+    },
+    "h2_binder": {
+      "blob": "9b3a605a2ac2f47729678bdb696d89b0c9b06b9a",
+      "bytes": 41350,
+      "sha256": "6bbaa72dcb899d359f14c6e442c824c46a8c52aa74aa0d6be8b1820596c34cf4"
+    },
+    "h2_driver": {
+      "blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+      "bytes": 62344,
+      "sha256": "703e5ecfc9b88ce4d8cdaf81342597a12a7b42c92af583b54d87f4f8a37bcf13"
+    },
+    "cli_stage": {
+      "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+      "bytes": 23638,
+      "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+    },
+    "cli_stage_base": {
+      "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+      "bytes": 22935,
+      "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+    },
+    "cli_stage_root_budget_review": "8674877d7bb1cdea7cd49a96bac7a81660e26e67",
+    "cli_stage_peer": "5b8bfc4b5fb825a154a65484b952376641f24dd7"
+  },
+  "known_compatible_parts": [
+    "Current source namespace, current product five content pins and original normal61 receipts already match the unchanged H2 binder.",
+    "Five exact H2 QA sources and twelve instrument content pins are known. The product/instrument identities remain separate.",
+    "Existing host machine SHA, three utility pins and six old-result fence content pins can be copied as data without changing H2 gates or deadlines."
+  ],
+  "incompatible_unchanged_body_constraints": [
+    {
+      "id": "directory_set",
+      "existing": {
+        "line": 230,
+        "exact": "for name in (\"qa\", \"artifacts\"):"
+      },
+      "required": {
+        "line": 384,
+        "exact": "self.control / \"h2qa\" / names[role]"
+      },
+      "gap": "The existing stage creates only two child directories, while the unchanged H2 binder requires a third h2qa child. This cannot be supplied by a top-level data constant."
+    },
+    {
+      "id": "copy_source_and_destination",
+      "existing": [
+        {
+          "line": 283,
+          "exact": "path = INCOMING / name"
+        },
+        {
+          "line": 288,
+          "exact": "dir_fd=self.artfd)"
+        }
+      ],
+      "gap": "The existing copy method has one incoming root and one artifacts destination FD. H2 has current-product incoming and separate instrument incoming, with instrument copies required in h2qa. Literal changes alone cannot express both."
+    },
+    {
+      "id": "allowed_write_fds_names",
+      "existing": [
+        {
+          "line": 243,
+          "exact": "need(fd in (self.rootfd, self.qafd, self.artfd), \"owned_destination_fd\")"
+        },
+        {
+          "line": 244,
+          "exact": "need(name in set(QA_NAMES) | {\"groups.json\", \"normal-release-tests-result.public.json\","
+        }
+      ],
+      "gap": "The original held-FD and filename allowlists do not admit the twelve H2 instrument files under a third destination."
+    },
+    {
+      "id": "exact_binding_members",
+      "existing": {
+        "line": 421,
+        "exact": "spec[\"official_cli\"] = bind(official)"
+      },
+      "required": {
+        "line": 319,
+        "exact": "\"qa_files\", \"artifacts\", \"h2_client\", \"utilities\", \"old_fences\","
+      },
+      "gap": "Unchanged CLI main adds an official_cli field; the H2 binder requires its exact field set without that member. It also has no loop that publishes/rebinds h2_client files."
+    },
+    {
+      "id": "fixed_carrier_schema_and_final_membership",
+      "existing": [
+        {
+          "line": 369,
+          "exact": "payload[\"schema\"] == \"heptabao.official271-native-cli-phaseb-r3.local-source-carrier.v1\""
+        },
+        {
+          "line": 434,
+          "exact": "need(set(os.listdir(owned.artfd)) == {x[0] for x in COPY}"
+        }
+      ],
+      "gap": "The fixed CLI carrier schema and final two-directory membership checks are part of executable main, not top-level data."
+    }
+  ],
+  "earliest_existing_H2_runtime_entry": {
+    "source_blob": "6687ce5d76ae38ec9f079c876f50d86b04f40448",
+    "entry": "main",
+    "readonly_args": "--binding <actual binding.private.json> --binding-sha256 <actual SHA> --prepare-only",
+    "ready_guard": {
+      "line": 327,
+      "exact": "need(spec[\"ready_for_readonly_prepare\"] is True, \"unresolved_binding_is_not_admission\")"
+    },
+    "separate_live_guard": "--run requires prior exact prepare result SHA; unchanged 300-second prepare and 2400-second outer live proposal.",
+    "entry_is_not_a_publisher": true
+  },
+  "evidence_search_scope": "The reviewed H2 dual49 tree, its original source-plan and current CLI stage source only. No claim that no other repository stager exists.",
+  "missing_objects": [
+    "Five existing incoming instrument independent file_info observations: indices 7 through 11.",
+    "A separately reviewed minimal adaptation of the existing staging implementation that publishes exact h2qa inputs and produces a valid H2 binding; no new controller was written in this task.",
+    "Actual independent H2 control/work freshness and publication identities, actual binding digest, actual readonly prepare."
+  ],
+  "no_new_controller_written": true,
+  "no_Runtime_requests_constructed": true,
+  "dispatch_template_unchanged": true,
+  "body_or_guard_changes": 0,
+  "Runtime_calls": 0
+}

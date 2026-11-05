@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.mac-selected-owner-next-three-dependency-metadata.proposal.r1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "host": "mac",
+  "sourceBasis": "Exact imports in already whole-read public source; lexical resolution under their observed parent directory, not proof of file existence or canonical resolution.",
+  "requests": [
+    {
+      "id": "runtime-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "origin": {
+        "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+        "line": 4,
+        "import": "import { t as resolveModelRuntimePolicy } from \"./model-runtime-policy-Ca791C2-.js\";"
+      },
+      "purpose": "Determine actual agent/model/provider/session policy precedence before defining a credential-free projection.",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-runtime-policy-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js"
+          }
+        }
+      },
+      "actualFile": null,
+      "sourceDerivedPathOnly": true,
+      "submitted": false
+    },
+    {
+      "id": "openai-routing",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "origin": {
+        "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+        "line": 5,
+        "import": "import { o as openAIProviderUsesCodexRuntimeByDefault } from \"./openai-routing-DXJmS9CT.js\";"
+      },
+      "purpose": "Determine the precise configuration predicate used for the implicit Codex routing branch; provider=openai alone is not proven sufficient.",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-openai-routing-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js"
+          }
+        }
+      },
+      "actualFile": null,
+      "sourceDerivedPathOnly": true,
+      "submitted": false
+    },
+    {
+      "id": "plugin-loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "origin": {
+        "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+        "line": 5,
+        "import": "import { s as loadOpenClawPlugins } from \"./loader-D8d2EvVh.js\";"
+      },
+      "purpose": "Locate the actual manifest/root/registration resolver used by the loader, before naming any Google manifest file or claiming actual owner options.",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-loader-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js"
+          }
+        }
+      },
+      "actualFile": null,
+      "sourceDerivedPathOnly": true,
+      "submitted": false
+    }
+  ],
+  "maximumMetadataOperations": 3,
+  "metadataHashWork": "Purpose-built file_info performs full-file SHA internally; this tool has no byte-cap parameter. No body read limit is claimed to bound its hash work.",
+  "bodyRequests": null,
+  "bodyReadAuthorized": false,
+  "sourceExecutionAuthorized": false,
+  "googleRootObserved": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+  "googleManifestPath": null,
+  "googleCodePins": null,
+  "actualSelectedOwner": null,
+  "protocolIfSeparatelyAuthorized": {
+    "externalExactIntentBeforeUniqueStart": true,
+    "oneOriginalOperationAtATime": true,
+    "rawSdkBeforeIsErrorAndParse": true,
+    "wholeClosedInactiveBeforeNext": true,
+    "errorStopsNoFallback": true,
+    "noAliasFollowingOrAdditionalPaths": true,
+    "noAutomaticBodyRead": true
+  },
+  "reasonForNotReadingGoogleManifestNow": "The catalog gives the captured root only; none of the completed files establishes the manifest filename or actual plugin registration resolver. No package.json/openclaw.plugin.json path is invented."
+}

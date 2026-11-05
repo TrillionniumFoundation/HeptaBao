@@ -1,0 +1,541 @@
+{
+  "error": "Error: actual_source3_empty_leader1",
+  "checks": [
+    {
+      "name": "exact_source_commit_tree",
+      "passed": true
+    },
+    {
+      "name": "terminal_original_job",
+      "passed": true
+    },
+    {
+      "name": "whole_public_stream_sizes",
+      "passed": true
+    },
+    {
+      "name": "launch_original_prepared_source",
+      "passed": true
+    },
+    {
+      "name": "launch_controller_absolute_deadline",
+      "passed": true
+    },
+    {
+      "name": "launch_argv_exact_prepared",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_schema",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_prepared",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_source",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_complete_argv",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_no_prod_or_private",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_schema",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_whole_equals_stdout_value",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_zero",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_original_budget",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_all_unchanged",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_summary_exact",
+      "passed": true
+    },
+    {
+      "name": "exit_zero_all_source_fences",
+      "passed": true
+    },
+    {
+      "name": "original98_counts_unique",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:candidate_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:three_distinct_physical_hosts",
+      "passed": true
+    },
+    {
+      "name": "original:same_source_native_abis",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_endpoints_configured",
+      "passed": true
+    },
+    {
+      "name": "original:seed_fresh_uninitialized",
+      "passed": true
+    },
+    {
+      "name": "original:seed_initialized_once",
+      "passed": true
+    },
+    {
+      "name": "original:seed_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:seed_v5_and_kv2_history",
+      "passed": true
+    },
+    {
+      "name": "original:seed_stopped_cold_archive",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_cold_clone",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_cold_clone",
+      "passed": true
+    },
+    {
+      "name": "original:three_raft_elected_before_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_1_to_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_1_to_3",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_2_to_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_2_to_3",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_3_to_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_3_to_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_3",
+      "passed": true
+    },
+    {
+      "name": "original:native_activate_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_v5_history_preserved",
+      "passed": true
+    },
+    {
+      "name": "original:native_noop_config_accepted",
+      "passed": true
+    },
+    {
+      "name": "original:native_delete_missing_accepted",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_01",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_02",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_03",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_04",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_05",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_06",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_07",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_08",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_09",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_10",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_11",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_12",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_13",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_14",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_15",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_16",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_17",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_34mib_capacity",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_all_retained_exact",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_soft_delete_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_destroy_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_retention_states",
+      "passed": true
+    },
+    {
+      "name": "original:native_standby_small_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_standby_small_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:leader_sigkill_identity_verified",
+      "passed": true
+    },
+    {
+      "name": "original:different_leader_after_sigkill",
+      "passed": true
+    },
+    {
+      "name": "original:new_leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "original:failover_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:failover_survivors_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_cold_restart",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_local_raft_caught_up",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_forwarded_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:single_survivor_loses_authority",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_loss_write_denied_no_ack",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_loss_read_denied_no_payload",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_restored",
+      "passed": true
+    },
+    {
+      "name": "original:denied_quorum_write_absent",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_recovery_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_stopped_for_cold_restart",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_cold_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_local_raft_persistent",
+      "passed": true
+    },
+    {
+      "name": "original:cold_leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "original:cold_restart_new_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:cold_restart_all_hosts_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_targets_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_two_targets_quarantined",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_sealed_pair_elected",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_source_rejoined",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_empty_before_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_exact_history",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_actual_leaves_rebuilt",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_remaining_nodes_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_all_hosts_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:synthetic_metadata_cleanup_once",
+      "passed": true
+    },
+    {
+      "name": "original:synthetic_metadata_absent",
+      "passed": true
+    },
+    {
+      "name": "original:source_and_binaries_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original:report_excludes_runtime_secrets",
+      "passed": true
+    },
+    {
+      "name": "original:owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:owned_mesh_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:native.complete",
+      "passed": true
+    },
+    {
+      "name": "separate12_count_unique",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.inputs_and_history_bound",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_three_owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.mac_persisted_frontier_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.same_recovered_cipher_reference_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.new_processes_sealed",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.real_sealed_leader_elected",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_three_unsealed_once",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_local_frontiers_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_metadata_and_retired_states_exact",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_hosts_small_readindex",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.shared_deadline_completed",
+      "passed": true
+    },
+    {
+      "name": "original_http_admission_budgets",
+      "passed": true
+    },
+    {
+      "name": "postcold_absolute_deadline_clamped",
+      "passed": true
+    },
+    {
+      "name": "actual_source3_empty_leader1",
+      "passed": false
+    }
+  ]
+}

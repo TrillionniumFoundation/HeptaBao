@@ -1,0 +1,7 @@
+{
+  "chunk_id": "70a5da",
+  "wall_time_seconds": 0.000040441,
+  "exit_code": 0,
+  "original_token_count": 42,
+  "output": "{\"status\": \"materialized_offline_inputs\", \"files\": 289, \"root\": \"/workspace/scratch/f86faac821c4/x230_relay_actual_final_r1\", \"network_calls\": 0, \"Runtime_calls\": 0}\n"
+}

@@ -1,0 +1,2206 @@
+{
+  "schema": "heptabao.auth.body4.raw-chain-verification.v1",
+  "ok": true,
+  "scope": "Pure V8 reconstruction of returned public source read chains. Not SDK/product execution or a selected-owner qualification.",
+  "checks": [
+    {
+      "id": "whole:authorization/root-GO.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:reference/metadata-SUMMARY.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:reference/body-PROPOSAL.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:reference/metadata/runtime-policy.native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:reference/metadata/openai-routing.native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:reference/metadata/plugin-loader.native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:sources/runtime-policy.original.js",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/01/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:sources/openai-routing.original.js",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/02/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-16384/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-16384/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-16384/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-24576/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-24576/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-24576/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-32768/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-32768/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-32768/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-40960/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-40960/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-40960/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-49152/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-49152/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-49152/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-57344/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-57344/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-57344/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-65536/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-65536/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-65536/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-73728/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-73728/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-73728/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-81920/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-81920/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/result-81920/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/03/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-16384/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-16384/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-16384/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-24576/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-24576/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-24576/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-32768/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-32768/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-32768/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-40960/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-40960/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-40960/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-49152/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-49152/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-49152/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-57344/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-57344/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-57344/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-65536/request.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-65536/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/result-65536/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:sources/plugin-loader.original.js",
+      "passed": true
+    },
+    {
+      "id": "whole:observations/04/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "whole:handoff/RELEASE.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:authorization/root-GO.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:handoff/RELEASE.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:reference/body-PROPOSAL.public.json",
+      "passed": true
+    },
+    {
+      "id": "exact_body_GO",
+      "passed": true
+    },
+    {
+      "id": "same_proposal",
+      "passed": true
+    },
+    {
+      "id": "four_original_status_requests",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "exact_request:01",
+      "passed": true
+    },
+    {
+      "id": "binary_read_scope:01",
+      "passed": true
+    },
+    {
+      "id": "exact_intent:01",
+      "passed": true
+    },
+    {
+      "id": "expected_file_current_metadata:01",
+      "passed": true
+    },
+    {
+      "id": "present:reference/metadata/runtime-policy.native.json",
+      "passed": true
+    },
+    {
+      "id": "metadata_actual_pin:01",
+      "passed": true
+    },
+    {
+      "id": "first_metadata_closed_intent",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/01/start",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/01/start",
+      "passed": true
+    },
+    {
+      "id": "original_ACK_unique:01",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/01/status-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/01/status-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "status_request:01",
+      "passed": true
+    },
+    {
+      "id": "completed_stored_inactive:01",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/01/result-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/01/result-0",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/01/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/01/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/01/result-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/01/result-8192",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole_original_payload:01",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "native_success:01",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "native_range_version:01",
+      "passed": true
+    },
+    {
+      "id": "native_body_chunk_SHA:01",
+      "passed": true
+    },
+    {
+      "id": "present:observations/01/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "actual_binding:01",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "exact_request:02",
+      "passed": true
+    },
+    {
+      "id": "binary_read_scope:02",
+      "passed": true
+    },
+    {
+      "id": "exact_intent:02",
+      "passed": true
+    },
+    {
+      "id": "expected_file_current_metadata:02",
+      "passed": true
+    },
+    {
+      "id": "present:reference/metadata/openai-routing.native.json",
+      "passed": true
+    },
+    {
+      "id": "metadata_actual_pin:02",
+      "passed": true
+    },
+    {
+      "id": "previous_whole_before_next:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/02/start",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/02/start",
+      "passed": true
+    },
+    {
+      "id": "original_ACK_unique:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/02/status-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/02/status-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "status_request:02",
+      "passed": true
+    },
+    {
+      "id": "completed_stored_inactive:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/02/result-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/02/result-0",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad2",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/02/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/02/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/02/result-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole_original_payload:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "native_success:02",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "native_range_version:02",
+      "passed": true
+    },
+    {
+      "id": "native_body_chunk_SHA:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/02/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "actual_binding:02",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "exact_request:03",
+      "passed": true
+    },
+    {
+      "id": "binary_read_scope:03",
+      "passed": true
+    },
+    {
+      "id": "exact_intent:03",
+      "passed": true
+    },
+    {
+      "id": "expected_file_current_metadata:03",
+      "passed": true
+    },
+    {
+      "id": "present:reference/metadata/plugin-loader.native.json",
+      "passed": true
+    },
+    {
+      "id": "metadata_actual_pin:03",
+      "passed": true
+    },
+    {
+      "id": "previous_whole_before_next:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/start",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/start",
+      "passed": true
+    },
+    {
+      "id": "original_ACK_unique:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/status-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/status-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "status_request:03",
+      "passed": true
+    },
+    {
+      "id": "completed_stored_inactive:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-0",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-8192",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-16384/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-16384/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-16384/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-16384",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-24576/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-24576/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-24576/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-24576",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-32768/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-32768/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-32768/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-32768",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-40960/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-40960/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-40960/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-40960",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-49152/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-49152/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-49152/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-49152",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-57344/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-57344/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-57344/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-57344",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-65536/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-65536/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-65536/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-65536",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-73728/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-73728/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-73728/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-73728",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-81920/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-81920/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/result-81920/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad2",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/03/result-81920",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole_original_payload:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "native_success:03",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad2",
+      "passed": true
+    },
+    {
+      "id": "native_range_version:03",
+      "passed": true
+    },
+    {
+      "id": "native_body_chunk_SHA:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/03/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "actual_binding:03",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "id": "exact_request:04",
+      "passed": true
+    },
+    {
+      "id": "binary_read_scope:04",
+      "passed": true
+    },
+    {
+      "id": "exact_intent:04",
+      "passed": true
+    },
+    {
+      "id": "expected_file_current_metadata:04",
+      "passed": true
+    },
+    {
+      "id": "present:reference/metadata/plugin-loader.native.json",
+      "passed": true
+    },
+    {
+      "id": "metadata_actual_pin:04",
+      "passed": true
+    },
+    {
+      "id": "previous_whole_before_next:04",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/start/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/start",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/start",
+      "passed": true
+    },
+    {
+      "id": "original_ACK_unique:04",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/status-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/status-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/status-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/status-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/status-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "status_request:04",
+      "passed": true
+    },
+    {
+      "id": "completed_stored_inactive:04",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-0/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-0/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-0",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-0",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-0",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-0",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-8192/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-8192/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-8192/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-8192",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-16384/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-16384/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-16384/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-16384",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-24576/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-24576/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-24576/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-24576",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-32768/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-32768/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-32768/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-32768",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-40960/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-40960/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-40960/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-40960",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-49152/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-49152/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-49152/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-49152",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-57344/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-57344/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-57344/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-57344",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-65536/request.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-65536/original-sdk.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/result-65536/original-native.json",
+      "passed": true
+    },
+    {
+      "id": "SDK_noerror:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "SDK_native_exact:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "base64.pad1",
+      "passed": true
+    },
+    {
+      "id": "page_request:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_fixed_protocol:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_bounds:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "page_snapshot_fixed:observations/04/result-65536",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "whole_original_payload:04",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/original-payload.json",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/native-result.public.json",
+      "passed": true
+    },
+    {
+      "id": "native_success:04",
+      "passed": true
+    },
+    {
+      "id": "base64.syntax",
+      "passed": true
+    },
+    {
+      "id": "native_range_version:04",
+      "passed": true
+    },
+    {
+      "id": "native_body_chunk_SHA:04",
+      "passed": true
+    },
+    {
+      "id": "present:observations/04/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "id": "actual_binding:04",
+      "passed": true
+    },
+    {
+      "id": "whole_source_chunk:runtime-policy:0",
+      "passed": true
+    },
+    {
+      "id": "present:sources/runtime-policy.original.js",
+      "passed": true
+    },
+    {
+      "id": "actual_whole_source:runtime-policy",
+      "passed": true
+    },
+    {
+      "id": "whole_source_chunk:openai-routing:0",
+      "passed": true
+    },
+    {
+      "id": "present:sources/openai-routing.original.js",
+      "passed": true
+    },
+    {
+      "id": "actual_whole_source:openai-routing",
+      "passed": true
+    },
+    {
+      "id": "whole_source_chunk:plugin-loader:0",
+      "passed": true
+    },
+    {
+      "id": "whole_source_chunk:plugin-loader:1",
+      "passed": true
+    },
+    {
+      "id": "present:sources/plugin-loader.original.js",
+      "passed": true
+    },
+    {
+      "id": "actual_whole_source:plugin-loader",
+      "passed": true
+    },
+    {
+      "id": "four_body_total_and_pages",
+      "passed": true
+    },
+    {
+      "id": "release_zero_and_counts",
+      "passed": true
+    },
+    {
+      "id": "prior_consumption_not_reset",
+      "passed": true
+    }
+  ],
+  "counts": {
+    "checks": 513,
+    "original_operations": 4,
+    "original_immutable_pages": 23,
+    "body_bytes": 127095,
+    "whole_files": 3
+  },
+  "rows": [
+    {
+      "sequence": 1,
+      "id": "runtime-policy",
+      "operation_id": "759c24c999725828c6258057aec668fc43aef8305f5149a8542703aacb122996",
+      "pages": 2,
+      "original_payload_bytes": 9643,
+      "original_payload_sha256": "e61db03d8f418c922c18ef7085354006242bb77af2be6d929ac9275496f8db89",
+      "body_bytes": 6918,
+      "body_sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+      "offset": 0,
+      "next_offset": 6918,
+      "eof": true,
+      "status": {
+        "blob": "cd36160cedb13eb3dc19b5db998387e825206231",
+        "bytes": 802,
+        "sha256": "92ebb1784f669c9abece6d51bb588ebe41e538fd1fbb742cb719883dc432e0e6"
+      },
+      "native": {
+        "blob": "90091c4d74beb65606be6c2837263c51d0e28dc1",
+        "bytes": 9540,
+        "sha256": "3be62bb53608e612725f608da04b84e861df93225d7ef7f8b289b399217550cf"
+      }
+    },
+    {
+      "sequence": 2,
+      "id": "openai-routing",
+      "operation_id": "0a3de1c5d12cb9577fa765265da3913e6f0fa8f1d37233efddda64c061a182bf",
+      "pages": 1,
+      "original_payload_bytes": 5077,
+      "original_payload_sha256": "f8c71e2350d4b02023677b071caafcc8ba8ec4c265b30d1f5ee10e89ec99d4db",
+      "body_bytes": 3497,
+      "body_sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6",
+      "offset": 0,
+      "next_offset": 3497,
+      "eof": true,
+      "status": {
+        "blob": "6c853c7479b0556ec3188a49dd3cd3b7e113e734",
+        "bytes": 802,
+        "sha256": "e91ec3f9e9f0f46cb3ef1b5833fd10808349e4b4baabe53c6d8697109c1cf974"
+      },
+      "native": {
+        "blob": "8c64fe8f5e29432f4916c56e76405de61f4f4769",
+        "bytes": 4974,
+        "sha256": "baa60469e154f33d93104f36c8237dd4ba617c0b27c0e31629c7e508e08068b0"
+      }
+    },
+    {
+      "sequence": 3,
+      "id": "plugin-loader",
+      "operation_id": "5df99abf71152e78c9c1157eb7b30b8490fc528e61249e172cc94be674b206b7",
+      "pages": 11,
+      "original_payload_bytes": 87795,
+      "original_payload_sha256": "9758cc417e58af35057ae4f8f36c211f614d445ca377b1297670b142e190b6ed",
+      "body_bytes": 65536,
+      "body_sha256": "e765b0932cd1f80892c5876c351801555059986f2859d995f64dab83b5f31577",
+      "offset": 0,
+      "next_offset": 65536,
+      "eof": false,
+      "status": {
+        "blob": "c928325b0461b86d5a8b637e8c13e6424731b42b",
+        "bytes": 802,
+        "sha256": "b2eea596dedf66cd8f8875add7fca70d8cbf6b2404f113736a6e618fb1cc77ff"
+      },
+      "native": {
+        "blob": "8c8c47227dc2694efb100abd26f227cf02c2843d",
+        "bytes": 87692,
+        "sha256": "71d162573b26f2196356f3be6acd8529a3c7b50ac0397db45bbbed655feade27"
+      }
+    },
+    {
+      "sequence": 4,
+      "id": "plugin-loader",
+      "operation_id": "4e30dd2ed18a8da114be7dc54822c049f152ca731d99476d4f36690de274e904",
+      "pages": 9,
+      "original_payload_bytes": 68607,
+      "original_payload_sha256": "107a1eb2b2f352d264ce829c23398f6b2ff6cdc0d7910677b2a6fdf46bd9f046",
+      "body_bytes": 51144,
+      "body_sha256": "54ebdfed2adbcac818e84add4ab3ebc7c1bb8468f4a7ed8822f849a357784f8b",
+      "offset": 65536,
+      "next_offset": 116680,
+      "eof": true,
+      "status": {
+        "blob": "3d50fa61f55fd775a9b2e1249ad4507defa58c50",
+        "bytes": 802,
+        "sha256": "bd4b51a5756c74b4fb0a1b80f829ae1f9c09402d7c5bc56e965b4192fbce650b"
+      },
+      "native": {
+        "blob": "647092e2fc6ae6808410f04ab95d075bca18859b",
+        "bytes": 68504,
+        "sha256": "f27904627d2797de40349e517fe7aa87191d484244defe3f0b6aceb32b30e6fc"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "runtime-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "source": {
+        "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+        "bytes": 6918,
+        "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6"
+      },
+      "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+      "native_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "openai-routing",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "source": {
+        "blob": "b7b0533dcde5a358096fc1f57a0b8e2cee75863d",
+        "bytes": 3497,
+        "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6"
+      },
+      "version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+      "native_sequences": [
+        2
+      ]
+    },
+    {
+      "id": "plugin-loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "source": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7"
+      },
+      "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+      "native_sequences": [
+        3,
+        4
+      ]
+    }
+  ],
+  "current_Runtime_calls_inflight": 0,
+  "current_owned_native_futures": 0,
+  "actual_selected_owner_proven": false,
+  "chronology_limit": "Intent/SDK save-before-parse followed during collection; immutable files independently prove exact bindings and bytes, not wall-clock save order."
+}

@@ -1,0 +1,7 @@
+{
+  "error": "ReferenceError: dir is not defined",
+  "scope": "Local orchestration declaration before any status request archive or Runtime call",
+  "operation_id": "65e7a4a57c530d009e9032d953584cb89eacde6258bbe853c075a000a805e4b8",
+  "Runtime_call_occurred": false,
+  "fix": "Declare dir in the const statement; same original status request/ID, not a repeated native admission."
+}

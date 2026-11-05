@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-postcold-prepare-streams0-r1-20261105",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ad1383c9-fc05-5863",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

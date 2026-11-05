@@ -1,0 +1,10 @@
+{
+  "direct_child_reaped": true,
+  "elapsed_seconds": 25.34039764292538,
+  "exit_code": 0,
+  "label": "receive-x230",
+  "limit_seconds": 300,
+  "pid": 507843,
+  "remaining": [],
+  "timed_out": false
+}

@@ -1,0 +1,2962 @@
+{
+  "schema": "heptabao.x230-publication-offline-evidence-verification.v1",
+  "status": "PASS",
+  "checks_passed": 737,
+  "checks": [
+    {
+      "label": "present:reference/ROOT_GO.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:STATE.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:CLOSURE.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:reference/ROOT_GO.original.json",
+      "ok": true
+    },
+    {
+      "label": "exact-root-GO",
+      "ok": true
+    },
+    {
+      "label": "present:calls/index.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:observations/index.public.json",
+      "ok": true
+    },
+    {
+      "label": "thirty-unique-original-calls",
+      "ok": true
+    },
+    {
+      "label": "eight-unique-original-observers",
+      "ok": true
+    },
+    {
+      "label": "no-inflight-no-active-future",
+      "ok": true
+    },
+    {
+      "label": "source-only",
+      "ok": true
+    },
+    {
+      "label": "submitted-order-index",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-binary-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/oracle-archive-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-write:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-write:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-write:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-write:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-write:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-write:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-info-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-info-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-info-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-body-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-body-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/full34-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "full34-body-page-008192:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-write:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison69-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body-page-008192:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-write/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-write/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-write/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-write:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-info-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-admission/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-admission/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-admission/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-admission:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-status/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-status/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-status/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-status/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-status:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-000000/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-000000/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-000000/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-000000/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-000000:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-008192/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-008192/intent.public.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-008192/result.original.sdk.json",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "whole:calls/comparison-driver-body-page-008192/result.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:original-sdk-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:intent-exact-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:intent-pins",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body-page-008192:method-whitelist",
+      "ok": true
+    },
+    {
+      "label": "exact-call-counts",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:original-admission",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:closed-status",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:tool-name",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "present:observations/oracle-binary/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/oracle-binary/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:native-git",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:original-admission",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:closed-status",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:tool-name",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "present:observations/oracle-archive/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/oracle-archive/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:native-git",
+      "ok": true
+    },
+    {
+      "label": "full34-info:original-admission",
+      "ok": true
+    },
+    {
+      "label": "full34-info:closed-status",
+      "ok": true
+    },
+    {
+      "label": "full34-info:tool-name",
+      "ok": true
+    },
+    {
+      "label": "full34-info:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "full34-info:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "full34-info:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "present:observations/full34-info/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-info:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "full34-info:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/full34-info/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-info:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-info:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-info:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-info:native-git",
+      "ok": true
+    },
+    {
+      "label": "full34-body:original-admission",
+      "ok": true
+    },
+    {
+      "label": "full34-body:closed-status",
+      "ok": true
+    },
+    {
+      "label": "full34-body:tool-name",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-request:1",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-range:1",
+      "ok": true
+    },
+    {
+      "label": "full34-body:page-whole-eof:1",
+      "ok": true
+    },
+    {
+      "label": "present:observations/full34-body/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "full34-body:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/full34-body/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34-body:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "full34-body:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "full34-body:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "full34-body:native-git",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:original-admission",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:closed-status",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:tool-name",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison69-info/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison69-info/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:native-git",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:original-admission",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:closed-status",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:tool-name",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-request:1",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-range:1",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:page-whole-eof:1",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison69-body/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison69-body/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69-body:native-git",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:original-admission",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:closed-status",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:tool-name",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison-driver-info/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison-driver-info/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:native-git",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:original-admission",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:closed-status",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:tool-name",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-request:0",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-range:0",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-whole-eof:0",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-request:1",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-range:1",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:page-whole-eof:1",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison-driver-body/payload.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:payload-reconstruction",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:payload-git",
+      "ok": true
+    },
+    {
+      "label": "present:observations/comparison-driver-body/native.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:payload:not-error",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:payload:one-native-text",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:payload-native-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-body:native-git",
+      "ok": true
+    },
+    {
+      "label": "eleven-immutable-pages",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-binary-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:fixed-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:expected-oracle-whole",
+      "ok": true
+    },
+    {
+      "label": "present:calls/oracle-archive-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:fixed-request",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:expected-oracle-whole",
+      "ok": true
+    },
+    {
+      "label": "present:actual/input-identities.public.json",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:version-decimal-tokens",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:metadata-mode",
+      "ok": true
+    },
+    {
+      "label": "oracle-binary:lossless-full9",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:version-decimal-tokens",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:metadata-mode",
+      "ok": true
+    },
+    {
+      "label": "oracle-archive:lossless-full9",
+      "ok": true
+    },
+    {
+      "label": "full34-info:version-decimal-tokens",
+      "ok": true
+    },
+    {
+      "label": "full34-info:metadata-mode",
+      "ok": true
+    },
+    {
+      "label": "full34-info:lossless-full9",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:version-decimal-tokens",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:metadata-mode",
+      "ok": true
+    },
+    {
+      "label": "comparison69-info:lossless-full9",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:version-decimal-tokens",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:metadata-mode",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver-info:lossless-full9",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34:exact-write-request",
+      "ok": true
+    },
+    {
+      "label": "full34:absent-write",
+      "ok": true
+    },
+    {
+      "label": "present:actual/source/full34_controller.py",
+      "ok": true
+    },
+    {
+      "label": "full34:write-source-exact",
+      "ok": true
+    },
+    {
+      "label": "full34:known-write-and-info",
+      "ok": true
+    },
+    {
+      "label": "present:calls/full34-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "full34:root-info-request",
+      "ok": true
+    },
+    {
+      "label": "full34:independent-info",
+      "ok": true
+    },
+    {
+      "label": "full34:actual-source-mode-owner-single-link",
+      "ok": true
+    },
+    {
+      "label": "full34:only-actual-version-derived",
+      "ok": true
+    },
+    {
+      "label": "full34:read-contract",
+      "ok": true
+    },
+    {
+      "label": "full34:actual-full-body-exact",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69:exact-write-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69:absent-write",
+      "ok": true
+    },
+    {
+      "label": "present:actual/source/comparison69_controller.py",
+      "ok": true
+    },
+    {
+      "label": "comparison69:write-source-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison69:known-write-and-info",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison69-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison69:root-info-request",
+      "ok": true
+    },
+    {
+      "label": "comparison69:independent-info",
+      "ok": true
+    },
+    {
+      "label": "comparison69:actual-source-mode-owner-single-link",
+      "ok": true
+    },
+    {
+      "label": "comparison69:only-actual-version-derived",
+      "ok": true
+    },
+    {
+      "label": "comparison69:read-contract",
+      "ok": true
+    },
+    {
+      "label": "comparison69:actual-full-body-exact",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-write/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:exact-write-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:absent-write",
+      "ok": true
+    },
+    {
+      "label": "present:actual/source/native271_comparison_final_r1.py",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:write-source-exact",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:known-write-and-info",
+      "ok": true
+    },
+    {
+      "label": "present:calls/comparison-driver-info-admission/request.original.json",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:root-info-request",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:independent-info",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:actual-source-mode-owner-single-link",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:only-actual-version-derived",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:read-contract",
+      "ok": true
+    },
+    {
+      "label": "comparison-driver:actual-full-body-exact",
+      "ok": true
+    },
+    {
+      "label": "exact-original-serial-order",
+      "ok": true
+    }
+  ],
+  "original_calls": 30,
+  "original_observers": 8,
+  "immutable_pages": 11,
+  "payload_bytes": 45705,
+  "source_bytes": 31119,
+  "host_io": false,
+  "product_qualification": false
+}

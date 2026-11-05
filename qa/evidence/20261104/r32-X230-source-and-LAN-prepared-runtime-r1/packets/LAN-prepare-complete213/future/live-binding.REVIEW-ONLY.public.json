@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.current4e808.existing-LAN-live.prepared-binding.REVIEW-ONLY.v1",
+  "status": "SOURCE_REQUEST_ONLY_NO_LIVE_GO",
+  "existing_prepare_request": {
+    "blob": "483231efe2016a8bd72b8aa205fb589b13513f6e",
+    "bytes": 480,
+    "sha256": "4a1aa367dca92a9b4438c690b4db971e0ac8efe71af9d3dd4847ae34a4ea7baa"
+  },
+  "existing_launcher": {
+    "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+    "bytes": 25879,
+    "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92"
+  },
+  "actual_prepare_job": "1a1ad1383c9-fc05-5863",
+  "actual_prepared": {
+    "blob": "0b664e254c69bb57fec34eb29c2bedec5b44151e",
+    "bytes": 43852,
+    "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+  },
+  "actual_prepared_version": "2050:7363112:43852:1793905105749942399:1793905105749942399",
+  "actual_prepared_full9_decimal": [
+    "2050",
+    "7363112",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "43852",
+    "1793905105749942399",
+    "1793905105749942399"
+  ],
+  "prepared_observation": "e4a4888d02242000d285bd7f6f3b49c8f5029c1e89c9814c2217bde3b7cfe1a5",
+  "all_five_bodies_closed": true,
+  "actual_source_import_qualification": {
+    "name": "r31-desktop-current-source-import-complete-root-qualification.public.json",
+    "blob": "3859911145a8bd8b947935bc038d501e143a5d63",
+    "bytes": 4874,
+    "sha256": "ce161e3fd35ec1c6548a1f6a9d84fbc391eb333de7fa8ea0b2ce05b0cbebfe0a"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "--run-once",
+      "--prepared-sha256",
+      "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-4e808-postcold-live-r1-57cb2b31-7ee5ee82"
+  },
+  "request_pin": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+  },
+  "process_binding": {
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py\",\"--run-once\",\"--prepared-sha256\",\"6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"desktop\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":3000}",
+    "request_digest": "a9b995a1bd91a05389653e25ea0d472b1de150ad473321453087c2e0330eff4f",
+    "request_fingerprint_decimal": "12229970785004003411"
+  },
+  "source_changes": 0,
+  "new_control_layer": false,
+  "original98": 98,
+  "separate12": 12,
+  "original_controller_seconds": 2400,
+  "postcold_seconds_clipped_to_original": 300,
+  "role_prepare_seconds": 60,
+  "HTTP_seconds": 15,
+  "native_admission_seconds": 8,
+  "outer_seconds": 3000,
+  "old_fences": 36,
+  "canonicalQA": 5,
+  "live_authorized": false,
+  "live_submitted": false,
+  "separate_root_GO_and_exclusive_runtime_window_required": true,
+  "original_failed_read_preserved": "302a4f4b96b848b28389145261e098b1696b4c8e",
+  "known_closed_read_recovery_GO": "aa0064627e0fce8d7b1d7f32b50a0056782ef1e5",
+  "prior_import_tail_UNKNOWN_preserved": true
+}

@@ -1,0 +1,256 @@
+{
+  "schema": "heptabao.root-current4e808-CLI-eight-content-slot-binding.r32.v1",
+  "status": "PASS_CONTENT_BINDING_ONLY_TARGET_PUBLICATION_PENDING",
+  "source_only": true,
+  "before": {
+    "blob": "2352421bf5952ad22ce62c5dace8f810533beadf",
+    "bytes": 6692,
+    "sha256": "f3c3cdd09d3c4d22d26cddee2c1c4265f29dc7b9104b8eb95ac2a21bc0e5609d"
+  },
+  "after": {
+    "name": "r32-CLI-artifact-content-bound-template.public.json",
+    "blob": "728f4c6dd801310de3f05b4b54ff2ea26bb2d331",
+    "bytes": 6945,
+    "sha256": "cb4fd6c0ef9708f5bde5bd01cabc67273f3a2e24db5abe37660606e965bf0ee6"
+  },
+  "current_normal5_actual_table": {
+    "blob": "795c92856119c5a2f8c73130f5772d82f3dfc295",
+    "bytes": 5741,
+    "sha256": "ab19bf4c72c2e92df78a0c3ef8a8d20004bfc5db38af4fdd35b6f704f3067cd0"
+  },
+  "current_normal5_root_review": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+  "canonical_source_complete_qualification": "3859911145a8bd8b947935bc038d501e143a5d63",
+  "exact_changed_JSON_leaves": [
+    {
+      "path": "/artifacts/combined_tests/bytes",
+      "before": null,
+      "after": 57532
+    },
+    {
+      "path": "/artifacts/combined_tests/sha256",
+      "before": null,
+      "after": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+    },
+    {
+      "path": "/artifacts/native_receipt/bytes",
+      "before": null,
+      "after": 786
+    },
+    {
+      "path": "/artifacts/native_receipt/sha256",
+      "before": null,
+      "after": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+    },
+    {
+      "path": "/artifacts/release_receipt/bytes",
+      "before": null,
+      "after": 3192
+    },
+    {
+      "path": "/artifacts/release_receipt/sha256",
+      "before": null,
+      "after": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+    },
+    {
+      "path": "/artifacts/server/bytes",
+      "before": null,
+      "after": 110219600
+    },
+    {
+      "path": "/artifacts/server/sha256",
+      "before": null,
+      "after": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+    }
+  ],
+  "bindings": [
+    {
+      "artifact": "combined_tests",
+      "source_observed": {
+        "index": 3,
+        "name": "normal-release-tests-result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+        "bytes": 57532,
+        "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+        "mode": 256,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1,
+        "version": "2050:7361495:57532:1793892021140513746:1793892021140513746",
+        "operation_id": "7ed9a7c61cce919cfa31de8d458430958b9709cae76f8f49ded6407028ff5e62",
+        "independent_info": {
+          "path": "destination/3-normal-release-tests-result.public.json/file-info.native.json",
+          "blob": "d69083ad6a618db79aaf7412912a6c3ba3961696",
+          "bytes": 529,
+          "sha256": "49d5598e7afceff1f84ef1372e930e8017b43a75d470f697af178e98098ac7eb"
+        },
+        "receiver_full9": [
+          2050,
+          7361495,
+          1000,
+          1000,
+          33024,
+          1,
+          57532,
+          "1793892021140513746",
+          "1793892021140513746"
+        ],
+        "matched_receiver_full9": true
+      },
+      "target_content_only": {
+        "bytes": 57532,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/normal-release-tests-result.public.json",
+        "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+        "uid": 1000
+      },
+      "target_observed": false
+    },
+    {
+      "artifact": "native_receipt",
+      "source_observed": {
+        "index": 1,
+        "name": "native-build.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+        "bytes": 786,
+        "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+        "mode": 256,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1,
+        "version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+        "operation_id": "8f5917c599a2fff0c94b06a2506d4863c2f0fc1fe235bf694c1be77f6127c9fb",
+        "independent_info": {
+          "path": "destination/1-native-build.public.json/file-info.native.json",
+          "blob": "6cf6e8a79b93d196851a1e552c6279144ba7cf13",
+          "bytes": 510,
+          "sha256": "d99c41aece261814eac2d77a5ec54d2277831adfd7231caeb38db095a6ddd32e"
+        },
+        "receiver_full9": [
+          2050,
+          7361482,
+          1000,
+          1000,
+          33024,
+          1,
+          786,
+          "1793892021124514009",
+          "1793892021124514009"
+        ],
+        "matched_receiver_full9": true
+      },
+      "target_content_only": {
+        "bytes": 786,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/native-build.public.json",
+        "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+        "uid": 1000
+      },
+      "target_observed": false
+    },
+    {
+      "artifact": "release_receipt",
+      "source_observed": {
+        "index": 2,
+        "name": "normal-release-result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+        "bytes": 3192,
+        "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+        "mode": 256,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1,
+        "version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+        "operation_id": "8c27b23d6812369b6cdf41a344225e693acd49aad40541182e53ca5353de3a97",
+        "independent_info": {
+          "path": "destination/2-normal-release-result.public.json/file-info.native.json",
+          "blob": "b588f7da60d8d92fdff0336f59df1bf21d3973f7",
+          "bytes": 521,
+          "sha256": "bfd1d001e42d3d6bc405ab3c136900137fc62233eb0f4d2231f455deb12b57fe"
+        },
+        "receiver_full9": [
+          2050,
+          7361483,
+          1000,
+          1000,
+          33024,
+          1,
+          3192,
+          "1793892021131513894",
+          "1793892021131513894"
+        ],
+        "matched_receiver_full9": true
+      },
+      "target_content_only": {
+        "bytes": 3192,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/normal-release-result.public.json",
+        "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+        "uid": 1000
+      },
+      "target_observed": false
+    },
+    {
+      "artifact": "server",
+      "source_observed": {
+        "index": 0,
+        "name": "heptabao-server",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+        "bytes": 110219600,
+        "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+        "mode": 320,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1,
+        "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+        "operation_id": "8262b9f0f3118eb6b7f5826a3cd27577f79a4da71392c2f1f0a1c7269d739063",
+        "independent_info": {
+          "path": "destination/0-heptabao-server/file-info.native.json",
+          "blob": "c99fe8b91521f78687afe4a5839ea64b98af69d8",
+          "bytes": 513,
+          "sha256": "2b57bcec4ed2832205fc4c539d1ddab89bbcfb90f1c4f8123dc1be1a9fe1dadb"
+        },
+        "receiver_full9": [
+          2050,
+          7361480,
+          1000,
+          1000,
+          33088,
+          1,
+          110219600,
+          "1793892019496540722",
+          "1793892019496540722"
+        ],
+        "matched_receiver_full9": true
+      },
+      "target_content_only": {
+        "bytes": 110219600,
+        "mode": 320,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/artifacts/heptabao-server",
+        "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+        "uid": 1000
+      },
+      "target_observed": false
+    }
+  ],
+  "all_other_JSON_leaves_unchanged": true,
+  "ready_for_readonly_prepare": false,
+  "five_target_artifacts_observed": false,
+  "source0400_and_planned_target0600_not_conflated": true,
+  "original_five_QA_pins_unchanged": true,
+  "original_six_old_fences_unchanged": true,
+  "original_three_utilities_unchanged": true,
+  "official_OpenBao271_instrument_unchanged": true,
+  "original_five_CLI_cases_and_deadlines_unchanged": true,
+  "original_controller_and_binder_source_unchanged": true,
+  "existing_stage_source_candidate_for_minimal_data_binding": {
+    "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+    "bytes": 22935,
+    "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed",
+    "current_qualified": false
+  },
+  "Runtime_calls": 0,
+  "source_modules_executed": 0,
+  "product_tests_executed": 0,
+  "current_CLI_five_case_qualification": false,
+  "full_OpenBao271_replacement": false
+}

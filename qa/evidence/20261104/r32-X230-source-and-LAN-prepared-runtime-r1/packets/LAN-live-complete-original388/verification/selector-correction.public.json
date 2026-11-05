@@ -1,0 +1,6 @@
+{
+  "only_change": "directional_observed_pair.actual_source_node -> directional_observed_pair.source_node",
+  "reason": "Actual public summary schema names the source field source_node; checker first selected a non-existent field. Source/runtime/evidence unchanged.",
+  "prior_failure_preserved": true,
+  "runtime_calls": 0
+}

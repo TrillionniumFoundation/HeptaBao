@@ -1,0 +1,23 @@
+--- before/full34.py
++++ candidate/full34.py
+@@ -3,14 +3,14 @@
+ import hashlib,json,os,stat,subprocess,time
+ from pathlib import Path
+ SOURCE_TEXT=Path(__file__).read_text()
+-BINDING_READY=False
+-NORMAL61_SHA=None
+-NORMAL_NATIVE_SHA=None
+-NORMAL_RELEASE_SHA=None
+-TRANSFER_SHA=None
++BINDING_READY=True
++NORMAL61_SHA='7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475'
++NORMAL_NATIVE_SHA='3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a'
++NORMAL_RELEASE_SHA='78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22'
++TRANSFER_SHA='dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f'
+ ROOT=Path('/home/qian/heptabao-same-root-publication-normal-20261105-r1');REPO=ROOT/'source';OUT=ROOT/'evidence/full34-r1'
+ HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec';TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+-PIN=None;DRIVER='383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581'
++PIN='cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0';DRIVER='383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581'
+ def need(v,c):
+  if not v:raise RuntimeError(c)
+ def sha(p):

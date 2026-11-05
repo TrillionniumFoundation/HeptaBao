@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-registration-body-plugin-registry-25f3ef82-65536-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+      "expected_version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+      "offset": 65536,
+      "limit": 65536
+    }
+  }
+}

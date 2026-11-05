@@ -1,0 +1,274 @@
+[
+  {
+    "name": "fixed output 0 independent info + whole body",
+    "pass": true
+  },
+  {
+    "name": "fixed output 1 independent info + whole body",
+    "pass": true
+  },
+  {
+    "name": "fixed output 2 independent info + whole body",
+    "pass": true
+  },
+  {
+    "name": "fixed output 3 independent info + whole body",
+    "pass": true
+  },
+  {
+    "name": "fixed output 4 independent info + whole body",
+    "pass": true
+  },
+  {
+    "name": "authoritative terminal/full original streams",
+    "pass": true
+  },
+  {
+    "name": "prepared source and schema",
+    "pass": true
+  },
+  {
+    "name": "source-bound maps exact",
+    "pass": true
+  },
+  {
+    "name": "36 old fences / 5 canonical QA / 10 product hashes",
+    "pass": true
+  },
+  {
+    "name": "original98 and independent12 unchanged",
+    "pass": true
+  },
+  {
+    "name": "unchanged controller/request budgets",
+    "pass": true
+  },
+  {
+    "name": "canonical source and prior evidence guards actually reported",
+    "pass": true
+  },
+  {
+    "name": "prepare only boundary",
+    "pass": true
+  },
+  {
+    "name": "exact four control hashes",
+    "pass": true
+  },
+  {
+    "name": "full existing source-defined argv exact",
+    "pass": true
+  },
+  {
+    "name": "actual described contract required_check_count",
+    "pass": true
+  },
+  {
+    "name": "actual described contract fixture_started",
+    "pass": true
+  },
+  {
+    "name": "actual described contract required_extra_check_count",
+    "pass": true
+  },
+  {
+    "name": "actual described contract required_extra_checks",
+    "pass": true
+  },
+  {
+    "name": "actual described contract deadline_qa_pins",
+    "pass": true
+  },
+  {
+    "name": "actual described contract new_shared_postrecovery_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract original_controller_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract extra_phase_before_original_finish_application",
+    "pass": true
+  },
+  {
+    "name": "actual described contract canonical_qa_unchanged",
+    "pass": true
+  },
+  {
+    "name": "actual described contract reference_captured_in_original_recovered_scan",
+    "pass": true
+  },
+  {
+    "name": "actual described contract cipher_helper_sha256",
+    "pass": true
+  },
+  {
+    "name": "actual described contract readable_large_versions",
+    "pass": true
+  },
+  {
+    "name": "actual described contract lifecycle_versions",
+    "pass": true
+  },
+  {
+    "name": "actual described contract requested_cipher_source_node",
+    "pass": true
+  },
+  {
+    "name": "actual described contract requested_actual_empty_leader_node",
+    "pass": true
+  },
+  {
+    "name": "actual described contract numeric_helper_sha256",
+    "pass": true
+  },
+  {
+    "name": "actual described contract controlled_stop_order",
+    "pass": true
+  },
+  {
+    "name": "actual described contract original_stop_count_preserved",
+    "pass": true
+  },
+  {
+    "name": "actual described contract new_role_prepare_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract original_sealed_election_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract role_prepare_clipped_to_original_controller",
+    "pass": true
+  },
+  {
+    "name": "actual described contract witness_additional_mutation_limit",
+    "pass": true
+  },
+  {
+    "name": "actual described contract witness_write_cas",
+    "pass": true
+  },
+  {
+    "name": "actual described contract witness_cleanup",
+    "pass": true
+  },
+  {
+    "name": "actual described contract witness_requires_mac_exact_read_and_absence",
+    "pass": true
+  },
+  {
+    "name": "actual described contract witness_excluded_from_history_acknowledged_and_check_denominators",
+    "pass": true
+  },
+  {
+    "name": "actual described contract original_higher_term_guard_unchanged",
+    "pass": true
+  },
+  {
+    "name": "actual described contract same_leader_requires_old_last_committed_vote_exact",
+    "pass": true
+  },
+  {
+    "name": "actual described contract full_log_id_order",
+    "pass": true
+  },
+  {
+    "name": "actual described contract new_numeric_read_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract new_numeric_ssh_seconds",
+    "pass": true
+  },
+  {
+    "name": "actual described contract canonical128_summary_sha256",
+    "pass": true
+  },
+  {
+    "name": "two actual original build probes only",
+    "pass": true
+  },
+  {
+    "name": "linux probe source/normal boundary",
+    "pass": true
+  },
+  {
+    "name": "linux probe public receipts identical to independently read outputs",
+    "pass": true
+  },
+  {
+    "name": "linux all five original retained hashes",
+    "pass": true
+  },
+  {
+    "name": "linux retained file artifacts/heptabao-seed",
+    "pass": true
+  },
+  {
+    "name": "linux retained file artifacts/heptabao-server",
+    "pass": true
+  },
+  {
+    "name": "linux retained file normal-release-build.stdout",
+    "pass": true
+  },
+  {
+    "name": "linux retained file native-build.public.json",
+    "pass": true
+  },
+  {
+    "name": "linux retained file normal-release-result.public.json",
+    "pass": true
+  },
+  {
+    "name": "linux original release/native success",
+    "pass": true
+  },
+  {
+    "name": "linux original build/provenance pins",
+    "pass": true
+  },
+  {
+    "name": "mac probe source/normal boundary",
+    "pass": true
+  },
+  {
+    "name": "mac probe public receipts identical to independently read outputs",
+    "pass": true
+  },
+  {
+    "name": "mac all five original retained hashes",
+    "pass": true
+  },
+  {
+    "name": "mac retained file artifacts/heptabao-seed",
+    "pass": true
+  },
+  {
+    "name": "mac retained file artifacts/heptabao-server",
+    "pass": true
+  },
+  {
+    "name": "mac retained file normal-release-build.stdout",
+    "pass": true
+  },
+  {
+    "name": "mac retained file native-build.public.json",
+    "pass": true
+  },
+  {
+    "name": "mac retained file normal-release-result.public.json",
+    "pass": true
+  },
+  {
+    "name": "mac original release/native success",
+    "pass": true
+  },
+  {
+    "name": "mac original build/provenance pins",
+    "pass": true
+  }
+]

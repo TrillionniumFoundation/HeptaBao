@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-publish-comparison-driver-body0-r1-20261105",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+      "expected_version": "2053:3062749:9261:1793908920065966649:1793908920066966649",
+      "offset": 0,
+      "limit": 9261
+    }
+  }
+}

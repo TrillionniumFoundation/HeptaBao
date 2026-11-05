@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.root-X230-two-measured-NUL-content-reuse-GO.r32.v1",
+  "status": "GO_EXACT_TWO_CONTENT_REPRESENTATIONS_ONLY",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "original_relay_job": "desktop/1a1ad0a9524-fc05-5839",
+  "original_execution_GO": "0de9e52cff21d0827a584387e178559c73d93a04",
+  "original_fixed_log_plan": {
+    "blob": "99770e25ee67d5fd192b913c3a0871125e036557",
+    "bytes": 28001,
+    "sha256": "3ca75fa84e10d85f983d8ec4de6ded38a8f0a00df1d572608c1de4f6e8034c54"
+  },
+  "current_X230_info_root_review": {
+    "name": "r32-X230-current-two-NUL-info-root-review.public.json",
+    "blob": "71591cba75f3e978f82579524d6ab3163cd2450e",
+    "bytes": 3953,
+    "sha256": "bb44ebcb81030167f9eceda1f0058565286ae8d03ec101d7fd618ee97b05161d"
+  },
+  "existing_canonical_reconstruction_root": {
+    "name": "r31-importer-NUL-reconstruction-cross-root-review.public.json",
+    "blob": "9bfb8c03027d17a8b87838a5b7c4fffba3df65bf",
+    "bytes": 1646,
+    "sha256": "38d75597f4ca4a0d7e1c36a66e83c45d20fc3712e5695b4f8e65f0b1dcfdde1e"
+  },
+  "reported_receiver_core_peer_intake": {
+    "name": "r32-X230-relay-core-peer-and-receiver-match-root-review.public.json",
+    "blob": "a96bff2a7c1fab48143fdbea05bf1ded63299b70",
+    "bytes": 3700,
+    "sha256": "80441041d0b425cfdf3f800e0dbeafb2f4f63743853ae8817a7216f585666b7c"
+  },
+  "files": [
+    {
+      "label": "011-materialized-tree",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.stdout",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+      "version": "2053:3062379:450459:1793904538253657445:1793904538254657446",
+      "full9_decimal": [
+        "2053",
+        "3062379",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "450459",
+        "1793904538253657445",
+        "1793904538254657446"
+      ],
+      "current_info_operation": "1c2e0285cfb0265c0aa630cecfb68dd2a32447b31e927f47e1c282df8ea8cf47",
+      "current_info_blob": "a8a4dd63011aae2526412c3a0f05709abbfcc7b6",
+      "reconstructed_content_blob": "6c1558f24909344f06eda9c9106ed51ef832b3d2",
+      "current_host_body_RPC_count": 0
+    },
+    {
+      "label": "012-materialized-index",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.stdout",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+      "version": "2053:3062382:438717:1793904538286657470:1793904538287657471",
+      "full9_decimal": [
+        "2053",
+        "3062382",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "438717",
+        "1793904538286657470",
+        "1793904538287657471"
+      ],
+      "current_info_operation": "9f27a9ad175500ea35f0182a846b89dec77e5c707cf4e3b16c5fb1ed0f423403",
+      "current_info_blob": "78a49a460a3c9e215054e71f63c11ba0554d57f7",
+      "reconstructed_content_blob": "36c857b0ad549e5783774e77d0fd357850afc9aa",
+      "current_host_body_RPC_count": 0
+    }
+  ],
+  "authorized_delta": {
+    "represent_exact_two_measured_current_files_with_existing_complete_immutable_canonical_bytes": true,
+    "root_qualifies_current_X230_file_identity_separately_from_Desktop_f7": true,
+    "current_host_large_body_RPC_count": 0,
+    "original_plan_preserved": true,
+    "no_new_Runtime_for_this_content_reuse": true,
+    "all_other61_receiver_small_and8_desktop_small_require_actual_complete_native_reads": true
+  },
+  "mandatory_provenance": {
+    "origin": "Deterministic canonical Git-tree reconstruction, independently matched to each actual X230 file's full SHA256, size, version/full9 and original receiver command measured hash.",
+    "claim_current_native_body_retrieval": false,
+    "metadata_snapshot_is_not_global_atomic_snapshot": true,
+    "all_command_semantics_and_resource_closure_still_required": true,
+    "full_original_chain_still_required": true
+  },
+  "unchanged": {
+    "source_and_binary_bytes": true,
+    "seven_artifact_custody": true,
+    "original_process_request_and_key": true,
+    "all_deadlines": true,
+    "all_fences_and_UNKNOWNs": true,
+    "no_new_wrappers_or_control_layer": true
+  },
+  "scope_limits": {
+    "full_transfer_qualified": false,
+    "X230_source_import_qualified": false,
+    "product_runtime_authorized": false,
+    "full34_or_comparison69_started": false,
+    "production_cutover": false
+  },
+  "root_Runtime_calls": 0
+}

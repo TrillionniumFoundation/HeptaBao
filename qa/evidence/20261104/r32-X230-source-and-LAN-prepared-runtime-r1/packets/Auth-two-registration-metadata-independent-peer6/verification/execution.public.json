@@ -1,0 +1,27 @@
+{
+  "engine": "functions.exec V8",
+  "execution": "Independent verify(inputs, utf8, sha1, sha256, decode64) executed on the 36 whole-fetched original Git files.",
+  "verifier": {
+    "blob": "b451645071ceceeaf7308e46c1843450223e1f0f",
+    "bytes": 13050,
+    "sha256": "e36e47a664ad3f6a50fa1d281bcc564a9730d9217241f2ab94f8daa91c3aeecf"
+  },
+  "input_index": {
+    "blob": "3b70e20e8c4ace5c8b5eaf327e7acbc207950328",
+    "bytes": 24991,
+    "sha256": "fd5dc7777047dd97ba28840f65ef5ac59ca9195a7a3ebec53c21ab4acf232fc5"
+  },
+  "result": {
+    "blob": "07a267e62bff9d678555ab0b61ba75643e8bf330",
+    "bytes": 19771,
+    "sha256": "dc67f684dca9e3dfdc65405d3a0c696f388d59f3507700fe02ea9d4e71cc77f9"
+  },
+  "primitives": {
+    "blob": "305b062774e4d27dcff2ae688536114cf87539a1",
+    "bytes": 3857,
+    "sha256": "26f865f8c7cbf06f69f1014ed53214298f0c6b0eaf3e547a4ed6100a779c0385"
+  },
+  "checks": 189,
+  "Runtime_calls": 0,
+  "author_checker_executed": false
+}

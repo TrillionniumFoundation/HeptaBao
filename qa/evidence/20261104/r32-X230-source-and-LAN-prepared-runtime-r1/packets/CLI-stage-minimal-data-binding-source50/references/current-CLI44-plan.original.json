@@ -1,0 +1,65 @@
+{
+  "actual_future_local_artifact_slots": null,
+  "base_source_tree": "f3f268581b6efe14d7f8e8e6981ff4e1498802c4",
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "current_normal_runner_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+  "future_layout": {
+    "base": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "binding": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/binding.private.json",
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r4/prepare-r1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r4"
+  },
+  "future_product_input_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming",
+  "normal_groups": {
+    "cold_h2": 9,
+    "ingress_observer": 7,
+    "original": 44,
+    "same_root_publication": 1
+  },
+  "old_unknown_fences_unchanged": true,
+  "outer_live_seconds": 3000,
+  "outer_prepare_seconds": 330,
+  "pending": [
+    "accepted standalone current canonical import",
+    "accepted current five-artifact transport",
+    "reviewed create-only local stage with exact actual input pins",
+    "actual binding digest and reviewed exact prepare request",
+    "actual prepare receipt, explicit fixture window and exact live request"
+  ],
+  "qualification": {
+    "archive_34mib": false,
+    "explicit_h2": false,
+    "five_cli_windows": false,
+    "full_openbao271": false,
+    "prepare": false
+  },
+  "requests_authorized": false,
+  "runtime_dispatch_present": false,
+  "schema": "heptabao.phaseb-4e808-unbound-source-plan.v1",
+  "selected_total": 61,
+  "source_only": true,
+  "template_ready": false,
+  "unchanged_budgets": {
+    "action_seconds": 300,
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "cli_seconds": 15,
+    "election_seconds": 60,
+    "forward_timeout_ms": 8000,
+    "http_seconds": 15,
+    "peer_timeout_ms": 1500,
+    "readiness_seconds": 45,
+    "stable_leader_seconds": 2.2
+  },
+  "unchanged_cli": {
+    "bytes": 181760103,
+    "mode": 320,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "uid": 1000
+  },
+  "unknown_prohibits_new_cli_mutation_and_cold_restart": true
+}

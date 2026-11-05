@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.root-Auth-next-two-public-registration-metadata-exact-GO.r32.v1",
+  "status": "GO_EXACT_TWO_FILE_INFO_ONLY",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "handoff": {
+    "name": "r32-lane-A-LAN-closed-to-Auth-two-metadata-handoff.public.json",
+    "blob": "bbd23db120e8e40f7da32168e5bd502185ec4ab6",
+    "bytes": 890,
+    "sha256": "4bfc694ea0585806e168bcc06691097c6e82e89baa9b56c458e7090ff4b048bd"
+  },
+  "source_root_review": {
+    "name": "r32-Auth-two-next-metadata-root-source-review.public.json",
+    "blob": "2b6f936a5a955ad37f6b88ea14a7d0a006275007",
+    "bytes": 4213,
+    "sha256": "dad5979615c17ef1cc22527141c28baf9f056420b0dde197abac0cf088b89050"
+  },
+  "source_packet": "0e8e139fdbd8a41290baccec05408776329c728d",
+  "requests": [
+    {
+      "sequence": 1,
+      "id": "manifest-registry",
+      "exact_request": {
+        "path": "requests/01-manifest-registry.info.json",
+        "blob": "de339e004231215b90f084799cede9aeb8535e94",
+        "bytes": 278,
+        "sha256": "2be919f191a69b23ad760fc3fdb210df3524fc57bc1195453ebff6ff6e3866f7",
+        "mode": "100644"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-manifest-registry-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js"
+          }
+        }
+      },
+      "origin": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "line": 15,
+        "import": "import { t as loadPluginManifestRegistry } from \"./manifest-registry--UiRn6nq.js\";"
+      }
+    },
+    {
+      "sequence": 2,
+      "id": "plugin-registry",
+      "exact_request": {
+        "path": "requests/02-plugin-registry.info.json",
+        "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+        "bytes": 267,
+        "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8",
+        "mode": "100644"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-registry-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js"
+          }
+        }
+      },
+      "origin": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "line": 40,
+        "import": "import { A as clearCompactionProviders, C as clearMemoryEmbeddingProviders, D as listRegisteredMemoryEmbeddingProviders, M as listRegisteredCompactionProviders, N as restoreRegisteredCompactionProviders, k as restoreRegisteredMemoryEmbeddingProviders, t as createPluginRegistry } from \"./registry-B8eQDFB4.js\";"
+      }
+    }
+  ],
+  "maximum_new_file_info_operations": 2,
+  "metadata_only": true,
+  "body_requests_authorized": 0,
+  "metadata_hash_work": "Purpose-built file_info performs whole-file SHA internally; this is not pure stat and no body budget bounds its hash work.",
+  "protocol": {
+    "each_exact_intent_external_completed_before_single_start": true,
+    "each_original_SDK_whole_saved_before_isError_and_parse": true,
+    "one_original_operation_at_a_time": true,
+    "completed_stored_inactive_and_whole_original_payload_before_next": true,
+    "immutable_result_page_limit": 8192,
+    "original64bit_values_preserved": true,
+    "error_or_missing_ACK": "Preserve original response; stop new admissions. No inferred absence, alternate path, changed key or operation/body replay.",
+    "no_extra_dependency_or_directory_search": true,
+    "no_alias_following": true
+  },
+  "after_success": {
+    "record_observed_actual_size_SHA_version_POSIX_full9": true,
+    "no_preexisting_metadata_pins_claimed": true,
+    "no_actual_owner_or_SDK_execution_claimed": true,
+    "derive_finite_new_body_request_plan_from_observed_sizes": true,
+    "new_body_GO_required": true,
+    "old_consumed_public_bodies": {
+      "files": 6,
+      "chunks": 7,
+      "bytes": 140664
+    },
+    "old_budget_cannot_be_reused_or_reset": true,
+    "all_candidate_owners_still_required": true
+  },
+  "prohibited_effects": {
+    "provider_model_refresh_quota_changes": false,
+    "J3160_dependency": false,
+    "credentials_reads": false,
+    "SDK_import_or_execution": false,
+    "service_writes": false,
+    "production_cutover": false
+  },
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "heptabao.root-current4e808-existing-LAN-postrecovery-cold-exact-live-GO.r32.v1",
+  "status": "GO_ONE_EXISTING_LIVE_REQUEST_AFTER_COMPLETE_PREPARE",
+  "authorization_scope": "User-directed real Mac/ROG/Pocket4 isolated HA validation; no production cutover or cleanup.",
+  "owner": "/root/ha_validation",
+  "Runtime_lane": "A",
+  "root_Runtime_calls": 0,
+  "request": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e",
+    "value": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+        "--run-once",
+        "--prepared-sha256",
+        "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "timeout_seconds": 3000,
+      "idempotency_key": "heptabao-4e808-postcold-live-r1-57cb2b31-7ee5ee82"
+    }
+  },
+  "typed_binding": {
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py\",\"--run-once\",\"--prepared-sha256\",\"6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"desktop\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":3000}",
+    "request_digest": "a9b995a1bd91a05389653e25ea0d472b1de150ad473321453087c2e0330eff4f",
+    "expected_request_fingerprint_decimal": "12229970785004003411",
+    "native_ACK_binding_still_required": true
+  },
+  "complete_prepare_qualification": {
+    "name": "r32-LAN-prepare-complete-root-qualification.public.json",
+    "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+    "bytes": 9534,
+    "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+  },
+  "prepared": {
+    "name": "prepared.public.json",
+    "blob": "0b664e254c69bb57fec34eb29c2bedec5b44151e",
+    "bytes": 43852,
+    "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1",
+    "version": "2050:7363112:43852:1793905105749942399:1793905105749942399",
+    "full9_decimal": [
+      "2050",
+      "7363112",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "43852",
+      "1793905105749942399",
+      "1793905105749942399"
+    ]
+  },
+  "current_canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "original_source_import_qualification": "3859911145a8bd8b947935bc038d501e143a5d63",
+  "actual_nine_source_root_review": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+  "original_launcher": {
+    "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+    "bytes": 25879,
+    "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92"
+  },
+  "original_runner": {
+    "blob": "c87a051609f0e0a8049367e6df27618c8931c784",
+    "bytes": 72753,
+    "sha256": "7ee5ee8218b50b7edc3cc010bdd1306f6d03b3301f00811034425b591ad76754"
+  },
+  "existing_complete_runner_argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+    "--candidate-source",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "--binary-source",
+    "rog-ts:/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+    "--expected-binary-sha256",
+    "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "--node-binary",
+    "mac-ts,mac-ts:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server,c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63,4e808d0ecb1bcded22870a7ec960dfb2491cf6ec,eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "--source-commit",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "--source-tree",
+    "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "--native-build-receipt",
+    "mac-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json,25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+    "--native-build-receipt",
+    "rog-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json,3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "--native-build-receipt",
+    "pocket4-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json,3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "--node",
+    "mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1",
+    "--node",
+    "rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node2-r1",
+    "--node",
+    "pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node3-r1",
+    "--api-port",
+    "46230",
+    "--raft-port",
+    "46231",
+    "--allow-private-lan",
+    "--work-root",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1",
+    "--darwin-watchdog-python",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "--darwin-watchdog-python-sha256",
+    "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  ],
+  "submission": {
+    "count": 1,
+    "external_intent_before_tool": true,
+    "preserve_whole_original_SDK_before_isError_or_parse": true,
+    "one_original_process_start": true,
+    "observe_original_job_only": true,
+    "same_request_same_key_ACK_reconciliation_only_if_needed": true,
+    "no_business_replay_on_UNKNOWN": true,
+    "no_new_control_or_run_root": true,
+    "no_timeout_widening": true
+  },
+  "exclusive_fixture": {
+    "hosts": [
+      "mac-ts",
+      "rog-ts",
+      "pocket4-ts"
+    ],
+    "IPv4": [
+      "192.168.0.8",
+      "192.168.0.10",
+      "192.168.0.9"
+    ],
+    "API_port": 46230,
+    "Raft_port": 46231,
+    "owner": "/root/ha_validation",
+    "lane_B": "/root/authbus_migration public read-only source bodies only until release; subsequent X230-only work cannot mutate these fixtures",
+    "maximum_total_Runtime_lanes": 2,
+    "maximum_active_call_or_owned_future_per_lane": 1
+  },
+  "original_contract": {
+    "source_changes": 0,
+    "outer_seconds": 3000,
+    "controller_seconds": 2400,
+    "postcold_seconds_clipped_to_original": 300,
+    "role_prepare_seconds": 60,
+    "sealed_election_seconds": 60,
+    "HTTP_seconds": 15,
+    "native_admission_seconds": 8,
+    "numeric_read_seconds": 15,
+    "SSH_seconds": 45,
+    "original_checks": 98,
+    "separate_postcold_checks": 12,
+    "old_fences": 36,
+    "canonical_QA": 5,
+    "actual_natural_election_required": true,
+    "stop_order": [
+      2,
+      1,
+      3
+    ],
+    "cipher_source_role": 3,
+    "cipher_actual_empty_leader_role": 1,
+    "forced_elections": false,
+    "term_frontier_guards_preserved": true,
+    "bounded_witness_mutations": 2,
+    "witness_CAS": 0,
+    "witness_same_key_metadata_delete": true,
+    "witness_excluded_from_denominators": true,
+    "readable_versions": 17,
+    "lifecycle_versions": 19,
+    "readable_bytes": 35651584,
+    "no_all_standby_large_body_claim": true
+  },
+  "closures": {
+    "observe_terminal_and_full_stdout_stderr": true,
+    "preserve_failed_assertions_and_owned_cleanup": true,
+    "actual_result_file_info_then_version_bound_bodies": true,
+    "no_fresh_job_for_logs": true,
+    "production_changed": false,
+    "old_UNKNOWN_preserved": true
+  },
+  "qualification_at_GO": {
+    "prepare_only": true,
+    "HA_live_submitted": false,
+    "HA_live_qualified": false,
+    "full_OpenBao271_replacement": false,
+    "client_cutover": false,
+    "old_assets_deletion": false
+  }
+}

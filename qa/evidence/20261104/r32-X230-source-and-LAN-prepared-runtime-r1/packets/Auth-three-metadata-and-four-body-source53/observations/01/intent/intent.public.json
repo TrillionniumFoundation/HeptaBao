@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.auth.next3metadata.exact-intent.v1",
+  "sequence": 1,
+  "id": "runtime-policy",
+  "root_GO": {
+    "blob": "05401409ea379379875c69ffb04e6688f310d555",
+    "bytes": 5126,
+    "sha256": "18afd37048d51261d1c4c289fe91d63519649a74e18fde8fc97852852aa722e7"
+  },
+  "handoff": {
+    "blob": "e1edf77fc54e891486a5c4a16efb3042dcc51ca4",
+    "bytes": 1175,
+    "sha256": "9f61d7c223ec201e884ef692fe79e427427d6efac70fe48dd744fcd5d64d3b44"
+  },
+  "proposal": {
+    "blob": "9d64664ed990d2d6a10287de0c4d09dd9d157395",
+    "bytes": 4171,
+    "sha256": "86ae41caebe2b7404e1bd73bfdb170889ea3b745aee9ae0cc35726e016ab7719"
+  },
+  "request": {
+    "blob": "ddd6317a9f1fe57fffb9ebfd17ffc96edd59b805",
+    "bytes": 278,
+    "sha256": "a175f39f31eaefbe92792e966ef2899fa4e5a8b6a249dd38a6611ebacfbc8a46"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-info-runtime-policy-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js"
+      }
+    }
+  },
+  "prior_completed_operations": 0,
+  "prior_line_handoff_closed": true,
+  "maximum_native_futures": 1,
+  "immutable_page_limit": 8192,
+  "metadata_only": true,
+  "body_reads_authorized": 0,
+  "SDK_execution_authorized": false,
+  "new_submission_before_this_intent": 0,
+  "on_error": "Preserve original SDK and stop new admissions; no key/path change or inferred absence."
+}

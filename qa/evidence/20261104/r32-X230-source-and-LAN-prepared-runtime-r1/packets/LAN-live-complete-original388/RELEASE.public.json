@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.current4e808.LAN.fixture-lane-release.r1",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "original_request_blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+  "original_GO_blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+  "authority_blob": "0f745b9078a5c27f3c9fc3923c88069a9040a967",
+  "summary_blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+  "original_execution_count": 1,
+  "terminal": {
+    "exit_code": 0,
+    "state": "succeeded",
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "owned_process_pair_count": 19,
+  "intermediate_stop_count": 16,
+  "final_stop_count": 3,
+  "foreground_sessions": 7,
+  "foreground_local_and_native_leaders_reaped_and_group_empty": true,
+  "foreground_original_five_second_stop_deadline_satisfied": true,
+  "readonly_helper_successes": 4,
+  "readonly_helper_close_evidence": "Exact completed results plus admitted success paths: three numeric invocations each close six registered descriptors before completed; cipher closes 338 leaf FDs, one marker FD and three retained directories before completed. No per-FD runtime ledger field exists.",
+  "launcher_log_contexts_closed_before_exit_receipt": true,
+  "per_fd_runtime_close_ledger_present": false,
+  "global_host_fd_inventory_proven": false,
+  "returned_read_observers": 15,
+  "immutable_pages": 62,
+  "all_returned_read_observers_completed_stored_inactive": true,
+  "unclosed_current_native_futures": 0,
+  "inflight_runtime_tool_calls": 0,
+  "current_new_read_or_product_actions_pending": 0,
+  "release_to_root_scheduler": true,
+  "release_scope": [
+    "line A current LAN observation lane",
+    "Mac/ROG/Pocket4 isolated fixture execution window"
+  ],
+  "no_cleanup_or_delete_actions_added": true,
+  "retained_evidence_roots_unchanged": true,
+  "prior_unknown_histories_unchanged": true,
+  "product_case_result": {
+    "original_98": 98,
+    "independent_12": 12
+  },
+  "root_independent_product_review_pending": true,
+  "full_openbao_qualification": false,
+  "production_authority": false
+}

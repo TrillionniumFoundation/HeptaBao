@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root-X230-publication-verifier-first-failure.r32.v1",
+  "error": "Error: oracle-binary-status:exact-intent-scope",
+  "verifier": {
+    "name": "r32-X230-actual-publication-independent-root-verifier.js",
+    "blob": "ee719ea0a080530bd1ab649e0c8e2fb41ebfed4b",
+    "bytes": 9151,
+    "sha256": "d2128dbd9d1d9f5b8193a7c8709a3d2e816ccb7bffa1a30dd4bf8a820c2b6999"
+  },
+  "Runtime_calls": 0,
+  "originals_changed": false
+}

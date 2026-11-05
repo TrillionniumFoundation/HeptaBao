@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.ha-validation.independent-X230-original-read-observer-peer.r1",
+  "status": "PASS_SCOPE_READ_CHAIN_AND_SMALL_EXTRACTIONS",
+  "reviewer": "/root/ha_validation",
+  "subject": {
+    "repository": "TrillionniumFoundation/HeptaBao",
+    "tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+    "original_job": "desktop/1a1ad0a9524-fc05-5839"
+  },
+  "actual_independent_execution": {
+    "runtime": "functions.exec V8 pure-data function execution",
+    "checks_passed": 1164,
+    "selected_input_files": 283,
+    "selected_input_bytes": 1565070,
+    "subject_Merkle_nodes": 52,
+    "original_operations_newly_checked": 18,
+    "immutable_pages_newly_checked": 26,
+    "original_payload_bytes_newly_reconstructed": 230173,
+    "small_file_extractions": 69,
+    "small_file_bytes": 59783,
+    "Runtime_calls": 0,
+    "product_cases": 0,
+    "author_1013_verifier_executed": false,
+    "verifier": {
+      "blob": "db732c0a0252cd8a6761409cd1d04ce3698d4034",
+      "bytes": 25044,
+      "sha256": "5ca80e90628c76701e50aa1066d211ac7753abde8abe5566b75fc511c89e06ac"
+    },
+    "result": {
+      "blob": "bc40086dbeb45e2c67752652f5a7bae38ece05aa",
+      "bytes": 121064,
+      "sha256": "072f61bf7e46cffad7f783e2a3f80b7e76f67def95af0577fcb228f94c5924b9"
+    },
+    "executor": {
+      "blob": "642693fcff985676a0436863164e58fbb22efe47",
+      "bytes": 644,
+      "sha256": "142e7bb1d9c21942489ec3a0b22a57e931964d3c5cb170191025199c1b6ac821"
+    },
+    "input_index": {
+      "blob": "1cdb439f01d8df034c1de66607a3a9f448fb73b7",
+      "bytes": 64886,
+      "sha256": "86dcf222ed547601478b95a95d3440befb57bdb259496e0dfaadc3341e54a77f"
+    }
+  },
+  "inherited_scope": {
+    "root_review": {
+      "blob": "71591cba75f3e978f82579524d6ab3163cd2450e",
+      "bytes": 3953,
+      "sha256": "bb44ebcb81030167f9eceda1f0058565286ae8d03ec101d7fd618ee97b05161d",
+      "original_checks": 27
+    },
+    "metadata_packet": "77a457ec134d50f03e388e629953d67cc302e9d8",
+    "original_operations": 2,
+    "immutable_pages": 2,
+    "all18_original_metadata_chain_files_exact_same_Git_blob_size_and_path": true,
+    "inherited_Merkle_nodes_verified": 7,
+    "aggregate_original_operations": 20,
+    "aggregate_immutable_pages": 28,
+    "new_chain_execution_excludes_these2": true,
+    "NUL_representation_GO": "200c32f98fe0bf5885a2cb90e7f407119bdbef92",
+    "current_host_NUL_body_RPC_count": 0
+  },
+  "findings": [
+    "Each newly checked archived request matches its fixed host/job/path or original bounded batch, including the exact idempotency key and complete typed argument shape. ACK tool/ID, original status, and every immutable page agree.",
+    "All 18 returned operations are completed/stored_observed/owned_future_active=false. Each SDK is checked for isError=false before its one original text is parsed. The archived original text and derived native text are byte-exact.",
+    "26 pages have contiguous offsets, unchanged total/hash, exact EOF and original operation ID. Their full decoded payloads are byte-equal to the preserved originals and SHA256. No request, page, or body was re-read from a host.",
+    "Five fixed batch responses contain exactly 61 receiver plus 8 desktop small files. Their native paths, whole sizes/hashes, versions, EOF and text are equal to the 69 archives; no additional commands archive is hidden in the selected inputs.",
+    "Two whole body observations are tied to their separate file_info versions/hashes and to exact core/receiver receipt bytes. Seven destination metadata projections retain original integer-decimal identity without timestamp rounding.",
+    "The earlier handoff's content_reuse_authorized=false is preserved as its historical state. The later exact root200c32 approval governs the two explicitly identified canonical NUL representations; no current-host NUL body read is claimed."
+  ],
+  "limitations": [
+    "This peer checks observation custody, immutable page reconstruction, and exact small-file extraction. It does not re-review receiver21 Git command semantics, held-fence semantics, or the source import/transport admission decision accepted from Auth/root.",
+    "Request-to-ACK association is checked from the archived invocation and SDK tool/operation metadata; it does not invent a server echo of every request argument or promote delivery_proven=false.",
+    "Independent file observations are not a globally atomic filesystem snapshot.",
+    "The historical relay remains UNKNOWN and its termination is not proven. This report grants no product/HA/LAN/full34/comparison69 execution or qualification.",
+    "One pre-verifier schema-inspection expression attempted to parse an intentionally unfetched out-of-scope reference. The resulting local TypeError is preserved; no verifier failed and no subject artifact or Runtime state changed."
+  ],
+  "reference_pins": {
+    "manifest": "547600a8a6119945b16bc5ebb762facdaa62206e",
+    "handoff": "ebbdbdb79bb71783e3573d0cec71b3fe85fb775f",
+    "fixed_read_plan": "99770e25ee67d5fd192b913c3a0871125e036557",
+    "small_provenance": "fde744da3689f730f92c75bbab651565d1b3b0d9"
+  },
+  "new_GO": false
+}

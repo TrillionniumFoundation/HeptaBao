@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "comparison69-info-admission",
+  "method": "operation_start",
+  "request_blob": "e9b471546477c65ea6402ef2424c200bfbed51db",
+  "request_bytes": 283,
+  "request_sha256": "dfde41ac41bae4efe56a4c73a95c37836c19fba2758068d1b0693ee16c69dcff",
+  "request": {
+    "idempotency_key": "heptabao-4e808-x230-publish-comparison69-info-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py"
+      }
+    }
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": null,
+  "original_call_only": true
+}

@@ -1,0 +1,576 @@
+{
+  "schema": "heptabao.authbus.peer.X230-relay-desktop-core-semantic.v1",
+  "status": "PASS_REPORTED_DESKTOP_CORE_CONTRACT_ONLY",
+  "original_inputs": {
+    "core": {
+      "blob": "33f31d57e93545fd15c93600748d8d138f772b7f",
+      "bytes": 58370,
+      "sha256": "b442f1ed6a5b3254aae79096c1a02d09895564a460a7f6333b809791109725b5"
+    },
+    "info": {
+      "blob": "96761101a4960795af741933ac58a0f0ea0a38fc",
+      "bytes": 504,
+      "sha256": "d83a4078525c1770e3f5ed7da3fb1eb84e579a79536b5ec8b151552619b08c85"
+    },
+    "relay": {
+      "blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f"
+    },
+    "sender": {
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    },
+    "receiver": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "go": {
+      "blob": "0de9e52cff21d0827a584387e178559c73d93a04",
+      "bytes": 13197,
+      "sha256": "cf5a34ffe4bbe5280b934892945f23747a6ce67a1021eb53daf5bcc945bdc293"
+    },
+    "intent": {
+      "blob": "3101506b954a8326b8b93192d281af079b6a8b1b",
+      "bytes": 4090,
+      "sha256": "7cfa373a48afb764afe0fac1c47cdd9510622fa93e405e13e56e00db7028f01e"
+    },
+    "ack-sdk": {
+      "blob": "6d33209e0b75ba65c78b7246121508dbaac25c48",
+      "bytes": 1398,
+      "sha256": "c2fec811685e73af11ac9a54349a8ca6bcf88a3b2c81edb306651448419ebb94"
+    },
+    "authority": {
+      "blob": "094c1fb53c2b59aad284423fc65d2ce519f9f6e9",
+      "bytes": 729,
+      "sha256": "98cbbd93055188f8f33aabd1b30fa1c66415b634ef400f261137ed9b42618de2"
+    },
+    "request": {
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+    }
+  },
+  "ready_source_tree": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2",
+  "original_job": "1a1ad0a9524-fc05-5839",
+  "executed_pure_predicate_checks": 286,
+  "failed": 0,
+  "check_groups": {
+    "inputs": 1,
+    "input": 27,
+    "known_ready_tree": 1,
+    "known_source_binding": 4,
+    "GO": 3,
+    "request": 2,
+    "intent": 1,
+    "ack": 4,
+    "authority": 5,
+    "core": 9,
+    "source": 15,
+    "source_contract": 18,
+    "control": 3,
+    "receiver": 30,
+    "endpoints": 1,
+    "sender": 8,
+    "local": 9,
+    "remote": 123,
+    "fence": 14,
+    "old_UNKNOWN_stays_separate": 1,
+    "old_HA_controller_unchanged": 1,
+    "trust": 3,
+    "ssh": 2,
+    "remote_positive_closure_conjunction": 1
+  },
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "history_commits": 3763,
+    "tracked_files": 3914
+  },
+  "actual_timing": {
+    "relay_seconds": 25.97583101200871,
+    "receiver_seconds": 24.730148568749428,
+    "sender_seconds": 12.826255248044617,
+    "unchanged_limits": {
+      "native_outer_seconds": 360,
+      "relay_overall_seconds": 300,
+      "sender_seconds": 90,
+      "receiver_seconds": 300,
+      "ssh_config_seconds": 90,
+      "clone_seconds": 90,
+      "git_seconds": 60,
+      "TERM_seconds": 5,
+      "KILL_seconds": 5,
+      "max_bundle_bytes": 67108864,
+      "no_reset_or_widening": true
+    }
+  },
+  "local_owned_commands": [
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.062358738970942795,
+      "exit_code": 0,
+      "label": "x230-ts-effective-config",
+      "limit_seconds": 90,
+      "pid": 507826,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 12.944670294062234,
+      "exit_code": 0,
+      "label": "send-desktop",
+      "limit_seconds": 90,
+      "pid": 507844,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 25.34039764292538,
+      "exit_code": 0,
+      "label": "receive-x230",
+      "limit_seconds": 300,
+      "pid": 507843,
+      "remaining": [],
+      "timed_out": false
+    }
+  ],
+  "local_cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "x230-ts-effective-config",
+      "pid": 507826,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "receive-x230",
+      "pid": 507843,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "send-desktop",
+      "pid": 507844,
+      "remaining": []
+    }
+  ],
+  "local_child_count": 3,
+  "receiver_reported_commands": [
+    {
+      "label": "000-standalone-clone",
+      "pid": 3644263,
+      "exit_code": 0,
+      "limit_seconds": 90,
+      "elapsed_seconds": 3.534866727888584,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "001-bundle-verify",
+      "pid": 3644266,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.015736681409180164,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "002-bundle-heads",
+      "pid": 3644268,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.01939545013010502,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "003-canonical-checkout",
+      "pid": 3644270,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.45717400312423706,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "004-remove-local-origin",
+      "pid": 3644272,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.02092756424099207,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "005-canonical-kind",
+      "pid": 3644274,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.01977601507678628,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "006-canonical-tree",
+      "pid": 3644276,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.02017743093892932,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "007-canonical-parents",
+      "pid": 3644278,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.02165082423016429,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "008-canonical-count",
+      "pid": 3644280,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.04448692826554179,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "009-canonical-roots",
+      "pid": 3644282,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.039873199071735144,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "010-canonical-full-fsck",
+      "pid": 3644284,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 3.3929448509588838,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "011-materialized-tree",
+      "pid": 3644295,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.02593477675691247,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "012-materialized-index",
+      "pid": 3644297,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.022663677111268044,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "013-no-sparse-config",
+      "pid": 3644299,
+      "exit_code": 1,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.018989834003150463,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "014-source-after-head",
+      "pid": 3644308,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.01415829174220562,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "015-source-after-tree",
+      "pid": 3644310,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.01420679921284318,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "016-source-after-status",
+      "pid": 3644312,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.3286611041985452,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "017-source-after-git-dir",
+      "pid": 3644321,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.014683863613754511,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "018-source-after-common-dir",
+      "pid": 3644323,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.015003733802586794,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "019-source-after-shallow",
+      "pid": 3644325,
+      "exit_code": 0,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.01931328186765313,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    },
+    {
+      "label": "020-source-after-partial-config",
+      "pid": 3644327,
+      "exit_code": 1,
+      "limit_seconds": 60,
+      "elapsed_seconds": 0.019983107689768076,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "argv_exact": true
+    }
+  ],
+  "remote_child_count": 21,
+  "receiver_reported_materialization": {
+    "actual_git_blob_bytes_verified": true,
+    "fsynced_directories": 369,
+    "fsynced_files": 3938,
+    "no_sparse_checkout": true,
+    "no_symlinks_or_hardlinks": true,
+    "tracked_files": 3914,
+    "tree_equals_index": true
+  },
+  "receiver_receipt_descriptor": {
+    "bytes": 35212,
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+    "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f"
+  },
+  "reported_destination_files": [
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "mode": 320,
+      "reported_full9_decimal": [
+        "2053",
+        "3057878",
+        "1000",
+        "1000",
+        "33088",
+        "1",
+        "110219600",
+        "1793904527474649454",
+        "1793904527474649454"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057879",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "786",
+        "1793904528451650178",
+        "1793904528451650178"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057880",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "3192",
+        "1793904528452650179",
+        "1793904528452650179"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057881",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "22320862",
+        "1793904530197651472",
+        "1793904530197651472"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057882",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "39692",
+        "1793904530486651686",
+        "1793904530486651686"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057883",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "57532",
+        "1793904530487651687",
+        "1793904530487651687"
+      ],
+      "independent_destination_info_verified_here": false
+    },
+    {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "mode": 256,
+      "reported_full9_decimal": [
+        "2053",
+        "3057884",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "6249",
+        "1793904530488651688",
+        "1793904530488651688"
+      ],
+      "independent_destination_info_verified_here": false
+    }
+  ],
+  "total_artifact_bytes": 132647913,
+  "fence": {
+    "observations": 3,
+    "held_descriptors": 3,
+    "all_once_closed": true,
+    "marker_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "root_identity_decimal": [
+      "2050",
+      "7237358",
+      "1000",
+      "1000",
+      "16832",
+      "2",
+      "4096",
+      "1793876790283098805",
+      "1793876790283098805"
+    ],
+    "marker_identity_decimal": [
+      "2050",
+      "7237359",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "2709",
+      "1793876790283098805",
+      "1793876790283098805"
+    ],
+    "continuous_atomic_namespace_proof": false,
+    "old_relay": "desktop/1a1aa57458d-fc05-4156",
+    "old_state": "UNKNOWN_PRESERVED",
+    "old_termination_proven": false
+  },
+  "runtime_calls": 0,
+  "SDK_executions": 0,
+  "candidate_executions": 0,
+  "host_reads": 0,
+  "independent_destination_infos_verified": false,
+  "independent_receiver_receipt_body_verified": false,
+  "full_observer_chain_verified": false,
+  "full_transfer_qualification": false,
+  "X230_runtime_qualification": false,
+  "production_qualification": false,
+  "evidence_limits": [
+    "Embedded receiver values and original local SSH exit0 satisfy the frozen relay's positive endpoint contract; they are not an independent destination read.",
+    "The seven destination infos, complete receiver receipt and their original observation chains remain with Compat/root.",
+    "Original desktop authority records 368 stdout bytes and zero stderr; the whole terminal stream body is not one of this verifier's inputs.",
+    "Only three held-fence descriptors are individually enumerated in the core. Other normal-path closes are enforced by source exceptions, not a new universal FD ledger.",
+    "The fence checks are bounded sequential held/named observations, not continuous atomic custody or evidence of old relay termination.",
+    "Normal61 and export proof flags are checked as required endpoint report fields; this review does not rerun those product tests or independently re-audit their receipt bodies."
+  ]
+}

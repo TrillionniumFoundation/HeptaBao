@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.authbus.peer.X230-relay-desktop-core-review.v1",
+  "status": "PASS_FINITE_REPORTED_CORE_CONTRACT",
+  "original_job": "desktop/1a1ad0a9524-fc05-5839",
+  "source_ready_tree": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2",
+  "core": {
+    "blob": "33f31d57e93545fd15c93600748d8d138f772b7f",
+    "bytes": 58370,
+    "sha256": "b442f1ed6a5b3254aae79096c1a02d09895564a460a7f6333b809791109725b5"
+  },
+  "independent_info": {
+    "blob": "96761101a4960795af741933ac58a0f0ea0a38fc",
+    "bytes": 504,
+    "sha256": "d83a4078525c1770e3f5ed7da3fb1eb84e579a79536b5ec8b151552619b08c85"
+  },
+  "exact_info_version": "2050:7532625:58370:1793904542839702697:1793904542839702697",
+  "verifier": {
+    "blob": "6193cca76e8e5153a9fd027de687c941e51591a5",
+    "bytes": 27546,
+    "sha256": "d397179acdf6dd182b1890c69ad2803dc44609761b807a4a27a3769b1752a955"
+  },
+  "actual_result": {
+    "blob": "ae0a9a02a627c3af9f192c7bb7c60b997518d3de",
+    "bytes": 16763,
+    "sha256": "1e274f2400f48cf914437a0810fde3c49282e00c98fedc6ed1219f46793855c0"
+  },
+  "pure_predicate_checks": 286,
+  "product_tests": 0,
+  "Runtime_calls": 0,
+  "SDK_executions": 0,
+  "host_reads": 0,
+  "interface": {
+    "function": "verifyRelayCore(input, readyTree, sha1, sha256)",
+    "input": "Map of ten logical keys core, info, relay, sender, receiver, go, intent, ack-sdk, authority, request to their exact original UTF-8 strings. Exact byte/SHA/Git pins are hardcoded in verifier and repeated in result.original_inputs.",
+    "readyTree": "Existing complete recursive Git-tree JSON for 4fdb7848257d917b8efdd4dd1bed296ae5c40dd2. This review binds its four source/request leaves; prior ready-tree whole qualification is reused, not rerun.",
+    "hashes": "Standard sha1/sha256 callbacks accept binary byte strings and return lowercase hexadecimal.",
+    "numbers": "Original JSON syntax validated; every unquoted numeric token retained as a string before comparing full9, versions or the ACK fingerprint. Only bounded elapsed/cap fields use Number.",
+    "no_effects": "Verifier contains data operations only. No Runtime tools, processes, files, SDK imports or source module execution."
+  },
+  "findings": [
+    "Original 386-byte request equals GO and durable intent. Original SDK isError=false is checked before decoding ACK. Same desktop job, unchanged argv/key/360s, request digest and exact 9962220792190238652 fingerprint are bound to succeeded exit0/full/durable authority.",
+    "Core whole bytes match the separate returned info size/SHA/version. This review did not fetch the original Runtime pages or claim the whole terminal stream is one of its inputs.",
+    "Seven source rows exactly equal the three frozen helper FILES tables and GO inputs: 132,647,913 total bytes. Sender initial/read-stream/after identities and SHA/size agree; embedded receiver same-FD readback, create-only/fsync/mode and full9 are consistent.",
+    "Three local child records are x230-ts-effective-config, send-desktop and receive-x230. Each has exit0, no timeout, direct reap and empty remaining group; cleanup pairs the same PID/label/exit and has no errors. Creation order and completion order are correctly distinct.",
+    "Embedded receiver contains 21 exact Git commands from the frozen receiver: one clone90 and twenty Git60. All are reaped/empty and within limits; only no-sparse-config and source-after-partial-config use their permitted exit1 with empty reported output.",
+    "Receiver report identifies canonical 4e808/eba5, sole parent1c665, root67d79, 3763 commits, full fsck, 3914 tracked files, exact tree/index, independent clean .git, no alternate/partial/shallow/sparse source. Reported materialization fsynced3938 files/369 directories; no product/compiler/server execution.",
+    "Original overall300, sender90, receiver300, config90, clone90, Git60 and cleanup5+5 remain unchanged. Actual core elapsed25.97583101200871s, sender12.826255248044617s and receiver24.730148568749428s are within those bounds.",
+    "All three fence observations match exact source literal full9 as decimal strings. Checks occur before fresh root, before endpoints and after cleanup. Three held descriptors each report close_attempted=true, closed=true, error_type=null.",
+    "Old desktop/1a1aa57458d-fc05-4156 remains UNKNOWN with original_relay_termination_proven=false. The fence is a bounded held/named namespace check, not continuous atomic custody or proof that the old relay terminated.",
+    "Positive embedded endpoint completion plus the original local SSH exit0 satisfy the frozen relay's endpoint contract. This is reported remote evidence; independent destination readback is still required."
+  ],
+  "source_contract_locations": {
+    "relay.py": [
+      "18–83 fixed seven-file/helper tables",
+      "159–187 local start/wait record contract",
+      "231–292 held-fence identities and once-close",
+      "303–412 admission, endpoint and canonical assertions",
+      "419–462 cleanup, fence conjunction and terminal exit"
+    ],
+    "sender.py": [
+      "162–200 held source identities, exact version, stream digest, final source checks and close"
+    ],
+    "receiver.py": [
+      "197–260 owned Git commands and final source freeze",
+      "273–304 same-FD receive/readback",
+      "318–389 receipt gates",
+      "391–489 canonical/materialization/recheck",
+      "491–574 create-only main, cleanup and terminal publication"
+    ]
+  },
+  "pending_independent_evidence": {
+    "seven_destination_file_infos": false,
+    "complete_receiver_receipt_body": false,
+    "complete_original_observation_chains": false,
+    "receiver_receipt_descriptor": {
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+      "bytes": 35212,
+      "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f"
+    },
+    "statement": "These pending observations remain assigned to Compat/root; none are replaced by this peer."
+  },
+  "limits": [
+    "Embedded receiver values and original local SSH exit0 satisfy the frozen relay's positive endpoint contract; they are not an independent destination read.",
+    "The seven destination infos, complete receiver receipt and their original observation chains remain with Compat/root.",
+    "Original desktop authority records 368 stdout bytes and zero stderr; the whole terminal stream body is not one of this verifier's inputs.",
+    "Only three held-fence descriptors are individually enumerated in the core. Other normal-path closes are enforced by source exceptions, not a new universal FD ledger.",
+    "The fence checks are bounded sequential held/named observations, not continuous atomic custody or evidence of old relay termination.",
+    "Normal61 and export proof flags are checked as required endpoint report fields; this review does not rerun those product tests or independently re-audit their receipt bodies."
+  ],
+  "full_transfer_qualification": false,
+  "X230_runtime_qualification": false,
+  "production_qualification": false,
+  "source_modified": false,
+  "original_errors_or_UNKNOWN_changed": false
+}

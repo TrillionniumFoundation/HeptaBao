@@ -1,0 +1,1921 @@
+{
+  "all_local_owned_stopped": true,
+  "all_owned_stopped": true,
+  "automatic_retry": false,
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "x230-ts-effective-config",
+      "pid": 507826,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "receive-x230",
+      "pid": 507843,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "send-desktop",
+      "pid": 507844,
+      "remaining": []
+    }
+  ],
+  "cleanup_errors": [],
+  "commands": [
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.062358738970942795,
+      "exit_code": 0,
+      "label": "x230-ts-effective-config",
+      "limit_seconds": 90,
+      "pid": 507826,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 12.944670294062234,
+      "exit_code": 0,
+      "label": "send-desktop",
+      "limit_seconds": 90,
+      "pid": 507844,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 25.34039764292538,
+      "exit_code": 0,
+      "label": "receive-x230",
+      "limit_seconds": 300,
+      "pid": 507843,
+      "remaining": [],
+      "timed_out": false
+    }
+  ],
+  "compiler_started": false,
+  "controller": {
+    "bytes": 25713,
+    "identity": [
+      2050,
+      7532611,
+      1000,
+      1000,
+      33152,
+      1,
+      25713,
+      1793901767238166039,
+      1793901767249302558
+    ],
+    "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f"
+  },
+  "destination_alias": "x230-ts",
+  "destination_git_commands": 21,
+  "destination_host": "x230",
+  "destination_materialization_verified": true,
+  "destination_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "destination_source_materialization_allowed": true,
+  "effect_fence_after_cleanup": {
+    "held_and_named_verified": true,
+    "marker_identity": [
+      2050,
+      7237359,
+      1000,
+      1000,
+      33152,
+      1,
+      2709,
+      1793876790283098805,
+      1793876790283098805
+    ],
+    "marker_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "original_relay_state": "UNKNOWN",
+    "original_relay_termination_proven": false,
+    "root_identity": [
+      2050,
+      7237358,
+      1000,
+      1000,
+      16832,
+      2,
+      4096,
+      1793876790283098805,
+      1793876790283098805
+    ]
+  },
+  "effect_fence_after_cleanup_verified": true,
+  "effect_fence_all_descriptors_closed": true,
+  "effect_fence_before": {
+    "held_and_named_verified": true,
+    "marker_identity": [
+      2050,
+      7237359,
+      1000,
+      1000,
+      33152,
+      1,
+      2709,
+      1793876790283098805,
+      1793876790283098805
+    ],
+    "marker_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "original_relay_state": "UNKNOWN",
+    "original_relay_termination_proven": false,
+    "root_identity": [
+      2050,
+      7237358,
+      1000,
+      1000,
+      16832,
+      2,
+      4096,
+      1793876790283098805,
+      1793876790283098805
+    ]
+  },
+  "effect_fence_before_endpoints": {
+    "held_and_named_verified": true,
+    "marker_identity": [
+      2050,
+      7237359,
+      1000,
+      1000,
+      33152,
+      1,
+      2709,
+      1793876790283098805,
+      1793876790283098805
+    ],
+    "marker_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "original_relay_state": "UNKNOWN",
+    "original_relay_termination_proven": false,
+    "root_identity": [
+      2050,
+      7237358,
+      1000,
+      1000,
+      16832,
+      2,
+      4096,
+      1793876790283098805,
+      1793876790283098805
+    ]
+  },
+  "effect_fence_before_verified": true,
+  "effect_fence_descriptors": [
+    {
+      "close_attempted": true,
+      "closed": true,
+      "error_type": null,
+      "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1"
+    },
+    {
+      "close_attempted": true,
+      "closed": true,
+      "error_type": null,
+      "name": "normal-cold-h2-x230-transfer-r1"
+    },
+    {
+      "close_attempted": true,
+      "closed": true,
+      "error_type": null,
+      "name": "relay-effect-fence.public.json"
+    }
+  ],
+  "elapsed_seconds": 25.97583101200871,
+  "files": [
+    {
+      "bytes": 110219600,
+      "name": "heptabao-server",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722"
+    },
+    {
+      "bytes": 786,
+      "name": "native-build.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361482:786:1793892021124514009:1793892021124514009"
+    },
+    {
+      "bytes": 3192,
+      "name": "result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361483:3192:1793892021131513894:1793892021131513894"
+    },
+    {
+      "bytes": 22320862,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221"
+    },
+    {
+      "bytes": 39692,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361625:39692:1793898902726866721:1793898902726866721"
+    },
+    {
+      "bytes": 57532,
+      "name": "normal61-result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361495:57532:1793892021140513746:1793892021140513746"
+    },
+    {
+      "bytes": 6249,
+      "name": "groups.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:7361500:6249:1793892021148513615:1793892021148513615"
+    }
+  ],
+  "helpers": {
+    "receiver.py": {
+      "bytes": 30791,
+      "identity": [
+        2050,
+        7532610,
+        1000,
+        1000,
+        33152,
+        1,
+        30791,
+        1793901767197502850,
+        1793901767206425051
+      ],
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "sender.py": {
+      "bytes": 8960,
+      "identity": [
+        2050,
+        7532609,
+        1000,
+        1000,
+        33152,
+        1,
+        8960,
+        1793901767144422082,
+        1793901767153777890
+      ],
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    }
+  },
+  "local_git_operations": 0,
+  "original_ha_controller_after": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "original_ha_controller_before": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "original_relay_state": "UNKNOWN",
+  "original_relay_termination_proven": false,
+  "overall_seconds": 300,
+  "production_changed": false,
+  "receiver": {
+    "all_owned_stopped": true,
+    "automatic_retry": false,
+    "bundle_header": {
+      "header_bytes": 63,
+      "header_sha256": "c86b1deb14c31b2f2e89a53afbb2be28ea8e1fd0b8dbc5e4677710d134ae9aa5",
+      "heads": [
+        [
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [],
+      "version": 2
+    },
+    "canonical_proof": {
+      "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "commit_count": 3763,
+      "full_fsck_passed": true,
+      "parents": [
+        "1c66541993662f92cf717154e33717abedb2ea74"
+      ],
+      "root": "67d79b3b5442ed033d38929eab2010403463e56d",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+    },
+    "cleanup": [
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "000-standalone-clone",
+        "pid": 3644263,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "001-bundle-verify",
+        "pid": 3644266,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "002-bundle-heads",
+        "pid": 3644268,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "003-canonical-checkout",
+        "pid": 3644270,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "004-remove-local-origin",
+        "pid": 3644272,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "005-canonical-kind",
+        "pid": 3644274,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "006-canonical-tree",
+        "pid": 3644276,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "007-canonical-parents",
+        "pid": 3644278,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "008-canonical-count",
+        "pid": 3644280,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "009-canonical-roots",
+        "pid": 3644282,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "010-canonical-full-fsck",
+        "pid": 3644284,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "011-materialized-tree",
+        "pid": 3644295,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "012-materialized-index",
+        "pid": 3644297,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 1,
+        "label": "013-no-sparse-config",
+        "pid": 3644299,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "014-source-after-head",
+        "pid": 3644308,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "015-source-after-tree",
+        "pid": 3644310,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "016-source-after-status",
+        "pid": 3644312,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "017-source-after-git-dir",
+        "pid": 3644321,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "018-source-after-common-dir",
+        "pid": 3644323,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "label": "019-source-after-shallow",
+        "pid": 3644325,
+        "remaining": []
+      },
+      {
+        "direct_child_reaped": true,
+        "exit_code": 1,
+        "label": "020-source-after-partial-config",
+        "pid": 3644327,
+        "remaining": []
+      }
+    ],
+    "clone_seconds": 90,
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+          "clone",
+          "--no-checkout",
+          "--no-hardlinks",
+          "--",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 3.534866727888584,
+        "exit_code": 0,
+        "label": "000-standalone-clone",
+        "limit_seconds": 90,
+        "pid": 3644263,
+        "remaining": [],
+        "stderr_bytes": 86,
+        "stderr_sha256": "0421688c7d34e7435270b57bf9cb208b94030b0ea33a984fe994ebcc77fcb221",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "bundle",
+          "verify",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.015736681409180164,
+        "exit_code": 0,
+        "label": "001-bundle-verify",
+        "limit_seconds": 60,
+        "pid": 3644266,
+        "remaining": [],
+        "stderr_bytes": 107,
+        "stderr_sha256": "618ec5590d87f94e77fd494091ca7626c2bc9f97d2d83f4ebff61dd76121c54b",
+        "stdout_bytes": 157,
+        "stdout_sha256": "b31aa8e063d47cd1dc8c3440ef6fe2bf3ff3ca5166ecc19eabbd5302ab91da5b",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "bundle",
+          "list-heads",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.01939545013010502,
+        "exit_code": 0,
+        "label": "002-bundle-heads",
+        "limit_seconds": 60,
+        "pid": 3644268,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 46,
+        "stdout_sha256": "1d7ec04605d0264e6ac1492e39bc81fb3b913a202c8eaef82738b1347147a217",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "checkout",
+          "--detach",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.45717400312423706,
+        "exit_code": 0,
+        "label": "003-canonical-checkout",
+        "limit_seconds": 60,
+        "pid": 3644270,
+        "remaining": [],
+        "stderr_bytes": 92,
+        "stderr_sha256": "56318c9b0b1ea356ff992607f5f380be6f1d2804ff0de2c9f33f12be5842a643",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "remote",
+          "remove",
+          "origin"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.02092756424099207,
+        "exit_code": 0,
+        "label": "004-remove-local-origin",
+        "limit_seconds": 60,
+        "pid": 3644272,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "cat-file",
+          "-t",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.01977601507678628,
+        "exit_code": 0,
+        "label": "005-canonical-kind",
+        "limit_seconds": 60,
+        "pid": 3644274,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 7,
+        "stdout_sha256": "50836eee574ecff79dea3b4fd40673d7d000f7a5f177d8a6a3000b59c78383b8",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec^{tree}"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.02017743093892932,
+        "exit_code": 0,
+        "label": "006-canonical-tree",
+        "limit_seconds": 60,
+        "pid": 3644276,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 41,
+        "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "show",
+          "-s",
+          "--format=%P",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.02165082423016429,
+        "exit_code": 0,
+        "label": "007-canonical-parents",
+        "limit_seconds": 60,
+        "pid": 3644278,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 41,
+        "stdout_sha256": "879eced507590ac79f5778a13b1c3c5e0cb4e0608932eeeec872920e3935a56a",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-list",
+          "--count",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.04448692826554179,
+        "exit_code": 0,
+        "label": "008-canonical-count",
+        "limit_seconds": 60,
+        "pid": 3644280,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 5,
+        "stdout_sha256": "0f5e00b716f0b5370c83215bd9f7864900922c672fe995beff4925497e64893e",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-list",
+          "--max-parents=0",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.039873199071735144,
+        "exit_code": 0,
+        "label": "009-canonical-roots",
+        "limit_seconds": 60,
+        "pid": 3644282,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 41,
+        "stdout_sha256": "8dfbdd110e323dd4c1726edf01071847a9c1032805aedcbb3584d0513880ac1f",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "fsck",
+          "--full",
+          "--strict",
+          "--no-reflogs",
+          "--no-dangling",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 3.3929448509588838,
+        "exit_code": 0,
+        "label": "010-canonical-full-fsck",
+        "limit_seconds": 60,
+        "pid": 3644284,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "ls-tree",
+          "-rz",
+          "--full-tree",
+          "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.02593477675691247,
+        "exit_code": 0,
+        "label": "011-materialized-tree",
+        "limit_seconds": 60,
+        "pid": 3644295,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 450459,
+        "stdout_sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "ls-files",
+          "--stage",
+          "-z"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.022663677111268044,
+        "exit_code": 0,
+        "label": "012-materialized-index",
+        "limit_seconds": 60,
+        "pid": 3644297,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 438717,
+        "stdout_sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "config",
+          "--local",
+          "--get-regexp",
+          "^(core[.]sparseCheckout|core[.]sparseCheckoutCone|extensions[.]worktreeConfig)$"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.018989834003150463,
+        "exit_code": 1,
+        "label": "013-no-sparse-config",
+        "limit_seconds": 60,
+        "pid": 3644299,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "--verify",
+          "HEAD"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.01415829174220562,
+        "exit_code": 0,
+        "label": "014-source-after-head",
+        "limit_seconds": 60,
+        "pid": 3644308,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 41,
+        "stdout_sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.01420679921284318,
+        "exit_code": 0,
+        "label": "015-source-after-tree",
+        "limit_seconds": 60,
+        "pid": 3644310,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 41,
+        "stdout_sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.3286611041985452,
+        "exit_code": 0,
+        "label": "016-source-after-status",
+        "limit_seconds": 60,
+        "pid": 3644312,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "--absolute-git-dir"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.014683863613754511,
+        "exit_code": 0,
+        "label": "017-source-after-git-dir",
+        "limit_seconds": 60,
+        "pid": 3644321,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 73,
+        "stdout_sha256": "2d68312ca8a368b08318fcedd5b45a3911742863a0ccdeb1f49849bfe977ec92",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "--git-common-dir"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.015003733802586794,
+        "exit_code": 0,
+        "label": "018-source-after-common-dir",
+        "limit_seconds": 60,
+        "pid": 3644323,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 5,
+        "stdout_sha256": "fd03f16fc5ad8be70d6e0491fa2e029bc4a31f5b0de6d4adf8e7dd709d23840f",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "rev-parse",
+          "--is-shallow-repository"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.01931328186765313,
+        "exit_code": 0,
+        "label": "019-source-after-shallow",
+        "limit_seconds": 60,
+        "pid": 3644325,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 6,
+        "stdout_sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+        "timed_out": false
+      },
+      {
+        "argv": [
+          "/usr/bin/git",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "core.hooksPath=/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/empty-hooks",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "log.showSignature=false",
+          "-c",
+          "protocol.allow=never",
+          "-c",
+          "protocol.file.allow=always",
+          "-c",
+          "pack.threads=1",
+          "-C",
+          "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+          "config",
+          "--local",
+          "--get-regexp",
+          "^(extensions[.]partialclone|remote[.].*[.]promisor|remote[.].*[.]partialclonefilter)$"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.019983107689768076,
+        "exit_code": 1,
+        "label": "020-source-after-partial-config",
+        "limit_seconds": 60,
+        "pid": 3644327,
+        "remaining": [],
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      }
+    ],
+    "compiler_started": false,
+    "controller": {
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "elapsed_seconds": 24.730148568749428,
+    "expected_full_commit_count": 3763,
+    "expected_prerequisites": [],
+    "export_receipt_verified": true,
+    "file_results": [
+      {
+        "bytes": 110219600,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057878,
+          1000,
+          1000,
+          33088,
+          1,
+          110219600,
+          1793904527474649454,
+          1793904527474649454
+        ],
+        "mode": 320,
+        "name": "heptabao-server",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+        "same_fd_readback": {
+          "bytes": 110219600,
+          "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+        },
+        "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+      },
+      {
+        "bytes": 786,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057879,
+          1000,
+          1000,
+          33024,
+          1,
+          786,
+          1793904528451650178,
+          1793904528451650178
+        ],
+        "mode": 256,
+        "name": "native-build.public.json",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+        "same_fd_readback": {
+          "bytes": 786,
+          "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+        },
+        "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+      },
+      {
+        "bytes": 3192,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057880,
+          1000,
+          1000,
+          33024,
+          1,
+          3192,
+          1793904528452650179,
+          1793904528452650179
+        ],
+        "mode": 256,
+        "name": "result.public.json",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+        "same_fd_readback": {
+          "bytes": 3192,
+          "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+        },
+        "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+      },
+      {
+        "bytes": 22320862,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057881,
+          1000,
+          1000,
+          33024,
+          1,
+          22320862,
+          1793904530197651472,
+          1793904530197651472
+        ],
+        "mode": 256,
+        "name": "canonical-4e808-full.bundle",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+        "same_fd_readback": {
+          "bytes": 22320862,
+          "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+        },
+        "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+      },
+      {
+        "bytes": 39692,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057882,
+          1000,
+          1000,
+          33024,
+          1,
+          39692,
+          1793904530486651686,
+          1793904530486651686
+        ],
+        "mode": 256,
+        "name": "source-export.result.public.json",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+        "same_fd_readback": {
+          "bytes": 39692,
+          "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+        },
+        "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+      },
+      {
+        "bytes": 57532,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057883,
+          1000,
+          1000,
+          33024,
+          1,
+          57532,
+          1793904530487651687,
+          1793904530487651687
+        ],
+        "mode": 256,
+        "name": "normal61-result.public.json",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+        "same_fd_readback": {
+          "bytes": 57532,
+          "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+        },
+        "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+      },
+      {
+        "bytes": 6249,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2053,
+          3057884,
+          1000,
+          1000,
+          33024,
+          1,
+          6249,
+          1793904530488651688,
+          1793904530488651688
+        ],
+        "mode": 256,
+        "name": "groups.json",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+        "same_fd_readback": {
+          "bytes": 6249,
+          "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+        },
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+      }
+    ],
+    "git_command_seconds": 60,
+    "materialized": {
+      "actual_git_blob_bytes_verified": true,
+      "fsynced_directories": 369,
+      "fsynced_files": 3938,
+      "no_sparse_checkout": true,
+      "no_symlinks_or_hardlinks": true,
+      "tracked_files": 3914,
+      "tree_equals_index": true
+    },
+    "maximum_bundle_bytes": 67108864,
+    "network_git_protocols_enabled": false,
+    "normal61_qualification_verified": true,
+    "normal_release_provenance_verified": true,
+    "old_source_opened": false,
+    "overall_seconds": 300,
+    "partial_root_retained_on_failure": true,
+    "product_tests_executed": 0,
+    "production_changed": false,
+    "publication_within_original_deadline": true,
+    "raw_receipts_preserved": true,
+    "receipt": {
+      "bytes": 35212,
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+      "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f"
+    },
+    "runtime_qualification": false,
+    "schema": "heptabao.4e808.x230-standalone-source-receiver.v1",
+    "server_started": false,
+    "source_after": {
+      "clean": true,
+      "git_common_directory": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/.git",
+      "git_directory": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/.git",
+      "head": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "independent_git_directory": true,
+      "lock_files": {
+        "config.lock": false,
+        "index.lock": false,
+        "packed-refs.lock": false,
+        "shallow.lock": false
+      },
+      "no_alternates": true,
+      "no_partial_clone": true,
+      "shallow": false,
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+    },
+    "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "status": "complete",
+    "success_requires_authoritative_exit_zero": true,
+    "success_requires_terminal_publication_within_original_deadline": true,
+    "transfer_passed": true,
+    "within_original_deadline": true
+  },
+  "receiver_seconds": 300,
+  "relay_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1",
+  "remote_cleanup_unknown": false,
+  "remote_endpoint_completion_verified": true,
+  "runtime_qualification": false,
+  "schema": "heptabao.4e808.x230-standalone-source-artifacts-relay.v1",
+  "sender": {
+    "all_owned_stopped": true,
+    "cleanup": [],
+    "cleanup_errors": [],
+    "compiler_started": false,
+    "elapsed_seconds": 12.826255248044617,
+    "files": [
+      {
+        "initial_file": {
+          "bytes": 110219600,
+          "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+        },
+        "name": "heptabao-server",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+        "source_identity_after": [
+          2050,
+          7361480,
+          1000,
+          1000,
+          33088,
+          1,
+          110219600,
+          1793892019496540722,
+          1793892019496540722
+        ],
+        "source_identity_before": [
+          2050,
+          7361480,
+          1000,
+          1000,
+          33088,
+          1,
+          110219600,
+          1793892019496540722,
+          1793892019496540722
+        ],
+        "source_version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+        "stream": {
+          "bytes": 110219600,
+          "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 786,
+          "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+        },
+        "name": "native-build.public.json",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+        "source_identity_after": [
+          2050,
+          7361482,
+          1000,
+          1000,
+          33024,
+          1,
+          786,
+          1793892021124514009,
+          1793892021124514009
+        ],
+        "source_identity_before": [
+          2050,
+          7361482,
+          1000,
+          1000,
+          33024,
+          1,
+          786,
+          1793892021124514009,
+          1793892021124514009
+        ],
+        "source_version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+        "stream": {
+          "bytes": 786,
+          "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 3192,
+          "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+        },
+        "name": "result.public.json",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+        "source_identity_after": [
+          2050,
+          7361483,
+          1000,
+          1000,
+          33024,
+          1,
+          3192,
+          1793892021131513894,
+          1793892021131513894
+        ],
+        "source_identity_before": [
+          2050,
+          7361483,
+          1000,
+          1000,
+          33024,
+          1,
+          3192,
+          1793892021131513894,
+          1793892021131513894
+        ],
+        "source_version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+        "stream": {
+          "bytes": 3192,
+          "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 22320862,
+          "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+        },
+        "name": "canonical-4e808-full.bundle",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+        "source_identity_after": [
+          2050,
+          7361612,
+          1000,
+          1000,
+          33024,
+          1,
+          22320862,
+          1793898902432875221,
+          1793898902432875221
+        ],
+        "source_identity_before": [
+          2050,
+          7361612,
+          1000,
+          1000,
+          33024,
+          1,
+          22320862,
+          1793898902432875221,
+          1793898902432875221
+        ],
+        "source_version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+        "stream": {
+          "bytes": 22320862,
+          "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 39692,
+          "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+        },
+        "name": "source-export.result.public.json",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+        "source_identity_after": [
+          2050,
+          7361625,
+          1000,
+          1000,
+          33024,
+          1,
+          39692,
+          1793898902726866721,
+          1793898902726866721
+        ],
+        "source_identity_before": [
+          2050,
+          7361625,
+          1000,
+          1000,
+          33024,
+          1,
+          39692,
+          1793898902726866721,
+          1793898902726866721
+        ],
+        "source_version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+        "stream": {
+          "bytes": 39692,
+          "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 57532,
+          "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+        },
+        "name": "normal61-result.public.json",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+        "source_identity_after": [
+          2050,
+          7361495,
+          1000,
+          1000,
+          33024,
+          1,
+          57532,
+          1793892021140513746,
+          1793892021140513746
+        ],
+        "source_identity_before": [
+          2050,
+          7361495,
+          1000,
+          1000,
+          33024,
+          1,
+          57532,
+          1793892021140513746,
+          1793892021140513746
+        ],
+        "source_version": "2050:7361495:57532:1793892021140513746:1793892021140513746",
+        "stream": {
+          "bytes": 57532,
+          "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 6249,
+          "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+        },
+        "name": "groups.json",
+        "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+        "source_identity_after": [
+          2050,
+          7361500,
+          1000,
+          1000,
+          33024,
+          1,
+          6249,
+          1793892021148513615,
+          1793892021148513615
+        ],
+        "source_identity_before": [
+          2050,
+          7361500,
+          1000,
+          1000,
+          33024,
+          1,
+          6249,
+          1793892021148513615,
+          1793892021148513615
+        ],
+        "source_version": "2050:7361500:6249:1793892021148513615:1793892021148513615",
+        "stream": {
+          "bytes": 6249,
+          "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+        }
+      }
+    ],
+    "git_operations": 0,
+    "request_seconds": 90,
+    "role": "sender",
+    "schema": "heptabao.4e808.x230-public-artifacts-sender.v1",
+    "server_started": false,
+    "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "status": "complete",
+    "within_original_deadline": true
+  },
+  "sender_seconds": 90,
+  "server_started": false,
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_host": "desktop",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "ssh_config_seconds": 90,
+  "ssh_preflight": {
+    "x230-ts": {
+      "effective_config_sha256": "f300105c5fed0f79c64b7f4b1dd2d1478a086cb031748e924b8d63bec6e5daf4",
+      "known_hosts_before": {
+        "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+          "bytes": 5391,
+          "identity": [
+            2050,
+            52599357,
+            1000,
+            1000,
+            33152,
+            1,
+            5391,
+            1793703653819681345,
+            1793703653854741609
+          ],
+          "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+        }
+      },
+      "projection": {
+        "batchmode": "yes",
+        "clearallforwardings": "yes",
+        "connectionattempts": "1",
+        "connecttimeout": "10",
+        "controlmaster": "false",
+        "controlpath": null,
+        "forwardagent": "no",
+        "host": "x230-ts",
+        "hostkeyalias": "hepta-node-x230",
+        "hostname": "192.168.0.13",
+        "port": "22",
+        "stricthostkeychecking": "true",
+        "updatehostkeys": "false",
+        "user": "qian"
+      }
+    }
+  },
+  "status": "transferred",
+  "terminal_unix_ns": 1793904542836918073,
+  "trust_after": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  },
+  "trust_before": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  }
+}

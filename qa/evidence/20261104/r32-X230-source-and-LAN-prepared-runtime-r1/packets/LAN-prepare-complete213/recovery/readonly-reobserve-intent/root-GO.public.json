@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-known-closed-read-transport-failure-single-recovery-GO.r32.v1",
+  "status": "GO_ONE_EXACT_READONLY_RECOVERY_AFTER_KNOWN_TERMINAL_FAILURE",
+  "owner": "/root/ha_validation",
+  "lane": "A",
+  "original_prepare_job": "desktop/1a1ad1383c9-fc05-5863",
+  "original_prepare_process_replay_authorized": false,
+  "original_failed_observation": "9f8eb82a15916661a8e424e4e4b74a2b6b4b27931886284c64fe025100940a0d",
+  "original_failure_packet": "302a4f4b96b848b28389145261e098b1696b4c8e",
+  "original_failure_payload": {
+    "path": "original-failed-payload.json",
+    "blob": "67106e298f5f87845aae09b23d30f7bf97c07ecf",
+    "bytes": 183,
+    "sha256": "5427c6345f5256d4b857421176675d1c1dda08db0504e937fbf95611ba90b67b",
+    "mode": "100644"
+  },
+  "root_failure_checks_passed": 7,
+  "root_failure_checks": [
+    "outer-SDK-before-native:start/original-sdk.json",
+    "outer-SDK-before-native:status/original-sdk.json",
+    "outer-SDK-before-native:result/original-sdk.json",
+    "exact-original3192-byte-version-bound-read",
+    "known-original-failed-future-positively-closed",
+    "complete-original-error-payload-single-page",
+    "original-error-is-read-transport-connection-close-not-product-or-file-version-result"
+  ],
+  "exact_new_read_request": {
+    "name": "r32-LAN-prepare-output1-exact-closed-read-recovery1.request.json",
+    "blob": "e32243a9b93650019fd75d096d2d769b16c2a1d9",
+    "bytes": 502,
+    "sha256": "77514a8d5246aaf88ad72b8c88be564a1494a7748333c9949959d860eb6cef68"
+  },
+  "request": {
+    "idempotency_key": "ha-4e808-postcold-prepare-output1-body0-closed-transport-recovery1-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+        "offset": 0,
+        "limit": 3192,
+        "expected_version": "2050:7401918:3192:1793905103902942062:1793905103902942062"
+      }
+    }
+  },
+  "reason": "The original readonly operation has a returned immutable ID, a complete retained native transport error and an authoritative failed/stored/inactive status. It is not an UNKNOWN admission. One separate recovery read of exactly the same3192 bytes at the same immutable version is authorized; the first failed operation and its key remain unchanged.",
+  "new_key_scope": "New identity only for this explicit read-only recovery after the old read is terminal; never reset, replay or replace the original prepare business request or any UNKNOWN.",
+  "maximum_recovery_submissions": 1,
+  "expected_content_sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+  "protocol": {
+    "external_exact_intent_before_single_operation_start": true,
+    "original_SDK_whole_before_parse": true,
+    "one_native_future": true,
+    "same_returned_ID_status_and_full_payload_only": true,
+    "immutable_page_limit": 8192,
+    "on_new_error_or_missing_ACK": "Preserve raw error and pause; no automatic second recovery, alternate path, widened limit, new version or process replay."
+  },
+  "unchanged": {
+    "path": true,
+    "expected_version": true,
+    "offset": 0,
+    "limit": 3192,
+    "tool": "binary_read",
+    "host": "desktop",
+    "prepare_source_and_result": true,
+    "original_failed_payload": true,
+    "all_product_deadlines": true,
+    "full34_and_HA_live_gates": true
+  },
+  "remaining_original_output2_to4": "Resume only their already frozen original GO requests after this recovery is fully closed; no new bodies beyond the existing finite5-file plan.",
+  "live_authorized": false,
+  "root_Runtime_calls": 0
+}

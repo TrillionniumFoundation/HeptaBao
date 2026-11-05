@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.h2-data-binding-offline-execution.v1",
+  "engine": "functions.exec V8",
+  "method": "Independent verifyH2Data applied to cached immutable original texts and this candidate. No source module import or execution.",
+  "checker": {
+    "blob": "2ab3fe260375ed7740759e0ba7330bdd1c772c58",
+    "bytes": 11784,
+    "sha256": "2409ab066c91863b687ecbc72401b56e8924fde104cffcf04689a490bc91ad3f"
+  },
+  "primitives": {
+    "blob": "c875919b2bc9ff82a83647ce39018c1aa333c3af",
+    "bytes": 5211,
+    "sha256": "9b09b8260290cad718c554ebe224b6b8f409e61e19a3bbbe1ffaa063810604d5"
+  },
+  "inputs": {
+    "blob": "6e760a69704538ec180b5cb84b550356e25d7b96",
+    "bytes": 3085,
+    "sha256": "1d6ef0be292417a9beea464c529dde236511327cbd234a32d2cc5ce1db8fd7cc"
+  },
+  "result": {
+    "blob": "8c2fd327b862eb9a3def317202ee57aeeb350c87",
+    "bytes": 16553,
+    "sha256": "3c00a8d7276e994a5793f4c6ea0c2053fd7e2acb263a806880545230f289d7d7"
+  },
+  "checks": 169,
+  "status": "passed",
+  "attempt1_failure_preserved": true,
+  "new_product_cases": 0,
+  "Runtime_calls": 0
+}

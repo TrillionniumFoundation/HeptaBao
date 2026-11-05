@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.current4e808.CLI-stage-minimal-data-binding.SOURCE.r1",
+  "source_only": true,
+  "Runtime_go": false,
+  "stage_submitted": false,
+  "prepare_submitted": false,
+  "live_submitted": false,
+  "base": {
+    "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+    "bytes": 22935,
+    "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+  },
+  "candidate": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "carrier": {
+    "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+    "bytes": 302459,
+    "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+  },
+  "unchanged_scope": {
+    "functions": 18,
+    "all_runtime_tail_bytes": true,
+    "binder_and_other_four_QA_exact_current_CLI44": true,
+    "stage_seconds": 300,
+    "outer_seconds": 330,
+    "stdin_maximum_bytes": 1048576,
+    "original_create_only_namespace": true,
+    "old_functions_main_close_and_final_deadline": true
+  },
+  "binding_template": {
+    "blob": "728f4c6dd801310de3f05b4b54ff2ea26bb2d331",
+    "ready_for_readonly_prepare": false,
+    "target_actual_metadata_observed": false
+  },
+  "canonical_source": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "complete_root_qualification": "3859911145a8bd8b947935bc038d501e143a5d63",
+    "current_source_pin_members": 8,
+    "all_old_source_members_retained": true,
+    "additional_current_binder_product_members": 3
+  },
+  "normal5": {
+    "actual_table": "795c92856119c5a2f8c73130f5772d82f3dfc295",
+    "complete_root_review": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+    "command_root_review": "77164d9ff9108e2aa218f5964eb6b19181182e10",
+    "incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming",
+    "actual_source_observations_not_claimed_current_stat": true,
+    "source_mode_target_mode_preserved": true,
+    "server_native_release_copied": 3,
+    "combined_groups_payload_originals": 2
+  },
+  "old_fences": {
+    "count": 6,
+    "exact_order_and_content_matches_template": true,
+    "original_four_preserved": true,
+    "two_B01_previous_failures_preserved": true
+  },
+  "candidate_runtime_request": {
+    "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "arg_count": 7,
+    "stdin_bytes": 302459,
+    "key": "heptabao-official271-phaseb-4e808-local-stage-87a9c2a7-20261105-r4",
+    "timeout_seconds": 330,
+    "interface_basis": "Unchanged original main argparse: inline isolated Python source followed by --external-controller-sha256 and exact admitted source digest. Original root review pins 300/330. This proposed request is SOURCE ONLY; it is not asserted to be byte-identical to a recovered historic request."
+  },
+  "authorization_required": "Root review and exact one-run stage GO; later readonly prepare and product live remain separately unauthorized.",
+  "new_or_current_product_qualification": false
+}

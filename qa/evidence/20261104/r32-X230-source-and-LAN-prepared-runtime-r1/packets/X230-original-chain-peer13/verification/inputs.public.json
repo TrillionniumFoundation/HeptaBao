@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.pure-V8-read-chain-verifier-inputs.r1",
+  "source": "verification/verify-read-chains.js",
+  "call": "eval('(' + verifier_source + ')')({ files, index, subject_tree, inherited_tree })",
+  "files": "Fetch only input-index.public.json selected paths at the fixed subject tree; require the exact blob/whole SHA256/size. No module is executed.",
+  "index": "verification/input-index.public.json",
+  "subject_tree": "verification/subject-tree.original.json",
+  "inherited_tree": "verification/inherited-metadata-tree.original.json",
+  "input_bytes_not_embedded_again": true,
+  "original_subject_sources_persisted_in_tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+  "no_Runtime_or_host_access_required": true
+}

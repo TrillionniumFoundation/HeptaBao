@@ -1,0 +1,412 @@
+{
+  "schema": "heptabao.mac-owner-next2.pure-source-bindings.result.v1",
+  "ok": true,
+  "checks": [
+    {
+      "name": "exact_source_names",
+      "passed": true
+    },
+    {
+      "name": "selector.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "selector.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "selector.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "selector.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "harness-policy.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "harness-policy.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "harness-policy.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "harness-policy.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "registry.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "registry.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "registry.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "registry.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "runtime-loader.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "runtime-loader.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "runtime-loader.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "runtime-loader.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "support.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "support.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "support.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "support.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "codex.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "codex.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "codex.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "codex.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "worker.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "worker.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "worker.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "worker.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "runtime-policy.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "runtime-policy.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "runtime-policy.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "runtime-policy.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "openai-routing.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "openai-routing.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "openai-routing.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "openai-routing.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "plugin-loader.whole_bytes",
+      "passed": true
+    },
+    {
+      "name": "plugin-loader.whole_sha256",
+      "passed": true
+    },
+    {
+      "name": "plugin-loader.whole_Git_blob",
+      "passed": true
+    },
+    {
+      "name": "plugin-loader.basis_pin",
+      "passed": true
+    },
+    {
+      "name": "anchor_count31",
+      "passed": true
+    },
+    {
+      "name": "anchor.worker-agents",
+      "passed": true
+    },
+    {
+      "name": "anchor.worker-import-prefix",
+      "passed": true
+    },
+    {
+      "name": "anchor.worker-exact-selection",
+      "passed": true
+    },
+    {
+      "name": "anchor.runtime-loader-scope",
+      "passed": true
+    },
+    {
+      "name": "anchor.runtime-loader-load-options",
+      "passed": true
+    },
+    {
+      "name": "anchor.manifest-import",
+      "passed": true
+    },
+    {
+      "name": "anchor.plugin-registry-import",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-inputs",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-activation-defaults",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-discovery-manifest",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-root-to-manifest-id",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-plugin-id-scope",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-record-root-source",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-candidate-realpath",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-config-module-path",
+      "passed": true
+    },
+    {
+      "name": "anchor.loader-register-and-restore",
+      "passed": true
+    },
+    {
+      "name": "anchor.runtime-provider-order",
+      "passed": true
+    },
+    {
+      "name": "anchor.runtime-agent-map",
+      "passed": true
+    },
+    {
+      "name": "anchor.runtime-policy-precedence",
+      "passed": true
+    },
+    {
+      "name": "anchor.routing-actual-url-predicate",
+      "passed": true
+    },
+    {
+      "name": "anchor.policy-default-runtime",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-actual-support-imports",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-compare-context-imports",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-object-and-policy",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-forced",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-auto",
+      "passed": true
+    },
+    {
+      "name": "anchor.selector-return-object",
+      "passed": true
+    },
+    {
+      "name": "anchor.registry-owner-and-instance",
+      "passed": true
+    },
+    {
+      "name": "anchor.support-context",
+      "passed": true
+    },
+    {
+      "name": "anchor.support-sort",
+      "passed": true
+    },
+    {
+      "name": "anchor.codex-supports",
+      "passed": true
+    },
+    {
+      "name": "request1.exact_shape",
+      "passed": true
+    },
+    {
+      "name": "request1.published_pin",
+      "passed": true
+    },
+    {
+      "name": "request1.literal_origin",
+      "passed": true
+    },
+    {
+      "name": "request1.lexical_path_only",
+      "passed": true
+    },
+    {
+      "name": "request1.actual_unbound",
+      "passed": true
+    },
+    {
+      "name": "request2.exact_shape",
+      "passed": true
+    },
+    {
+      "name": "request2.published_pin",
+      "passed": true
+    },
+    {
+      "name": "request2.literal_origin",
+      "passed": true
+    },
+    {
+      "name": "request2.lexical_path_only",
+      "passed": true
+    },
+    {
+      "name": "request2.actual_unbound",
+      "passed": true
+    },
+    {
+      "name": "proposal.metadata_only",
+      "passed": true
+    },
+    {
+      "name": "proposal.one_original",
+      "passed": true
+    },
+    {
+      "name": "consumed.first_window",
+      "passed": true
+    },
+    {
+      "name": "consumed.second_window",
+      "passed": true
+    },
+    {
+      "name": "consumed.cumulative",
+      "passed": true
+    },
+    {
+      "name": "proposed.body_zero",
+      "passed": true
+    },
+    {
+      "name": "worker.loader_call_exact",
+      "passed": true
+    },
+    {
+      "name": "worker.selector_call_exact",
+      "passed": true
+    },
+    {
+      "name": "worker.existing_codex_and_object_gates",
+      "passed": true
+    },
+    {
+      "name": "worker.five_agents",
+      "passed": true
+    },
+    {
+      "name": "contract.not_executable",
+      "passed": true
+    },
+    {
+      "name": "contract.original_guard_unchanged",
+      "passed": true
+    },
+    {
+      "name": "contract.owner_and_manifest_unbound",
+      "passed": true
+    },
+    {
+      "name": "selector.same_object_return",
+      "passed": true
+    },
+    {
+      "name": "registry.owner_field_separate",
+      "passed": true
+    },
+    {
+      "name": "loader.no_Google_manifest_literal",
+      "passed": true
+    }
+  ],
+  "passed": 99,
+  "failed": 0,
+  "scope": "Whole source/string anchors/request shape/accounting only",
+  "Runtime_calls": 0,
+  "native_futures": 0,
+  "source_functions_executed": 0,
+  "SDK_imported": 0,
+  "product_cases": 0,
+  "actual_selected_owner": null,
+  "GO": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "comparison69-body-page-000000",
+  "method": "operation_result",
+  "request_blob": "91b8318c5eaa0ae175ed616c7fbeb928b959c3bc",
+  "request_bytes": 121,
+  "request_sha256": "8597ec1f708fb673c42546b3801cd2edf77a4caf17c7cf878301d8104f07dc1f",
+  "request": {
+    "operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+    "offset": 0,
+    "limit": 8192
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+  "original_call_only": true
+}

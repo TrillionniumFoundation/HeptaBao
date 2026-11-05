@@ -1,0 +1,143 @@
+[
+  {
+    "path": "artifacts.server.bytes",
+    "before": null,
+    "after": 110219600,
+    "origin": "normal5_table.files[0].bytes"
+  },
+  {
+    "path": "artifacts.server.sha256",
+    "before": null,
+    "after": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "origin": "normal5_table.files[0].sha256"
+  },
+  {
+    "path": "artifacts.native_receipt.bytes",
+    "before": null,
+    "after": 786,
+    "origin": "normal5_table.files[1].bytes"
+  },
+  {
+    "path": "artifacts.native_receipt.sha256",
+    "before": null,
+    "after": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "origin": "normal5_table.files[1].sha256"
+  },
+  {
+    "path": "artifacts.release_receipt.bytes",
+    "before": null,
+    "after": 3192,
+    "origin": "normal5_table.files[2].bytes"
+  },
+  {
+    "path": "artifacts.release_receipt.sha256",
+    "before": null,
+    "after": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+    "origin": "normal5_table.files[2].sha256"
+  },
+  {
+    "path": "artifacts.combined_tests.bytes",
+    "before": null,
+    "after": 57532,
+    "origin": "normal5_table.files[3].bytes"
+  },
+  {
+    "path": "artifacts.combined_tests.sha256",
+    "before": null,
+    "after": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+    "origin": "normal5_table.files[3].sha256"
+  },
+  {
+    "path": "host.machine_id_sha256",
+    "before": null,
+    "after": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+    "origin": "cli_template.host.machine_id_sha256"
+  },
+  {
+    "path": "utilities.python.bytes",
+    "before": null,
+    "after": 8020928,
+    "origin": "cli_template.utilities.python.bytes"
+  },
+  {
+    "path": "utilities.python.sha256",
+    "before": null,
+    "after": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "origin": "cli_template.utilities.python.sha256"
+  },
+  {
+    "path": "utilities.git.bytes",
+    "before": null,
+    "after": 4066232,
+    "origin": "cli_template.utilities.git.bytes"
+  },
+  {
+    "path": "utilities.git.sha256",
+    "before": null,
+    "after": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+    "origin": "cli_template.utilities.git.sha256"
+  },
+  {
+    "path": "utilities.openssl.bytes",
+    "before": null,
+    "after": 1005368,
+    "origin": "cli_template.utilities.openssl.bytes"
+  },
+  {
+    "path": "utilities.openssl.sha256",
+    "before": null,
+    "after": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+    "origin": "cli_template.utilities.openssl.sha256"
+  },
+  {
+    "path": "old_fences",
+    "before": [
+      null
+    ],
+    "after": [
+      {
+        "bytes": 270785,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/result.public.json",
+        "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+        "uid": 1000
+      },
+      {
+        "bytes": 83438,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3/result.public.json",
+        "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68",
+        "uid": 1000
+      },
+      {
+        "bytes": 19915,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r3/result.public.json",
+        "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590",
+        "uid": 1000
+      },
+      {
+        "bytes": 109148,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+        "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+        "uid": 1000
+      },
+      {
+        "bytes": 45176,
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+        "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+        "uid": 1000
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/result.public.json",
+        "bytes": 278829,
+        "sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+        "mode": 384,
+        "uid": 1000
+      }
+    ],
+    "origin": "cli_template.old_fences"
+  }
+]

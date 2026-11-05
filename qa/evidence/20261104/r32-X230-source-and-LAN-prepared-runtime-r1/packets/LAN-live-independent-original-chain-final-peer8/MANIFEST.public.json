@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.current4e808.HA-chain-peer.manifest.v1",
+  "files": [
+    {
+      "path": "helpers/git-sha1-binary-string.js",
+      "blob": "e54923669076a4e95913d84bc8afbd84021dafdd",
+      "bytes": 988,
+      "sha256": "1aa5e372e6a1993c0bb44946c88a662b15374b522d9458b05abdbb8c632ed8c5"
+    },
+    {
+      "path": "helpers/sha256-binary-string.js",
+      "blob": "4f0455c211941915d4d5330d3b7a18585ec7b773",
+      "bytes": 1840,
+      "sha256": "8fc1480459206739fddbc077a4d86bf7d9721089f4242cd267ad94b42dfe9fa1"
+    },
+    {
+      "path": "history/post-verification-display-error.public.json",
+      "blob": "1a9df1d4777efa2998ba6fc8ec4b9456cb137922",
+      "bytes": 179,
+      "sha256": "87f401f3d0dc1589a7215fc1c535ee968d8d3750f9e2d9dd151d8e3a10402e8f"
+    },
+    {
+      "path": "INPUT-INTERFACE.public.json",
+      "blob": "407ba98595d9a032ef76439177d9433a825954b7",
+      "bytes": 2618,
+      "sha256": "cd359a3c0b017c87f1bfd4fbd366665ba64fb346d404d3cbc52c807b108da2bd"
+    },
+    {
+      "path": "PEER.md",
+      "blob": "cbd046612c496beed351ca2a664a285c44622953",
+      "bytes": 3714,
+      "sha256": "00cfcfe95d8185f931b81ddfda3b7f9720be69702a563ef14a5d327b0ad9b11d"
+    },
+    {
+      "path": "result.public.json",
+      "blob": "daf97b1107eb9ff65a6c7bb1252a219858eaa9df",
+      "bytes": 73572,
+      "sha256": "63974d02e77279da1f82f56c36fac58e85baa37da8b496d8b4c088f28e68cc54"
+    },
+    {
+      "path": "verifier.js",
+      "blob": "7791ece5427758ae42774a6b66e10affaae3a385",
+      "bytes": 16066,
+      "sha256": "a5684ecb9e028e812f63a70ddfa7c7dc86926fd10dab822e123ba0614d98a426"
+    }
+  ],
+  "scope": "Pure original-chain peer. 187 prior checks adopted, 1800 incremental checks executed. No Runtime or product semantic qualification."
+}

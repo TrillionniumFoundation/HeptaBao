@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "full34-body-status",
+  "method": "operation_status",
+  "request_blob": "724816b06a3e4e6865451c69698e7beb08b3fe74",
+  "request_bytes": 89,
+  "request_sha256": "245517d91b490060a306aa5751a627a7740d57a7a78da67d18fcf5ec7193cb2a",
+  "request": {
+    "operation_id": "352a0a3b7062b5ddb9e091b9ccb98312c04af2864e8a530e0bdb2aaacb09cecc"
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "352a0a3b7062b5ddb9e091b9ccb98312c04af2864e8a530e0bdb2aaacb09cecc",
+  "original_call_only": true
+}

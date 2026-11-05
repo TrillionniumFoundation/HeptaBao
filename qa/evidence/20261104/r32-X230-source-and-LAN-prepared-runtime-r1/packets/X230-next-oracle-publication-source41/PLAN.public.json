@@ -1,0 +1,289 @@
+{
+  "schema": "heptabao.current4e808-x230-existing-controls-publication-and-oracle-proposal.v1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "Runtime_calls": 0,
+  "new_publisher_layer": false,
+  "source_bytes_changed": false,
+  "current": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "seven_file_actual_tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+    "bound_wrapper_tree": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50"
+  },
+  "provenance": {
+    "comparison_driver": {
+      "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+      "bytes": 9261,
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "whole_read": true,
+      "unchanged": true,
+      "historical_source_tree": "a84333e715168946cfde93c4387f34bebaa5a5ba",
+      "source_member": "candidate/native271_comparison_final_r1.py",
+      "historical_inert_tree": "1b3ef14fccc9b137ef33fd0ae799ca5205b366f5",
+      "inert_member": "source/native271_comparison_final_r1.py",
+      "historical_only_file_info": "2d841e0339331724968e684c792af4730bc01128"
+    },
+    "original_actual_wrapper_tree": "dc1b7f2f07072c8252bbd8a0c35580ddcf24e46f",
+    "prior_df026_wrapper_source_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+    "current_unbound_wrapper_source_tree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+    "source_chain": "Original actual 495033 wrappers -> existing df026 normal60 admission wrappers -> existing current4e808 normal61 wrappers -> previously approved six-literal actual binding. This proposal changes none of those source bytes.",
+    "original_outer_budget_note": "Both recovered R10 launch intents use timeout_seconds=1800 and explicitly label it a NEW root-authorized supervisor cap for that R10 attempt; they state the older cap was not recovered. The two reconstructed native RequestBinding SHA256 digests match the original ACKs, including those timeout fields. This proposal retains 1800 without claiming older provenance."
+  },
+  "oracle_metadata": {
+    "reads": [
+      {
+        "role": "oracle-binary",
+        "name": "bao",
+        "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+        "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+        "native_request": {
+          "path": "requests/oracle-1-oracle-binary.file_info.json",
+          "bytes": 89,
+          "sha256": "70135b0a1ec4f25e21b62f7abf2db47930dadf5b53ef54049b1b45e61cc7ff7b",
+          "blob": "72f01d791e9d86d0cdee1542c2e2217589bea250"
+        },
+        "native_operation_request": {
+          "path": "requests/oracle-1-oracle-binary.operation_start.json",
+          "bytes": 243,
+          "sha256": "f8f5b62906a0d751972bc9c1ee1b778f46973b0c56a6318453640e08258c2ab4",
+          "blob": "3ee943d9c009b760b78e3bd6630e04749dd49b2e"
+        },
+        "whole_hash_required": true,
+        "known_source": "Unchanged fixed literal in both current and original actual X230 wrappers",
+        "observed_current_size": null,
+        "observed_current_version": null,
+        "observed_current_full9": null,
+        "submitted": false
+      },
+      {
+        "role": "oracle-archive",
+        "name": "official-openbao-2.7.1-linux-amd64.tar.gz",
+        "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+        "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+        "native_request": {
+          "path": "requests/oracle-2-oracle-archive.file_info.json",
+          "bytes": 127,
+          "sha256": "92a06124473aa17044d1391818c7bf1b7b957c9df76f7ee482a3ce77668b9dff",
+          "blob": "8d0a66e5f37a69e476a57b729960ae1acbca188d"
+        },
+        "native_operation_request": {
+          "path": "requests/oracle-2-oracle-archive.operation_start.json",
+          "bytes": 282,
+          "sha256": "7fb6667a4e2df25f300e06d19aa0cf1ad5a2448417104d1ab9584f2fe0607066",
+          "blob": "95070d68f5508654393973c968af80f11cd5c271"
+        },
+        "whole_hash_required": true,
+        "known_source": "Unchanged fixed literal in both current and original actual X230 wrappers",
+        "observed_current_size": null,
+        "observed_current_version": null,
+        "observed_current_full9": null,
+        "submitted": false
+      }
+    ],
+    "sequence": "Oracle binary, then archive; exactly one read future at a time when root grants a line. The current actual size, version and full9 remain unresolved until original closed payloads are received.",
+    "contract": "file_info obtains whole SHA256 as well as metadata; it is not represented as a pure stat. No alternate path, symlink traversal, provider request or executable probe is proposed.",
+    "failure": "Retain the original SDK first. A transport or native failure stops this proposal's subsequent admissions for root reconciliation; do not change path/key or turn a missing result into file absence."
+  },
+  "create_only_publication": {
+    "writes": [
+      {
+        "order": 1,
+        "role": "full34",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+        "source": {
+          "bytes": 10142,
+          "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+          "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1"
+        },
+        "request": {
+          "path": "requests/publication-1-full34.binary_write.json",
+          "bytes": 13693,
+          "sha256": "8a3605714b8b116a30577c41ab630f7b3c6ac3d8aa072b9660265a1ca44b226d",
+          "blob": "8565b7b336905361a84ee68f1224fb01b2176cac"
+        },
+        "tool": "binary_write",
+        "expected_version": "absent",
+        "create_only": true,
+        "strict_base64_roundtrip_verified": true,
+        "bytes_unchanged": true,
+        "extra_publisher": false,
+        "postpublication_info_request": {
+          "path": "requests/postpublication-1-full34.file_info.json",
+          "bytes": 116,
+          "sha256": "f1aae31f423c6cd3b44664de047f76aef5e553f8dab37bc792e5bd182aeec1a6",
+          "blob": "5b49b57ef4ab49d137fcbe6d9d20d9c22a943add"
+        },
+        "published": false,
+        "current_version": null,
+        "current_full9": null,
+        "current_mode": null
+      },
+      {
+        "order": 2,
+        "role": "comparison69",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+        "source": {
+          "bytes": 11716,
+          "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+          "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c"
+        },
+        "request": {
+          "path": "requests/publication-2-comparison69.binary_write.json",
+          "bytes": 15799,
+          "sha256": "e9865bc30e1e718ad92427756185e9e44616a3cb35c68fb8fe990778687e57c7",
+          "blob": "afeca569bb8e1e6d9d9f5cd4fa1c3352e5659c39"
+        },
+        "tool": "binary_write",
+        "expected_version": "absent",
+        "create_only": true,
+        "strict_base64_roundtrip_verified": true,
+        "bytes_unchanged": true,
+        "extra_publisher": false,
+        "postpublication_info_request": {
+          "path": "requests/postpublication-2-comparison69.file_info.json",
+          "bytes": 122,
+          "sha256": "ff3230c3e21e71c008e7c545ce7e85f5ca64f7b260dc59f2995f4736e77e4b38",
+          "blob": "cc5654ac9d86841186eaa23a60bb22654e980d20"
+        },
+        "published": false,
+        "current_version": null,
+        "current_full9": null,
+        "current_mode": null
+      },
+      {
+        "order": 3,
+        "role": "comparison-driver",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+        "source": {
+          "bytes": 9261,
+          "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+          "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468"
+        },
+        "request": {
+          "path": "requests/publication-3-comparison-driver.binary_write.json",
+          "bytes": 12529,
+          "sha256": "bf50fc2dfdbb216d5cf24c14f85f35cd6d54132baabf22ac598aa04992fbac4f",
+          "blob": "9571811215e1777b6e91ba8eb4f2e5e019c64870"
+        },
+        "tool": "binary_write",
+        "expected_version": "absent",
+        "create_only": true,
+        "strict_base64_roundtrip_verified": true,
+        "bytes_unchanged": true,
+        "extra_publisher": false,
+        "postpublication_info_request": {
+          "path": "requests/postpublication-3-comparison-driver.file_info.json",
+          "bytes": 128,
+          "sha256": "ec480b82f810db367d70ef952931dc093fde557f8b75e40e742466b1cd14dd57",
+          "blob": "b82cd76b62d4343905943efdd77c5f3df4e778ae"
+        },
+        "published": false,
+        "current_version": null,
+        "current_full9": null,
+        "current_mode": null
+      }
+    ],
+    "total_decoded_bytes": 31119,
+    "tool": "binary_write",
+    "tool_contract": "Each exact supported request has data_base64, expected_version='absent', host='x230', and one fixed absolute path. No process_start, Python publisher, mkdir helper, chmod, compile process or source import is added.",
+    "destination_parent": "The already materialized current X230 ROOT from the accepted seven-file receiver; all three targets are top-level source controls outside ROOT/source.",
+    "expected_permissions_note": "The tool schema has no requested-mode argument. The historical three controls were mode0600, but no new mode/version/full9 is claimed here. Root must review actual publication metadata/readback before any future run; no unsupported mode field or chmod is introduced.",
+    "readback": "After each successful write, the fixed independent file_info request is supplied. Bind any requested whole-body read to the returned actual version; do not invent one. Require exact original source bytes/SHA and a regular single-link file under the operator account.",
+    "unknown": "binary_write has no idempotency-key argument. An ambiguous response does not authorize repetition or overwrite. Keep the original response and let root choose a fixed-path read-only reconciliation; expected_version remains 'absent'.",
+    "atomicity": "Each tool write is separately atomic according to its advertised contract. No cross-file atomic publication is asserted.",
+    "authorized": false
+  },
+  "existing_run_contract": {
+    "requests": [
+      {
+        "role": "full34",
+        "request": {
+          "path": "proposed-future-run/full34.process_start.json",
+          "bytes": 355,
+          "sha256": "235880f1326aa4d1848b2a9867c5915719c787bb9b58e90140b95838a7c49b69",
+          "blob": "3839158cca7a7d543d8b277fc4df9f271d45ab83"
+        },
+        "canonical_typed_request": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian/heptabao-same-root-publication-normal-20261105-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"x230\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":1800}",
+        "request_digest": "5c151114a4d4ae0e2770e4dc7060205cc8d5868cda1da1bd85c3c4347123e3ac",
+        "actual_job_id": null,
+        "submitted": false,
+        "authorized": false,
+        "source_pin": {
+          "bytes": 10142,
+          "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+          "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1"
+        },
+        "retained_outer_seconds": 1800,
+        "provenance": "Same native interface and 1800 cap as recovered R10 actual intent, whose original text labels 1800 NEW root-authorized at that time; earlier cap was not recovered.",
+        "requires": "Separate root GO after exact source publication/current input verification; comparison69 additionally follows current full34 terminal plus owned cleanup."
+      },
+      {
+        "role": "comparison69",
+        "request": {
+          "path": "proposed-future-run/comparison69.process_start.json",
+          "bytes": 367,
+          "sha256": "4e6c3e22504fedffbfdead8f50a9856678f1de42d8b1ec2a728befbc507f97ea",
+          "blob": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d"
+        },
+        "canonical_typed_request": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian/heptabao-same-root-publication-normal-20261105-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"x230\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":1800}",
+        "request_digest": "56ddc986607a02e224a254f604912c4d12b3c4b7de290b2d724b3add50687e35",
+        "actual_job_id": null,
+        "submitted": false,
+        "authorized": false,
+        "source_pin": {
+          "bytes": 11716,
+          "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+          "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c"
+        },
+        "retained_outer_seconds": 1800,
+        "provenance": "Same native interface and 1800 cap as recovered R10 actual intent, whose original text labels 1800 NEW root-authorized at that time; earlier cap was not recovered.",
+        "requires": "Separate root GO after exact source publication/current input verification; comparison69 additionally follows current full34 terminal plus owned cleanup."
+      }
+    ],
+    "entry_shape": "/usr/bin/python3 -I -S -B ROOT/{full34,comparison69}_controller.py, cwd ROOT, timeout_seconds1800; no shell, stdin, environment override or new execution layer.",
+    "sequence": "Only after separate root permission, accepted current oracle observations and exact publication/readback: one full34, terminal result plus original owned cleanup; only then a separately authorized comparison69.",
+    "wrapper_ready_meaning": "BINDING_READY=True only denotes the five actual normal61/transfer hash slots filled in the previously reviewed wrapper; it does not grant product execution.",
+    "full34": {
+      "driver": "ROOT/source/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "checks": 31,
+      "http_seconds": 15,
+      "migration_seconds": 360,
+      "profile": "full34",
+      "migration_lane": "native-large",
+      "private_work_root": "ROOT/evidence/full34-r1/private-run",
+      "candidate_storage_scope": "single-node migration/snapshot/restore/cold verification"
+    },
+    "comparison69": {
+      "driver": "ROOT/native271_comparison_final_r1.py",
+      "cases_each_side": 69,
+      "default_modules": 13,
+      "modules_argument_omitted": true,
+      "oracle_version": "2.7.1",
+      "private_work_root": "ROOT/evidence/comparison69-r1/private-run",
+      "candidate_storage": "native_v6_file",
+      "full_openbao_compatibility": false
+    },
+    "unchanged_scope": "Original fixture behaviors, assertions, bounded HTTP/migration and stop/cleanup requirements remain. The wrapper subprocess.run calls remain unchanged; no new internal timeout or Linux Owner/5+5 guarantee is invented."
+  },
+  "old_relay": {
+    "job": "1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN",
+    "termination_proven": false,
+    "replay": false,
+    "held_effect_fence_changes": 0,
+    "namespace_condition_not_strengthened": true
+  },
+  "boundaries": {
+    "host_requests_submitted": 0,
+    "source_controls_published": false,
+    "oracle_current_qualified": false,
+    "current_full34_qualified": false,
+    "current_comparison69_qualified": false,
+    "HA_qualification_added": false,
+    "full_OpenBao_replacement_qualified": false,
+    "production_cutover": false
+  }
+}

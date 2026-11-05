@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.current4e808.cli-stage-canonical-eight-members.r1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "root_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "trees": [
+    {
+      "name": "root",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "computed": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "entries": 26,
+      "whole": true
+    },
+    {
+      "name": "crates",
+      "tree": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+      "computed": "fd50f52f2beb3cef919ad86194955a3e32090e80",
+      "entries": 49,
+      "whole": true
+    },
+    {
+      "name": "heptabao-server",
+      "tree": "19f9a6ab211357e04e17266636279843921be619",
+      "computed": "19f9a6ab211357e04e17266636279843921be619",
+      "entries": 8,
+      "whole": true
+    },
+    {
+      "name": "src",
+      "tree": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+      "computed": "de426e481e192ca774a4c9fef252d8c1d4b71b92",
+      "entries": 780,
+      "whole": true
+    }
+  ],
+  "members": [
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "blob": "6828ae88590184830da949001b13abd82a4f9b10",
+      "bytes": 14013,
+      "sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899,
+      "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "blob": "052e96ae3b6d1d8d58c4013c07d28a2adf0af9d8",
+      "bytes": 16516,
+      "sha256": "e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "bytes": 31855,
+      "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121",
+      "exact_membership": true
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "exact_membership": true
+    }
+  ],
+  "full_tree_rechecked_here": false,
+  "scope": "Four complete ancestor trees and eight exact leaves; full 3914-leaf canonical qualification remains separately rooted in 3859911145a8bd8b947935bc038d501e143a5d63.",
+  "Runtime_calls": 0
+}

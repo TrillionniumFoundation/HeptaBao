@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "comparison-driver-info-status",
+  "method": "operation_status",
+  "request_blob": "0740fb6e8234ac7f57fe7e3c7a5cca6a2a0d9da9",
+  "request_bytes": 89,
+  "request_sha256": "96d462a69ee7372214c7ed6396c1c2bc2a3cd63220fcaa5f35dbd2d8bb705c30",
+  "request": {
+    "operation_id": "eb4d59a4f07722d8ed4871a3634c6960afa0e3dcbea0938b26772d94d498024e"
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "eb4d59a4f07722d8ed4871a3634c6960afa0e3dcbea0938b26772d94d498024e",
+  "original_call_only": true
+}

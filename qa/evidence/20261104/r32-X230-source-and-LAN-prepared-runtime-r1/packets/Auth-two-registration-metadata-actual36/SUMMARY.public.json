@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.mac-registration-metadata2.complete-summary.r1",
+  "root_GO": "a99b9f7d507d357195cbdfc2ee76cf418ce04db1",
+  "lane": "A",
+  "original_operation_count": 2,
+  "immutable_page_count": 2,
+  "original_payload_bytes": 1155,
+  "all_completed_stored_inactive": true,
+  "all_original_payloads_whole": true,
+  "all_original_SDKs_persisted_before_parsing": true,
+  "metadata_requested": 2,
+  "metadata_complete": 2,
+  "errors": 0,
+  "reconciliations": 0,
+  "body_operations_submitted": 0,
+  "SDK_executed": 0,
+  "actual_selected_owner": null,
+  "observed": [
+    {
+      "sequence": 1,
+      "id": "manifest-registry",
+      "request": {
+        "blob": "de339e004231215b90f084799cede9aeb8535e94",
+        "bytes": 278,
+        "sha256": "2be919f191a69b23ad760fc3fdb210df3524fc57bc1195453ebff6ff6e3866f7"
+      },
+      "intent": {
+        "blob": "8cbdb0248b6ed2b5aa4d512d4b6f818868592d8f",
+        "bytes": 1418,
+        "sha256": "c2f1aafd839e0f2e60a7db36fa9afd321284087cd904365b4d911c9cbf2bc811"
+      },
+      "operation_id": "7a88b1d0144ee83cdc64bc2717c7c1b2f622fc487cad20da2b60ed8608ffd7b4",
+      "ACK_SDK": "15a337d95c9899d40dad3ef791d6157d400ecd91",
+      "ACK_native": "f9345b28a15c2958c30913df9eba24e78e54a38e",
+      "status": {
+        "blob": "1320941ffaecf2daa108d869c0c6fd89f531aeb6",
+        "bytes": 800,
+        "sha256": "cd1a2368a4605fe02170f50c20b1cd1fe26f16e3bd250fdf657d51b3cc32e7e9"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_bytes": 581,
+      "payload_sha256": "92732dd9bf436260635888189dbc37445999fc5b6afb2e48041f8b08188bea72",
+      "native": {
+        "blob": "fda116250a9560c6dbff15ce0815d2a887d25f8c",
+        "bytes": 464,
+        "sha256": "03de9557541da230e61f378709eb492d25b5e18c04cd787f5b3252f19e02041a"
+      },
+      "binding": {
+        "blob": "135d4ddb97212b3d4af186d37e0d4d8962f1a915",
+        "bytes": 1928,
+        "sha256": "af0b23e2e5f49b826234d5e842f620240583c9ca0c3b82cd60b178bd6e88b539"
+      },
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 80,
+          "link_count": 1,
+          "metadata_platform": "darwin",
+          "mode": 420,
+          "uid": 501,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 420,
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+        "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+        "size": 31444,
+        "version": "16777233:405237428:31444:1784843459184750747:1784843459184750747"
+      },
+      "full9_decimal": [
+        "16777233",
+        "405237428",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "31444",
+        "1784843459184750747",
+        "1784843459184750747"
+      ]
+    },
+    {
+      "sequence": 2,
+      "id": "plugin-registry",
+      "request": {
+        "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+        "bytes": 267,
+        "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8"
+      },
+      "intent": {
+        "blob": "39ab52a4a7dc14e41a04545857534fe642f9bcab",
+        "bytes": 1564,
+        "sha256": "03688ef7766826a49d88f7def9392c1b7aa2469c1bd88c8d9fab9d48a1289e40"
+      },
+      "operation_id": "921e9ebd9f85ea4b118698312ce295b313aced33538f1edd4d1d04a7ad5fb7d2",
+      "ACK_SDK": "c1dbd67a8324e1037dab4e6b09157521757d6fc9",
+      "ACK_native": "e4707ec66fae1ce80b1beff34013051e0adbe0f1",
+      "status": {
+        "blob": "8414ed66a671815387d92fc4863f3a439bcefc3d",
+        "bytes": 800,
+        "sha256": "f2bb272808f586b1043a3b043ea9dda393afa3886eed28013487ea012182fbfe"
+      },
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false,
+      "payload_bytes": 574,
+      "payload_sha256": "7db36ce1824a6d5d66178322ad097af9464d79892a8ac23dad05242ab7ab6b10",
+      "native": {
+        "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+        "bytes": 457,
+        "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+      },
+      "binding": {
+        "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+        "bytes": 1922,
+        "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740"
+      },
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 80,
+          "link_count": 1,
+          "metadata_platform": "darwin",
+          "mode": 420,
+          "uid": 501,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 420,
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+        "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+        "size": 181581,
+        "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234"
+      },
+      "full9_decimal": [
+        "16777233",
+        "405238776",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "181581",
+        "1784843461889330234",
+        "1784843461889330234"
+      ]
+    }
+  ],
+  "proposed_body_plan": {
+    "blob": "38cb45d78de86306e215adf64b8905e949fd2050",
+    "bytes": 9520,
+    "sha256": "fbc10c42a52eec9a479eebb882160ea907f5c8272fe1cd9c8e6a65f4d2fb6ce3"
+  },
+  "new_body_bytes_proposed": 213025,
+  "prior_consumed_body_bytes": 140664,
+  "cumulative_if_new_body_separately_approved_and_completed": 353689,
+  "metadata_whole_file_hash_work": "Purpose-built file_info hashed each exact source internally; this does not mean source bodies have been retrieved or inspected.",
+  "inflight_Runtime_calls": 0,
+  "unclosed_native_futures": 0
+}

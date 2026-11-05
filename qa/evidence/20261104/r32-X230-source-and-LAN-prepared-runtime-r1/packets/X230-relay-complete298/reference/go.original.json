@@ -1,0 +1,281 @@
+{
+  "schema": "heptabao.root-X230-exact-seven-file-relay-and-source-import-GO.r31.v1",
+  "status": "GO_ONCE_EXACT_EXISTING_RELAY",
+  "lane": "B",
+  "owner": "/root/compatibility_audit",
+  "root_Runtime_calls": 0,
+  "prior_line_state": {
+    "inert_original_job": "desktop/1a1ace08ffa-fc05-576b",
+    "known_original_observers_closed": 10,
+    "immutable_pages": 14,
+    "known_calls_in_flight": 0,
+    "known_owned_native_futures_active": 0,
+    "root_actual_qualification": {
+      "name": "r31-X230-inert-complete-root-qualification.public.json",
+      "blob": "e4253d4b9ac873a810107b201ef4cf9eb05c8152",
+      "bytes": 6503,
+      "sha256": "539cb90bc785b00944be9d3858184491e1a36f4bf013a031c05f21e8f57e971c"
+    }
+  },
+  "request": {
+    "path": "dispatch/relay.exact-request.json",
+    "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+    "bytes": 386,
+    "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3",
+    "mode": "100644"
+  },
+  "exact_request": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "executable": "/usr/bin/python3",
+    "host": "desktop",
+    "idempotency_key": "heptabao-4e808-x230-source-artifacts-relay-r1-cc5a9ed3",
+    "timeout_seconds": 360
+  },
+  "request_digest": "8a40eb0744827fbc9a290b8c541be147c062539004cf7990412cc465549d3a9b",
+  "request_fingerprint_decimal": "9962220792190238652",
+  "actual_control_files": [
+    {
+      "role": "sender",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/sender.py",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663",
+      "version": "2050:7532609:8960:1793901767144422082:1793901767153777890",
+      "full9_decimal": [
+        "2050",
+        "7532609",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "8960",
+        "1793901767144422082",
+        "1793901767153777890"
+      ],
+      "info_blob": "03c71956533f7dd28123a9e16b577b2125cf5ff2",
+      "body_blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9"
+    },
+    {
+      "role": "receiver",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/receiver.py",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+      "version": "2050:7532610:30791:1793901767197502850:1793901767206425051",
+      "full9_decimal": [
+        "2050",
+        "7532610",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30791",
+        "1793901767197502850",
+        "1793901767206425051"
+      ],
+      "info_blob": "17dbd5385d474dc01200d042a557d366a73d52c3",
+      "body_blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e"
+    },
+    {
+      "role": "relay",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f",
+      "version": "2050:7532611:25713:1793901767238166039:1793901767249302558",
+      "full9_decimal": [
+        "2050",
+        "7532611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25713",
+        "1793901767238166039",
+        "1793901767249302558"
+      ],
+      "info_blob": "f5d27d38f37a3855332c24801173cdf802c76450",
+      "body_blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784"
+    },
+    {
+      "role": "receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/inert-stage.result.public.json",
+      "bytes": 1924,
+      "sha256": "22bb50e3e627fe07f5b344711790802f45ccb079115c1bcbff70d1bdc889b0ca",
+      "version": "2050:7532612:1924:1793901767259034616:1793901767292502914",
+      "full9_decimal": [
+        "2050",
+        "7532612",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1924",
+        "1793901767259034616",
+        "1793901767292502914"
+      ],
+      "info_blob": "97babcd9955080c9e7411615db99b2af13ebdbcd",
+      "body_blob": "ac4e5e11243b1ed7808e29609972532b38255940"
+    }
+  ],
+  "seven_actual_source_inputs": [
+    {
+      "reference": "reference/actual-info/heptabao-server.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+      "mode": 320,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "destination_mode": "0500"
+    },
+    {
+      "reference": "reference/actual-info/native-build.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "destination_mode": "0400"
+    },
+    {
+      "reference": "reference/actual-info/normal-release-result.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "destination_mode": "0400"
+    },
+    {
+      "reference": "reference/source2/bundle-info.original.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+      "destination_mode": "0400"
+    },
+    {
+      "reference": "reference/source2/export-info.original.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+      "destination_mode": "0400"
+    },
+    {
+      "reference": "reference/actual-info/normal-release-tests-result.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "version": "2050:7361495:57532:1793892021140513746:1793892021140513746",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "destination_mode": "0400"
+    },
+    {
+      "reference": "reference/actual-info/groups.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "version": "2050:7361500:6249:1793892021148513615:1793892021148513615",
+      "mode": 256,
+      "destination_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+      "destination_mode": "0400"
+    }
+  ],
+  "total_artifact_bytes": 132647913,
+  "fixed_namespaces": {
+    "desktop_owned_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1",
+    "desktop_core": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/result.public.json",
+    "destination_alias": "x230-ts",
+    "destination_host": "x230",
+    "destination_ipv4": "192.168.0.13",
+    "destination_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "destination_artifacts": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts",
+    "destination_source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+    "destination_receiver_receipt": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+    "create_only": true
+  },
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "history_commits": 3763,
+    "tracked_files": 3914
+  },
+  "unchanged_limits": {
+    "native_outer_seconds": 360,
+    "relay_overall_seconds": 300,
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "ssh_config_seconds": 90,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5,
+    "max_bundle_bytes": 67108864,
+    "no_reset_or_widening": true
+  },
+  "original_fence": {
+    "old_relay": "desktop/1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN_PRESERVED",
+    "marker_blob": "57e60bde940b51814c47af72fd3b1880cc8cb41e",
+    "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "three_held_readonly_FDs_required": true,
+    "original_before_root_before_endpoints_after_cleanup_rechecks_required": true,
+    "original_close_once_ledger_required": true,
+    "namespace_stability_condition_preserved": true,
+    "no_claim_of_continuous_atomic_fence_or_old_remote_termination": true,
+    "no_guard_or_marker_mutation": true
+  },
+  "protocol": [
+    "Complete an independent external exact intent and whole readback before the one original process_start.",
+    "Use the 386-byte original request exactly, original four argv, key, cwd and360s; no source rewrite/extra argument/new controller.",
+    "Whole-save the original SDK ACK externally before parsing; inspect isError first, retain unsafe integer tokens, match digest/fingerprint.",
+    "Missing ACK/error/UNKNOWN: preserve original response and stop new admissions; no business replay/new key/root/deadline.",
+    "Only original returned job and original read operation IDs, one Runtime call and one owned native future at a time."
+  ],
+  "authorized_actions": "Only seven-file desktop→fixed X230 transport, strict SSH trust verification and receiver's local file-protocol Git clone/materialization/proofs in the fixed fresh namespace. No server/compiler/HTTP/credential/provider/production action.",
+  "finite_original_evidence_after_terminal": {
+    "original_job_authority_and_entire_stdout_stderr": true,
+    "require_exit0_full_durable_confirmed_no_timeout_no_cancel": true,
+    "independent_desktop_core_info_and_whole_version_bound_body": true,
+    "independent_seven_fixed_X230_artifact_infos": true,
+    "independent_X230_receiver_receipt_info_and_whole_body": true,
+    "seven_destinations_must_equal_source_size_sha_mode_and_receiver_full9": true,
+    "original_sender_and_receiver_receipts_and_commands_required": true,
+    "freeze_only_actual_control_command_record_and_saved_stream_paths_before_reading": true,
+    "no_directory_or_credential_search": true,
+    "native_read_and_page_limits_unchanged": true,
+    "all_local_and_remote_owned_children_FDs_and_groups_positive_closure_required": true,
+    "original_fence_after_cleanup_and_close_ledger_required": true,
+    "full_source_history_and3914_materialized_source_proof_required": true,
+    "all_original_observers_pages_errors_provenance_whole": true
+  },
+  "not_authorized": [
+    "X230 product/full34/comparison execution",
+    "LAN prepare/live",
+    "production service creation/change/cutover",
+    "credential/config/model/provider/refresh/quota changes",
+    "old OpenBao/HeptaBao/binary/backup/intermediate deletion",
+    "J3160 dependency or contact",
+    "old UNKNOWN replay or cleanup"
+  ],
+  "qualification": {
+    "transfer_qualified_before_actual_result": false,
+    "X230_source_import_qualified_before_actual_result": false,
+    "X230_runtime_qualified": false,
+    "full_replacement_qualified": false
+  }
+}

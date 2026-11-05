@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "oracle-archive-admission",
+  "method": "operation_start",
+  "request_blob": "95070d68f5508654393973c968af80f11cd5c271",
+  "request_bytes": 282,
+  "request_sha256": "7fb6667a4e2df25f300e06d19aa0cf1ad5a2448417104d1ab9584f2fe0607066",
+  "request": {
+    "idempotency_key": "heptabao-4e808-x230-oracle-archive-info-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz"
+      }
+    }
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": null,
+  "original_call_only": true
+}

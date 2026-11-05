@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.mac-owner-next2.source-packet.manifest.v1",
+  "scope": "Source-only two file_info proposals, actual immutable line evidence and unbound credential-free selection contract",
+  "Runtime_calls": 0,
+  "native_futures": 0,
+  "SDK_execution": 0,
+  "metadata_submitted": 0,
+  "body_submitted": 0,
+  "pure_source_binding_checks": 99,
+  "files": [
+    {
+      "path": "checks/actual-result.public.json",
+      "blob": "698cc59da0964c072a002d782c93255053243577",
+      "bytes": 7999,
+      "sha256": "a6f5e6147b56f24d7c5003d527ef3ebcba45a67f4bf5a5dbafc5dcd9ea298084"
+    },
+    {
+      "path": "checks/INTERFACE.public.json",
+      "blob": "4fddd1f7f812d88a2e145b1d25bc7e2c2180090c",
+      "bytes": 993,
+      "sha256": "4e14afe7d896e0f9fc6170ca394ebcc61c681de8b646ccf30e3a49ef50bb65c8"
+    },
+    {
+      "path": "checks/verify-source-bindings.mjs",
+      "blob": "04ff41afac5f1e8945ae83ceb2f6c1e7d774416c",
+      "bytes": 8736,
+      "sha256": "c64f1eaaf1fa23c27ca33788443a63bacd5365561a813f642f76459278189255"
+    },
+    {
+      "path": "CONFIG-AND-INSTANCE-CONTRACT.public.json",
+      "blob": "317bff00673901d2e576340eed2fc3c9e7d56840",
+      "bytes": 12962,
+      "sha256": "6f47092adcead894e1ab2e62dc8d2948289d2db1eba1b3df25699300193374de"
+    },
+    {
+      "path": "METADATA-REQUESTS.public.json",
+      "blob": "33f0b539e7a9e9c8a87e7746b3e9d03b95c57669",
+      "bytes": 6359,
+      "sha256": "0c066f6d2299d20c5a738d9a4083d54e214c47412f7885bf2154cd5d15650c8a"
+    },
+    {
+      "path": "requests/01-manifest-registry.info.json",
+      "blob": "de339e004231215b90f084799cede9aeb8535e94",
+      "bytes": 278,
+      "sha256": "2be919f191a69b23ad760fc3fdb210df3524fc57bc1195453ebff6ff6e3866f7"
+    },
+    {
+      "path": "requests/02-plugin-registry.info.json",
+      "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+      "bytes": 267,
+      "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8"
+    },
+    {
+      "path": "REVIEW.md",
+      "blob": "7fdef38696873d846f016a1279ba7b48ed4b6d69",
+      "bytes": 10116,
+      "sha256": "9de4f217c21245cd2903d230482e7fcb14e853bcb135fd69ec0e9134a7858523"
+    },
+    {
+      "path": "SOURCE-ANCHORS.public.json",
+      "blob": "6db47c3d01162a22116f05090b6fa4b9dbb96c75",
+      "bytes": 41152,
+      "sha256": "036baf38adc631f43fb126810b7b4816de391d2b2fe5ba9851bb038ba85fd44f"
+    },
+    {
+      "path": "SOURCE-BASIS.public.json",
+      "blob": "c7aad7bf5daa1208957eeb7907dcb1524e868044",
+      "bytes": 2737,
+      "sha256": "e0d50480211241932a07ebc814319f2d9a92d989e1a2259da7ee47c2535414d4"
+    }
+  ],
+  "all_original_source_pins": "SOURCE-BASIS.public.json references whole verified immutable originals; source text is excerpted exactly in SOURCE-ANCHORS, not executed."
+}

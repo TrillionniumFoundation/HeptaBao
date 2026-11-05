@@ -1,0 +1,39 @@
+{
+  "Runtime_calls": 0,
+  "candidate_execution": false,
+  "new_product_tests": 0,
+  "rows": [
+    {
+      "candidate_executed": false,
+      "definition_names": [
+        "need",
+        "sha",
+        "save",
+        "enc",
+        "git",
+        "source",
+        "normal61_admission",
+        "main"
+      ],
+      "name": "full34",
+      "unchanged_full_definition_count": 8,
+      "unified_hunks": 1
+    },
+    {
+      "candidate_executed": false,
+      "definition_names": [
+        "need",
+        "sha",
+        "save",
+        "git",
+        "source",
+        "normal61_admission",
+        "main"
+      ],
+      "name": "comparison69",
+      "unchanged_full_definition_count": 7,
+      "unified_hunks": 1
+    }
+  ],
+  "schema": "heptabao.existing-X230-two-wrapper-definition-identity.v1"
+}

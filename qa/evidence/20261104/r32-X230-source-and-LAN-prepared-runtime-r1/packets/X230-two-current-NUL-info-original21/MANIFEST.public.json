@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.x230-two-nul-metadata-original-observer-packet.v1",
+  "scope": "Two original file_info observations and their complete immutable payload chains; zero NUL body reads; content reuse not yet authorized",
+  "files": [
+    {
+      "path": "observations/nul-tree-info/request.original.json",
+      "bytes": 278,
+      "sha256": "59978a8f4098f1f66790c6165d573e8d129aa6175b8ed6d476461841a4c93118",
+      "blob": "87364108f4083edd3f57fae69eb97b0578b28637"
+    },
+    {
+      "path": "observations/nul-tree-info/admission.original.sdk.json",
+      "bytes": 704,
+      "sha256": "89d136a6e09d832e8926e6c48f81fe12f6a2e8a9c68925dd0650b605078dc6bc",
+      "blob": "a51ec54623b97fe80f812569bd6402ee2a59fa29"
+    },
+    {
+      "path": "observations/nul-tree-info/admission.original.json",
+      "bytes": 543,
+      "sha256": "020aa80ac6e41c4110012f483d20cab87106ca8fe5dbb5b4720ee40f905f2513",
+      "blob": "5616b6876dcb645150883a1a7b5851cb51367121"
+    },
+    {
+      "path": "observations/nul-tree-info/status.original.sdk.json",
+      "bytes": 975,
+      "sha256": "cf1f58a8f1b53feeb33150aefa2dde48fe2be19f29c23508905a6fbfbe02b199",
+      "blob": "f7b269b068e61ee8a2809b4dbde91ba6c60c6ff8"
+    },
+    {
+      "path": "observations/nul-tree-info/status.original.json",
+      "bytes": 800,
+      "sha256": "a4b9397b43745b5fe53f35440c7b8df74c9705e596bb86f83845dcb294f90554",
+      "blob": "f28122b127bf3bb2b57be562c86f81906c3995e4"
+    },
+    {
+      "path": "observations/nul-tree-info/pages/000000.original.sdk.json",
+      "bytes": 1656,
+      "sha256": "8419f1c6438728480d8624dae13697cfcfe8727ccb3938eaf0703311a42f7ed5",
+      "blob": "29702d2c06dd614b71639322232129658d2af144"
+    },
+    {
+      "path": "observations/nul-tree-info/pages/000000.original.json",
+      "bytes": 1485,
+      "sha256": "2ea6101499b5fa3b795f98dafe030c29de5146375cb35c26f173d58647a62c84",
+      "blob": "4e97505198bdce5fdaaa6bfe567913b2d80dd01b"
+    },
+    {
+      "path": "observations/nul-tree-info/payload.original.json",
+      "bytes": 602,
+      "sha256": "b231b05c91cd1286f19e9bc5a2d8af998021d04d42d408c02446a78d56c2180f",
+      "blob": "f9d9ffc7b67bf27cfab5cc9668b8afb94b1a3b00"
+    },
+    {
+      "path": "observations/nul-tree-info/native.original.json",
+      "bytes": 485,
+      "sha256": "ba4dd858dccf77d0e47f9ddae50e8c3e31b5c224e4d97ec70781eef24d721cd9",
+      "blob": "a8a4dd63011aae2526412c3a0f05709abbfcc7b6"
+    },
+    {
+      "path": "observations/nul-index-info/request.original.json",
+      "bytes": 280,
+      "sha256": "ac118f6a209959668470affeafd932012535cba4e245414788d88e22bdb38bdb",
+      "blob": "ee55379713f89f435213f18039834039abeb12a8"
+    },
+    {
+      "path": "observations/nul-index-info/admission.original.sdk.json",
+      "bytes": 704,
+      "sha256": "758f9ae09d8576140b951e649513b8bd366177834025136e2e853c3aa44e0883",
+      "blob": "1715050a7e464c7baa6a21e04939c2cf39c3b881"
+    },
+    {
+      "path": "observations/nul-index-info/admission.original.json",
+      "bytes": 543,
+      "sha256": "5fe6ba70a4b61ff84c200e58e374e21f60b727dd9cf29ba47cbdd87954461f21",
+      "blob": "e889ff0b4e7f5e11fb1cf079e5a0227283821311"
+    },
+    {
+      "path": "observations/nul-index-info/status.original.sdk.json",
+      "bytes": 975,
+      "sha256": "569ce0042c68a8caf3dc9e9b41ea4464edcc6ea3d65b58b9a0609e5a98025815",
+      "blob": "31ed6547168d485b9a418a0e58738d782b7ccbaa"
+    },
+    {
+      "path": "observations/nul-index-info/status.original.json",
+      "bytes": 800,
+      "sha256": "d95e5c12beaf8a046e4b2b87ace58790333484356721a9ec82ac4cf254051f78",
+      "blob": "54a71df98c5a9136166809e010b7d93f6b3397ff"
+    },
+    {
+      "path": "observations/nul-index-info/pages/000000.original.sdk.json",
+      "bytes": 1656,
+      "sha256": "c45e5a136b3e8e7563f4e6faf42e49b5dae61cf60db53e238eae04291fdb30e3",
+      "blob": "0ea2dd4f9037f21dfa38c72bf937dabc7869854f"
+    },
+    {
+      "path": "observations/nul-index-info/pages/000000.original.json",
+      "bytes": 1485,
+      "sha256": "d793b7b685b7badf0e88a2d8615eb847f0c6fce05d36e9637df3f7a7f1b99400",
+      "blob": "8266081bd6c2782fcaa457bc08758116fe6c51f2"
+    },
+    {
+      "path": "observations/nul-index-info/payload.original.json",
+      "bytes": 603,
+      "sha256": "f4e93398e3397b27651de44fe26759123c571031ed8f7815a86982338d63f4d7",
+      "blob": "90d00f1492a67cb01f77ef4fc5d8d04e2263a913"
+    },
+    {
+      "path": "observations/nul-index-info/native.original.json",
+      "bytes": 486,
+      "sha256": "0b292e45a05c8eb37db0ecddf5e45fa685ea8089ef166c0bfeca7c92736157a7",
+      "blob": "78a49a460a3c9e215054e71f63c11ba0554d57f7"
+    },
+    {
+      "path": "actual/nul-current-metadata.public.json",
+      "bytes": 3230,
+      "sha256": "eb277f38e5b7a2d50dccfdb5c16c644bbb60410f9186297f026aac3ebf257228",
+      "blob": "f781b111396ab7440c285f3ac3f39c644606526c"
+    },
+    {
+      "path": "READPLAN.fixed-original-logs.public.json",
+      "bytes": 28001,
+      "sha256": "3ca75fa84e10d85f983d8ec4de6ded38a8f0a00df1d572608c1de4f6e8034c54",
+      "blob": "99770e25ee67d5fd192b913c3a0871125e036557"
+    }
+  ],
+  "operation_ids": [
+    "1c2e0285cfb0265c0aa630cecfb68dd2a32447b31e927f47e1c282df8ea8cf47",
+    "9f27a9ad175500ea35f0182a846b89dec77e5c707cf4e3b16c5fb1ed0f423403"
+  ]
+}

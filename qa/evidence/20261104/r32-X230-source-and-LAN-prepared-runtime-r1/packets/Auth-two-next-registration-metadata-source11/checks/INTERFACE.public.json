@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.source-proposal.pure-verifier.interface.v1",
+  "function": "verifySourceProposal(input, sha256BinaryString, gitSha1BinaryString)",
+  "input": {
+    "sources": "Map named exactly as SOURCE-BASIS.sources; each value contains raw whole UTF-8 source text plus blob/bytes/sha256. Obtain raw from that immutable Git blob, never from host.",
+    "source_basis": "parsed SOURCE-BASIS.public.json",
+    "anchors": "parsed SOURCE-ANCHORS.public.json",
+    "request_values": "two parsed request files in the prescribed order",
+    "proposal": "parsed METADATA-REQUESTS.public.json",
+    "contract": "parsed CONFIG-AND-INSTANCE-CONTRACT.public.json"
+  },
+  "hash_helpers": "sha256 and SHA1 of binary byte strings; verifier performs its own UTF-8 encoding and Git blob envelope",
+  "effects": "Pure strings/JSON/arithmetic/hashes only. No filesystem/Runtime/SDK/source-function invocation.",
+  "result": "Named finite source-binding checks and explicit scope. Not product tests."
+}

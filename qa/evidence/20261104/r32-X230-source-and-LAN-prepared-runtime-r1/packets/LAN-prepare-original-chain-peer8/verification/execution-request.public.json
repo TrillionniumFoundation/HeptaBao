@@ -1,0 +1,5 @@
+{
+  "cmd": "python3 /workspace/scratch/f86faac821c4/lan_prepare_peer_verify.py /workspace/scratch/f86faac821c4/lan_prepare_peer_original213 /workspace/scratch/f86faac821c4/lan_prepare_peer_result.public.json",
+  "workdir": "/workspace/scratch/f86faac821c4",
+  "max_output_tokens": 2000
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.root-line-B-Auth-four-bodies-to-X230-handoff.r32.v1",
+  "status": "LANE_B_RELEASE_ACCEPTED_AWAIT_EXACT_X230_REQUEST_GO",
+  "from": "/root/authbus_migration",
+  "to": "/root/compatibility_audit",
+  "owner_release": {
+    "blob": "ed0513fa0cf54e5ae4d8c631c94f572c99a012ac",
+    "bytes": 9914,
+    "sha256": "6c8f385c77c00fee52a484ff923477161bf67df66e0503e8712b982b0bae152a"
+  },
+  "root_whole_verified_terminal_statuses": [
+    {
+      "sequence": 1,
+      "operation_id": "759c24c999725828c6258057aec668fc43aef8305f5149a8542703aacb122996",
+      "blob": "cd36160cedb13eb3dc19b5db998387e825206231",
+      "bytes": 802,
+      "sha256": "92ebb1784f669c9abece6d51bb588ebe41e538fd1fbb742cb719883dc432e0e6",
+      "closed": true
+    },
+    {
+      "sequence": 2,
+      "operation_id": "0a3de1c5d12cb9577fa765265da3913e6f0fa8f1d37233efddda64c061a182bf",
+      "blob": "6c853c7479b0556ec3188a49dd3cd3b7e113e734",
+      "bytes": 802,
+      "sha256": "e91ec3f9e9f0f46cb3ef1b5833fd10808349e4b4baabe53c6d8697109c1cf974",
+      "closed": true
+    },
+    {
+      "sequence": 3,
+      "operation_id": "5df99abf71152e78c9c1157eb7b30b8490fc528e61249e172cc94be674b206b7",
+      "blob": "c928325b0461b86d5a8b637e8c13e6424731b42b",
+      "bytes": 802,
+      "sha256": "b2eea596dedf66cd8f8875add7fca70d8cbf6b2404f113736a6e618fb1cc77ff",
+      "closed": true
+    },
+    {
+      "sequence": 4,
+      "operation_id": "4e30dd2ed18a8da114be7dc54822c049f152ca731d99476d4f36690de274e904",
+      "blob": "3d50fa61f55fd775a9b2e1249ad4507defa58c50",
+      "bytes": 802,
+      "sha256": "bd4b51a5756c74b4fb0a1b80f829ae1f9c09402d7c5bc56e965b4192fbce650b",
+      "closed": true
+    }
+  ],
+  "active_Runtime_calls": 0,
+  "active_owned_futures": 0,
+  "prior_body_GO": {
+    "name": "r32-Auth-four-fixed-public-body-reads-exact-GO.public.json",
+    "blob": "89d02183f27a783b27dd9d4a976529dcc32045dc",
+    "bytes": 9280,
+    "sha256": "5525d55fafc956f523f43f6342e62cde03d318ad25ccb0abed27539e53b53d50"
+  },
+  "original_operations": 4,
+  "immutable_pages_reported": 23,
+  "full_original_body_chain_qualification_pending": true,
+  "Auth_now_pure_source_only": true,
+  "HA_lane_A_owner": "/root/ha_validation",
+  "HA_live_GO": {
+    "name": "r32-LAN-existing-postrecovery-cold-exact-live-GO.public.json",
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "HA_three_host_fixture_exclusive": true,
+  "X230_new_authorization": "Only separately root-reviewed exact requests; this handoff alone submits no Runtime request.",
+  "maximum_total_Runtime_lanes": 2,
+  "maximum_active_call_or_owned_future_per_lane": 1,
+  "root_Runtime_calls": 0
+}

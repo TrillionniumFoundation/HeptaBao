@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-registration-body-manifest-registry-819c76c3-0-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+      "expected_version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+      "offset": 0,
+      "limit": 31444
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py\",\n      \"--prepare-only\"\n    ],\n    \"created_unix_ms\": 1793905099721,\n    \"cwd\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1ad1383c9-fc05-5863\",\n    \"idempotency_key\": \"heptabao-4e808-postcold-prepare-r1-57cb2b31-7ee5ee82\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ad1383c9-fc05-5863\",\n    \"request_digest\": \"da7f3e7686a98e37b8d0aad6ac917c53d1e3cc2f7022d25c3cb3940ed206ed82\",\n    \"request_fingerprint\": 15744371501096865335,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ad1383c9-fc05-5863\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ad1383c9-fc05-5863\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

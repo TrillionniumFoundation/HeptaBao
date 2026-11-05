@@ -1,0 +1,58 @@
+{
+  "role": "comparison-driver",
+  "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+  "bytes": 9261,
+  "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+  "source_blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+  "body_read_blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+  "actual_source": {
+    "path": "actual/source/native271_comparison_final_r1.py",
+    "bytes": 9261,
+    "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+    "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+    "carrier_tree": "f2bf8fa43bf216836f549f7309617e2c1c3ea312"
+  },
+  "version": "2053:3062749:9261:1793908920065966649:1793908920066966649",
+  "full9_decimal": [
+    "2053",
+    "3062749",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "9261",
+    "1793908920065966649",
+    "1793908920066966649"
+  ],
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "independent_info_native": {
+    "path": "observations/comparison-driver-info/native.original.json",
+    "bytes": 477,
+    "sha256": "083b9da39563fd7bbe8491d79df903a7033a80238421a4b3dd8f04a2450d1794",
+    "blob": "91ec40a76d4220b86dbad979afe476722432bb8e",
+    "carrier_tree": "d994f52f8c8537965b2d7bce857404a8281cf2b5"
+  },
+  "body_native": {
+    "path": "observations/comparison-driver-body/native.original.json",
+    "bytes": 12674,
+    "sha256": "cdacf302b966cb5e4e9bc876f90b44c71321e016cc6acf2b48056d9d7b65ab47",
+    "blob": "2d5c7928ebab26facd73eb90059015231ee0c190",
+    "carrier_tree": "9dba91ba332f389224392ddf25369bdcf8ab5fe0"
+  },
+  "body_payload": {
+    "path": "observations/comparison-driver-body/payload.original.json",
+    "bytes": 12777,
+    "sha256": "afc9dea80a12244348ecfa48279129e4e01410c84b74cfb82c53719b7f5ed57b",
+    "blob": "49e6a103bc142e7989d136f3ee538aadc1adafb4",
+    "carrier_tree": "53e0e32e12986e8c52401a0c426f95d64e4ea036"
+  },
+  "body_operation_id": "1258d09b34e5230111962b1d351a50d426e089289ead3cb59c8bc9f5a5d74416",
+  "pages": 2,
+  "original_body_closed": true,
+  "whole_source_exact": true,
+  "compiled": false,
+  "executed": false
+}

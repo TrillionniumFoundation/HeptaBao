@@ -1,0 +1,10 @@
+{
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.062358738970942795,
+  "exit_code": 0,
+  "label": "x230-ts-effective-config",
+  "limit_seconds": 90,
+  "pid": 507826,
+  "remaining": [],
+  "timed_out": false
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-65536-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+      "offset": 65536,
+      "limit": 51144
+    }
+  }
+}

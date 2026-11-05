@@ -1,0 +1,372 @@
+{
+  "schema": "heptabao.root-LAN-prepare-five-file-and-source-semantic-review.r32.v1",
+  "status": "PASS_ACTUAL_PREPARE_SEMANTICS_ORIGINAL_CHAIN_PEER_PENDING",
+  "checks_passed": 55,
+  "checks": [
+    "whole213-original-evidence-Merkle",
+    "same-already-qualified-launcher-and-probe-source",
+    "original-prepare-exit0-full-durable-confirmed",
+    "complete-original297-stdout-and-empty-stderr",
+    "original-terminal-binds-actual-prepared-whole",
+    "five-fixed-output-plan-total52030",
+    "output0:independent-info-full-body-plan-exact",
+    "output0:actual-owner-mode-size-version",
+    "output1:independent-info-full-body-plan-exact",
+    "output1:actual-owner-mode-size-version",
+    "output2:independent-info-full-body-plan-exact",
+    "output2:actual-owner-mode-size-version",
+    "output3:independent-info-full-body-plan-exact",
+    "output3:actual-owner-mode-size-version",
+    "output4:independent-info-full-body-plan-exact",
+    "output4:actual-owner-mode-size-version",
+    "exact-current-prepared-identity",
+    "current4e808-canonical-prepared-schema",
+    "source-AST-exact-constant:qa_pins",
+    "source-AST-exact-constant:comparison_pins",
+    "source-AST-exact-constant:build_pins",
+    "source-AST-exact-constant:deadline_qa_pins",
+    "source-AST-exact-constant:required_extra_checks",
+    "original5QA36fences4deadline-sources98plus12",
+    "all-helper-source-digests",
+    "current-linux-retained-source-probe-no-product-execution",
+    "current-linux-five-frozen-product-file-pins",
+    "probe-linux:artifacts/heptabao-seed:original-eight-field-identity-format",
+    "probe-linux:artifacts/heptabao-server:original-eight-field-identity-format",
+    "probe-linux:native-build.public.json:original-eight-field-identity-format",
+    "probe-linux:normal-release-build.stdout:original-eight-field-identity-format",
+    "probe-linux:normal-release-result.public.json:original-eight-field-identity-format",
+    "normal-default-features-without-private-diagnostics:linux",
+    "original-probe-raw-receipt-byte-exact:linux:native-build.public.json",
+    "original-probe-raw-receipt-byte-exact:linux:normal-release-result.public.json",
+    "current-mac-retained-source-probe-no-product-execution",
+    "current-mac-five-frozen-product-file-pins",
+    "probe-mac:artifacts/heptabao-seed:original-eight-field-identity-format",
+    "probe-mac:artifacts/heptabao-server:original-eight-field-identity-format",
+    "probe-mac:native-build.public.json:original-eight-field-identity-format",
+    "probe-mac:normal-release-build.stdout:original-eight-field-identity-format",
+    "probe-mac:normal-release-result.public.json:original-eight-field-identity-format",
+    "normal-default-features-without-private-diagnostics:mac",
+    "original-probe-raw-receipt-byte-exact:mac:native-build.public.json",
+    "original-probe-raw-receipt-byte-exact:mac:normal-release-result.public.json",
+    "complete-exact-three-physical-host-argv-source-build-and-fresh-roots",
+    "original98-and-distinct12-no-official30-recount",
+    "direction-contract-exact-current-source-and-historical-comparison-pins",
+    "all-original-deadline-contracts-preserved",
+    "natural-election-real-direction-and-original-term-frontier-guards",
+    "original34MiB-history-and-honest-standby-scope",
+    "bounded-existing-witness-not-test-denominator-or-history",
+    "source-contract-preservation-and-original-parser-admission",
+    "prepare-only-no-live-or-production-qualification",
+    "original13-observer20-page-error-inclusive-scope-still-awaits-peer"
+  ],
+  "packet": "f799faca211d7c34db5f386c948509e1d6219faa",
+  "job": "desktop/1a1ad1383c9-fc05-5863",
+  "actual_outputs": [
+    {
+      "name": "linux-native-build.public.json",
+      "blob": "9e8a896dddf88bb1623981022568074fdc1ddab7",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2050:7401917:786:1793905103897983088:1793905103897983088",
+      "full9_decimal": [
+        "2050",
+        "7401917",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "786",
+        "1793905103897983088",
+        "1793905103897983088"
+      ]
+    },
+    {
+      "name": "linux-normal-release-result.public.json",
+      "blob": "8817820102da001912a8ad5188dfbab01444f6cb",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2050:7401918:3192:1793905103902942062:1793905103902942062",
+      "full9_decimal": [
+        "2050",
+        "7401918",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3192",
+        "1793905103902942062",
+        "1793905103902942062"
+      ]
+    },
+    {
+      "name": "mac-native-build.public.json",
+      "blob": "27dbe301526370817252d0540006d801eddccad0",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "version": "2050:7401919:814:1793905103904979860:1793905103904979860",
+      "full9_decimal": [
+        "2050",
+        "7401919",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "814",
+        "1793905103904979860",
+        "1793905103904979860"
+      ]
+    },
+    {
+      "name": "mac-normal-release-result.public.json",
+      "blob": "b011605fe037ff7aa764808ce402e69559150646",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "version": "2050:7401920:3386:1793905103906606614:1793905103906606614",
+      "full9_decimal": [
+        "2050",
+        "7401920",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3386",
+        "1793905103906606614",
+        "1793905103906606614"
+      ]
+    },
+    {
+      "name": "prepared.public.json",
+      "blob": "0b664e254c69bb57fec34eb29c2bedec5b44151e",
+      "bytes": 43852,
+      "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1",
+      "version": "2050:7363112:43852:1793905105749942399:1793905105749942399",
+      "full9_decimal": [
+        "2050",
+        "7363112",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "43852",
+        "1793905105749942399",
+        "1793905105749942399"
+      ]
+    }
+  ],
+  "source_AST_constants_review": {
+    "name": "r32-LAN-prepare-source-constants-root-review.public.json",
+    "blob": "fd61e617f7ed7d64d63e184b2fa37940dc337ad7",
+    "bytes": 11391,
+    "sha256": "fdb6e3e3fe94e309e5d1d86c45bce193758400ec49a7c26f9acdab9cbc444573"
+  },
+  "prior_nine_actual_source_root": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+  "original_source_import_qualification": "3859911145a8bd8b947935bc038d501e143a5d63",
+  "retained_build_current_identity8": [
+    {
+      "platform": "linux",
+      "name": "artifacts/heptabao-seed",
+      "bytes": 102145376,
+      "sha256": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+      "identity8_decimal": [
+        "66306",
+        "35799525",
+        "102145376",
+        "1000",
+        "320",
+        "1793878962612899835",
+        "1793878962748899164",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "identity8_decimal": [
+        "66306",
+        "35799524",
+        "110219600",
+        "1000",
+        "320",
+        "1793878962288901433",
+        "1793878962422900772",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "identity8_decimal": [
+        "66306",
+        "35799527",
+        "786",
+        "1000",
+        "384",
+        "1793878962882813897",
+        "1793878962882813897",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "normal-release-build.stdout",
+      "bytes": 390609,
+      "sha256": "064a4de5bc8a6dd76faddd9bcac7e444b27c1f7128000fdf9638695e6ecc9e24",
+      "identity8_decimal": [
+        "66306",
+        "35799520",
+        "390609",
+        "1000",
+        "384",
+        "1793878962089902414",
+        "1793878962089902414",
+        "1"
+      ]
+    },
+    {
+      "platform": "linux",
+      "name": "normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "identity8_decimal": [
+        "66306",
+        "35799526",
+        "3192",
+        "1000",
+        "384",
+        "1793878962880898513",
+        "1793878962880898513",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "artifacts/heptabao-seed",
+      "bytes": 86761216,
+      "sha256": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+      "identity8_decimal": [
+        "16777244",
+        "72626765",
+        "86761216",
+        "501",
+        "320",
+        "1793876826766527617",
+        "1793876826790237905",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "artifacts/heptabao-server",
+      "bytes": 92398928,
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "identity8_decimal": [
+        "16777244",
+        "72626763",
+        "92398928",
+        "501",
+        "320",
+        "1793876826299674364",
+        "1793876826322472740",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "native-build.public.json",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "identity8_decimal": [
+        "16777244",
+        "72626768",
+        "814",
+        "501",
+        "384",
+        "1793876826903716038",
+        "1793876826903716038",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "normal-release-build.stdout",
+      "bytes": 440534,
+      "sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+      "identity8_decimal": [
+        "16777244",
+        "72626337",
+        "440534",
+        "501",
+        "384",
+        "1793876825836663089",
+        "1793876825836663089",
+        "1"
+      ]
+    },
+    {
+      "platform": "mac",
+      "name": "normal-release-result.public.json",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "identity8_decimal": [
+        "16777244",
+        "72626767",
+        "3386",
+        "501",
+        "384",
+        "1793876826902261004",
+        "1793876826902261004",
+        "1"
+      ]
+    }
+  ],
+  "complete_expected_live_argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+    "--candidate-source",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "--binary-source",
+    "rog-ts:/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+    "--expected-binary-sha256",
+    "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "--node-binary",
+    "mac-ts,mac-ts:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server,c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63,4e808d0ecb1bcded22870a7ec960dfb2491cf6ec,eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "--source-commit",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "--source-tree",
+    "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "--native-build-receipt",
+    "mac-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json,25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+    "--native-build-receipt",
+    "rog-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json,3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "--native-build-receipt",
+    "pocket4-ts,local:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json,3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "--node",
+    "mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1",
+    "--node",
+    "rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node2-r1",
+    "--node",
+    "pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node3-r1",
+    "--api-port",
+    "46230",
+    "--raft-port",
+    "46231",
+    "--allow-private-lan",
+    "--work-root",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1",
+    "--darwin-watchdog-python",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "--darwin-watchdog-python-sha256",
+    "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  ],
+  "original_checks": 98,
+  "separate_postcold_checks": 12,
+  "product_checks_executed_in_prepare": 0,
+  "known_read_error_preserved": true,
+  "full_prepare_qualification_pending_original_chain": true,
+  "live_authorized": false,
+  "root_Runtime_calls": 0
+}

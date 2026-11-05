@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.current4e808.LAN-prepare.fixed-version-body-plan.v1",
+  "root_GO": {
+    "blob": "8378661df80442329b793a4dd73b1661a53dd80f",
+    "bytes": 10779,
+    "sha256": "e34f7e0075b0b0edbccc8afa7c37ccf5843cf4a9190c2a9c7f12d451dc1b6ab4"
+  },
+  "original_job": "1a1ad1383c9-fc05-5863",
+  "native_body_requests": 5,
+  "total_original_file_bytes": 52030,
+  "maximum_single_body_limit": 65536,
+  "one_native_future": true,
+  "immutable_result_page_limit": 8192,
+  "all_five_independent_infos_closed": true,
+  "requests_previously_submitted": 0,
+  "rows": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2050:7401917:786:1793905103897983088:1793905103897983088",
+      "full9_decimal": [
+        "2050",
+        "7401917",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "786",
+        "1793905103897983088",
+        "1793905103897983088"
+      ],
+      "original_file_info_operation": "8639ea8f31422b6c8c220c5623ca421bb14b6f1213ad39c7129ef6f87d5f6f4e",
+      "body_observation": {
+        "name": "output0_body0",
+        "key": "ha-4e808-postcold-prepare-output0-body0-r1-20261105",
+        "tool": "binary_read",
+        "args": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json",
+          "offset": 0,
+          "limit": 786,
+          "expected_version": "2050:7401917:786:1793905103897983088:1793905103897983088"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2050:7401918:3192:1793905103902942062:1793905103902942062",
+      "full9_decimal": [
+        "2050",
+        "7401918",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3192",
+        "1793905103902942062",
+        "1793905103902942062"
+      ],
+      "original_file_info_operation": "068c5dab455f33cbf2272e137cb7682ec5db706bd4feabaebc29008dea5dd79a",
+      "body_observation": {
+        "name": "output1_body0",
+        "key": "ha-4e808-postcold-prepare-output1-body0-r1-20261105",
+        "tool": "binary_read",
+        "args": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+          "offset": 0,
+          "limit": 3192,
+          "expected_version": "2050:7401918:3192:1793905103902942062:1793905103902942062"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json",
+      "bytes": 814,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+      "version": "2050:7401919:814:1793905103904979860:1793905103904979860",
+      "full9_decimal": [
+        "2050",
+        "7401919",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "814",
+        "1793905103904979860",
+        "1793905103904979860"
+      ],
+      "original_file_info_operation": "1c496733fc1e12117427f2506c22ca59d178b95cefc9d30789f2d0c5e428ef74",
+      "body_observation": {
+        "name": "output2_body0",
+        "key": "ha-4e808-postcold-prepare-output2-body0-r1-20261105",
+        "tool": "binary_read",
+        "args": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json",
+          "offset": 0,
+          "limit": 814,
+          "expected_version": "2050:7401919:814:1793905103904979860:1793905103904979860"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-normal-release-result.public.json",
+      "bytes": 3386,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+      "version": "2050:7401920:3386:1793905103906606614:1793905103906606614",
+      "full9_decimal": [
+        "2050",
+        "7401920",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3386",
+        "1793905103906606614",
+        "1793905103906606614"
+      ],
+      "original_file_info_operation": "fe668df6d3b750e4491c5bfc017383e8869e7a5a98acf9ec9e42aef233c613f8",
+      "body_observation": {
+        "name": "output3_body0",
+        "key": "ha-4e808-postcold-prepare-output3-body0-r1-20261105",
+        "tool": "binary_read",
+        "args": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-normal-release-result.public.json",
+          "offset": 0,
+          "limit": 3386,
+          "expected_version": "2050:7401920:3386:1793905103906606614:1793905103906606614"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json",
+      "bytes": 43852,
+      "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1",
+      "version": "2050:7363112:43852:1793905105749942399:1793905105749942399",
+      "full9_decimal": [
+        "2050",
+        "7363112",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "43852",
+        "1793905105749942399",
+        "1793905105749942399"
+      ],
+      "original_file_info_operation": "71b24e9867166237fbb0262ca332b1f8221a9bd68570ee7ec69bf0ec52378c19",
+      "body_observation": {
+        "name": "output4_body0",
+        "key": "ha-4e808-postcold-prepare-output4-body0-r1-20261105",
+        "tool": "binary_read",
+        "args": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json",
+          "offset": 0,
+          "limit": 43852,
+          "expected_version": "2050:7363112:43852:1793905105749942399:1793905105749942399"
+        }
+      }
+    }
+  ]
+}

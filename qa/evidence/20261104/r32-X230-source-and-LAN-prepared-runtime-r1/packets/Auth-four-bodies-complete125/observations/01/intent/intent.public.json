@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.auth.dependency-body4.exact-intent.v1",
+  "sequence": 1,
+  "id": "runtime-policy",
+  "root_GO": {
+    "blob": "89d02183f27a783b27dd9d4a976529dcc32045dc",
+    "bytes": 9280,
+    "sha256": "5525d55fafc956f523f43f6342e62cde03d318ad25ccb0abed27539e53b53d50"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-body-runtime-policy-58c0bac3-0-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+        "expected_version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+        "offset": 0,
+        "limit": 6918
+      }
+    }
+  },
+  "request": {
+    "blob": "92bf9032438f6ad25d3e54666c7e0f150f02c361",
+    "bytes": 424,
+    "sha256": "8ca3ad248e0adf52c9dc8345d3feee5debfb728a92f6b4279d340258695cf649"
+  },
+  "expected_file": {
+    "id": "runtime-policy",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+    "bytes": 6918,
+    "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+    "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+    "full9_decimal": [
+      "16777233",
+      "405237709",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "6918",
+      "1784843459540531789",
+      "1784843459540531789"
+    ],
+    "original_operation": "c7327362f8e218d312a444eba43c95929cf415e02735255f87258d8b5773bae2",
+    "native_info_blob": "80cfc9f2b6bcb94b2192b3392aca9f00c29febe1"
+  },
+  "expected_next_offset": 6918,
+  "expected_eof": true,
+  "prior_three_metadata_all_closed": true,
+  "metadata_packet": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+  "previous_body_operations_completed": 0,
+  "new_submissions_before_this_intent": 0,
+  "maximum_inflight_call": 1,
+  "maximum_owned_native_future": 1,
+  "immutable_result_page_limit": 8192,
+  "SDK_execution": false,
+  "stop_on_error_without_replay": true
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.auth.next3metadata.exact-intent.v1",
+  "sequence": 3,
+  "id": "plugin-loader",
+  "root_GO": {
+    "blob": "05401409ea379379875c69ffb04e6688f310d555",
+    "bytes": 5126,
+    "sha256": "18afd37048d51261d1c4c289fe91d63519649a74e18fde8fc97852852aa722e7"
+  },
+  "handoff": {
+    "blob": "e1edf77fc54e891486a5c4a16efb3042dcc51ca4",
+    "bytes": 1175,
+    "sha256": "9f61d7c223ec201e884ef692fe79e427427d6efac70fe48dd744fcd5d64d3b44"
+  },
+  "request": {
+    "blob": "88650268efa2225e1252204cb899ac1762fa3589",
+    "bytes": 263,
+    "sha256": "9c8d44eec66add66eddf8a8c5e5005926c290205ca0ca4de4a7b71b217f21919"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-loader-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js"
+      }
+    }
+  },
+  "prior_completed_operations": 2,
+  "previous_original_closed": {
+    "operation_id": "65e7a4a57c530d009e9032d953584cb89eacde6258bbe853c075a000a805e4b8",
+    "status": {
+      "blob": "0bd0a8ce7c57fe5e85c675b04f2767fc2b89e56c",
+      "bytes": 800,
+      "sha256": "d55b6d216456a18666d90fd5c379c94bdcd151e2d7f7959d28ba6b94c91a7a16"
+    },
+    "payload": {
+      "blob": "8b54f65b511f16a062347379bec402dc3c34bfa4",
+      "bytes": 576,
+      "sha256": "8645aad43c616571a8207483674a90801ba1667e5860f193d69c1363f7d34208"
+    },
+    "native": {
+      "blob": "ae7b9389a5a6f75aeca838e33a905ee6396fe8fc",
+      "bytes": 459,
+      "sha256": "e13a60650b4e97849ad86e097bff42ce67c85e11e9f55d10362322fa2fd0891d"
+    },
+    "whole_verified": true
+  },
+  "maximum_native_futures": 1,
+  "immutable_page_limit": 8192,
+  "metadata_only": true,
+  "body_reads_authorized": 0,
+  "SDK_execution_authorized": false,
+  "new_submission_before_this_intent": 0,
+  "on_error": "Preserve original SDK and stop new admissions; no key/path change or inferred absence."
+}

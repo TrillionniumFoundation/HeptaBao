@@ -1,0 +1,6 @@
+{
+  "stage": "postverification_metadata_display",
+  "error": "TypeError: r.observer_summary?.map is not a function",
+  "verifier_execution_changed": false,
+  "Runtime_calls": 0
+}

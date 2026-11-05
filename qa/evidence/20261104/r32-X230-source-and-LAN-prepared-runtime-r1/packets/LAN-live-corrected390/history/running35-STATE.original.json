@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.current4e808.LAN-live-original-evidence-state.r1",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "request": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+  },
+  "submission_count": 1,
+  "exact_ACK_bound": {
+    "original_host": true,
+    "original_key": true,
+    "executable": true,
+    "args": true,
+    "cwd": true,
+    "empty_environment": true,
+    "digest": true,
+    "fingerprint": true,
+    "new_original_job": true,
+    "launched": true,
+    "backend": true,
+    "record": true,
+    "valid_id": true
+  },
+  "original_authority_latest": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1ad3a6dd4-fc05-5919",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1ad3a6dd4-fc05-5919 9ace3a2192a7b79c461510b099d87798",
+      "ExecMainCode": "0",
+      "ExecMainPID": "700515",
+      "ExecMainStatus": "0",
+      "InvocationID": "9bc7da39956142ffbf0a174f674c0af3",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "terminal_authority": null,
+  "authority_observation": "authority1",
+  "original98": 98,
+  "separate_extra12": 12,
+  "original_outer_seconds": 3000,
+  "original_controller_seconds": 2400,
+  "observer_count": 2,
+  "observers": [
+    {
+      "name": "authority0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority0-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 617,
+          "external_tree": "3c09b164da04b03361fa2e16b2c7d0158494a10f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "authority1",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority1-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 617,
+          "external_tree": "4649a3f5b4f8454fdc0276d42ae0a1f0815ff3c0"
+        }
+      ],
+      "error": null
+    }
+  ],
+  "new_admissions_paused": false,
+  "product_qualification": false,
+  "production_changed": false,
+  "prior_UNKNOWN_preserved": true
+}

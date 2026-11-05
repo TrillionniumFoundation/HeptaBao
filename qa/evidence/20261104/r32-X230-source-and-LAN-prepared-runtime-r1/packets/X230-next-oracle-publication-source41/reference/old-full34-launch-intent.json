@@ -1,0 +1,20 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/full34_controller.py"
+  ],
+  "cwd": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "timeout_seconds": 1800,
+  "idempotency_key": "heptabao-r10-x230-full34-495033-20261104-r1",
+  "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; original outer cap was not recovered",
+  "controller_sha256": "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc",
+  "accepted_inert_receipt_sha256": "5ffd00b329cc5d678b156d4c465e3ec513e0efb5b96e28c30051b01a7bad3519",
+  "original_request_seconds": 15,
+  "original_migration_seconds": 360,
+  "network_scope": "X230 loopback only",
+  "product_run_attempt": 1
+}

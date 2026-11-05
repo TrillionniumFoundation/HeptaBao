@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": 68,
+  "prepared": {
+    "blob": "0b664e254c69bb57fec34eb29c2bedec5b44151e",
+    "bytes": 43852,
+    "sha256": "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+  },
+  "five_outputs_complete": true,
+  "fixture_started": false,
+  "original98": 98,
+  "separate12": 12,
+  "live_submitted": false
+}

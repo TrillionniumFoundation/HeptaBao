@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.current-LAN-live-ACK-binding.r1",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "checks": {
+    "original_host": true,
+    "original_key": true,
+    "executable": true,
+    "args": true,
+    "cwd": true,
+    "empty_environment": true,
+    "digest": true,
+    "fingerprint": true,
+    "new_original_job": true,
+    "launched": true,
+    "backend": true,
+    "record": true,
+    "valid_id": true
+  },
+  "request": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+  },
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "terminal_observed": false
+}

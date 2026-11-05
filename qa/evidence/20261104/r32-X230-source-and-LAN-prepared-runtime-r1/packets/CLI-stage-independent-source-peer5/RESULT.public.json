@@ -1,0 +1,1571 @@
+{
+  "schema": "heptabao.compatibility-peer-current-CLI-stage.v1",
+  "status": "PASS_NARROW_SOURCE_ONLY",
+  "checks_passed": 379,
+  "checks": [
+    {
+      "label": "strict-newlines-false",
+      "ok": true
+    },
+    {
+      "label": "strict-header-false",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-false-0",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-false-0",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-4",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-18",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-5",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-19",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-6",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-20",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-7",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-21",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-8",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-22",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-9",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-23",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-10",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-24",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-11",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-12",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-13",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-14",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-15",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-25",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-16",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-26",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-17",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-27",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-18",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-28",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-19",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-29",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-20",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-30",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-21",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-22",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-23",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-24",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-25",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-31",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-26",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-32",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-27",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-33",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-28",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-34",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-29",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-35",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-30",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-36",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-31",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-37",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-32",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-38",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-33",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-34",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-35",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-39",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-36",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-40",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-37",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-41",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-false-0",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-false-1",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-false-1",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-39",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-50",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-40",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-51",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-41",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-52",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-42",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-53",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-43",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-54",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-44",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-45",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-46",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-55",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-47",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-56",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-48",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-57",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-49",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-58",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-50",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-59",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-51",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-60",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-52",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-61",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-53",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-62",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-54",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-55",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-56",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-63",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-57",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-64",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-58",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-65",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-false-1",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-false-2",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-false-2",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-60",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-67",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-61",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-68",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-62",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-69",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-63",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-70",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-64",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-71",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-65",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-72",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-66",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-67",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-68",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-69",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-73",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-70",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-74",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-71",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-75",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-72",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-76",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-73",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-77",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-74",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-78",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-75",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-79",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-76",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-77",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-78",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-79",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-80",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-80",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-81",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-81",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-82",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-83",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-82",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-84",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-83",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-85",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-84",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-86",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-85",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-87",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-88",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-86",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-89",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-87",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-false-90",
+      "ok": true
+    },
+    {
+      "label": "strict-context-false-88",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-false-2",
+      "ok": true
+    },
+    {
+      "label": "strict-newlines-true",
+      "ok": true
+    },
+    {
+      "label": "strict-header-true",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-true-0",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-true-0",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-4",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-18",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-5",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-19",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-6",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-20",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-7",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-8",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-9",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-10",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-11",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-21",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-12",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-22",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-13",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-23",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-14",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-24",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-15",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-25",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-16",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-26",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-17",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-18",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-19",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-20",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-21",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-27",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-22",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-28",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-23",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-29",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-24",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-30",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-25",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-31",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-26",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-32",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-27",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-33",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-28",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-34",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-29",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-35",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-30",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-36",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-31",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-32",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-33",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-37",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-34",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-38",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-35",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-39",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-36",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-40",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-37",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-41",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-true-0",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-true-1",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-true-1",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-39",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-50",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-40",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-51",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-41",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-52",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-42",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-43",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-44",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-53",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-45",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-54",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-46",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-55",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-47",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-56",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-48",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-57",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-49",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-58",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-50",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-59",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-51",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-60",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-52",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-53",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-54",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-61",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-55",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-62",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-56",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-63",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-57",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-64",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-58",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-65",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-true-1",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-header-true-2",
+      "ok": true
+    },
+    {
+      "label": "strict-hunk-order-true-2",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-60",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-67",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-61",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-68",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-62",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-69",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-63",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-64",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-65",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-66",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-70",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-67",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-71",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-68",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-72",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-69",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-73",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-70",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-74",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-71",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-75",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-72",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-76",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-73",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-77",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-74",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-78",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-75",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-76",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-79",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-77",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-80",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-78",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-81",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-79",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-82",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-80",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-83",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-81",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-84",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-82",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-85",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-83",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-86",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-84",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-87",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-85",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-88",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-86",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-89",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-87",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-90",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-88",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-91",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-89",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-92",
+      "ok": true
+    },
+    {
+      "label": "strict-diff-line-true-90",
+      "ok": true
+    },
+    {
+      "label": "strict-context-true-93",
+      "ok": true
+    },
+    {
+      "label": "strict-counts-true-2",
+      "ok": true
+    },
+    {
+      "label": "three-hunks-forward-reverse-whole",
+      "ok": true
+    },
+    {
+      "label": "UNTIL-through-EOF-byte-identical",
+      "ok": true
+    },
+    {
+      "label": "eighteen-original-definitions-in-unchanged-tail",
+      "ok": true
+    },
+    {
+      "label": "only-twelve-top-bindings",
+      "ok": true
+    },
+    {
+      "label": "exact-candidate-whole",
+      "ok": true
+    },
+    {
+      "label": "template-exact-layout-not-ready",
+      "ok": true
+    },
+    {
+      "label": "six-old-fences-exact-order-and-SHA",
+      "ok": true
+    },
+    {
+      "label": "original-four-old-fences-retained",
+      "ok": true
+    },
+    {
+      "label": "carrier-shape",
+      "ok": true
+    },
+    {
+      "label": "eight-carrier-files",
+      "ok": true
+    },
+    {
+      "label": "carrier-whole-and-original-cap",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:phaseb_controller_r3.py",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:phaseb_binding_r3.py",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:phaseb_evidence_r3.py",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:native_fixture_reference_r8.py",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:official_cli_reference_r4.py",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:normal-release-tests-result.public.json",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:groups.json",
+      "ok": true
+    },
+    {
+      "label": "carried-whole:binding.partially-resolved.json",
+      "ok": true
+    },
+    {
+      "label": "five-QA-original-order",
+      "ok": true
+    },
+    {
+      "label": "current-CLI44-QA-leaf:phaseb_controller_r3.py",
+      "ok": true
+    },
+    {
+      "label": "QA-template-pin:phaseb_controller_r3.py",
+      "ok": true
+    },
+    {
+      "label": "current-CLI44-QA-leaf:phaseb_binding_r3.py",
+      "ok": true
+    },
+    {
+      "label": "QA-template-pin:phaseb_binding_r3.py",
+      "ok": true
+    },
+    {
+      "label": "current-CLI44-QA-leaf:phaseb_evidence_r3.py",
+      "ok": true
+    },
+    {
+      "label": "QA-template-pin:phaseb_evidence_r3.py",
+      "ok": true
+    },
+    {
+      "label": "current-CLI44-QA-leaf:native_fixture_reference_r8.py",
+      "ok": true
+    },
+    {
+      "label": "QA-template-pin:native_fixture_reference_r8.py",
+      "ok": true
+    },
+    {
+      "label": "current-CLI44-QA-leaf:official_cli_reference_r4.py",
+      "ok": true
+    },
+    {
+      "label": "QA-template-pin:official_cli_reference_r4.py",
+      "ok": true
+    },
+    {
+      "label": "three-copy-roles",
+      "ok": true
+    },
+    {
+      "label": "copy-actual-input:heptabao-server",
+      "ok": true
+    },
+    {
+      "label": "copy-source-target-modes:heptabao-server",
+      "ok": true
+    },
+    {
+      "label": "copy-actual-input:native-build.public.json",
+      "ok": true
+    },
+    {
+      "label": "copy-source-target-modes:native-build.public.json",
+      "ok": true
+    },
+    {
+      "label": "copy-actual-input:normal-release-result.public.json",
+      "ok": true
+    },
+    {
+      "label": "copy-source-target-modes:normal-release-result.public.json",
+      "ok": true
+    },
+    {
+      "label": "payload-normal5-original:normal-release-tests-result.public.json",
+      "ok": true
+    },
+    {
+      "label": "payload-normal5-original:groups.json",
+      "ok": true
+    },
+    {
+      "label": "five-old-source-members-plus-three",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/snapshot_archive.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/service.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "ok": true
+    },
+    {
+      "label": "whole-changed-source-pin:crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/http_h2.rs",
+      "ok": true
+    },
+    {
+      "label": "whole-changed-source-pin:crates/heptabao-server/src/http_h2.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "ok": true
+    },
+    {
+      "label": "whole-changed-source-pin:crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "ok": true
+    },
+    {
+      "label": "canonical-member:crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "ok": true
+    },
+    {
+      "label": "whole-changed-source-pin:crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "ok": true
+    },
+    {
+      "label": "four-old-source-content-pins-unchanged",
+      "ok": true
+    },
+    {
+      "label": "request-host-python-cwd-original-outer",
+      "ok": true
+    },
+    {
+      "label": "request-exact-main-interface",
+      "ok": true
+    },
+    {
+      "label": "request-exact-stdin",
+      "ok": true
+    },
+    {
+      "label": "original-required-arg-and-300",
+      "ok": true
+    },
+    {
+      "label": "review-only-fixed-key",
+      "ok": true
+    }
+  ],
+  "changed_bindings": [
+    "CONTROL",
+    "WORK",
+    "SOURCE",
+    "INCOMING",
+    "HEAD",
+    "TREE",
+    "PAYLOAD_SHA",
+    "PAYLOAD_BYTES",
+    "FILES",
+    "COPY",
+    "SOURCE_PINS",
+    "OLD_FENCES"
+  ],
+  "unchanged_defs": [
+    "need",
+    "remaining",
+    "sha",
+    "unique",
+    "identity",
+    "directory_identity",
+    "absent",
+    "open_source",
+    "finish_source",
+    "capture",
+    "__init__",
+    "check",
+    "create",
+    "write",
+    "copy",
+    "close",
+    "main",
+    "bind"
+  ],
+  "strict_hunks": 3,
+  "original_runtime_tail_identical": true,
+  "source_modules_executed": 0,
+  "author_AST_executed": false,
+  "Runtime_calls": 0,
+  "new_stage_go": false,
+  "prepare_or_live_qualification": false,
+  "canonical_member_merkle_directories": [
+    "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "fd50f52f2beb3cef919ad86194955a3e32090e80",
+    "19f9a6ab211357e04e17266636279843921be619",
+    "de426e481e192ca774a4c9fef252d8c1d4b71b92"
+  ],
+  "canonical_member_merkle_checks": 7
+}

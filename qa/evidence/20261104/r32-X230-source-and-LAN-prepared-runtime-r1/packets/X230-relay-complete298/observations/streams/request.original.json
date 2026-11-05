@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-relay-observe-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ad0a9524-fc05-5839",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

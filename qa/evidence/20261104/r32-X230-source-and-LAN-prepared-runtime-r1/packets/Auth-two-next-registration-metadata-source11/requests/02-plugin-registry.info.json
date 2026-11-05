@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-registry-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js"
+    }
+  }
+}

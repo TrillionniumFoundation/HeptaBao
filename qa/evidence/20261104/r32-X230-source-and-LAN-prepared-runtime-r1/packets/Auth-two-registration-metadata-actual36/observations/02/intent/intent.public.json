@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.mac-registration-metadata2.exact-external-intent.r1",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "root_GO": {
+    "blob": "a99b9f7d507d357195cbdfc2ee76cf418ce04db1",
+    "bytes": 4445,
+    "sha256": "c8cbe0883f0ae5d187eeb698bff9694f322df1748ae8ce8134c529140a15b720"
+  },
+  "handoff": {
+    "blob": "bbd23db120e8e40f7da32168e5bd502185ec4ab6",
+    "bytes": 890,
+    "sha256": "4bfc694ea0585806e168bcc06691097c6e82e89baa9b56c458e7090ff4b048bd"
+  },
+  "sequence": 2,
+  "request": {
+    "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+    "bytes": 267,
+    "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-registry-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js"
+      }
+    }
+  },
+  "previous_original_closed_and_whole": {
+    "blob": "135d4ddb97212b3d4af186d37e0d4d8962f1a915",
+    "bytes": 1928,
+    "sha256": "af0b23e2e5f49b826234d5e842f620240583c9ca0c3b82cd60b178bd6e88b539"
+  },
+  "submission_count_before": 0,
+  "dispatch_once_after_this_external_call_completes": true,
+  "SDK_external_before_isError_and_parse": true,
+  "maximum_Runtime_calls": 1,
+  "maximum_native_futures": 1,
+  "immutable_page_limit": 8192,
+  "body_authorized": 0,
+  "SDK_authorized": 0,
+  "on_error": "Preserve original response and stop new admissions; no new key/path/fallback/read."
+}

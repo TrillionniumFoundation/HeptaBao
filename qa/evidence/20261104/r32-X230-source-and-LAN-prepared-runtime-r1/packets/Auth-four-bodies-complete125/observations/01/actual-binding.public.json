@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.auth.fixed-source-body-actual-binding.v1",
+  "sequence": 1,
+  "id": "runtime-policy",
+  "operation_id": "759c24c999725828c6258057aec668fc43aef8305f5149a8542703aacb122996",
+  "status": {
+    "blob": "cd36160cedb13eb3dc19b5db998387e825206231",
+    "bytes": 802,
+    "sha256": "92ebb1784f669c9abece6d51bb588ebe41e538fd1fbb742cb719883dc432e0e6"
+  },
+  "original_payload": {
+    "blob": "30a57ee83d478d17c5e8ecde436ca12d38a42cb6",
+    "bytes": 9643,
+    "sha256": "e61db03d8f418c922c18ef7085354006242bb77af2be6d929ac9275496f8db89"
+  },
+  "native": {
+    "blob": "90091c4d74beb65606be6c2837263c51d0e28dc1",
+    "bytes": 9540,
+    "sha256": "3be62bb53608e612725f608da04b84e861df93225d7ef7f8b289b399217550cf"
+  },
+  "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+  "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+  "offset": 0,
+  "next_offset": 6918,
+  "eof": true,
+  "chunk_bytes": 6918,
+  "chunk_sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+  "expected_whole": {
+    "id": "runtime-policy",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+    "bytes": 6918,
+    "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+    "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+    "full9_decimal": [
+      "16777233",
+      "405237709",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "6918",
+      "1784843459540531789",
+      "1784843459540531789"
+    ],
+    "original_operation": "c7327362f8e218d312a444eba43c95929cf415e02735255f87258d8b5773bae2",
+    "native_info_blob": "80cfc9f2b6bcb94b2192b3392aca9f00c29febe1"
+  },
+  "whole_source": {
+    "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+    "bytes": 6918,
+    "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6"
+  },
+  "original_operation_completed_stored_inactive": true,
+  "all_original_payload_pages_whole": true,
+  "SDK_execution": false
+}

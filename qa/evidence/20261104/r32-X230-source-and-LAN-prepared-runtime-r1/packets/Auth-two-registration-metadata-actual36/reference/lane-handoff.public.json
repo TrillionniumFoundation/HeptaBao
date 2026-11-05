@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root-lane-A-LAN-to-Auth-handoff.r32.v1",
+  "from": "/root/ha_validation",
+  "to": "/root/authbus_migration",
+  "lane": "A",
+  "release_root_review": {
+    "name": "r32-LAN-lane-A-release-root-review.public.json",
+    "blob": "e74ffb1da0602e642a9ace8df0aef6f6b7ee00d8",
+    "bytes": 5992,
+    "sha256": "038365fadc9118e6aed00644b935036af42200624eba63490ebf96bc85c1220e"
+  },
+  "owner_release": "ba9177271b3878752f657d806a7e2524e1c3e68c",
+  "old_original_job": "desktop/1a1ad3a6dd4-fc05-5919",
+  "old_current_calls": 0,
+  "old_current_futures": 0,
+  "new_scope": "Two exact fixed public registration-module file_info observations only.",
+  "other_lane": "B /root/compatibility_audit; no current execution; later X230 full34 requires separate exact GO",
+  "maximum_two_Runtime_lanes": true,
+  "one_call_and_one_owned_future_per_lane": true,
+  "root_Runtime_calls": 0
+}

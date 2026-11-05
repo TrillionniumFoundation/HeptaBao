@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.root-Auth-metadata3-original-chain-and-body4-source-review.r32.v1",
+  "status": "PASS_METADATA_CHAIN_AND_FOUR_FINITE_BODY_BINDINGS",
+  "checks_passed": 45,
+  "checks": [
+    "whole53-original-packet-and-Merkle",
+    "exact-existing-line-B-authorization",
+    "exact-original-file-info-and-sequential-intent:0",
+    "whole-original-SDK-native-link:0:start",
+    "whole-original-SDK-native-link:0:status-0",
+    "whole-original-SDK-native-link:0:result-0",
+    "unique-file-info-returned-ID:0",
+    "same-original-ID-completed-stored-inactive:0",
+    "complete-original-single-page-payload:0",
+    "original-payload-to-exact-native-info:0",
+    "actual-three-public-files-version-and-derived-regular-full9:0",
+    "exact-original-file-info-and-sequential-intent:1",
+    "whole-original-SDK-native-link:1:start",
+    "whole-original-SDK-native-link:1:status-0",
+    "whole-original-SDK-native-link:1:result-0",
+    "unique-file-info-returned-ID:1",
+    "same-original-ID-completed-stored-inactive:1",
+    "complete-original-single-page-payload:1",
+    "original-payload-to-exact-native-info:1",
+    "actual-three-public-files-version-and-derived-regular-full9:1",
+    "exact-original-file-info-and-sequential-intent:2",
+    "whole-original-SDK-native-link:2:start",
+    "whole-original-SDK-native-link:2:status-0",
+    "whole-original-SDK-native-link:2:result-0",
+    "unique-file-info-returned-ID:2",
+    "same-original-ID-completed-stored-inactive:2",
+    "complete-original-single-page-payload:2",
+    "original-payload-to-exact-native-info:2",
+    "actual-three-public-files-version-and-derived-regular-full9:2",
+    "three-original-metadata-operations-closed-no-body-or-SDK",
+    "two-local-bookkeeping-errors-preserved",
+    "exact-new4-body-proposal-not-executed",
+    "exact-body-request-original-pinned-bytes:0",
+    "body-request-exact-current-version-and-contiguous-finite-range:0",
+    "expected-chunk-end-and-EOF:0",
+    "exact-body-request-original-pinned-bytes:1",
+    "body-request-exact-current-version-and-contiguous-finite-range:1",
+    "expected-chunk-end-and-EOF:1",
+    "exact-body-request-original-pinned-bytes:2",
+    "body-request-exact-current-version-and-contiguous-finite-range:2",
+    "expected-chunk-end-and-EOF:2",
+    "exact-body-request-original-pinned-bytes:3",
+    "body-request-exact-current-version-and-contiguous-finite-range:3",
+    "expected-chunk-end-and-EOF:3",
+    "old-consumed-budget-retained-exact-new4-127095-and-cumulative-accounting"
+  ],
+  "metadata_packet": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+  "actual_files": [
+    {
+      "id": "runtime-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "bytes": 6918,
+      "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+      "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+      "full9_decimal": [
+        "16777233",
+        "405237709",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "6918",
+        "1784843459540531789",
+        "1784843459540531789"
+      ],
+      "original_operation": "c7327362f8e218d312a444eba43c95929cf415e02735255f87258d8b5773bae2",
+      "native_info_blob": "80cfc9f2b6bcb94b2192b3392aca9f00c29febe1"
+    },
+    {
+      "id": "openai-routing",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "bytes": 3497,
+      "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6",
+      "version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+      "full9_decimal": [
+        "16777233",
+        "405238041",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "3497",
+        "1784843459992420263",
+        "1784843459992420263"
+      ],
+      "original_operation": "65e7a4a57c530d009e9032d953584cb89eacde6258bbe853c075a000a805e4b8",
+      "native_info_blob": "ae7b9389a5a6f75aeca838e33a905ee6396fe8fc"
+    },
+    {
+      "id": "plugin-loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "bytes": 116680,
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+      "full9_decimal": [
+        "16777233",
+        "405237358",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "116680",
+        "1784843458968424711",
+        "1784843458968424711"
+      ],
+      "original_operation": "f79243c6590b65e5ddf97c648cd0355ed0aa9c528794dfc4d75c2c380325a616",
+      "native_info_blob": "e7e553238612f91d7e8fd00332347508dbf6050e"
+    }
+  ],
+  "original_metadata_operations": 3,
+  "immutable_pages": 3,
+  "new_body_requests": [
+    {
+      "sequence": 1,
+      "id": "runtime-policy",
+      "request": {
+        "blob": "92bf9032438f6ad25d3e54666c7e0f150f02c361",
+        "bytes": 424,
+        "sha256": "8ca3ad248e0adf52c9dc8345d3feee5debfb728a92f6b4279d340258695cf649"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-runtime-policy-58c0bac3-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+            "expected_version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+            "offset": 0,
+            "limit": 6918
+          }
+        }
+      },
+      "expected_next_offset": 6918,
+      "expected_eof": true
+    },
+    {
+      "sequence": 2,
+      "id": "openai-routing",
+      "request": {
+        "blob": "cd54a82e49ad9f6bbf38ac5f82ad23e33323d7be",
+        "bytes": 418,
+        "sha256": "8f10e2d4b7a06ac91464be9a2af3caa0194a15cc22ece7994a1c3252637b0c98"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-openai-routing-31d71606-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+            "expected_version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+            "offset": 0,
+            "limit": 3497
+          }
+        }
+      },
+      "expected_next_offset": 3497,
+      "expected_eof": true
+    },
+    {
+      "sequence": 3,
+      "id": "plugin-loader",
+      "request": {
+        "blob": "9ecb58d868a67d0d1c0d3129e5b0173520f15e7f",
+        "bytes": 412,
+        "sha256": "cb8708d5ac19f2d870588c720bd00e42837e35f1f8ce67fa22cbc6a93124f673"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-0-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+            "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+            "offset": 0,
+            "limit": 65536
+          }
+        }
+      },
+      "expected_next_offset": 65536,
+      "expected_eof": false
+    },
+    {
+      "sequence": 4,
+      "id": "plugin-loader",
+      "request": {
+        "blob": "d43b196e131771e248f7b726703914e44f859c99",
+        "bytes": 420,
+        "sha256": "392d34608f1c8bf8e8a92556eef22bfb6af16214ca2fc90ffd007ced91d1401a"
+      },
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-65536-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+            "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+            "offset": 65536,
+            "limit": 51144
+          }
+        }
+      },
+      "expected_next_offset": 116680,
+      "expected_eof": true
+    }
+  ],
+  "accounting": {
+    "scope": "This new dependency readset plus the immediately prior closed harness-policy/support-context/Codex readset; other historical source readsets remain separately archived.",
+    "prior_consumed": {
+      "files": 3,
+      "native_body_chunks": 3,
+      "body_bytes": 13569,
+      "root_actual_review": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+      "original_maximum_chunks": 5,
+      "original_maximum_body_bytes": 265740,
+      "remaining_authorization_reused": 0
+    },
+    "proposed_new": {
+      "files": 3,
+      "native_body_chunks": 4,
+      "body_bytes": 127095,
+      "max_chunk": 65536,
+      "immutable_result_page_limit": 8192
+    },
+    "cumulative_if_separately_approved_and_completed": {
+      "files": 6,
+      "native_body_chunks": 7,
+      "body_bytes": 140664
+    },
+    "file_info_hash_work": "The completed metadata calls performed full-file hashes under file_info; the body byte limits did not bound that work. New body accounting does not retroactively reclassify metadata hash I/O.",
+    "all_fixture_timeouts_and_guards_unchanged": true
+  },
+  "metadata_full_hash_work_not_bounded_by_body_caps": true,
+  "canonical_owner_or_SDK_selection_qualified": false,
+  "SDK_execution_authorized": false,
+  "root_Runtime_calls": 0
+}

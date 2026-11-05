@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-info-runtime-policy-20261105-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js"
+    }
+  }
+}

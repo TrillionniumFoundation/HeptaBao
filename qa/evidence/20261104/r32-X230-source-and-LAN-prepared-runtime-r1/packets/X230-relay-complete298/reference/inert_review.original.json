@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.root-X230-inert-complete-qualification.r31.v1",
+  "status": "QUALIFIED_ACTUAL_INERT_CONTROL_PUBLICATION_ONLY",
+  "checks_passed": 7,
+  "checks": [
+    "same-full154-peer-inputs",
+    "all154-original-input-pins-root-equal",
+    "six-ready34-exact-source-bindings",
+    "peer-actual-result-2250-no-product-relabel",
+    "ten-original-returned-observers-fourteen-pages",
+    "original-process-and-whole-streams",
+    "same-ID-status-recovery-error-preserved"
+  ],
+  "actual_packet": "6b7781609be0345b5730aabb1b4394652d4d74be",
+  "actual_packet_files": 154,
+  "actual_packet_bytes": 1139834,
+  "actual_packet_Merkle": 28,
+  "root_semantic_review": {
+    "name": "r31-X230-inert-four-file-semantic-root-review.public.json",
+    "blob": "b2f1dd324234637f5d9858b05aca6bbc1f2cb0d8",
+    "bytes": 5396,
+    "sha256": "a2a58cbf6c7fdb01441346fa49f5af0574744fb53ee475cce1cefd7d7adc58ab"
+  },
+  "root_semantic_checks": 35,
+  "independent_original_chain_peer": {
+    "packet": "b784a703e0ccaf8a6fe8caf1444b54fa5046df30",
+    "review": "24f624e27ce2341c9dac1dddd0f3d310e63b50fa",
+    "verifier": "63708805a6a442528861525d8bf40a56ad000188",
+    "actual_result": "a95202578041793de634a4d388ef5e68273b3a25",
+    "pure_predicate_evaluations": 2250,
+    "product_test_cases": 0
+  },
+  "root_did_not_repeat_same_pure_peer_verifier": true,
+  "job": "desktop/1a1ace08ffa-fc05-576b",
+  "actual_files": [
+    {
+      "role": "sender",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/sender.py",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663",
+      "version": "2050:7532609:8960:1793901767144422082:1793901767153777890",
+      "full9_decimal": [
+        "2050",
+        "7532609",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "8960",
+        "1793901767144422082",
+        "1793901767153777890"
+      ],
+      "info_blob": "03c71956533f7dd28123a9e16b577b2125cf5ff2",
+      "body_blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9"
+    },
+    {
+      "role": "receiver",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/receiver.py",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+      "version": "2050:7532610:30791:1793901767197502850:1793901767206425051",
+      "full9_decimal": [
+        "2050",
+        "7532610",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30791",
+        "1793901767197502850",
+        "1793901767206425051"
+      ],
+      "info_blob": "17dbd5385d474dc01200d042a557d366a73d52c3",
+      "body_blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e"
+    },
+    {
+      "role": "relay",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f",
+      "version": "2050:7532611:25713:1793901767238166039:1793901767249302558",
+      "full9_decimal": [
+        "2050",
+        "7532611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25713",
+        "1793901767238166039",
+        "1793901767249302558"
+      ],
+      "info_blob": "f5d27d38f37a3855332c24801173cdf802c76450",
+      "body_blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784"
+    },
+    {
+      "role": "receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/inert-stage.result.public.json",
+      "bytes": 1924,
+      "sha256": "22bb50e3e627fe07f5b344711790802f45ccb079115c1bcbff70d1bdc889b0ca",
+      "version": "2050:7532612:1924:1793901767259034616:1793901767292502914",
+      "full9_decimal": [
+        "2050",
+        "7532612",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1924",
+        "1793901767259034616",
+        "1793901767292502914"
+      ],
+      "info_blob": "97babcd9955080c9e7411615db99b2af13ebdbcd",
+      "body_blob": "ac4e5e11243b1ed7808e29609972532b38255940"
+    }
+  ],
+  "known_original_observers_closed": [
+    {
+      "name": "authority",
+      "operation_id": "3da25bbdc8d13174dc8fe3883a3f8fc1845d9b77a189ea609be154ba7e5c439e",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "streams",
+      "operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "info-sender",
+      "operation_id": "c1d72d057f817184d8dfc056d44587a33c445639dffcc7b915a4daec38feafcf",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "info-receiver",
+      "operation_id": "706f0edf1332bd2f6d1d0fa2609941dadc255b34023727a3b042fe33ebf5555c",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "info-relay",
+      "operation_id": "855153f1c89290ea7f17ca4c2764502acc4e241fa6c0a12f524598c453a5b42d",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "info-receipt",
+      "operation_id": "de7812609c9d2bfdd27ad60f12609282b5692aefac9933af6235392ef019755b",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "body-sender",
+      "operation_id": "0417e0c90a5dc2b3b41baec29d10284eef6e5510bc05b79cf8cfac1fc2542bc2",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "body-receiver",
+      "operation_id": "36c7a44be91e0133fbea1b00a85096ddf7ea0da58ca8a8baebc0688b8a319b9c",
+      "pages": 3,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "body-relay",
+      "operation_id": "7f7db9c4b9d496ebdfa147f59bb76de841ef7189572bed1e32714517c6474f3b",
+      "pages": 3,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "body-receipt",
+      "operation_id": "e828f08160c7c5e3d8aacab580d429ed82e056535e2e72f815f7de54195c20b0",
+      "pages": 1,
+      "completed": true,
+      "owned_future_active": false
+    }
+  ],
+  "inert_qualified": true,
+  "relay_dispatched": false,
+  "X230_source_import_qualified": false,
+  "X230_runtime_qualified": false,
+  "old_relay_unknown_preserved": true,
+  "root_Runtime_calls": 0
+}

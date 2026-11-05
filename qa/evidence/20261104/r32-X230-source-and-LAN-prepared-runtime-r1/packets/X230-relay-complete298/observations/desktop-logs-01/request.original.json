@@ -1,0 +1,21 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-relay-desktop-logs-01-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.stdout",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.stderr",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/send-desktop.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/send-desktop.stderr",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.stdout",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.stderr"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    }
+  }
+}

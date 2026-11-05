@@ -1,0 +1,22 @@
+[
+  {
+    "name": "original job authority",
+    "pass": true
+  },
+  {
+    "name": "known successful terminal",
+    "pass": true
+  },
+  {
+    "name": "full durable published terminal",
+    "pass": true
+  },
+  {
+    "name": "stdout original full stream",
+    "pass": true
+  },
+  {
+    "name": "stderr original full stream",
+    "pass": true
+  }
+]

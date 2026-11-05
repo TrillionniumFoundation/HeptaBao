@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.pure-evidence-verifier-failure.v1",
+  "status": "FAILED_LOCAL_CHECKER",
+  "error": "present:/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+  "cause": "Checker selected the host destination request.path instead of the evidence request.original.json path for the fixed write-request hash check.",
+  "candidate_changed": false,
+  "evidence_changed": false,
+  "Runtime_calls": 0
+}

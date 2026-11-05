@@ -1,0 +1,29 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-relay-receiver-logs-03-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "x230",
+      "paths": [
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/010-canonical-full-fsck.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.stdout",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.stdout",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.stdout",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.stderr",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/016-source-after-status.public.json",
+        "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/016-source-after-status.stdout"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072
+    }
+  }
+}

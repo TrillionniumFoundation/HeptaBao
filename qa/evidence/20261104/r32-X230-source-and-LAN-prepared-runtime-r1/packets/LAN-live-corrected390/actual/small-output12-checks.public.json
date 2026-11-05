@@ -1,0 +1,14 @@
+{
+  "launch_schema": true,
+  "launch_prepared": true,
+  "launch_source": true,
+  "launch_complete_argv": true,
+  "launch_original_budget": true,
+  "launch_no_prod_or_private": true,
+  "exit_schema": true,
+  "exit_whole_equals_stdout_value": true,
+  "exit_zero": true,
+  "exit_original_budget": true,
+  "exit_all_unchanged": true,
+  "exit_summary_exact": true
+}

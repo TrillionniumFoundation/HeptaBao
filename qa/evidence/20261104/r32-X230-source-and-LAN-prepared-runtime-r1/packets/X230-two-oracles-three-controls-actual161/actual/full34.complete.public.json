@@ -1,0 +1,58 @@
+{
+  "role": "full34",
+  "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py",
+  "bytes": 10142,
+  "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+  "source_blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+  "body_read_blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+  "actual_source": {
+    "path": "actual/source/full34_controller.py",
+    "bytes": 10142,
+    "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+    "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1",
+    "carrier_tree": "f12883736e8458290f4b1c82adb0872a39708d7d"
+  },
+  "version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+  "full9_decimal": [
+    "2053",
+    "3062745",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "10142",
+    "1793908417811750782",
+    "1793908417813750783"
+  ],
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "independent_info_native": {
+    "path": "observations/full34-info/native.original.json",
+    "bytes": 467,
+    "sha256": "a822a097b3b0373a4519832dd8c41b384dd5c7b38cea1e5d252861022fcdf447",
+    "blob": "7c1a47d703be2115a49879ad1b62b3b4d1b78d7e",
+    "carrier_tree": "7a0c60a9e7487a98398a8e0bae8996bdfb466fc0"
+  },
+  "body_native": {
+    "path": "observations/full34-body/native.original.json",
+    "bytes": 13841,
+    "sha256": "9d30cd1297a80b998b077b3c9fd8fbf06b1d07f05811f2e78c1311ed23b4d9c5",
+    "blob": "a4ea5c32a684a1bd95a20a0a7371dc1ef34358d9",
+    "carrier_tree": "e2a8bda23124b0735cc5a222b7ebf3ce8011e5f9"
+  },
+  "body_payload": {
+    "path": "observations/full34-body/payload.original.json",
+    "bytes": 13944,
+    "sha256": "8f302720da2f9841b54eb253954aa289c9a6e7721f8a03d3517db284b433e782",
+    "blob": "aa9aef6abb1b0e5b96903c97539e8ee181a8b61a",
+    "carrier_tree": "0467b7f4b99309d7b505d2fe128d0ec8cf714ada"
+  },
+  "body_operation_id": "352a0a3b7062b5ddb9e091b9ccb98312c04af2864e8a530e0bdb2aaacb09cecc",
+  "pages": 2,
+  "original_body_closed": true,
+  "whole_source_exact": true,
+  "compiled": false,
+  "executed": false
+}

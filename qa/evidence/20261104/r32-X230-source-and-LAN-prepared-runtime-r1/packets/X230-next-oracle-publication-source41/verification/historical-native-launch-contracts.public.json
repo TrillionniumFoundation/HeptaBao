@@ -1,0 +1,80 @@
+[
+  {
+    "role": "full34",
+    "intent": {
+      "bytes": 818,
+      "sha256": "c10ccbc541e17c3b8b8db7fcd9ea622a9596638801f743d8681e297b7224e6d5",
+      "blob": "a2aba72a8cce91789ce5b3928ea0c94723056f55"
+    },
+    "ACK": {
+      "bytes": 1123,
+      "sha256": "aa45554893ac28c9182b6e412ebdc9110f4b34d0d639296c10756bfd9252db60",
+      "blob": "7f8e2e3eab297493efb1a1105107fef20f926a77"
+    },
+    "authority": {
+      "bytes": 729,
+      "sha256": "d09c0e4fe0290bb182d679e44660721f54d7fd4ba35f1625e9373f0b9ef186c7",
+      "blob": "52d6207493f812fc32f6ded439dc225d8b57bd3e"
+    },
+    "typed_request": {
+      "host": "x230",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/full34_controller.py"
+      ],
+      "cwd": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+      "timeout_seconds": 1800,
+      "idempotency_key": "heptabao-r10-x230-full34-495033-20261104-r1"
+    },
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/full34_controller.py\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"x230\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":1800}",
+    "independently_recomputed_request_digest": "8adb15c6c7c841d96e365e1d221a0bbabdea341ee5223c694d5e3f1aecfe1029",
+    "original_ACK_fingerprint_decimal": "10005614940633186777",
+    "actual_job_id": "1a1a8170415-fc05-2da3",
+    "exact_timeout_seconds": 1800,
+    "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; original outer cap was not recovered",
+    "executed_native_argv_matches_intent": true,
+    "actual_authority_exit0_full_durable": true
+  },
+  {
+    "role": "comparison69",
+    "intent": {
+      "bytes": 1050,
+      "sha256": "e25201ba1535595d6543e71a97cb865b4f4d2b83d179d68b9611508728e4a691",
+      "blob": "9a288b6768df0937d1e8053aefc50833dcac9e8d"
+    },
+    "ACK": {
+      "bytes": 1134,
+      "sha256": "123e472cd5fe640de0ddc8a458b4873519bfd87446fdd17a7cfa1b22c1507572",
+      "blob": "3425cfb8f8eb13bb97a54cf8578441854b1ba2e9"
+    },
+    "authority": {
+      "bytes": 729,
+      "sha256": "b865b612c79716014cb5a8134ccc35ddd9400f12a68f194b6ce86f2e14c4602f",
+      "blob": "52c2cdc6fd5b4d30ad30251bbf3579d327a41acf"
+    },
+    "typed_request": {
+      "host": "x230",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/comparison69_controller.py"
+      ],
+      "cwd": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+      "timeout_seconds": 1800,
+      "idempotency_key": "heptabao-r10-x230-comparison69-495033-20261104-r1"
+    },
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/comparison69_controller.py\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"x230\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":1800}",
+    "independently_recomputed_request_digest": "65973708a385ad74a977688581585f736d78b0f0f842757c837868bcf01de45a",
+    "original_ACK_fingerprint_decimal": "7320380229556743540",
+    "actual_job_id": "1a1a81beb21-fc05-2db3",
+    "exact_timeout_seconds": 1800,
+    "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; old outer cap was not recovered",
+    "executed_native_argv_matches_intent": true,
+    "actual_authority_exit0_full_durable": true
+  }
+]

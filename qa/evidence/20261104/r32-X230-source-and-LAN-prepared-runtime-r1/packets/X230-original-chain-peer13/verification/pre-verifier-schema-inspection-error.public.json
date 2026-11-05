@@ -1,0 +1,6 @@
+{
+  "stage": "schema inspection, before verifier implementation",
+  "error": "TypeError: Cannot read properties of undefined (reading 'length')",
+  "cause": "Tried to parse reference/go.original.json which was intentionally not in the scoped input map.",
+  "effect": "No verifier result produced, no subject artifact mutated, no Runtime call."
+}

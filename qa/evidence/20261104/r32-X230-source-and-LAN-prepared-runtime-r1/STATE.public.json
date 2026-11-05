@@ -1,0 +1,844 @@
+{
+  "schema": "heptabao.full-replacement-checkpoint.r32.v1",
+  "as_of_utc": "2026-11-05T21:01:15Z",
+  "previous_checkpoint": {
+    "checkpoint": "R31",
+    "commit": "d2bfaab64364d07ba339ce96b74a844cdbf40781",
+    "tree": "61dcc46248119a4aa8b3f9248221e132b4ca6cd4",
+    "publication_proof": {
+      "blob": "100bd027e3c5fa291dfbc6c591b647a456bd0b41",
+      "bytes": 1815,
+      "sha256": "386cd63691b1d8655ce8e94830757bed1f4998267322eb684d046d161988ded6"
+    }
+  },
+  "evidence_prefix": "qa/evidence/20261104/r32-X230-source-and-LAN-prepared-runtime-r1",
+  "overall": {
+    "full_openbao_2_7_1_replacement": false,
+    "production_cutover": false,
+    "all_clients_and_backups_migrated": false,
+    "old_service_binary_asset_cleanup": false,
+    "old_failures_and_unknowns_preserved": true
+  },
+  "candidate": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "canonical_leaves": 3914,
+    "canonical_bytes": 62227757,
+    "canonical_history_commits": 3763,
+    "worktree_index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092",
+    "draft_PR": 159,
+    "PR_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/159",
+    "one_changed_test_vs_sole_parent": true,
+    "production_source_changed_by_test_successor": false,
+    "fixture_fix": "Retain and republish the first real NativeRootMigrationPlan for A after B; independent V5-to-V6 migration uses fresh object_address_key and is not the original A.",
+    "request_deadline_ms": 15000,
+    "all_existing30_assertions_and_tail_preserved": true,
+    "PR_not_merged": true
+  },
+  "current_product_results": {
+    "Mac_normal61": {
+      "passed": 61,
+      "qualified": true,
+      "source": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+      "original_command_archive_libtest_seven_chunks_pending": true
+    },
+    "ROG_normal61": {
+      "passed": 61,
+      "qualified": true,
+      "source": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+      "full_command_and_large_build_archive_pending": true
+    },
+    "Mac_full34": {
+      "qualified": true,
+      "original_cases": 31,
+      "passed": 31,
+      "elapsed_seconds": 47.534,
+      "readable_versions": 17,
+      "MiB_per_large_version": 2,
+      "lifecycle_versions": 19,
+      "whole_history_witnesses": 57,
+      "one_export_and_import": true,
+      "migration_each_seconds": 360,
+      "formal_native_v6_and_cold_restart_and_HTTP_restore": true,
+      "scope": "Existing R29 qualification adopted, not rerun."
+    }
+  },
+  "X230": {
+    "source_transfer_qualified": true,
+    "source_transfer_qualification": {
+      "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+      "bytes": 10556,
+      "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+    },
+    "source_transfer_packet": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+    "canonical_history": 3763,
+    "canonical_leaves": 3914,
+    "total_seven_assets_bytes": 132647913,
+    "commands": 21,
+    "expected_config_absent_exit1": 2,
+    "all_other_commands_exit0": true,
+    "original_old_relay_UNKNOWN_preserved": "desktop/1a1aa57458d-fc05-4156",
+    "three_finite_fences_not_global_termination_proof": true,
+    "current_NUL_infos_qualified": true,
+    "NUL_current_host_body_RPC": 0,
+    "oracle_and_controls_publication_qualified": true,
+    "publication_qualification": {
+      "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+      "bytes": 22370,
+      "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+    },
+    "full34": {
+      "exact_GO": {
+        "blob": "773ffa99d027be4cd77e265b3a40f8432864139c",
+        "bytes": 6192,
+        "sha256": "66e15a989b26ed9cf57a89896767e845267c2a7f8be72e2ac94cab9ffde3d869"
+      },
+      "original_submissions": 1,
+      "job": "x230/1a1ad5ffad0-fc05-599a",
+      "terminal_authority": {
+        "blob": "adfb59fdb566c3acb280812f33e6961994962e34",
+        "bytes": 729,
+        "sha256": "33d3949d275404316b8545346688fff4fdb7fc0806c72cd0fb0d74af3b02dfae"
+      },
+      "succeeded_exit0_full_durable_confirmed": true,
+      "actual_result": {
+        "blob": "551255f3ff372d04f49ea595f1cf5a55c3c06285",
+        "bytes": 1124,
+        "sha256": "e2c18577543dc0290461daf2b6791cfe9da87616d87cd4a17c007a8f99f0d9a0"
+      },
+      "reported_original_cases_passed": 31,
+      "reported_original_cases_total": 31,
+      "reported_elapsed_seconds": 144.321,
+      "reported_owned_processes_stopped": true,
+      "reported_source_binary_unchanged": true,
+      "summary_expected_bytes": 90926,
+      "summary_expected_sha256": "b9966b600df2f2c681148b63d03dca3bbceabcdff3fb42dc1eb4bae73677ae9f",
+      "root_contract_verifier_prepared": {
+        "blob": "3126c4254eb9b9800dda8eda2a986726065a9a23",
+        "bytes": 9153,
+        "sha256": "3f44253af98c5f794dca2d772c170dcc7f093431fb03193033b556a05a7503ea"
+      },
+      "whole_summary_root_contract_qualified": false,
+      "original_observation_chain_qualified": false,
+      "complete_qualified": false,
+      "current_work": "Continue original version-bound summary chunks and immutable pages; no product replay."
+    },
+    "comparison69": {
+      "submitted": false,
+      "qualified": false,
+      "next_exact_request": "6c51aa75507c4ba473d19406ecf51d9ca8c2860d",
+      "requires_full34_original_chain_and_cleanup_qualification": true
+    }
+  },
+  "HA": {
+    "qualified": true,
+    "qualification": {
+      "blob": "0f4bccd7b70b5d68e0d07e9fa7e8fb40d8fe892b",
+      "bytes": 5084,
+      "sha256": "bdf159bad0e6e1c7ffe27ee313379aeaa882c4dda42b19e61505f0ae9d924205"
+    },
+    "semantic_review": {
+      "blob": "ff2fec8d7f1c42946a021243526156cb93f69bfb",
+      "bytes": 10115,
+      "sha256": "8bf3b0787c69fbe660515fcb2b4947c1a5e991dcf5f844d6a2a6bb364a9fa896"
+    },
+    "prepare_qualification": {
+      "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+      "bytes": 9534,
+      "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+    },
+    "original_job": "desktop/1a1ad3a6dd4-fc05-5919",
+    "original_packet_preserved": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+    "corrected_archive_packet": "625df69e7dbe4407686253564ccd607a3b60b939",
+    "original_chain_peer": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+    "original98_passed": 98,
+    "separate_postcold12_passed": 12,
+    "baseline62_executed": false,
+    "official30_executed": false,
+    "hosts": [
+      "Mac",
+      "ROG",
+      "Pocket4"
+    ],
+    "leader_kill": {
+      "method": "SIGKILL",
+      "old_node": 1,
+      "old_pid": 74905,
+      "new_node": 2
+    },
+    "quorum_loss": {
+      "read_status": 503,
+      "write_status": 503,
+      "denied_write_absent_on_all_three": true
+    },
+    "readable_large_versions": 17,
+    "large_logical_payload_bytes": 35651584,
+    "lifecycle_versions": 19,
+    "postcold": {
+      "elapsed_seconds": 51.809603061992675,
+      "shared_budget_seconds": 300,
+      "controller_budget_seconds": 2400,
+      "actual_data_source": 3,
+      "actual_empty_leader": 1,
+      "forced_election": false,
+      "original_keys_once_unsealed": true,
+      "all_nodes_committed_and_applied": 67,
+      "ReadIndex_small_keys": 4,
+      "ReadIndex_hosts": 3,
+      "original_metadata_hash_preserved": true,
+      "cipher_leaves_verified": 338,
+      "cipher_bytes_verified": 35742455
+    },
+    "cleanup": {
+      "owned_starts": 19,
+      "matched_stops": 19,
+      "Mac_foreground_sessions_closed": 7,
+      "native_and_local_leaders_reaped": 14,
+      "original_stop_seconds": 5,
+      "per_FD_runtime_ledger": false,
+      "global_host_FD_inventory": false
+    },
+    "scope": "Current4e808 normal build, synthetic direct-private-LAN fixture, original98 and separate12 only.",
+    "uncovered": [
+      "native_ha_snapshot_export_restore",
+      "large_http_forwarding",
+      "physical_power_loss",
+      "disk_full",
+      "long_horizon_linearizability",
+      "production_traffic_switch",
+      "old_production_asset_cleanup"
+    ],
+    "old_failed_postcold_preserved": true,
+    "production_qualified": false
+  },
+  "AuthBus": {
+    "source_metadata3_and_prior_body4_qualified": true,
+    "prior_body4_review": {
+      "blob": "0074fb98ae02518672bc2bf8e8269764d4e60e93",
+      "bytes": 12098,
+      "sha256": "1e95dae1f76a363d4f411d80d7cc4072d699fc157544774cd715c9a78ebfd1c9"
+    },
+    "new_registration_metadata2_qualified": true,
+    "metadata2_review": {
+      "blob": "459a8919593386faa96403d6411f576d112252e1",
+      "bytes": 12267,
+      "sha256": "2d62443cb8ad5cc005b50f7216d00d40417f38f1ac3d4b078bd4c133dce0cb95"
+    },
+    "new_body4_exact_GO": {
+      "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+      "bytes": 10218,
+      "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b"
+    },
+    "new_body4_expected_bytes": 213025,
+    "new_body4_complete_root_qualified": false,
+    "new_body4_state": "Original admitted reads continue; partial original SDK and whole-source results are persisted. Later complete chain belongs to R33.",
+    "SDK_executed": false,
+    "actual_selected_owner_proven": false,
+    "private_capsule_read_for_diagnostic": false,
+    "production_credentials_changed": false,
+    "J3160_contacted": false,
+    "providers_models_refresh_quota_unchanged": true,
+    "trust_AppRole_TLS_KV_Policy_renew_revoke_complete": false,
+    "next_required": "Complete two public registration source files; derive minimal exact owner/registration diagnostic from actual entry. Do not traverse unrelated SDK dependencies."
+  },
+  "CLI": {
+    "source_review_qualified": true,
+    "source_review": {
+      "blob": "c341c7213dfa77b9a32e4326535ee931168c0cce",
+      "bytes": 4695,
+      "sha256": "144c59c685f6e8a524e9a6b513ac914a96ed39e5bed58f88e6437f20a0a34c31"
+    },
+    "source_packet": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+    "independent_source_peer": "b506b704ad62570448033c337887f69fbee217e3",
+    "stage_exact_request": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "stage_typed_digest": "8a10353c991430800ffe9e2c9ec33a375ff33a6254b3d335abebb8b14ac9c67e",
+    "stage_expected_fingerprint": "9948510111243972736",
+    "stage_internal_seconds": 300,
+    "stage_outer_seconds": 330,
+    "stage_submitted": false,
+    "prepare_submitted": false,
+    "live_submitted": false,
+    "product_qualified": false,
+    "two_old_B01_UNKNOWN_preserved": true
+  },
+  "H2": {
+    "content_bound_source_packet": "697f7b64102692c5da736eee4cd329211189839a",
+    "stage_gap": {
+      "blob": "6d2e49c267c7c48b08c9ebc0904b1c8440e72c1e",
+      "bytes": 5686,
+      "sha256": "daf5100ab7c9c42b231f78b56ec3a1543df233cbf2a04e8517f502c613315a56"
+    },
+    "template_ready": false,
+    "independent_incoming_infos": 7,
+    "incoming_infos_required": 12,
+    "target_actual_identities_observed": 0,
+    "stage_submitted": false,
+    "product_qualified": false,
+    "next_work": "Five fixed incoming metadata observations and narrow adaptation of existing stage: h2qa owned directory/FD, second fixed input set, exact target membership, H2 schema and h2_client binding. Original QA, dual identity and deadlines unchanged.",
+    "instrument_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "product_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec"
+  },
+  "clients_and_backups": {
+    "all_migrated": false,
+    "current_client_set_complete": false,
+    "Mac5_and_ROG6_are_bounded_prior_observations": true,
+    "ROG_disabled_generation203_preserved": true,
+    "Pocket4_manager_and_X230_current_consumers_pending": true,
+    "backup_chain": "Nov2 capture/Nov3 transport: one historical 23-file,7-DB,6-auth-store,9-receipt chain.",
+    "backup_is_global_atomic_snapshot": false,
+    "per_client_cutover_requires": [
+      "real trusted credential read/write",
+      "service/client restart",
+      "rollback rehearsal",
+      "traffic transition verification"
+    ],
+    "cleanup_authorized_condition_met": false
+  },
+  "runtime_connection": {
+    "maximum_concurrent_lines": 2,
+    "current_line_owners": {
+      "A": "/root/authbus_migration",
+      "B": "/root/compatibility_audit"
+    },
+    "current_A_GO": "49fa57d6128f99ff425ea798466514564374d3b4",
+    "current_B_GO": "773ffa99d027be4cd77e265b3a40f8432864139c",
+    "root_Runtime_calls": 0,
+    "HA_agent_pure_H2_source_only": true,
+    "no_original_business_replay": true,
+    "missing_original_ACK_not_classified_as_absent": true
+  },
+  "recovery": {
+    "functions_store_reset": true,
+    "remote_jobs_not_restarted": true,
+    "immutable_saved_evidence_and_known_IDs_retained": true,
+    "new_SDKs_written_to_shared_files_before_parsing_and_Git_archival": true,
+    "root_draft_reconstructed_from_saved_qualifications": true,
+    "prior_completed_whole_packet_qualifications_adopted_not_rerun": true,
+    "packet_Merkle_catalogs_recomputed": true,
+    "R31_full_recursive_tree_two_transport_closed_errors": true,
+    "publication_preservation_method": "Compare exact immediate Git tree IDs and unchanged subtrees at all changed ancestor paths; no reliance on unavailable large recursive response.",
+    "LAN_early_two_file_ACK_bytes_retained_within_four_file_ACK_binding_packet": true
+  },
+  "evidence": {
+    "packet_count": 24,
+    "packet_files": 1925,
+    "packet_bytes": 15798161,
+    "packet_merkle_trees": 646,
+    "qualification_predicates_are_not_product_cases": true,
+    "packets": [
+      {
+        "name": "X230-relay-core-semantic-peer3",
+        "tree": "57cb069d0249babe220e9544d9a306a7df4ca3de",
+        "files": 3,
+        "bytes": 51432,
+        "merkle": {
+          "root_sha": "57cb069d0249babe220e9544d9a306a7df4ca3de",
+          "trees_verified": 1,
+          "leaf_count": 3
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-two-current-NUL-info-original21",
+        "tree": "77a457ec134d50f03e388e629953d67cc302e9d8",
+        "files": 21,
+        "bytes": 51548,
+        "merkle": {
+          "root_sha": "77a457ec134d50f03e388e629953d67cc302e9d8",
+          "trees_verified": 7,
+          "leaf_count": 21
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-prepare-complete213",
+        "tree": "f799faca211d7c34db5f386c948509e1d6219faa",
+        "files": 213,
+        "bytes": 594588,
+        "merkle": {
+          "root_sha": "f799faca211d7c34db5f386c948509e1d6219faa",
+          "trees_verified": 92,
+          "leaf_count": 213
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-relay-complete298",
+        "tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+        "files": 298,
+        "bytes": 2716199,
+        "merkle": {
+          "root_sha": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+          "trees_verified": 52,
+          "leaf_count": 298
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "Auth-three-metadata-and-four-body-source53",
+        "tree": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+        "files": 53,
+        "bytes": 120108,
+        "merkle": {
+          "root_sha": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+          "trees_verified": 23,
+          "leaf_count": 53
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-prepare-original-chain-peer8",
+        "tree": "63b2ad933c1443e09da31931eee44ad4abd3be3c",
+        "files": 8,
+        "bytes": 136555,
+        "merkle": {
+          "root_sha": "63b2ad933c1443e09da31931eee44ad4abd3be3c",
+          "trees_verified": 3,
+          "leaf_count": 8
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-original-chain-peer13",
+        "tree": "f06eb7341dbe768ca2f848e9d2e136d19dde6f89",
+        "files": 13,
+        "bytes": 351753,
+        "merkle": {
+          "root_sha": "f06eb7341dbe768ca2f848e9d2e136d19dde6f89",
+          "trees_verified": 3,
+          "leaf_count": 13
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-two-exact-bound-wrappers23",
+        "tree": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50",
+        "files": 23,
+        "bytes": 169527,
+        "merkle": {
+          "root_sha": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50",
+          "trees_verified": 6,
+          "leaf_count": 23
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "Auth-four-bodies-complete125",
+        "tree": "1a6dff12d9d52a5e71361eb641200f988a779ba4",
+        "files": 125,
+        "bytes": 1140056,
+        "merkle": {
+          "root_sha": "1a6dff12d9d52a5e71361eb641200f988a779ba4",
+          "trees_verified": 47,
+          "leaf_count": 125
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-next-oracle-publication-source41",
+        "tree": "af115fddab06b90935b58a653ce0a05e669f0c89",
+        "files": 41,
+        "bytes": 206650,
+        "merkle": {
+          "root_sha": "af115fddab06b90935b58a653ce0a05e669f0c89",
+          "trees_verified": 6,
+          "leaf_count": 41
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "Auth-two-next-registration-metadata-source11",
+        "tree": "0e8e139fdbd8a41290baccec05408776329c728d",
+        "files": 11,
+        "bytes": 94365,
+        "merkle": {
+          "root_sha": "0e8e139fdbd8a41290baccec05408776329c728d",
+          "trees_verified": 3,
+          "leaf_count": 11
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "X230-two-oracles-three-controls-actual161",
+        "tree": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+        "files": 161,
+        "bytes": 638880,
+        "merkle": {
+          "root_sha": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+          "trees_verified": 45,
+          "leaf_count": 161
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-live-complete-original388",
+        "tree": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+        "files": 388,
+        "bytes": 3007450,
+        "merkle": {
+          "root_sha": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+          "trees_verified": 149,
+          "leaf_count": 388
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-live-corrected390",
+        "tree": "625df69e7dbe4407686253564ccd607a3b60b939",
+        "files": 390,
+        "bytes": 3012088,
+        "merkle": {
+          "root_sha": "625df69e7dbe4407686253564ccd607a3b60b939",
+          "trees_verified": 149,
+          "leaf_count": 390
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "CLI-stage-minimal-data-binding-source50",
+        "tree": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+        "files": 50,
+        "bytes": 2558486,
+        "merkle": {
+          "root_sha": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+          "trees_verified": 13,
+          "leaf_count": 50
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "CLI-stage-independent-source-peer5",
+        "tree": "b506b704ad62570448033c337887f69fbee217e3",
+        "files": 5,
+        "bytes": 64003,
+        "merkle": {
+          "root_sha": "b506b704ad62570448033c337887f69fbee217e3",
+          "trees_verified": 1,
+          "leaf_count": 5
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "Auth-two-registration-metadata-actual36",
+        "tree": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+        "files": 36,
+        "bytes": 53998,
+        "merkle": {
+          "root_sha": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+          "trees_verified": 15,
+          "leaf_count": 36
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "Auth-two-registration-metadata-independent-peer6",
+        "tree": "7448f5bc13b27f52b862720344cbff4ff830e20e",
+        "files": 6,
+        "bytes": 66036,
+        "merkle": {
+          "root_sha": "7448f5bc13b27f52b862720344cbff4ff830e20e",
+          "trees_verified": 2,
+          "leaf_count": 6
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-original-chain-preparation-peer5",
+        "tree": "bdb2a3338c513bfa8846626157b00609de34a662",
+        "files": 5,
+        "bytes": 57083,
+        "merkle": {
+          "root_sha": "bdb2a3338c513bfa8846626157b00609de34a662",
+          "trees_verified": 1,
+          "leaf_count": 5
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-live-independent-original-chain-final-peer8",
+        "tree": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+        "files": 8,
+        "bytes": 100735,
+        "merkle": {
+          "root_sha": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+          "trees_verified": 3,
+          "leaf_count": 8
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "H2-content-bound-template-and-stage-gap-source52",
+        "tree": "697f7b64102692c5da736eee4cd329211189839a",
+        "files": 52,
+        "bytes": 582172,
+        "merkle": {
+          "root_sha": "697f7b64102692c5da736eee4cd329211189839a",
+          "trees_verified": 19,
+          "leaf_count": 52
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true
+      },
+      {
+        "name": "LAN-prepare-output1-original-closed-read-failure8",
+        "tree": "302a4f4b96b848b28389145261e098b1696b4c8e",
+        "files": 8,
+        "bytes": 6983,
+        "merkle": {
+          "root_sha": "302a4f4b96b848b28389145261e098b1696b4c8e",
+          "trees_verified": 4
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true,
+        "contained_in": "f799faca211d7c34db5f386c948509e1d6219faa",
+        "contained_path": "history/output1-original-failed-body"
+      },
+      {
+        "name": "LAN-live-original-intent3",
+        "tree": "a6f7a7483f604c839ab870a7c68c5c670261df66",
+        "files": 3,
+        "bytes": 13153,
+        "merkle": {
+          "root_sha": "a6f7a7483f604c839ab870a7c68c5c670261df66",
+          "trees_verified": 1
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true,
+        "contained_in": "625df69e7dbe4407686253564ccd607a3b60b939",
+        "contained_path": "execution/intent"
+      },
+      {
+        "name": "LAN-live-original-ACK-binding4",
+        "tree": "4307353612e9a9a5580bd096307470917fa0ed8d",
+        "files": 4,
+        "bytes": 4313,
+        "merkle": {
+          "root_sha": "4307353612e9a9a5580bd096307470917fa0ed8d",
+          "trees_verified": 1
+        },
+        "prior_root_whole_verification_adopted_from_saved_qualification": true,
+        "contained_in": "625df69e7dbe4407686253564ccd607a3b60b939",
+        "contained_path": "execution/ACK"
+      }
+    ],
+    "root_artifacts_before_state_and_manifest": 33,
+    "root_artifacts": [
+      {
+        "name": "LAN-complete-qualification.public.json",
+        "blob": "0f4bccd7b70b5d68e0d07e9fa7e8fb40d8fe892b",
+        "bytes": 5084,
+        "sha256": "bdf159bad0e6e1c7ffe27ee313379aeaa882c4dda42b19e61505f0ae9d924205"
+      },
+      {
+        "name": "LAN-live-semantic-review.public.json",
+        "blob": "ff2fec8d7f1c42946a021243526156cb93f69bfb",
+        "bytes": 10115,
+        "sha256": "8bf3b0787c69fbe660515fcb2b4947c1a5e991dcf5f844d6a2a6bb364a9fa896"
+      },
+      {
+        "name": "LAN-prepare-qualification.public.json",
+        "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+        "bytes": 9534,
+        "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+      },
+      {
+        "name": "LAN-lane-A-release.public.json",
+        "blob": "e74ffb1da0602e642a9ace8df0aef6f6b7ee00d8",
+        "bytes": 5992,
+        "sha256": "038365fadc9118e6aed00644b935036af42200624eba63490ebf96bc85c1220e"
+      },
+      {
+        "name": "LAN-complete-verifier.js",
+        "blob": "80ab51f8e29f9e8868f2ae6b0313ce5d1bbcc427",
+        "bytes": 6016,
+        "sha256": "20b8730e7de74ef7cd976f8b99bdf8dc5b1c5badd28807fa82e7824307994542"
+      },
+      {
+        "name": "X230-transfer-qualification.public.json",
+        "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+        "bytes": 10556,
+        "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+      },
+      {
+        "name": "X230-oracles-controls-publication-qualification.public.json",
+        "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+        "bytes": 22370,
+        "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+      },
+      {
+        "name": "X230-full34-exact-GO.public.json",
+        "blob": "773ffa99d027be4cd77e265b3a40f8432864139c",
+        "bytes": 6192,
+        "sha256": "66e15a989b26ed9cf57a89896767e845267c2a7f8be72e2ac94cab9ffde3d869"
+      },
+      {
+        "name": "X230-full34-actual-result.public.json",
+        "blob": "551255f3ff372d04f49ea595f1cf5a55c3c06285",
+        "bytes": 1124,
+        "sha256": "e2c18577543dc0290461daf2b6791cfe9da87616d87cd4a17c007a8f99f0d9a0"
+      },
+      {
+        "name": "X230-full34-authority.original.json",
+        "blob": "adfb59fdb566c3acb280812f33e6961994962e34",
+        "bytes": 729,
+        "sha256": "33d3949d275404316b8545346688fff4fdb7fc0806c72cd0fb0d74af3b02dfae"
+      },
+      {
+        "name": "X230-full34-contract-verifier.js",
+        "blob": "3126c4254eb9b9800dda8eda2a986726065a9a23",
+        "bytes": 9153,
+        "sha256": "3f44253af98c5f794dca2d772c170dcc7f093431fb03193033b556a05a7503ea"
+      },
+      {
+        "name": "X230-NUL-current-info-review.public.json",
+        "blob": "71591cba75f3e978f82579524d6ab3163cd2450e",
+        "bytes": 3953,
+        "sha256": "bb44ebcb81030167f9eceda1f0058565286ae8d03ec101d7fd618ee97b05161d"
+      },
+      {
+        "name": "X230-core-peer-intake.public.json",
+        "blob": "a96bff2a7c1fab48143fdbea05bf1ded63299b70",
+        "bytes": 3700,
+        "sha256": "80441041d0b425cfdf3f800e0dbeafb2f4f63743853ae8817a7216f585666b7c"
+      },
+      {
+        "name": "LAN-prepare-semantics.public.json",
+        "blob": "4d3419a504cf4d0c068276904364f620df35d854",
+        "bytes": 13674,
+        "sha256": "1adbae1dde24a47d19e11289ae6dfa74cf1d0a51b805ae4e7cc89ed0a49bd7e5"
+      },
+      {
+        "name": "Auth-prior-body4-review.public.json",
+        "blob": "0074fb98ae02518672bc2bf8e8269764d4e60e93",
+        "bytes": 12098,
+        "sha256": "1e95dae1f76a363d4f411d80d7cc4072d699fc157544774cd715c9a78ebfd1c9"
+      },
+      {
+        "name": "Auth-registration-metadata2-review.public.json",
+        "blob": "459a8919593386faa96403d6411f576d112252e1",
+        "bytes": 12267,
+        "sha256": "2d62443cb8ad5cc005b50f7216d00d40417f38f1ac3d4b078bd4c133dce0cb95"
+      },
+      {
+        "name": "Auth-registration-body4-exact-GO.public.json",
+        "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+        "bytes": 10218,
+        "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b"
+      },
+      {
+        "name": "CLI-stage-source-review.public.json",
+        "blob": "c341c7213dfa77b9a32e4326535ee931168c0cce",
+        "bytes": 4695,
+        "sha256": "144c59c685f6e8a524e9a6b513ac914a96ed39e5bed58f88e6437f20a0a34c31"
+      },
+      {
+        "name": "CLI-stage-source-verifier.js",
+        "blob": "8db4605b75027badf6b7fec7e7f834188215e79e",
+        "bytes": 7938,
+        "sha256": "dd1485a059aab89a142990607780cca10e85a7cd22cfef04ce0778621a0ce617"
+      },
+      {
+        "name": "H2-stage-gap.public.json",
+        "blob": "6d2e49c267c7c48b08c9ebc0904b1c8440e72c1e",
+        "bytes": 5686,
+        "sha256": "daf5100ab7c9c42b231f78b56ec3a1543df233cbf2a04e8517f502c613315a56"
+      },
+      {
+        "name": "R31-publication-proof.public.json",
+        "blob": "100bd027e3c5fa291dfbc6c591b647a456bd0b41",
+        "bytes": 1815,
+        "sha256": "386cd63691b1d8655ce8e94830757bed1f4998267322eb684d046d161988ded6"
+      },
+      {
+        "name": "recovery-pure-helpers.js",
+        "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+        "bytes": 6684,
+        "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+      },
+      {
+        "name": "recovery-git-helpers.js",
+        "blob": "85878559fd5af179c2d0f7aac8657145513ed204",
+        "bytes": 3680,
+        "sha256": "96d3543afead13f6d80d7c7d0c8392c1b17d62716e219e2401f8206d385cab70"
+      },
+      {
+        "name": "recovery-immediate-Merkle-helpers.js",
+        "blob": "6c5bd52313333acd4abd635085c4019af4462b78",
+        "bytes": 1386,
+        "sha256": "24874d625143ea1ee457d6ff35121d80c13985531836ab08788beb7511610935"
+      },
+      {
+        "name": "r32-X230-eight-independent-infos-root-review.public.json",
+        "blob": "a2c1cd9a7731ba4b029e739decec29375ad1c1c0",
+        "bytes": 6986,
+        "sha256": "73f3ac8d322f7c6401aaaf9922b70d3802e654bc4211326ca41966f403d3ac45"
+      },
+      {
+        "name": "r32-X230-final69-command-content-root-review.public.json",
+        "blob": "91547d01e1c690c60a8c936361293168f1537db2",
+        "bytes": 15852,
+        "sha256": "0f4bdcb5dcc3247f6dfdcaf6e3fc14f4d64737a827e38c6ba3cb023cac046818"
+      },
+      {
+        "name": "r32-X230-publication-root-verifier-first-failure.public.json",
+        "blob": "5d844b6db8ad97255854ad64554a659d03d23c22",
+        "bytes": 441,
+        "sha256": "f72457cdb2c7d3ff85ea86095addd9150e1ed0b56cafc18d381f74025b3ad8de"
+      },
+      {
+        "name": "r32-X230-publication-root-verifier-correction.public.json",
+        "blob": "aecb005cebcbdb7516df3442c58b4ae0b6bbdc15",
+        "bytes": 1204,
+        "sha256": "d47d7b960471023267bd0a5aac73b7126027f49331361d472893db9a8407561b"
+      },
+      {
+        "name": "r32-X230-two-bound-wrappers-root-review.public.json",
+        "blob": "7934f6369f16912b30775317ed8327cc7d3c0ad5",
+        "bytes": 5427,
+        "sha256": "c23e69003520719b623fefaf05f4dd9369b65849554f7dd86b902dbfc0528ad3"
+      },
+      {
+        "name": "r32-LAN-prepare-source-constants-root-review.public.json",
+        "blob": "fd61e617f7ed7d64d63e184b2fa37940dc337ad7",
+        "bytes": 11391,
+        "sha256": "fdb6e3e3fe94e309e5d1d86c45bce193758400ec49a7c26f9acdab9cbc444573"
+      },
+      {
+        "name": "r32-Auth-metadata3-body4-root-review.public.json",
+        "blob": "0eeb69c9fa57909bd3f8415f98af4bfcadd60ffe",
+        "bytes": 9378,
+        "sha256": "289c23222f88f20aa06c482d503debc4d147821d2ade8b0042bd13c247971b05"
+      },
+      {
+        "name": "r31-checkpoint.md",
+        "blob": "d02226534c06152be44d6b55691bb6e5120b44db",
+        "bytes": 303221,
+        "sha256": "8eafdf01b2bd4b7a2cf3b306291af9da27d2db660c5219667a2b637e9de2a1d4",
+        "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+        "mode": "100644",
+        "previous_blob": "d27e5de2bb4065b1680b4407c85809bc7539f90d"
+      },
+      {
+        "name": "r31-checkpoint-index.public.json",
+        "blob": "d82a2259b405bb72e6f5f53fb347b553ed42dc22",
+        "bytes": 864829,
+        "sha256": "8d961c15865dcfc61877a8a5b38fc98e1a7390be45a1574162862bd89139bf76",
+        "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+        "mode": "100644",
+        "previous_blob": "ba23a377a930ea9867f39cbeee6f43ad7698fed4"
+      }
+    ]
+  },
+  "next_required": [
+    "Finish X230 original full34 detailed contract and original chain, then exact comparison69.",
+    "Complete CLI stage, read-only prepare, and original live snapshot save/restore/cold/standby cases.",
+    "Complete H2 fixed input metadata, stage, prepare and actual TLS-ALPN-h2 cases.",
+    "Resolve AuthBus actual owner and trusted credential origin without J3160, then AppRole/TLS/KV/Policy/renew/revoke.",
+    "Complete current client and backup inventory; per-client real credential/read-write/restart/rollback before traffic switch.",
+    "Only after all migration and backups are verified, remove old services, binaries and reproducible intermediates, retaining newest HeptaBao service."
+  ],
+  "freeze_scope": {
+    "listed_immutable_evidence_only": true,
+    "unlisted_later_outcomes": "R33",
+    "whole_R31_document_preserved_verbatim": true,
+    "prior_index_values_preserved_as_original_JSON_lexemes": true
+  }
+}

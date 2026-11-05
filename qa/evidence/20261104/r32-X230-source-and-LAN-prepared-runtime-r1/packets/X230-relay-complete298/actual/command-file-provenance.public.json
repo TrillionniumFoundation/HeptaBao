@@ -1,0 +1,651 @@
+{
+  "schema": "heptabao.4e808.x230-command-content-provenance.v1",
+  "actual_small_files": 69,
+  "reused_canonical_nul_files": 2,
+  "current_native_nul_body_rpc_count": 0,
+  "files": [
+    {
+      "archive_path": "commands/receiver/000-standalone-clone.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/000-standalone-clone.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 1160,
+      "sha256": "d1ab20d7fbeb49a1eadc43c96afb6c9c3b7c7f48b4373ac940d81b5f03b2f526",
+      "version": "2053:3057922:1160:1793904534126654385:1793904534126654385"
+    },
+    {
+      "archive_path": "commands/receiver/000-standalone-clone.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/000-standalone-clone.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3057909:0:1793904534124654384:1793904534125654384"
+    },
+    {
+      "archive_path": "commands/receiver/000-standalone-clone.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/000-standalone-clone.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 86,
+      "sha256": "0421688c7d34e7435270b57bf9cb208b94030b0ea33a984fe994ebcc77fcb221",
+      "version": "2053:3057921:86:1793904534125654384:1793904534125654384"
+    },
+    {
+      "archive_path": "commands/receiver/001-bundle-verify.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/001-bundle-verify.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 1057,
+      "sha256": "b6669d06e8ee7ae39858bc3109b45f547bb11119ea37ca81d90aa67cd7a4a5f2",
+      "version": "2053:3057925:1057:1793904534145654399:1793904534145654399"
+    },
+    {
+      "archive_path": "commands/receiver/001-bundle-verify.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/001-bundle-verify.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 157,
+      "sha256": "b31aa8e063d47cd1dc8c3440ef6fe2bf3ff3ca5166ecc19eabbd5302ab91da5b",
+      "version": "2053:3057923:157:1793904534143654398:1793904534143654398"
+    },
+    {
+      "archive_path": "commands/receiver/001-bundle-verify.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/001-bundle-verify.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 107,
+      "sha256": "618ec5590d87f94e77fd494091ca7626c2bc9f97d2d83f4ebff61dd76121c54b",
+      "version": "2053:3057924:107:1793904534144654399:1793904534144654399"
+    },
+    {
+      "archive_path": "commands/receiver/002-bundle-heads.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/002-bundle-heads.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 1056,
+      "sha256": "d26deff53784084a9a1c0c0be8b7e4a9afab953bb33c63155b69f75cc565b816",
+      "version": "2053:3057928:1056:1793904534168654416:1793904534168654416"
+    },
+    {
+      "archive_path": "commands/receiver/002-bundle-heads.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/002-bundle-heads.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 46,
+      "sha256": "1d7ec04605d0264e6ac1492e39bc81fb3b913a202c8eaef82738b1347147a217",
+      "version": "2053:3057926:46:1793904534166654415:1793904534166654415"
+    },
+    {
+      "archive_path": "commands/receiver/002-bundle-heads.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/002-bundle-heads.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3057927:0:1793904534167654415:1793904534167654415"
+    },
+    {
+      "archive_path": "commands/receiver/003-canonical-checkout.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/003-canonical-checkout.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 1004,
+      "sha256": "b348cb28c16c7914b38d808145704ba728be66a47b9b48a462c3505c0b2d9d13",
+      "version": "2053:3062357:1004:1793904534637654764:1793904534637654764"
+    },
+    {
+      "archive_path": "commands/receiver/003-canonical-checkout.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/003-canonical-checkout.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062355:0:1793904534626654756:1793904534626654756"
+    },
+    {
+      "archive_path": "commands/receiver/003-canonical-checkout.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/003-canonical-checkout.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 92,
+      "sha256": "56318c9b0b1ea356ff992607f5f380be6f1d2804ff0de2c9f33f12be5842a643",
+      "version": "2053:3062356:92:1793904534636654763:1793904534636654763"
+    },
+    {
+      "archive_path": "commands/receiver/004-remove-local-origin.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/004-remove-local-origin.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 966,
+      "sha256": "136a093e4f7e3b948465554d40400220dd289de82e721710254adf949882750b",
+      "version": "2053:3062360:966:1793904534661654782:1793904534661654782"
+    },
+    {
+      "archive_path": "commands/receiver/004-remove-local-origin.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/004-remove-local-origin.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3057914:0:1793904534659654780:1793904534659654780"
+    },
+    {
+      "archive_path": "commands/receiver/004-remove-local-origin.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/004-remove-local-origin.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062359:0:1793904534660654781:1793904534660654781"
+    },
+    {
+      "archive_path": "commands/receiver/005-canonical-kind.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/005-canonical-kind.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-01",
+      "bytes": 993,
+      "sha256": "1df859306c0a1289c5fe4cb5aa67129c3bd3bcf37aa1c7d78418bf3e5be4bd96",
+      "version": "2053:3062363:993:1793904534685654800:1793904534685654800"
+    },
+    {
+      "archive_path": "commands/receiver/005-canonical-kind.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/005-canonical-kind.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 7,
+      "sha256": "50836eee574ecff79dea3b4fd40673d7d000f7a5f177d8a6a3000b59c78383b8",
+      "version": "2053:3062361:7:1793904534682654797:1793904534682654797"
+    },
+    {
+      "archive_path": "commands/receiver/005-canonical-kind.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/005-canonical-kind.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062362:0:1793904534684654799:1793904534684654799"
+    },
+    {
+      "archive_path": "commands/receiver/006-canonical-tree.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/006-canonical-tree.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 992,
+      "sha256": "e4ba24eb43190d4804edbd89bf9456c5946902dd5e9790f15ed3b98932986efd",
+      "version": "2053:3062366:992:1793904534709654817:1793904534709654817"
+    },
+    {
+      "archive_path": "commands/receiver/006-canonical-tree.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/006-canonical-tree.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 41,
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "version": "2053:3062364:41:1793904534706654815:1793904534706654815"
+    },
+    {
+      "archive_path": "commands/receiver/006-canonical-tree.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/006-canonical-tree.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062365:0:1793904534708654817:1793904534708654817"
+    },
+    {
+      "archive_path": "commands/receiver/007-canonical-parents.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/007-canonical-parents.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 1012,
+      "sha256": "d408946b9c5040a4ad04674481efd0f518e33e07a1be0c82fd0c53b4d7302769",
+      "version": "2053:3062369:1012:1793904534734654836:1793904534734654836"
+    },
+    {
+      "archive_path": "commands/receiver/007-canonical-parents.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/007-canonical-parents.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 41,
+      "sha256": "879eced507590ac79f5778a13b1c3c5e0cb4e0608932eeeec872920e3935a56a",
+      "version": "2053:3062367:41:1793904534732654834:1793904534732654834"
+    },
+    {
+      "archive_path": "commands/receiver/007-canonical-parents.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/007-canonical-parents.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062368:0:1793904534733654835:1793904534733654835"
+    },
+    {
+      "archive_path": "commands/receiver/008-canonical-count.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/008-canonical-count.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 999,
+      "sha256": "a2e7a68c891b2f97051eee99e4cfb24325a967e0c020d3dc861aa429e583bc5b",
+      "version": "2053:3062372:999:1793904534782654871:1793904534782654871"
+    },
+    {
+      "archive_path": "commands/receiver/008-canonical-count.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/008-canonical-count.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 5,
+      "sha256": "0f5e00b716f0b5370c83215bd9f7864900922c672fe995beff4925497e64893e",
+      "version": "2053:3062370:5:1793904534780654870:1793904534780654870"
+    },
+    {
+      "archive_path": "commands/receiver/008-canonical-count.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/008-canonical-count.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062371:0:1793904534781654871:1793904534781654871"
+    },
+    {
+      "archive_path": "commands/receiver/009-canonical-roots.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/009-canonical-roots.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 1009,
+      "sha256": "8989aaded82900ee758f4681b1ca3830df048c87e22b6de43b5fecbf6787e9ea",
+      "version": "2053:3062375:1009:1793904534826654904:1793904534826654904"
+    },
+    {
+      "archive_path": "commands/receiver/009-canonical-roots.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/009-canonical-roots.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 41,
+      "sha256": "8dfbdd110e323dd4c1726edf01071847a9c1032805aedcbb3584d0513880ac1f",
+      "version": "2053:3062373:41:1793904534824654903:1793904534824654903"
+    },
+    {
+      "archive_path": "commands/receiver/009-canonical-roots.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/009-canonical-roots.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062374:0:1793904534825654904:1793904534825654904"
+    },
+    {
+      "archive_path": "commands/receiver/010-canonical-full-fsck.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/010-canonical-full-fsck.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 1054,
+      "sha256": "f2290976e4aaf83e239e3dfa7102a1dcf8304d01d972d92c2bbfeda43d463ac7",
+      "version": "2053:3062378:1054:1793904538222657422:1793904538222657422"
+    },
+    {
+      "archive_path": "commands/receiver/010-canonical-full-fsck.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/010-canonical-full-fsck.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-02",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062376:0:1793904538220657421:1793904538221657422"
+    },
+    {
+      "archive_path": "commands/receiver/010-canonical-full-fsck.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/010-canonical-full-fsck.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062377:0:1793904538221657422:1793904538221657422"
+    },
+    {
+      "archive_path": "commands/receiver/011-materialized-tree.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 1020,
+      "sha256": "70ae84522f5332d9ff422c0c03eeedf6cba829c8ee9fe1d5c26ad7a69b632062",
+      "version": "2053:3062381:1020:1793904538258657449:1793904538258657449"
+    },
+    {
+      "archive_path": "commands/receiver/011-materialized-tree.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062380:0:1793904538256657448:1793904538256657448"
+    },
+    {
+      "archive_path": "commands/receiver/012-materialized-index.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 970,
+      "sha256": "7d5fc53f160cc691b11fb6f52ece6ba2c74005aa91a77e70ec2f9736b4b2d4be",
+      "version": "2053:3062384:970:1793904538291657473:1793904538291657473"
+    },
+    {
+      "archive_path": "commands/receiver/012-materialized-index.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062383:0:1793904538289657472:1793904538289657472"
+    },
+    {
+      "archive_path": "commands/receiver/013-no-sparse-config.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 1058,
+      "sha256": "46e99a869c0301ce8265232981ac4e569765dfb47484d4b5639db9428edec1f8",
+      "version": "2053:3062387:1058:1793904538397657552:1793904538397657552"
+    },
+    {
+      "archive_path": "commands/receiver/013-no-sparse-config.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062385:0:1793904538393657549:1793904538394657550"
+    },
+    {
+      "archive_path": "commands/receiver/013-no-sparse-config.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/013-no-sparse-config.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062386:0:1793904538396657551:1793904538396657551"
+    },
+    {
+      "archive_path": "commands/receiver/014-source-after-head.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 968,
+      "sha256": "05529a15549787688be10e831cd63b47d8b861cd244dd2ea4835e1c76a01d077",
+      "version": "2053:3062390:968:1793904541381659765:1793904541381659765"
+    },
+    {
+      "archive_path": "commands/receiver/014-source-after-head.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 41,
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c",
+      "version": "2053:3062388:41:1793904541380659764:1793904541380659764"
+    },
+    {
+      "archive_path": "commands/receiver/014-source-after-head.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/014-source-after-head.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062389:0:1793904541381659765:1793904541381659765"
+    },
+    {
+      "archive_path": "commands/receiver/015-source-after-tree.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 959,
+      "sha256": "c51014a54adaeddbdc54d08493f86b0799696adc71b2c54d9262175be3bd98a3",
+      "version": "2053:3062393:959:1793904541397659777:1793904541397659777"
+    },
+    {
+      "archive_path": "commands/receiver/015-source-after-tree.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 41,
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0",
+      "version": "2053:3062391:41:1793904541396659776:1793904541396659776"
+    },
+    {
+      "archive_path": "commands/receiver/015-source-after-tree.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/015-source-after-tree.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062392:0:1793904541397659777:1793904541397659777"
+    },
+    {
+      "archive_path": "commands/receiver/016-source-after-status.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/016-source-after-status.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 988,
+      "sha256": "ee166a9de3e3af2e69c44540c1d6d7d27e7c5ba02a696ad309da711d8b92ec91",
+      "version": "2053:3062396:988:1793904541730660024:1793904541730660024"
+    },
+    {
+      "archive_path": "commands/receiver/016-source-after-status.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/016-source-after-status.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-03",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062394:0:1793904541726660021:1793904541726660021"
+    },
+    {
+      "archive_path": "commands/receiver/016-source-after-status.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/016-source-after-status.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062395:0:1793904541729660023:1793904541729660023"
+    },
+    {
+      "archive_path": "commands/receiver/017-source-after-git-dir.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/017-source-after-git-dir.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 970,
+      "sha256": "d2b027f6493cad6e269104545d11eb4504d372fbc6e211c46f49598f01789ef3",
+      "version": "2053:3062399:970:1793904541748660037:1793904541748660037"
+    },
+    {
+      "archive_path": "commands/receiver/017-source-after-git-dir.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/017-source-after-git-dir.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 73,
+      "sha256": "2d68312ca8a368b08318fcedd5b45a3911742863a0ccdeb1f49849bfe977ec92",
+      "version": "2053:3062397:73:1793904541746660036:1793904541746660036"
+    },
+    {
+      "archive_path": "commands/receiver/017-source-after-git-dir.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/017-source-after-git-dir.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062398:0:1793904541747660036:1793904541747660036"
+    },
+    {
+      "archive_path": "commands/receiver/018-source-after-common-dir.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/018-source-after-common-dir.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 970,
+      "sha256": "c69b8a060cd7f58048f037b81cae6691f96bbf7288092387f4551ed08ddece67",
+      "version": "2053:3062402:970:1793904541766660050:1793904541766660050"
+    },
+    {
+      "archive_path": "commands/receiver/018-source-after-common-dir.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/018-source-after-common-dir.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 5,
+      "sha256": "fd03f16fc5ad8be70d6e0491fa2e029bc4a31f5b0de6d4adf8e7dd709d23840f",
+      "version": "2053:3062400:5:1793904541764660049:1793904541764660049"
+    },
+    {
+      "archive_path": "commands/receiver/018-source-after-common-dir.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/018-source-after-common-dir.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062401:0:1793904541765660050:1793904541765660050"
+    },
+    {
+      "archive_path": "commands/receiver/019-source-after-shallow.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/019-source-after-shallow.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 973,
+      "sha256": "4bc8b1b300a3086afe108cb3d101aaacdb8788ebe78436158544258f5c6c7317",
+      "version": "2053:3062405:973:1793904541788660067:1793904541788660067"
+    },
+    {
+      "archive_path": "commands/receiver/019-source-after-shallow.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/019-source-after-shallow.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 6,
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0",
+      "version": "2053:3062403:6:1793904541786660065:1793904541786660065"
+    },
+    {
+      "archive_path": "commands/receiver/019-source-after-shallow.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/019-source-after-shallow.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062404:0:1793904541787660066:1793904541788660067"
+    },
+    {
+      "archive_path": "commands/receiver/020-source-after-partial-config.public.json",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/020-source-after-partial-config.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 1075,
+      "sha256": "f62594655ed6fe20360d71b50d81a052efa3eb6438fb61b85bc59430a5236e5d",
+      "version": "2053:3062408:1075:1793904541811660084:1793904541811660084"
+    },
+    {
+      "archive_path": "commands/receiver/020-source-after-partial-config.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/020-source-after-partial-config.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062406:0:1793904541809660082:1793904541809660082"
+    },
+    {
+      "archive_path": "commands/receiver/020-source-after-partial-config.stderr",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/020-source-after-partial-config.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "receiver-logs-04",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2053:3062407:0:1793904541810660083:1793904541810660083"
+    },
+    {
+      "archive_path": "commands/desktop/x230-ts-effective-config.public.json",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 215,
+      "sha256": "0bd075b5412780edab569ea279ca07e28d294d20e9658f44daf275c1c6a9af32",
+      "version": "2050:7532618:215:1793904517049626810:1793904517049626810"
+    },
+    {
+      "archive_path": "commands/desktop/x230-ts-effective-config.stdout",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 4313,
+      "sha256": "f300105c5fed0f79c64b7f4b1dd2d1478a086cb031748e924b8d63bec6e5daf4",
+      "version": "2050:7532617:4313:1793904516994480674:1793904516994480674"
+    },
+    {
+      "archive_path": "commands/desktop/x230-ts-effective-config.stderr",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/x230-ts-effective-config.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:7532616:0:1793904516986480915:1793904516986480915"
+    },
+    {
+      "archive_path": "commands/desktop/send-desktop.public.json",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/send-desktop.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 201,
+      "sha256": "caac25b79f2a9f32a8347fdb0718d864fcb445c8cc65d700e9f326a625196bde",
+      "version": "2050:7532623:201:1793904530139338822:1793904530139338822"
+    },
+    {
+      "archive_path": "commands/desktop/send-desktop.stderr",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/send-desktop.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 5410,
+      "sha256": "866a7889aafc24f9db11ddf68a6a79df0452aafb7213631794c8d716f3c5fbe2",
+      "version": "2050:7532622:5410:1793904530069086989:1793904530069086989"
+    },
+    {
+      "archive_path": "commands/desktop/receive-x230.public.json",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.public.json",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 201,
+      "sha256": "ddd0c7de0df029ba3a9a2b0ce21768e472d67bbe4b45aa936bd8760d26f5c0d9",
+      "version": "2050:7532624:201:1793904542533919921:1793904542533919921"
+    },
+    {
+      "archive_path": "commands/desktop/receive-x230.stdout",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.stdout",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:7532621:0:1793904517192474710:1793904517192474710"
+    },
+    {
+      "archive_path": "commands/desktop/receive-x230.stderr",
+      "native_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/receive-x230.stderr",
+      "method": "actual-native-read_multiple_files",
+      "observation": "desktop-logs-01",
+      "bytes": 27401,
+      "sha256": "1cfe0c4c3bc6589d87f46f3aa12b9bd5a48f880db036685debffc0ec4e422151",
+      "version": "2050:7532620:27401:1793904542468713858:1793904542468713858"
+    },
+    {
+      "archive_path": "content-representations/receiver/011-materialized-tree.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/011-materialized-tree.stdout",
+      "method": "root-approved-canonical-complete-bytes-reuse",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+      "version": "2053:3062379:450459:1793904538253657445:1793904538254657446",
+      "current_file_info": "a8a4dd63011aae2526412c3a0f05709abbfcc7b6",
+      "current_native_body_rpc_count": 0,
+      "approval": "200c32f98fe0bf5885a2cb90e7f407119bdbef92"
+    },
+    {
+      "archive_path": "content-representations/receiver/012-materialized-index.stdout",
+      "native_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/control/012-materialized-index.stdout",
+      "method": "root-approved-canonical-complete-bytes-reuse",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+      "version": "2053:3062382:438717:1793904538286657470:1793904538287657471",
+      "current_file_info": "78a49a460a3c9e215054e71f63c11ba0554d57f7",
+      "current_native_body_rpc_count": 0,
+      "approval": "200c32f98fe0bf5885a2cb90e7f407119bdbef92"
+    }
+  ]
+}

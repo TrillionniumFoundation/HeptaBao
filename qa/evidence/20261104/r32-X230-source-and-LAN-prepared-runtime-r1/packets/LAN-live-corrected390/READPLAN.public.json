@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.current4e808.LAN-live.existing-original-evidence-plan.r1",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "only_original_job": true,
+  "source_evidence": {
+    "launcher": {
+      "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+      "bytes": 25879,
+      "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92"
+    },
+    "native": {
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
+    }
+  },
+  "first_public_outputs": [
+    {
+      "index": 0,
+      "role": "original-launch",
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+      "source": "launcher original lines318-324, before subprocess.run"
+    },
+    {
+      "index": 1,
+      "role": "original-exit",
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+      "source": "launcher original lines331-344, after original child and post-build probes"
+    },
+    {
+      "index": 2,
+      "role": "original-public-summary",
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+      "source": "native execute_fixture original lines1579-1586, secret_safe_report, final public receipt"
+    }
+  ],
+  "read_after_known_original_terminal": true,
+  "file_info_before_each_body": true,
+  "body_version_binding": "exact returned independent file_info.version",
+  "body_chunk_max": 65536,
+  "immutable_page_limit": 8192,
+  "one_active_observer_max": 1,
+  "all_original_SDKs_external_before_isError_and_parse": true,
+  "process_read": {
+    "host": "desktop",
+    "job_id": "1a1ad3a6dd4-fc05-5919",
+    "limit": 16384,
+    "initial_stdout_offset": 0,
+    "initial_stderr_offset": 0,
+    "follow_only_original_returned_offsets": true
+  },
+  "node_process_log_bodies_in_scope": false,
+  "new_product_actions": 0,
+  "repeat_run_or_new_run_root": false,
+  "UNKNOWN_replay": false
+}

@@ -1,0 +1,1083 @@
+{
+  "schema": "heptabao.current4e808.LAN-live-original-evidence-state.r1",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "request": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+  },
+  "submission_count": 1,
+  "exact_ACK_bound": {
+    "original_host": true,
+    "original_key": true,
+    "executable": true,
+    "args": true,
+    "cwd": true,
+    "empty_environment": true,
+    "digest": true,
+    "fingerprint": true,
+    "new_original_job": true,
+    "launched": true,
+    "backend": true,
+    "record": true,
+    "valid_id": true
+  },
+  "original_authority_latest": {
+    "at_unix_ms": 1793908088770,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ad3a6dd4-fc05-5919",
+    "launch_nonce": "9ace3a2192a7b79c461510b099d87798",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 612,
+        "stored": 612
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "terminal_authority": {
+    "at_unix_ms": 1793908088770,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ad3a6dd4-fc05-5919",
+    "launch_nonce": "9ace3a2192a7b79c461510b099d87798",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 612,
+        "stored": 612
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "authority_observation": "authority3",
+  "original98": 98,
+  "separate_extra12": 12,
+  "original_outer_seconds": 3000,
+  "original_controller_seconds": 2400,
+  "observer_count": 15,
+  "observers": [
+    {
+      "name": "authority0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority0-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 617,
+          "external_tree": "3c09b164da04b03361fa2e16b2c7d0158494a10f"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "authority1",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority1-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 617,
+          "external_tree": "4649a3f5b4f8454fdc0276d42ae0a1f0815ff3c0"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "authority2",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority2-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "4967f77ff99c6691de387b6f4adcd4db0fe1c9502b020693312c390afa8d106f",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "4967f77ff99c6691de387b6f4adcd4db0fe1c9502b020693312c390afa8d106f",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 617,
+          "external_tree": "df2066770d36174ac5acad8804b070758b4fbc11"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "authority3",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-authority3-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919"
+          }
+        }
+      },
+      "operation_id": "8a476a0cc512651715d662ba00649751f92434bb67cea2596d0216eaf10bda05",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "8a476a0cc512651715d662ba00649751f92434bb67cea2596d0216eaf10bda05",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 908,
+          "external_tree": "6af4b3ba591c1d39c87e9aef127ae7fc2c9a47c0"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "streams0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-streams0-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1ad3a6dd4-fc05-5919",
+            "limit": 16384,
+            "stdout_offset": 0,
+            "stderr_offset": 0
+          }
+        }
+      },
+      "operation_id": "02b6722f1033d93ea02bc26db07bb5ecfcca5072cc26933f82b38a5f994ec7fe",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "02b6722f1033d93ea02bc26db07bb5ecfcca5072cc26933f82b38a5f994ec7fe",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 2401,
+          "external_tree": "f0586ed99e648c817da2a187a3a813cc835e1222"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_info",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json"
+          }
+        }
+      },
+      "operation_id": "91b1e8a6385821d5bdb6ca63ced9b07ee0befa4f52d24e7561adfd3aae0dbf94",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "91b1e8a6385821d5bdb6ca63ced9b07ee0befa4f52d24e7561adfd3aae0dbf94",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 626,
+          "external_tree": "810a6f0e19dbb80dc24c64c8c00d8f0e44be01ff"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output1_info",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output1-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json"
+          }
+        }
+      },
+      "operation_id": "67969a17c6f0acfc32b702c8ef2b25d3ae2ff450cc9c6af2ab889b92ff22e55f",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "67969a17c6f0acfc32b702c8ef2b25d3ae2ff450cc9c6af2ab889b92ff22e55f",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 632,
+          "external_tree": "64db9a5fd1c5f31c6b52a10175822a268558cf2d"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output0_info",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output0-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json"
+          }
+        }
+      },
+      "operation_id": "af0147b8e6c7263d167d240b8c224ae8c8a522a42236323373be8d593a29d347",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "af0147b8e6c7263d167d240b8c224ae8c8a522a42236323373be8d593a29d347",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 636,
+          "external_tree": "68ffc333e159ecc6bbb362379295f4081e5641ce"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output0_body0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output0-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+            "offset": 0,
+            "limit": 4132,
+            "expected_version": "2050:7401922:4132:1793907654678586055:1793907654678586055"
+          }
+        }
+      },
+      "operation_id": "5d8f6cc9a209f95a54b12bf24692b75fa0406eedeeee22a6d6b5f4b806570cbf",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "5d8f6cc9a209f95a54b12bf24692b75fa0406eedeeee22a6d6b5f4b806570cbf",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 5983,
+          "external_tree": "c355f6b74bdc8d6b016442264f357729f2205743"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output1_body0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output1-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+            "offset": 0,
+            "limit": 652,
+            "expected_version": "2050:7401925:652:1793908088720162039:1793908088720162039"
+          }
+        }
+      },
+      "operation_id": "234e9807daaf2ccedfc2507f7bd32e9cc23403a0b851031366b0efbb8f422f84",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "234e9807daaf2ccedfc2507f7bd32e9cc23403a0b851031366b0efbb8f422f84",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 1338,
+          "external_tree": "9e64f80ce8bddfc8abf924148610ba1137274ee8"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_body0",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 0,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      },
+      "operation_id": "fc1dee26d21344fa390137c6fa68823bfd9adfa5eb408df03b3dd8c138f48fcb",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "fc1dee26d21344fa390137c6fa68823bfd9adfa5eb408df03b3dd8c138f48fcb",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "211ee91ca62789ec814732fd01cb4c72d633c646"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "a87560f247c9626aab80ca7bf27fdd907c5d6d8b"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "8f42861c8909a4d79c27e89c6e5d00b46da1a07e"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "edf00af7868d5269204db4224dfac2c9fc9353d0"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "b02ebb21f599e65838b769fb420807729dba1cd2"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "bdfbb173613ff773221889c33412698eba5e671b"
+        },
+        {
+          "offset": 49152,
+          "bytes": 8192,
+          "external_tree": "04abe79ce5f1557400deecbc5ac84b8c4f07fe58"
+        },
+        {
+          "offset": 57344,
+          "bytes": 8192,
+          "external_tree": "a0248109affb169c7b34d2af71797449ad8be788"
+        },
+        {
+          "offset": 65536,
+          "bytes": 8192,
+          "external_tree": "2b4409cced3d9df182aa7569ccfd77738ed0c756"
+        },
+        {
+          "offset": 73728,
+          "bytes": 8192,
+          "external_tree": "3ae977c5b8a258290159a67d1fc8bdfb3bf683d0"
+        },
+        {
+          "offset": 81920,
+          "bytes": 5927,
+          "external_tree": "c833b1360af1de574fee30bb1963935f02ccfddd"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_body1",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-body1-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 65536,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      },
+      "operation_id": "278390aa5da1fcec07e4033d7a1348315895c4318c5d13e07c422b7b108f77a5",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "278390aa5da1fcec07e4033d7a1348315895c4318c5d13e07c422b7b108f77a5",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "901d61bf2746ad89a3631854d0c5cb14a3c9a953"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "32115608628abc3b2f2a7aa0f3797891a44b8de3"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "d3e4077d674913da132de7cf44f7a793cf83e330"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "c136385850bc9ea4609c741842e893b40a7a4c36"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "a4f8a583615445735a27c8dd9897b65b18116850"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "3515337de1c040049ba23b985dd68123fb4b692e"
+        },
+        {
+          "offset": 49152,
+          "bytes": 8192,
+          "external_tree": "201b51deb1cd376760218c210eea47021390a66b"
+        },
+        {
+          "offset": 57344,
+          "bytes": 8192,
+          "external_tree": "99b4f82e3884fbf1c54a158741c4fc5b67db0837"
+        },
+        {
+          "offset": 65536,
+          "bytes": 8192,
+          "external_tree": "53058a96e82557ddc7e238bbe4529137763bd5ff"
+        },
+        {
+          "offset": 73728,
+          "bytes": 8192,
+          "external_tree": "f27a77384e4cfa6b224c730a635f436cfa057a88"
+        },
+        {
+          "offset": 81920,
+          "bytes": 5932,
+          "external_tree": "6e3fc2517dc2cebe1ee56487f8ae5558e41ec220"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_body2",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-body2-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 131072,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      },
+      "operation_id": "9c6ec1eae3d758c721f16457d6a958927b7505bd69908005913bd537e45cc838",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "9c6ec1eae3d758c721f16457d6a958927b7505bd69908005913bd537e45cc838",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "de008326b9bf2b8a6eece1a64569aca495fd945d"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "f936602be34c0d5edd464b05893b6f7099c72dfd"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "6761013e7c3d698a1328fdc4258f95ecff460252"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "266c78c56bd2c9c267ead424e0312391104dc5c3"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "1ddc618177cf5129c9fc8a3bf488c9384881c240"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "31418aa65e0f435040559eb2e68b190a18f4852e"
+        },
+        {
+          "offset": 49152,
+          "bytes": 8192,
+          "external_tree": "4f1ee04497c9c67a350949d00de6f5e39d4c3d0f"
+        },
+        {
+          "offset": 57344,
+          "bytes": 8192,
+          "external_tree": "6cacdf79dfea827916a1c2d6950444225df2207f"
+        },
+        {
+          "offset": 65536,
+          "bytes": 8192,
+          "external_tree": "a3bd37060c996ad568fa541b2d5183e16d31e059"
+        },
+        {
+          "offset": 73728,
+          "bytes": 8192,
+          "external_tree": "e1e11c5ed036de2eaed8426c05eca1932c7ab950"
+        },
+        {
+          "offset": 81920,
+          "bytes": 5933,
+          "external_tree": "93abe1a7e25fa01aa6a72868182787bc03141506"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_body3",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-body3-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 196608,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      },
+      "operation_id": "f69afaa074077ba7fa10c229366e4f05fe7e576db68fe09a2dfae4291eeb8413",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "f69afaa074077ba7fa10c229366e4f05fe7e576db68fe09a2dfae4291eeb8413",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "60812df32229d8a471a2b03fa7d7ee00d668bc3b"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "3bbf39e186d7a6e361a5ca6a16dc676171846aff"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "e61df1122beeed696ef24602725f1ebbc4ac107a"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "1fae4a99bf512c5dea8e9aab04ade98507cda625"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "505c94f06d0d883ce80b3c9301910f4016873f15"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "6824881f0a4ea749c8944376048f2f23ff9daecc"
+        },
+        {
+          "offset": 49152,
+          "bytes": 8192,
+          "external_tree": "5f48ca68ac96c94b492b6da868009d36e9da5efb"
+        },
+        {
+          "offset": 57344,
+          "bytes": 8192,
+          "external_tree": "ba682f11339f8893797595dc572f5d1b4cd62f4b"
+        },
+        {
+          "offset": 65536,
+          "bytes": 8192,
+          "external_tree": "ee55a9b8fb16e245571bde8040e809e5833f6101"
+        },
+        {
+          "offset": 73728,
+          "bytes": 8192,
+          "external_tree": "07d85f77d9c1005d949946878b67d0258a5c4657"
+        },
+        {
+          "offset": 81920,
+          "bytes": 5933,
+          "external_tree": "7a25d7e3c1b4d4ead2b33ef57f890788b427aebe"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "output2_body4",
+      "exact_operation": {
+        "idempotency_key": "ha-4e808-postcold-live-output2-body4-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 262144,
+            "limit": 45148,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      },
+      "operation_id": "54646239f7a0dc09ba28ac0adfdd5f84730f85b5458fcfe6498a8c88dedb2f94",
+      "completed": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "54646239f7a0dc09ba28ac0adfdd5f84730f85b5458fcfe6498a8c88dedb2f94",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "3ec533f6e222c60f16989c3a3049106afe2cf682"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "45fd0f8ed0dca68090923a56e9d2a93a80fdbfcb"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "09a207499e9ba5848d71662f30d40bd14898c4b3"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "b97c626297d15fa4538f435c46cf2620ce44a4b3"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "6f78ef854691b0122aefc96264d8623212dbd7db"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "9946e18d6069a4ea87f4e2f817cc848c133ca96e"
+        },
+        {
+          "offset": 49152,
+          "bytes": 8192,
+          "external_tree": "523599de02cfca2f89f004ec42cf7eb1c0b8eefd"
+        },
+        {
+          "offset": 57344,
+          "bytes": 3324,
+          "external_tree": "4eddd03b39a8ca243bdc51b2b485b2a5a9f85fe8"
+        }
+      ],
+      "error": null
+    }
+  ],
+  "new_admissions_paused": false,
+  "product_qualification": false,
+  "production_changed": false,
+  "prior_UNKNOWN_preserved": true,
+  "all_requested_outputs_whole": true,
+  "terminal_core_complete": true,
+  "original98_passed": 98,
+  "independent12_passed": 12,
+  "actual_owned_cleanup_verified": true,
+  "source_conditioned_descriptor_closure_verified": true,
+  "per_fd_runtime_ledger_present": false,
+  "returned_observer_count": 15,
+  "immutable_page_count": 62,
+  "current_runtime_inflight": 0,
+  "root_semantic_review_pending": true,
+  "release_to_root_scheduler": true,
+  "verification_is_not_product_cases": true,
+  "whole_output_pins": [
+    {
+      "index": 0,
+      "blob": "1887e1ad3917bfe532df19b83dc1aa8ad6013db6",
+      "bytes": 4132,
+      "sha256": "693d7ebdf0d0787cfdce443c4c504cce82c3b9180ecc3ec1e4bc161ece41fbad"
+    },
+    {
+      "index": 1,
+      "blob": "f6b857e904694aa2dc6199e673ce96eb9535b434",
+      "bytes": 652,
+      "sha256": "93a33f4d70249e597f7ecd5ef5cfef9ddfbdea733846b8146441254b9498a5a9"
+    },
+    {
+      "index": 2,
+      "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+      "bytes": 307292,
+      "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+    }
+  ]
+}

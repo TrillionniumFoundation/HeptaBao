@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.current4e808-x230-future-call-contract.v1",
+  "source_only": true,
+  "exact_request": null,
+  "admitted": false,
+  "relay": {
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 360
+  },
+  "sender": {
+    "executable": "/usr/bin/python3",
+    "args_shape": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact full sender source"
+    ]
+  },
+  "receiver": {
+    "remote_python": "/usr/bin/python3",
+    "args_shape": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact full receiver source",
+      "SHA256 of exact receiver source"
+    ],
+    "self_digest_required": true,
+    "original_remote_command_function_unchanged": true
+  },
+  "full34": {
+    "entrypoint": "main",
+    "admission_before_new_fixture_creation": true,
+    "actual_receive_pins": null
+  },
+  "comparison69": {
+    "entrypoint": "main",
+    "admission_before_new_fixture_creation": true,
+    "actual_receive_pins": null
+  },
+  "no_old_request_replay": true
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "comparison69-body-status",
+  "method": "operation_status",
+  "request_blob": "e303e48fc2afa76c173dcc4a19c51540e1c0d58f",
+  "request_bytes": 89,
+  "request_sha256": "7509d679a8a774cf782807a2691627f3487204182d1c9308965010fa189f9d12",
+  "request": {
+    "operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c"
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+  "original_call_only": true
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.root-LAN-lane-A-release-intake.r32.v1",
+  "status": "PASS_OBSERVER_CLOSURE_AND_LANE_RELEASE",
+  "checks_passed": 37,
+  "checks": [
+    "whole388-Merkle",
+    "exact-agent-release-original",
+    "owner-releases-current-lane-with-zero-work",
+    "original-product-terminal-no-live-job",
+    "exact15-original-closed-observers",
+    "observations/authority0:status-SDK-original",
+    "observations/authority0:same-ID-closed",
+    "observations/authority1:status-SDK-original",
+    "observations/authority1:same-ID-closed",
+    "observations/authority2:status-SDK-original",
+    "observations/authority2:same-ID-closed",
+    "observations/authority3:status-SDK-original",
+    "observations/authority3:same-ID-closed",
+    "observations/output0_body0:status-SDK-original",
+    "observations/output0_body0:same-ID-closed",
+    "observations/output0_info:status-SDK-original",
+    "observations/output0_info:same-ID-closed",
+    "observations/output1_body0:status-SDK-original",
+    "observations/output1_body0:same-ID-closed",
+    "observations/output1_info:status-SDK-original",
+    "observations/output1_info:same-ID-closed",
+    "observations/output2_body0:status-SDK-original",
+    "observations/output2_body0:same-ID-closed",
+    "observations/output2_body1:status-SDK-original",
+    "observations/output2_body1:same-ID-closed",
+    "observations/output2_body2:status-SDK-original",
+    "observations/output2_body2:same-ID-closed",
+    "observations/output2_body3:status-SDK-original",
+    "observations/output2_body3:same-ID-closed",
+    "observations/output2_body4:status-SDK-original",
+    "observations/output2_body4:same-ID-closed",
+    "observations/output2_info:status-SDK-original",
+    "observations/output2_info:same-ID-closed",
+    "observations/streams0:status-SDK-original",
+    "observations/streams0:same-ID-closed",
+    "15-distinct-original-ops",
+    "scope-and-FD-limits-preserved"
+  ],
+  "packet": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+  "original_job": "desktop/1a1ad3a6dd4-fc05-5919",
+  "release_blob": "ba9177271b3878752f657d806a7e2524e1c3e68c",
+  "original_observers": [
+    {
+      "label": "authority0",
+      "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+      "tool": "process_status",
+      "status_path": "observations/authority0/status-0/original.native.txt"
+    },
+    {
+      "label": "authority1",
+      "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+      "tool": "process_status",
+      "status_path": "observations/authority1/status-0/original.native.txt"
+    },
+    {
+      "label": "authority2",
+      "operation_id": "4967f77ff99c6691de387b6f4adcd4db0fe1c9502b020693312c390afa8d106f",
+      "tool": "process_status",
+      "status_path": "observations/authority2/status-0/original.native.txt"
+    },
+    {
+      "label": "authority3",
+      "operation_id": "8a476a0cc512651715d662ba00649751f92434bb67cea2596d0216eaf10bda05",
+      "tool": "process_status",
+      "status_path": "observations/authority3/status-0/original.native.txt"
+    },
+    {
+      "label": "output0_body0",
+      "operation_id": "5d8f6cc9a209f95a54b12bf24692b75fa0406eedeeee22a6d6b5f4b806570cbf",
+      "tool": "binary_read",
+      "status_path": "observations/output0_body0/status-0/original.native.txt"
+    },
+    {
+      "label": "output0_info",
+      "operation_id": "af0147b8e6c7263d167d240b8c224ae8c8a522a42236323373be8d593a29d347",
+      "tool": "file_info",
+      "status_path": "observations/output0_info/status-0/original.native.txt"
+    },
+    {
+      "label": "output1_body0",
+      "operation_id": "234e9807daaf2ccedfc2507f7bd32e9cc23403a0b851031366b0efbb8f422f84",
+      "tool": "binary_read",
+      "status_path": "observations/output1_body0/status-0/original.native.txt"
+    },
+    {
+      "label": "output1_info",
+      "operation_id": "67969a17c6f0acfc32b702c8ef2b25d3ae2ff450cc9c6af2ab889b92ff22e55f",
+      "tool": "file_info",
+      "status_path": "observations/output1_info/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_body0",
+      "operation_id": "fc1dee26d21344fa390137c6fa68823bfd9adfa5eb408df03b3dd8c138f48fcb",
+      "tool": "binary_read",
+      "status_path": "observations/output2_body0/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_body1",
+      "operation_id": "278390aa5da1fcec07e4033d7a1348315895c4318c5d13e07c422b7b108f77a5",
+      "tool": "binary_read",
+      "status_path": "observations/output2_body1/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_body2",
+      "operation_id": "9c6ec1eae3d758c721f16457d6a958927b7505bd69908005913bd537e45cc838",
+      "tool": "binary_read",
+      "status_path": "observations/output2_body2/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_body3",
+      "operation_id": "f69afaa074077ba7fa10c229366e4f05fe7e576db68fe09a2dfae4291eeb8413",
+      "tool": "binary_read",
+      "status_path": "observations/output2_body3/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_body4",
+      "operation_id": "54646239f7a0dc09ba28ac0adfdd5f84730f85b5458fcfe6498a8c88dedb2f94",
+      "tool": "binary_read",
+      "status_path": "observations/output2_body4/status-0/original.native.txt"
+    },
+    {
+      "label": "output2_info",
+      "operation_id": "91b1e8a6385821d5bdb6ca63ced9b07ee0befa4f52d24e7561adfd3aae0dbf94",
+      "tool": "file_info",
+      "status_path": "observations/output2_info/status-0/original.native.txt"
+    },
+    {
+      "label": "streams0",
+      "operation_id": "02b6722f1033d93ea02bc26db07bb5ecfcca5072cc26933f82b38a5f994ec7fe",
+      "tool": "process_read",
+      "status_path": "observations/streams0/status-0/original.native.txt"
+    }
+  ],
+  "current_inflight_calls": 0,
+  "current_active_futures": 0,
+  "product_semantic_qualification_pending": true,
+  "release_scope": "Runtime lane A only; physical fixture process semantics independently reviewed separately.",
+  "root_Runtime_calls": 0
+}

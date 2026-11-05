@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.mac-owner-next-two.source-basis.v1",
+  "scope": "Only whole already archived public source, not SDK execution",
+  "sources": {
+    "selector": {
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "bytes": 673468,
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+    },
+    "harness-policy": {
+      "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+      "bytes": 5718,
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43"
+    },
+    "registry": {
+      "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+    },
+    "runtime-loader": {
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb"
+    },
+    "support": {
+      "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+      "bytes": 4255,
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6"
+    },
+    "codex": {
+      "blob": "39b49d3be2df87cde0af1f592a049cb49013c57d",
+      "bytes": 3596,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+    },
+    "worker": {
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+      "bytes": 28533,
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431"
+    },
+    "runtime-policy": {
+      "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+      "bytes": 6918,
+      "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6"
+    },
+    "openai-routing": {
+      "blob": "b7b0533dcde5a358096fc1f57a0b8e2cee75863d",
+      "bytes": 3497,
+      "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6"
+    },
+    "plugin-loader": {
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "bytes": 116680,
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7"
+    }
+  },
+  "retrieval_evidence": {
+    "new_three_source_actual_tree": "1a6dff12d9d52a5e71361eb641200f988a779ba4",
+    "root_actual_read_chain_review": "0074fb98ae02518672bc2bf8e8269764d4e60e93",
+    "original_source4_release": "ed0513fa0cf54e5ae4d8c631c94f572c99a012ac",
+    "root_previous_three_body_review": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+    "worker_source_provided_by_root": "3614c27cb06f311870ceeeda3f01e806306ae0d1"
+  },
+  "qualification": {
+    "all_source_blobs_whole_hash_checked": true,
+    "source_functions_executed": 0,
+    "SDK_executed": 0,
+    "actual_selected_owner": null,
+    "Google_manifest_path": null,
+    "Runtime_calls": 0,
+    "native_futures": 0
+  }
+}

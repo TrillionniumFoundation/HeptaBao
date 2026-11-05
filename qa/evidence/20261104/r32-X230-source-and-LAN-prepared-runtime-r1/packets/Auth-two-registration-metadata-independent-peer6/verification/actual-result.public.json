@@ -1,0 +1,848 @@
+{
+  "schema": "heptabao.ha-independent-auth-metadata2-original-chain-peer.v1",
+  "status": "PASS_METADATA_ORIGINAL_CHAINS_AND_FUTURE_BODY_BINDINGS_ONLY",
+  "source_tree": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+  "whole_files": 36,
+  "whole_bytes": 53998,
+  "merkle_nodes": 15,
+  "checks_count": 189,
+  "checks": [
+    {
+      "name": "fixed tree",
+      "passed": true
+    },
+    {
+      "name": "36 whole leaves",
+      "passed": true
+    },
+    {
+      "name": "whole RELEASE.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole SUMMARY.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole body-proposal/REQUESTS.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole body-proposal/requests/01-manifest-registry-0.json",
+      "passed": true
+    },
+    {
+      "name": "whole body-proposal/requests/02-plugin-registry-0.json",
+      "passed": true
+    },
+    {
+      "name": "whole body-proposal/requests/03-plugin-registry-65536.json",
+      "passed": true
+    },
+    {
+      "name": "whole body-proposal/requests/04-plugin-registry-131072.json",
+      "passed": true
+    },
+    {
+      "name": "whole manifest.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/result-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/result-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/result-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/01/status-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/result-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/result-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/result-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole observations/02/status-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole reference/lane-handoff.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole reference/root-GO.public.json",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/01/admission",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/02/admission",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/01/result-0",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/01/status-0",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/02/result-0",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/02/status-0",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/01/intent",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/02/intent",
+      "passed": true
+    },
+    {
+      "name": "Merkle body-proposal/requests",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/01",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations/02",
+      "passed": true
+    },
+    {
+      "name": "Merkle body-proposal",
+      "passed": true
+    },
+    {
+      "name": "Merkle observations",
+      "passed": true
+    },
+    {
+      "name": "Merkle reference",
+      "passed": true
+    },
+    {
+      "name": "Merkle /",
+      "passed": true
+    },
+    {
+      "name": "manifest 35 original members",
+      "passed": true
+    },
+    {
+      "name": "manifest body-proposal/REQUESTS.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest body-proposal/requests/01-manifest-registry-0.json",
+      "passed": true
+    },
+    {
+      "name": "manifest body-proposal/requests/02-plugin-registry-0.json",
+      "passed": true
+    },
+    {
+      "name": "manifest body-proposal/requests/03-plugin-registry-65536.json",
+      "passed": true
+    },
+    {
+      "name": "manifest body-proposal/requests/04-plugin-registry-131072.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/result-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/result-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/result-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/01/status-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/actual-binding.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/intent/exact-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/result-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/result-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/result-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest observations/02/status-0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest reference/lane-handoff.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest reference/root-GO.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest RELEASE.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest SUMMARY.public.json",
+      "passed": true
+    },
+    {
+      "name": "exact metadata GO",
+      "passed": true
+    },
+    {
+      "name": "handoff pin",
+      "passed": true
+    },
+    {
+      "name": "01.request matches GO",
+      "passed": true
+    },
+    {
+      "name": "01.intent request",
+      "passed": true
+    },
+    {
+      "name": "01.intent GO/handoff",
+      "passed": true
+    },
+    {
+      "name": "01.intent limits",
+      "passed": true
+    },
+    {
+      "name": "01.previous closure",
+      "passed": true
+    },
+    {
+      "name": "01.request only info",
+      "passed": true
+    },
+    {
+      "name": "observations/01/admission.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/01/admission.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/01/admission.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "observations/01/status-0.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/01/status-0.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/01/status-0.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "observations/01/result-0.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/01/result-0.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/01/result-0.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "01.ACK identity",
+      "passed": true
+    },
+    {
+      "name": "01.status same ID request",
+      "passed": true
+    },
+    {
+      "name": "01.status completed inactive",
+      "passed": true
+    },
+    {
+      "name": "01.page request same ID bounded",
+      "passed": true
+    },
+    {
+      "name": "01.immutable page",
+      "passed": true
+    },
+    {
+      "name": "01.page full original bytes",
+      "passed": true
+    },
+    {
+      "name": "01.native payload noerror complete",
+      "passed": true
+    },
+    {
+      "name": "01.native byte exact",
+      "passed": true
+    },
+    {
+      "name": "01.native exact path",
+      "passed": true
+    },
+    {
+      "name": "01.metadata kind and permissions",
+      "passed": true
+    },
+    {
+      "name": "01.version integers lossless",
+      "passed": true
+    },
+    {
+      "name": "01.whole SHA shape",
+      "passed": true
+    },
+    {
+      "name": "01.bound raw full9",
+      "passed": true
+    },
+    {
+      "name": "01.bound request status and content pins",
+      "passed": true
+    },
+    {
+      "name": "01.bound closure identity",
+      "passed": true
+    },
+    {
+      "name": "01.summary pins",
+      "passed": true
+    },
+    {
+      "name": "01.summary closed sameID",
+      "passed": true
+    },
+    {
+      "name": "02.request matches GO",
+      "passed": true
+    },
+    {
+      "name": "02.intent request",
+      "passed": true
+    },
+    {
+      "name": "02.intent GO/handoff",
+      "passed": true
+    },
+    {
+      "name": "02.intent limits",
+      "passed": true
+    },
+    {
+      "name": "02.previous closure",
+      "passed": true
+    },
+    {
+      "name": "02.request only info",
+      "passed": true
+    },
+    {
+      "name": "observations/02/admission.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/02/admission.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/02/admission.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "observations/02/status-0.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/02/status-0.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/02/status-0.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "observations/02/result-0.SDK noerror",
+      "passed": true
+    },
+    {
+      "name": "observations/02/result-0.SDK one text",
+      "passed": true
+    },
+    {
+      "name": "observations/02/result-0.SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "02.ACK identity",
+      "passed": true
+    },
+    {
+      "name": "02.status same ID request",
+      "passed": true
+    },
+    {
+      "name": "02.status completed inactive",
+      "passed": true
+    },
+    {
+      "name": "02.page request same ID bounded",
+      "passed": true
+    },
+    {
+      "name": "02.immutable page",
+      "passed": true
+    },
+    {
+      "name": "02.page full original bytes",
+      "passed": true
+    },
+    {
+      "name": "02.native payload noerror complete",
+      "passed": true
+    },
+    {
+      "name": "02.native byte exact",
+      "passed": true
+    },
+    {
+      "name": "02.native exact path",
+      "passed": true
+    },
+    {
+      "name": "02.metadata kind and permissions",
+      "passed": true
+    },
+    {
+      "name": "02.version integers lossless",
+      "passed": true
+    },
+    {
+      "name": "02.whole SHA shape",
+      "passed": true
+    },
+    {
+      "name": "02.bound raw full9",
+      "passed": true
+    },
+    {
+      "name": "02.bound request status and content pins",
+      "passed": true
+    },
+    {
+      "name": "02.bound closure identity",
+      "passed": true
+    },
+    {
+      "name": "02.summary pins",
+      "passed": true
+    },
+    {
+      "name": "02.summary closed sameID",
+      "passed": true
+    },
+    {
+      "name": "two distinct operations",
+      "passed": true
+    },
+    {
+      "name": "actual sizes",
+      "passed": true
+    },
+    {
+      "name": "four future proposal requests",
+      "passed": true
+    },
+    {
+      "name": "body1.exact original proposal",
+      "passed": true
+    },
+    {
+      "name": "body1.only exact binary fields",
+      "passed": true
+    },
+    {
+      "name": "body1.metadata original pins",
+      "passed": true
+    },
+    {
+      "name": "body1.full info equality",
+      "passed": true
+    },
+    {
+      "name": "body1.extent EOF and unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "body1.key unique fixed hash",
+      "passed": true
+    },
+    {
+      "name": "body2.exact original proposal",
+      "passed": true
+    },
+    {
+      "name": "body2.only exact binary fields",
+      "passed": true
+    },
+    {
+      "name": "body2.metadata original pins",
+      "passed": true
+    },
+    {
+      "name": "body2.full info equality",
+      "passed": true
+    },
+    {
+      "name": "body2.extent EOF and unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "body2.key unique fixed hash",
+      "passed": true
+    },
+    {
+      "name": "body3.exact original proposal",
+      "passed": true
+    },
+    {
+      "name": "body3.only exact binary fields",
+      "passed": true
+    },
+    {
+      "name": "body3.metadata original pins",
+      "passed": true
+    },
+    {
+      "name": "body3.full info equality",
+      "passed": true
+    },
+    {
+      "name": "body3.extent EOF and unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "body3.key unique fixed hash",
+      "passed": true
+    },
+    {
+      "name": "body4.exact original proposal",
+      "passed": true
+    },
+    {
+      "name": "body4.only exact binary fields",
+      "passed": true
+    },
+    {
+      "name": "body4.metadata original pins",
+      "passed": true
+    },
+    {
+      "name": "body4.full info equality",
+      "passed": true
+    },
+    {
+      "name": "body4.extent EOF and unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "body4.key unique fixed hash",
+      "passed": true
+    },
+    {
+      "name": "body limits contiguous unique extents",
+      "passed": true
+    },
+    {
+      "name": "new accounting not inherited",
+      "passed": true
+    },
+    {
+      "name": "hash work distinct from body read",
+      "passed": true
+    },
+    {
+      "name": "owner and production unqualified",
+      "passed": true
+    },
+    {
+      "name": "summary counts and readonly scope",
+      "passed": true
+    },
+    {
+      "name": "summary proposal exact",
+      "passed": true
+    },
+    {
+      "name": "release exact scope",
+      "passed": true
+    }
+  ],
+  "observations": [
+    {
+      "sequence": 1,
+      "operation_id": "7a88b1d0144ee83cdc64bc2717c7c1b2f622fc487cad20da2b60ed8608ffd7b4",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js",
+      "bytes": 31444,
+      "sha256": "819c76c314e6ed1fd39c5ed6b169d63997905b3ae8a98b9373783d626431ace4",
+      "version": "16777233:405237428:31444:1784843459184750747:1784843459184750747",
+      "full9_decimal": [
+        "16777233",
+        "405237428",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "31444",
+        "1784843459184750747",
+        "1784843459184750747"
+      ],
+      "payload_bytes": 581,
+      "native_pin": {
+        "blob": "fda116250a9560c6dbff15ce0815d2a887d25f8c",
+        "bytes": 464,
+        "sha256": "03de9557541da230e61f378709eb492d25b5e18c04cd787f5b3252f19e02041a"
+      },
+      "binding_pin": {
+        "blob": "135d4ddb97212b3d4af186d37e0d4d8962f1a915",
+        "bytes": 1928,
+        "sha256": "af0b23e2e5f49b826234d5e842f620240583c9ca0c3b82cd60b178bd6e88b539"
+      }
+    },
+    {
+      "sequence": 2,
+      "operation_id": "921e9ebd9f85ea4b118698312ce295b313aced33538f1edd4d1d04a7ad5fb7d2",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js",
+      "bytes": 181581,
+      "sha256": "25f3ef82756d85281ad5c25375a5cd2f405989a1145ed438de05992e8c995376",
+      "version": "16777233:405238776:181581:1784843461889330234:1784843461889330234",
+      "full9_decimal": [
+        "16777233",
+        "405238776",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "181581",
+        "1784843461889330234",
+        "1784843461889330234"
+      ],
+      "payload_bytes": 574,
+      "native_pin": {
+        "blob": "79c97aa723f11a670fadee82726d7bf516b76f89",
+        "bytes": 457,
+        "sha256": "5f17977b62215a5ac52cedbc1a8a610be0d5fbb50f68d2470e82e5e6af719d10"
+      },
+      "binding_pin": {
+        "blob": "4be423ca21e0d9157a922ba21ed4d9568cd46a28",
+        "bytes": 1922,
+        "sha256": "f9974a505995f53beef0504d1b83690d14b2d9efe0df6959eb05172d24c56740"
+      }
+    }
+  ],
+  "proposed_chunks": [
+    31444,
+    65536,
+    65536,
+    50509
+  ],
+  "proposed_bytes": 213025,
+  "prior_bytes": 140664,
+  "cumulative_if_new_authorized": 353689,
+  "Runtime_calls": 0,
+  "author_checker_executed": false,
+  "public_source_bodies_read_by_this_peer": false,
+  "actual_owner_or_SDK_execution_qualified": false,
+  "fullmode_derivation": "Regular-file kind from purpose-built file_info contract plus returned permission mode; device/inode/size/mtime/ctime decimal strings from exact version; uid/gid/nlink from native metadata.",
+  "limitations": [
+    "Confirms immutable raw-chain consistency and closed original observer statuses; does not independently timestamp external call completion order.",
+    "Source bodies are not retrieved by this metadata packet; exact body proposals still require separate root authorization.",
+    "Known native metadata and whole SHA are historical observations, not a new host stat; no SDK factory/winner inference."
+  ]
+}

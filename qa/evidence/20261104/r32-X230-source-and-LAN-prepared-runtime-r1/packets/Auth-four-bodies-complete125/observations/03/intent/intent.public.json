@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.auth.dependency-body4.exact-intent.v1",
+  "sequence": 3,
+  "id": "plugin-loader",
+  "root_GO": {
+    "blob": "89d02183f27a783b27dd9d4a976529dcc32045dc",
+    "bytes": 9280,
+    "sha256": "5525d55fafc956f523f43f6342e62cde03d318ad25ccb0abed27539e53b53d50"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-body-plugin-loader-3a10479b-0-20261105-r1",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "expected_version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+        "offset": 0,
+        "limit": 65536
+      }
+    }
+  },
+  "request": {
+    "blob": "9ecb58d868a67d0d1c0d3129e5b0173520f15e7f",
+    "bytes": 412,
+    "sha256": "cb8708d5ac19f2d870588c720bd00e42837e35f1f8ce67fa22cbc6a93124f673"
+  },
+  "expected_file": {
+    "id": "plugin-loader",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+    "bytes": 116680,
+    "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+    "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+    "full9_decimal": [
+      "16777233",
+      "405237358",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "116680",
+      "1784843458968424711",
+      "1784843458968424711"
+    ],
+    "original_operation": "f79243c6590b65e5ddf97c648cd0355ed0aa9c528794dfc4d75c2c380325a616",
+    "native_info_blob": "e7e553238612f91d7e8fd00332347508dbf6050e"
+  },
+  "expected_next_offset": 65536,
+  "expected_eof": false,
+  "previous_body_operations_completed": 2,
+  "previous_body_closed_and_whole": {
+    "operation_id": "0a3de1c5d12cb9577fa765265da3913e6f0fa8f1d37233efddda64c061a182bf",
+    "status": {
+      "blob": "6c853c7479b0556ec3188a49dd3cd3b7e113e734",
+      "bytes": 802,
+      "sha256": "e91ec3f9e9f0f46cb3ef1b5833fd10808349e4b4baabe53c6d8697109c1cf974"
+    },
+    "payload": {
+      "blob": "d5f90095bdf36a3c3c1ccb97ba73ebea51e6314e",
+      "bytes": 5077,
+      "sha256": "f8c71e2350d4b02023677b071caafcc8ba8ec4c265b30d1f5ee10e89ec99d4db"
+    },
+    "native": {
+      "blob": "8c64fe8f5e29432f4916c56e76405de61f4f4769",
+      "bytes": 4974,
+      "sha256": "baa60469e154f33d93104f36c8237dd4ba617c0b27c0e31629c7e508e08068b0"
+    },
+    "binding": {
+      "blob": "81aaeb58d31083172914be121e51cb28c74472a3",
+      "bytes": 2040,
+      "sha256": "85dfc129289b1d3b091d142867e7903fb7441643808a73bf1768bc7f1d6c92f5"
+    }
+  },
+  "new_submissions_before_this_intent": 0,
+  "maximum_inflight_call": 1,
+  "maximum_owned_native_future": 1,
+  "immutable_result_page_limit": 8192,
+  "SDK_execution": false,
+  "stop_on_error_without_replay": true
+}

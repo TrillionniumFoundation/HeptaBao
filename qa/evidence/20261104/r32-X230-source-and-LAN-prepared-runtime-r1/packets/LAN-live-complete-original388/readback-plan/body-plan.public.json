@@ -1,0 +1,215 @@
+{
+  "schema": "heptabao.current4e808.LAN-live.actual-output-version-body-plan.r1",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "authority_observer": "authority3",
+  "outputs": [
+    {
+      "index": 0,
+      "role": "original-launch",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+        "sha256": "693d7ebdf0d0787cfdce443c4c504cce82c3b9180ecc3ec1e4bc161ece41fbad",
+        "size": 4132,
+        "version": "2050:7401922:4132:1793907654678586055:1793907654678586055",
+        "full9_decimal": [
+          "2050",
+          "7401922",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4132",
+          "1793907654678586055",
+          "1793907654678586055"
+        ]
+      },
+      "expected_whole_bytes": 4132,
+      "expected_whole_sha256": "693d7ebdf0d0787cfdce443c4c504cce82c3b9180ecc3ec1e4bc161ece41fbad",
+      "chunks": [
+        {
+          "name": "output0_body0",
+          "key": "ha-4e808-postcold-live-output0-body0-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+            "offset": 0,
+            "limit": 4132,
+            "expected_version": "2050:7401922:4132:1793907654678586055:1793907654678586055"
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "role": "original-exit",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+        "sha256": "93a33f4d70249e597f7ecd5ef5cfef9ddfbdea733846b8146441254b9498a5a9",
+        "size": 652,
+        "version": "2050:7401925:652:1793908088720162039:1793908088720162039",
+        "full9_decimal": [
+          "2050",
+          "7401925",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "652",
+          "1793908088720162039",
+          "1793908088720162039"
+        ]
+      },
+      "expected_whole_bytes": 652,
+      "expected_whole_sha256": "93a33f4d70249e597f7ecd5ef5cfef9ddfbdea733846b8146441254b9498a5a9",
+      "chunks": [
+        {
+          "name": "output1_body0",
+          "key": "ha-4e808-postcold-live-output1-body0-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+            "offset": 0,
+            "limit": 652,
+            "expected_version": "2050:7401925:652:1793908088720162039:1793908088720162039"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "role": "original-public-summary",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+      "info": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+        "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1",
+        "size": 307292,
+        "version": "2050:7874221:307292:1793908086830161920:1793908086830161920",
+        "full9_decimal": [
+          "2050",
+          "7874221",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "307292",
+          "1793908086830161920",
+          "1793908086830161920"
+        ]
+      },
+      "expected_whole_bytes": 307292,
+      "expected_whole_sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1",
+      "chunks": [
+        {
+          "name": "output2_body0",
+          "key": "ha-4e808-postcold-live-output2-body0-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 0,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        },
+        {
+          "name": "output2_body1",
+          "key": "ha-4e808-postcold-live-output2-body1-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 65536,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        },
+        {
+          "name": "output2_body2",
+          "key": "ha-4e808-postcold-live-output2-body2-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 131072,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        },
+        {
+          "name": "output2_body3",
+          "key": "ha-4e808-postcold-live-output2-body3-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 196608,
+            "limit": 65536,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        },
+        {
+          "name": "output2_body4",
+          "key": "ha-4e808-postcold-live-output2-body4-r1-20261105",
+          "tool": "binary_read",
+          "args": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+            "offset": 262144,
+            "limit": 45148,
+            "expected_version": "2050:7874221:307292:1793908086830161920:1793908086830161920"
+          }
+        }
+      ]
+    }
+  ],
+  "total_bytes": 312076,
+  "total_body_operations": 7,
+  "max_body_chunk": 65536,
+  "immutable_page_limit": 8192,
+  "one_native_future_max": 1,
+  "versions_must_not_change": true,
+  "unknown_stops_new_admissions": true,
+  "no_process_start": true
+}

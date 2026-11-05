@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.ha-validation.current4e808-LAN-exact-live-external-intent.r1",
+  "owner": "/root/ha_validation",
+  "lane": "A",
+  "root_GO": {
+    "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+    "bytes": 8703,
+    "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+  },
+  "prepare_root_qualification": {
+    "name": "r32-LAN-prepare-complete-root-qualification.public.json",
+    "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+    "bytes": 9534,
+    "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+  },
+  "request": {
+    "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+    "bytes": 571,
+    "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+  },
+  "exact_native_tool": "mcp__codex_apps__heptaruntime_mac_controller_process_start",
+  "exact_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "--run-once",
+      "--prepared-sha256",
+      "6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-4e808-postcold-live-r1-57cb2b31-7ee5ee82"
+  },
+  "typed_binding": {
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py\",\"--run-once\",\"--prepared-sha256\",\"6771797283cadf054f0d81844aff27651bbc1174273965d974a7c9b70f899fc1\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"desktop\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":3000}",
+    "request_digest": "a9b995a1bd91a05389653e25ea0d472b1de150ad473321453087c2e0330eff4f",
+    "request_fingerprint_decimal": "12229970785004003411"
+  },
+  "checks": {
+    "exact_request_bytes": true,
+    "GO_exact_request": true,
+    "typed_canonical": true,
+    "digest": true,
+    "fingerprint": true,
+    "original_key": true,
+    "prepared_hash": true,
+    "original_outer": true,
+    "scope_once": true
+  },
+  "dispatch_count_before_this_intent": 0,
+  "dispatch_allowed_after_external_whole_intent_call_completes": 1,
+  "preserve_original_SDK_before_isError_or_parse": true,
+  "unknown_business_replay": false,
+  "fixture_exclusive_hosts": [
+    "mac-ts",
+    "rog-ts",
+    "pocket4-ts"
+  ],
+  "original_contract": {
+    "source_changes": 0,
+    "outer_seconds": 3000,
+    "controller_seconds": 2400,
+    "postcold_seconds_clipped_to_original": 300,
+    "role_prepare_seconds": 60,
+    "sealed_election_seconds": 60,
+    "HTTP_seconds": 15,
+    "native_admission_seconds": 8,
+    "numeric_read_seconds": 15,
+    "SSH_seconds": 45,
+    "original_checks": 98,
+    "separate_postcold_checks": 12,
+    "old_fences": 36,
+    "canonical_QA": 5,
+    "actual_natural_election_required": true,
+    "stop_order": [
+      2,
+      1,
+      3
+    ],
+    "cipher_source_role": 3,
+    "cipher_actual_empty_leader_role": 1,
+    "forced_elections": false,
+    "term_frontier_guards_preserved": true,
+    "bounded_witness_mutations": 2,
+    "witness_CAS": 0,
+    "witness_same_key_metadata_delete": true,
+    "witness_excluded_from_denominators": true,
+    "readable_versions": 17,
+    "lifecycle_versions": 19,
+    "readable_bytes": 35651584,
+    "no_all_standby_large_body_claim": true
+  },
+  "no_source_or_guard_changes": true,
+  "no_production_cutover_or_deletion": true,
+  "live_qualification_before_execution": false
+}

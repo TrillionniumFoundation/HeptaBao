@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.current4e808-x230-existing-two-wrapper-actual-bound-source-plan.v1",
+  "source_only": true,
+  "Runtime_calls": 0,
+  "product_calls": 0,
+  "base_source_tree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+  "current_relay_actual_tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+  "input_metadata_root_review": "a2c1cd9a7731ba4b029e739decec29375ad1c1c0",
+  "scope_of_delta": "Per file only BINDING_READY False to True and the five exact observed SHA literals. All full function bodies are byte-identical to the reviewed current unbound wrappers. No publisher, new control layer, execution request or product action is introduced.",
+  "bound_fields": [
+    "NORMAL61_SHA",
+    "NORMAL_NATIVE_SHA",
+    "NORMAL_RELEASE_SHA",
+    "TRANSFER_SHA",
+    "PIN or BINARY_SHA"
+  ],
+  "root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "history": 3763,
+    "tracked_files": 3914
+  },
+  "wrapper_pins": [
+    {
+      "name": "full34",
+      "bytes": 10142,
+      "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+      "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1"
+    },
+    {
+      "name": "comparison69",
+      "bytes": 11716,
+      "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+      "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c"
+    }
+  ],
+  "remaining_before_actual_run": [
+    {
+      "id": "oracle-binary-current-identity",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "expected_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "expected_bytes": null,
+      "current_independent_file_info": null,
+      "origin": "Exact fixed existing wrapper contract; no current observation of this path was included in the current seven-file relay.",
+      "possible_next_operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "x230",
+          "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao"
+        }
+      },
+      "submitted": false
+    },
+    {
+      "id": "oracle-archive-current-identity",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "expected_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "expected_bytes": null,
+      "current_independent_file_info": null,
+      "origin": "Exact fixed existing wrapper contract; no current observation of this path was included in the current seven-file relay.",
+      "possible_next_operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "x230",
+          "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz"
+        }
+      },
+      "submitted": false
+    },
+    {
+      "id": "wrapper-publication",
+      "details": "These two bound candidates are Git SOURCE only; no current host publication or executable request is included. Reuse the approved publication interface when root chooses the concrete request.",
+      "submitted": false
+    },
+    {
+      "id": "comparison-driver-publication",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/native271_comparison_final_r1.py",
+      "expected_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "details": "The seven-file transfer materialized only its named artifacts and canonical source. This external original comparison driver was not one of those files; publication at this fresh-root path is not established. Preserve original bytes and default 13 modules.",
+      "current_publication_proven": false,
+      "submitted": false
+    }
+  ],
+  "full34": {
+    "driver": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+    "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+    "source_materialized_by_original_relay": true,
+    "original_checks": 31,
+    "original_http_seconds": 15,
+    "original_migration_seconds": 360,
+    "existing_outer_budget_seconds": 1800,
+    "work_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/full34-r1/private-run",
+    "runtime_qualified": false
+  },
+  "comparison69": {
+    "original_cases_per_side": 69,
+    "original_modules": 13,
+    "source_acceptance_sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d",
+    "existing_outer_budget_seconds": 1800,
+    "work_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/evidence/comparison69-r1/private-run",
+    "runtime_qualified": false,
+    "full_openbao_compatibility": false
+  },
+  "old_relay": {
+    "job_id": "1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN",
+    "termination_proven": false,
+    "replay": false,
+    "effect_fence_changes": 0
+  },
+  "dispatch_request": null,
+  "dispatch_authorized": false,
+  "product_runtime_qualification": false,
+  "production_qualification": false
+}

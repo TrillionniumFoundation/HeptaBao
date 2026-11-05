@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.mac-selected-owner-next-two-registration-metadata.proposal.r1",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "host": "mac",
+  "requests": [
+    {
+      "sequence": 1,
+      "id": "manifest-registry",
+      "request_path": "requests/01-manifest-registry.info.json",
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-manifest-registry-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js"
+          }
+        }
+      },
+      "origin": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+        "source_path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "line": 15,
+        "import": "import { t as loadPluginManifestRegistry } from \"./manifest-registry--UiRn6nq.js\";",
+        "relative_specifier": "./manifest-registry--UiRn6nq.js",
+        "derivation": "Resolve this literal relative import under the already observed loader parent; lexical path only, not existence/realpath/owner proof."
+      },
+      "question": "Which manifest path/record source actually supplies id/root/source for this loader, without guessing a Google manifest filename?",
+      "actual": {
+        "metadata": null,
+        "bytes": null,
+        "sha256": null,
+        "version": null,
+        "full9": null,
+        "body": null
+      },
+      "submitted": false,
+      "request": {
+        "blob": "de339e004231215b90f084799cede9aeb8535e94",
+        "bytes": 278,
+        "sha256": "2be919f191a69b23ad760fc3fdb210df3524fc57bc1195453ebff6ff6e3866f7"
+      }
+    },
+    {
+      "sequence": 2,
+      "id": "plugin-registry",
+      "request_path": "requests/02-plugin-registry.info.json",
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-registry-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-B8eQDFB4.js"
+          }
+        }
+      },
+      "origin": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+        "source_path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "line": 40,
+        "import": "import { A as clearCompactionProviders, C as clearMemoryEmbeddingProviders, D as listRegisteredMemoryEmbeddingProviders, M as listRegisteredCompactionProviders, N as restoreRegisteredCompactionProviders, k as restoreRegisteredMemoryEmbeddingProviders, t as createPluginRegistry } from \"./registry-B8eQDFB4.js\";",
+        "relative_specifier": "./registry-B8eQDFB4.js",
+        "derivation": "Resolve this literal relative import under the already observed loader parent; lexical path only, not existence/realpath/owner proof."
+      },
+      "question": "How does createPluginRegistry/createApi bind record.id to registerAgentHarness ownerPluginId and declared harness ids?",
+      "actual": {
+        "metadata": null,
+        "bytes": null,
+        "sha256": null,
+        "version": null,
+        "full9": null,
+        "body": null
+      },
+      "submitted": false,
+      "request": {
+        "blob": "dfe400bad04a2b62d613da8aee4dd8e189e0dee2",
+        "bytes": 267,
+        "sha256": "3c37c2558a7c0dba50d4e60fd4abf9bd3c2ff24c09c2e9098482621ebb27a0b8"
+      }
+    }
+  ],
+  "bounds": {
+    "maximum_native_metadata_operations": 2,
+    "maximum_inflight_Runtime_calls": 1,
+    "maximum_original_native_futures": 1,
+    "immutable_result_page_limit": 8192,
+    "body_read_operations": 0,
+    "SDK_executions": 0,
+    "directory_enumerations": 0,
+    "metadata_hash_work": "file_info computes whole-file SHA internally and exposes no byte-cap argument. No body cap or local observer deadline is misrepresented as bounding that work.",
+    "body_budget": "No new body bytes/chunks authorized or reserved. After actual metadata, a separate exact size/version/EOF proposal is required."
+  },
+  "consumed_body_accounting": {
+    "scope": "Immediately preceding public dependencies only; other historical readsets remain separately archived.",
+    "first_completed_window": {
+      "files": 3,
+      "chunks": 3,
+      "bytes": 13569,
+      "original_max_chunks": 5,
+      "original_max_bytes": 265740,
+      "unused_authorization_reused": 0
+    },
+    "second_completed_window": {
+      "files": 3,
+      "chunks": 4,
+      "bytes": 127095
+    },
+    "cumulative_completed": {
+      "files": 6,
+      "chunks": 7,
+      "bytes": 140664
+    },
+    "proposed_metadata_window": {
+      "metadata_operations": 2,
+      "body_bytes": 0,
+      "body_chunks": 0
+    },
+    "cumulative_if_metadata_completes": {
+      "files_with_body": 6,
+      "body_chunks": 7,
+      "body_bytes": 140664
+    }
+  },
+  "protocol_if_root_separately_authorizes": [
+    "Require a separate exact GO and actual line handoff. The currently released line B and HA exclusive live window confer no authorization.",
+    "Use these two requests in order. Finish separate external exact intent persistence before one operation_start; persist original SDK whole before isError or parsing.",
+    "At most one Runtime call and one original native future. Reconstruct the original ID's complete immutable payload and confirm completed/stored/inactive before next admission.",
+    "Stop on any error, lost ACK, missing result, inconsistent path/identity or unknown closure. No key/path substitution, guessed manifest, directory scan, alias fallback, or automatic metadata retry.",
+    "Do not read bodies, execute SDK/loader/supports/factory, use credentials, or rerun any WAL/fixture. If metadata gives a symlink/refusal, retain it without following an alternate path.",
+    "Success yields observed public file metadata only. Propose any new body budget from actual size/version and account it separately from the already consumed 140664 bytes."
+  ],
+  "original_guards_and_budgets_unchanged": true,
+  "actual_selected_owner": null,
+  "Google_manifest_path": null,
+  "registry_owner_provenance": null
+}

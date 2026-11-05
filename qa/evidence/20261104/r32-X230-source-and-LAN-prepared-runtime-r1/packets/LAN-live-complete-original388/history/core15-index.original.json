@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.current4e808.LAN-live-actual-core.originals.r1",
+  "job_id": "1a1ad3a6dd4-fc05-5919",
+  "original_job_exit": 0,
+  "original_output_complete": true,
+  "original_output_durable": true,
+  "original_stdout_bytes": 612,
+  "original_stderr_bytes": 0,
+  "actual_original_checks": 98,
+  "actual_original_passed": 98,
+  "actual_separate_extra_checks": 12,
+  "actual_separate_extra_passed": 12,
+  "independent_semantic_root_review_pending": true,
+  "owned_cleanup_review_in_progress": true,
+  "original_observers": 15,
+  "immutable_pages": 62,
+  "all_returned_observers_closed": true,
+  "Runtime_calls_inflight": 0,
+  "body_infos_versions": [
+    {
+      "index": 0,
+      "role": "original-launch",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch.public.json",
+      "bytes": 4132,
+      "sha256": "693d7ebdf0d0787cfdce443c4c504cce82c3b9180ecc3ec1e4bc161ece41fbad",
+      "version": "2050:7401922:4132:1793907654678586055:1793907654678586055",
+      "full9_decimal": [
+        "2050",
+        "7401922",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "4132",
+        "1793907654678586055",
+        "1793907654678586055"
+      ]
+    },
+    {
+      "index": 1,
+      "role": "original-exit",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json",
+      "bytes": 652,
+      "sha256": "93a33f4d70249e597f7ecd5ef5cfef9ddfbdea733846b8146441254b9498a5a9",
+      "version": "2050:7401925:652:1793908088720162039:1793908088720162039",
+      "full9_decimal": [
+        "2050",
+        "7401925",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "652",
+        "1793908088720162039",
+        "1793908088720162039"
+      ]
+    },
+    {
+      "index": 2,
+      "role": "original-public-summary",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1/summary.json",
+      "bytes": 307292,
+      "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1",
+      "version": "2050:7874221:307292:1793908086830161920:1793908086830161920",
+      "full9_decimal": [
+        "2050",
+        "7874221",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "307292",
+        "1793908086830161920",
+        "1793908086830161920"
+      ]
+    }
+  ],
+  "original_errors_this_execution": 0,
+  "no_product_replay": true,
+  "full_replacement_qualified": false,
+  "production_changed": false,
+  "pins": [
+    {
+      "path": "actual/summary.original.json",
+      "bytes": 307292,
+      "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1",
+      "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162"
+    },
+    {
+      "path": "actual/launch.original.json",
+      "bytes": 4132,
+      "sha256": "693d7ebdf0d0787cfdce443c4c504cce82c3b9180ecc3ec1e4bc161ece41fbad",
+      "blob": "1887e1ad3917bfe532df19b83dc1aa8ad6013db6"
+    },
+    {
+      "path": "actual/exit.original.json",
+      "bytes": 652,
+      "sha256": "93a33f4d70249e597f7ecd5ef5cfef9ddfbdea733846b8146441254b9498a5a9",
+      "blob": "f6b857e904694aa2dc6199e673ce96eb9535b434"
+    },
+    {
+      "path": "actual/summary-info.original.json",
+      "bytes": 509,
+      "sha256": "f58a1b36a63ded4896fbe2a497d588adebca4b516294769fbe66094dbf09725d",
+      "blob": "cdf03a79a53e70a971be4072d0849e88b1f1486b"
+    },
+    {
+      "path": "actual/launch-info.original.json",
+      "bytes": 519,
+      "sha256": "b620251e7b6181fb1ef3330e8748518e18d88d31341a9f3bd3f4cce11c352a54",
+      "blob": "b9907a0104d1cc7e702110f01a6223f783fcbefa"
+    },
+    {
+      "path": "actual/exit-info.original.json",
+      "bytes": 515,
+      "sha256": "53f0909f99110d3529286fea4fc49fa9551fef9bbd3ee57c0adc5f3291a4134e",
+      "blob": "37c7fd7171cfd7fabc2a7191678e232fe45f799d"
+    },
+    {
+      "path": "actual/authority.original.json",
+      "bytes": 729,
+      "sha256": "a0bac2c6fec975a02c7bc42a496004e7ba83364c304f765d9a810e16f2414890",
+      "blob": "0f745b9078a5c27f3c9fc3923c88069a9040a967"
+    },
+    {
+      "path": "actual/stdout.original.txt",
+      "bytes": 612,
+      "sha256": "b6fd2a848a3d53d4680a7347b3295c153836e2bfbad491285b5f113729560833",
+      "blob": "f7ca6d27be3cf2e401ff71fdaa64d422656e7554"
+    },
+    {
+      "path": "actual/stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "execution/ACK.original.json",
+      "bytes": 1346,
+      "sha256": "aace499bad44824527e4fe8a7a03569a03c636dc22f3480f25014323588fdc46",
+      "blob": "c58f02419b662ac81b494161ad4b36e4e26045af"
+    },
+    {
+      "path": "execution/request.original.json",
+      "bytes": 571,
+      "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e",
+      "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce"
+    },
+    {
+      "path": "references/root-live-GO.original.json",
+      "bytes": 8703,
+      "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e",
+      "blob": "b1e1c5a77c225b989825a86de287241c5b369402"
+    },
+    {
+      "path": "READPLAN.public.json",
+      "bytes": 8150,
+      "sha256": "a4895de36e7e8c9f95cd11105e8c7c1a74a9c30d428c9e35b33b5854e3afcc6d",
+      "blob": "0d2a159cfb78835f273772d308669e177f369afd"
+    },
+    {
+      "path": "actual/small-output12-checks.public.json",
+      "bytes": 361,
+      "sha256": "3fc6ac2d66534e5f814bb7531691db934d0eac83249d294b14ae52530d4e6984",
+      "blob": "870a08ce42c545efd770501a9b666d5e75e62e15"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "cmd": "python3 /workspace/scratch/f86faac821c4/x230_relay_actual_final_r1/verification/verify-original-evidence.py /workspace/scratch/f86faac821c4/x230_relay_actual_final_r1 /workspace/scratch/f86faac821c4/x230_relay_actual_final_r1/verification/result.public.json",
+  "workdir": "/workspace/scratch/f86faac821c4",
+  "max_output_tokens": 2000
+}

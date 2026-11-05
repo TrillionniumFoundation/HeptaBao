@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "full34-info-admission",
+  "method": "operation_start",
+  "request_blob": "66bdde5b5dfc1a12b31982f9b0ae46f057a92bf2",
+  "request_bytes": 271,
+  "request_sha256": "5e915a7221e1aad1b4d7340cddac470f901a5220402963495486ff6698ea9347",
+  "request": {
+    "idempotency_key": "heptabao-4e808-x230-publish-full34-info-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/full34_controller.py"
+      }
+    }
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": null,
+  "original_call_only": true
+}

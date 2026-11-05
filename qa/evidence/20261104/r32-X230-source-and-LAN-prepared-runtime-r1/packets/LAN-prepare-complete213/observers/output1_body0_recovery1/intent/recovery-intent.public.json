@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.current4e808.LAN-prepare.known-closed-body-recovery-intent.v1",
+  "root_GO": {
+    "blob": "aa0064627e0fce8d7b1d7f32b50a0056782ef1e5",
+    "bytes": 3700,
+    "sha256": "00e18fdaf29ef08d6a3184d5b19de34fc6b66bd9fd95c0be4474bd058623b599"
+  },
+  "exact_request": {
+    "blob": "e32243a9b93650019fd75d096d2d769b16c2a1d9",
+    "bytes": 502,
+    "sha256": "77514a8d5246aaf88ad72b8c88be564a1494a7748333c9949959d860eb6cef68"
+  },
+  "request": {
+    "idempotency_key": "ha-4e808-postcold-prepare-output1-body0-closed-transport-recovery1-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+        "offset": 0,
+        "limit": 3192,
+        "expected_version": "2050:7401918:3192:1793905103902942062:1793905103902942062"
+      }
+    }
+  },
+  "original_prepare_job": "1a1ad1383c9-fc05-5863",
+  "original_failure_packet": "302a4f4b96b848b28389145261e098b1696b4c8e",
+  "original_failed_operation": "9f8eb82a15916661a8e424e4e4b74a2b6b4b27931886284c64fe025100940a0d",
+  "original_failure_preserved": true,
+  "new_readonly_operation_limit": 1,
+  "logical_output_index": 1,
+  "original_path_version_offset_and_limit_unchanged": true,
+  "expected_body_sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+  "process_start_calls": 0,
+  "business_replay": false,
+  "new_error_stops_without_loop": true
+}

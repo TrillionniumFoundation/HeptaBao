@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.local-status-field-correction.v1",
+  "sequence": 3,
+  "operation_id": "f79243c6590b65e5ddf97c648cd0355ed0aa9c528794dfc4d75c2c380325a616",
+  "original_status": {
+    "blob": "6b335c0d148a851bf14cde696c0af5e13747a621",
+    "bytes": 800,
+    "sha256": "c2ca12173c0eb7fd303f84d6fa9b188121451993c84e8ccb1118e2b05a19161c"
+  },
+  "local_expression_before": "value.observation_state === \"stored_observed\"",
+  "actual_protocol_field": "result_state",
+  "actual_result_state": "stored_observed",
+  "local_expression_after": "value.result_state === \"stored_observed\"",
+  "wrong_check_returned": false,
+  "original_Runtime_status_unchanged": true,
+  "additional_Runtime_calls": 0,
+  "no_replay": true,
+  "classification": "Local conservative bookkeeping false; saved actual status already proves completed/stored_observed/inactive. Corrected only local predicate."
+}

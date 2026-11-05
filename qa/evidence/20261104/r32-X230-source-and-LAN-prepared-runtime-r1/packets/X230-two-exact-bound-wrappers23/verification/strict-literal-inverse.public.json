@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.4e808.x230-two-wrapper-six-literal-exact-change.v1",
+  "results": [
+    {
+      "name": "full34",
+      "base": {
+        "blob": "2ad457fd40fc30154934671868e347898150b59e",
+        "bytes": 9833,
+        "sha256": "adc3117c8ff7e27e3e88bed13793c38c9e6037665f2e63b363e7692dd1dfa38b"
+      },
+      "candidate": {
+        "bytes": 10142,
+        "sha256": "73f0ff5583a9323c91625a37afe3502de8f766735ff74baaa66b08f9b922b2b5",
+        "blob": "bf3c0a43853e88eaf8b7dfc0b7f92b5420f5aaf1"
+      },
+      "replacements": [
+        {
+          "before": "BINDING_READY=False",
+          "after": "BINDING_READY=True"
+        },
+        {
+          "before": "NORMAL61_SHA=None",
+          "after": "NORMAL61_SHA='7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475'"
+        },
+        {
+          "before": "NORMAL_NATIVE_SHA=None",
+          "after": "NORMAL_NATIVE_SHA='3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a'"
+        },
+        {
+          "before": "NORMAL_RELEASE_SHA=None",
+          "after": "NORMAL_RELEASE_SHA='78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22'"
+        },
+        {
+          "before": "TRANSFER_SHA=None",
+          "after": "TRANSFER_SHA='dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f'"
+        },
+        {
+          "before": "PIN=None",
+          "after": "PIN='cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0'"
+        }
+      ],
+      "exact_six_literal_inverse": true,
+      "root_independent_prediction_exact": true,
+      "no_other_source_bytes_changed": true
+    },
+    {
+      "name": "comparison69",
+      "base": {
+        "blob": "06a56edbdff787f0a7c89c019f84b1f6b6b882d8",
+        "bytes": 11407,
+        "sha256": "eaa93bfd0f802f92b43efce9f07a92f2078208133b2e1a155da4af947f97a40b"
+      },
+      "candidate": {
+        "bytes": 11716,
+        "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+        "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c"
+      },
+      "replacements": [
+        {
+          "before": "BINDING_READY=False",
+          "after": "BINDING_READY=True"
+        },
+        {
+          "before": "NORMAL61_SHA=None",
+          "after": "NORMAL61_SHA='7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475'"
+        },
+        {
+          "before": "NORMAL_NATIVE_SHA=None",
+          "after": "NORMAL_NATIVE_SHA='3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a'"
+        },
+        {
+          "before": "NORMAL_RELEASE_SHA=None",
+          "after": "NORMAL_RELEASE_SHA='78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22'"
+        },
+        {
+          "before": "TRANSFER_SHA=None",
+          "after": "TRANSFER_SHA='dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f'"
+        },
+        {
+          "before": "BINARY_SHA=None",
+          "after": "BINARY_SHA='cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0'"
+        }
+      ],
+      "exact_six_literal_inverse": true,
+      "root_independent_prediction_exact": true,
+      "no_other_source_bytes_changed": true
+    }
+  ],
+  "candidate_functions_executed": false,
+  "new_product_tests": 0,
+  "Runtime_calls": 0
+}

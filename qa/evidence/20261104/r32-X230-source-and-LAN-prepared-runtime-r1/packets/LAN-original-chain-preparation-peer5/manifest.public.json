@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.HA-chain-preparation.manifest.v1",
+  "files": [
+    {
+      "path": "PREPARATION.md",
+      "blob": "f001a3204bc33777ae8b94ff766fa4941f5a376e",
+      "bytes": 1160,
+      "sha256": "9f546d50572969d236ffb5878bcf0f5042bbb92642ba95c9bbf01f1f59d86258"
+    },
+    {
+      "path": "verify-observation-chain.draft.mjs",
+      "blob": "0615c939a64f50cb11a4040202c271cc346402fc",
+      "bytes": 11727,
+      "sha256": "e4e15f7519877e74350682bad8884f28eca2005435312fbb814d8ee2cd3b0854"
+    },
+    {
+      "path": "INPUTS.public.json",
+      "blob": "7e948116c544317ece466a5a279fcb2433d34bf0",
+      "bytes": 13114,
+      "sha256": "9121a0548533f67b357ec8da734d6cecd4ba95cf5bbb14c401f018500be8a40a"
+    },
+    {
+      "path": "prepared-result.public.json",
+      "blob": "c5040a809dfaec32f5bd739248ba1598c11e6065",
+      "bytes": 30083,
+      "sha256": "df8a94f767766ef4bb6f863d9b0a537a43da7fd78ef56ab572de69e6bce13efb"
+    }
+  ],
+  "Runtime_calls": 0,
+  "final_qualification": false
+}

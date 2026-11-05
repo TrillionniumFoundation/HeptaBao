@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-relay-dest-info-4-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "role": "comparison69-info",
+  "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+  "bytes": 11716,
+  "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+  "version": "2053:3062747:11716:1793908604961815054:1793908604962815054",
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "full9_decimal": [
+    "2053",
+    "3062747",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "11716",
+    "1793908604961815054",
+    "1793908604962815054"
+  ],
+  "original_native": {
+    "path": "observations/comparison69-info/native.original.json",
+    "bytes": 473,
+    "sha256": "9fc06630c78d54e199972b38e9bc91694bcc21afe6b15c5bc8e8eafa89e53598",
+    "blob": "810d58c915bbf08d106fda56aa3b372d2c2f5a42",
+    "carrier_tree": "a363601e1f7bf4feaf748bf4b977612b25fea936"
+  },
+  "original_operation_id": "e2ecc3dee3549a5a9bf467d65bf34ee85832c662ac22cd69478c51f4fd498d85",
+  "original_closed": true,
+  "regular_file_basis": "successful purpose-built file_info contract",
+  "source_role_guard": true
+}

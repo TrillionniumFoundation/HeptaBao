@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.h2-data-binding-checker-inputs.v1",
+  "locations": {
+    "before": "reference/original-H2-template.private.json",
+    "after": "candidate/fixture-binding.CONTENT-BOUND.private.json",
+    "cli": "reference/accepted-CLI-template.private.json",
+    "normal": "reference/current-normal5-table.public.json",
+    "core": "reference/QA12-actual-core.public.json",
+    "diff": "diff/fixture-binding.data-only.diff",
+    "changes": "binding/changes.public.json",
+    "h2Tree": "reference/H2-dual49-tree.original.json",
+    "plan": "reference/H2-plan.public.json",
+    "map": "binding/instrument12-known-and-unobserved.public.json",
+    "root7": "reference/QA12-root-info7-review.public.json",
+    "unobserved": "binding/remaining-objects.public.json",
+    "gap": "STAGE-GAP.public.json",
+    "cliStage": "reference/current-CLI-stage.py",
+    "dispatch": "reference/H2-dispatch-UNRESOLVED.public.json",
+    "qaSources": {
+      "phaseb_evidence_r3.py": "reference/unchanged-H2-QA/phaseb_evidence_r3.py",
+      "native_fixture_reference_r8.py": "reference/unchanged-H2-QA/native_fixture_reference_r8.py",
+      "official_cli_reference_r4.py": "reference/unchanged-H2-QA/official_cli_reference_r4.py",
+      "native_h2_gate_r1.py": "reference/unchanged-H2-QA/native_h2_gate_r1.py",
+      "native_h2_binding_r1.py": "reference/unchanged-H2-QA/native_h2_binding_r1.py"
+    },
+    "infoTexts": [
+      "reference/qa12-core/native/destination-0.file_info.json",
+      "reference/qa12-core/native/destination-1.file_info.json",
+      "reference/qa12-core/native/destination-2.file_info.json",
+      "reference/qa12-core/native/destination-3.file_info.json",
+      "reference/qa12-core/native/destination-4.file_info.json",
+      "reference/qa12-core/native/destination-5.file_info.json",
+      "reference/qa12-info7/native/file_info.public.json"
+    ],
+    "infoSDKs": [
+      "reference/qa12-core/sdk/destination-metadata/0/sdk/destination_info0.original.json",
+      "reference/qa12-core/sdk/destination-metadata/0/sdk/destination_info1.original.json",
+      "reference/qa12-core/sdk/destination-metadata/2/sdk/destination_info2.original.json",
+      "reference/qa12-core/sdk/destination-metadata/2/sdk/destination_info3.original.json",
+      "reference/qa12-core/sdk/destination-metadata/4/sdk/destination_info4.original.json",
+      "reference/qa12-core/sdk/destination-metadata/4/sdk/destination_info5.original.json"
+    ]
+  },
+  "parse_JSON_fields": [
+    "changes",
+    "h2Tree",
+    "plan",
+    "map",
+    "root7",
+    "unobserved",
+    "gap",
+    "dispatch"
+  ],
+  "all_other_inputs_are_exact_original_strings": true,
+  "source_packet_core": "936776253c96ea65ecf6aedf0a60983716f845d8",
+  "checker": {
+    "blob": "2ab3fe260375ed7740759e0ba7330bdd1c772c58",
+    "bytes": 11784,
+    "sha256": "2409ab066c91863b687ecbc72401b56e8924fde104cffcf04689a490bc91ad3f"
+  },
+  "actual_result": {
+    "blob": "8c2fd327b862eb9a3def317202ee57aeeb350c87",
+    "bytes": 16553,
+    "sha256": "3c00a8d7276e994a5793f4c6ea0c2053fd7e2acb263a806880545230f289d7d7"
+  },
+  "Runtime_calls": 0
+}

@@ -1,0 +1,252 @@
+{
+  "schema": "heptabao.mac-credential-free-harness-selection.source-contract.v1",
+  "status": "UNBOUND_SOURCE_CONTRACT_NOT_EXECUTABLE_NO_SDK_GO",
+  "scope": "Prepare a later separately approved isolated selection-only diagnostic. It must not run the original worker main, load auth stores, read the private capsule in Node, create a native client, or contact provider services.",
+  "source_worker": {
+    "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+    "bytes": 28533,
+    "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+    "exact_selection_lines": [
+      335,
+      343
+    ]
+  },
+  "agents": [
+    "main",
+    "trnm",
+    "hepta-ui",
+    "hepta",
+    "hepta-backend"
+  ],
+  "actual_input_values": "NOT_READ_BY_THIS_REVIEW; no model, workspace, enabled scope or configuration value is invented",
+  "original_selection_call": {
+    "module_import_order": [
+      "dist/runtime-registry-loader-Duw3fvRO.js",
+      "dist/selection-JInn13lc.js",
+      "dist/registry-DtLZ3rba.js"
+    ],
+    "loader": "await loader.t({ scope:'all', config:cfg, activationSourceConfig:cfg, workspaceDir:plan.workspace, onlyPluginIds:plan.harnessOwnerPluginIds });",
+    "selector": "selector.o({ provider:plan.model.provider, modelId:plan.model.id, config:cfg, agentId:plan.agentId })",
+    "existing_id_gate": "selectedHarness?.id === 'codex'",
+    "existing_instance_gate": "registry.r('codex')?.harness === selectedHarness",
+    "not_supplied_by_original_call": [
+      "sessionKey",
+      "agentHarnessRuntimeOverride",
+      "onlyChannelIds",
+      "activate:false",
+      "loadModules:false",
+      "validateOnly:true"
+    ],
+    "preserve_absent_as_absent": true,
+    "preserve_complete_original_scope_and_order": true
+  },
+  "configuration_read_requirements": [
+    {
+      "id": "model-and-agent-binding",
+      "fields": [
+        "plan.model.provider",
+        "plan.model.id",
+        "plan.agentId",
+        "plan.workspace",
+        "plan.harnessOwnerPluginIds",
+        "cfg.agents.list[].id",
+        "cfg.agents.list[].model",
+        "cfg.agents.defaults.model"
+      ],
+      "basis": [
+        "worker-agents",
+        "worker-exact-selection"
+      ],
+      "rule": "Preserve the actual captured five-agent declaration/default binding and complete scope; do not infer Codex from provider names, filter Google ordinal 22, or replace agent models. The selected worker call does not supply sessionKey/override.",
+      "exact_values_bound": false,
+      "public_emission": "Only previously admitted fixed agent/plugin identifiers or checked equality booleans; no whole configuration."
+    },
+    {
+      "id": "runtime-policy",
+      "fields": [
+        "cfg.models.providers object keys and order",
+        "cfg.models.providers[resolved].agentRuntime.id",
+        "cfg.models.providers[resolved].models[].id",
+        "cfg.models.providers[resolved].models[].agentRuntime.id",
+        "resolved agent.models keys/order and entry.agentRuntime.id",
+        "cfg.agents.defaults.models keys/order and entry.agentRuntime.id"
+      ],
+      "basis": [
+        "runtime-provider-order",
+        "runtime-agent-map",
+        "runtime-policy-precedence"
+      ],
+      "rule": "Keep exact presence, type, key order and array order. Direct provider key precedes normalized aliases; exact model precedes wildcard/provider policy. Do not reduce to only the winning-looking entry.",
+      "closed_allowlist": false,
+      "remaining_dependency": "resolveSessionAgentIds/listAgentEntries/normalizers receive config and are imported; this is a proved lower bound, not an exhaustive safe projection."
+    },
+    {
+      "id": "openai-default-route",
+      "fields": [
+        "cfg.models.providers.openai.baseUrl",
+        "first normalized OpenAI provider.baseUrl if direct absent"
+      ],
+      "basis": [
+        "routing-actual-url-predicate",
+        "policy-default-runtime"
+      ],
+      "rule": "Missing/blank baseUrl takes the official-default branch; custom or invalid URL can select auto rather than implicit Codex. Removing or replacing it can change selection. Keep the source's exact predicate, not a new URL-security rule.",
+      "sensitivity": "A URL may carry credentials. Never publish it or copy an unsafe value into a public/credential-free file. If exact behavior-preserving nonsecret projection is not proven, this input remains blocked."
+    },
+    {
+      "id": "supports-context",
+      "fields": [
+        "resolved provider.api",
+        "resolved provider.baseUrl",
+        "resolved provider.params.azureApiVersion",
+        "resolved provider.request",
+        "first exact model.id match: api/baseUrl/params.azureApiVersion",
+        "provider/modelId/requestedRuntime",
+        "resolveProviderRefOwnership(config,provider) result"
+      ],
+      "basis": [
+        "support-context",
+        "selector-forced",
+        "selector-auto"
+      ],
+      "rule": "The real selector uses support exports i(context) and a(compare), and calls provider ownership for forced and auto branches. The other effective-runtime helper is not a substitute. provider.request and plugin-supplied supports are not assumed credential-free.",
+      "closed_allowlist": false,
+      "remaining_dependency": "providers-y2Lns8fh ownership semantics and each actually registered supports implementation/options are not established by this packet; no automatic reads are proposed for them."
+    },
+    {
+      "id": "loader-config",
+      "fields": [
+        "options.config and options.activationSourceConfig (same cfg object)",
+        "cfg.plugins (normalizer input)",
+        "cfg.plugins.installs",
+        "normalized.entries[pluginId].config",
+        "normalized.entries[pluginId].hooks",
+        "normalized allow/deny/loadPaths/slots and enable state",
+        "options.workspaceDir",
+        "options.onlyPluginIds"
+      ],
+      "basis": [
+        "loader-inputs",
+        "loader-discovery-manifest",
+        "loader-config-module-path",
+        "loader-register-and-restore"
+      ],
+      "rule": "Do not supply a fabricated manifestRegistry/discovery/installRecords override or a sanitized plugins object and claim equivalence. createApi receives cfg plus schema-validated plugin config; arbitrary plugin config cannot enter public output.",
+      "closed_allowlist": false,
+      "remaining_dependency": "The two proposed implementation sources establish manifest/registration attribution next; config normalization, activation, discovery and module-specific read sets must be accounted for before SDK execution."
+    },
+    {
+      "id": "environment-and-import-state",
+      "fields": [
+        "OPENCLAW_BUILD_PRIVATE_QA",
+        "OPENCLAW_QA_FORCE_RUNTIME",
+        "OPENCLAW_STATE_DIR",
+        "OPENCLAW_CONFIG_PATH",
+        "OPENCLAW_OAUTH_DIR",
+        "original public import prefix and process environment"
+      ],
+      "basis": [
+        "runtime-policy-precedence",
+        "worker-agents",
+        "worker-import-prefix",
+        "loader-inputs",
+        "loader-activation-defaults"
+      ],
+      "rule": "Do not introduce QA force variables, inherit credential env, use existing private state roots, or treat a new empty registry as the same as the original worker. Owned diagnostic paths may differ only with an explicit reviewed equivalence boundary. Existing worker imported SDK/order/row/cache before selection; its auth reads must not be reused.",
+      "closed_allowlist": false
+    }
+  ],
+  "call_order_for_later_bound_diagnostic": [
+    {
+      "step": 1,
+      "action": "Before any SDK import, establish and demonstrate the separately reviewed OS sandbox denying all network and nonowned writes, fixed admitted public-code reads and only the owned bounded projection inputs, with complete child/FD ownership. Current package proves no such new execution.",
+      "ready": false
+    },
+    {
+      "step": 2,
+      "action": "For each original agent scope use the original process-isolation rule, exact declared/default model binding, captured complete harness scope and nonsecret configuration projection with known source consumers. No capsule/auth/cache data is given to Node.",
+      "ready": false
+    },
+    {
+      "step": 3,
+      "action": "Account for original public module import prefix and global/cache prestate. Preserve the original loader/selector/registry import order; no pre-registration, mocked harness or cache-reset trick to force a result.",
+      "ready": false
+    },
+    {
+      "step": 4,
+      "action": "Call the original loader.t once with the exact original shape and original full candidate scope. It may reuse a compatible wider active registry; record/check the resulting actual registration set without silently trimming it. loadModules:false and activate:false are not substitutes.",
+      "ready": false
+    },
+    {
+      "step": 5,
+      "action": "Call selector.o once for the agent with exactly provider/modelId/config/agentId. Do not replace it with resolveEffectiveAgentRuntime or call supports separately to manufacture a result; no factory/native/runAttempt call.",
+      "ready": false
+    },
+    {
+      "step": 6,
+      "action": "Look up registry.r(selected.id) in that same process and registry. Reuse the original selected.id==='codex' and exact object equality as qualification conditions. A different selector result is an honest nonqualifying observation, not coerced to codex.",
+      "ready": false
+    },
+    {
+      "step": 7,
+      "action": "Require nonempty real record.ownerPluginId and harness.pluginId and compare both with the actual plugin/manifest owner; registry alone permits divergence. Bind actual registered plugin record root/source and actual executed module entry, manifest and relevant source pins. The two proposed sources must supply provenance before this gate is implementable.",
+      "ready": false
+    },
+    {
+      "step": 8,
+      "action": "Retain all original loaded/evaluated candidates. In auto mode every registered supports may run; even an unselected plugin can execute during import/registration. Selected-owner restriction never authorizes ignoring those code paths.",
+      "ready": false
+    },
+    {
+      "step": 9,
+      "action": "Reobserve the same record/object and admitted code/parent identities after the selected call; fail on drift, errors, incomplete report or unknown ownership/closure. This is sequential observation, not atomic custody or live-gateway instance proof.",
+      "ready": false
+    },
+    {
+      "step": 10,
+      "action": "Emit only fixed typed public booleans, bounded source-derived identifiers/pins and finite priorities needed by the approved schema. Never emit cfg, arbitrary labels/support reasons/error messages, provider requests/URLs, tokens/account data or environment. Close all owned resources and bind real exit/authority.",
+      "ready": false
+    }
+  ],
+  "important_scope_limits": {
+    "Google_catalog_root_observed": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+    "Google_manifest_path": null,
+    "Google_executed_entry": null,
+    "Google_owner_selected": null,
+    "bundled_path_support_is_not_Google_code_admission": true,
+    "original_npm_composite_guard_modified": false,
+    "actual_gateway_instance_proven": false,
+    "diagnostic_os_sandbox_ready": false,
+    "new_diagnostic_request": null,
+    "new_diagnostic_runtime_budget": null,
+    "original_fixture_limits_unchanged": {
+      "capture_seconds": 45,
+      "query_seconds": 3,
+      "registry_WAL_bytes": 5969912,
+      "row_bytes": 1048576,
+      "aggregate_bytes": 8388608,
+      "configuration_bytes": 4194304,
+      "controller_seconds": 900,
+      "manager_seconds": 600,
+      "phase_seconds": 120,
+      "native_seconds": [
+        15,
+        8,
+        3
+      ],
+      "cleanup_seconds": 60,
+      "HTTP_seconds": 10,
+      "ready_seconds": 30,
+      "outer_seconds": 1080
+    },
+    "old_failures_and_UNKNOWN_preserved": true,
+    "credentials_qualified": false,
+    "production_cutover_authorized": false
+  },
+  "projection_boundary": {
+    "existing_private_capsule": "195155-byte previously captured private capsule remains subject to its original identity/hash/parent/FD guards; it is not a Node input and is not read by this work.",
+    "producer": "Only a separately approved bounded reader could emit a strict, typed, secret-free owned configuration projection from already captured permitted metadata.",
+    "no_equivalence_shortcut": "Preserving the known fields below is necessary but not sufficient: arbitrary imported helpers/register/supports code may inspect other cfg fields. Any required secret-bearing or unreviewed field makes the credential-free proposal incomplete; no placeholder, omission or blanket subtree copy is accepted as equivalent.",
+    "public_output": "Never export auth/cache/token/provider-request/URL/environment or arbitrary config/plugin text; current report contains source schemas only."
+  }
+}

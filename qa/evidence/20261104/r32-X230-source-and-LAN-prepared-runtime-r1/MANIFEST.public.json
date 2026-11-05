@@ -1,0 +1,532 @@
+{
+  "schema": "heptabao.immutable-checkpoint-manifest.r32.v1",
+  "as_of_utc": "2026-11-05T21:01:15Z",
+  "evidence_prefix": "qa/evidence/20261104/r32-X230-source-and-LAN-prepared-runtime-r1",
+  "previous_checkpoint": {
+    "checkpoint": "R31",
+    "commit": "d2bfaab64364d07ba339ce96b74a844cdbf40781",
+    "tree": "61dcc46248119a4aa8b3f9248221e132b4ca6cd4",
+    "publication_proof": {
+      "blob": "100bd027e3c5fa291dfbc6c591b647a456bd0b41",
+      "bytes": 1815,
+      "sha256": "386cd63691b1d8655ce8e94830757bed1f4998267322eb684d046d161988ded6"
+    }
+  },
+  "packets": [
+    {
+      "name": "X230-relay-core-semantic-peer3",
+      "tree": "57cb069d0249babe220e9544d9a306a7df4ca3de",
+      "files": 3,
+      "bytes": 51432,
+      "merkle": {
+        "root_sha": "57cb069d0249babe220e9544d9a306a7df4ca3de",
+        "trees_verified": 1,
+        "leaf_count": 3
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-two-current-NUL-info-original21",
+      "tree": "77a457ec134d50f03e388e629953d67cc302e9d8",
+      "files": 21,
+      "bytes": 51548,
+      "merkle": {
+        "root_sha": "77a457ec134d50f03e388e629953d67cc302e9d8",
+        "trees_verified": 7,
+        "leaf_count": 21
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-prepare-complete213",
+      "tree": "f799faca211d7c34db5f386c948509e1d6219faa",
+      "files": 213,
+      "bytes": 594588,
+      "merkle": {
+        "root_sha": "f799faca211d7c34db5f386c948509e1d6219faa",
+        "trees_verified": 92,
+        "leaf_count": 213
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-relay-complete298",
+      "tree": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+      "files": 298,
+      "bytes": 2716199,
+      "merkle": {
+        "root_sha": "ed4e8240614998ae9b11d8cb03b5b9c3047d04ff",
+        "trees_verified": 52,
+        "leaf_count": 298
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "Auth-three-metadata-and-four-body-source53",
+      "tree": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+      "files": 53,
+      "bytes": 120108,
+      "merkle": {
+        "root_sha": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+        "trees_verified": 23,
+        "leaf_count": 53
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-prepare-original-chain-peer8",
+      "tree": "63b2ad933c1443e09da31931eee44ad4abd3be3c",
+      "files": 8,
+      "bytes": 136555,
+      "merkle": {
+        "root_sha": "63b2ad933c1443e09da31931eee44ad4abd3be3c",
+        "trees_verified": 3,
+        "leaf_count": 8
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-original-chain-peer13",
+      "tree": "f06eb7341dbe768ca2f848e9d2e136d19dde6f89",
+      "files": 13,
+      "bytes": 351753,
+      "merkle": {
+        "root_sha": "f06eb7341dbe768ca2f848e9d2e136d19dde6f89",
+        "trees_verified": 3,
+        "leaf_count": 13
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-two-exact-bound-wrappers23",
+      "tree": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50",
+      "files": 23,
+      "bytes": 169527,
+      "merkle": {
+        "root_sha": "6bbb5bd951db5b0493191e9b83ae5cb41ddb2a50",
+        "trees_verified": 6,
+        "leaf_count": 23
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "Auth-four-bodies-complete125",
+      "tree": "1a6dff12d9d52a5e71361eb641200f988a779ba4",
+      "files": 125,
+      "bytes": 1140056,
+      "merkle": {
+        "root_sha": "1a6dff12d9d52a5e71361eb641200f988a779ba4",
+        "trees_verified": 47,
+        "leaf_count": 125
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-next-oracle-publication-source41",
+      "tree": "af115fddab06b90935b58a653ce0a05e669f0c89",
+      "files": 41,
+      "bytes": 206650,
+      "merkle": {
+        "root_sha": "af115fddab06b90935b58a653ce0a05e669f0c89",
+        "trees_verified": 6,
+        "leaf_count": 41
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "Auth-two-next-registration-metadata-source11",
+      "tree": "0e8e139fdbd8a41290baccec05408776329c728d",
+      "files": 11,
+      "bytes": 94365,
+      "merkle": {
+        "root_sha": "0e8e139fdbd8a41290baccec05408776329c728d",
+        "trees_verified": 3,
+        "leaf_count": 11
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "X230-two-oracles-three-controls-actual161",
+      "tree": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+      "files": 161,
+      "bytes": 638880,
+      "merkle": {
+        "root_sha": "174c2816524022fbb9b128e6ae2b12a66fafc312",
+        "trees_verified": 45,
+        "leaf_count": 161
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-live-complete-original388",
+      "tree": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+      "files": 388,
+      "bytes": 3007450,
+      "merkle": {
+        "root_sha": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+        "trees_verified": 149,
+        "leaf_count": 388
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-live-corrected390",
+      "tree": "625df69e7dbe4407686253564ccd607a3b60b939",
+      "files": 390,
+      "bytes": 3012088,
+      "merkle": {
+        "root_sha": "625df69e7dbe4407686253564ccd607a3b60b939",
+        "trees_verified": 149,
+        "leaf_count": 390
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "CLI-stage-minimal-data-binding-source50",
+      "tree": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+      "files": 50,
+      "bytes": 2558486,
+      "merkle": {
+        "root_sha": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+        "trees_verified": 13,
+        "leaf_count": 50
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "CLI-stage-independent-source-peer5",
+      "tree": "b506b704ad62570448033c337887f69fbee217e3",
+      "files": 5,
+      "bytes": 64003,
+      "merkle": {
+        "root_sha": "b506b704ad62570448033c337887f69fbee217e3",
+        "trees_verified": 1,
+        "leaf_count": 5
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "Auth-two-registration-metadata-actual36",
+      "tree": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+      "files": 36,
+      "bytes": 53998,
+      "merkle": {
+        "root_sha": "27c4b1be1736069cf4b9fdc6a1bf44acb819624f",
+        "trees_verified": 15,
+        "leaf_count": 36
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "Auth-two-registration-metadata-independent-peer6",
+      "tree": "7448f5bc13b27f52b862720344cbff4ff830e20e",
+      "files": 6,
+      "bytes": 66036,
+      "merkle": {
+        "root_sha": "7448f5bc13b27f52b862720344cbff4ff830e20e",
+        "trees_verified": 2,
+        "leaf_count": 6
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-original-chain-preparation-peer5",
+      "tree": "bdb2a3338c513bfa8846626157b00609de34a662",
+      "files": 5,
+      "bytes": 57083,
+      "merkle": {
+        "root_sha": "bdb2a3338c513bfa8846626157b00609de34a662",
+        "trees_verified": 1,
+        "leaf_count": 5
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-live-independent-original-chain-final-peer8",
+      "tree": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+      "files": 8,
+      "bytes": 100735,
+      "merkle": {
+        "root_sha": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+        "trees_verified": 3,
+        "leaf_count": 8
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "H2-content-bound-template-and-stage-gap-source52",
+      "tree": "697f7b64102692c5da736eee4cd329211189839a",
+      "files": 52,
+      "bytes": 582172,
+      "merkle": {
+        "root_sha": "697f7b64102692c5da736eee4cd329211189839a",
+        "trees_verified": 19,
+        "leaf_count": 52
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true
+    },
+    {
+      "name": "LAN-prepare-output1-original-closed-read-failure8",
+      "tree": "302a4f4b96b848b28389145261e098b1696b4c8e",
+      "files": 8,
+      "bytes": 6983,
+      "merkle": {
+        "root_sha": "302a4f4b96b848b28389145261e098b1696b4c8e",
+        "trees_verified": 4
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true,
+      "contained_in": "f799faca211d7c34db5f386c948509e1d6219faa",
+      "contained_path": "history/output1-original-failed-body"
+    },
+    {
+      "name": "LAN-live-original-intent3",
+      "tree": "a6f7a7483f604c839ab870a7c68c5c670261df66",
+      "files": 3,
+      "bytes": 13153,
+      "merkle": {
+        "root_sha": "a6f7a7483f604c839ab870a7c68c5c670261df66",
+        "trees_verified": 1
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true,
+      "contained_in": "625df69e7dbe4407686253564ccd607a3b60b939",
+      "contained_path": "execution/intent"
+    },
+    {
+      "name": "LAN-live-original-ACK-binding4",
+      "tree": "4307353612e9a9a5580bd096307470917fa0ed8d",
+      "files": 4,
+      "bytes": 4313,
+      "merkle": {
+        "root_sha": "4307353612e9a9a5580bd096307470917fa0ed8d",
+        "trees_verified": 1
+      },
+      "prior_root_whole_verification_adopted_from_saved_qualification": true,
+      "contained_in": "625df69e7dbe4407686253564ccd607a3b60b939",
+      "contained_path": "execution/ACK"
+    }
+  ],
+  "root_artifacts": [
+    {
+      "name": "LAN-complete-qualification.public.json",
+      "blob": "0f4bccd7b70b5d68e0d07e9fa7e8fb40d8fe892b",
+      "bytes": 5084,
+      "sha256": "bdf159bad0e6e1c7ffe27ee313379aeaa882c4dda42b19e61505f0ae9d924205"
+    },
+    {
+      "name": "LAN-live-semantic-review.public.json",
+      "blob": "ff2fec8d7f1c42946a021243526156cb93f69bfb",
+      "bytes": 10115,
+      "sha256": "8bf3b0787c69fbe660515fcb2b4947c1a5e991dcf5f844d6a2a6bb364a9fa896"
+    },
+    {
+      "name": "LAN-prepare-qualification.public.json",
+      "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+      "bytes": 9534,
+      "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+    },
+    {
+      "name": "LAN-lane-A-release.public.json",
+      "blob": "e74ffb1da0602e642a9ace8df0aef6f6b7ee00d8",
+      "bytes": 5992,
+      "sha256": "038365fadc9118e6aed00644b935036af42200624eba63490ebf96bc85c1220e"
+    },
+    {
+      "name": "LAN-complete-verifier.js",
+      "blob": "80ab51f8e29f9e8868f2ae6b0313ce5d1bbcc427",
+      "bytes": 6016,
+      "sha256": "20b8730e7de74ef7cd976f8b99bdf8dc5b1c5badd28807fa82e7824307994542"
+    },
+    {
+      "name": "X230-transfer-qualification.public.json",
+      "blob": "14026aab3619c13f2de8c972f5913d0f329730aa",
+      "bytes": 10556,
+      "sha256": "70c679e596110ad000e5b5e31799cec5dc342a1ef565c72b432976c2d024cde9"
+    },
+    {
+      "name": "X230-oracles-controls-publication-qualification.public.json",
+      "blob": "31a05798ea870d71c4d08092ad53e895e275c11f",
+      "bytes": 22370,
+      "sha256": "bd98852e1a4f7f22ba7a9467f6b89bcbede8e5f226743863463b887246178301"
+    },
+    {
+      "name": "X230-full34-exact-GO.public.json",
+      "blob": "773ffa99d027be4cd77e265b3a40f8432864139c",
+      "bytes": 6192,
+      "sha256": "66e15a989b26ed9cf57a89896767e845267c2a7f8be72e2ac94cab9ffde3d869"
+    },
+    {
+      "name": "X230-full34-actual-result.public.json",
+      "blob": "551255f3ff372d04f49ea595f1cf5a55c3c06285",
+      "bytes": 1124,
+      "sha256": "e2c18577543dc0290461daf2b6791cfe9da87616d87cd4a17c007a8f99f0d9a0"
+    },
+    {
+      "name": "X230-full34-authority.original.json",
+      "blob": "adfb59fdb566c3acb280812f33e6961994962e34",
+      "bytes": 729,
+      "sha256": "33d3949d275404316b8545346688fff4fdb7fc0806c72cd0fb0d74af3b02dfae"
+    },
+    {
+      "name": "X230-full34-contract-verifier.js",
+      "blob": "3126c4254eb9b9800dda8eda2a986726065a9a23",
+      "bytes": 9153,
+      "sha256": "3f44253af98c5f794dca2d772c170dcc7f093431fb03193033b556a05a7503ea"
+    },
+    {
+      "name": "X230-NUL-current-info-review.public.json",
+      "blob": "71591cba75f3e978f82579524d6ab3163cd2450e",
+      "bytes": 3953,
+      "sha256": "bb44ebcb81030167f9eceda1f0058565286ae8d03ec101d7fd618ee97b05161d"
+    },
+    {
+      "name": "X230-core-peer-intake.public.json",
+      "blob": "a96bff2a7c1fab48143fdbea05bf1ded63299b70",
+      "bytes": 3700,
+      "sha256": "80441041d0b425cfdf3f800e0dbeafb2f4f63743853ae8817a7216f585666b7c"
+    },
+    {
+      "name": "LAN-prepare-semantics.public.json",
+      "blob": "4d3419a504cf4d0c068276904364f620df35d854",
+      "bytes": 13674,
+      "sha256": "1adbae1dde24a47d19e11289ae6dfa74cf1d0a51b805ae4e7cc89ed0a49bd7e5"
+    },
+    {
+      "name": "Auth-prior-body4-review.public.json",
+      "blob": "0074fb98ae02518672bc2bf8e8269764d4e60e93",
+      "bytes": 12098,
+      "sha256": "1e95dae1f76a363d4f411d80d7cc4072d699fc157544774cd715c9a78ebfd1c9"
+    },
+    {
+      "name": "Auth-registration-metadata2-review.public.json",
+      "blob": "459a8919593386faa96403d6411f576d112252e1",
+      "bytes": 12267,
+      "sha256": "2d62443cb8ad5cc005b50f7216d00d40417f38f1ac3d4b078bd4c133dce0cb95"
+    },
+    {
+      "name": "Auth-registration-body4-exact-GO.public.json",
+      "blob": "49fa57d6128f99ff425ea798466514564374d3b4",
+      "bytes": 10218,
+      "sha256": "9ab46d2157d77f7045cdd33426c52692bc844424537efb196936f8cef6ef5c8b"
+    },
+    {
+      "name": "CLI-stage-source-review.public.json",
+      "blob": "c341c7213dfa77b9a32e4326535ee931168c0cce",
+      "bytes": 4695,
+      "sha256": "144c59c685f6e8a524e9a6b513ac914a96ed39e5bed58f88e6437f20a0a34c31"
+    },
+    {
+      "name": "CLI-stage-source-verifier.js",
+      "blob": "8db4605b75027badf6b7fec7e7f834188215e79e",
+      "bytes": 7938,
+      "sha256": "dd1485a059aab89a142990607780cca10e85a7cd22cfef04ce0778621a0ce617"
+    },
+    {
+      "name": "H2-stage-gap.public.json",
+      "blob": "6d2e49c267c7c48b08c9ebc0904b1c8440e72c1e",
+      "bytes": 5686,
+      "sha256": "daf5100ab7c9c42b231f78b56ec3a1543df233cbf2a04e8517f502c613315a56"
+    },
+    {
+      "name": "R31-publication-proof.public.json",
+      "blob": "100bd027e3c5fa291dfbc6c591b647a456bd0b41",
+      "bytes": 1815,
+      "sha256": "386cd63691b1d8655ce8e94830757bed1f4998267322eb684d046d161988ded6"
+    },
+    {
+      "name": "recovery-pure-helpers.js",
+      "blob": "25eb67a1def4c90ed8a6b1308ca2494228587c1c",
+      "bytes": 6684,
+      "sha256": "54047677f4bbcd0d6565b89a58a8b14c483c7988309b7ea010b6408765f60e45"
+    },
+    {
+      "name": "recovery-git-helpers.js",
+      "blob": "85878559fd5af179c2d0f7aac8657145513ed204",
+      "bytes": 3680,
+      "sha256": "96d3543afead13f6d80d7c7d0c8392c1b17d62716e219e2401f8206d385cab70"
+    },
+    {
+      "name": "recovery-immediate-Merkle-helpers.js",
+      "blob": "6c5bd52313333acd4abd635085c4019af4462b78",
+      "bytes": 1386,
+      "sha256": "24874d625143ea1ee457d6ff35121d80c13985531836ab08788beb7511610935"
+    },
+    {
+      "name": "r32-X230-eight-independent-infos-root-review.public.json",
+      "blob": "a2c1cd9a7731ba4b029e739decec29375ad1c1c0",
+      "bytes": 6986,
+      "sha256": "73f3ac8d322f7c6401aaaf9922b70d3802e654bc4211326ca41966f403d3ac45"
+    },
+    {
+      "name": "r32-X230-final69-command-content-root-review.public.json",
+      "blob": "91547d01e1c690c60a8c936361293168f1537db2",
+      "bytes": 15852,
+      "sha256": "0f4bdcb5dcc3247f6dfdcaf6e3fc14f4d64737a827e38c6ba3cb023cac046818"
+    },
+    {
+      "name": "r32-X230-publication-root-verifier-first-failure.public.json",
+      "blob": "5d844b6db8ad97255854ad64554a659d03d23c22",
+      "bytes": 441,
+      "sha256": "f72457cdb2c7d3ff85ea86095addd9150e1ed0b56cafc18d381f74025b3ad8de"
+    },
+    {
+      "name": "r32-X230-publication-root-verifier-correction.public.json",
+      "blob": "aecb005cebcbdb7516df3442c58b4ae0b6bbdc15",
+      "bytes": 1204,
+      "sha256": "d47d7b960471023267bd0a5aac73b7126027f49331361d472893db9a8407561b"
+    },
+    {
+      "name": "r32-X230-two-bound-wrappers-root-review.public.json",
+      "blob": "7934f6369f16912b30775317ed8327cc7d3c0ad5",
+      "bytes": 5427,
+      "sha256": "c23e69003520719b623fefaf05f4dd9369b65849554f7dd86b902dbfc0528ad3"
+    },
+    {
+      "name": "r32-LAN-prepare-source-constants-root-review.public.json",
+      "blob": "fd61e617f7ed7d64d63e184b2fa37940dc337ad7",
+      "bytes": 11391,
+      "sha256": "fdb6e3e3fe94e309e5d1d86c45bce193758400ec49a7c26f9acdab9cbc444573"
+    },
+    {
+      "name": "r32-Auth-metadata3-body4-root-review.public.json",
+      "blob": "0eeb69c9fa57909bd3f8415f98af4bfcadd60ffe",
+      "bytes": 9378,
+      "sha256": "289c23222f88f20aa06c482d503debc4d147821d2ade8b0042bd13c247971b05"
+    },
+    {
+      "name": "r31-checkpoint.md",
+      "blob": "d02226534c06152be44d6b55691bb6e5120b44db",
+      "bytes": 303221,
+      "sha256": "8eafdf01b2bd4b7a2cf3b306291af9da27d2db660c5219667a2b637e9de2a1d4",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "d27e5de2bb4065b1680b4407c85809bc7539f90d"
+    },
+    {
+      "name": "r31-checkpoint-index.public.json",
+      "blob": "d82a2259b405bb72e6f5f53fb347b553ed42dc22",
+      "bytes": 864829,
+      "sha256": "8d961c15865dcfc61877a8a5b38fc98e1a7390be45a1574162862bd89139bf76",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "ba23a377a930ea9867f39cbeee6f43ad7698fed4"
+    }
+  ],
+  "state": {
+    "name": "STATE.public.json",
+    "blob": "d11fa471982c2840d137300a97380bf3de28c9e5",
+    "bytes": 33002,
+    "sha256": "3543c8a9a79f5da391fefa4b89f92d69c27b21075f7b9ac9356a7d116bcb5d3c"
+  },
+  "counts": {
+    "packets": 24,
+    "packet_files": 1925,
+    "packet_bytes": 15798161,
+    "packet_Merkle": 646,
+    "roots_before_state_manifest": 33
+  },
+  "scope": "Previously verified immutable whole packets and saved qualifications adopted; packet Merkle catalogs recomputed after transient cache reset. Actual full34 result reports31/31 but summary contract and read chain remain incomplete at this freeze.",
+  "no_product_reruns_during_recovery": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

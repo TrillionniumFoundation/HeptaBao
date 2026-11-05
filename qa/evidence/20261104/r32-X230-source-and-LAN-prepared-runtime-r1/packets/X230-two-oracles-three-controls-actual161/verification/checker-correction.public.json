@@ -1,0 +1,5 @@
+{
+  "before": "pin(raw(write.request.path||\"calls/\"+role+\"-write/request.original.json\"),p.request,role+\":exact-write-request\");",
+  "after": "pin(raw(\"calls/\"+role+\"-write/request.original.json\"),p.request,role+\":exact-write-request\");",
+  "scope": "Only evidence packet path selection; original candidate and Runtime raw evidence unchanged."
+}

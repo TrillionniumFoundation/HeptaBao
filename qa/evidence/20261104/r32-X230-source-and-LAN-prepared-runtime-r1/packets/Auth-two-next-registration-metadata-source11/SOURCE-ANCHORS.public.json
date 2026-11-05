@@ -1,0 +1,285 @@
+{
+  "schema": "heptabao.mac-owner.source-line-evidence.v1",
+  "line_numbers": "1-based; text excludes only the final line terminator of each extracted interval",
+  "anchors": [
+    {
+      "id": "worker-agents",
+      "source": "worker",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "start_line": 221,
+      "end_line": 242,
+      "text": "  plan = JSON.parse(privateRead(process.argv[2]));\n  const AGENTS = ['main', 'trnm', 'hepta-ui', 'hepta', 'hepta-backend'];\n  const ROOT = '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1';\n  need(plan.schema === 'heptabao.mac-five-agent-worker.private.r1' && plan.mode === 'native'\n    && AGENTS.includes(plan.agentId) && ['initial', 'cold-new-process'].includes(plan.phase),\n    'exact_native_worker_scope');\n  need(plan.workRoot === ROOT && plan.phaseRoot === path.join(ROOT, plan.phase)\n    && plan.stateRoot === path.join(plan.phaseRoot, 'state')\n    && fs.realpathSync(plan.stateRoot) === plan.stateRoot, 'exact_owned_state_scope');\n  need(Number.isSafeInteger(plan.phaseRemainingMs) && plan.phaseRemainingMs > 0\n    && plan.phaseRemainingMs <= 120000 && plan.phaseOwnerPid === process.ppid,\n    'original_phase_owner_and_remaining_allocation');\n  // A relative allocation is only a child-side shortening. The real wrapper\n  // keeps and enforces the original monotonic phase deadline across all six\n  // workers, including process startup and all observer/cleanup time.\n  nativeUntil = workerStarted + BigInt(plan.phaseRemainingMs) * 1000000n;\n  report.agentId = plan.agentId; report.phase = plan.phase;\n  report.phaseOwnerAbsoluteDeadlineAuthoritative = true;\n  report.allocatedRemainingMs = plan.phaseRemainingMs;\n  check('scoped_application_roots', process.env.OPENCLAW_STATE_DIR === plan.stateRoot\n    && process.env.OPENCLAW_CONFIG_PATH === path.join(plan.stateRoot, 'openclaw.json')\n    && process.env.OPENCLAW_OAUTH_DIR === path.join(plan.stateRoot, 'oauth'));"
+    },
+    {
+      "id": "worker-import-prefix",
+      "source": "worker",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "start_line": 311,
+      "end_line": 324,
+      "text": "  syncBuiltinESMExports();\n  const sdk = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/plugin-sdk/agent-runtime.js')));\n  const orderApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/order-CeBlX0NH.js')));\n  const rowApi = await import(pathToFileURL(path.join(path.dirname(process.argv[1]), 'mac_auth_rows_cas_r1.mjs')));\n  const cacheApi = await import(pathToFileURL(path.join(path.dirname(process.argv[1]), 'mac_authbus_cache_cas_r1.mjs')));\n  const candidate = JSON.parse(privateRead(plan.rollbackCheckpointOutput));\n  const currentStores = () => {\n    sdk.clearRuntimeAuthProfileStoreSnapshots();\n    return Object.fromEntries(AGENTS.map(id => [id, sdk.loadAuthProfileStoreWithoutExternalProfiles(\n      path.join(plan.stateRoot, 'agents', id, 'agent'), { allowKeychainPrompt: false })]));\n  };\n  const allBefore = currentStores();\n  const rowsBefore = Object.fromEntries(AGENTS.map(id => [id, rowApi.captureAuthRows(plan.stateRoot,id)]));\n  const cachesBefore = cacheApi.captureAuthBusCaches(plan.stateRoot);"
+    },
+    {
+      "id": "worker-exact-selection",
+      "source": "worker",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "start_line": 333,
+      "end_line": 350,
+      "text": "  const committed = allBefore[plan.agentId];\n  const order = orderApi.i({ cfg, store: structuredClone(committed), provider: plan.model.provider });\n  const loader = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/runtime-registry-loader-Duw3fvRO.js')));\n  const selector = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/selection-JInn13lc.js')));\n  const registry = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/registry-DtLZ3rba.js')));\n  await loader.t({ scope:'all', config:cfg, activationSourceConfig:cfg,\n    workspaceDir:plan.workspace, onlyPluginIds:plan.harnessOwnerPluginIds });\n  const selectedHarness = selector.o({ provider:plan.model.provider, modelId:plan.model.id,\n    config:cfg, agentId:plan.agentId });\n  check('actual_loader_and_selector_choose_codex', selectedHarness?.id === 'codex');\n  check('selected_harness_is_actual_registered_instance', registry.r('codex')?.harness === selectedHarness);\n  const nativeApi = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/shared-client-4ICy3U6d.js')));\n  const codexConfig = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/config-CYEDnLJ2.js')));\n  const startOptions = codexConfig.d({ pluginConfig:cfg.plugins.entries.codex.config, env:process.env }).start;\n  check('original_agent_scope_and_managed_stdio_options', startOptions.homeScope === 'agent'\n    && startOptions.transport === 'stdio' && startOptions.commandSource === 'managed'\n    && startOptions.command === 'codex' && !startOptions.env?.CODEX_HOME);\n  // Do not force either trusted shared ID. The actual five-agent SDK preserves"
+    },
+    {
+      "id": "runtime-loader-scope",
+      "source": "runtime-loader",
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "start_line": 69,
+      "end_line": 93,
+      "text": "function ensurePluginRegistryLoaded(options) {\n\tconst scope = options?.scope ?? \"all\";\n\tconst requestedPluginIdsFromOptions = normalizePluginIdScope(options?.onlyPluginIds);\n\tconst requestedChannelIds = normalizePluginIdScope(options?.onlyChannelIds);\n\tconst context = resolvePluginRuntimeLoadContext(options);\n\tconst requestedChannelOwnerPluginIds = requestedChannelIds === void 0 ? void 0 : resolveDiscoverableScopedChannelPluginIds({\n\t\tconfig: context.config,\n\t\tactivationSourceConfig: context.activationSourceConfig,\n\t\tchannelIds: requestedChannelIds,\n\t\tworkspaceDir: context.workspaceDir,\n\t\tenv: context.env\n\t});\n\tconst requestedPluginIds = requestedChannelOwnerPluginIds === void 0 ? requestedPluginIdsFromOptions : normalizePluginIdScope([...requestedPluginIdsFromOptions ?? [], ...requestedChannelOwnerPluginIds]);\n\tconst scopedLoad = hasExplicitPluginIdScope(requestedPluginIds);\n\tconst expectedPluginIds = scopedLoad ? requestedPluginIds ?? [] : resolveScopePluginIds({\n\t\tscope,\n\t\tcontext\n\t});\n\tconst active = getActivePluginRegistry();\n\tconst requestedPluginIdsForScope = scope === \"all\" && expectedPluginIds.length === 0 ? expectedPluginIds : void 0;\n\tif (!scopedLoad && scopeRank(pluginRegistryLoaded) >= scopeRank(scope) && activeRegistrySatisfiesScope(scope, active, expectedPluginIds, requestedPluginIdsForScope, context.workspaceDir)) return;\n\tif ((pluginRegistryLoaded === \"none\" || scopedLoad) && activeRegistrySatisfiesScope(scope, active, expectedPluginIds, requestedPluginIds, context.workspaceDir)) {\n\t\tif (!scopedLoad) pluginRegistryLoaded = scope;\n\t\treturn;\n\t}"
+    },
+    {
+      "id": "runtime-loader-load-options",
+      "source": "runtime-loader",
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "start_line": 102,
+      "end_line": 114,
+      "text": "\tresolveOrLoadRuntimePluginRegistry(buildPluginRuntimeLoadOptionsFromValues({\n\t\t...context,\n\t\tconfig: scopedConfig,\n\t\tactivationSourceConfig: scopedActivationSourceConfig\n\t}, {\n\t\tthrowOnLoadError: true,\n\t\t...hasExplicitPluginIdScope(requestedPluginIds) || shouldForwardChannelScope({\n\t\t\tscope,\n\t\t\tscopedLoad\n\t\t}) || hasNonEmptyPluginIdScope(expectedPluginIds) || scope === \"all\" ? { onlyPluginIds: expectedPluginIds } : {}\n\t}));\n\tif (!scopedLoad) pluginRegistryLoaded = scope;\n}"
+    },
+    {
+      "id": "manifest-import",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 15,
+      "end_line": 15,
+      "text": "import { t as loadPluginManifestRegistry } from \"./manifest-registry--UiRn6nq.js\";"
+    },
+    {
+      "id": "plugin-registry-import",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 40,
+      "end_line": 40,
+      "text": "import { A as clearCompactionProviders, C as clearMemoryEmbeddingProviders, D as listRegisteredMemoryEmbeddingProviders, M as listRegisteredCompactionProviders, N as restoreRegisteredCompactionProviders, k as restoreRegisteredMemoryEmbeddingProviders, t as createPluginRegistry } from \"./registry-B8eQDFB4.js\";"
+    },
+    {
+      "id": "loader-inputs",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1190,
+      "end_line": 1219,
+      "text": "function resolvePluginLoadCacheContext(options = {}) {\n\tconst shouldResolveRawConfigEnvVars = options.resolveRawConfigEnvVars === true;\n\tconst baseEnv = options.env ?? process.env;\n\tconst rawConfig = options.config ?? {};\n\tconst rawActivationSourceConfig = resolvePluginActivationSourceConfig({\n\t\tconfig: options.config,\n\t\tactivationSourceConfig: options.activationSourceConfig\n\t});\n\tconst env = shouldResolveRawConfigEnvVars ? createConfigRuntimeEnv(rawConfig, baseEnv) : baseEnv;\n\tconst cfg = applyTestPluginDefaults(shouldResolveRawConfigEnvVars ? resolveConfigEnvVars(rawConfig, env, { onMissing: () => void 0 }) : rawConfig, env);\n\tconst activationSourceConfig = shouldResolveRawConfigEnvVars ? resolveConfigEnvVars(rawActivationSourceConfig, env, { onMissing: () => void 0 }) : rawActivationSourceConfig;\n\tconst normalized = normalizePluginsConfig(cfg.plugins);\n\tconst activationSource = createPluginActivationSource({ config: activationSourceConfig });\n\tconst trustNormalized = mergeTrustPluginConfigFromActivationSource({\n\t\tnormalized,\n\t\tactivationSource\n\t});\n\tconst onlyPluginIds = normalizePluginIdScope(options.onlyPluginIds);\n\tconst includeSetupOnlyChannelPlugins = options.includeSetupOnlyChannelPlugins === true;\n\tconst forceSetupOnlyChannelPlugins = options.forceSetupOnlyChannelPlugins === true;\n\tconst requireSetupEntryForSetupOnlyChannelPlugins = options.requireSetupEntryForSetupOnlyChannelPlugins === true;\n\tconst preferSetupRuntimeForChannelPlugins = options.preferSetupRuntimeForChannelPlugins === true;\n\tconst forceFullRuntimeForChannelPlugins = options.forceFullRuntimeForChannelPlugins === true;\n\tconst preferBuiltPluginArtifacts = options.preferBuiltPluginArtifacts === true;\n\tconst runtimeSubagentMode = resolveRuntimeSubagentMode(options.runtimeOptions);\n\tconst coreGatewayMethodNames = resolveCoreGatewayMethodNames(options);\n\tconst installRecords = {\n\t\t...options.installRecords ?? loadInstalledPluginIndexInstallRecordsSync({ env }),\n\t\t...cfg.plugins?.installs\n\t};"
+    },
+    {
+      "id": "loader-activation-defaults",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1252,
+      "end_line": 1265,
+      "text": "\t\tautoEnabledReasons: options.autoEnabledReasons ?? {},\n\t\tonlyPluginIds,\n\t\tincludeSetupOnlyChannelPlugins,\n\t\tforceSetupOnlyChannelPlugins,\n\t\trequireSetupEntryForSetupOnlyChannelPlugins,\n\t\tpreferSetupRuntimeForChannelPlugins,\n\t\tforceFullRuntimeForChannelPlugins,\n\t\tpreferBuiltPluginArtifacts,\n\t\tshouldActivate: options.activate !== false,\n\t\tshouldLoadModules: options.loadModules !== false,\n\t\truntimeSubagentMode,\n\t\tinstallRecords,\n\t\tdevSourceRoot,\n\t\tcacheKey"
+    },
+    {
+      "id": "loader-discovery-manifest",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1603,
+      "end_line": 1620,
+      "text": "\t\tconst suppliedManifestRegistry = options.manifestRegistry;\n\t\tconst discovery = suppliedManifestRegistry ? {\n\t\t\tcandidates: createPluginCandidatesFromManifestRegistry(suppliedManifestRegistry),\n\t\t\tdiagnostics: []\n\t\t} : options.discovery ?? discoverOpenClawPlugins({\n\t\t\tworkspaceDir: options.workspaceDir,\n\t\t\textraPaths: normalized.loadPaths,\n\t\t\tenv,\n\t\t\tinstallRecords\n\t\t});\n\t\tconst manifestRegistry = suppliedManifestRegistry ?? loadPluginManifestRegistry({\n\t\t\tconfig: cfg,\n\t\t\tworkspaceDir: options.workspaceDir,\n\t\t\tenv,\n\t\t\tcandidates: discovery.candidates,\n\t\t\tdiagnostics: discovery.diagnostics,\n\t\t\tinstallRecords: Object.keys(installRecords).length > 0 ? installRecords : void 0\n\t\t});"
+    },
+    {
+      "id": "loader-root-to-manifest-id",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1640,
+      "end_line": 1649,
+      "text": "\t\tconst manifestByRoot = new Map(manifestRegistry.plugins.map((record) => [record.rootDir, record]));\n\t\tconst orderedCandidates = [...discovery.candidates].toSorted((left, right) => {\n\t\t\treturn compareDuplicateCandidateOrder({\n\t\t\t\tleft,\n\t\t\t\tright,\n\t\t\t\tmanifestByRoot,\n\t\t\t\tprovenance,\n\t\t\t\tenv\n\t\t\t});\n\t\t});"
+    },
+    {
+      "id": "loader-plugin-id-scope",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1663,
+      "end_line": 1671,
+      "text": "\t\tfor (const candidate of orderedCandidates) {\n\t\t\tconst manifestRecord = manifestByRoot.get(candidate.rootDir);\n\t\t\tif (!manifestRecord) continue;\n\t\t\tconst pluginId = manifestRecord.id;\n\t\t\tif (!matchesScopedPluginOrDreamingSidecar({\n\t\t\t\tonlyPluginIdSet,\n\t\t\t\tpluginId,\n\t\t\t\tsidecar: dreamingSidecar\n\t\t\t})) continue;"
+    },
+    {
+      "id": "loader-record-root-source",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1731,
+      "end_line": 1753,
+      "text": "\t\t\tconst record = createPluginRecord({\n\t\t\t\tid: pluginId,\n\t\t\t\tname: manifestRecord.name ?? pluginId,\n\t\t\t\tdescription: manifestRecord.description,\n\t\t\t\tversion: manifestRecord.version,\n\t\t\t\tpackageName: manifestRecord.packageName,\n\t\t\t\tformat: manifestRecord.format,\n\t\t\t\tbundleFormat: manifestRecord.bundleFormat,\n\t\t\t\tbundleCapabilities: manifestRecord.bundleCapabilities,\n\t\t\t\tsource: candidate.source,\n\t\t\t\trootDir: candidate.rootDir,\n\t\t\t\torigin: candidate.origin,\n\t\t\t\tworkspaceDir: candidate.workspaceDir,\n\t\t\t\ttrustedOfficialInstall: manifestRecord.trustedOfficialInstall,\n\t\t\t\tenabled: enableState.enabled,\n\t\t\t\tcompat: collectPluginManifestCompatCodes(manifestRecord),\n\t\t\t\tactivationState,\n\t\t\t\tsyntheticAuthRefs: manifestRecord.syntheticAuthRefs,\n\t\t\t\tchannelIds: manifestRecord.channels,\n\t\t\t\tproviderIds: manifestRecord.providers,\n\t\t\t\tconfigSchema: Boolean(manifestRecord.configSchema),\n\t\t\t\tcontracts: manifestRecord.contracts\n\t\t\t});"
+    },
+    {
+      "id": "loader-candidate-realpath",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1780,
+      "end_line": 1792,
+      "text": "\t\t\tconst pluginRoot = safeRealpathOrResolve(candidate.rootDir);\n\t\t\tconst runtimeCandidateEntry = resolvePreferredBuiltRuntimeArtifact({\n\t\t\t\tsource: candidate.source,\n\t\t\t\trootDir: pluginRoot,\n\t\t\t\torigin: candidate.origin,\n\t\t\t\tpreferBuiltPluginArtifacts\n\t\t\t});\n\t\t\tconst runtimeSetupEntry = manifestRecord.setupSource ? resolvePreferredBuiltRuntimeArtifact({\n\t\t\t\tsource: manifestRecord.setupSource,\n\t\t\t\trootDir: pluginRoot,\n\t\t\t\torigin: candidate.origin,\n\t\t\t\tpreferBuiltPluginArtifacts\n\t\t\t}) : void 0;"
+    },
+    {
+      "id": "loader-config-module-path",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 1899,
+      "end_line": 1947,
+      "text": "\t\t\tconst validatedConfig = validatePluginConfig({\n\t\t\t\tschema: manifestRecord.configSchema,\n\t\t\t\tcacheKey: manifestRecord.schemaCacheKey,\n\t\t\t\tvalue: entry?.config\n\t\t\t});\n\t\t\tif (!validatedConfig.ok) {\n\t\t\t\tlogger.error(`[plugins] ${record.id} invalid config: ${validatedConfig.errors?.join(\", \")}`);\n\t\t\t\tpushPluginLoadError(`invalid config: ${validatedConfig.errors?.join(\", \")}`);\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tif (!shouldLoadModules) {\n\t\t\t\tapplyManifestSnapshotMetadata(record, manifestRecord);\n\t\t\t\tregistry.plugins.push(record);\n\t\t\t\tseenIds.set(pluginId, candidate.origin);\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tconst loadEntry = registrationPlan.loadSetupEntry && runtimeSetupEntry ? runtimeSetupEntry : runtimeCandidateEntry;\n\t\t\tconst moduleLoadSource = resolveCanonicalDistRuntimeSource(loadEntry.source);\n\t\t\tconst moduleRoot = resolveCanonicalDistRuntimeSource(loadEntry.rootDir);\n\t\t\tconst rejectHardlinks = shouldRejectHardlinkedPluginFiles({\n\t\t\t\torigin: candidate.origin,\n\t\t\t\trootDir: candidate.rootDir,\n\t\t\t\tenv\n\t\t\t});\n\t\t\tconst opened = openRootFileSync({\n\t\t\t\tabsolutePath: moduleLoadSource,\n\t\t\t\trootPath: moduleRoot,\n\t\t\t\tboundaryLabel: \"plugin root\",\n\t\t\t\trejectHardlinks,\n\t\t\t\tskipLexicalRootCheck: true\n\t\t\t});\n\t\t\tif (!opened.ok) {\n\t\t\t\tpushPluginLoadError(\"plugin entry path escapes plugin root or fails alias checks\");\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tconst safeSource = opened.path;\n\t\t\tfs.closeSync(opened.fd);\n\t\t\tlet mod = null;\n\t\t\tlet moduleLoadMs = 0;\n\t\t\tlet moduleLoadFailed = false;\n\t\t\tconst beforeModuleLoad = performance.now();\n\t\t\ttry {\n\t\t\t\trecordImportedPluginId(record.id);\n\t\t\t\tpluginLoadAttemptCount++;\n\t\t\t\tlogger.debug?.(`[plugins] loading ${record.id} from ${safeSource}`);\n\t\t\t\tmod = withProfile({\n\t\t\t\t\tpluginId: record.id,\n\t\t\t\t\tsource: safeSource\n\t\t\t\t}, registrationMode, () => loadPluginModule(safeSource));"
+    },
+    {
+      "id": "loader-register-and-restore",
+      "source": "plugin-loader",
+      "blob": "d93477dd8c184405737907803455dd52b214038c",
+      "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7",
+      "start_line": 2237,
+      "end_line": 2276,
+      "text": "\t\t\tconst api = createApi(record, {\n\t\t\t\tconfig: cfg,\n\t\t\t\tpluginConfig: validatedConfig.value,\n\t\t\t\thookPolicy: entry?.hooks,\n\t\t\t\tregistrationMode\n\t\t\t});\n\t\t\tconst registrySnapshot = snapshotPluginRegistry(registry);\n\t\t\tconst previousAgentHarnesses = listRegisteredAgentHarnesses();\n\t\t\tconst previousCompactionProviders = listRegisteredCompactionProviders();\n\t\t\tconst previousDetachedTaskRuntimeRegistration = getDetachedTaskLifecycleRuntimeRegistration();\n\t\t\tconst previousEmbeddingProviders = listRegisteredEmbeddingProviders();\n\t\t\tconst previousMemoryCapability = getMemoryCapabilityRegistration();\n\t\t\tconst previousMemoryEmbeddingProviders = listRegisteredMemoryEmbeddingProviders();\n\t\t\tconst previousMemoryCorpusSupplements = listMemoryCorpusSupplements();\n\t\t\tconst previousMemoryPromptSupplements = listMemoryPromptSupplements();\n\t\t\tconst beforeRegister = performance.now();\n\t\t\tlet registerFailed = false;\n\t\t\ttry {\n\t\t\t\twithProfile({\n\t\t\t\t\tpluginId: record.id,\n\t\t\t\t\tsource: record.source\n\t\t\t\t}, `${registrationMode}:register`, () => runPluginRegisterSync(register, api));\n\t\t\t\tif (!shouldActivate) {\n\t\t\t\t\trestoreRegisteredAgentHarnesses(previousAgentHarnesses);\n\t\t\t\t\trestoreRegisteredCompactionProviders(previousCompactionProviders);\n\t\t\t\t\trestoreDetachedTaskLifecycleRuntimeRegistration(previousDetachedTaskRuntimeRegistration);\n\t\t\t\t\trestoreRegisteredEmbeddingProviders(previousEmbeddingProviders);\n\t\t\t\t\trestoreRegisteredMemoryEmbeddingProviders(previousMemoryEmbeddingProviders);\n\t\t\t\t\trestoreMemoryPluginState({\n\t\t\t\t\t\tcapability: previousMemoryCapability,\n\t\t\t\t\t\tcorpusSupplements: previousMemoryCorpusSupplements,\n\t\t\t\t\t\tpromptSupplements: previousMemoryPromptSupplements\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t\tregistry.plugins.push(record);\n\t\t\t\tseenIds.set(pluginId, candidate.origin);\n\t\t\t} catch (err) {\n\t\t\t\trollbackPluginGlobalSideEffects(record.id);\n\t\t\t\trestorePluginRegistry(registry, registrySnapshot);\n\t\t\t\trestoreRegisteredAgentHarnesses(previousAgentHarnesses);"
+    },
+    {
+      "id": "runtime-provider-order",
+      "source": "runtime-policy",
+      "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+      "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+      "start_line": 16,
+      "end_line": 33,
+      "text": "function resolveProviderConfig(config, provider) {\n\tif (!config?.models?.providers || !provider?.trim()) return;\n\tconst providers = config.models.providers;\n\tconst direct = providers[provider];\n\tif (direct) return direct;\n\tconst normalizedProvider = normalizeProviderId(provider);\n\tfor (const [candidateProvider, providerConfig] of Object.entries(providers)) if (normalizeProviderId(candidateProvider) === normalizedProvider) return providerConfig;\n}\nfunction normalizeModelIdForProvider(provider, modelId) {\n\tconst trimmed = modelId?.trim();\n\tif (!trimmed) return;\n\tconst slash = trimmed.indexOf(\"/\");\n\tif (slash <= 0) return trimmed;\n\tconst modelProvider = normalizeProviderId(trimmed.slice(0, slash));\n\tconst expectedProvider = normalizeProviderId(provider ?? \"\");\n\tif (expectedProvider && modelProvider !== expectedProvider) return;\n\treturn trimmed.slice(slash + 1).trim() || void 0;\n}"
+    },
+    {
+      "id": "runtime-agent-map",
+      "source": "runtime-policy",
+      "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+      "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+      "start_line": 84,
+      "end_line": 115,
+      "text": "function resolveAgentModelEntryRuntimePolicy(params) {\n\tconst modelId = normalizeModelIdForProvider(params.provider, params.modelId);\n\tif (!params.config || !modelId && params.matchKind !== \"provider-wildcard\") return {};\n\tconst { sessionAgentId } = resolveSessionAgentIds({\n\t\tconfig: params.config,\n\t\tagentId: params.agentId,\n\t\tsessionKey: params.sessionKey\n\t});\n\tconst modelMaps = [listAgentEntries(params.config).find((entry) => normalizeAgentId(entry.id) === sessionAgentId)?.models, params.config.agents?.defaults?.models];\n\tconst callerProvider = normalizeProviderId(params.provider ?? \"\");\n\tfor (const models of modelMaps) {\n\t\tconst scopeMatches = [];\n\t\tfor (const [key, entry] of Object.entries(models ?? {})) {\n\t\t\tconst matches = modelId ? modelKeyMatchKind({\n\t\t\t\tkey,\n\t\t\t\tprovider: params.provider,\n\t\t\t\tmodelId\n\t\t\t}) === params.matchKind : modelKeyIsProviderWildcard({\n\t\t\t\tkey,\n\t\t\t\tprovider: params.provider\n\t\t\t});\n\t\t\tconst policy = entry?.agentRuntime;\n\t\t\tif (!matches || !policy || !hasRuntimePolicy(policy)) continue;\n\t\t\tscopeMatches.push({\n\t\t\t\tprovider: parseProviderModelKey(key)?.provider ?? \"\",\n\t\t\t\tpolicy\n\t\t\t});\n\t\t}\n\t\tconst resolved = resolvePolicyMatch(scopeMatches, callerProvider);\n\t\tif (resolved.policy || resolved.ambiguous) return resolved;\n\t}\n\treturn {};"
+    },
+    {
+      "id": "runtime-policy-precedence",
+      "source": "runtime-policy",
+      "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+      "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6",
+      "start_line": 127,
+      "end_line": 167,
+      "text": "function resolveModelRuntimePolicy(params) {\n\tconst callerProvider = normalizeProviderId(params.provider ?? \"\");\n\tconst effectiveProvider = resolveEffectiveProvider(params.provider, params.modelId);\n\tconst inferredMatchedProvider = callerProvider ? void 0 : effectiveProvider;\n\tif (process.env.OPENCLAW_BUILD_PRIVATE_QA === \"1\") {\n\t\tconst forcedRuntime = process.env.OPENCLAW_QA_FORCE_RUNTIME?.trim().toLowerCase();\n\t\tif (forcedRuntime === \"openclaw\" || forcedRuntime === \"codex\") return {\n\t\t\tpolicy: { id: forcedRuntime },\n\t\t\tsource: \"model\"\n\t\t};\n\t}\n\tconst agentModelPolicy = resolveAgentModelEntryRuntimePolicy({\n\t\t...params,\n\t\tprovider: effectiveProvider,\n\t\tmatchKind: \"exact\"\n\t});\n\tif (agentModelPolicy.ambiguous) return {};\n\tif (agentModelPolicy.policy) return agentModelPolicy;\n\tconst providerConfig = resolveProviderConfig(params.config, effectiveProvider);\n\tconst modelConfig = resolveModelConfig({\n\t\tproviderConfig,\n\t\tprovider: effectiveProvider,\n\t\tmodelId: params.modelId\n\t});\n\tif (hasRuntimePolicy(modelConfig?.agentRuntime)) return {\n\t\tpolicy: modelConfig?.agentRuntime,\n\t\tsource: \"model\",\n\t\t...inferredMatchedProvider ? { matchedProvider: inferredMatchedProvider } : {}\n\t};\n\tconst agentWildcardModelPolicy = resolveAgentModelEntryRuntimePolicy({\n\t\t...params,\n\t\tprovider: effectiveProvider,\n\t\tmatchKind: \"provider-wildcard\"\n\t});\n\tif (agentWildcardModelPolicy.policy) return agentWildcardModelPolicy;\n\tif (hasRuntimePolicy(providerConfig?.agentRuntime)) return {\n\t\tpolicy: providerConfig?.agentRuntime,\n\t\tsource: \"provider\",\n\t\t...inferredMatchedProvider ? { matchedProvider: inferredMatchedProvider } : {}\n\t};\n\treturn {};"
+    },
+    {
+      "id": "routing-actual-url-predicate",
+      "source": "openai-routing",
+      "blob": "b7b0533dcde5a358096fc1f57a0b8e2cee75863d",
+      "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6",
+      "start_line": 11,
+      "end_line": 37,
+      "text": "function isOfficialOpenAIBaseUrl(baseUrl) {\n\tif (typeof baseUrl !== \"string\" || !baseUrl.trim()) return true;\n\ttry {\n\t\tconst url = new URL(baseUrl.trim());\n\t\treturn url.protocol === \"https:\" && url.hostname.toLowerCase() === \"api.openai.com\" && (url.pathname === \"\" || url.pathname === \"/\" || url.pathname === \"/v1\" || url.pathname === \"/v1/\");\n\t} catch {\n\t\treturn false;\n\t}\n}\nfunction resolveOpenAIProviderConfig(config) {\n\tconst providers = config?.models?.providers;\n\tif (!providers) return;\n\tconst direct = providers.openai;\n\tif (direct) return direct;\n\tfor (const [providerId, providerConfig] of Object.entries(providers)) if (normalizeProviderId(providerId) === \"openai\") return providerConfig;\n}\nfunction openAIProviderUsesCustomBaseUrl(config) {\n\treturn !isOfficialOpenAIBaseUrl(resolveOpenAIProviderConfig(config)?.baseUrl);\n}\n/** Returns true for provider ids that normalize to OpenAI. */\nfunction isOpenAIProvider(provider) {\n\treturn normalizeProviderId(provider ?? \"\") === OPENAI_PROVIDER_ID;\n}\n/** Returns whether OpenAI should use the Codex runtime default for this config. */\nfunction openAIProviderUsesCodexRuntimeByDefault(params) {\n\treturn isOpenAIProvider(params.provider) && !openAIProviderUsesCustomBaseUrl(params.config);\n}"
+    },
+    {
+      "id": "policy-default-runtime",
+      "source": "harness-policy",
+      "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+      "start_line": 8,
+      "end_line": 36,
+      "text": "function resolveAgentHarnessPolicy(params) {\n\tconst configured = resolveModelRuntimePolicy({\n\t\tconfig: params.config,\n\t\tprovider: params.provider,\n\t\tmodelId: params.modelId,\n\t\tagentId: params.agentId,\n\t\tsessionKey: params.sessionKey\n\t});\n\tconst configuredRuntime = normalizeOptionalAgentRuntimeId(configured.policy?.id);\n\tconst runtimeSource = configured.source ?? \"implicit\";\n\tconst runtime = configuredRuntime && configuredRuntime !== \"default\" ? configuredRuntime : AUTO_AGENT_RUNTIME_ID;\n\tif (openAIProviderUsesCodexRuntimeByDefault({\n\t\tprovider: params.provider,\n\t\tconfig: params.config\n\t})) {\n\t\tif (runtime === \"auto\") return {\n\t\t\truntime: \"codex\",\n\t\t\truntimeSource\n\t\t};\n\t\treturn {\n\t\t\truntime,\n\t\t\truntimeSource\n\t\t};\n\t}\n\treturn {\n\t\truntime,\n\t\truntimeSource\n\t};\n}"
+    },
+    {
+      "id": "selector-actual-support-imports",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 42,
+      "end_line": 43,
+      "text": "import { p as resolveProviderRefOwnership } from \"./providers-y2Lns8fh.js\";\nimport { i as listRegisteredAgentHarnesses, r as getRegisteredAgentHarness } from \"./registry-DtLZ3rba.js\";"
+    },
+    {
+      "id": "selector-compare-context-imports",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 105,
+      "end_line": 106,
+      "text": "import { r as isCliRuntimeAliasForProvider } from \"./model-runtime-aliases-w4oRlOM0.js\";\nimport { a as compareHarnessSupport, i as buildAgentHarnessSupportContext } from \"./thinking-runtime-rftFo2fO.js\";"
+    },
+    {
+      "id": "selector-object-and-policy",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 15231,
+      "end_line": 15246,
+      "text": "function listPluginAgentHarnesses() {\n\treturn listRegisteredAgentHarnesses().map((entry) => entry.harness);\n}\nfunction resolveAvailableAgentHarnessPolicy(params) {\n\treturn applyAgentHarnessAvailabilityPolicy(resolveAgentHarnessPolicy(params));\n}\nfunction applyAgentHarnessAvailabilityPolicy(policy) {\n\tif (policy.runtime === \"codex\" && policy.runtimeSource === \"implicit\" && !getRegisteredAgentHarness(\"codex\")) return {\n\t\t...policy,\n\t\truntime: \"openclaw\"\n\t};\n\treturn policy;\n}\nfunction selectAgentHarness(params) {\n\treturn selectAgentHarnessDecision(params).harness;\n}"
+    },
+    {
+      "id": "selector-forced",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 15255,
+      "end_line": 15328,
+      "text": "function selectAgentHarnessDecision(params) {\n\tconst resolvedPolicy = resolveAgentHarnessPolicy(params);\n\tconst runtimeOverride = normalizeOptionalAgentRuntimeId(params.agentHarnessRuntimeOverride);\n\tconst policy = runtimeOverride && !isDefaultAgentRuntimeId(runtimeOverride) ? {\n\t\t...resolvedPolicy,\n\t\truntime: runtimeOverride,\n\t\truntimeSource: \"model\"\n\t} : resolvedPolicy;\n\tconst pluginHarnesses = listPluginAgentHarnesses();\n\tconst openClawHarness = createOpenClawAgentHarness();\n\tconst runtime = policy.runtime;\n\tif (runtime === \"openclaw\") return buildSelectionDecision({\n\t\tharness: openClawHarness,\n\t\tpolicy,\n\t\tselectedReason: \"forced_openclaw\",\n\t\tcandidates: listHarnessCandidates(pluginHarnesses)\n\t});\n\tif (runtime !== \"auto\") {\n\t\tconst forced = pluginHarnesses.find((entry) => entry.id === runtime);\n\t\tif (forced) {\n\t\t\tconst supportContext = buildAgentHarnessSupportContext({\n\t\t\t\tprovider: params.provider,\n\t\t\t\tmodelId: params.modelId,\n\t\t\t\trequestedRuntime: runtime,\n\t\t\t\tconfig: params.config,\n\t\t\t\tproviderOwnership: resolveProviderRefOwnership({\n\t\t\t\t\tprovider: params.provider,\n\t\t\t\t\tconfig: params.config\n\t\t\t\t})\n\t\t\t});\n\t\t\tconst support = forced.supports(supportContext);\n\t\t\tif (support.supported) return buildSelectionDecision({\n\t\t\t\tharness: forced,\n\t\t\t\tpolicy,\n\t\t\t\tselectedReason: \"forced_plugin\",\n\t\t\t\tcandidates: listHarnessCandidates(pluginHarnesses)\n\t\t\t});\n\t\t\tif (isCliRuntimeAliasForProvider({\n\t\t\t\truntime,\n\t\t\t\tprovider: params.provider\n\t\t\t})) return buildSelectionDecision({\n\t\t\t\tharness: openClawHarness,\n\t\t\t\tpolicy: {\n\t\t\t\t\t...policy,\n\t\t\t\t\truntime: \"openclaw\"\n\t\t\t\t},\n\t\t\t\tselectedReason: \"cli_runtime_passthrough_openclaw\",\n\t\t\t\tcandidates: listHarnessCandidates(pluginHarnesses)\n\t\t\t});\n\t\t\tthrow new Error(`Requested agent harness \"${runtime}\" does not support ${formatProviderModel(params)}${support.reason ? ` (${support.reason})` : \"\"}.`);\n\t\t}\n\t\tif (runtime === \"codex\" && policy.runtimeSource === \"implicit\") return buildSelectionDecision({\n\t\t\tharness: openClawHarness,\n\t\t\tpolicy: {\n\t\t\t\t...policy,\n\t\t\t\truntime: \"openclaw\"\n\t\t\t},\n\t\t\tselectedReason: \"implicit_plugin_unavailable_openclaw\",\n\t\t\tcandidates: listHarnessCandidates(pluginHarnesses)\n\t\t});\n\t\tif (isCliRuntimeAliasForProvider({\n\t\t\truntime,\n\t\t\tprovider: params.provider,\n\t\t\tcfg: params.config\n\t\t})) return buildSelectionDecision({\n\t\t\tharness: openClawHarness,\n\t\t\tpolicy: {\n\t\t\t\t...policy,\n\t\t\t\truntime: \"openclaw\"\n\t\t\t},\n\t\t\tselectedReason: \"cli_runtime_passthrough_openclaw\",\n\t\t\tcandidates: listHarnessCandidates(pluginHarnesses)\n\t\t});\n\t\tthrow new MissingAgentHarnessError(runtime);"
+    },
+    {
+      "id": "selector-auto",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 15330,
+      "end_line": 15358,
+      "text": "\tconst candidates = pluginHarnesses.length > 0 ? (() => {\n\t\tconst supportContext = buildAgentHarnessSupportContext({\n\t\t\tprovider: params.provider,\n\t\t\tmodelId: params.modelId,\n\t\t\trequestedRuntime: runtime,\n\t\t\tconfig: params.config,\n\t\t\tproviderOwnership: resolveProviderRefOwnership({\n\t\t\t\tprovider: params.provider,\n\t\t\t\tconfig: params.config\n\t\t\t})\n\t\t});\n\t\treturn pluginHarnesses.map((harness) => ({\n\t\t\tharness,\n\t\t\tsupport: harness.supports(supportContext)\n\t\t}));\n\t})() : [];\n\tconst selected = candidates.filter((entry) => entry.support.supported).toSorted(compareHarnessSupport)[0]?.harness;\n\tif (selected) return buildSelectionDecision({\n\t\tharness: selected,\n\t\tpolicy,\n\t\tselectedReason: \"auto_plugin\",\n\t\tcandidates: candidates.map(toSelectionCandidate)\n\t});\n\treturn buildSelectionDecision({\n\t\tharness: openClawHarness,\n\t\tpolicy,\n\t\tselectedReason: \"auto_openclaw\",\n\t\tcandidates: candidates.map(toSelectionCandidate)\n\t});"
+    },
+    {
+      "id": "selector-return-object",
+      "source": "selector",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "start_line": 15531,
+      "end_line": 15538,
+      "text": "function buildSelectionDecision(params) {\n\treturn {\n\t\tharness: params.harness,\n\t\tpolicy: params.policy,\n\t\tselectedHarnessId: params.harness.id,\n\t\tselectedReason: params.selectedReason,\n\t\tcandidates: params.candidates\n\t};"
+    },
+    {
+      "id": "registry-owner-and-instance",
+      "source": "registry",
+      "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "start_line": 12,
+      "end_line": 47,
+      "text": "const AGENT_HARNESS_REGISTRY_STATE = Symbol.for(\"openclaw.agentHarnessRegistryState\");\nconst log = createSubsystemLogger(\"agents/harness\");\nfunction getAgentHarnessRegistryState() {\n\tconst globalState = globalThis;\n\tglobalState[AGENT_HARNESS_REGISTRY_STATE] ??= { harnesses: /* @__PURE__ */ new Map() };\n\treturn globalState[AGENT_HARNESS_REGISTRY_STATE];\n}\n/** Registers or replaces an agent harness under its trimmed id. */\nfunction registerAgentHarness(harness, options) {\n\tconst id = harness.id.trim();\n\tgetAgentHarnessRegistryState().harnesses.set(id, {\n\t\tharness: {\n\t\t\t...harness,\n\t\t\tid,\n\t\t\tpluginId: harness.pluginId ?? options?.ownerPluginId\n\t\t},\n\t\townerPluginId: options?.ownerPluginId\n\t});\n}\n/** Returns the harness plus plugin ownership metadata for registry diagnostics. */\nfunction getRegisteredAgentHarness(id) {\n\treturn getAgentHarnessRegistryState().harnesses.get(id.trim());\n}\n/** Lists registered harness records for selection and lifecycle fan-out. */\nfunction listRegisteredAgentHarnesses() {\n\treturn Array.from(getAgentHarnessRegistryState().harnesses.values());\n}\n/** Clears all harnesses; intended for tests and controlled registry reloads. */\nfunction clearAgentHarnesses() {\n\tgetAgentHarnessRegistryState().harnesses.clear();\n}\n/** Restores a prior harness snapshot after tests temporarily replace the registry. */\nfunction restoreRegisteredAgentHarnesses(entries) {\n\tconst map = getAgentHarnessRegistryState().harnesses;\n\tmap.clear();\n\tfor (const entry of entries) map.set(entry.harness.id, entry);"
+    },
+    {
+      "id": "support-context",
+      "source": "support",
+      "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+      "start_line": 8,
+      "end_line": 25,
+      "text": "function buildAgentHarnessSupportContext(params) {\n\tconst providerConfig = findNormalizedProviderValue(params.config?.models?.providers, params.provider);\n\tconst modelConfig = params.modelId ? providerConfig?.models?.find((entry) => entry.id === params.modelId) : void 0;\n\treturn {\n\t\tprovider: params.provider,\n\t\tmodelId: params.modelId,\n\t\tmodelProvider: providerConfig ? {\n\t\t\tapi: modelConfig?.api ?? providerConfig.api ?? \"openai-responses\",\n\t\t\tbaseUrl: modelConfig?.baseUrl ?? providerConfig.baseUrl,\n\t\t\tazureApiVersion: readStringParam(modelConfig?.params?.azureApiVersion ?? providerConfig.params?.azureApiVersion),\n\t\t\trequest: providerConfig.request\n\t\t} : void 0,\n\t\trequestedRuntime: params.requestedRuntime,\n\t\t...params.providerOwnership ? {\n\t\t\tproviderOwnerStatus: params.providerOwnership.status,\n\t\t\tproviderOwnerPluginIds: params.providerOwnership.status === \"unowned\" ? [] : params.providerOwnership.pluginIds\n\t\t} : {}\n\t};"
+    },
+    {
+      "id": "support-sort",
+      "source": "support",
+      "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+      "start_line": 27,
+      "end_line": 40,
+      "text": "/** Resolves the registered plugin harness that auto selection would choose. */\nfunction resolveAutoAgentHarnessId(params) {\n\tconst supportContext = buildAgentHarnessSupportContext({\n\t\t...params,\n\t\trequestedRuntime: \"auto\"\n\t});\n\treturn listRegisteredAgentHarnesses().map(({ harness }) => ({\n\t\tharness,\n\t\tsupport: harness.supports(supportContext)\n\t})).filter(isSupportedHarness).toSorted(compareHarnessSupport)[0]?.harness.id;\n}\nfunction compareHarnessSupport(left, right) {\n\tconst priorityDelta = (right.support.priority ?? 0) - (left.support.priority ?? 0);\n\treturn priorityDelta !== 0 ? priorityDelta : left.harness.id.localeCompare(right.harness.id);"
+    },
+    {
+      "id": "codex-supports",
+      "source": "codex",
+      "blob": "39b49d3be2df87cde0af1f592a049cb49013c57d",
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+      "start_line": 16,
+      "end_line": 33,
+      "text": "function createCodexAppServerAgentHarness(options) {\n\tconst providerIds = new Set([...options?.providerIds ?? DEFAULT_CODEX_HARNESS_PROVIDER_IDS].map((id) => id.trim().toLowerCase()));\n\treturn {\n\t\tid: options?.id ?? \"codex\",\n\t\tlabel: options?.label ?? \"Codex agent harness\",\n\t\tcontextEngineHostCapabilities: CODEX_APP_SERVER_CONTEXT_ENGINE_HOST_CAPABILITIES,\n\t\tdeliveryDefaults: { sourceVisibleReplies: \"message_tool\" },\n\t\tsupports: (ctx) => {\n\t\t\tconst provider = ctx.provider.trim().toLowerCase();\n\t\t\tif (providerIds.has(provider)) return {\n\t\t\t\tsupported: true,\n\t\t\t\tpriority: 100\n\t\t\t};\n\t\t\treturn {\n\t\t\t\tsupported: false,\n\t\t\t\treason: `provider is not one of: ${[...providerIds].toSorted().join(\", \")}`\n\t\t\t};\n\t\t},"
+    }
+  ]
+}

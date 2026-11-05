@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.compatibility-independent-current-CLI-stage-narrow-peer.v1",
+  "reviewer": "/root/compatibility_audit",
+  "source_tree": "4b6256ccb13ee3c355d5dcd08388b7a3d06fb28a",
+  "status": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_SCOPE",
+  "scope": "Exact3-hunk stage constant rebinding, inherited definitions/runtime tail, fixed six fences, current normal5/CLI44 carrier and native launch argument contract. No entire packet/runtime qualification.",
+  "before": {
+    "path": "before/stage.original.py",
+    "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+    "bytes": 22935,
+    "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+  },
+  "after": {
+    "path": "candidate/stage_current4e808_r4.py",
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "diff": {
+    "path": "review/stage.review.diff",
+    "blob": "263098ed555e9f3e9bd0c4ce1fda460d5c1bf914",
+    "bytes": 5445,
+    "sha256": "3f969dbaf6b8ba9ceb019f220069fd11c16b6da875dd34f0492451dc958d2124"
+  },
+  "carrier": {
+    "path": "candidate/source-carrier.public.json",
+    "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+    "bytes": 302459,
+    "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+  },
+  "request": {
+    "path": "requests/STAGE.REVIEW-ONLY.public.json",
+    "blob": "ec3b323f77bfb2f111f5fc22a06f1bf30ea634eb",
+    "bytes": 346000,
+    "sha256": "bff45cc8f5ee4ca1dc2b6b6515bbb38e68cb61b02cd2f3d2ca34e323042b075f"
+  },
+  "current_CLI44_tree": "ce236663c9969af8d7e00cf598a6594666c5d0fc",
+  "findings": [],
+  "verified": {
+    "strict_hunks_forward_and_reverse": 3,
+    "top_level_bindings_changed": [
+      "CONTROL",
+      "WORK",
+      "SOURCE",
+      "INCOMING",
+      "HEAD",
+      "TREE",
+      "PAYLOAD_SHA",
+      "PAYLOAD_BYTES",
+      "FILES",
+      "COPY",
+      "SOURCE_PINS",
+      "OLD_FENCES"
+    ],
+    "eighteen_original_defs": [
+      "need",
+      "remaining",
+      "sha",
+      "unique",
+      "identity",
+      "directory_identity",
+      "absent",
+      "open_source",
+      "finish_source",
+      "capture",
+      "__init__",
+      "check",
+      "create",
+      "write",
+      "copy",
+      "close",
+      "main",
+      "bind"
+    ],
+    "UNTIL_to_EOF_byte_identical": true,
+    "six_OLD_FENCES_same_template_order_and_SHA": true,
+    "original_four_fences_retained": true,
+    "two_prior_B01_boundaries_retained": true,
+    "five_QA_whole_equal_current_CLI44_leaves": true,
+    "three_COPY_actual_normal5_sizes_hashes_source_modes_exact": true,
+    "copy_target_modes": "server0500; two JSON0600; source server0500/JSON0400 explicitly distinct",
+    "combined57532_and_groups6249_original_payloads": true,
+    "eight_text_carrier_members_exact": true,
+    "carrier_bytes": 302459,
+    "original_stdin_cap": 1048576,
+    "old_five_source_member_paths_retained": true,
+    "old_no_forwarding_test_correct_current_member": "052e96ae3b6d1d8d58c4013c07d28a2adf0af9d8,16516B",
+    "three_current_H2_read_observer_members_added": true,
+    "canonical_directories_independently_Merkle_checked": [
+      "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "fd50f52f2beb3cef919ad86194955a3e32090e80",
+      "19f9a6ab211357e04e17266636279843921be619",
+      "de426e481e192ca774a4c9fef252d8c1d4b71b92"
+    ],
+    "request_exact_inline_source_and_stdin": true,
+    "request_main_required_flag": "--external-controller-sha256",
+    "request_args": 7,
+    "stage_seconds": 300,
+    "outer_seconds": 330,
+    "template_ready": false,
+    "changed_code_definitions": 0
+  },
+  "mechanical_checks": 379,
+  "additional_canonical_Merkle_checks": 7,
+  "whole_sources_read": 28,
+  "whole_source_bytes": 1639473,
+  "limitations": {
+    "source_modules_executed": 0,
+    "author_44_AST_rerun": false,
+    "Runtime_calls": 0,
+    "new_host_metadata": false,
+    "no_new_GO": true,
+    "stage_prepare_live_qualified": false,
+    "current_normal5_table_is_prior_observation_not_current_stat": true,
+    "historic_80549_exact_process_start_request_not_retrieved": true,
+    "launch_shape_basis": "Whole unchanged original main and existing reviewed300/330 contract; proposal does not claim byte identity to an unrecovered historical request."
+  }
+}

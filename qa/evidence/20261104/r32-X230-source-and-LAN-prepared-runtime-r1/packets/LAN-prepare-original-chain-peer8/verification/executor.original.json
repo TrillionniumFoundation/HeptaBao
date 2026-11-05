@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f9df50",
+  "wall_time_seconds": 0.327371841,
+  "exit_code": 0,
+  "original_token_count": 46,
+  "output": "{\"status\": \"PASS_SCOPED_ORIGINAL_OBSERVATION_CHAINS\", \"checks_passed\": 852, \"report_bytes\": 11818, \"report_sha256\": \"b0b164d27722cb5146d8b7ee6d9843c504efff5c97f0850f971b8807f00c7de1\"}\n"
+}

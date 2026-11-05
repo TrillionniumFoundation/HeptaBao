@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.mac-registration-metadata2.owner-read-lane-release.r1",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "root_GO": "a99b9f7d507d357195cbdfc2ee76cf418ce04db1",
+  "summary": {
+    "blob": "f728a2635773fc6cb1f2404b51339f75b611cd4a",
+    "bytes": 5830,
+    "sha256": "474c76f98a013a76cdac2c6efc30e17b73ce237be18dfc8a42a7b21dc5d2ead4"
+  },
+  "original_operation_ids": [
+    "7a88b1d0144ee83cdc64bc2717c7c1b2f622fc487cad20da2b60ed8608ffd7b4",
+    "921e9ebd9f85ea4b118698312ce295b313aced33538f1edd4d1d04a7ad5fb7d2"
+  ],
+  "completed_stored_inactive": true,
+  "whole_original_payloads": true,
+  "inflight_Runtime_calls": 0,
+  "unclosed_current_native_futures": 0,
+  "current_authorized_scope_complete": true,
+  "release_to_root_scheduler": true,
+  "new_body_requests_submitted": 0,
+  "new_body_GO_required": true,
+  "SDK_execution": 0,
+  "production_changes": 0,
+  "actual_selected_owner": null
+}

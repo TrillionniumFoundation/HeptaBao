@@ -1,0 +1,22 @@
+[
+  {
+    "name": "original observation closed/full",
+    "pass": true
+  },
+  {
+    "name": "fixed output path",
+    "pass": true
+  },
+  {
+    "name": "whole file bytes/SHA",
+    "pass": true
+  },
+  {
+    "name": "lossless version",
+    "pass": true
+  },
+  {
+    "name": "owner/group/mode/single-link",
+    "pass": true
+  }
+]

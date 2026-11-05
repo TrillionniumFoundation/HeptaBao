@@ -1,0 +1,191 @@
+{
+  "schema": "heptabao.root-X230-actual-seven-files-and-independent-receiver-identity.r32.v1",
+  "status": "PASS_EIGHT_INDEPENDENT_INFOS_AND_RECEIVER_BODY_BINDING",
+  "checks_passed": 24,
+  "checks": [
+    "exact7-artifacts-plus-independent-receiver-info",
+    "artifact0:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact0:independent-full9-lossless-equals-receiver",
+    "artifact0:original-create-only-fsync-same-FD-readback",
+    "artifact1:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact1:independent-full9-lossless-equals-receiver",
+    "artifact1:original-create-only-fsync-same-FD-readback",
+    "artifact2:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact2:independent-full9-lossless-equals-receiver",
+    "artifact2:original-create-only-fsync-same-FD-readback",
+    "artifact3:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact3:independent-full9-lossless-equals-receiver",
+    "artifact3:original-create-only-fsync-same-FD-readback",
+    "artifact4:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact4:independent-full9-lossless-equals-receiver",
+    "artifact4:original-create-only-fsync-same-FD-readback",
+    "artifact5:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact5:independent-full9-lossless-equals-receiver",
+    "artifact5:original-create-only-fsync-same-FD-readback",
+    "artifact6:actual-path-size-SHA-mode-matches-source-and-receiver",
+    "artifact6:independent-full9-lossless-equals-receiver",
+    "artifact6:original-create-only-fsync-same-FD-readback",
+    "seven-original-artifact-byte-total",
+    "independent-receiver-receipt-info-exact-whole-body-and-version"
+  ],
+  "original_job": "desktop/1a1ad0a9524-fc05-5839",
+  "actual_files": [
+    {
+      "name": "heptabao-server",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "version": "2053:3057878:110219600:1793904527474649454:1793904527474649454",
+      "full9_decimal": [
+        "2053",
+        "3057878",
+        "1000",
+        "1000",
+        "33088",
+        "1",
+        "110219600",
+        "1793904527474649454",
+        "1793904527474649454"
+      ],
+      "info_blob": "776d730027bb223b10b08888f830a6cca43cde81"
+    },
+    {
+      "name": "native-build.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2053:3057879:786:1793904528451650178:1793904528451650178",
+      "full9_decimal": [
+        "2053",
+        "3057879",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "786",
+        "1793904528451650178",
+        "1793904528451650178"
+      ],
+      "info_blob": "d24758a19970ab5f4d4482a2ac103245f8c9cce4"
+    },
+    {
+      "name": "result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2053:3057880:3192:1793904528452650179:1793904528452650179",
+      "full9_decimal": [
+        "2053",
+        "3057880",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "3192",
+        "1793904528452650179",
+        "1793904528452650179"
+      ],
+      "info_blob": "78c7231663c5ec4332e781a0b93b07e4f46d9581"
+    },
+    {
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "version": "2053:3057881:22320862:1793904530197651472:1793904530197651472",
+      "full9_decimal": [
+        "2053",
+        "3057881",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "22320862",
+        "1793904530197651472",
+        "1793904530197651472"
+      ],
+      "info_blob": "bbe3311d6119ff5e2a704ad106a825e1e42e32df"
+    },
+    {
+      "name": "source-export.result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "version": "2053:3057882:39692:1793904530486651686:1793904530486651686",
+      "full9_decimal": [
+        "2053",
+        "3057882",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "39692",
+        "1793904530486651686",
+        "1793904530486651686"
+      ],
+      "info_blob": "b193b76c026e5f24a5c46663fd385f42bdd5ab19"
+    },
+    {
+      "name": "normal61-result.public.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "version": "2053:3057883:57532:1793904530487651687:1793904530487651687",
+      "full9_decimal": [
+        "2053",
+        "3057883",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "57532",
+        "1793904530487651687",
+        "1793904530487651687"
+      ],
+      "info_blob": "a9c0b437062c883d771fd95f11085bdfd084c471"
+    },
+    {
+      "name": "groups.json",
+      "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "version": "2053:3057884:6249:1793904530488651688:1793904530488651688",
+      "full9_decimal": [
+        "2053",
+        "3057884",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "6249",
+        "1793904530488651688",
+        "1793904530488651688"
+      ],
+      "info_blob": "f171a71b942f41633e27c0ca9ca73f25468194a6"
+    }
+  ],
+  "receiver_receipt": {
+    "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/transfer.result.public.json",
+    "bytes": 35212,
+    "sha256": "dd36121b4d65ced9ef686039f9c2869cc52c33adda58e5e185fcb32eceb4973f",
+    "version": "2053:3062409:35212:1793904542416660532:1793904542416660532",
+    "full9_decimal": [
+      "2053",
+      "3062409",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "35212",
+      "1793904542416660532",
+      "1793904542416660532"
+    ],
+    "info_blob": "32e6bfb79b21f1a15fc4b3edff8ef16a4135ebbb",
+    "content_blob": "6d8690b485c81eec0018b40da8de52fffe2f3279"
+  },
+  "total_artifact_bytes": 132647913,
+  "raw_observer_and69_small_original_content_qualification_pending": true,
+  "full_transfer_qualified": false,
+  "X230_runtime_qualified": false,
+  "root_Runtime_calls": 0
+}

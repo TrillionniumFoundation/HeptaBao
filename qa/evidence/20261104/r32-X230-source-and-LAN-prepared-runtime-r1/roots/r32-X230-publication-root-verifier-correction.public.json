@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root-X230-publication-verifier-correction.r32.v1",
+  "original_verifier": {
+    "name": "r32-X230-actual-publication-independent-root-verifier.js",
+    "blob": "ee719ea0a080530bd1ab649e0c8e2fb41ebfed4b",
+    "bytes": 9151,
+    "sha256": "d2128dbd9d1d9f5b8193a7c8709a3d2e816ccb7bffa1a30dd4bf8a820c2b6999"
+  },
+  "original_failure": {
+    "name": "r32-X230-publication-root-verifier-first-failure.public.json",
+    "blob": "5d844b6db8ad97255854ad64554a659d03d23c22",
+    "bytes": 441,
+    "sha256": "f72457cdb2c7d3ff85ea86095addd9150e1ed0b56cafc18d381f74025b3ad8de"
+  },
+  "correction": "The verifier incorrectly required null prior_active_operation_id on status/result reads. Original exact requests correctly bind these to their own already-admitted observer. Require original operation_id for operation_status/operation_result; keep null for each new admission/write. No original request/source or Runtime behavior changes.",
+  "single_expression_replacement": {
+    "from": "intent.prior_active_operation_id===null",
+    "to": "intent.prior_active_operation_id===([\"operation_status\",\"operation_result\"].includes(c.method)?rq.operation_id:null)"
+  },
+  "Runtime_calls": 0
+}

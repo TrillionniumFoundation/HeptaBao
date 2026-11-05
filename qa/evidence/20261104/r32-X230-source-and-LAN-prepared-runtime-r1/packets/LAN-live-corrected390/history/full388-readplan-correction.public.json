@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.current4e808.LAN.archive-path-correction.r1",
+  "original_immutable_tree": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+  "original_running_tree": "de76952ade1b7d754e18836f31a05ea2f2150c80",
+  "cause": "After verifying the collector's running35 prefix, the core15 merge replaced READPLAN.public.json with the body plan. The earlier claim of 34 unchanged non-state paths was wrong for the original 388 tree: 33 were unchanged; all observation originals were unaffected.",
+  "restored_running_path": {
+    "path": "READPLAN.public.json",
+    "from": {
+      "blob": "0d2a159cfb78835f273772d308669e177f369afd",
+      "bytes": 8150,
+      "sha256": "a4895de36e7e8c9f95cd11105e8c7c1a74a9c30d428c9e35b33b5854e3afcc6d"
+    },
+    "to": {
+      "blob": "4a2e5d16798838b8835f6c40e2164becebf86605",
+      "bytes": 2419,
+      "sha256": "b58caa8ef619efd72df70bcfd860ee1f3510cc2f27a4f3e3467026d8a014f0c4"
+    }
+  },
+  "full_body_plan_preserved_at": [
+    "readback-plan/body-plan.public.json",
+    "history/merged-core15-READPLAN.original.json"
+  ],
+  "all_original_observation_files_unchanged": true,
+  "actual_launch_exit_summary_and_metadata_unchanged": true,
+  "closure_verifier_and_result_unchanged": true,
+  "release_proof_unchanged": true,
+  "current_original_read_plan_restored": true,
+  "original_388_tree_not_modified": true,
+  "Runtime_calls": 0,
+  "product_executions_added": 0,
+  "prior_packaging_cell_parse_error": {
+    "error": "SyntaxError: Numeric separators are not allowed at the end of numeric literals",
+    "cause": "unquoted diagnostic output property 34_original_nonstate_exact",
+    "code_executed": false,
+    "tools_called": false,
+    "corrected_output_property": "original_nonstate_exact_count"
+  }
+}

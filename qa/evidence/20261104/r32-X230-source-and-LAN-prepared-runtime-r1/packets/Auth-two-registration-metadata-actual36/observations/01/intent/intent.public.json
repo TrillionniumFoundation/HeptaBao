@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.mac-registration-metadata2.exact-external-intent.r1",
+  "owner": "/root/authbus_migration",
+  "lane": "A",
+  "root_GO": {
+    "blob": "a99b9f7d507d357195cbdfc2ee76cf418ce04db1",
+    "bytes": 4445,
+    "sha256": "c8cbe0883f0ae5d187eeb698bff9694f322df1748ae8ce8134c529140a15b720"
+  },
+  "handoff": {
+    "blob": "bbd23db120e8e40f7da32168e5bd502185ec4ab6",
+    "bytes": 890,
+    "sha256": "4bfc694ea0585806e168bcc06691097c6e82e89baa9b56c458e7090ff4b048bd"
+  },
+  "sequence": 1,
+  "request": {
+    "blob": "de339e004231215b90f084799cede9aeb8535e94",
+    "bytes": 278,
+    "sha256": "2be919f191a69b23ad760fc3fdb210df3524fc57bc1195453ebff6ff6e3866f7"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-mac-harness-dependency-info-manifest-registry-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/manifest-registry--UiRn6nq.js"
+      }
+    }
+  },
+  "previous_original_closed_and_whole": null,
+  "submission_count_before": 0,
+  "dispatch_once_after_this_external_call_completes": true,
+  "SDK_external_before_isError_and_parse": true,
+  "maximum_Runtime_calls": 1,
+  "maximum_native_futures": 1,
+  "immutable_page_limit": 8192,
+  "body_authorized": 0,
+  "SDK_authorized": 0,
+  "on_error": "Preserve original response and stop new admissions; no new key/path/fallback/read."
+}

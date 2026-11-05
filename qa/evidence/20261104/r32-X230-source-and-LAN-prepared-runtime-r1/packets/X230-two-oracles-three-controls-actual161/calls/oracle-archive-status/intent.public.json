@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "oracle-archive-status",
+  "method": "operation_status",
+  "request_blob": "55fb5e9bac124053d857edf117eef09e79970026",
+  "request_bytes": 89,
+  "request_sha256": "65f8cea1730568e86d92938e726271a0c33aeffda419c841071dc204d2e7ba1a",
+  "request": {
+    "operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd"
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+  "original_call_only": true
+}

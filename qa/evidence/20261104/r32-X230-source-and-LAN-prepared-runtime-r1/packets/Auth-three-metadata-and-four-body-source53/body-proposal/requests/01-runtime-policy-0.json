@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-body-runtime-policy-58c0bac3-0-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "expected_version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+      "offset": 0,
+      "limit": 6918
+    }
+  }
+}

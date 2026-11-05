@@ -1,0 +1,58 @@
+{
+  "role": "comparison69",
+  "path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/comparison69_controller.py",
+  "bytes": 11716,
+  "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+  "source_blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+  "body_read_blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+  "actual_source": {
+    "path": "actual/source/comparison69_controller.py",
+    "bytes": 11716,
+    "sha256": "836dfd5eae25f45a680f08c9a93b9aacccc52c02da9ca6ceea15b89cd121e143",
+    "blob": "bd0d7378ccf7502c55712d88253ce39c3508a08c",
+    "carrier_tree": "17fc11e83bd9fe145795c98dce01f7527524bbbc"
+  },
+  "version": "2053:3062747:11716:1793908604961815054:1793908604962815054",
+  "full9_decimal": [
+    "2053",
+    "3062747",
+    "1000",
+    "1000",
+    "33152",
+    "1",
+    "11716",
+    "1793908604961815054",
+    "1793908604962815054"
+  ],
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "independent_info_native": {
+    "path": "observations/comparison69-info/native.original.json",
+    "bytes": 473,
+    "sha256": "9fc06630c78d54e199972b38e9bc91694bcc21afe6b15c5bc8e8eafa89e53598",
+    "blob": "810d58c915bbf08d106fda56aa3b372d2c2f5a42",
+    "carrier_tree": "a363601e1f7bf4feaf748bf4b977612b25fea936"
+  },
+  "body_native": {
+    "path": "observations/comparison69-body/native.original.json",
+    "bytes": 15947,
+    "sha256": "660108e05eacbe4f5152333fe53de20eea0b356d8bb13779ec8c78db37c23d1a",
+    "blob": "c26a9b61b63938b741c8334acd58e4f809a5762e",
+    "carrier_tree": "dc4c1d6d9adf96e3aebec7baaca2e8e74cd0a817"
+  },
+  "body_payload": {
+    "path": "observations/comparison69-body/payload.original.json",
+    "bytes": 16050,
+    "sha256": "81f0c5a4fcc657ec1facaba7a23f3c63b1f04d1c001d0bcfafffe191a1654191",
+    "blob": "ea699e410b1223741e9b4fe1a5532c2ccaeb3afc",
+    "carrier_tree": "ed7cced08ffde82be0bb114775610c7c7f9583d1"
+  },
+  "body_operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+  "pages": 2,
+  "original_body_closed": true,
+  "whole_source_exact": true,
+  "compiled": false,
+  "executed": false
+}

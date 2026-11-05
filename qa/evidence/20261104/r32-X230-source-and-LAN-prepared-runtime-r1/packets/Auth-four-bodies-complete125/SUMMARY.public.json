@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.auth.selected-owner-dependency-body4-complete-public-packet.v1",
+  "status": "FOUR_FIXED_READS_CLOSED_AND_THREE_SOURCES_WHOLE",
+  "root_GO": {
+    "blob": "89d02183f27a783b27dd9d4a976529dcc32045dc",
+    "bytes": 9280,
+    "sha256": "5525d55fafc956f523f43f6342e62cde03d318ad25ccb0abed27539e53b53d50"
+  },
+  "source_metadata_packet": "0444e7d532a37b9f35e18acfd72206bef7f9d75c",
+  "release": {
+    "blob": "ed0513fa0cf54e5ae4d8c631c94f572c99a012ac",
+    "bytes": 9914,
+    "sha256": "6c8f385c77c00fee52a484ff923477161bf67df66e0503e8712b982b0bae152a"
+  },
+  "raw_operations": 4,
+  "raw_immutable_pages": 23,
+  "original_payload_bytes": 171122,
+  "body_bytes": 127095,
+  "whole_sources": [
+    {
+      "id": "runtime-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "source": {
+        "blob": "d61f4e1e874441cd4683a5da8e3a13dafb120514",
+        "bytes": 6918,
+        "sha256": "58c0bac3584b6db4c73f2d6770b71ae742fbbec79981cbf2803c6c4b5bbc54d6"
+      },
+      "version": "16777233:405237709:6918:1784843459540531789:1784843459540531789",
+      "native_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "openai-routing",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "source": {
+        "blob": "b7b0533dcde5a358096fc1f57a0b8e2cee75863d",
+        "bytes": 3497,
+        "sha256": "31d71606e25c68579061a8ec2998402ebe33fb8cba0b55d9cf3342f8bfa029d6"
+      },
+      "version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+      "native_sequences": [
+        2
+      ]
+    },
+    {
+      "id": "plugin-loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "source": {
+        "blob": "d93477dd8c184405737907803455dd52b214038c",
+        "bytes": 116680,
+        "sha256": "3a10479bdcbb713692c3ded7dbd5baad27c1b17ae3566172c117d45916dabce7"
+      },
+      "version": "16777233:405237358:116680:1784843458968424711:1784843458968424711",
+      "native_sequences": [
+        3,
+        4
+      ]
+    }
+  ],
+  "raw_chain_checks": 513,
+  "pure_result": {
+    "blob": "3c28865a586ff0c091ff1e6e84009dd7ebf1309a",
+    "bytes": 51865,
+    "sha256": "cf522f6e774e38220e57b975ae33b78b403f5d634feb335d33a1b8048d7d4d45"
+  },
+  "old_metadata_checker_errors_preserved_in_prior_packet": true,
+  "new_tool_errors": 0,
+  "new_automatic_retries": 0,
+  "new_source_execution": 0,
+  "Runtime_calls_inflight": 0,
+  "owned_native_futures": 0,
+  "source_review_status": "Content available for static reading; no source semantics or actual selected-owner claim is embedded in this observation packet.",
+  "cumulative_with_prior_harness_readset": {
+    "prior_files": 3,
+    "prior_chunks": 3,
+    "prior_bytes": 13569,
+    "new_files": 3,
+    "new_chunks": 4,
+    "new_bytes": 127095,
+    "total_files": 6,
+    "total_chunks": 7,
+    "total_bytes": 140664,
+    "old_unused_limit_reused": false
+  },
+  "remaining_boundary": "No SDK/loader/supports/factory/native execution. No additional import/root/manifest read, private-capsule read, credentials, provider/model/refresh/quota or service change. All old UNKNOWN retained; original fixture guards and deadlines unchanged. The observed public source does not itself prove the active registry or selected owner."
+}

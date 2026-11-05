@@ -1,0 +1,360 @@
+{
+  "schema": "heptabao.x230-current-source-publication-closure.v1",
+  "root_GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "host": "x230",
+  "lane": "B",
+  "result": "PASS_SOURCE_PUBLICATION_AND_READBACK_ONLY",
+  "known_success_writes": 3,
+  "closed_original_observers": 8,
+  "immutable_pages": 11,
+  "source_body_bytes": 31119,
+  "tool_calls_inflight": 0,
+  "native_futures_active": 0,
+  "process_start_submitted": 0,
+  "product_execution": false,
+  "compiled": false,
+  "source_or_product_tests_executed": 0,
+  "original_old_relay_unknown_preserved": true,
+  "observations": [
+    {
+      "label": "oracle-binary",
+      "operation_id": "1a239b868f01b65c463fd24048da93192df0bf464c8ac5359c62c3745d84a029",
+      "status": {
+        "path": "calls/oracle-binary-status/result.original.json",
+        "blob": "1d5d05b10bc35787b5be1c750e76df53d459c9d0",
+        "bytes": 800,
+        "sha256": "063539f858365e137362ff69087e9ec609f6b1baed953a1d706d5bf259e2c94e"
+      },
+      "admission": {
+        "path": "calls/oracle-binary-admission/result.original.json",
+        "blob": "91851deb5080fa3522a2ab5296a40f970cabc4dc",
+        "bytes": 543,
+        "sha256": "55633b32974adfdd884545aa649890d585b91f12cdb29a311c1754fdf1b63ce1"
+      },
+      "payload": {
+        "path": "observations/oracle-binary/payload.original.json",
+        "blob": "63d256396d55924874e778f3ca95709c5f63f04b",
+        "bytes": 565,
+        "sha256": "950f86baa021e6b3b41845f544e830c52cfe507fa2fbd8312eb9ba3feff1ef10"
+      },
+      "native": {
+        "path": "observations/oracle-binary/native.original.json",
+        "blob": "3fe97192ce568d3f502472d9bde3827f6cc1027b",
+        "bytes": 448,
+        "sha256": "d7ba1693438aa0088e684945b6024089778e23d53fa5f8da40c473b9e718f810"
+      },
+      "immutable_pages": 1,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "oracle-archive",
+      "operation_id": "6e9dad0a31cfdea1fb95328fa928e5d324e069cbc9f512b290c68da4bead56cd",
+      "status": {
+        "path": "calls/oracle-archive-status/result.original.json",
+        "blob": "2440db28fbc3ca520874108166cba61c3b09b134",
+        "bytes": 800,
+        "sha256": "21abb9705d50fac05477dbd42fb365859ffa95311aa83231cc17610df9185508"
+      },
+      "admission": {
+        "path": "calls/oracle-archive-admission/result.original.json",
+        "blob": "813492a91d0a64d462dc8451b4482bada2d91020",
+        "bytes": 543,
+        "sha256": "b5d86e1ddff761cec6d362dd79984058002dd3f35193fa4f4752481e8c2b8935"
+      },
+      "payload": {
+        "path": "observations/oracle-archive/payload.original.json",
+        "blob": "d609c692ed2503790aa0eeefabd0dae8f99c4b4c",
+        "bytes": 601,
+        "sha256": "bbd27a4e18be08ef9c52f2eb0687137289c457c4bafbe00d61ef48c9bafd93e7"
+      },
+      "native": {
+        "path": "observations/oracle-archive/native.original.json",
+        "blob": "4d184134d27daa5a66fb899607340f0a10d48211",
+        "bytes": 484,
+        "sha256": "d4ce4b27d08040daa758fbed4ec55d9e781a117e58da2c81827086a5217c4022"
+      },
+      "immutable_pages": 1,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "full34-info",
+      "operation_id": "ab7651c7a158b18750e45937457ba0dd4dda70d39a6ee79580e5f712daf14326",
+      "status": {
+        "path": "calls/full34-info-status/result.original.json",
+        "blob": "1cc8a7891d96b87765fdc706a743507f05b4bf06",
+        "bytes": 800,
+        "sha256": "27e319f2de89f380865f138334024bf00575d397c378427c669b80cbac51111e"
+      },
+      "admission": {
+        "path": "calls/full34-info-admission/result.original.json",
+        "blob": "1ae7e3e120520294513ad99ded9baade40e5b40c",
+        "bytes": 543,
+        "sha256": "b5e4371d07cf9681f90fc1920f8dbbdd336d0c5927db8897be987013f942f1c1"
+      },
+      "payload": {
+        "path": "observations/full34-info/payload.original.json",
+        "blob": "655b934bc6b5507dcc4dc3ffb2c4d2128d6f0aed",
+        "bytes": 584,
+        "sha256": "29e2a9146a6cff3af094b4531c5a54a534fd88fd6403ba4724934769238691c5"
+      },
+      "native": {
+        "path": "observations/full34-info/native.original.json",
+        "blob": "7c1a47d703be2115a49879ad1b62b3b4d1b78d7e",
+        "bytes": 467,
+        "sha256": "a822a097b3b0373a4519832dd8c41b384dd5c7b38cea1e5d252861022fcdf447"
+      },
+      "immutable_pages": 1,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "full34-body",
+      "operation_id": "352a0a3b7062b5ddb9e091b9ccb98312c04af2864e8a530e0bdb2aaacb09cecc",
+      "status": {
+        "path": "calls/full34-body-status/result.original.json",
+        "blob": "fef727948741ff8d64c26ff4fc713b01163b0679",
+        "bytes": 802,
+        "sha256": "3110f2ee0e86ccb9df74cd384bff35897e3c90da9669dfce50a48661829da502"
+      },
+      "admission": {
+        "path": "calls/full34-body-admission/result.original.json",
+        "blob": "094a887f168405cf81647e7948d6de909297a0af",
+        "bytes": 545,
+        "sha256": "0f00d799bbc91bec22d7bf8d14ccff3cc8371a8ff9edf4b0829f1a5f6a531842"
+      },
+      "payload": {
+        "path": "observations/full34-body/payload.original.json",
+        "blob": "aa9aef6abb1b0e5b96903c97539e8ee181a8b61a",
+        "bytes": 13944,
+        "sha256": "8f302720da2f9841b54eb253954aa289c9a6e7721f8a03d3517db284b433e782"
+      },
+      "native": {
+        "path": "observations/full34-body/native.original.json",
+        "blob": "a4ea5c32a684a1bd95a20a0a7371dc1ef34358d9",
+        "bytes": 13841,
+        "sha256": "9d30cd1297a80b998b077b3c9fd8fbf06b1d07f05811f2e78c1311ed23b4d9c5"
+      },
+      "immutable_pages": 2,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "comparison69-info",
+      "operation_id": "e2ecc3dee3549a5a9bf467d65bf34ee85832c662ac22cd69478c51f4fd498d85",
+      "status": {
+        "path": "calls/comparison69-info-status/result.original.json",
+        "blob": "659dc94a4bee34e5820cfd4606ef682631c1ac1f",
+        "bytes": 800,
+        "sha256": "00d242fb42b830a04362a7b6a5de3a931541dc593773587b88bd52a2154ce309"
+      },
+      "admission": {
+        "path": "calls/comparison69-info-admission/result.original.json",
+        "blob": "28ff622fc56c99f855d0379a2e0b597cead40069",
+        "bytes": 543,
+        "sha256": "302689b99bddbc46598321017ef1c3bd8f398077894fa2e140aaffd5a7e9d596"
+      },
+      "payload": {
+        "path": "observations/comparison69-info/payload.original.json",
+        "blob": "561424a98920478be5ae36b1d9a71bd1bb1489df",
+        "bytes": 590,
+        "sha256": "6b7663e59cd681a817203daed6ff8622856c03d44604544efd3ff7a9d5adadbf"
+      },
+      "native": {
+        "path": "observations/comparison69-info/native.original.json",
+        "blob": "810d58c915bbf08d106fda56aa3b372d2c2f5a42",
+        "bytes": 473,
+        "sha256": "9fc06630c78d54e199972b38e9bc91694bcc21afe6b15c5bc8e8eafa89e53598"
+      },
+      "immutable_pages": 1,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "comparison69-body",
+      "operation_id": "f5e3bedd7a1d76722cafbe5167d75ad222343e7fc161defea5559d12b5fe428c",
+      "status": {
+        "path": "calls/comparison69-body-status/result.original.json",
+        "blob": "498ffeb3b159df4991f5cb5c3ba3dce2bb086cfa",
+        "bytes": 802,
+        "sha256": "3a03e78dac5c91f97ecea27d811e757609d16aa0b7bebee5bf544d661085f916"
+      },
+      "admission": {
+        "path": "calls/comparison69-body-admission/result.original.json",
+        "blob": "e5cd2ee226e858323ea27f8fa0a434d38f2ca5a4",
+        "bytes": 545,
+        "sha256": "a1d925ed7c471d3561cba4d9ddc911f72af3de18f8143501e76c91cd746833b4"
+      },
+      "payload": {
+        "path": "observations/comparison69-body/payload.original.json",
+        "blob": "ea699e410b1223741e9b4fe1a5532c2ccaeb3afc",
+        "bytes": 16050,
+        "sha256": "81f0c5a4fcc657ec1facaba7a23f3c63b1f04d1c001d0bcfafffe191a1654191"
+      },
+      "native": {
+        "path": "observations/comparison69-body/native.original.json",
+        "blob": "c26a9b61b63938b741c8334acd58e4f809a5762e",
+        "bytes": 15947,
+        "sha256": "660108e05eacbe4f5152333fe53de20eea0b356d8bb13779ec8c78db37c23d1a"
+      },
+      "immutable_pages": 2,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "comparison-driver-info",
+      "operation_id": "eb4d59a4f07722d8ed4871a3634c6960afa0e3dcbea0938b26772d94d498024e",
+      "status": {
+        "path": "calls/comparison-driver-info-status/result.original.json",
+        "blob": "82b88d3e8d1a7664c0a1be937b75868e1e110b7d",
+        "bytes": 800,
+        "sha256": "4836618221859c84a42be50359c49aed5da8f988f5108b99572d7655c9af7c63"
+      },
+      "admission": {
+        "path": "calls/comparison-driver-info-admission/result.original.json",
+        "blob": "ad6f61c9044884835accd609689483894efd4fc4",
+        "bytes": 543,
+        "sha256": "e45ba97be910832db194daf946555e7bbf48b0cbc208ea21c5b2dcc3bad68b78"
+      },
+      "payload": {
+        "path": "observations/comparison-driver-info/payload.original.json",
+        "blob": "8df1a1efe8ae64684eb50f5a92b15209005e4752",
+        "bytes": 594,
+        "sha256": "0e4ef050e4ebfd547a37f5e8c460f90142b9f17c73b8db34c2eb06d1b0ab5162"
+      },
+      "native": {
+        "path": "observations/comparison-driver-info/native.original.json",
+        "blob": "91ec40a76d4220b86dbad979afe476722432bb8e",
+        "bytes": 477,
+        "sha256": "083b9da39563fd7bbe8491d79df903a7033a80238421a4b3dd8f04a2450d1794"
+      },
+      "immutable_pages": 1,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    },
+    {
+      "label": "comparison-driver-body",
+      "operation_id": "1258d09b34e5230111962b1d351a50d426e089289ead3cb59c8bc9f5a5d74416",
+      "status": {
+        "path": "calls/comparison-driver-body-status/result.original.json",
+        "blob": "188ae24f8be61408393beca3170641d71c8b08e6",
+        "bytes": 802,
+        "sha256": "28699c9ecf72078d2aea9f1a5545490c2501a55c04f86b3a64f8dd3a4243d341"
+      },
+      "admission": {
+        "path": "calls/comparison-driver-body-admission/result.original.json",
+        "blob": "9ed8ce5356cb9246a6c418ecdd6a9a72ceb038e0",
+        "bytes": 545,
+        "sha256": "a2d97c4dc5ed64a544122baea76e1be54c1a1c8b4e2e36c09a9ec23560b5210e"
+      },
+      "payload": {
+        "path": "observations/comparison-driver-body/payload.original.json",
+        "blob": "49e6a103bc142e7989d136f3ee538aadc1adafb4",
+        "bytes": 12777,
+        "sha256": "afc9dea80a12244348ecfa48279129e4e01410c84b74cfb82c53719b7f5ed57b"
+      },
+      "native": {
+        "path": "observations/comparison-driver-body/native.original.json",
+        "blob": "2d5c7928ebab26facd73eb90059015231ee0c190",
+        "bytes": 12674,
+        "sha256": "cdacf302b966cb5e4e9bc876f90b44c71321e016cc6acf2b48056d9d7b65ab47"
+      },
+      "immutable_pages": 2,
+      "async_state": "completed",
+      "result_state": "stored_observed",
+      "owned_future_active": false
+    }
+  ],
+  "writes": [
+    {
+      "role": "full34",
+      "version": "2053:3062745:10142:1793908417811750782:1793908417813750783",
+      "sdk": {
+        "path": "calls/full34-write/result.original.sdk.json",
+        "blob": "4ef44bd6fc1d01591c51b9727ce65898dcd532bc",
+        "bytes": 325,
+        "sha256": "b6933e867c7c6d03da10ed4e353733e675f81ad7e991d39e9da48e4ec35aab6b"
+      },
+      "native": {
+        "path": "calls/full34-write/result.original.json",
+        "blob": "e6f45812a6ae1c4397fa1cd7a15cac448610a749",
+        "bytes": 188,
+        "sha256": "3a3f50d52e136f26f87fdf832a82506034d221a946ebcb88cffcc8b9cde32bfd"
+      }
+    },
+    {
+      "role": "comparison69",
+      "version": "2053:3062747:11716:1793908604961815054:1793908604962815054",
+      "sdk": {
+        "path": "calls/comparison69-write/result.original.sdk.json",
+        "blob": "095e9b4caa9baff5f44ac1ab65ad9d7c35fd8fe5",
+        "bytes": 325,
+        "sha256": "b75bc1daf19ce3e3b2d694cc2e91220fa2a15b106a366486ad21eb164102f42c"
+      },
+      "native": {
+        "path": "calls/comparison69-write/result.original.json",
+        "blob": "d1520306171e858ad5328a1be5904158b48f6363",
+        "bytes": 188,
+        "sha256": "6cdb3002998f969beb95aaf8483f2a63c5fd1d2fbd62452014f60ea2bbb25d59"
+      }
+    },
+    {
+      "role": "comparison-driver",
+      "version": "2053:3062749:9261:1793908920065966649:1793908920066966649",
+      "sdk": {
+        "path": "calls/comparison-driver-write/result.original.sdk.json",
+        "blob": "93bebf7391599d2dc0c5a54820a791ec8b0ec967",
+        "bytes": 322,
+        "sha256": "a94dfad9e83c38c66bdde09ac833abd2ac10c92ac68f153019cfbb895a3a5a88"
+      },
+      "native": {
+        "path": "calls/comparison-driver-write/result.original.json",
+        "blob": "829136f726c3f565928335442cfc33bd8b08cab4",
+        "bytes": 185,
+        "sha256": "f4c3739bcf20703aff2b6ae1ee6b737e58823dc274f1fe1c370c5a19badc3369"
+      }
+    }
+  ],
+  "source_results": [
+    {
+      "path": "actual/full34.complete.public.json",
+      "blob": "678ddd1d26115ff54a8959f94cb7ec24a34392b7",
+      "bytes": 2076,
+      "sha256": "aee82a772f76d2f09aff9139e046a50162bb9e18a90f5efc05cb8cc7325cc245"
+    },
+    {
+      "path": "actual/comparison69.complete.public.json",
+      "blob": "4bf62e4d901b764a52ad5ecb77b6e5af0a7a6bd0",
+      "bytes": 2112,
+      "sha256": "5229816219c96cc19f9cb77716410da9300a781782c6aea2f590703759ee4d36"
+    },
+    {
+      "path": "actual/comparison-driver.complete.public.json",
+      "blob": "8679bc21e7f10e2228eb939366ad40a3c2365ba5",
+      "bytes": 2140,
+      "sha256": "c6b65319606bc7ddd6b44e69794e9d9744a633cd1b0059ae1d20eda58d2114f5"
+    }
+  ],
+  "oracle_bindings": [
+    {
+      "path": "actual/oracle-binary.binding.public.json",
+      "blob": "5d520903ef88499e8afb8a67088c2d06c403153f",
+      "bytes": 1040,
+      "sha256": "44be5f4bc542e4ff3e78c9e911cdabcb2ac052f289e697c58a72cb9b77f234c6"
+    },
+    {
+      "path": "actual/oracle-archive.binding.public.json",
+      "blob": "8d0cb88bad4421da91c5a83e889669f1f85e4bbf",
+      "bytes": 1077,
+      "sha256": "d9f1c84a267917ec95141937ceaabbd1420c5e6ebb5b3730f47a2a1ff454cb93"
+    }
+  ]
+}

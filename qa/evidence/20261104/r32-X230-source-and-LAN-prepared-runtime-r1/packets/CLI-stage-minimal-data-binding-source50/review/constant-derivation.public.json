@@ -1,0 +1,331 @@
+{
+  "schema": "heptabao.current4e808.cli-stage-data-derivation.r1",
+  "source_only": true,
+  "base": {
+    "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+    "bytes": 22935,
+    "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+  },
+  "candidate": {
+    "blob": "45ceb135688a2002e845f31e010ca5c010551517",
+    "bytes": 23638,
+    "sha256": "87a9c2a7d1b9b4e789a4fda79fc9a89ba21657493707403f36cb891546e4a34f"
+  },
+  "carrier_before": {
+    "blob": "ecad1df703f911f44e74dd57a5ea3ae245189f3a",
+    "bytes": 257060,
+    "sha256": "ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34"
+  },
+  "carrier_after": {
+    "blob": "eabd91310302ea038bd023ff681f511511f43db2",
+    "bytes": 302459,
+    "sha256": "a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915"
+  },
+  "replacement_count": 12,
+  "replacements": [
+    {
+      "label": "CONTROL",
+      "before": "CONTROL = BASE / \"official271-native-cli-phaseb-r3-control-r1\"",
+      "after": "CONTROL = BASE / \"official271-native-cli-phaseb-r3-control-r4\""
+    },
+    {
+      "label": "WORK",
+      "before": "WORK = BASE / \"official271-native-cli-phaseb-r3-live-r1\"",
+      "after": "WORK = BASE / \"official271-native-cli-phaseb-r3-live-r4\""
+    },
+    {
+      "label": "SOURCE",
+      "before": "SOURCE = BASE / \"normal-r10-validation-source-r1\"",
+      "after": "SOURCE = BASE / \"normal-same-root-publication-validation-source-r1\""
+    },
+    {
+      "label": "INCOMING",
+      "before": "INCOMING = BASE / \"normal-r10-shared-artifacts-r1/incoming\"",
+      "after": "INCOMING = BASE / \"normal-same-root-publication-shared-artifacts-r1/incoming\""
+    },
+    {
+      "label": "HEAD",
+      "before": "HEAD = \"49503322c7f446e5eb41e7744f1fdbd7f1192ecc\"",
+      "after": "HEAD = \"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\""
+    },
+    {
+      "label": "TREE",
+      "before": "TREE = \"1d4211f91e1b34a2ed087a3bbef2e2884bac88e9\"",
+      "after": "TREE = \"eba5e650bd080b8ad41ea52a2bc68867f541d255\""
+    },
+    {
+      "label": "PAYLOAD_SHA",
+      "before": "PAYLOAD_SHA = \"ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34\"",
+      "after": "PAYLOAD_SHA = \"a2f1d6b11c206b8b10ec896fd857207e38f72efac24bffd556fa94349bc34915\""
+    },
+    {
+      "label": "PAYLOAD_BYTES",
+      "before": "PAYLOAD_BYTES = 257060",
+      "after": "PAYLOAD_BYTES = 302459"
+    },
+    {
+      "label": "FILES",
+      "before": "FILES = json.loads(r'''{\n  \"phaseb_controller_r3.py\": {\n    \"bytes\": 61210,\n    \"sha256\": \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n  },\n  \"phaseb_binding_r3.py\": {\n    \"bytes\": 20742,\n    \"sha256\": \"39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501\"\n  },\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 24311,\n    \"sha256\": \"409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 5088,\n    \"sha256\": \"6ba4c570b6d48d3194b640fa891832c24229e54d2ba2d9fd694616205fac5fa0\"\n  }\n}''')",
+      "after": "FILES = json.loads(r'''{\n  \"phaseb_controller_r3.py\": {\n    \"bytes\": 61210,\n    \"sha256\": \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n  },\n  \"phaseb_binding_r3.py\": {\n    \"bytes\": 28134,\n    \"sha256\": \"f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d\"\n  },\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 57532,\n    \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 6945,\n    \"sha256\": \"cb4fd6c0ef9708f5bde5bd01cabc67273f3a2e24db5abe37660606e965bf0ee6\"\n  }\n}''')"
+    },
+    {
+      "label": "COPY",
+      "before": "COPY = (\n    (\"heptabao-server\", 109091112, \"67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113\", 0o500, 0o500),\n    (\"native-build.public.json\", 801, \"0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77\", 0o400, 0o600),\n    (\"normal-release-result.public.json\", 3227, \"75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee\", 0o400, 0o600),\n)",
+      "after": "COPY = (\n    (\"heptabao-server\", 110219600, \"cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0\", 0o500, 0o500),\n    (\"native-build.public.json\", 786, \"3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a\", 0o400, 0o600),\n    (\"normal-release-result.public.json\", 3192, \"78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22\", 0o400, 0o600),\n)"
+    },
+    {
+      "label": "SOURCE_PINS",
+      "before": "SOURCE_PINS = {\n    \"crates/heptabao-server/src/snapshot_archive.rs\": (14013, \"77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d\"),\n    \"crates/heptabao-server/src/service.rs\": (518245, \"2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2\"),\n    \"crates/heptabao-server/src/service_snapshot_transfer.rs\": (50683, \"022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9\"),\n    \"crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs\": (43899, \"3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff\"),\n    \"crates/heptabao-server/src/service_no_forwarding_ha_tests.rs\": (16529, \"3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f\"),\n}",
+      "after": "SOURCE_PINS = {\n    \"crates/heptabao-server/src/snapshot_archive.rs\": (14013, \"77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d\"),\n    \"crates/heptabao-server/src/service.rs\": (518245, \"2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2\"),\n    \"crates/heptabao-server/src/service_snapshot_transfer.rs\": (50683, \"022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9\"),\n    \"crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs\": (43899, \"3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff\"),\n    \"crates/heptabao-server/src/service_no_forwarding_ha_tests.rs\": (16516, \"e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8\"),\n    \"crates/heptabao-server/src/http_h2.rs\": (14691, \"4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1\"),\n    \"crates/heptabao-server/src/service_native_v6_ha_read.rs\": (31855, \"bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121\"),\n    \"crates/heptabao-server/src/ha_native_v6_runtime.rs\": (61623, \"5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a\"),\n}"
+    },
+    {
+      "label": "OLD_FENCES",
+      "before": "OLD_FENCES = {\n    \"official271-cli-transport-live-r3/result.public.json\": \"03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68\",\n    \"normal33-standby-oracle-live-r3/result.public.json\": \"f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590\",\n    \"formal-33cafa-normal-full128-r2/summary.json\": \"8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1\",\n    \"formal-33cafa-pocket3-mac1-direct98-r1/summary.json\": \"b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f\",\n}",
+      "after": "OLD_FENCES = {\n    \"official271-native-cli-phaseb-r3-live-r1/result.public.json\": \"cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184\",\n    \"official271-cli-transport-live-r3/result.public.json\": \"03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68\",\n    \"normal33-standby-oracle-live-r3/result.public.json\": \"f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590\",\n    \"formal-33cafa-normal-full128-r2/summary.json\": \"8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1\",\n    \"formal-33cafa-pocket3-mac1-direct98-r1/summary.json\": \"b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f\",\n    \"official271-native-cli-phaseb-r3-live-r2/result.public.json\": \"15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e\",\n}"
+    }
+  ],
+  "entire_runtime_tail_unchanged": true,
+  "strict_reverse_whole_equal": true,
+  "QA_names_unchanged": true,
+  "qa_whole_unchanged_to_current_cli44": true,
+  "payload_entries": 8,
+  "payload_changes": [
+    {
+      "name": "phaseb_binding_r3.py",
+      "before": {
+        "blob": "236c35803f07f2b6bfeb06b0abfe108baef27215",
+        "bytes": 20742,
+        "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501"
+      },
+      "after": {
+        "blob": "8ea43b812f6b466646ea32a044dd300a1445573f",
+        "bytes": 28134,
+        "sha256": "f046016ddfcf87eeec2febf5ae2b6d36afa3d8c82454823455dd157e9991cd0d"
+      }
+    },
+    {
+      "name": "normal-release-tests-result.public.json",
+      "before": {
+        "blob": "3e0a0ce5f20de8bb892436c1e1a38872b45f27d6",
+        "bytes": 24311,
+        "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee"
+      },
+      "after": {
+        "blob": "162336b81e26f391b12d2e6c860c6eb9cc2a9c71",
+        "bytes": 57532,
+        "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475"
+      }
+    },
+    {
+      "name": "binding.partially-resolved.json",
+      "before": {
+        "blob": "38e70200523d71fa3c0455d15b1e08098f0bcd83",
+        "bytes": 5088,
+        "sha256": "6ba4c570b6d48d3194b640fa891832c24229e54d2ba2d9fd694616205fac5fa0"
+      },
+      "after": {
+        "blob": "728f4c6dd801310de3f05b4b54ff2ea26bb2d331",
+        "bytes": 6945,
+        "sha256": "cb4fd6c0ef9708f5bde5bd01cabc67273f3a2e24db5abe37660606e965bf0ee6"
+      }
+    }
+  ],
+  "copy": [
+    {
+      "index": 0,
+      "name": "heptabao-server",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "mode": 320,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+      "operation_id": "8262b9f0f3118eb6b7f5826a3cd27577f79a4da71392c2f1f0a1c7269d739063",
+      "independent_info": {
+        "path": "destination/0-heptabao-server/file-info.native.json",
+        "blob": "c99fe8b91521f78687afe4a5839ea64b98af69d8",
+        "bytes": 513,
+        "sha256": "2b57bcec4ed2832205fc4c539d1ddab89bbcfb90f1c4f8123dc1be1a9fe1dadb"
+      },
+      "receiver_full9": [
+        2050,
+        7361480,
+        1000,
+        1000,
+        33088,
+        1,
+        110219600,
+        "1793892019496540722",
+        "1793892019496540722"
+      ],
+      "matched_receiver_full9": true
+    },
+    {
+      "index": 1,
+      "name": "native-build.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "mode": 256,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+      "operation_id": "8f5917c599a2fff0c94b06a2506d4863c2f0fc1fe235bf694c1be77f6127c9fb",
+      "independent_info": {
+        "path": "destination/1-native-build.public.json/file-info.native.json",
+        "blob": "6cf6e8a79b93d196851a1e552c6279144ba7cf13",
+        "bytes": 510,
+        "sha256": "d99c41aece261814eac2d77a5ec54d2277831adfd7231caeb38db095a6ddd32e"
+      },
+      "receiver_full9": [
+        2050,
+        7361482,
+        1000,
+        1000,
+        33024,
+        1,
+        786,
+        "1793892021124514009",
+        "1793892021124514009"
+      ],
+      "matched_receiver_full9": true
+    },
+    {
+      "index": 2,
+      "name": "normal-release-result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "mode": 256,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+      "operation_id": "8c27b23d6812369b6cdf41a344225e693acd49aad40541182e53ca5353de3a97",
+      "independent_info": {
+        "path": "destination/2-normal-release-result.public.json/file-info.native.json",
+        "blob": "b588f7da60d8d92fdff0336f59df1bf21d3973f7",
+        "bytes": 521,
+        "sha256": "bfd1d001e42d3d6bc405ab3c136900137fc62233eb0f4d2231f455deb12b57fe"
+      },
+      "receiver_full9": [
+        2050,
+        7361483,
+        1000,
+        1000,
+        33024,
+        1,
+        3192,
+        "1793892021131513894",
+        "1793892021131513894"
+      ],
+      "matched_receiver_full9": true
+    }
+  ],
+  "canonical_source_pins": [
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/snapshot_archive.rs",
+      "blob": "6828ae88590184830da949001b13abd82a4f9b10",
+      "bytes": 14013,
+      "sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899,
+      "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "blob": "052e96ae3b6d1d8d58c4013c07d28a2adf0af9d8",
+      "bytes": 16516,
+      "sha256": "e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/http_h2.rs",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "blob": "2632c4fde7f21ad31efb6cb88ed8c1b6e5538137",
+      "bytes": 31855,
+      "sha256": "bba510596687120b08a0cef1ee80252ae5e97f10ad4942bcc832983c5d08e121"
+    },
+    {
+      "path": "reference/canonical/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+    }
+  ],
+  "old_source_members_retained": true,
+  "original_old_fences_retained": true,
+  "old_fences_exact_current_template": [
+    {
+      "bytes": 270785,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/result.public.json",
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+      "uid": 1000
+    },
+    {
+      "bytes": 83438,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3/result.public.json",
+      "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68",
+      "uid": 1000
+    },
+    {
+      "bytes": 19915,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r3/result.public.json",
+      "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590",
+      "uid": 1000
+    },
+    {
+      "bytes": 109148,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+      "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+      "uid": 1000
+    },
+    {
+      "bytes": 45176,
+      "mode": 384,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+      "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+      "uid": 1000
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/result.public.json",
+      "bytes": 278829,
+      "sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+      "mode": 384,
+      "uid": 1000
+    }
+  ],
+  "original_stage_seconds": 300,
+  "original_outer_seconds_from_old_root_review": 330,
+  "current_template_ready": false,
+  "current_stage_submitted": false,
+  "original_stage_functions_modified": 0,
+  "current_product_modules_executed": 0,
+  "Runtime_calls": 0
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root-line-B-X230-original-reads-closed-to-Auth-metadata-handoff.r32.v1",
+  "status": "LINE_B_TRANSFERRED_FOR_EXACT_THREE_READONLY_METADATA",
+  "from": "/root/compatibility_audit",
+  "to": "/root/authbus_migration",
+  "release_original": {
+    "blob": "ebbdbdb79bb71783e3573d0cec71b3fe85fb775f",
+    "bytes": 32634,
+    "sha256": "72d224be668611035f7d8b5eb58adc1f7cf0f2d1d94bcbd1dfa291417b332747"
+  },
+  "release_scope": "Releasing owner reports20 returned originals/28 pages completed-stored-inactive and0 call/0 known native future; root whole-verifies exact signed-by-context report and pinned observation list. Full independent X230 chain qualification remains a separate pending task.",
+  "root_full_X230_observer_chain_not_yet_qualified": true,
+  "from_Runtime_calls_after_handoff": 0,
+  "to_max_owned_native_future": 1,
+  "line_A_owner": "/root/ha_validation",
+  "maximum_global_runtime_lanes": 2,
+  "root_Runtime_calls": 0,
+  "old_X230_relay_UNKNOWN_preserved": true,
+  "original_unlisted_unknowns_not_reclassified": true,
+  "allowed_next": "Only exact three file_info requests already sourced and reviewed in R30; no body or SDK execution."
+}

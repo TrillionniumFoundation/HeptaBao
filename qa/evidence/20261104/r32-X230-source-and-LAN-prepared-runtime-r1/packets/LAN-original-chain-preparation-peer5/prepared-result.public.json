@@ -1,0 +1,1034 @@
+{
+  "schema": "heptabao.current4e808.HA-independent-original-chain-peer.result.v1",
+  "scope": "PREPARATION_ONLY_RUNNING35_AND_BODYPLAN11",
+  "ok": true,
+  "checks": [
+    {
+      "name": "file.present:execution/intent/exact-request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:execution/intent/exact-request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:execution/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:execution/intent/intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:execution/intent/root-GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:execution/intent/root-GO.original.json",
+      "passed": true
+    },
+    {
+      "name": "execution.request_fixed_blob",
+      "passed": true
+    },
+    {
+      "name": "execution.GO_fixed_blob",
+      "passed": true
+    },
+    {
+      "name": "execution.intent_request",
+      "passed": true
+    },
+    {
+      "name": "execution.intent_pin",
+      "passed": true
+    },
+    {
+      "name": "execution.typed_canonical",
+      "passed": true
+    },
+    {
+      "name": "execution.typed_digest",
+      "passed": true
+    },
+    {
+      "name": "execution.fingerprint_decimal",
+      "passed": true
+    },
+    {
+      "name": "file.present:execution/ACK/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:execution/ACK/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:execution/ACK/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:execution/ACK/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "execution/ACK/start.original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:execution/ACK/ACK.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:execution/ACK/ACK.original.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:execution/ACK/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "execution.ACK_lossless_FP",
+      "passed": true
+    },
+    {
+      "name": "execution.ACK_binding",
+      "passed": true
+    },
+    {
+      "name": "execution.one_original_launched",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.admission_request_exact",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/intent/read-intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/intent/read-intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.intent_request",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority0/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority0/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority0/admission/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority0/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.id_shape",
+      "passed": true
+    },
+    {
+      "name": "authority0.unique_id",
+      "passed": true
+    },
+    {
+      "name": "authority0.tool_binding",
+      "passed": true
+    },
+    {
+      "name": "authority0.new_original_admission",
+      "passed": true
+    },
+    {
+      "name": "authority0.status_present",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.status_request:observations/authority0/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority0/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority0/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority0/status-0/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority0/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.status_same_id:observations/authority0/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.closed",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/pages/000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/pages/000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.pages_present",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_request:0",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority0/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority0/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority0/pages/000000/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/pages/000000/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/pages/000000/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority0/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_snapshot:0",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_total_bound",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_identity:0",
+      "passed": true
+    },
+    {
+      "name": "base64.syntax",
+      "passed": true
+    },
+    {
+      "name": "base64.pad1",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_extent:0",
+      "passed": true
+    },
+    {
+      "name": "authority0.page_eof:0",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority0.payload_whole",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "payload.complete:observations/authority0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority0/payload.original.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "payload.native_exact:observations/authority0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/admission/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/intent/exact-operation-start-request.public.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.admission_request_exact",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/intent/read-intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/intent/read-intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.intent_request",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority1/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority1/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority1/admission/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/admission/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority1/admission/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.id_shape",
+      "passed": true
+    },
+    {
+      "name": "authority1.unique_id",
+      "passed": true
+    },
+    {
+      "name": "authority1.tool_binding",
+      "passed": true
+    },
+    {
+      "name": "authority1.new_original_admission",
+      "passed": true
+    },
+    {
+      "name": "authority1.status_present",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.status_request:observations/authority1/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority1/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority1/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority1/status-0/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/status-0/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority1/status-0/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.status_same_id:observations/authority1/status-0/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.closed",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/pages/000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/pages/000000/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.pages_present",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_request:0",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.isError_false:observations/authority1/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "SDK.structured_null:observations/authority1/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority1/pages/000000/original.sdk.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/pages/000000/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/pages/000000/original.native.txt",
+      "passed": true
+    },
+    {
+      "name": "SDK.native_exact:observations/authority1/pages/000000/original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_snapshot:0",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_total_bound",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_identity:0",
+      "passed": true
+    },
+    {
+      "name": "base64.syntax",
+      "passed": true
+    },
+    {
+      "name": "base64.pad1",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_extent:0",
+      "passed": true
+    },
+    {
+      "name": "authority1.page_eof:0",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "authority1.payload_whole",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "payload.complete:observations/authority1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "observations/authority1/payload.original.json.one_text",
+      "passed": true
+    },
+    {
+      "name": "file.present:observations/authority1/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:observations/authority1/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "payload.native_exact:observations/authority1/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/body-plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/body-plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.fixed_job",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/actual-info/output0.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/actual-info/output0.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.info0",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output0_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output0_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output0_body0",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.coverage0",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/actual-info/output1.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/actual-info/output1.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.info1",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output1_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output1_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output1_body0",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.coverage1",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/actual-info/output2.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/actual-info/output2.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.info2",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output2_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output2_body0.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output2_body0",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output2_body1.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output2_body1.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output2_body1",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output2_body2.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output2_body2.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output2_body2",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output2_body3.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output2_body3.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output2_body3",
+      "passed": true
+    },
+    {
+      "name": "file.present:bodyplan/requests/output2_body4.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.pin:bodyplan/requests/output2_body4.public.json",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.request:output2_body4",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.coverage2",
+      "passed": true
+    },
+    {
+      "name": "bodyplan.total",
+      "passed": true
+    }
+  ],
+  "passed": 187,
+  "failed": 0,
+  "complete_claim": false,
+  "observer_summary": {
+    "authority0": {
+      "operation_id": "9c456d92e5dd4a939b2c148208e862c6205ddb8c4cb932854b93887341f29886",
+      "tool": "process_status",
+      "closed": true,
+      "pages": 1,
+      "payload_bytes": 617,
+      "payload_sha256": "46cb1549dbbfd3247153e12d8257b654aac3fab99243071a168aa043111125af"
+    },
+    "authority1": {
+      "operation_id": "b4fbd25fa8130077bea52dbe98445f9b671d274fe701107ebac3abe5fc654a77",
+      "tool": "process_status",
+      "closed": true,
+      "pages": 1,
+      "payload_bytes": 617,
+      "payload_sha256": "46cb1549dbbfd3247153e12d8257b654aac3fab99243071a168aa043111125af"
+    }
+  },
+  "used_files": [
+    {
+      "path": "bodyplan/actual-info/output0.public.json",
+      "blob": "53a18789a467da028e2886874f8b254fa4396c7c",
+      "bytes": 760,
+      "sha256": "d602c88a65bbc81a039482e2a79d6efaaeed402a4a180ae8abb0c911b76b1d81"
+    },
+    {
+      "path": "bodyplan/actual-info/output1.public.json",
+      "blob": "7f8e28bbca85244a4bb9e8093d791046310cfa54",
+      "bytes": 755,
+      "sha256": "b81874671dad91d86ff33b06c9184a863ed34b412b1c93aad00371b73953f71c"
+    },
+    {
+      "path": "bodyplan/actual-info/output2.public.json",
+      "blob": "bf6e1bb183eb754aa6e109069493397bb8be12e3",
+      "bytes": 752,
+      "sha256": "e333a5d286871218ab2a58bc4a012438a582fcc38cf6c00a444427164020ee16"
+    },
+    {
+      "path": "bodyplan/body-plan.public.json",
+      "blob": "0d2a159cfb78835f273772d308669e177f369afd",
+      "bytes": 8150,
+      "sha256": "a4895de36e7e8c9f95cd11105e8c7c1a74a9c30d428c9e35b33b5854e3afcc6d"
+    },
+    {
+      "path": "bodyplan/requests/output0_body0.public.json",
+      "blob": "eac2518b8ae6d52baa06d80ddfe229c59a80feea",
+      "bytes": 454,
+      "sha256": "9b5c07db09262e6a5665b939e24f8c35cfa1db56e6ce59277508dc7e98768b83"
+    },
+    {
+      "path": "bodyplan/requests/output1_body0.public.json",
+      "blob": "0e0a20bbbad9b7224f5a52cdd8546e55b2d1fb62",
+      "bytes": 450,
+      "sha256": "0e03014d3af7473378a19d4ffcc82304b980a376552827837175d5e18c98039f"
+    },
+    {
+      "path": "bodyplan/requests/output2_body0.public.json",
+      "blob": "196f8dbba56c47475e8c4c2cc62db0f175367da3",
+      "bytes": 443,
+      "sha256": "bd669ca3a662d1cd3f418f8394ba9c5a43d276f6d18759adb99b6213c6267aff"
+    },
+    {
+      "path": "bodyplan/requests/output2_body1.public.json",
+      "blob": "4c70535ef36394d2a33551b386fb53f407583a6c",
+      "bytes": 447,
+      "sha256": "f54b9d5d970ea2508f41f8c9e4cedd2e4d2f962f17ead4a6dd1bf6a7fcc8d228"
+    },
+    {
+      "path": "bodyplan/requests/output2_body2.public.json",
+      "blob": "fd2c70fd59124a15eb1ddcfdc954c1150f12382b",
+      "bytes": 448,
+      "sha256": "3225e9dbf463444a5b8fd7f9f5b617a1eb9b111adfb2dfbaa587fb20caa8db02"
+    },
+    {
+      "path": "bodyplan/requests/output2_body3.public.json",
+      "blob": "8e95f48cf691e3fd8c540ffc8136ec5b4dea497c",
+      "bytes": 448,
+      "sha256": "56e9ad8e3e8f0d1e8ee7ac73cdb85263bb40fa2a32c4c438266bfd73fb2bcd2c"
+    },
+    {
+      "path": "bodyplan/requests/output2_body4.public.json",
+      "blob": "1720667073913975ae41136ee7442cf219a49b03",
+      "bytes": 448,
+      "sha256": "c030b4a3d42aaf22fe546da0249c8a3fe68e2e0a8351728cb4ae9db75b0b0d1f"
+    },
+    {
+      "path": "execution/ACK/ACK.original.json",
+      "blob": "c58f02419b662ac81b494161ad4b36e4e26045af",
+      "bytes": 1346,
+      "sha256": "aace499bad44824527e4fe8a7a03569a03c636dc22f3480f25014323588fdc46"
+    },
+    {
+      "path": "execution/ACK/start.original.sdk.json",
+      "blob": "9c36f9475452c84986484c4be2c8d369bc70e154",
+      "bytes": 1598,
+      "sha256": "e83adb7e55ea3904ceac0dc9b4b647574ae37df89b8b5baffefd0b989b5836e5"
+    },
+    {
+      "path": "execution/intent/exact-request.original.json",
+      "blob": "c97a08fa3f1844d678b800d04fc54daa22e07cce",
+      "bytes": 571,
+      "sha256": "6e9c7cb348d222d6fb2e518982f9d845108b989162317645d5c05f36f24cbb3e"
+    },
+    {
+      "path": "execution/intent/intent.public.json",
+      "blob": "96d5f393c50c49b04fdd4710a7977d6808f21f39",
+      "bytes": 3879,
+      "sha256": "00a571c24fdd69c83b9ca632cfdde0d09e837a7f57676bd9879106d3a2004f95"
+    },
+    {
+      "path": "execution/intent/root-GO.original.json",
+      "blob": "b1e1c5a77c225b989825a86de287241c5b369402",
+      "bytes": 8703,
+      "sha256": "035deda4ec4222e9f2f5a02d0e306b175f96a6ccd532d0469a76d3a7d116b23e"
+    },
+    {
+      "path": "observations/authority0/admission/original.native.txt",
+      "blob": "3df2ca9904fda866a5da7760015e616da0d4ad95",
+      "bytes": 548,
+      "sha256": "c906c938eca66887e0fd9558f6e346f481266902f09d9eb99f0b11ae2bd1051e"
+    },
+    {
+      "path": "observations/authority0/admission/original.sdk.json",
+      "blob": "e0c298e5cd2c8cbe7da4023034f417ec045d2e40",
+      "bytes": 709,
+      "sha256": "f604489618242a6aff379be12cbc28bd8dba175c2222f8adc171c7051f337f8e"
+    },
+    {
+      "path": "observations/authority0/admission/request.original.json",
+      "blob": "7b549149976b6153e818ce86ddd7b0e746ecb36d",
+      "bytes": 215,
+      "sha256": "5875f6c0cd80abe2fa1b026dbbddb5880f81806d1e4dc1e757d5987bdb285c7e"
+    },
+    {
+      "path": "observations/authority0/intent/exact-operation-start-request.public.json",
+      "blob": "7b549149976b6153e818ce86ddd7b0e746ecb36d",
+      "bytes": 215,
+      "sha256": "5875f6c0cd80abe2fa1b026dbbddb5880f81806d1e4dc1e757d5987bdb285c7e"
+    },
+    {
+      "path": "observations/authority0/intent/read-intent.public.json",
+      "blob": "8755163a76117daebf3b287195c5f2add75d5167",
+      "bytes": 973,
+      "sha256": "adec9ba50c12210fbfb59c04c9dc10599eceaf848d2344c6329204a1c39a49d6"
+    },
+    {
+      "path": "observations/authority0/native.original.json",
+      "blob": "755fe7c5914547c781824a1719a1c73752197701",
+      "bytes": 470,
+      "sha256": "dcb1f0296d7a034896c3f16a931a9f6f566946818e52474ae1748dadb607cfc4"
+    },
+    {
+      "path": "observations/authority0/pages/000000/original.native.txt",
+      "blob": "a99cecdb7de353d9451b82030f371640c84fa38a",
+      "bytes": 1505,
+      "sha256": "0c7dec357edab0109291b9b95fe07b2c17f640d2c7b5d50e461f4d3c372a791f"
+    },
+    {
+      "path": "observations/authority0/pages/000000/original.sdk.json",
+      "blob": "9537c294988d8a194ba9c8032416a68b9bae0f7b",
+      "bytes": 1676,
+      "sha256": "dfee926d3b47be687d9012240c1b60e2b1676d22007e032fe338f3bdbad5161a"
+    },
+    {
+      "path": "observations/authority0/pages/000000/request.original.json",
+      "blob": "f44d4ff27d3ff412e300ead47a80181ff39d04eb",
+      "bytes": 121,
+      "sha256": "b505b1410e5aae85b2f4c3582731c800a229291d96395cd55cac74210de0ab04"
+    },
+    {
+      "path": "observations/authority0/payload.original.json",
+      "blob": "c8e6ba81750de9bb86ecdb4cdfacbf4357d8ac95",
+      "bytes": 617,
+      "sha256": "46cb1549dbbfd3247153e12d8257b654aac3fab99243071a168aa043111125af"
+    },
+    {
+      "path": "observations/authority0/status-0/original.native.txt",
+      "blob": "d2c8f97b531a25925690082b91a89ac6e45720b9",
+      "bytes": 805,
+      "sha256": "d9b7902ea35e49b3f06d6dbc0cea20b7f4055f6f2dc83c6d3a429adc0dfaeee9"
+    },
+    {
+      "path": "observations/authority0/status-0/original.sdk.json",
+      "blob": "eaefce932ca46268a454d8e7ccb0dd9befaddb7b",
+      "bytes": 980,
+      "sha256": "41db8e9704fd84d25bd71b8749c7d2895631582c01c2474d21716eb2877e4d92"
+    },
+    {
+      "path": "observations/authority0/status-0/request.original.json",
+      "blob": "0e62f49d33933ed2b8eef696c3e98340d279c6d8",
+      "bytes": 89,
+      "sha256": "b14991fab6e0394e7361907c5e082251336d7f65bc747422b4288056fd51009d"
+    },
+    {
+      "path": "observations/authority1/admission/original.native.txt",
+      "blob": "f75b7a342e9084ec4149d69a3962f367f7920ed1",
+      "bytes": 548,
+      "sha256": "60754c72531ac1061f479a37ca3a0b5bc351e42131cb2cde341b19034209da13"
+    },
+    {
+      "path": "observations/authority1/admission/original.sdk.json",
+      "blob": "a01ff45e6ca3f8c1b5aa1df0a46d3e35aefad895",
+      "bytes": 709,
+      "sha256": "86a6741eeb9d5d91e0f1763f025b7c9f934e984631436f96c021c3df9dea17d1"
+    },
+    {
+      "path": "observations/authority1/admission/request.original.json",
+      "blob": "e375994f828b7473a6975e3a7be288987d915ca5",
+      "bytes": 215,
+      "sha256": "14b94911367ca448d76d3007a38978ab2a4ab7f8f135e7d6f1e6f1e805f0b56c"
+    },
+    {
+      "path": "observations/authority1/intent/exact-operation-start-request.public.json",
+      "blob": "e375994f828b7473a6975e3a7be288987d915ca5",
+      "bytes": 215,
+      "sha256": "14b94911367ca448d76d3007a38978ab2a4ab7f8f135e7d6f1e6f1e805f0b56c"
+    },
+    {
+      "path": "observations/authority1/intent/read-intent.public.json",
+      "blob": "733caa60a5cc73905d71096c24cb52d97caa748a",
+      "bytes": 916,
+      "sha256": "7b018c2e2753b059e17678f5b8c915c9e9a6a74b8689a0d4f0f56e75c43e5fb3"
+    },
+    {
+      "path": "observations/authority1/native.original.json",
+      "blob": "755fe7c5914547c781824a1719a1c73752197701",
+      "bytes": 470,
+      "sha256": "dcb1f0296d7a034896c3f16a931a9f6f566946818e52474ae1748dadb607cfc4"
+    },
+    {
+      "path": "observations/authority1/pages/000000/original.native.txt",
+      "blob": "cc5477bdf2401043c9e66619666418fe7db6a79b",
+      "bytes": 1505,
+      "sha256": "9bf07cb975169f6e25077ead815e417afaf81b9272f6b2f63a936f5624035ef4"
+    },
+    {
+      "path": "observations/authority1/pages/000000/original.sdk.json",
+      "blob": "792601cb6fe2c4bdde62e61e063a13a3c25f65f2",
+      "bytes": 1676,
+      "sha256": "26beb89f789dfeb3d297dcaee17fcf56a1356ec70fc345c9256e0b7347aed18b"
+    },
+    {
+      "path": "observations/authority1/pages/000000/request.original.json",
+      "blob": "095b78d39aa79ca1d4fb413d6beae3242b273afd",
+      "bytes": 121,
+      "sha256": "d6d6f98ea3e1280bfd4f8ee5bda9a9651f08bc1d0a1f3fdf56692c77a5355a5b"
+    },
+    {
+      "path": "observations/authority1/payload.original.json",
+      "blob": "c8e6ba81750de9bb86ecdb4cdfacbf4357d8ac95",
+      "bytes": 617,
+      "sha256": "46cb1549dbbfd3247153e12d8257b654aac3fab99243071a168aa043111125af"
+    },
+    {
+      "path": "observations/authority1/status-0/original.native.txt",
+      "blob": "bcd90d5410f8b9d352025ef9e64d74c33c4e1a4a",
+      "bytes": 805,
+      "sha256": "2aed3b2a343be1fb494cc7a2548b6346dba0b3378c8c769d4c1a0e67279a7f88"
+    },
+    {
+      "path": "observations/authority1/status-0/original.sdk.json",
+      "blob": "58cae31ae273665c24d6a5c0f766a1a0ef5d30f2",
+      "bytes": 980,
+      "sha256": "1412d580596d898b36562e70f0b75a391042017ea416ef8b2286aa0711a1d26f"
+    },
+    {
+      "path": "observations/authority1/status-0/request.original.json",
+      "blob": "2741c58579374fa6c346e0c1fb6030d974e3457d",
+      "bytes": 89,
+      "sha256": "0cde99412a58d9ba8ad3d8539467deb4b6695b82fc1edaf0f638b8c772ae995f"
+    }
+  ],
+  "running_authority_not_terminal": true,
+  "product_98plus12_semantics_reviewed": false,
+  "author_verifier_run": false,
+  "Runtime_calls": 0
+}

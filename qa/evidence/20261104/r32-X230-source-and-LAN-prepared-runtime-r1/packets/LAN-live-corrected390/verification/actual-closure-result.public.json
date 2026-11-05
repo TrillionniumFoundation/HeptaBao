@@ -1,0 +1,1233 @@
+{
+  "schema": "heptabao.current4e808.LAN.actual-closure-checks.r1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "exact_source_commit_tree",
+      "passed": true
+    },
+    {
+      "name": "terminal_original_job",
+      "passed": true
+    },
+    {
+      "name": "whole_public_stream_sizes",
+      "passed": true
+    },
+    {
+      "name": "launch_original_prepared_source",
+      "passed": true
+    },
+    {
+      "name": "launch_controller_absolute_deadline",
+      "passed": true
+    },
+    {
+      "name": "launch_argv_exact_prepared",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_schema",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_prepared",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_source",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_complete_argv",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:launch_no_prod_or_private",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_schema",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_whole_equals_stdout_value",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_zero",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_original_budget",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_all_unchanged",
+      "passed": true
+    },
+    {
+      "name": "prior_small_output_check:exit_summary_exact",
+      "passed": true
+    },
+    {
+      "name": "exit_zero_all_source_fences",
+      "passed": true
+    },
+    {
+      "name": "original98_counts_unique",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_build_receipt",
+      "passed": true
+    },
+    {
+      "name": "original:candidate_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_new_private_root",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_binary_digest",
+      "passed": true
+    },
+    {
+      "name": "original:three_distinct_physical_hosts",
+      "passed": true
+    },
+    {
+      "name": "original:same_source_native_abis",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_endpoints_configured",
+      "passed": true
+    },
+    {
+      "name": "original:seed_fresh_uninitialized",
+      "passed": true
+    },
+    {
+      "name": "original:seed_initialized_once",
+      "passed": true
+    },
+    {
+      "name": "original:seed_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:seed_v5_and_kv2_history",
+      "passed": true
+    },
+    {
+      "name": "original:seed_stopped_cold_archive",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_cold_clone",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_cold_clone",
+      "passed": true
+    },
+    {
+      "name": "original:three_raft_elected_before_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_1_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_2_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:node_3_initial_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_1_to_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_1_to_3",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_2_to_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_2_to_3",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_3_to_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_mtls_3_to_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_1",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_2",
+      "passed": true
+    },
+    {
+      "name": "original:direct_lan_api_leaf_3",
+      "passed": true
+    },
+    {
+      "name": "original:native_activate_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_v5_history_preserved",
+      "passed": true
+    },
+    {
+      "name": "original:native_noop_config_accepted",
+      "passed": true
+    },
+    {
+      "name": "original:native_delete_missing_accepted",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_01",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_02",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_03",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_04",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_05",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_06",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_07",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_08",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_09",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_10",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_11",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_12",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_13",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_14",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_15",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_16",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_write_17",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_34mib_capacity",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_all_retained_exact",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_soft_delete_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_destroy_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_history_retention_states",
+      "passed": true
+    },
+    {
+      "name": "original:native_standby_small_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:native_standby_small_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:leader_sigkill_identity_verified",
+      "passed": true
+    },
+    {
+      "name": "original:different_leader_after_sigkill",
+      "passed": true
+    },
+    {
+      "name": "original:new_leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "original:failover_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:failover_survivors_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_cold_restart",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_local_raft_caught_up",
+      "passed": true
+    },
+    {
+      "name": "original:old_leader_forwarded_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:single_survivor_loses_authority",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_loss_write_denied_no_ack",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_loss_read_denied_no_payload",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_restored",
+      "passed": true
+    },
+    {
+      "name": "original:denied_quorum_write_absent",
+      "passed": true
+    },
+    {
+      "name": "original:quorum_recovery_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_stopped_for_cold_restart",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_cold_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:all_voters_local_raft_persistent",
+      "passed": true
+    },
+    {
+      "name": "original:cold_leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "original:cold_restart_new_write_once",
+      "passed": true
+    },
+    {
+      "name": "original:cold_restart_all_hosts_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_targets_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_two_targets_quarantined",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_sealed_pair_elected",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_source_rejoined",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_empty_before_unseal",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_leader_exact_history",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_actual_leaves_rebuilt",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_remaining_nodes_unsealed",
+      "passed": true
+    },
+    {
+      "name": "original:missing_cipher_all_hosts_readindex",
+      "passed": true
+    },
+    {
+      "name": "original:synthetic_metadata_cleanup_once",
+      "passed": true
+    },
+    {
+      "name": "original:synthetic_metadata_absent",
+      "passed": true
+    },
+    {
+      "name": "original:source_and_binaries_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original:report_excludes_runtime_secrets",
+      "passed": true
+    },
+    {
+      "name": "original:owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:owned_mesh_stopped",
+      "passed": true
+    },
+    {
+      "name": "original:native.complete",
+      "passed": true
+    },
+    {
+      "name": "separate12_count_unique",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.inputs_and_history_bound",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_three_owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.mac_persisted_frontier_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.same_recovered_cipher_reference_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.new_processes_sealed",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.real_sealed_leader_elected",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_three_unsealed_once",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_local_frontiers_retained",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.leader_retained_history_exact",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_metadata_and_retired_states_exact",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.all_hosts_small_readindex",
+      "passed": true
+    },
+    {
+      "name": "postcold:postcold.shared_deadline_completed",
+      "passed": true
+    },
+    {
+      "name": "original_http_admission_budgets",
+      "passed": true
+    },
+    {
+      "name": "postcold_absolute_deadline_clamped",
+      "passed": true
+    },
+    {
+      "name": "actual_source3_empty_leader1",
+      "passed": true
+    },
+    {
+      "name": "original_cold_unseals_preserved",
+      "passed": true
+    },
+    {
+      "name": "original_restored_history",
+      "passed": true
+    },
+    {
+      "name": "postcold_fresh_sealed_processes",
+      "passed": true
+    },
+    {
+      "name": "new_pid_differs:1",
+      "passed": true
+    },
+    {
+      "name": "frontier_preserved:1",
+      "passed": true
+    },
+    {
+      "name": "new_pid_differs:2",
+      "passed": true
+    },
+    {
+      "name": "frontier_preserved:2",
+      "passed": true
+    },
+    {
+      "name": "new_pid_differs:3",
+      "passed": true
+    },
+    {
+      "name": "frontier_preserved:3",
+      "passed": true
+    },
+    {
+      "name": "three_original_keys_once",
+      "passed": true
+    },
+    {
+      "name": "history_exact_34MiB",
+      "passed": true
+    },
+    {
+      "name": "all_three_normal_readindex",
+      "passed": true
+    },
+    {
+      "name": "nineteen_start_stop_pairs",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:74579",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:2:3392768",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2841388",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:74905",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:76805",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:77077",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2862630",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:2:3400337",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2864463",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:77345",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:77777",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:2:3401260",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2866856",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:78167",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:2:3401691",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2868900",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:2:3403502",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:3:2871271",
+      "passed": true
+    },
+    {
+      "name": "stop_after_start:1:79131",
+      "passed": true
+    },
+    {
+      "name": "sixteen_intermediate_three_final",
+      "passed": true
+    },
+    {
+      "name": "last_cold_pid_finally_stopped:1",
+      "passed": true
+    },
+    {
+      "name": "last_cold_pid_finally_stopped:2",
+      "passed": true
+    },
+    {
+      "name": "last_cold_pid_finally_stopped:3",
+      "passed": true
+    },
+    {
+      "name": "cleanup_checks_true",
+      "passed": true
+    },
+    {
+      "name": "foreground_count_and_native_pid_exact",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:0",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:0",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:0:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:0:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:0",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:1",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:1",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:1:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:1:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:1",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:2",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:2",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:2:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:2:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:2",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:3",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:3",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:3:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:3:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:3",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:4",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:4",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:4:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:4:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:4",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:5",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:5",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:5:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:5:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:5",
+      "passed": true
+    },
+    {
+      "name": "foreground_bound_once:6",
+      "passed": true
+    },
+    {
+      "name": "foreground_original_budget:6",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:6:local_ssh_cleanup",
+      "passed": true
+    },
+    {
+      "name": "foreground_reaped_empty_bound:6:remote_cleanup",
+      "passed": true
+    },
+    {
+      "name": "remote_pid_and_expected_exit:6",
+      "passed": true
+    },
+    {
+      "name": "exact_four_readonly_results",
+      "passed": true
+    },
+    {
+      "name": "reader_known_once_success:0",
+      "passed": true
+    },
+    {
+      "name": "reader_original_deadline:0",
+      "passed": true
+    },
+    {
+      "name": "reader_known_once_success:1",
+      "passed": true
+    },
+    {
+      "name": "reader_original_deadline:1",
+      "passed": true
+    },
+    {
+      "name": "reader_known_once_success:2",
+      "passed": true
+    },
+    {
+      "name": "reader_original_deadline:2",
+      "passed": true
+    },
+    {
+      "name": "reader_known_once_success:3",
+      "passed": true
+    },
+    {
+      "name": "reader_original_deadline:3",
+      "passed": true
+    },
+    {
+      "name": "numeric_close_before_success_source",
+      "passed": true
+    },
+    {
+      "name": "cipher_close_before_success_source",
+      "passed": true
+    },
+    {
+      "name": "launcher_output_context_before_exit_receipt",
+      "passed": true
+    },
+    {
+      "name": "native_complete_after_owned_cleanup",
+      "passed": true
+    },
+    {
+      "name": "fifteen_original_observers",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:authority0",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:authority1",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:authority2",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:authority3",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:streams0",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_info",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output1_info",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output0_info",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output0_body0",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output1_body0",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_body0",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_body1",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_body2",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_body3",
+      "passed": true
+    },
+    {
+      "name": "observer_closed_full:output2_body4",
+      "passed": true
+    },
+    {
+      "name": "sixtytwo_original_pages",
+      "passed": true
+    },
+    {
+      "name": "no_mutation_retry_or_unknown",
+      "passed": true
+    },
+    {
+      "name": "witness_separate",
+      "passed": true
+    },
+    {
+      "name": "qualification_scope_not_broadened",
+      "passed": true
+    }
+  ],
+  "check_count": 240,
+  "product_test_denominator_unchanged": {
+    "original": 98,
+    "independent_postcold": 12
+  },
+  "pairs": [
+    {
+      "node": 1,
+      "pid": 74579,
+      "native": false,
+      "started_unix": 1793907692.8415947,
+      "stopped_unix": 1793907694.6648643,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 2,
+      "pid": 3392768,
+      "native": true,
+      "started_unix": 1793907706.5066133,
+      "stopped_unix": 1793907895.31149,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2841388,
+      "native": true,
+      "started_unix": 1793907707.3912046,
+      "stopped_unix": 1793907844.6771436,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 74905,
+      "native": true,
+      "started_unix": 1793907708.6302245,
+      "stopped_unix": 1793907812.0750747,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 76805,
+      "native": true,
+      "started_unix": 1793907834.4850385,
+      "stopped_unix": 1793907843.737311,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 77077,
+      "native": true,
+      "started_unix": 1793907874.882988,
+      "stopped_unix": 1793907894.387099,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2862630,
+      "native": true,
+      "started_unix": 1793907875.7859113,
+      "stopped_unix": 1793907896.220871,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 2,
+      "pid": 3400337,
+      "native": true,
+      "started_unix": 1793907897.1054544,
+      "stopped_unix": 1793907932.736574,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2864463,
+      "native": true,
+      "started_unix": 1793907897.9905705,
+      "stopped_unix": 1793907935.0368881,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 77345,
+      "native": true,
+      "started_unix": 1793907899.090846,
+      "stopped_unix": 1793907930.0882635,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 77777,
+      "native": true,
+      "started_unix": 1793907931.2523756,
+      "stopped_unix": 1793907957.829835,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 2,
+      "pid": 3401260,
+      "native": true,
+      "started_unix": 1793907933.6346226,
+      "stopped_unix": 1793907939.7399077,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2866856,
+      "native": true,
+      "started_unix": 1793907935.9213228,
+      "stopped_unix": 1793907958.7775395,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 78167,
+      "native": true,
+      "started_unix": 1793907961.7825503,
+      "stopped_unix": 1793908021.984908,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 2,
+      "pid": 3401691,
+      "native": true,
+      "started_unix": 1793907962.6793067,
+      "stopped_unix": 1793908022.8727157,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2868900,
+      "native": true,
+      "started_unix": 1793907967.7838433,
+      "stopped_unix": 1793908023.8063745,
+      "stop_event": "owned_server_stopped"
+    },
+    {
+      "node": 2,
+      "pid": 3403502,
+      "native": true,
+      "started_unix": 1793908025.9226828,
+      "stopped_unix": 1793908085.9632423,
+      "stop_event": "final_owned_server_stopped"
+    },
+    {
+      "node": 3,
+      "pid": 2871271,
+      "native": true,
+      "started_unix": 1793908026.8093836,
+      "stopped_unix": 1793908085.1103399,
+      "stop_event": "final_owned_server_stopped"
+    },
+    {
+      "node": 1,
+      "pid": 79131,
+      "native": true,
+      "started_unix": 1793908027.8574946,
+      "stopped_unix": 1793908086.7380824,
+      "stop_event": "final_owned_server_stopped"
+    }
+  ],
+  "foreground": [
+    {
+      "native_pid": 74905,
+      "local_ssh_pid": 703081,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.2681784509913996
+    },
+    {
+      "native_pid": 76805,
+      "local_ssh_pid": 708027,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.33595429291017354
+    },
+    {
+      "native_pid": 77077,
+      "local_ssh_pid": 709257,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.33447673893533647
+    },
+    {
+      "native_pid": 77345,
+      "local_ssh_pid": 709971,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.3084441589890048
+    },
+    {
+      "native_pid": 77777,
+      "local_ssh_pid": 710883,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.3107072979910299
+    },
+    {
+      "native_pid": 78167,
+      "local_ssh_pid": 712244,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.26834203698672354
+    },
+    {
+      "native_pid": 79131,
+      "local_ssh_pid": 715081,
+      "local_exit": 0,
+      "remote_exit": -9,
+      "stop_seconds": 0.2621069320011884
+    }
+  ],
+  "readonly_readers": [
+    {
+      "index": 0,
+      "node": 2,
+      "kind": "numeric",
+      "result_sha256": "0d2aa87ede7f9d65de8394f997cd0c9cca91001a8c99e2f61aaff748eabb8404",
+      "elapsed_seconds": 0.0016433779965154827,
+      "descriptor_count_from_executed_fixed_success_path": 6,
+      "has_per_fd_runtime_ledger": false,
+      "close_evidence": "completed is published only after execute finally closes all retained descriptors; close failure prevents completed",
+      "file_count": 3,
+      "directory_count": 3
+    },
+    {
+      "index": 1,
+      "node": 1,
+      "kind": "numeric",
+      "result_sha256": "18e0a7c23b4eaedebb3c41559968377ded14dd368163a579123a3f47d79f5751",
+      "elapsed_seconds": 0.02106570778414607,
+      "descriptor_count_from_executed_fixed_success_path": 6,
+      "has_per_fd_runtime_ledger": false,
+      "close_evidence": "completed is published only after execute finally closes all retained descriptors; close failure prevents completed",
+      "file_count": 3,
+      "directory_count": 3
+    },
+    {
+      "index": 2,
+      "node": 1,
+      "kind": "numeric",
+      "result_sha256": "85dd78610998c1f158a654319f025a462621da0a3fa452c0d6c15f3c2538563d",
+      "elapsed_seconds": 0.021463540848344564,
+      "descriptor_count_from_executed_fixed_success_path": 6,
+      "has_per_fd_runtime_ledger": false,
+      "close_evidence": "completed is published only after execute finally closes all retained descriptors; close failure prevents completed",
+      "file_count": 3,
+      "directory_count": 3
+    },
+    {
+      "index": 3,
+      "node": 1,
+      "kind": "cipher",
+      "result_sha256": "4a2aaa3931e69f052a6f3945acc8fcb524d3ac0573f94a6aa8036ce6bb8af4ef",
+      "elapsed_seconds": 0.042904125060886145,
+      "descriptor_count_from_executed_fixed_success_path": 342,
+      "has_per_fd_runtime_ledger": false,
+      "close_evidence": "completed is published only after execute finally closes all retained descriptors; close failure prevents completed",
+      "file_count": 338,
+      "directory_count": 3
+    }
+  ],
+  "all_returned_observers_closed": true,
+  "original_runtime_executions": 1,
+  "verification_new_runtime_calls": 0,
+  "per_fd_runtime_close_ledger_present": false,
+  "global_host_fd_inventory_proven": false,
+  "historical_unknown_overwritten": false,
+  "root_independent_semantic_review_pending": true
+}

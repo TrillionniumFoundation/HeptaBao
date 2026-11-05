@@ -1,0 +1,7 @@
+# Current 4e808 existing LAN prepare — complete
+
+One exact --prepare-only execution under root837866, using the unchanged launcher, original nine controls, two retained normal-build paths, five canonical QA hashes and 36 old-evidence fences. Product fixture/live have not run. The actual original job authority, full streams, independent file_info results, frozen finite version-bound body plan and all returned immutable observation payloads are archived separately. Actual body completion and any known failed observations are explicitly listed in STATE; incomplete bodies are not inferred from metadata. The original output1 body read failed after SSH connection closure, returned no file body, and is retained as an inactive failed operation with its complete 183-byte error payload.
+
+The prepared artifact has an original terminal SHA and independent current file metadata. Whole version-bound body qualification is stated only after its actual body verifier succeeds. Pure validation of source constants, argument contract, 98 plus independent12 counts, existing deadlines and two fresh build probes is complete; no product module is executed by this evidence checker. Future live request is a review-only binding to the existing --run-once interface and actual prepared SHA; it is not authorization or dispatch.
+
+The prior importer first-tail lost-ACK UNKNOWN remains preserved by its already qualified archive; this prepare does not rewrite historical errors.

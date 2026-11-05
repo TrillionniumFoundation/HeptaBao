@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.root-complete-current4e808-three-host-LAN-qualification.r32.v1",
+  "status": "QUALIFIED_SCOPED_NORMAL_THREE_HOST_ORIGINAL98_AND_SEPARATE_POSTCOLD12",
+  "checks_passed": 14,
+  "checks": [
+    "all-actual-and-peer-whole-packets",
+    "prior187-preparation-only-honest-running-status",
+    "independent1800-increment-adopts187-without-rerun",
+    "chain-and-independent139-business-review-scopes-combine",
+    "peer326-exact-original-input-pins",
+    "exact-prior-input-interface",
+    "exact-four-archive-leaf-differences",
+    "READPLAN-and-old-STATE-accurate-history-mapping",
+    "old33-then-corrected34-no-false-inheritance",
+    "all-runtime-originals-and-release-byte-unchanged",
+    "all15-62-and426448-original-payload-accounting",
+    "three-whole-outputs-and-seven-body-originals-bind-semantic-input",
+    "same-original-terminal-and-whole-streams",
+    "prior-prepare-and-current-lane-closure-reference"
+  ],
+  "actual_packet": "625df69e7dbe4407686253564ccd607a3b60b939",
+  "original388_preserved": "06d392d5d549d060efa77faeb44a0d48933d8d45",
+  "original_job": "desktop/1a1ad3a6dd4-fc05-5919",
+  "summary": {
+    "blob": "74bc3f4393c3909de08c9f541570ed7c4043b162",
+    "bytes": 307292,
+    "sha256": "87f4e3a08d87045de370d30555768bea5b8a95f3a8f317a684746f8c9a4250b1"
+  },
+  "prepare_qualification": {
+    "name": "r32-LAN-prepare-complete-root-qualification.public.json",
+    "blob": "f493ed5914ff47d12840b658b4367aa4c780e279",
+    "bytes": 9534,
+    "sha256": "96a8375a4badc9f6535586505ae703e34eceb767745bd97e5678b764ec70cb7e"
+  },
+  "independent_business_and_cleanup_review": {
+    "name": "r32-LAN-live-independent-semantic-root-review.public.json",
+    "blob": "ff2fec8d7f1c42946a021243526156cb93f69bfb",
+    "bytes": 10115,
+    "sha256": "8bf3b0787c69fbe660515fcb2b4947c1a5e991dcf5f844d6a2a6bb364a9fa896"
+  },
+  "independent_chain_peer": {
+    "tree": "01760630e2754edffaa99b8e397a225d97b4ba9c",
+    "verifier": {
+      "blob": "7791ece5427758ae42774a6b66e10affaae3a385",
+      "bytes": 16066,
+      "sha256": "a5684ecb9e028e812f63a70ddfa7c7dc86926fd10dab822e123ba0614d98a426"
+    },
+    "result": {
+      "blob": "daf97b1107eb9ff65a6c7bb1252a219858eaa9df",
+      "bytes": 73572,
+      "sha256": "63974d02e77279da1f82f56c36fac58e85baa37da8b496d8b4c088f28e68cc54"
+    },
+    "prior_preparation_tree": "bdb2a3338c513bfa8846626157b00609de34a662",
+    "prior187_adopted_not_rerun": true,
+    "incremental_predicates": 1800,
+    "total_observers": 15,
+    "total_pages": 62,
+    "original_payload_bytes": 426448,
+    "body_operations": 7,
+    "body_bytes": 312076
+  },
+  "root_lane_release": {
+    "name": "r32-LAN-lane-A-release-root-review.public.json",
+    "blob": "e74ffb1da0602e642a9ace8df0aef6f6b7ee00d8",
+    "bytes": 5992,
+    "sha256": "038365fadc9118e6aed00644b935036af42200624eba63490ebf96bc85c1220e"
+  },
+  "product_cases": {
+    "original98": 98,
+    "passed98": 98,
+    "separate_postcold12": 12,
+    "passed12": 12,
+    "baseline62_executed": false,
+    "official30_executed": false
+  },
+  "actual_facts": {
+    "hosts": [
+      "Mac",
+      "ROG",
+      "Pocket4"
+    ],
+    "leader_kill": {
+      "node": 1,
+      "pid": 74905,
+      "new_leader": 2
+    },
+    "quorum_loss": {
+      "read_status": 503,
+      "write_status": 503,
+      "denied_write_absent_hosts": 3
+    },
+    "readable_versions": 17,
+    "lifecycle_versions": 19,
+    "large_payload_bytes": 35651584,
+    "direction": {
+      "source": 3,
+      "actual_empty_leader": 1,
+      "forced": false,
+      "witness_mutations": 2
+    },
+    "postcold": {
+      "elapsed_seconds": 51.809603061992675,
+      "shared_budget": 300,
+      "committed_applied_before_after": [
+        67,
+        67,
+        67
+      ],
+      "small_readindex_hosts": 3,
+      "small_keys": 4,
+      "recovered_cipher_leaves": 338,
+      "recovered_cipher_bytes": 35742455
+    },
+    "cleanup": {
+      "owned_starts": 19,
+      "matched_stops": 19,
+      "Mac_foreground_sessions": 7,
+      "native_and_local_leaders_reaped": 14,
+      "original_stop_seconds": 5,
+      "completed_readonly_helpers": 4,
+      "per_FD_runtime_ledger": false,
+      "global_host_FD_inventory": false
+    }
+  },
+  "qualified": true,
+  "qualification_scope": "Current4e808 normal build; real Mac/ROG/Pocket4 direct-private-LAN synthetic fixture only. Original98 and separate12; no borrowed baseline62 or official30.",
+  "per_FD_runtime_ledger": false,
+  "global_host_FD_inventory": false,
+  "old_failed_postcold_preserved": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+  "uncovered": [
+    "native_ha_snapshot_export_restore",
+    "large_http_forwarding",
+    "physical_power_loss",
+    "disk_full",
+    "long_horizon_linearizability",
+    "production_traffic_switch",
+    "old_production_asset_cleanup"
+  ],
+  "old_unknowns_reclassified": false,
+  "source_changed": false,
+  "root_Runtime_calls": 0,
+  "full_OpenBao271_replacement": false,
+  "production_authority": false,
+  "production_cutover": false,
+  "old_asset_cleanup": false,
+  "peer_and_author_verifiers_not_rerun_by_root": true
+}

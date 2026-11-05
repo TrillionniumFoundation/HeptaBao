@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-dependency-body-openai-routing-31d71606-0-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "expected_version": "16777233:405238041:3497:1784843459992420263:1784843459992420263",
+      "offset": 0,
+      "limit": 3497
+    }
+  }
+}

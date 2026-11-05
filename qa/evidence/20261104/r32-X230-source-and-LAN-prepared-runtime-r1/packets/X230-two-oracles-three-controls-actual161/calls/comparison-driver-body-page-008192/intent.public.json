@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.x230-publication-fixed-call-intent.v1",
+  "GO": "f518cb97d0e05ff4916d64a7647aa130920d1f28",
+  "lane": "B",
+  "label": "comparison-driver-body-page-008192",
+  "method": "operation_result",
+  "request_blob": "04e14cba56f7cedc2981130edbe26fceb76bc555",
+  "request_bytes": 124,
+  "request_sha256": "71bf6e2f2ef56c863eafc2ebfa3e02e8df81c51dd9714e46cda0a5e59a1a7bb4",
+  "request": {
+    "operation_id": "1258d09b34e5230111962b1d351a50d426e089289ead3cb59c8bc9f5a5d74416",
+    "offset": 8192,
+    "limit": 8192
+  },
+  "source_only_publication_and_observation": true,
+  "process_start_authorized": false,
+  "prior_active_operation_id": "1258d09b34e5230111962b1d351a50d426e089289ead3cb59c8bc9f5a5d74416",
+  "original_call_only": true
+}

@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "elapsed_after_publication_seconds": 25.997907969984226, "local_git_operations": 0, "publication_within_original_deadline": true, "receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1/control/result.public.json", "server_started": false, "status": "transferred"}

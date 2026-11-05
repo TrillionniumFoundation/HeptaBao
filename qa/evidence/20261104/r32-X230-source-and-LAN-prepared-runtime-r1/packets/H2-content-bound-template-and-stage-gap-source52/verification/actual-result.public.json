@@ -1,0 +1,722 @@
+{
+  "schema": "heptabao.current4e808.h2.data-binding-source-checks.v1",
+  "status": "PASS_CONTENT_BINDING_ONLY_WITH_EXPLICIT_STAGE_AND_OBSERVATION_GAPS",
+  "checks_count": 169,
+  "checks": [
+    {
+      "name": "exact original H2 template",
+      "passed": true
+    },
+    {
+      "name": "template original formatting roundtrip",
+      "passed": true
+    },
+    {
+      "name": "exact CLI existing data source",
+      "passed": true
+    },
+    {
+      "name": "exact normal5 source table",
+      "passed": true
+    },
+    {
+      "name": "normal source actual five metadata",
+      "passed": true
+    },
+    {
+      "name": "exact sixteen data replacement locations",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.server.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.server.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.native_receipt.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.native_receipt.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.release_receipt.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.release_receipt.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.combined_tests.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value artifacts.combined_tests.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value host.machine_id_sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.python.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.python.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.git.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.git.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.openssl.bytes",
+      "passed": true
+    },
+    {
+      "name": "changed value utilities.openssl.sha256",
+      "passed": true
+    },
+    {
+      "name": "changed value old_fences",
+      "passed": true
+    },
+    {
+      "name": "inverse all other bytes unchanged",
+      "passed": true
+    },
+    {
+      "name": "strict three hunks forward",
+      "passed": true
+    },
+    {
+      "name": "strict three hunks reverse",
+      "passed": true
+    },
+    {
+      "name": "product canonical remains 4e808",
+      "passed": true
+    },
+    {
+      "name": "instrument remains df026",
+      "passed": true
+    },
+    {
+      "name": "readiness remains false",
+      "passed": true
+    },
+    {
+      "name": "unchanged schema",
+      "passed": true
+    },
+    {
+      "name": "unchanged candidate_commit",
+      "passed": true
+    },
+    {
+      "name": "unchanged candidate_tree",
+      "passed": true
+    },
+    {
+      "name": "unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "unchanged qa_files",
+      "passed": true
+    },
+    {
+      "name": "unchanged h2_client",
+      "passed": true
+    },
+    {
+      "name": "unchanged budgets",
+      "passed": true
+    },
+    {
+      "name": "unchanged ready_for_readonly_prepare",
+      "passed": true
+    },
+    {
+      "name": "unchanged instrument_build_commit",
+      "passed": true
+    },
+    {
+      "name": "unchanged instrument_build_tree",
+      "passed": true
+    },
+    {
+      "name": "exact H2 paths unchanged",
+      "passed": true
+    },
+    {
+      "name": "product server content",
+      "passed": true
+    },
+    {
+      "name": "product server planned layout and mode",
+      "passed": true
+    },
+    {
+      "name": "product server unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "product server independent incoming evidence",
+      "passed": true
+    },
+    {
+      "name": "product native_receipt content",
+      "passed": true
+    },
+    {
+      "name": "product native_receipt planned layout and mode",
+      "passed": true
+    },
+    {
+      "name": "product native_receipt unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "product native_receipt independent incoming evidence",
+      "passed": true
+    },
+    {
+      "name": "product release_receipt content",
+      "passed": true
+    },
+    {
+      "name": "product release_receipt planned layout and mode",
+      "passed": true
+    },
+    {
+      "name": "product release_receipt unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "product release_receipt independent incoming evidence",
+      "passed": true
+    },
+    {
+      "name": "product combined_tests content",
+      "passed": true
+    },
+    {
+      "name": "product combined_tests planned layout and mode",
+      "passed": true
+    },
+    {
+      "name": "product combined_tests unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "product combined_tests independent incoming evidence",
+      "passed": true
+    },
+    {
+      "name": "product test_groups content",
+      "passed": true
+    },
+    {
+      "name": "product test_groups planned layout and mode",
+      "passed": true
+    },
+    {
+      "name": "product test_groups unchanged layout",
+      "passed": true
+    },
+    {
+      "name": "product test_groups independent incoming evidence",
+      "passed": true
+    },
+    {
+      "name": "machine guard exact inherited",
+      "passed": true
+    },
+    {
+      "name": "six old fences exact ordered",
+      "passed": true
+    },
+    {
+      "name": "utility python all fields inherited",
+      "passed": true
+    },
+    {
+      "name": "utility git all fields inherited",
+      "passed": true
+    },
+    {
+      "name": "utility openssl all fields inherited",
+      "passed": true
+    },
+    {
+      "name": "five unchanged QA sources",
+      "passed": true
+    },
+    {
+      "name": "QA phaseb_evidence_r3.py full content pin",
+      "passed": true
+    },
+    {
+      "name": "QA native_fixture_reference_r8.py full content pin",
+      "passed": true
+    },
+    {
+      "name": "QA official_cli_reference_r4.py full content pin",
+      "passed": true
+    },
+    {
+      "name": "QA native_h2_gate_r1.py full content pin",
+      "passed": true
+    },
+    {
+      "name": "QA native_h2_binding_r1.py full content pin",
+      "passed": true
+    },
+    {
+      "name": "exact reviewed binder unchanged",
+      "passed": true
+    },
+    {
+      "name": "exact reviewed driver unchanged",
+      "passed": true
+    },
+    {
+      "name": "original H01 H02 H03 cases retained",
+      "passed": true
+    },
+    {
+      "name": "original deadlines retained",
+      "passed": true
+    },
+    {
+      "name": "original body and actual transport conjunction unchanged",
+      "passed": true
+    },
+    {
+      "name": "receiver exact accepted original core",
+      "passed": true
+    },
+    {
+      "name": "receiver original completion distinguished from target",
+      "passed": true
+    },
+    {
+      "name": "twelve roles original ordered",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 0 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 1 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 2 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 3 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 4 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "instrument 5 original SDK exact native",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 independent exact native content",
+      "passed": true
+    },
+    {
+      "name": "instrument 6 native and receiver identity exact",
+      "passed": true
+    },
+    {
+      "name": "seventh info accepted root exact pin",
+      "passed": true
+    },
+    {
+      "name": "instrument 7 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 7 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 7 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 7 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 7 independent info remains unobserved",
+      "passed": true
+    },
+    {
+      "name": "instrument 8 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 8 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 8 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 8 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 8 independent info remains unobserved",
+      "passed": true
+    },
+    {
+      "name": "instrument 9 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 9 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 9 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 9 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 9 independent info remains unobserved",
+      "passed": true
+    },
+    {
+      "name": "instrument 10 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 10 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 10 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 10 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 10 independent info remains unobserved",
+      "passed": true
+    },
+    {
+      "name": "instrument 11 unchanged content and name",
+      "passed": true
+    },
+    {
+      "name": "instrument 11 actual receiver readback",
+      "passed": true
+    },
+    {
+      "name": "instrument 11 distinct source and target modes",
+      "passed": true
+    },
+    {
+      "name": "instrument 11 not H2 destination observed",
+      "passed": true
+    },
+    {
+      "name": "instrument 11 independent info remains unobserved",
+      "passed": true
+    },
+    {
+      "name": "seven info five pending counted",
+      "passed": true
+    },
+    {
+      "name": "old lost ACK not rewritten",
+      "passed": true
+    },
+    {
+      "name": "22 H2 target files unobserved",
+      "passed": true
+    },
+    {
+      "name": "actual binding/prepare not invented",
+      "passed": true
+    },
+    {
+      "name": "existing CLI stage identity",
+      "passed": true
+    },
+    {
+      "name": "gap anchor directory_set 230",
+      "passed": true
+    },
+    {
+      "name": "gap anchor directory_set 384",
+      "passed": true
+    },
+    {
+      "name": "gap anchor copy_source_and_destination 283",
+      "passed": true
+    },
+    {
+      "name": "gap anchor copy_source_and_destination 288",
+      "passed": true
+    },
+    {
+      "name": "gap anchor allowed_write_fds_names 243",
+      "passed": true
+    },
+    {
+      "name": "gap anchor allowed_write_fds_names 244",
+      "passed": true
+    },
+    {
+      "name": "gap anchor exact_binding_members 421",
+      "passed": true
+    },
+    {
+      "name": "gap anchor exact_binding_members 319",
+      "passed": true
+    },
+    {
+      "name": "gap anchor fixed_carrier_schema_and_final_membership 369",
+      "passed": true
+    },
+    {
+      "name": "gap anchor fixed_carrier_schema_and_final_membership 434",
+      "passed": true
+    },
+    {
+      "name": "stage gap 5 executable constraints retained",
+      "passed": true
+    },
+    {
+      "name": "existing dispatch not runnable",
+      "passed": true
+    }
+  ],
+  "before": {
+    "blob": "8d3002682ea54f648a3a5312f126747978444484",
+    "bytes": 8093,
+    "sha256": "6f67ad14ffda5bb3a30e283a45fdec9a66e3dc57031c1082a4a80dfe3f2733e1"
+  },
+  "after": {
+    "blob": "52ce20ef5c148ad5477b493ce43ac3b43d8569a8",
+    "bytes": 10231,
+    "sha256": "f8eaa547f0cf3d2536c55652293b3c8e9572126b537ee34014495ed222d20bcf"
+  },
+  "diff": {
+    "blob": "b1c1c4d7b8a7f1e94d843756958be9d4e4feb051",
+    "bytes": 4413,
+    "sha256": "010afd2a15897057abb6c7fec4f053910be18f6cb4baece32442d2518ac913e0"
+  },
+  "literal_locations": 16,
+  "diff_hunks": 3,
+  "original_H2_QA_definitions_unchanged": true,
+  "new_code_or_controller_written": false,
+  "current_product_pins": 5,
+  "instrument_content_pins": 12,
+  "incoming_instrument_independent_infos": 7,
+  "incoming_instrument_missing_infos": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "planned_H2_targets": 22,
+  "observed_H2_targets": 0,
+  "utilities_inherited": 3,
+  "old_fences_inherited": 6,
+  "ready_for_readonly_prepare": false,
+  "Runtime_calls": 0,
+  "source_module_execution": 0,
+  "new_builds": 0,
+  "prepare_dispatch": 0,
+  "live_dispatch": 0
+}

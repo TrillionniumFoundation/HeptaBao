@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-postcold-live-authority3-r1-20261105",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ad3a6dd4-fc05-5919"
+    }
+  }
+}
