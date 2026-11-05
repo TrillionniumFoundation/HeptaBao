@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a90d2733-fc05-30d1\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22636f6d706c657465645f6e616d65645f7465737473223a20302c202266756c6c5f7265706c6163656d656e745f7175616c6966696564223a2066616c73652c2022726573756c74223a20222f566f6c756d65732f54352f68657074612d766e6578742d7265636f766572792d32303236313031332f636f6e74696e756174696f6e2d32303236313130342d68612d736e617073686f742d61636c2d64656e69616c2d363166662d72312f636f6e74726f6c2f6e6f726d616c2d617474656d70742d72352f63616e6469646174652d6e6f726d616c2d726573756c742e7075626c69632e6a736f6e222c2022726573756c745f736861323536223a202232613764333863633239386630303037613061666436323938316531343962333231333133346661316431323337326435353265623561636436363734613963222c20227365727665725f736861323536223a206e756c6c2c2022736f75726365223a206e756c6c2c2022737461747573223a20226661696c6564227d0a\",\n    \"eof\": true,\n    \"next_offset\": 380,\n    \"offset\": 0,\n    \"size\": 380,\n    \"text\": \"{\\\"completed_named_tests\\\": 0, \\\"full_replacement_qualified\\\": false, \\\"result\\\": \\\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/control/normal-attempt-r5/candidate-normal-result.public.json\\\", \\\"result_sha256\\\": \\\"2a7d38cc298f0007a0afd62981e149b3213134fa1d12372d552eb5acd6674a9c\\\", \\\"server_sha256\\\": null, \\\"source\\\": null, \\\"status\\\": \\\"failed\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

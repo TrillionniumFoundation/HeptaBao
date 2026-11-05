@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.root.mac-r5-actual-review.v1",
+  "job_id": "1a1a90d2733-fc05-30d1",
+  "evidence_commit": "edbdb2f754bbd9cb8d84418f3d04bac970e970e6",
+  "authoritative_state": "failed",
+  "exit_code": 1,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "result_sha256": "2a7d38cc298f0007a0afd62981e149b3213134fa1d12372d552eb5acd6674a9c",
+  "result_bytes": 17544,
+  "independent_remote_read_and_sha256": true,
+  "failure_code": "external_compiler_or_product_process_present",
+  "elapsed_seconds": 0.3499723747372627,
+  "commands": 4,
+  "all_command_exits_known_zero": true,
+  "all_owned_groups_stopped": true,
+  "no_forced_cleanup": true,
+  "no_signal_after_reap": true,
+  "actual_input_source": {
+    "commit": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+    "status": "",
+    "tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec"
+  },
+  "source_pin_count": 21,
+  "blockers_observed": [
+    {
+      "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/heptabao-server",
+      "pgid": 12062,
+      "pid": 12062,
+      "ppid": 12059
+    }
+  ],
+  "source_patch_applied": false,
+  "strict_clippy_executed": false,
+  "compile_executed": false,
+  "tests_executed": 0,
+  "normal_link_executed": false,
+  "production_changed": false,
+  "real_credentials_used": false,
+  "decision": "Retain this terminal preflight rejection. Do not resend the completed request, change the process guard or stop an unrelated fixture. Independently establish the external fixture's completion before considering a separately reviewed continuation.",
+  "full_replacement_qualified": false
+}
