@@ -339,7 +339,19 @@ impl PendingExternalRequest {
                         Response::error(413, "snapshot archive exceeds transfer bound")
                     })?;
                 }
-                snapshot_archive::import(archive, &plan.lease, plan.deadline)
+                // Only these already-admitted public upload paths use the
+                // restore-compatible outer ending. Repair and other internal
+                // callers retain strict gzip/file EOF; archive bytes cannot
+                // choose this policy or supply any installation authority.
+                let imported = if matches!(
+                    plan.path.as_str(),
+                    "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                ) {
+                    snapshot_archive::import_public_restore(archive, &plan.lease, plan.deadline)
+                } else {
+                    snapshot_archive::import(archive, &plan.lease, plan.deadline)
+                };
+                imported
                     .map(Observation::Upload)
                     .map_err(|_| {
                         Response::error(

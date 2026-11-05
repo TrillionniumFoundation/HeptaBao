@@ -220,33 +220,256 @@ fn spool_reopen_cleans_only_owned_interrupted_leaves_and_never_follows_links() -
     Ok(())
 }
 
+const PUBLIC_RESTORE_PATHS: [&str; 2] = [
+    "sys/storage/raft/snapshot",
+    "sys/storage/raft/snapshot-force",
+];
+
+fn strict_native_import(service: &Service, bytes: &[u8]) -> TestResult<bool> {
+    let lease = service.snapshot_spool.as_ref().ok_or("spool")?.lease()?;
+    let deadline = Instant::now() + Duration::from_secs(30);
+    let mut file = lease.file(MAX_NATIVE_ARCHIVE, deadline)?;
+    file.write_all(bytes)?;
+    Ok(snapshot_archive::import(file, &lease, deadline).is_ok())
+}
+
+fn native_archive_tar(bytes: &[u8]) -> TestResult<Vec<u8>> {
+    let mut tar = Vec::new();
+    flate2::read::GzDecoder::new(bytes).read_to_end(&mut tar)?;
+    Ok(tar)
+}
+
+fn gzip_native_tar(tar: &[u8]) -> TestResult<Vec<u8>> {
+    let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+    gzip.write_all(tar)?;
+    Ok(gzip.finish()?)
+}
+
+fn native_archive_with_invalid_sealed_sums(
+    service: &Service,
+    bytes: &[u8],
+) -> TestResult<Vec<u8>> {
+    let lease = service.snapshot_spool.as_ref().ok_or("spool")?.lease()?;
+    let deadline = Instant::now() + Duration::from_secs(30);
+    let mut file = lease.file(MAX_NATIVE_ARCHIVE, deadline)?;
+    file.write_all(bytes)?;
+    let mut imported = snapshot_archive::import(file, &lease, deadline)?;
+    imported.sealed_sums[0] ^= 1;
+    // Produce a real archive with valid tar/gzip framing and unchanged content
+    // hashes. Only the actual sealed checksum ciphertext is corrupted.
+    let mut exported = snapshot_archive::export(
+        DownloadSource {
+            state: imported.state,
+            metadata: serde_json::to_vec(&imported.metadata)?,
+            sums: imported.sums,
+            sealed_sums: imported.sealed_sums,
+        },
+        &lease,
+        deadline,
+    )?;
+    let mut result = Vec::new();
+    exported.read_to_end(&mut result)?;
+    Ok(result)
+}
+
 #[test]
-fn native_archive_rejects_truncation_concatenated_gzip_and_corruption() -> TestResult {
+fn strict_native_archive_import_still_requires_gzip_and_file_eof() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
     let (_, token) = bootstrap(&mut service)?;
-    put(&mut service, &token, "keep");
-    let valid = download(&mut service, &token)?;
-    let mut appended = valid.clone();
-    appended.extend_from_slice(&valid);
-    let mut corrupt = valid.clone();
-    let middle = corrupt.len() / 2;
-    corrupt[middle] ^= 64;
-    for mut archive in [
-        &valid[..valid.len() - 1],
-        appended.as_slice(),
-        corrupt.as_slice(),
-        b"not a gzip native snapshot".as_slice(),
+    put(&mut service, &token, "first");
+    let first = download(&mut service, &token)?;
+    put(&mut service, &token, "second");
+    let second = download(&mut service, &token)?;
+    let mut concatenated = first.clone();
+    concatenated.extend_from_slice(&second);
+    let mut trailing = first.clone();
+    trailing.extend_from_slice(b"unrelated trailing bytes");
+    assert!(strict_native_import(&service, &first)?);
+    for archive in [
+        &first[..first.len() - 1],
+        concatenated.as_slice(),
+        trailing.as_slice(),
     ] {
-        let mut plan = pending(&mut service, "POST", &token)?;
-        let before = service.durable.as_ref().ok_or("durable")?.generation();
-        let (result, _) = plan.execute_snapshot_transfer(&mut archive);
-        assert_eq!(service.finish_external_request(*plan, result).status, 400);
-        assert_eq!(
-            service.durable.as_ref().ok_or("durable")?.generation(),
-            before
-        );
-        assert_eq!(get(&mut service, &token), "keep");
+        assert!(!strict_native_import(&service, archive)?);
+    }
+    assert_eq!(get(&mut service, &token), "second");
+    assert!(
+        fs::read_dir(service.data_dir.join(".snapshot-transfer"))?
+            .next()
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn public_native_restore_outer_end_variants_install_first_archive_and_reopen() -> TestResult {
+    for path in PUBLIC_RESTORE_PATHS {
+        for variant in ["normal", "footer-truncated", "concatenated"] {
+            let root = Root::new();
+            let mut service = root.service()?;
+            let (key, token) = bootstrap(&mut service)?;
+            put(&mut service, &token, "first");
+            let first = download(&mut service, &token)?;
+            put(&mut service, &token, "second");
+            let second = download(&mut service, &token)?;
+            let archive = match variant {
+                "normal" => first.clone(),
+                "footer-truncated" => first[..first.len() - 1].to_vec(),
+                "concatenated" => {
+                    let mut archive = first.clone();
+                    archive.extend_from_slice(&second);
+                    archive
+                }
+                _ => return Err("unknown outer-end variant".into()),
+            };
+            let seal = fs::read(service.data_dir.join("seal.json"))?;
+            put(&mut service, &token, "live-marker");
+            assert_eq!(get(&mut service, &token), "live-marker");
+            // Exercise the real admitted public path, importer and finalizer.
+            // A successful status alone cannot establish which archive won.
+            let restored = upload_native_path(&mut service, &token, path, &archive)?;
+            assert_eq!(restored.status, 200, "{path} {variant}");
+            assert_eq!(restored.body["data"]["rollback"], true);
+            assert_eq!(get(&mut service, &token), "first", "{path} {variant}");
+            assert_eq!(fs::read(service.data_dir.join("seal.json"))?, seal);
+            assert!(
+                fs::read_dir(service.data_dir.join(".snapshot-transfer"))?
+                    .next()
+                    .is_none()
+            );
+            drop(service);
+            let mut service = root.service()?;
+            assert_eq!(
+                call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+            assert_eq!(get(&mut service, &token), "first", "{path} {variant}");
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn public_native_restore_rejects_required_tar_damage_and_invalid_first_archive() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "first");
+    let first = download(&mut service, &token)?;
+    put(&mut service, &token, "second");
+    let second = download(&mut service, &token)?;
+    let tar = native_archive_tar(&first)?;
+    let metadata_length = usize::from_str_radix(std::str::from_utf8(&tar[124..135])?, 8)?;
+    let state_header = 512 + metadata_length.div_ceil(512) * 512;
+    assert_eq!(&tar[state_header..state_header + 9], b"state.bin");
+    let state_start = state_header + 512;
+    assert!(state_start < tar.len() - 1024);
+    let mut changed_state = tar.clone();
+    changed_state[state_start] ^= 1;
+    let changed_state = gzip_native_tar(&changed_state)?;
+    let mut invalid_first_then_valid = changed_state.clone();
+    invalid_first_then_valid.extend_from_slice(&second);
+    let mut nonzero_end = tar.clone();
+    *nonzero_end.last_mut().ok_or("tar terminator")? = 1;
+    let mut compressed_damage = first.clone();
+    let middle = compressed_damage.len() / 2;
+    compressed_damage[middle] ^= 64;
+    let mut optional_header = first.clone();
+    optional_header[3] = 8; // FNAME is still outside the canonical native header.
+    let variants = [
+        ("compressed-content-damage", compressed_damage),
+        ("not-gzip", b"not a gzip native snapshot".to_vec()),
+        ("optional-gzip-header", optional_header),
+        ("missing-state-body", gzip_native_tar(&tar[..state_start])?),
+        ("missing-tar-terminator-byte", gzip_native_tar(&tar[..tar.len() - 1])?),
+        ("nonzero-tar-terminator", gzip_native_tar(&nonzero_end)?),
+        ("state-hash-mismatch", changed_state),
+        ("invalid-first-then-valid", invalid_first_then_valid),
+    ];
+    put(&mut service, &token, "keep-live");
+    for path in PUBLIC_RESTORE_PATHS {
+        for (variant, archive) in &variants {
+            let generation = service.durable.as_ref().ok_or("durable")?.generation();
+            let identity = service.current_state_identity().map_err(|_| "state identity")?;
+            let activation = service.unseal_nonce.clone();
+            let rejected = upload_native_path(&mut service, &token, path, archive)?;
+            assert_eq!(rejected.status, 500, "{path} {variant}");
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+            assert_eq!(
+                service.current_state_identity().map_err(|_| "state identity")?,
+                identity
+            );
+            assert_eq!(service.unseal_nonce, activation);
+            assert_eq!(get(&mut service, &token), "keep-live", "{path} {variant}");
+            assert!(
+                fs::read_dir(service.data_dir.join(".snapshot-transfer"))?
+                    .next()
+                    .is_none()
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn public_native_restore_outer_end_never_bypasses_sealed_checksum_authentication() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    put(&mut service, &token, "historical");
+    let valid = download(&mut service, &token)?;
+    let invalid = native_archive_with_invalid_sealed_sums(&service, &valid)?;
+    let mut invalid_then_valid = invalid.clone();
+    invalid_then_valid.extend_from_slice(&valid);
+    put(&mut service, &token, "keep-live");
+    for path in PUBLIC_RESTORE_PATHS {
+        for (variant, mut archive) in [
+            ("normal", invalid.as_slice()),
+            ("footer-truncated", &invalid[..invalid.len() - 1]),
+            ("invalid-first-then-valid", invalid_then_valid.as_slice()),
+        ] {
+            let mut plan = match stage(&mut service, "POST", path, &token) {
+                RequestExecution::External(plan) => plan,
+                RequestExecution::Complete(_) => return Err("public restore admission".into()),
+            };
+            let generation = service.durable.as_ref().ok_or("durable")?.generation();
+            let identity = service.current_state_identity().map_err(|_| "state identity")?;
+            let activation = service.unseal_nonce.clone();
+            let (result, file) = plan.execute_snapshot_transfer(&mut archive);
+            assert!(file.is_none());
+            assert!(
+                matches!(
+                    &result,
+                    ExternalEffectResult::SnapshotTransfer(Ok(Observation::Upload(_)))
+                ),
+                "the outer parser must finish before the real seal refusal"
+            );
+            let rejected = service.finish_external_request(*plan, result);
+            assert_eq!(rejected.status, 400, "{path} {variant}");
+            assert_eq!(
+                rejected.body["errors"][0],
+                "snapshot checksum authentication failed"
+            );
+            assert_eq!(
+                service.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+            assert_eq!(
+                service.current_state_identity().map_err(|_| "state identity")?,
+                identity
+            );
+            assert_eq!(service.unseal_nonce, activation);
+            assert_eq!(get(&mut service, &token), "keep-live", "{path} {variant}");
+            assert!(
+                fs::read_dir(service.data_dir.join(".snapshot-transfer"))?
+                    .next()
+                    .is_none()
+            );
+        }
     }
     Ok(())
 }
