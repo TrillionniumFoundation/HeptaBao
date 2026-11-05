@@ -1,0 +1,1108 @@
+{
+  "schema": "heptabao.openbao271.acceptance-denominator-readonly-audit.v1",
+  "audit_id": "20261105-61ff-acceptance-inventory-r1",
+  "as_of_utc": "2026-11-05T00:19:00Z",
+  "role": "Read-only source and previously archived public-evidence audit; not a product execution receipt.",
+  "actions": {
+    "remote_processes_started": 0,
+    "product_files_modified": 0,
+    "credentials_read": false,
+    "production_changed": false,
+    "external_messages_sent": false,
+    "blocked_development_restarted": false
+  },
+  "target": {
+    "product": "OpenBao",
+    "version": "2.7.1",
+    "tag": "v2.7.1",
+    "tag_points_directly_to_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "source_tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182",
+    "official_binary_sha256_observed_in_x230_receipt": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "version_source_caveat": "version_base.go embeds 2.0.0-HEAD unless release ldflags set it; use actual artifact checksum and observed version, not source-string inference."
+  },
+  "candidate": {
+    "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+    "tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+    "concurrent_evidence_note": "Only explicitly read immutable records below are counted. Later r5 execution results must be appended and reviewed separately."
+  },
+  "conclusion": {
+    "complete_openbao271_denominator_closed": false,
+    "total_endpoint_count": null,
+    "total_semantic_case_count": null,
+    "full_replacement_qualified": false,
+    "all_clients_migrated": false,
+    "retirement_qualified": false,
+    "reason": "Existing 2.6.2/2.7.0 inventories are useful predecessors but not a 2.7.1 full denominator. Current formal V6 storage profiles explicitly exclude several live owners. Exact source-qualified component passes do not transfer to later trees."
+  },
+  "official_source_registration_facts": {
+    "interpretation": "Counts are counts within named source maps. They overlap core and alias families and must not be added into a grand feature or endpoint total.",
+    "plugin_registry": {
+      "credentialBackends": [
+        "approle",
+        "cert",
+        "jwt",
+        "kubernetes",
+        "oidc",
+        "userpass"
+      ],
+      "databasePlugins": [
+        "mysql-database-plugin",
+        "mysql-aurora-database-plugin",
+        "mysql-rds-database-plugin",
+        "mysql-legacy-database-plugin",
+        "cassandra-database-plugin",
+        "influxdb-database-plugin",
+        "postgresql-database-plugin",
+        "redis-database-plugin",
+        "valkey-database-plugin"
+      ],
+      "logicalBackends": [
+        "kubernetes",
+        "kv",
+        "pki",
+        "rabbitmq",
+        "ssh",
+        "totp",
+        "transit"
+      ],
+      "counts": {
+        "credential_names": 6,
+        "logical_names": 7,
+        "database_names": 9
+      },
+      "aliases": {
+        "auth_oidc_and_jwt": "same credJWT.Factory",
+        "mysql": "four registered names with constructor username-template differences",
+        "redis_and_valkey": "same dbValkey.New"
+      },
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/helper/builtinplugins/registry.go",
+        "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/helper/builtinplugins/registry.go",
+        "read": "full_blob_read"
+      }
+    },
+    "command_registries": {
+      "auditBackends": [
+        "file",
+        "http",
+        "socket",
+        "syslog"
+      ],
+      "credentialBackends": [
+        "plugin"
+      ],
+      "logicalBackends": [
+        "plugin",
+        "database",
+        "kv"
+      ],
+      "physicalBackends": [
+        "inmem_ha",
+        "inmem",
+        "raft",
+        "postgresql",
+        "pebbledb"
+      ],
+      "serviceRegistrations": [
+        "kubernetes"
+      ],
+      "counts": {
+        "audit_names": 4,
+        "physical_names": 5,
+        "service_registration_names": 1
+      },
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/command/commands.go",
+        "blob": "82dd82cd13436258d6c316c8185306d440a84c9e",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/commands.go",
+        "read": "full_blob_read"
+      }
+    },
+    "core_registered_families": {
+      "credential": [
+        "token",
+        "namespace token shared-store variant"
+      ],
+      "logical": [
+        "kv fallback",
+        "cubbyhole",
+        "system",
+        "identity",
+        "namespace shared-backend variants"
+      ],
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/core.go",
+        "blob": "ee0941af06d4b12c5a81b9b4bf0d18aa4f056534",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/core.go",
+        "read": "full_blob_read"
+      }
+    },
+    "cli": {
+      "registered_command_key_count": 127,
+      "unique_key_count": 127,
+      "command_keys": [
+        "agent",
+        "agent generate-config",
+        "audit",
+        "audit disable",
+        "audit enable",
+        "audit list",
+        "auth tune",
+        "auth",
+        "auth disable",
+        "auth enable",
+        "auth help",
+        "auth list",
+        "auth move",
+        "debug",
+        "delete",
+        "lease",
+        "lease renew",
+        "lease lookup",
+        "lease revoke",
+        "list",
+        "login",
+        "namespace",
+        "namespace list",
+        "namespace scan",
+        "namespace lookup",
+        "namespace create",
+        "namespace patch",
+        "namespace delete",
+        "namespace delete-sealed",
+        "namespace lock",
+        "namespace unlock",
+        "namespace seal",
+        "namespace unseal",
+        "namespace seal-status",
+        "operator",
+        "operator diagnose",
+        "operator generate-root",
+        "operator init",
+        "operator key-status",
+        "operator members",
+        "operator migrate",
+        "operator raft",
+        "operator raft autopilot get-config",
+        "operator raft autopilot set-config",
+        "operator raft autopilot state",
+        "operator raft list-peers",
+        "operator raft join",
+        "operator raft remove-peer",
+        "operator raft promote",
+        "operator raft demote",
+        "operator raft snapshot",
+        "operator raft snapshot restore",
+        "operator raft snapshot save",
+        "operator rekey",
+        "operator rotate",
+        "operator rotate-keys",
+        "operator seal",
+        "operator step-down",
+        "operator unseal",
+        "operator validate-config",
+        "patch",
+        "path-help",
+        "pki",
+        "pki health-check",
+        "pki issue",
+        "pki list-intermediates",
+        "pki reissue",
+        "pki verify-sign",
+        "plugin",
+        "plugin deregister",
+        "plugin info",
+        "plugin init",
+        "plugin list",
+        "plugin prune",
+        "plugin register",
+        "plugin reload",
+        "plugin reload-status",
+        "proxy",
+        "policy",
+        "policy delete",
+        "policy fmt",
+        "policy list",
+        "policy read",
+        "policy write",
+        "print",
+        "print token",
+        "read",
+        "scan",
+        "secrets",
+        "secrets disable",
+        "secrets enable",
+        "secrets list",
+        "secrets move",
+        "secrets tune",
+        "server",
+        "ssh",
+        "status",
+        "transit",
+        "transit import",
+        "transit import-version",
+        "token",
+        "token create",
+        "token capabilities",
+        "token lookup",
+        "token renew",
+        "token revoke",
+        "unwrap",
+        "version",
+        "version-history",
+        "write",
+        "kv",
+        "kv put",
+        "kv patch",
+        "kv rollback",
+        "kv get",
+        "kv delete",
+        "kv list",
+        "kv destroy",
+        "kv undelete",
+        "kv enable-versioning",
+        "kv metadata",
+        "kv metadata put",
+        "kv metadata patch",
+        "kv metadata get",
+        "kv metadata delete",
+        "kv scan",
+        "monitor"
+      ],
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/command/commands.go",
+        "blob": "82dd82cd13436258d6c316c8185306d440a84c9e",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/commands.go",
+        "read": "full_blob_read"
+      },
+      "scope": "Source-map keys, not the number of flags, wire operations or semantic test cases."
+    },
+    "system_constructor": {
+      "path_builder_calls": 34,
+      "conditionally_added_builders": [
+        "rawPaths when core.rawEnabled",
+        "raftStoragePaths when core.GetRaftBackend()!=nil"
+      ],
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/logical_system.go",
+        "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system.go",
+        "read": "full_blob_read"
+      }
+    },
+    "system_paths_file": {
+      "literal_Pattern_field_occurrences": 86,
+      "scope": "Lexical occurrences in one file only; not a total endpoint count.",
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/logical_system_paths.go",
+        "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system_paths.go",
+        "read": "full_blob_read"
+      }
+    },
+    "openapi_generation": {
+      "authorized_mounted_backends_only": true,
+      "requires_separate_kv_versions": true,
+      "generic_mount_parameterization_supported": true,
+      "source": {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/logical_system.go",
+        "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system.go",
+        "read": "full_blob_read"
+      },
+      "scope": "pathInternalOpenAPI obtains authorized mounts, invokes backend HelpOperation, and merges returned paths. It does not prove semantically correct responses or cover every listener/recovery/configuration condition."
+    }
+  },
+  "predecessor_inventories": {
+    "v262": {
+      "source": {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+        "blob": "aaf511acf1408e229ae6b3fc5a6992668baf2162",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/qa/openbao-acceptance/complete_surface_corpus_v1.json",
+        "read": "full_blob_read"
+      },
+      "declared_and_recomputed": {
+        "declaredSurfaceCount": 59,
+        "actualSurfaceCount": 59,
+        "declaredFixtureCaseCount": 472,
+        "actualFixtureCaseMemberships": 472,
+        "uniqueFixtureCaseIds": 472,
+        "duplicateFixtureCaseIds": 0,
+        "duplicates": []
+      },
+      "category_counts": {
+        "core_system": {
+          "surfaces": 8,
+          "cases": 47
+        },
+        "auth_methods": {
+          "surfaces": 9,
+          "cases": 62
+        },
+        "secret_engines": {
+          "surfaces": 9,
+          "cases": 97
+        },
+        "database_providers": {
+          "surfaces": 5,
+          "cases": 60
+        },
+        "audit_devices": {
+          "surfaces": 4,
+          "cases": 30
+        },
+        "storage_backends": {
+          "surfaces": 2,
+          "cases": 14
+        },
+        "plugin_classes": {
+          "surfaces": 4,
+          "cases": 37
+        },
+        "cluster_ha": {
+          "surfaces": 5,
+          "cases": 8
+        },
+        "client_operator": {
+          "surfaces": 6,
+          "cases": 21
+        },
+        "namespace_workflow": {
+          "surfaces": 4,
+          "cases": 77
+        },
+        "migration": {
+          "surfaces": 3,
+          "cases": 19
+        }
+      },
+      "all_claims": {
+        "complete_fixture_coverage": false,
+        "independent_observation_complete": false,
+        "compatibility_claim": false,
+        "production_authority": false,
+        "authority_effect": "NONE"
+      },
+      "independently_observed_current_exact_head_surface_count": 0
+    },
+    "v270": {
+      "source": {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "oracle/inventory/openbao-v2.7.0/builtin-surface-observed.json",
+        "blob": "f785964f71ac4e81568397c8cfcbfcebd1c2791a",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/oracle/inventory/openbao-v2.7.0/builtin-surface-observed.json",
+        "read": "full_blob_read"
+      },
+      "version": "2.7.0",
+      "collection": "live_checksum_pinned_official_binary_verified_tls_server_not_dev",
+      "storage": "pebbledb_non_ha",
+      "mounted_variants": 15,
+      "openapi": {
+        "generic_path_count": 511,
+        "operation_count": 735,
+        "path_count": 511,
+        "path_groups": {
+          "/auth": 75,
+          "/cubbyhole": 1,
+          "/identity": 64,
+          "/inventory-database": 11,
+          "/inventory-kubernetes": 5,
+          "/inventory-kv1": 1,
+          "/inventory-kv2": 9,
+          "/inventory-pki": 136,
+          "/inventory-rabbitmq": 5,
+          "/inventory-ssh": 17,
+          "/inventory-totp": 3,
+          "/inventory-transit": 38,
+          "/sys": 146
+        },
+        "version": "3.0.2"
+      },
+      "qualification": {
+        "all_deployment_and_external_plugin_routes_observed": false,
+        "all_reported_builtin_auth_secret_mounts_enabled": true,
+        "all_reported_database_catalog_entries_read": true,
+        "candidate_semantics_qualified": false,
+        "database_engine_mounted": true,
+        "full_openbao_replacement": false,
+        "independent_admission": false
+      },
+      "scope_notes": [
+        "This is an observed API and builtin-plugin inventory, not a candidate compatibility receipt.",
+        "The fixture mounts each reported builtin auth and secret plugin, both KV versions, and the database engine. Default system, identity, cubbyhole and token mounts remain present.",
+        "Custom external plugins and deployment-specific routes may extend this inventory. Their behavior, CLI, Agent, Proxy, UI, provider effects and migration still need separate qualification.",
+        "The legacy OpenBao 2.6.2 corpus is unchanged and is not relabeled as 2.7.0.",
+        "The original HTTP bodies here were decoded by the shared TLS client. This manifest does not claim literal raw HTTP byte parity."
+      ]
+    },
+    "current_candidate_inventory_directories": [
+      "openbao-v2.6.2",
+      "openbao-v2.7.0"
+    ],
+    "exact_v271_inventory_directory_observed": false
+  },
+  "v271_required_security_regressions": [
+    {
+      "id": "271_sanitized_config_eab",
+      "contract": "Sanitized config must omit the ACME EAB MAC key.",
+      "candidate_runtime_qualified": false,
+      "candidate_source": "crates/heptabao-server/src/http_sanitized_config.rs",
+      "source_read_in_this_audit": "tree_entry_only",
+      "notes": "Exact 21a positive/negative redaction receipt not supplied to this audit."
+    },
+    {
+      "id": "271_unauth_root_rekey_audit_failure",
+      "contract": "Unauthenticated root-generation and rekey responses must fail when required audit logging fails.",
+      "candidate_runtime_qualified": false,
+      "notes": "Default-disabled listener routes need explicit separate fixture mode; ordinary root/ACL tests do not close this contract."
+    },
+    {
+      "id": "271_approle_expiry_before_tidy",
+      "contract": "Expired Secret IDs must be rejected before tidy.",
+      "candidate_runtime_qualified": false,
+      "harness": [
+        {
+          "path": "qa/openbao-acceptance/approle_271_security_live.py",
+          "blob": "d574f4d931eaa504045c2baf230c2e74fbf09c60",
+          "size": 8737,
+          "observation": "source_entry_present_not_a_runtime_pass"
+        }
+      ],
+      "notes": "Harness body read; no exact 21a run receipt qualified."
+    },
+    {
+      "id": "271_approle_form_login",
+      "contract": "Form-encoded AppRole login follows the corrected parser contract.",
+      "candidate_runtime_qualified": false,
+      "harness": [
+        {
+          "path": "qa/openbao-acceptance/approle_271_security_live.py",
+          "blob": "d574f4d931eaa504045c2baf230c2e74fbf09c60",
+          "size": 8737,
+          "observation": "source_entry_present_not_a_runtime_pass"
+        },
+        {
+          "path": "qa/openbao-acceptance/approle_form_negative_live.py",
+          "blob": "39c8f9f3d7943ca0ae93641145daf3cb2c3c31e2",
+          "size": 5534,
+          "observation": "source_entry_present_not_a_runtime_pass"
+        }
+      ],
+      "notes": "First harness body read; second source entry only. No exact 21a run qualified."
+    },
+    {
+      "id": "271_cert_role_quota_tls",
+      "contract": "Certificate role quota selection must receive the TLS connection.",
+      "candidate_runtime_qualified": false,
+      "harness": [
+        {
+          "path": "qa/openbao-acceptance/quota_role_271_live.py",
+          "blob": "cabfab4a21b513a35cf00d9d0ade3686a7cb07eb",
+          "size": 10661,
+          "observation": "source_entry_present_not_a_runtime_pass"
+        }
+      ],
+      "notes": "The inspected quota_role_271 runner explicitly exercises AppRole quota; it cannot substitute for the cert/TLS role-quota regression."
+    },
+    {
+      "id": "271_kubernetes_renewal_revalidation",
+      "contract": "Renewal must validate the Service Account JWT again.",
+      "candidate_runtime_qualified": false,
+      "harness": [
+        {
+          "path": "qa/openbao-acceptance/kubernetes_renewal_271_cluster_live.py",
+          "blob": "d041ba01c64e0287ea1cac3807ed98453e818f65",
+          "size": 38055,
+          "observation": "source_entry_present_not_a_runtime_pass"
+        }
+      ],
+      "notes": "Source entry and README existence only; formal native V6 admission currently excludes nonempty Kubernetes auth configuration."
+    }
+  ],
+  "v270_features_carried_into_v271": [
+    "External Keys",
+    "PKI ML-DSA",
+    "Transit ML-DSA",
+    "PQC TLS",
+    "PostgreSQL HA read scaling",
+    "Strong consistency headers",
+    "PebbleDB",
+    "Control Groups"
+  ],
+  "v271_additional_bugfix_contracts": [
+    "Persist rotation-config disabled changes",
+    "gRPC invalidation across active/standby lifecycle",
+    "Raft auto_join with discovered host:port",
+    "PostgreSQL applied-index LSN semantics",
+    "LifetimeWatcher error-backoff interval"
+  ],
+  "version_scope_changes": {
+    "removed_from_core_in_v270": [
+      "Kerberos auth",
+      "LDAP auth",
+      "RADIUS auth",
+      "LDAP secret engine",
+      "file physical storage",
+      "several provider KMS seal implementations"
+    ],
+    "rule": "Keep external plugin interfaces and deployed plugin versions in a separate explicit profile; neither silently count removed builtins nor silently drop actual dependencies.",
+    "source": {
+      "repo": "openbao/openbao",
+      "path": "CHANGELOG.md",
+      "blob": "930abb0b58b2d46760c8c8a5e5ff87a03c4b3f73",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/CHANGELOG.md",
+      "read": "full_blob_read"
+    }
+  },
+  "formal_native_v6_profile": {
+    "root_auth_allowed_names": [
+      "token",
+      "approle",
+      "cert",
+      "userpass"
+    ],
+    "ordinary_child_auth_allowed_names": [
+      "token",
+      "approle",
+      "cert"
+    ],
+    "ordinary_child_auth_token_type": "service only; AppRole/cert/token-role batch checks remain",
+    "root_secret_shapes": [
+      "KV1 / KV1 records",
+      "KV2 / KV2 native",
+      "Transit without external state",
+      "TOTP",
+      "SSH",
+      "PKI satisfying native_local_profile"
+    ],
+    "ordinary_child_secret_shapes": [
+      "KV1 / KV1 records",
+      "KV2 / KV2 native"
+    ],
+    "rejected_live_owner_classes": [
+      "nonempty database state",
+      "non-default Raft administration",
+      "JWT/OIDC/Kubernetes auth configuration",
+      "LDAP/RADIUS/Kerberos/plugin auth configuration",
+      "identity MFA",
+      "password policy state",
+      "SDK auth catalog/clock/leases/custody",
+      "SDK secret catalog/owners/leases",
+      "external keys or provider adapters",
+      "protected/independently sealed namespace custody and namespace leases",
+      "unsupported workflow/control-group targets"
+    ],
+    "startup_profile_requirements": [
+      "Shamir sealed local file custody",
+      "Explicit enrolled Raft owner for native_v6_raft",
+      "Existing acknowledged Shamir seed for native V6 Raft",
+      "No PostgreSQL durable provider, Wrapper, SDK, plugin auth/database/KMS/secrets or external KMS adapters"
+    ],
+    "state_admission_sources": [
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_storage.rs",
+        "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_storage.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/server_storage.rs",
+        "blob": "cfcd4469d1357547ef279d35451d1dd6d3c857a4",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/server_storage.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "blob": "7d878b6d96c54e471b9d887afc3fef6cd50e7d5a",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/engines/native_empty_namespace.rs",
+        "blob": "a48529a3bacb82e01b68b7ac929075e5a32b0e73",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/engines/native_empty_namespace.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_controlgroups.rs",
+        "blob": "93284c62bb70a8bd9e208bf4f8a72063536b78f2",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_controlgroups.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_namespace_flat_retirement.rs",
+        "blob": "a8b940b3a28940bad812087325297ee15b9336e8",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_namespace_flat_retirement.rs",
+        "read": "full_blob_read"
+      }
+    ],
+    "important_qualification": "These are static admission restrictions for this formal native V6 profile, not a claim that all corresponding V5 features or other adapters are absent from the repository. Some error strings list fewer supported engines than the actual predicates; this audit uses the predicates."
+  },
+  "evidence_by_source": [
+    {
+      "id": "source_21a_syntax",
+      "source_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+      "source_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+      "evidence_commit": "bc0ff9d481cbe4ad659d4e8413be9f855e51968c",
+      "evidence_path": "qa/evidence/20261105/ha-mac-snapshot-api-attempt-61ff-r5/execution/syntax-review.public.json",
+      "job": "1a1a9082357-fc05-30a2",
+      "status": "CONTROL_SYNTAX_ONLY",
+      "actual": {
+        "schema": 1,
+        "job_id": "1a1a9082357-fc05-30a2",
+        "host": "mac",
+        "status": "succeeded",
+        "exit_code": 0,
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "compiled": true,
+        "driver_executed": false,
+        "remote_source_preflight_executed": false,
+        "product_build_or_test_executed": false,
+        "driver_sha256": "6e1ba63d18d6133c4912228b2c1bc5662465155b578017c3278c8a008834477c",
+        "packet_sha256": "8a4af1a4039a8884390568766fa6868b665dc1e93eb97c3b0a22beeeeaebaea4",
+        "bootstrap_sha256": "e6edd4661fecb837997142cffee297f10b7aab127a9b9da6ccd1130f63e7bbc1",
+        "stdout_bytes": 231,
+        "stdout_sha256": "93982016c57433901da876966fbed9b1199551b43245c2d9e671e7bb4a198622",
+        "stderr_bytes": 0,
+        "full_replacement_qualified": false
+      },
+      "scope": "Only the control syntax was compiled. See source_21a_r5_preflight_refusal for the later actual request; it executed no product build or test."
+    },
+    {
+      "id": "source_21a_r5_preflight_refusal",
+      "requested_candidate_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+      "requested_candidate_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+      "actual_input_source": {
+        "commit": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+        "tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec",
+        "status": ""
+      },
+      "evidence_commit": "edbdb2f754bbd9cb8d84418f3d04bac970e970e6",
+      "evidence_path": "qa/evidence/20261105/ha-mac-snapshot-api-attempt-61ff-r5/execution/candidate-normal-result.public.json",
+      "evidence_blob": "492a563989420f42b9ce155e4e680fdd785a95b3",
+      "result_bytes": 17544,
+      "result_sha256": "2a7d38cc298f0007a0afd62981e149b3213134fa1d12372d552eb5acd6674a9c",
+      "job": "1a1a90d2733-fc05-30d1",
+      "status": "PREFLIGHT_REFUSED_BEFORE_PRODUCT_WORK",
+      "authoritative_state": "failed",
+      "exit_code": 1,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "failure_code": "external_compiler_or_product_process_present",
+      "elapsed_seconds": 0.3499723747372627,
+      "read_only_commands": 4,
+      "all_read_only_commands_exit_zero": true,
+      "all_owned_groups_stopped": true,
+      "forced_cleanup": false,
+      "signal_after_reap": false,
+      "source_patch_applied": false,
+      "strict_clippy_executed": false,
+      "libtest_compile_executed": false,
+      "named_tests_executed": 0,
+      "normal_server_link_executed": false,
+      "real_credentials_used": false,
+      "production_changed": false,
+      "candidate_qualification": false,
+      "scope": "The target input_tree field is planned, not applied. Four read-only checks completed against the old actual source. Preserve the earlier 5-pass/9-fail r3 result; no test or build qualification transfers to the requested candidate."
+    },
+    {
+      "id": "source_f064_mac14",
+      "source_commit": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+      "source_tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec",
+      "review_alias": "78e9a44651fb9261823f726d1739fcdcd442e368",
+      "evidence_commit": "5f2b028c1581b630d7f6bc8972f97f8b9a5d4c22",
+      "evidence_path": "qa/evidence/20261104/ha-mac-snapshot-api-attempt-61ff-r1/execution/terminal-review.public.json",
+      "job": "1a1a8324009-fc05-2dfa",
+      "status": "FAILED",
+      "passed": 5,
+      "failed": 9,
+      "critical_total": 14,
+      "strict_clippy_exit": 0,
+      "libtest_compile_exit": 0,
+      "normal_server_link_executed": false,
+      "scope": "Predecessor tree only; no pass or compile qualification transfers to 21a."
+    },
+    {
+      "id": "source_7071_x230_formal34",
+      "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+      "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+      "evidence_commit": "dee59223feea40a0633900fdbd496d66c3ea4194",
+      "evidence_path": "qa/evidence/20261104/x230-formal34-61ff-r1/execution/root-actual-verification.public.json",
+      "evidence_blob": "527fd1c77467b229dbd32b8b1bc6e6b15df5cb6a",
+      "job": "1a1a813f218-fc05-2d94",
+      "status": "SCOPED_COMPONENT_PASS",
+      "passed": 31,
+      "total": 31,
+      "binary_sha256": "199e2b6a91346db2b61a6066827a0b4ee658991758926ed9c6b50a8f1ea98a71",
+      "retained_live_payload_bytes": 35651584,
+      "retained_live_versions": 17,
+      "owned_children_waited": 408,
+      "source_export_count": 1,
+      "target_import_count": 1,
+      "snapshot_restore_count": 1,
+      "scope": "Exact normal 7071 native_v6_file synthetic KV2 data/history/physical witness/cold restart/snapshot restore/CAS qualification. Not whole instance, new tree, cross-product snapshot wire format, HA or real traffic."
+    },
+    {
+      "id": "source_7071_workspace",
+      "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+      "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+      "evidence_commit": "3ae8b5cf4f5753dbefc7c12b21369d952367be7e",
+      "evidence_path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt2/terminal-assessment.public.json",
+      "evidence_blob": "1af557a76c52bd3e86834ac1e2f05e660e0533e4",
+      "job": "1a1a7e9ec36-fc05-2cea",
+      "status": "FAILED",
+      "cargo_exit": 101,
+      "groups": 67,
+      "passed": 4752,
+      "failed": 8,
+      "ignored": 9,
+      "scope": "Preserve failures and ignored names. The later full-log archive is separate from the earlier terminal-assessment full_logs_retrieved=false field."
+    },
+    {
+      "id": "source_33_authbus_r4b",
+      "source_family": "33cafa4",
+      "evidence_commit": "f8378f188406d9dfe818bc274101f742d4d7caa7",
+      "evidence_path": "qa/evidence/20261104/root-continuation-reviews-61ff-r1/authbus-r4b/root-actual-review.public.json",
+      "original_evidence_commit": "988892fb8fbf0c7c5e0a8017d7f575c0fea3ac29",
+      "job": "1a1a8265bf5-fc05-2dd3",
+      "status": "COUNTEREXAMPLE_CONFIRMED",
+      "root_checks": 43,
+      "dynamic_checks": 421,
+      "single_writer_gate_passed": false,
+      "fixed_candidate_executed": false,
+      "scope": "Three real concurrent local RPC counterexamples, owned cleanup and logical rollback. Original 33 source and SDK factory. Prior provider source proof referenced; no fresh provider query or default gateway/cutover qualification."
+    },
+    {
+      "id": "historical_33_lan",
+      "source_family": "33cafa4",
+      "status": "PARENT_CONTEXT_ONLY_NOT_REOPENED_IN_THIS_AUDIT",
+      "reported_counts": {
+        "lan": 128,
+        "empty_destination_recovery": 98
+      },
+      "current_candidate_credit": false,
+      "scope": "Root previously verified historical Mac/ROG/Pocket receipts. This audit did not reopen their complete primary files and does not count these numbers as independently reproduced here."
+    }
+  ],
+  "fleet_inventory": {
+    "source": {
+      "repo": "TrillionniumFoundation/HeptaBao",
+      "path": "qa/evidence/20261104/retirement-inventory/six-host-root-review.public.json",
+      "blob": "006b11baf68ac5e72acc04a932d43421edbc3f56",
+      "commit": "938d6a2d57dcdd2626480387a8ed6372fa3c55a4",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/938d6a2d57dcdd2626480387a8ed6372fa3c55a4/qa/evidence/20261104/retirement-inventory/six-host-root-review.public.json",
+      "read": "full_blob_read"
+    },
+    "hosts": 6,
+    "service_path_candidates": 53,
+    "nonrecursive_backup_path_candidates": 91,
+    "complete_asset_inventory": false,
+    "docker_listing_failed_hosts": [
+      "rog",
+      "pocket4"
+    ],
+    "desktop_separate_local_provider": true,
+    "ai395_absence_limited_to_scan_scope": true,
+    "all_clients_migrated": false,
+    "all_backup_restore_paths_migrated": false,
+    "preserve_x230_openbao271_oracle": true,
+    "old_installations_deleted": false
+  },
+  "missing_denominator_layers": [
+    {
+      "id": "builtin_api",
+      "scope": "All registered auth/secret/database names and core system/token/identity/cubbyhole families",
+      "open_gap": "2.7.1 live mounted OpenAPI inventory and per-operation semantic cases missing from audited current-tree receipts."
+    },
+    {
+      "id": "conditional_system_and_http",
+      "scope": "Raft, raw/recovery mode, namespace, listener-dependent unauthenticated administration, metrics/pprof/UI and direct HTTP routes",
+      "open_gap": "A non-HA root-namespace OpenAPI snapshot is not the union; inventory conditions must be recorded."
+    },
+    {
+      "id": "authz_identity_and_lifecycle",
+      "scope": "ACL templates/parameters, namespaces, tokens, SecretID, MFA, leases, renew/revoke, wrapping, control groups",
+      "open_gap": "Stateful and negative authorization contracts need exact-current-source tests. Native V6 has explicit profile exclusions."
+    },
+    {
+      "id": "secret_engine_semantics",
+      "scope": "KV1/KV2 history/CAS/types; Transit algorithms; PKI/ACME/CRL/OCSP/issuers; SSH/TOTP; dynamic database/Kubernetes/RabbitMQ credentials",
+      "open_gap": "31-case KV2 migration is one component. External effects, renewal/revoke, other engine state migration are separate."
+    },
+    {
+      "id": "physical_storage_seal_and_recovery",
+      "scope": "Raft, PostgreSQL, PebbleDB behavior/configuration, Shamir/auto-seal/KMS, snapshots and restart/crash durability",
+      "open_gap": "Backend option-name recognition is not file-format interoperability; native formal profile excludes provider adapters and wrapped/SDK ownership."
+    },
+    {
+      "id": "ha_and_consistency",
+      "scope": "Election, quorum/ReadIndex, forwarding, X-Vault-Index/X-Vault-Inconsistent, partitions, active/standby transitions, restart and backup recovery",
+      "open_gap": "Current candidate has no closed LAN receipt in this audit; historical source qualifications cannot transfer."
+    },
+    {
+      "id": "operators_clients",
+      "scope": "127 CLI command keys plus flags/output/exit codes, Agent, Proxy, SDK clients/LifetimeWatcher, UI/OpenAPI/config/timers",
+      "open_gap": "No complete exact-current-source coverage mapping; selected CLI/API scenarios do not qualify all commands or flags."
+    },
+    {
+      "id": "external_plugins",
+      "scope": "Auth/secret/database/KMS plugin contracts and actual installed plugin versions/digests",
+      "open_gap": "LDAP/RADIUS/Kerberos/LDAP-secret and several KMS implementations moved out of 2.7 core; deployment-specific external plugin denominator remains unclosed."
+    },
+    {
+      "id": "fleet_migration_and_retirement",
+      "scope": "Actual clients, credentials, service units, jobs, TLS renewal and backup/restore consumers per host",
+      "open_gap": "Six-host path scan is incomplete; 53 service paths/91 backup-path candidates are not migrated services/backups. Real per-client restart/rollback/cutover evidence is incomplete."
+    }
+  ],
+  "proposed_reproducible_generation": {
+    "execution_authorized_by_this_report": false,
+    "artifacts": [
+      "source-registration-v271.json",
+      "observed-routes-v271.json",
+      "semantic-contracts-v271.json",
+      "exact-source-evidence-index.json",
+      "fleet-dependency-and-migration-register.json"
+    ],
+    "source_pass": "Pin official tag/commit/tree and each registry/route/config/CLI source blob; parse map keys and Go AST path expressions/build conditions. Retain unresolved dynamic expressions as unresolved, never discard them.",
+    "oracle_pass": "Use checksum-pinned official 2.7.1 actual server in newly owned isolated fixtures. Inventory authenticated plugin catalog, mounts/auth and OpenAPI after enabling every reported builtin auth/secret variant including both KV versions and database. Capture responses/statuses and exact source/binary/config/mode pins, with credentials retained only in private fixture files.",
+    "conditional_pass": "Collect the union of PebbleDB, Raft and PostgreSQL modes; root/child namespace conditions; enabled raw/recovery/listener-dependent administration and direct HTTP handlers. Record N/A only with an explicit supported-profile justification. External plugin versions/digests and actual fleet configuration are additional inputs.",
+    "normalization_key": [
+      "reference version+binary checksum",
+      "profile/config/mode",
+      "namespace kind",
+      "mount kind+type+options",
+      "route template/operation ID",
+      "HTTP or logical operation",
+      "request/response content types"
+    ],
+    "semantics_pass": "For every normalized contract enumerate positive/negative auth, status/body/headers, state transition, TTL/renew/revoke, one-shot/replay, audit/failure, durable restart and relevant HA consistency properties. Aliases and CLI flags/output/exit codes require their own observable contract where behavior differs.",
+    "evidence_binding": [
+      "candidate exact source commit and tree",
+      "clean/dirty source manifest",
+      "lockfile and build-profile pins",
+      "actual artifact hash per OS",
+      "official exact artifact version/hash",
+      "exact case inventory and skipped reasons",
+      "known/unreplayed request journal",
+      "owned-process terminal/cleanup receipts",
+      "before/after state and backup/rollback observations"
+    ],
+    "counting_rule": "Source declarations, OpenAPI operation entries, semantic cases, and fleet client migrations are different denominators. Recompute each from unique stable IDs and retain all unresolved/failed/ignored items. Never promote source presence or a predecessor pass into an exact-current-source pass.",
+    "completion_rule": "Close the version-specific inventory and required supported-profile semantics, then the physical-fleet cutover/rollback/backup register. Full replacement and retirement stay false while any required contract, live owner, client, or backup consumer is unresolved."
+  },
+  "read_sources": {
+    "official": [
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/helper/builtinplugins/registry.go",
+        "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/helper/builtinplugins/registry.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/command/commands.go",
+        "blob": "82dd82cd13436258d6c316c8185306d440a84c9e",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/commands.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/core.go",
+        "blob": "ee0941af06d4b12c5a81b9b4bf0d18aa4f056534",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/core.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/logical_system.go",
+        "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/vault/logical_system_paths.go",
+        "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system_paths.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/http/handler.go",
+        "blob": "ee3c7bc5c0e342d379cf4d6334a5f9f0d4233ff3",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/handler.go",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "CHANGELOG.md",
+        "blob": "930abb0b58b2d46760c8c8a5e5ff87a03c4b3f73",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/CHANGELOG.md",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "openbao/openbao",
+        "path": "internal/version/version_base.go",
+        "blob": "1bec5753e197e79d2b67003e2b902ad388723f95",
+        "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/version/version_base.go",
+        "read": "full_blob_read"
+      }
+    ],
+    "candidate": [
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_storage.rs",
+        "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_storage.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/server_storage.rs",
+        "blob": "cfcd4469d1357547ef279d35451d1dd6d3c857a4",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/server_storage.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "blob": "7d878b6d96c54e471b9d887afc3fef6cd50e7d5a",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/engines/native_empty_namespace.rs",
+        "blob": "a48529a3bacb82e01b68b7ac929075e5a32b0e73",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/engines/native_empty_namespace.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_native_controlgroups.rs",
+        "blob": "93284c62bb70a8bd9e208bf4f8a72063536b78f2",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_native_controlgroups.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "crates/heptabao-server/src/service_namespace_flat_retirement.rs",
+        "blob": "a8b940b3a28940bad812087325297ee15b9336e8",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/crates/heptabao-server/src/service_namespace_flat_retirement.rs",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+        "blob": "aaf511acf1408e229ae6b3fc5a6992668baf2162",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/qa/openbao-acceptance/complete_surface_corpus_v1.json",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "oracle/inventory/openbao-v2.6.2/surface-catalog.yaml",
+        "blob": "36a372596e1819366e18c3bb191832c02b1d6bab",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/oracle/inventory/openbao-v2.6.2/surface-catalog.yaml",
+        "read": "full_blob_read"
+      },
+      {
+        "repo": "TrillionniumFoundation/HeptaBao",
+        "path": "oracle/inventory/openbao-v2.7.0/builtin-surface-observed.json",
+        "blob": "f785964f71ac4e81568397c8cfcbfcebd1c2791a",
+        "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+        "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/21a521e3e59af291dd2abc6721e8559e06338657/oracle/inventory/openbao-v2.7.0/builtin-surface-observed.json",
+        "read": "full_blob_read"
+      }
+    ]
+  },
+  "limitations": [
+    "No remote process or official/candidate product request was executed by this audit.",
+    "No complete 2.7.1 dynamic route union or semantic-case total was generated; totals remain null.",
+    "Candidate source entries and fixture definitions are not run receipts.",
+    "Historical 33 LAN counts are parent-context references only; their primary receipts were not reopened here.",
+    "New concurrent r5 results after the pinned syntax record are intentionally not inferred."
+  ],
+  "fleet_candidate_register": {
+    "evidence_commit": "3f910144cf1f37c3c66605d97026d036d07a61f7",
+    "path": "qa/evidence/20261105/root-continuation-reviews-61ff-r1/fleet/fleet-candidate-migration-register.public.json",
+    "blob": "6c5b3a2c9308f460a8c5d00bdaa1aef9bd0f4449",
+    "bytes": 73927,
+    "sha256": "d98b8a94d11bed63a784d1b620f65a56bafca443034d5422df545b6af0d8be3f",
+    "candidate_host_path_rows": 144,
+    "configured_agent_entries": 21,
+    "fresh_host_inventory": false,
+    "production_cutovers_proved": 0,
+    "retirement_qualified": false
+  },
+  "root_update_note": "Root incorporated independently verified r5 refusal and the historical six-host candidate register. No new runtime qualification was added."
+}
