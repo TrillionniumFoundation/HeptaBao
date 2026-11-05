@@ -231,7 +231,18 @@ def http_leaf():
         response = connection.getresponse()
         need(not 300 <= response.status < 400, "http_redirect_refused")
         limit = ARCHIVE_BYTES if archive_out and response.status == 200 else JSON_BYTES
-        body = response.read(limit + 1)
+        if archive_in and response.status == 204:
+            need(response.getheader("Content-Length") is None
+                 and response.getheader("Transfer-Encoding") is None,
+                 "snapshot_restore_204_body_framing")
+            need(response.fp is not None, "snapshot_restore_response_stream")
+            # HTTPResponse.read() assumes a 204 has no body. Read the original
+            # buffered TLS stream to EOF so illegal trailing bytes are seen.
+            body = response.fp.read(1)
+            need(body == b"", "snapshot_restore_204_body_must_be_empty")
+            response.close()
+        else:
+            body = response.read(limit + 1)
         need(len(body) <= limit, "http_response_bound")
         if archive_out and response.status == 200:
             private_write(archive_out, body)
@@ -294,6 +305,8 @@ class Endpoint:
                 return status, result
             raw = base64.b64decode(result["body"], validate=True)
             need(len(raw) <= JSON_BYTES, "http_json_response_bound")
+            if archive_in and status == 204:
+                need(not raw, "snapshot_restore_204_body_must_be_empty")
             decoded = decode(raw) if raw else {}
             if response_evidence is not None:
                 private_write(response_evidence, raw)
@@ -739,8 +752,9 @@ class Run:
                    and same_json_tokens(applied["data"].get("data"), {"after_snapshot": True})
                    and isinstance(applied_metadata.get("data"), dict)
                    and applied_metadata["data"].get("current_version") == live_count + 3)
-        self.check("snapshot_restore_once", self.target.call(
-            "POST", "sys/storage/raft/snapshot", archive_in=snapshot)[0] == 200)
+        restore_status, restore_body = self.target.call(
+            "POST", "sys/storage/raft/snapshot", archive_in=snapshot)
+        self.check("snapshot_restore_once", restore_status == 204 and restore_body == {})
         self.cold_candidate()
         self.check("restored_cold_history_exact", same_json_tokens(observations(self.target, live_count), self.original))
         self.verify_target_storage("restored_storage_history_exact", live_count, size)

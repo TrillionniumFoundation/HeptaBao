@@ -1303,6 +1303,17 @@ pub(crate) enum ExternalEffectResult {
     ),
 }
 
+impl ExternalEffectResult {
+    // This classifies only the stream importer's observation. It grants no
+    // restore or delivery authority; the original finalizer must still run.
+    pub(crate) fn is_native_snapshot_upload_observation(&self) -> bool {
+        matches!(
+            self,
+            Self::SnapshotTransfer(Ok(snapshot_transfer::Observation::Upload(_)))
+        )
+    }
+}
+
 pub(crate) struct PendingExternalRequest {
     raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
     quota_response_headers: Option<rate_limit_quotas::AcceptedHeaders>,

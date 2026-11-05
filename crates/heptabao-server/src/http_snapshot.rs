@@ -307,6 +307,11 @@ pub(super) fn execute(
     deadline: Instant,
 ) -> NativeReply {
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let public_snapshot_upload = matches!(request.method, "POST" | "PUT")
+        && matches!(
+            request.path,
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        );
     let execution = match lock_until(service, deadline) {
         Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),
         Err(_) => return NativeReply::Json(Response::error(503, "snapshot admission unavailable")),
@@ -340,6 +345,9 @@ pub(super) fn execute(
             None,
         ),
     };
+    let uploaded_archive = public_snapshot_upload
+        && file.is_none()
+        && observation.is_native_snapshot_upload_observation();
     // No network/body I/O occurs under the service writer. The final request
     // audit must succeed before this file capability can reach the socket.
     let mut response = match lock_until(service, deadline) {
@@ -358,6 +366,15 @@ pub(super) fn execute(
                 "snapshot redirect lost its original route",
             ))
         };
+    }
+    if uploaded_archive && response.status == 200 {
+        // OpenBao's public restore wire contract is 204 with no body. Apply
+        // this only after the actual finalizer, mandatory audit and delivery
+        // checks succeed. The typed Upload observation excludes inspect/cancel
+        // reconciliation; the exact public routes exclude repair. Preserve the
+        // final response's quota/consistency headers and internal Service reply.
+        response.status = 204;
+        crate::service::erase_json(&mut response.body);
     }
     if response.status == 200
         && let Some(file) = file
