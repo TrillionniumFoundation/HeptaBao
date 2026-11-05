@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/.git/HEAD\",\"sha256\":\"5465634762c512d82ffb67dd8adbff655bd7aed38012c99c97c4872b5a5feff4\",\"size\":56,\"text\":\"ref: refs/heads/codex/heptabao-unified-61ff-20261104-r1\\n\",\"version\":\"66306:31362545:56:1793807481975046398:1793807481975046398\"},{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/Cargo.toml\",\"sha256\":\"ea76f784a4b1941eb213067e39953c8ade071481d20f13a6fec68a444c27bdce\",\"size\":615,\"text\":\"[workspace]\\nmembers = [\\\"crates/*\\\"]\\nexclude = [\\\"vendor/bcrypt-0.19.3\\\", \\\"third_party/workflow-gotmpl\\\"]\\nresolver = \\\"3\\\"\\n\\n[workspace.package]\\nedition = \\\"2024\\\"\\nrust-version = \\\"1.98\\\"\\nversion = \\\"0.1.0\\\"\\n\\n[workspace.lints.rust]\\nunsafe_code = \\\"forbid\\\"\\nunused_must_use = \\\"deny\\\"\\n\\n[workspace.lints.clippy]\\nall = { level = \\\"warn\\\", priority = -1 }\\nexpect_used = \\\"deny\\\"\\npanic = \\\"deny\\\"\\nunwrap_used = \\\"deny\\\"\\n\\n# Owner validation must finish within the same bounded request deadlines.\\n# Development and inherited test builds keep runtime safety checks enabled.\\n[profile.dev]\\nopt-level = 1\\ndebug-assertions = true\\noverflow-checks = true\\n\",\"version\":\"66306:31362241:615:1793807481809636496:1793807481809636496\"},{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/.cargo-lock\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"size\":0,\"text\":\"\",\"version\":\"66306:31493162:0:1793783269341057224:1793807478208646569\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

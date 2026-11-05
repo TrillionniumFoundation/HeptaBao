@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.snapshot-outer-static-review.v1",
+  "fixed_base_git_blobs_and_bytes_verified": true,
+  "reconstructed_before_format_matches_prior_recorded_hashes": true,
+  "only_post_reconstruction_edit": "expand one 102-character matches! assertion into four lines",
+  "changed_rust_files": [
+    "crates/heptabao-server/src/snapshot_archive.rs",
+    "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "crates/heptabao-server/src/service_snapshot_transfer_tests.rs"
+  ],
+  "required_tar_parser_before_terminator_byte_identical": true,
+  "state_magic_and_import_return_tail_byte_identical": true,
+  "service_finalizer_and_later_code_byte_identical": true,
+  "one_shared_private_parser": true,
+  "one_production_public_restore_call_site": true,
+  "route_selector": [
+    "sys/storage/raft/snapshot",
+    "sys/storage/raft/snapshot-force"
+  ],
+  "selector_authority": "already-admitted server-side upload plan.path",
+  "default_strict_wrapper_preserved": true,
+  "strict_internal_repair_preserved_by_exact_path_selection": true,
+  "new_test_functions": [
+    "service::snapshot_transfer::tests::strict_native_archive_import_still_requires_gzip_and_file_eof",
+    "service::snapshot_transfer::tests::public_native_restore_outer_end_variants_install_first_archive_and_reopen",
+    "service::snapshot_transfer::tests::public_native_restore_rejects_required_tar_damage_and_invalid_first_archive",
+    "service::snapshot_transfer::tests::public_native_restore_outer_end_never_bypasses_sealed_checksum_authentication"
+  ],
+  "root_independent_source_diff_review": "parent reported complete local diff review and no additional required change before final packaging",
+  "formatter_executed": false,
+  "clippy_executed": false,
+  "rust_compiler_executed": false,
+  "product_tests_executed": false,
+  "http_observer_executed": false,
+  "remote_process_started": false,
+  "mac_source_modified": false,
+  "known_unfixed_http_status": "existing Service/native HTTP success 200 versus official restore 204; separate repair required",
+  "full_replacement_qualified": false
+}

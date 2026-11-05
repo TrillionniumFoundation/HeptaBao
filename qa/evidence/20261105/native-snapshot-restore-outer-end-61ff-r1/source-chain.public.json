@@ -1,0 +1,282 @@
+{
+  "schema": "heptabao.snapshot-outer-source-chain.v1",
+  "base_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "base_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "review_kind": "read-only source review, no runtime qualification",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "git_blob": "6828ae88590184830da949001b13abd82a4f9b10",
+      "bytes": 14013
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9",
+      "bytes": 16786
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc",
+      "bytes": 64504
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer_tests.rs",
+      "git_blob": "e239d8e7d3b88df0899265fa39d796745505e6d6",
+      "bytes": 37933
+    },
+    {
+      "path": "crates/heptabao-server/src/service_backup_restore.rs",
+      "git_blob": "c349e3b69432f1fd2da94499ab948e3fc4282c54",
+      "bytes": 55523
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+      "bytes": 27950
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
+      "bytes": 44113
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_repair.rs",
+      "git_blob": "e2b5834eef2c44e964f2ac3c50f319df63f4db35",
+      "bytes": 7302
+    },
+    {
+      "path": "crates/heptabao-server/src/service_records_v6.rs",
+      "git_blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e",
+      "bytes": 66207
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_backup.rs",
+      "git_blob": "07db3372f2a0f6a79fff02b7272f0cdce172cf7d",
+      "bytes": 22973
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_backup_historical.rs",
+      "git_blob": "33beeb330a5d7666ef686651d7098e88428889d8",
+      "bytes": 8086
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_backup_cold.rs",
+      "git_blob": "82f03f03cf7e58d01f1ca8e90e7b1e35a8b6e001",
+      "bytes": 7204
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_backup_format.rs",
+      "git_blob": "357387e9f0abeda9dc43a5be21acb9e499c3e363",
+      "bytes": 12539
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "git_blob": "3801150b71e68d75afb46136e31dce05841fe081",
+      "bytes": 231872
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "git_blob": "ed4983b4d8b8527fed8f699284a9244eecbfe81d",
+      "bytes": 33910
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "git_blob": "703a7183185a4fee775a95109e7b084c1aa315f6",
+      "bytes": 27709
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/backup_stream.rs",
+      "git_blob": "53678add08ca6eb51a879ba7bb7fd13142e5df8a",
+      "bytes": 6270
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/prepared_restore.rs",
+      "git_blob": "bf0876f6a2c9ac16e647cb083aa196462b462f4b",
+      "bytes": 13326
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/lib.rs",
+      "git_blob": "ceb93474c0bfef674a00bfb20b7b7b419775f492",
+      "bytes": 148811
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/v6_object_backup.rs",
+      "git_blob": "fc14da10306b6a238dd4a08ef73d3238869591ad",
+      "bytes": 43289
+    },
+    {
+      "path": "Cargo.lock",
+      "git_blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff",
+      "bytes": 101193
+    }
+  ],
+  "stages": [
+    {
+      "name": "complete_http_body",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/http_snapshot.rs",
+          "git_blob": "ed4983b4d8b8527fed8f699284a9244eecbfe81d"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc"
+        },
+        {
+          "path": "crates/heptabao-server/src/snapshot_file.rs",
+          "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9"
+        }
+      ],
+      "finding": "BodyReader completion precedes import; complete compressed input including any suffix remains subject to original framing, size and deadline."
+    },
+    {
+      "name": "outer_envelope",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/snapshot_archive.rs",
+          "git_blob": "6828ae88590184830da949001b13abd82a4f9b10"
+        }
+      ],
+      "finding": "Required canonical entries, metadata, state SHA256, nonempty sealed sums, zero padding, 1024 zero terminator and state magic remain mandatory. Only public restore omits reads after the first logical tar end."
+    },
+    {
+      "name": "v5_authenticated_restore",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_backup_restore.rs",
+          "git_blob": "c349e3b69432f1fd2da94499ab948e3fc4282c54"
+        },
+        {
+          "path": "crates/heptabao-durable-service/src/backup_stream.rs",
+          "git_blob": "53678add08ca6eb51a879ba7bb7fd13142e5df8a"
+        },
+        {
+          "path": "crates/heptabao-durable-service/src/lib.rs",
+          "git_blob": "ceb93474c0bfef674a00bfb20b7b7b419775f492"
+        },
+        {
+          "path": "crates/heptabao-durable-service/src/prepared_restore.rs",
+          "git_blob": "bf0876f6a2c9ac16e647cb083aa196462b462f4b"
+        }
+      ],
+      "finding": "Live seal plus authenticated sums; exact HBB2 length/EOF; component AEAD, journal/checkpoint/generation checks; application state, protected floors and capacity; affine instance/frontier-bound durable install."
+    },
+    {
+      "name": "v6_authenticated_restore",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+          "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f"
+        },
+        {
+          "path": "crates/heptabao-durable-service/src/v6_object_backup.rs",
+          "git_blob": "fc14da10306b6a238dd4a08ef73d3238869591ad"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_records_v6.rs",
+          "git_blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e"
+        }
+      ],
+      "finding": "Sealed sums and live seal; exact HBV6PK01 EOF, per-object AEAD and sealed pack transcript; full_payloads=true materialization; guarded real object staging and durable publication."
+    },
+    {
+      "name": "ha_inner_archive",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/ha_native_v6_backup.rs",
+          "git_blob": "07db3372f2a0f6a79fff02b7272f0cdce172cf7d"
+        },
+        {
+          "path": "crates/heptabao-server/src/ha_native_v6_backup_historical.rs",
+          "git_blob": "33beeb330a5d7666ef686651d7098e88428889d8"
+        },
+        {
+          "path": "crates/heptabao-server/src/ha_native_v6_backup_cold.rs",
+          "git_blob": "82f03f03cf7e58d01f1ca8e90e7b1e35a8b6e001"
+        },
+        {
+          "path": "crates/heptabao-server/src/ha_native_v6_backup_format.rs",
+          "git_blob": "357387e9f0abeda9dc43a5be21acb9e499c3e363"
+        }
+      ],
+      "finding": "HBV6HA01 exact EOF, local/shared hashes, ARCHIVE_AAD sealed transcript, bounded closure and source/cluster/epoch rules remain unchanged."
+    },
+    {
+      "name": "ha_historical_install",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+          "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_records_v6.rs",
+          "git_blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e"
+        }
+      ],
+      "finding": "Original actor and current source stay live; full local-pack and full-payload graph checks precede a new actual Raft restore epoch/CAS and local committed installation. Historical bytes do not become a current Raft proof."
+    },
+    {
+      "name": "strict_internal_repair",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_v6_ha_repair.rs",
+          "git_blob": "e2b5834eef2c44e964f2ac3c50f319df63f4db35"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc"
+        },
+        {
+          "path": "crates/heptabao-server/src/snapshot_archive.rs",
+          "git_blob": "6828ae88590184830da949001b13abd82a4f9b10"
+        }
+      ],
+      "finding": "snapshot-repair does not match either public path and keeps strict import, then the existing sealed sums, live source and repair proof gates."
+    },
+    {
+      "name": "unchanged_http_status_boundary",
+      "files": [
+        {
+          "path": "crates/heptabao-server/src/http_snapshot.rs",
+          "git_blob": "ed4983b4d8b8527fed8f699284a9244eecbfe81d"
+        },
+        {
+          "path": "crates/heptabao-server/src/http.rs",
+          "git_blob": "3801150b71e68d75afb46136e31dce05841fe081"
+        },
+        {
+          "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+          "git_blob": "703a7183185a4fee775a95109e7b084c1aa315f6"
+        },
+        {
+          "path": "crates/heptabao-server/src/service_backup_restore.rs",
+          "git_blob": "c349e3b69432f1fd2da94499ab948e3fc4282c54"
+        }
+      ],
+      "finding": "Service restore success remains status 200 with its existing payload. NativeReply::Json and the HTTP writer preserve response.status. Official 2.7.1 restore was observed as HTTP 204. This candidate does not repair or qualify that separate wire boundary."
+    }
+  ],
+  "external_sources": [
+    {
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "version": "v2.7.1",
+      "paths": [
+        "internal/physical/raft/snapshot/snapshot.go",
+        "internal/physical/raft/snapshot/archive.go"
+      ],
+      "finding": "WriteToTempFileWithSealer ends after tar read and internal/sealed hash validation; Verify alone additionally invokes concludeGzipRead."
+    },
+    {
+      "repository": "rust-lang/flate2-rs",
+      "ref": "1.1.8",
+      "path": "src/gz/bufread.rs",
+      "crate_checksum": "b375d6465b98090a5f25b1c7703f3859783755aa9a80433b36e0379a3ec2f369",
+      "finding": "Single-member GzDecoder returns nonzero output before later EOF reads enter footer CRC/ISIZE validation. Candidate does not catch or ignore errors from required reads."
+    }
+  ]
+}

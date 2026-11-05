@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.linux-candidate21a-git-only-feasibility.v1",
+  "status": "conditional_feasibility_only_no_execution_admission",
+  "scope": {
+    "github_immutable_records_only": true,
+    "remote_runtime_rpc_calls": 0,
+    "host_processes_started": 0,
+    "foreign_fixture_inspected_again": false,
+    "source_files_changed": false,
+    "guard_changed": false,
+    "production_changed": false,
+    "real_credentials_used": false,
+    "new_execution_budget_created": false,
+    "new_execution_request_created": false
+  },
+  "candidate": {
+    "commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+    "tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+    "base_physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "base_review_alias": "c71b405970544682e7b9b25c91214f66351a767b",
+    "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+    "full_tree_delta_files": 26,
+    "source_and_control_delta_files": 21,
+    "rust_delta_files": 19,
+    "python_control_delta_files": 2,
+    "evidence_delta_files": 5,
+    "cargo_lock_unchanged": true,
+    "workspace_manifest_unchanged": true,
+    "rust_toolchain_toml_unchanged": true,
+    "ordinary_kv_clock_transport_added": false
+  },
+  "rog": {
+    "historical_source": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source",
+    "historical_target": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal",
+    "historical_cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "toolchain_path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin",
+    "toolchain_binary_sha256_in_selected_record": false,
+    "controller_python": "/usr/bin/python3",
+    "normal_profile": {
+      "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+      "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+      "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal",
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+      "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+      "CARGO_PROFILE_RELEASE_LTO": "false",
+      "CARGO_PROFILE_RELEASE_DEBUG": "0",
+      "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+      "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+      "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+    },
+    "historical_build": {
+      "strict_exit": 0,
+      "production_exit": 0,
+      "production_seconds": 625.5381412720017,
+      "workspace_no_run_exit": 0,
+      "workspace_no_run_seconds": 2084.731234822015,
+      "remaining_empty": true,
+      "source_unchanged": true,
+      "production_artifacts": [
+        {
+          "original_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/heptabao-server",
+          "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r6/retained-heptabao-server",
+          "sha256": "199e2b6a91346db2b61a6066827a0b4ee658991758926ed9c6b50a8f1ea98a71",
+          "bytes": 110846072
+        },
+        {
+          "original_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/heptabao-seed",
+          "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r6/retained-heptabao-seed",
+          "sha256": "cde3481334e0091d86ef8b9ffda58db3e1e7915eefeef99e5015bdda69300823",
+          "bytes": 102695304
+        }
+      ],
+      "test_artifacts": [
+        {
+          "original_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/deps/heptabao_server-66ad9401463fa9d9",
+          "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r6/retained-heptabao_server-libtest",
+          "sha256": "2a3bf566a3b4e2fc5dcebeac38d0bd136709eccae6a0d0ffae5d93b09eae37dc",
+          "bytes": 187319840
+        },
+        {
+          "original_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/deps/heptabao_ha_service-98073f91fa6379d3",
+          "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r6/retained-heptabao_ha_service-libtest",
+          "sha256": "e3a7c07b2c79dab39979ee08897e15756a1c904da9b9d99e746eadf42e35bbd1",
+          "bytes": 19997296
+        }
+      ]
+    },
+    "isolation": "Target was an independent owned normal target for 7071. CARGO_HOME is an older shared path, not proof of whole-host or current exclusive ownership.",
+    "current_source_target_integrity_verified": false,
+    "current_host_or_ha_window_free_verified": false,
+    "can_replay_existing_controller": false,
+    "controller_replay_blockers": [
+      "r6 driver accepts the old r5 439c166 source/tree and exactly one test-lint file, not candidate21a",
+      "It requires absent normal-build-r6/frozen-source-r6 outputs that the archived run created",
+      "It consumes the original overall-bound.public.json and boot identity; the old budget is not a new authorization",
+      "Its compiler-only guard is restricted to operator UID and a specific historical foreign Cargo PID/start identity, not the running r10 HA fixture or whole host"
+    ],
+    "conditional_role": "Possible Linux build and same fourteen component tests only after new host/custody/admission evidence and separately reviewed fresh control package; historical target can be considered a cache source, not automatically written or borrowed."
+  },
+  "x230": {
+    "historical_root": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1",
+    "historical_source": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/source",
+    "historical_binary": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/artifacts/heptabao-server",
+    "historical_binary_sha256": "199e2b6a91346db2b61a6066827a0b4ee658991758926ed9c6b50a8f1ea98a71",
+    "host": "qian-ThinkPad-X230",
+    "uid": 1000,
+    "arch": "x86_64",
+    "python": "/usr/bin/python3.12",
+    "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "rust_compilation_target_observed": false,
+    "source_and_binary_origin": "Exact source plus normally linked ROG binary, fetched/copied read-only by the historical stage helper; no local Cargo compile in these records.",
+    "historical_run": {
+      "job_id": "1a1a813f218-fc05-2d94",
+      "exit_code": 0,
+      "checks_passed": 31,
+      "checks_total": 31,
+      "owned_children": 408,
+      "all_owned_children_stopped": true,
+      "retained_live_payload_bytes": 35651584,
+      "full34_qualified_for_7071": true,
+      "physical_ha_qualified": false,
+      "full_replacement_qualified": false
+    },
+    "current_source_binary_integrity_verified": false,
+    "current_host_window_free_verified": false,
+    "can_replay_existing_controller": false,
+    "controller_replay_blockers": [
+      "Fixed 7071/tree/binary/helper/build receipt identities",
+      "Fresh root and fresh output required; both historical paths already used",
+      "Stage helper performs git fetch and scp from ROG, consuming ROG/SSH capacity despite X230 being a different host"
+    ],
+    "conditional_role": "Possible next synthetic normal-binary full34 consumer after exact candidate21a Linux binary and read-only custody/current-window checks; not an evidenced alternate Rust builder."
+  },
+  "required_new_readonly_preflight": [
+    "Obtain actual configured-host/UID/architecture and current Python/Cargo/rustc file identity; recorded paths and earlier success do not establish current bytes.",
+    "Identify any current HA/test/compile controller ownership and authoritative completion; never infer a free window from a PID gap or merely from absence of a compiler. Keep the original guard unchanged.",
+    "Verify source HEAD/full tree/clean status, cache and target ancestry/device/owner/modes/no symlink or hardlink aliasing, live lock holders and available resource floor; historical ROG guard required 32 GiB available memory, 32 GiB disk and load <= cpu_count/2.",
+    "Any cache reuse must have an independently owned target and reviewable source-cache lock/copy contract; shared CARGO_HOME and old output directories cannot be treated as exclusive reservations.",
+    "Bind the complete 26-file tree delta or exact candidate full tree, not only the last three-file Mac fix. If formatting changes bytes, record a new actual source/tree manifest and preserve the prior identities.",
+    "Before X230 use, verify new exact Linux production binary and Cargo artifact profile/source lineage, source cleanliness, current official271 binary/archive pins and a fresh private output root; confirm no stage/transfer competes with an active ROG HA controller."
+  ],
+  "budgets_and_one_shot": {
+    "new_budget": null,
+    "old_rog_supervisor_seconds": 21600,
+    "old_rog_internal_budget_source": "existing overall-bound.public.json monotonic_expires plus boot id; not reusable for a new attempt",
+    "x230_historical_stage_seconds": 240,
+    "x230_historical_outer_seconds": 1800,
+    "unchanged_business_http_seconds": 15,
+    "unchanged_migration_seconds": 360,
+    "unchanged_native_large_http_seconds": 5,
+    "requirements": [
+      "Only a separately reviewed fresh request/key/output may start any new attempt",
+      "Preserve original business deadlines and original-child identity through cleanup; actual wait/group-empty evidence required",
+      "Each named component exactly once in the declared inventory; known failure is retained, unknown operation is reconciled rather than replayed",
+      "Full34 export and import each once; unknown export/import is not retried",
+      "Old7071 binary/libtest cannot qualify candidate21a; actual new Cargo JSON/profile and retained hashes are required"
+    ]
+  },
+  "conclusions": {
+    "conditional_linux_path": "ROG normal compile/component evidence followed by X230 normal-binary full34 is technically supported by historical infrastructure, but neither host is admitted for execution by this Git-only review.",
+    "ready_to_execute": false,
+    "mac_blocker_remains": true,
+    "linux_cannot_prove_darwin_accepted_socket_fix": true,
+    "physical_multi_host_ha_qualified": false,
+    "full_replacement_qualified": false
+  }
+}

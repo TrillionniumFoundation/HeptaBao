@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.root.linux-readonly-observations.v1",
+  "observed_utc_date": "2026-11-05",
+  "scope": "Read-only configured-host SSH health challenges and four regular-file reads; no product or Cargo process submitted.",
+  "rog_authenticated": true,
+  "x230_authenticated": true,
+  "rog_observed_source_ref": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "rog_source_head_and_ref_atomic": false,
+  "source_clean_or_full_tree_verified": false,
+  "target_cargo_lock_file_presence_establishes_exclusive_access": false,
+  "current_toolchain_bytes_verified": false,
+  "current_resource_floor_verified": false,
+  "ha_controller_completion_verified": false,
+  "execution_admitted": false,
+  "candidate21a_or_newer_compiled": false,
+  "full_replacement_qualified": false,
+  "original_receipts": [
+    {
+      "path": "linux-rog-health.original-sdk.json",
+      "bytes": 579,
+      "sha256": "73d64616158f348502cd373be61fb71433cc9c212b33947d2e9f2c771db552dc"
+    },
+    {
+      "path": "linux-rog-files.original-sdk.json",
+      "bytes": 1936,
+      "sha256": "c6d07fed4198312a439b52b587f24c5b9a0c2bd2d166b8700725fd0803140ac1"
+    },
+    {
+      "path": "linux-rog-source-ref.original-sdk.json",
+      "bytes": 622,
+      "sha256": "8942a92ed3a90b918e58eaef24e85f0a1f185887c13699154d5223dde34425c1"
+    },
+    {
+      "path": "linux-x230-health.original-sdk.json",
+      "bytes": 581,
+      "sha256": "8e344d39be4c1105e010f2012cfa6b802c8f8aec3df94d0f1726689a5fda3828"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/.git/refs/heads/codex/heptabao-unified-61ff-20261104-r1\",\"sha256\":\"c16122842ff7bb9383c3a8f92db805f6b21e458ff772bd82d3d9312dd808479e\",\"size\":41,\"text\":\"70714605c39014bea93545f7f6aa4217d2a23544\\n\",\"version\":\"66306:35150327:41:1793813814144176688:1793813814144176688\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.snapshot-outer-publication.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "work/20261105-snapshot-outer-restore-61ff-r1",
+  "base_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "source_commit": "4f0a732bd934321e5abfc3025a22345a1c42c5ae",
+  "source_tree": "62b8a0e4c1265192d86605be1766e7f4114e63d1",
+  "evidence_commit": "c5fa9ac0142b10092331312d2e08f22cc07aff05",
+  "evidence_tree": "63ce356173bcfb8298d176315604a9feaaf76f0e",
+  "branch_readback_matches_evidence_commit": true,
+  "evidence_commit_changes_only_expected_ten_qa_files": true,
+  "source_readback_receipt": "source-readback.public.json",
+  "evidence_files": [
+    {
+      "local_path": "manifest.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/manifest.public.json",
+      "bytes": 4805,
+      "sha256": "6a87d50064be4146e3e2fdee4ac3d3ad5cf041be5e1975e38e57ade05eebb5e1",
+      "git_blob": "c5d0158513e6da287162761d453f5f82a5a44129",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "candidate.patch",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/candidate.patch",
+      "bytes": 16609,
+      "sha256": "bb344a1a0db9b32529a46d258d555583544dd4cce562da1b4e01f85abf069650",
+      "git_blob": "2126a562808f3270079e02ff6b4142fcfb22cfd4",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "format-only.patch",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/format-only.patch",
+      "bytes": 755,
+      "sha256": "5dbcf43bf9902831b79805ff03d2a585eedf97141ba528bf4595a33c215ce5e1",
+      "git_blob": "5c295bc6f3b19c60c7a189ae2927998f5fd3076c",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "reconstruction.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/reconstruction.public.json",
+      "bytes": 1311,
+      "sha256": "ddff2a6dc9ea21ea8bd63e25a0a3e45b595f1cee25ad38f2b3aec16e40df8941",
+      "git_blob": "8f1f4315cbf0a93f9b80d7a629d100491c8d342a",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "base-source-pins.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/base-source-pins.public.json",
+      "bytes": 3702,
+      "sha256": "cfd5ca219b2422694d0a15cf389d5299c22a4931033e36794878160ab2694789",
+      "git_blob": "41a6f68094cd3da3fffe275b2082479ada43f9b9",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "source-chain.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/source-chain.public.json",
+      "bytes": 10793,
+      "sha256": "3eb85980185ef810a2e9291c96ceb474ebbc9e99ef58f956183c18a3cf887079",
+      "git_blob": "0b14cf6ce878ec089b57910f30fcefcbc5d0445b",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "required-unexecuted-cases.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/required-unexecuted-cases.public.json",
+      "bytes": 3813,
+      "sha256": "1524103e12ba73b2a2120fc34b0d1e6e5252a3f45c18ee221663e13bdea872ea",
+      "git_blob": "ffbec174d84b0562e47827a44b45f89e166ac125",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "static-review.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/static-review.public.json",
+      "bytes": 2079,
+      "sha256": "f1f67f90e4e4a150b676675bf70713d7d6daf8f1227276630c13e013d7b26199",
+      "git_blob": "22e1b71e47cdcc00b31e16460b39797eece3d9f9",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "review.md",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/review.md",
+      "bytes": 11670,
+      "sha256": "be1451524bfcd7d0aa01db25b239a843035ca076ec90a1c952ce5e0bef1b1f96",
+      "git_blob": "079d022448ed6c9e7da7bb8a80df54d35d71c47a",
+      "full_byte_equality": true
+    },
+    {
+      "local_path": "source-readback.public.json",
+      "repository_path": "qa/evidence/20261105/native-snapshot-restore-outer-end-61ff-r1/source-readback.public.json",
+      "bytes": 1195,
+      "sha256": "9658ad1d958fb9047083c36d4f8124d329c7b1cff3ceb36b21ea73b0d58bf600",
+      "git_blob": "4b8289bed97682fe3f47f9ea005fa988f02c4344",
+      "full_byte_equality": true
+    }
+  ],
+  "automatic_approval_rejection": false,
+  "product_execution": false,
+  "full_replacement_qualified": false,
+  "local_persistence_issue": {
+    "kind": "os_argument_limit_not_approval_rejection",
+    "message": "Argument list too long (os error 7)",
+    "resolved_with": "direct local apply_patch data persistence; no Git write retried"
+  }
+}

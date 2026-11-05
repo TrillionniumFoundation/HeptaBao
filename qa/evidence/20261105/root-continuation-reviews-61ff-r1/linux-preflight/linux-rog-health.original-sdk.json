@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"authenticated\": true,\n  \"diagnostics_redacted\": true,\n  \"host\": \"rog\",\n  \"measurement\": \"SSH invocation roundtrip including connection setup or reuse, authentication, remote shell startup and fixed response; not ICMP RTT.\",\n  \"platform\": \"linux\",\n  \"reachable\": true,\n  \"schema\": \"hepta-host-health-v1\",\n  \"ssh_roundtrip_ms\": 424.91225,\n  \"status\": \"healthy\",\n  \"timeout_ms\": 10000,\n  \"transport\": \"ssh\"\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

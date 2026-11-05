@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.root.snapshot-outer-candidate-review.v1",
+  "source_commit": "4f0a732bd934321e5abfc3025a22345a1c42c5ae",
+  "source_tree": "62b8a0e4c1265192d86605be1766e7f4114e63d1",
+  "base_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "patch_sha256": "bb344a1a0db9b32529a46d258d555583544dd4cce562da1b4e01f85abf069650",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "bytes": 15244,
+      "sha256": "c5445383810f272cdcb5a711946c5f4e8a861645ed546769cafb66861dd8d109",
+      "patch_reconstructs_exact_candidate": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 65168,
+      "sha256": "99b3ecc1e736f1f5aa55d52447f3fc0824012fd39234e6dbba7f91a4e44c2a51",
+      "patch_reconstructs_exact_candidate": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer_tests.rs",
+      "bytes": 47510,
+      "sha256": "44f7271b76ee8a9ad662ab4c23c06262024207317b99abd4a6ea15ba12965cc6",
+      "patch_reconstructs_exact_candidate": true
+    }
+  ],
+  "scope_review": [
+    "strict default importer retains gzip EOF and underlying file EOF",
+    "public upload parser policy selected only by two admitted server plan paths",
+    "full input staging, required tar reads, zero terminator, hashes, sealed checksum and live install gates remain",
+    "new tests check first archive marker and cold reopen, required-content rejection, invalid-first plus valid-second rejection, seal-authentication refusal after successful container parse"
+  ],
+  "independent_git_commit_parent_and_three_blobs_verified": true,
+  "formatter_executed": false,
+  "clippy_executed": false,
+  "compiled": false,
+  "product_tests_executed": false,
+  "runtime_qualification": false,
+  "http_success_204_gap_fixed_by_this_candidate": false,
+  "full_replacement_qualified": false
+}
