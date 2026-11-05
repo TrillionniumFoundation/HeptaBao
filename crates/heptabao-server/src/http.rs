@@ -943,13 +943,17 @@ fn serve_inner(
                         "request rate limit exceeded",
                         deadline,
                     );
-                    write_http1_reply(
+                    if write_http1_reply(
                         &mut stream,
                         snapshot::NativeReply::Json(response),
                         false,
                         "",
                         deadline,
-                    );
+                    )
+                    .is_ok()
+                    {
+                        finish_http1_connection(&mut stream);
+                    }
                     return;
                 }
                 // Parsing and a bounded rejected-body discard must leave time for
@@ -994,9 +998,12 @@ fn serve_inner(
                 );
                 mutation_profile.point(mutation_profile::Point::DispatchEnd);
                 let native_redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
-                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                let response_written =
+                    write_http1_reply(&mut stream, reply, head, &namespace, deadline).is_ok();
                 if native_redirect {
                     snapshot::finish_redirect_connection(&mut stream);
+                } else if response_written {
+                    finish_http1_connection(&mut stream);
                 }
             });
         if spawn.is_err() {
@@ -1470,7 +1477,7 @@ fn write_http1_reply(
     head: bool,
     namespace: &str,
     deadline: Instant,
-) {
+) -> io::Result<()> {
     let mut observation = ResponseWriteObservation {
         writer,
         accepted_plaintext_bytes: 0,
@@ -1505,6 +1512,40 @@ fn write_http1_reply(
         result.is_ok(), observation.status.as_ref().and_then(read_index_observation::StatusLine::status),
         observation.accepted_plaintext_bytes, observation.flush_attempted,
     );
+    result
+}
+
+fn finish_http1_connection(stream: &mut StreamOwned<rustls::ServerConnection, DeadlineStream>) {
+    // Only a fully written ordinary HTTP/1 response reaches this helper.
+    // Flush the TLS close alert through the same DeadlineStream, without
+    // reading peer bytes, waiting for an acknowledgement, or renewing time.
+    // Native redirects retain their separate unread-upload teardown.
+    let result = (|| -> io::Result<()> {
+        stream.sock.remaining()?;
+        stream.conn.send_close_notify();
+        while stream.conn.wants_write() {
+            match stream.conn.write_tls(&mut stream.sock) {
+                Ok(0) => {
+                    return Err(io::Error::new(
+                        io::ErrorKind::WriteZero,
+                        "TLS close alert write made no progress",
+                    ));
+                }
+                Ok(_) => {}
+                Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+                Err(error) => return Err(error),
+            }
+        }
+        stream.sock.remaining().map(|_| ())
+    })();
+    if let Err(error) = result {
+        // Closed error kind only; no peer-supplied text or response contents.
+        eprintln!(
+            "HBHTTP-TLS-CLOSE-FAILURE io_kind={:?} original_deadline_expired={}",
+            error.kind(),
+            Instant::now() >= stream.sock.deadline
+        );
+    }
 }
 
 struct DeadlineStream {
