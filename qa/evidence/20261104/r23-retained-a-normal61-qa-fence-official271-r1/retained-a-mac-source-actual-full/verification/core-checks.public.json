@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.retained-a-mac-stage-core-checks.v1",
+  "checks": [
+    {
+      "name": "authority_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "stdout_all_hex_text",
+      "passed": true
+    },
+    {
+      "name": "stderr_all_hex_text",
+      "passed": true
+    },
+    {
+      "name": "exact_source",
+      "passed": true
+    },
+    {
+      "name": "prepared_4point6_within_original300",
+      "passed": true
+    },
+    {
+      "name": "all41_owned_closed",
+      "passed": true
+    },
+    {
+      "name": "original_T5_prewrite_guard",
+      "passed": true
+    },
+    {
+      "name": "exact_incremental_bundle",
+      "passed": true
+    },
+    {
+      "name": "full_worktree_and_index",
+      "passed": true
+    },
+    {
+      "name": "full_fsck_and_independent",
+      "passed": true
+    },
+    {
+      "name": "old495_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_compiler_product_qualification",
+      "passed": true
+    },
+    {
+      "name": "control0_whole_and_independent_version",
+      "passed": true
+    },
+    {
+      "name": "control1_whole_and_independent_version",
+      "passed": true
+    },
+    {
+      "name": "control2_whole_and_independent_version",
+      "passed": true
+    },
+    {
+      "name": "control3_whole_and_independent_version",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "raw_41_command_archival_pending": true,
+  "raw_two_full_NUL_indexes_pending": true,
+  "normal61_submitted": false,
+  "bound_normal_request": {
+    "bytes": 1056,
+    "sha256": "8d987117ab1c6037b1491a38aab42465e8416b28cd22cfd685fe7d6db0eef40d",
+    "blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4"
+  }
+}

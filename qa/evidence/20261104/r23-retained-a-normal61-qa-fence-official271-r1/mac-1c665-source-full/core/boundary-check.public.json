@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.stage-terminal-read-boundary.v1",
+  "host": "mac",
+  "job_id": "1a1aaf3c0b0-fc05-48f8",
+  "ack_tree": "d4a52224bc61900647dcfa886df28829c6c1e738",
+  "request_blob": "e455bac514894112c694cc518e93e3b4c8799591",
+  "authority_exit_code": 0,
+  "authority_state": "succeeded",
+  "stdout_bytes": 404,
+  "stderr_bytes": 0,
+  "hex_equals_utf8_text": true,
+  "authority_complete_durable": true,
+  "source_result_still_requires_independent_read": true,
+  "normal_build_started": false,
+  "rog_source_authority_unknown": true
+}

@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.bounded-job-locator.static-invariance.r2",
+  "base": {
+    "blob": "fefc8ccbc254cc1d5af4b97ae110680325eb7561",
+    "bytes": 18882,
+    "sha256": "fdc59d1873b65301a2e75222f0f0a08acd7dd675456f59055692abb40943334f"
+  },
+  "candidate": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "strictUnifiedDiff": {
+    "hunks": 15,
+    "wholeEqual": true
+  },
+  "configsByteTextEqual": true,
+  "preserved": [
+    {
+      "name": "BUDGET_NS",
+      "exact_source": "BUDGET_NS = 15_000_000_000"
+    },
+    {
+      "name": "MAX_NAMES",
+      "exact_source": "MAX_NAMES = 16_384"
+    },
+    {
+      "name": "MAX_NAME_BYTES",
+      "exact_source": "MAX_NAME_BYTES = 1_048_576"
+    },
+    {
+      "name": "MAX_CANDIDATES",
+      "exact_source": "MAX_CANDIDATES = 128"
+    },
+    {
+      "name": "MAX_REQUEST_BYTES",
+      "exact_source": "MAX_REQUEST_BYTES = 262_144"
+    },
+    {
+      "name": "MAX_TOTAL_REQUEST_BYTES",
+      "exact_source": "MAX_TOTAL_REQUEST_BYTES = 8_388_608"
+    },
+    {
+      "name": "MAX_MATCHES",
+      "exact_source": "MAX_MATCHES = 8"
+    },
+    {
+      "name": "MAX_JSON_NODES",
+      "exact_source": "MAX_JSON_NODES = 65_536"
+    },
+    {
+      "name": "MAX_JSON_DEPTH",
+      "exact_source": "MAX_JSON_DEPTH = 64"
+    },
+    {
+      "name": "need",
+      "definition_bytes": 68,
+      "definition_sha256": "dad3116946c0fbe2770a2fa0a49c618744af5e04a74d06249fb9ce6f04ad00c8"
+    },
+    {
+      "name": "sha",
+      "definition_bytes": 56,
+      "definition_sha256": "166ad903d6d1b4f98706f40c535e6a84f4a6268f81640d32bb1d0f02c6857de1"
+    },
+    {
+      "name": "encode",
+      "definition_bytes": 145,
+      "definition_sha256": "f7663c5098afdd033ea6b00eeb9331ab26752093d6d6b05b8f816371cd98a67a"
+    },
+    {
+      "name": "full_identity",
+      "definition_bytes": 179,
+      "definition_sha256": "12fbc81e9bce195d53f7001e8246203777cd91bb6f0d12164c1e89f7f5c55aa3"
+    },
+    {
+      "name": "directory_identity",
+      "definition_bytes": 179,
+      "definition_sha256": "63c7b0d4df26fb30e71216e962b6e1581bddd308c228b3c9181d35861f11e9d2"
+    },
+    {
+      "name": "canonical_job_time",
+      "definition_bytes": 321,
+      "definition_sha256": "d88612b1dea14e588bdd33be3fa67bd2f56f9fa1085e97693b9388dad437da94"
+    },
+    {
+      "name": "strict_json",
+      "definition_bytes": 1058,
+      "definition_sha256": "78fd0a2cadb3e7e95f19ebc30de2a018106f7396375033c84d9748c759f406d7"
+    },
+    {
+      "name": "equal_typed",
+      "definition_bytes": 99,
+      "definition_sha256": "f46d41b1d1768c0a235c38b0cb72ca8a18567265e2c25e8cff88f2714f4a78b7"
+    },
+    {
+      "name": "verify_request",
+      "definition_bytes": 1662,
+      "definition_sha256": "f7f85b68ef7ec09d276311a1a05f14fb18cdfb665ab5d60f004c893339f60bc9"
+    },
+    {
+      "name": "dir_check",
+      "definition_bytes": 396,
+      "definition_sha256": "2665fb1cf708b8774ce64748fc4b7a6c5ea60d740d41ee169965e39944e72100"
+    },
+    {
+      "name": "compare_named_dir",
+      "definition_bytes": 395,
+      "definition_sha256": "18ecf8b00373f35f75455325bc48b1026730b925fc5610a8e67918493e962fef"
+    },
+    {
+      "name": "verify_ancestors",
+      "definition_bytes": 615,
+      "definition_sha256": "8c02313c18079cf673b3686b8934d16da39da74e6489b6ec7cf3b9c3d4853c3d"
+    }
+  ],
+  "definitionSliceRule": "Exact def line through body, excludes separating blank lines; no semantic normalization.",
+  "newOutputCap": 65536,
+  "sourceOnly": true,
+  "targetExecutionPerformed": false
+}

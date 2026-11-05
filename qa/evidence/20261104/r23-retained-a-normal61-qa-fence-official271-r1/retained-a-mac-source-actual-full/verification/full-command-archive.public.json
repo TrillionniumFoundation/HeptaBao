@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.retained-a-mac-source-full-originals.v1",
+  "original_job": "1a1ab595aa2-fc05-4ce1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "all41_command_records_whole": true,
+  "all82_streams_whole": true,
+  "small_streams": 80,
+  "large_NUL_streams": 2,
+  "large_version_pinned_chunks": 14,
+  "all_command_exit0": true,
+  "all_direct_children_reaped": true,
+  "all_remaining_groups_empty": true,
+  "all_elapsed_under_original_limit": true,
+  "all_record_pid_equal_original_core_cleanup": true,
+  "all_stream_sha_equal_original_command_records": true,
+  "full_NUL_index_canonical_equal": true,
+  "normal61_result_not_inferred": true
+}

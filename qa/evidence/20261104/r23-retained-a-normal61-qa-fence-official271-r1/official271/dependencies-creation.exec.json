@@ -1,0 +1,7 @@
+{
+  "chunk_id": "e7e8da",
+  "wall_time_seconds": 0.617435,
+  "exit_code": 0,
+  "original_token_count": 330,
+  "output": "{\n  \"archive\": {\n    \"name\": \"root-review-v3-dependencies.tar.gz.base64\",\n    \"bytes\": 848605,\n    \"sha256\": \"380b36c8f75daffd470603e64bef4360662ef221490790ba86004addb59288c1\"\n  },\n  \"manifest\": {\n    \"name\": \"root-review-v3-dependencies.manifest.public.json\",\n    \"bytes\": 1672,\n    \"sha256\": \"e42e94033459feba46be26e99af4551652fef5a7b01b21aec06661b3702d68ae\"\n  },\n  \"files\": [\n    {\n      \"name\": \"official271-source-contract-declarations-v2.public.json\",\n      \"bytes\": 2505503,\n      \"sha256\": \"239492f70e7e66aaa193c4c322d88edc1dc2e9b8c0c4379f9c9b20971ccaadac\",\n      \"git_blob\": \"cb264686774aa102184a12e1d431b323e5b16509\"\n    },\n    {\n      \"name\": \"product-corpus.json\",\n      \"bytes\": 1210315,\n      \"sha256\": \"d1f17d4a194aef6e443a87f3d2c207043a04bd2755b70bbb18dcea093ebf9ea6\",\n      \"git_blob\": \"5d901280cbd044abb3e682908e7c403390ef1edf\"\n    },\n    {\n      \"name\": \"official-tree.original.json\",\n      \"bytes\": 1563104,\n      \"sha256\": \"046a0a3c864e5f4f844d8ef4f8027f7d51816f0afe6a62b326365ab32f1545d0\",\n      \"git_blob\": \"ba52dabf9a0203560906cdf76b19138a3b5e0a35\"\n    },\n    {\n      \"name\": \"extract_contract_declarations_v2.py\",\n      \"bytes\": 13457,\n      \"sha256\": \"d00ed4c8450a3411ad9366cdfb243e6c8c03da7ec760f50054a58a41b97239b0\",\n      \"git_blob\": \"76cc4bd345f3678e9338bdba881cb1ed71476cff\"\n    }\n  ]\n}\n"
+}

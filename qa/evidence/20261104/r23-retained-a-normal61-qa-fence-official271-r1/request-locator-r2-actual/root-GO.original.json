@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.root.two-scope-readonly-job-locator-go.v1",
+  "as_of_utc": "2026-11-05 09:43:04 UTC",
+  "status": "GO_EACH_EXACT_READONLY_REQUEST_ONCE",
+  "source_packet": "e49778e26aea2673ed9a05594f935fe21a45c308",
+  "previous_packet_preserved": "2b8355a6e3efc74b4be6c3c9f54f6812ccc2647e",
+  "root_review": {
+    "name": "r23_job_locator_root_binding_result",
+    "blob": "3480dde5885ed9d2a5bbf3bbf6e5048fbab84557",
+    "bytes": 3267,
+    "sha256": "5f7965bc6843270856034872cbb543483eb0c7678034a0b3afdfdcf28d152d59"
+  },
+  "input_archive_correction": {
+    "only_two_wrapper_JSON_trailing_LFs_removed": true,
+    "source_and_both_requests_and_actual_components_unchanged": true
+  },
+  "source": {
+    "blob": "b28c4b681346e19d71d4b022013346937818270f",
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a"
+  },
+  "requests": [
+    {
+      "host": "desktop",
+      "request_blob": "0b05d5dfcae1d37252acc9d84be506636e360eee",
+      "request_bytes": 26526,
+      "request_sha256": "9962b351b3c17b1207048b57ab683dc225d0c8cf38729e9b27bc86e6b71981e7",
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-e1148f85-20261105-r2",
+      "timeout_seconds": 45
+    },
+    {
+      "host": "rog",
+      "request_blob": "777e74909453e11438f934d2803f562b0aad5252",
+      "request_bytes": 26483,
+      "request_sha256": "37c26b4180f293ab161205e971b75ee1df87534e52435fcc580e9dbafb20a559",
+      "idempotency_key": "heptabao-bounded-job-locator-rog-e1148f85-20261105-r2",
+      "timeout_seconds": 45
+    }
+  ],
+  "scope": {
+    "fixed_jobs_directory": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs",
+    "host_specific_positive_anchor_first": true,
+    "only_request_json_no_stdin_bin": true,
+    "soft_seconds": 15,
+    "outer_seconds": 45,
+    "max_names": 16384,
+    "max_name_bytes": 1048576,
+    "max_candidates": 128,
+    "max_single_request_bytes": 262144,
+    "max_total_returned_request_bytes": 8388608,
+    "max_matches": 8,
+    "new_stricter_public_output_bytes": 65536,
+    "children": 0,
+    "network": 0,
+    "file_writes": 0,
+    "signal_sends": 0
+  },
+  "dispatch_rule": "For each scope, save exact external intent in a separately completed call, then submit its exact request once and preserve original ACK immediately. Read only original authority and full streams to close each observation. No target business request resubmission, no changing keys, no host-alias inference, and no absence/termination/launch inference from partial or zero matches.",
+  "qualification": "This authorizes a bounded observation of stored request bindings only. A match requires subsequent original job authority/stream reconciliation. No source or product runtime pass is conferred."
+}

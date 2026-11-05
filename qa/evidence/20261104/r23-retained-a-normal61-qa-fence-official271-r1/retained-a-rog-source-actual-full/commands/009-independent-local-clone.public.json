@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "core.hooksPath=/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/empty-hooks",
+    "-c",
+    "protocol.allow=never",
+    "-c",
+    "protocol.file.allow=always",
+    "clone",
+    "--no-hardlinks",
+    "--dissociate",
+    "--no-checkout",
+    "--template=/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/empty-template",
+    "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.1349898139887955,
+  "exit_code": 0,
+  "limit_seconds": 180,
+  "pid": 2422370,
+  "remaining": [],
+  "stderr_sha256": "b9ea797f9e48c87d676cc7240cd79bef059b927819c35631301906d32bd5e202",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timed_out": false
+}

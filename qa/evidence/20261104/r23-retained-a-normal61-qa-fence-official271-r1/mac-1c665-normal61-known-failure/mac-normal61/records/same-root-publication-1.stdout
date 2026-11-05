@@ -1,0 +1,11 @@
+
+running 1 test
+test service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors ... FAILED
+
+failures:
+
+failures:
+    service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3562 filtered out; finished in 16.97s
+

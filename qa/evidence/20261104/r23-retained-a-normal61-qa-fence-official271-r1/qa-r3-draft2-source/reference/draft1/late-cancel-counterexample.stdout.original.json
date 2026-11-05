@@ -1,0 +1,18 @@
+{
+  "actual_children": 0,
+  "actual_fds": 0,
+  "actual_host_calls": 0,
+  "actual_signals": 0,
+  "actual_temporary_handler_pending": 15,
+  "counterexample_reproduced": true,
+  "fake_cleanup_calls": 1,
+  "full_module_executed": false,
+  "injected_point": "fake signal.signal restoring first original handler, after final report pending check",
+  "old_handlers_restored": true,
+  "old_owner_handler_calls": 0,
+  "report_cancel_signal": null,
+  "report_status": "observed_two_aliases",
+  "returned_output_after_cancel": true,
+  "schema": "heptabao.qa-reader-pending-signal-counterexample.v1",
+  "source_sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76"
+}

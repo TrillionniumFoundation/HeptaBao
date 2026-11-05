@@ -1,0 +1,120 @@
+{
+  "baseSha256": "fdc59d1873b65301a2e75222f0f0a08acd7dd675456f59055692abb40943334f",
+  "candidateSha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+  "checks": [
+    {
+      "case": "old_open_to_register_interrupt_reproduces_unregistered_fd",
+      "passed": true
+    },
+    {
+      "case": "new_open_registration_signal_deferred_then_fd_closed_once",
+      "passed": true
+    },
+    {
+      "case": "close_attempt_marker_signal_does_not_skip_close",
+      "passed": true
+    },
+    {
+      "case": "fd_close_failure_once_preserves_failed_row_and_closes_other",
+      "passed": true
+    },
+    {
+      "case": "ordinary_open_refusal_has_no_registered_fd",
+      "passed": true
+    },
+    {
+      "case": "registration_failure_remains_explicit_unknown",
+      "passed": true
+    },
+    {
+      "case": "total_request_bytes_admission",
+      "passed": true
+    },
+    {
+      "case": "aggregate_pre_admission_performs_no_request_open_or_read",
+      "passed": true
+    },
+    {
+      "case": "original_aggregate_budget_accepts_exact_reserved_remaining",
+      "passed": true
+    },
+    {
+      "case": "request_trailing_bytes",
+      "passed": true
+    },
+    {
+      "case": "returned_eof_probe_byte_counted_before_refusal",
+      "passed": true
+    },
+    {
+      "case": "unsafe_request_file",
+      "passed": true
+    },
+    {
+      "case": "single_request_cap_reserves_probe_without_any_payload_read",
+      "passed": true
+    },
+    {
+      "case": "cancel_after_returned_chunk_counts_bytes_and_closes_both",
+      "passed": true
+    },
+    {
+      "case": "iterator_close_failure_is_once_and_not_closed",
+      "passed": true
+    },
+    {
+      "case": "iterator_return_registration_cancel_closes_once",
+      "passed": true
+    },
+    {
+      "case": "duplicate_candidate_name",
+      "passed": true
+    },
+    {
+      "case": "duplicate_observed_candidate_does_not_duplicate_matches",
+      "passed": true
+    },
+    {
+      "case": "single_window_excludes_old_and_future_without_opening_requests",
+      "passed": true
+    },
+    {
+      "case": "actual_main_hides_nonmatching_argv_and_preserves_no_replay",
+      "passed": true
+    },
+    {
+      "case": "actual_main_iterator_closure_failure_prevents_green",
+      "passed": true
+    },
+    {
+      "case": "actual_main_original_deadline_includes_cleanup",
+      "passed": true
+    },
+    {
+      "case": "actual_main_cancel_during_cleanup_prevents_green",
+      "passed": true
+    },
+    {
+      "case": "actual_main_repeated_signal_at_cleanup_entry_is_deferred",
+      "passed": true
+    },
+    {
+      "case": "actual_main_postflush_deadline_rejects_candidate_success",
+      "passed": true
+    }
+  ],
+  "count": 25,
+  "schema": "heptabao.bounded-job-locator.selected-offline-components.r2",
+  "scope": {
+    "astSelectedDefinitionsOnly": true,
+    "childOrNetworkCalls": 0,
+    "completeCandidateModuleExecuted": false,
+    "old30ComponentsRepeated": false,
+    "realCandidateFileDescriptors": 0,
+    "realDirectoryScan": 0,
+    "realSignals": 0,
+    "sysSettraceUsedOnlyForSyntheticInterruptionBoundaries": true,
+    "targetHostCalls": 0
+  },
+  "status": "passed"
+}

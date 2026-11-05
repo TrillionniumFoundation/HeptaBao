@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.same-root-publication-lan-rebind-source-plan.v1",
+  "scope": "Unbound source proposal only; no carrier/prepare/live is submitted",
+  "base_inert_request_blob": "642468e6697635904c7c514aea38cb4de28a74dd",
+  "base_source_pins": {
+    "read_stopped_postrecovery_frontier_cold_h2_r1.py": {
+      "bytes": 16282,
+      "sha256": "ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b",
+      "blob": "844f08d06356da8fdbd50ca15a3313c95a833e02"
+    },
+    "read_stopped_recovered_cipher_cold_h2_r1.py": {
+      "bytes": 13211,
+      "sha256": "961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2",
+      "blob": "d1176cceefa907a4b975994e98af0386706704d5"
+    },
+    "native_v6_pocket_source_postrecovery_cold_df026_r1.py": {
+      "bytes": 72697,
+      "sha256": "83046e6f486c0b62d979623f6a2feed540acd3b2bd8955dbfc084312134359c4",
+      "blob": "916081f5d1ebec6f4bad6e25b49adebc2e9fe177"
+    },
+    "launch_normal_cold_h2_pocket_postrecovery_cold_r1.py": {
+      "bytes": 24819,
+      "sha256": "664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3",
+      "blob": "aeeb6d3d0c0b7e896679a0cf4d344a724870ef3c"
+    },
+    "deadline_qa/ha_multihost_live.py": {
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+    },
+    "deadline_qa/native_ha_foreground_watchdog.py": {
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b"
+    },
+    "deadline_qa/native_v6_ha_direct_lan_live.py": {
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    "deadline_qa/native_v6_ha_multihost_live.py": {
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    "probe_normal_build_r10_r1.py": {
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    }
+  },
+  "candidate_pins": {
+    "read_stopped_postrecovery_frontier_same_root_publication_r1.py": {
+      "bytes": 16310,
+      "sha256": "e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f",
+      "blob": "d2fc9a7d79240a32a026f8cd096b7e3d37a9bc23"
+    },
+    "read_stopped_recovered_cipher_same_root_publication_r1.py": {
+      "bytes": 13225,
+      "sha256": "0469ffd127f60c60ded67129a0f23868b81e28b6253a6b41584dc28a8afaab27",
+      "blob": "694dd87e1414dce7daadd441f14f94323f155398"
+    },
+    "native_v6_pocket_source_postrecovery_cold_1c665_r1.py": {
+      "bytes": 72753,
+      "sha256": "6438d429371e7a7e96d56c4c490d07b05df566efd454000452b316beff9195cd",
+      "blob": "e16cc7501cf82cfebc04b111592c6f5d31594f28"
+    },
+    "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py": {
+      "bytes": 25259,
+      "sha256": "24b36a810a7da72bc7d3673df0ea077def9b58de3ef8ac1f446b4a748676ce8f",
+      "blob": "fbfcd374bc596dc490545b400392c916d304c763"
+    },
+    "deadline_qa/ha_multihost_live.py": {
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+    },
+    "deadline_qa/native_ha_foreground_watchdog.py": {
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b"
+    },
+    "deadline_qa/native_v6_ha_direct_lan_live.py": {
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    "deadline_qa/native_v6_ha_multihost_live.py": {
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    "probe_normal_build_r10_r1.py": {
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    }
+  },
+  "modified_source_count": 4,
+  "unchanged_source_count": 5,
+  "modified_diff_hunks": [
+    1,
+    1,
+    4,
+    9
+  ],
+  "original_fences": 32,
+  "additional_df026_failure_fences": 4,
+  "total_fences": 36,
+  "original_98_checks_preserved": true,
+  "separate_postrecovery_12_checks_preserved": true,
+  "canonical_qa5": {
+    "ha_multihost_live.py": {
+      "name": "ha_multihost_live.py",
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0",
+      "bytes": 77805,
+      "sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de"
+    },
+    "native_v6_ha_multihost_live.py": {
+      "name": "native_v6_ha_multihost_live.py",
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "blob": "423cfe07588310fccf3846f4b291ad484639c58b",
+      "bytes": 75357,
+      "sha256": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c"
+    },
+    "native_v6_ha_direct_lan_live.py": {
+      "name": "native_v6_ha_direct_lan_live.py",
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197"
+    },
+    "native_v6_ha_official_history_live.py": {
+      "name": "native_v6_ha_official_history_live.py",
+      "path": "qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "blob": "639df2f7f742b4570a3bacc63c3cccd1707aa96f",
+      "bytes": 35247,
+      "sha256": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5"
+    },
+    "native_fixture_recovery.py": {
+      "name": "native_fixture_recovery.py",
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3"
+    }
+  },
+  "canonical_membership_source": {
+    "actual_mac_source_tree": "6bd25aee9d87e3ff8f7f69114d18167e8f541e7d",
+    "actual_nul_rebuilt_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "leaves": 3914,
+    "merkle": 358
+  },
+  "limits": {
+    "original_controller_seconds": 2400,
+    "extra_postcold_shared_seconds": 300,
+    "role_preparation_shared_seconds": 60,
+    "sealed_election_seconds": 60,
+    "http_seconds": 15,
+    "admission_seconds": 8,
+    "supervisor_seconds": 3000
+  },
+  "direction": {
+    "source_node": 3,
+    "required_actual_empty_leader": 1,
+    "actual_wrong_direction_stops_before_target_unseal": true,
+    "forced_election": false,
+    "witness_cas0_once": true,
+    "witness_metadata_delete_once": true,
+    "unknown_replay": false
+  },
+  "known_previous_actual": {
+    "df026_lan_tree": "e76233189ab4f9827d1a9d939d10bb73c6417873",
+    "original98_seen": 91,
+    "original98_missing": 7,
+    "extra12_seen": 0,
+    "status": "FAILED",
+    "old_roots_reused": false
+  },
+  "new_proposed_paths": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1"
+  },
+  "component_scope": {
+    "actual_passed": 38,
+    "main_or_qa_module_executed": false,
+    "cloud_public_input_script_and_stdlib_reads": true,
+    "selected_guard_native_os_api_calls": 0,
+    "business_host_calls": 0,
+    "product_children": 0
+  },
+  "next": "Require both independent actual normal61 full receipts, root source/qualification review, independent desktop canonical source import, then bind only actual10 digests; freeze final carrier and exact argv before any inert/prepare/live admission."
+}

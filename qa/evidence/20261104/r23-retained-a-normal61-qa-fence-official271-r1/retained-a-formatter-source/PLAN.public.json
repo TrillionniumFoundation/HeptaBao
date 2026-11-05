@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.retained-a-single-file-format-plan.v1",
+  "scope": "SOURCE ONLY pending exact root GO",
+  "base_source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "base_source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "base_formatter_request_blob": "52fe787d5b68896d16156740f719c74118a12a0b",
+  "test_source_packet": "0d51f6e38e57cf3bdf04d4230189fca70b976f88",
+  "original_failure_packet": "4bf2374c282fd07ce262bbdb84210dff3d684cab",
+  "changed_controller_fields_only": [
+    "fresh ROOT",
+    "one EXPECTED filename with actual before and candidate SHA",
+    "report schema/source base identity"
+  ],
+  "original_five_helpers_and_child_loop_exact": true,
+  "limits": {
+    "internal50": 50,
+    "per_child10": 10,
+    "outer60": 60,
+    "stdin262144": 262144
+  },
+  "zero_repositories_or_cargo_targets_read_or_written": true,
+  "zero_build_or_product": true,
+  "one_expected_child": true,
+  "known_success_requires_authoritative_exit0_full_durable": true,
+  "unknown_policy": "preserve original and never submit a replacement/retry",
+  "dispatch": {
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7",
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525"
+  },
+  "source": {
+    "bytes": 7134,
+    "sha256": "46aec69d278fe51525d920e85c1a183263ad7ace8cd0cc5c56c100fcecfcb3bc",
+    "blob": "d639911d8d97037f0ef7bd21c9d8203b16575ef5"
+  },
+  "stdin": {
+    "bytes": 12589,
+    "sha256": "42c59ef39fe38133f4ebe5a4b4b934591870c9ebb15feaf7a4051af968ad60bc",
+    "blob": "22db97e1a75381b73880676bb91f26d8819e1e02"
+  }
+}

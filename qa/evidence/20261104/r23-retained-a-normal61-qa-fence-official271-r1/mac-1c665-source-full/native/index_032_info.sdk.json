@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/control/032-git-ls-tree.stdout\",\"sha256\":\"dd907b2f2388820e2eee4c0bff6306f4818e4cb97b6b7e1ddef50824f9d600f8\",\"size\":450459,\"version\":\"16777244:72610685:450459:1793869469862001500:1793869469862001500\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

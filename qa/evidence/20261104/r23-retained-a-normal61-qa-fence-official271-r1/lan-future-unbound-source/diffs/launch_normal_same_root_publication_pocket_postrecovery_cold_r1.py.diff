@@ -1,0 +1,167 @@
+--- a/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py
++++ b/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py
+@@ -1,4 +1,4 @@
+-"""New fresh Direct98 plus separate post-recovery cold12; exact df026 product, private QA overlay."""
++"""New fresh Direct98 plus separate post-recovery cold12; exact 1c665 product, private QA overlay."""
+ from pathlib import Path
+ import argparse
+ import base64
+@@ -15,20 +15,20 @@
+ os.umask(0o077)
+ sys.dont_write_bytecode = True
+ ROOT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = ROOT / 'normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1'
++CONTROL = ROOT / 'normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1'
+-WORK = ROOT / 'formal-cold-h2-pocket3-mac1-postrecovery-cold-r1'
++WORK = ROOT / 'formal-same-root-publication-pocket3-mac1-postrecovery-cold-r1'
+-SOURCE = ROOT / 'normal-cold-h2-validation-source-r1'
++SOURCE = ROOT / 'normal-same-root-publication-validation-source-r1'
+-COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
+-TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
+-MAC = '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1'
++MAC = '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1'
+-LINUX = '/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3'
++LINUX = '/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/normal-release-tests-r1'
+ PROBE = CONTROL / 'probe_normal_build_r10_r1.py'
+-RUNNER = CONTROL / 'native_v6_pocket_source_postrecovery_cold_df026_r1.py'
++RUNNER = CONTROL / 'native_v6_pocket_source_postrecovery_cold_1c665_r1.py'
+-RUNNER_SHA256 = '83046e6f486c0b62d979623f6a2feed540acd3b2bd8955dbfc084312134359c4'
++RUNNER_SHA256 = '6438d429371e7a7e96d56c4c490d07b05df566efd454000452b316beff9195cd'
+-NUMERIC_HELPER = CONTROL / 'read_stopped_postrecovery_frontier_cold_h2_r1.py'
++NUMERIC_HELPER = CONTROL / 'read_stopped_postrecovery_frontier_same_root_publication_r1.py'
+-NUMERIC_HELPER_SHA256 = 'ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b'
++NUMERIC_HELPER_SHA256 = 'e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f'
+-CIPHER_HELPER = CONTROL / 'read_stopped_recovered_cipher_cold_h2_r1.py'
++CIPHER_HELPER = CONTROL / 'read_stopped_recovered_cipher_same_root_publication_r1.py'
+-CIPHER_HELPER_SHA256 = '961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2'
++CIPHER_HELPER_SHA256 = '0469ffd127f60c60ded67129a0f23868b81e28b6253a6b41584dc28a8afaab27'
+ DEADLINE_QA = CONTROL / 'deadline_qa'
+ DEADLINE_QA_PINS = {
+     "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+@@ -62,34 +62,34 @@
+         "abi": "x86_64-unknown-linux-gnu",
+         "actual_native_build_host": "rog",
+         "alias": "rog-ts",
+-        "build": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3",
+-        "source": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+-        "python": "/usr/bin/python3",
+-        "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+-        "build_driver_sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+-        "files": {
+-            "artifacts/heptabao-seed": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f",
+-            "artifacts/heptabao-server": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+-            "normal-release-build.stdout": "8919415e0f8093f85a8712dbae341ae3bb4c457e3e6c641ea195b8f7fb3ad331",
+-            "native-build.public.json": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+-            "normal-release-result.public.json": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d"
+-        }
+-    },
+-    "mac": {
+-        "abi": "aarch64-apple-darwin",
+-        "actual_native_build_host": "mac",
+-        "alias": "mac-ts",
+-        "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1",
+-        "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/source",
+-        "python": "/opt/homebrew/bin/python3",
+-        "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+-        "build_driver_sha256": "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862",
+-        "files": {
+-            "artifacts/heptabao-seed": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced",
+-            "artifacts/heptabao-server": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0",
+-            "normal-release-build.stdout": "835d50001d5b8c5401afb3c1dd30543325701c8e15d624cf130490f94623149e",
+-            "native-build.public.json": "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e",
+-            "normal-release-result.public.json": "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98"
++        "build": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/normal-release-tests-r1",
++        "source": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/source",
++        "python": "/usr/bin/python3",
++        "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
++        "build_driver_sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
++        "files": {
++            "artifacts/heptabao-seed": None,
++            "artifacts/heptabao-server": None,
++            "normal-release-build.stdout": None,
++            "native-build.public.json": None,
++            "normal-release-result.public.json": None
++        }
++    },
++    "mac": {
++        "abi": "aarch64-apple-darwin",
++        "actual_native_build_host": "mac",
++        "alias": "mac-ts",
++        "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1",
++        "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/source",
++        "python": "/opt/homebrew/bin/python3",
++        "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
++        "build_driver_sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
++        "files": {
++            "artifacts/heptabao-seed": None,
++            "artifacts/heptabao-server": None,
++            "normal-release-build.stdout": None,
++            "native-build.public.json": None,
++            "normal-release-result.public.json": None
+         }
+     }
+ }
+@@ -125,7 +125,11 @@
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/summary.json": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/exit.public.json": "f82c0a638a0493a9b5db9d28814a930cfc23a34e2862d2835c1ca37392e30cbf",
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/prepared.public.json": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+-    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-cold-h2-pocket3-mac1-postrecovery-cold-r1/summary.json": "532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json": "d2b5da49333eb27caf6d7a33956f0cda45e37690001a03aeee669bfe348f72a0",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json": "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py": "664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3"
+ }
+ 
+ 
+@@ -200,9 +204,9 @@
+         '--source-commit', COMMIT, '--source-tree', TREE]
+     for alias, platform in [('mac-ts', 'mac'), ('rog-ts', 'linux'), ('pocket4-ts', 'linux')]:
+         v += ['--native-build-receipt', alias + ',local:' + str(CONTROL / (platform + '-native-build.public.json')) + ',' + BUILDS[platform]['files']['native-build.public.json']]
+-    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/cold-h2-pocket3-mac1-postrecovery-cold-node1-r1',
++    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1',
+-          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1',
++          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node2-r1',
+-          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node3-r1',
++          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node3-r1',
+           '--api-port', '46230', '--raft-port', '46231', '--allow-private-lan', '--work-root', str(WORK),
+           '--darwin-watchdog-python', '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14',
+           '--darwin-watchdog-python-sha256', 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13']
+@@ -216,7 +220,7 @@
+ parser.add_argument('--prepared-sha256')
+ option = parser.parse_args()
+ require_bound_artifact_pins()
+-assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_cold_h2_pocket_postrecovery_cold_r1.py'
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py'
+ assert CONTROL.resolve(strict=True) == CONTROL
+ assert CONTROL.stat().st_uid == os.getuid() and stat.S_IMODE(CONTROL.stat().st_mode) == 0o700
+ assert not WORK.exists() and not WORK.is_symlink()
+@@ -273,7 +277,7 @@
+         str(ROOT / 'formal-r10-normal-full128-r2/summary.json')]
+     assert len(module.direct.DIRECT_CHECKS) == 98 and len(module.EXTRA_CHECKS) == 30
+     assert len(module.direct.DirectLanRun.required_checks) == 98
+-    prepared = {'schema': 'heptabao.normal-cold-h2-postrecovery-cold-prepared.v1',
++    prepared = {'schema': 'heptabao.normal-same-root-publication-postrecovery-cold-prepared.v1',
+         'required_extra_checks': POSTCOLD_CHECKS, 'required_extra_check_count': 12,
+         'new_shared_postrecovery_seconds': 300, 'original_controller_seconds': 2400,
+         'deadline_qa_pins': DEADLINE_QA_PINS, 'cipher_helper_sha256': CIPHER_HELPER_SHA256,
+@@ -311,7 +315,7 @@
+         assert sha(CONTROL / (name + '-' + filename)) == config['files'][filename]
+ qa_started = time.monotonic()
+ qa_until = qa_started + 2400.0
+-write_json(CONTROL / 'launch.public.json', {'schema': 'heptabao.normal-cold-h2-postrecovery-cold-launch.v1',
++write_json(CONTROL / 'launch.public.json', {'schema': 'heptabao.normal-same-root-publication-postrecovery-cold-launch.v1',
+     'original_controller_seconds': 2400, 'controller_started_monotonic': qa_started,
+     'controller_absolute_deadline': qa_until, 'new_shared_postrecovery_seconds': 300,
+     'deadline_qa_pins': DEADLINE_QA_PINS, 'cipher_helper_sha256': CIPHER_HELPER_SHA256,
+@@ -326,7 +330,7 @@
+                  HEPTABAO_SYNTHETIC_CONTROLLER_DEADLINE=repr(qa_until)), timeout=remaining_controller)
+ post = build_probes()
+ frozen = {name: post[name] == probes[name] for name in probes}
+-report = {'schema': 'heptabao.normal-cold-h2-postrecovery-cold-exit.v1',
++report = {'schema': 'heptabao.normal-same-root-publication-postrecovery-cold-exit.v1',
+     'deadline_qa_unchanged': verify_new_qa_sources(), 'required_extra_check_count': 12,
+     'original_controller_seconds': 2400, 'new_shared_postrecovery_seconds': 300, 'exit_code': result.returncode,
+     'summary': str(WORK / 'summary.json'), 'finished_unix': time.time(),

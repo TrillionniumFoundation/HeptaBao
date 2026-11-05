@@ -1,0 +1,134 @@
+{
+  "actual_child_processes": 0,
+  "actual_fd_operations": 0,
+  "actual_host_access": false,
+  "actual_main_calls": 0,
+  "actual_reader_instances": 0,
+  "actual_scandir_operations": 0,
+  "after_sha256": "7595dc5fa2c8dc800dfa986cb486d687d9a725510d3db4a7e5fed26ace36798c",
+  "before_sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf",
+  "check_count": 16,
+  "checks": [
+    {
+      "case": "all_existing_definitions_except_main_ast_identical",
+      "passed": true
+    },
+    {
+      "case": "one_new_pure_selector_only",
+      "passed": true
+    },
+    {
+      "case": "twelve_canonical_ids",
+      "passed": true
+    },
+    {
+      "case": "exact_unobserved_endpoints",
+      "passed": true
+    },
+    {
+      "case": "positive_at_most_ten_minute_inclusive_windows",
+      "passed": true
+    },
+    {
+      "case": "contiguous_nonoverlapping_windows",
+      "passed": true
+    },
+    {
+      "case": "exact_inclusive_cardinality_6871773",
+      "passed": true
+    },
+    {
+      "case": "actual_selector_preserves_all_fixed_intervals",
+      "passed": true
+    },
+    {
+      "case": "single_observed_now_clips_end_only",
+      "passed": true
+    },
+    {
+      "case": "future_interval_refuses_without_scope_widening",
+      "passed": true
+    },
+    {
+      "case": "unknown_noncanonical_and_nonstr_window_ids_refuse",
+      "passed": true
+    },
+    {
+      "case": "noninteger_now_refuses",
+      "passed": true
+    },
+    {
+      "case": "anchor_open_read_verify_report_block_byte_exact",
+      "passed": true
+    },
+    {
+      "case": "anchor_job_outside_all_windows_still_checked_first",
+      "passed": true
+    },
+    {
+      "case": "both_actual_configs_and_original_anchor_floor_unchanged",
+      "passed": true
+    },
+    {
+      "case": "one_wall_clock_sample_and_fixed_desktop_scope",
+      "passed": true
+    }
+  ],
+  "previous_25_components_rerun": false,
+  "range": [
+    1793865024255,
+    1793871896027
+  ],
+  "schema": "heptabao.locator-fixed-windows-r5.pure-components.v1",
+  "status": "PASS",
+  "windows": {
+    "01": [
+      1793865024255,
+      1793865624254
+    ],
+    "02": [
+      1793865624255,
+      1793866224254
+    ],
+    "03": [
+      1793866224255,
+      1793866824254
+    ],
+    "04": [
+      1793866824255,
+      1793867424254
+    ],
+    "05": [
+      1793867424255,
+      1793868024254
+    ],
+    "06": [
+      1793868024255,
+      1793868624254
+    ],
+    "07": [
+      1793868624255,
+      1793869224254
+    ],
+    "08": [
+      1793869224255,
+      1793869824254
+    ],
+    "09": [
+      1793869824255,
+      1793870424254
+    ],
+    "10": [
+      1793870424255,
+      1793871024254
+    ],
+    "11": [
+      1793871024255,
+      1793871624254
+    ],
+    "12": [
+      1793871624255,
+      1793871896027
+    ]
+  }
+}

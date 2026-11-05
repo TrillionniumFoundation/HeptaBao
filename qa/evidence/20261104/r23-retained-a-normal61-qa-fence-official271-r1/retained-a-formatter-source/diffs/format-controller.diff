@@ -1,0 +1,29 @@
+--- a/format-retained-a-controller.py
++++ b/format-retained-a-controller.py
+@@ -1,11 +1,11 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic(); LIMIT=50.0
+-ROOT=Path('/home/qian-qi/heptabao-same-root-publication-format-20261105-r1')
++ROOT=Path('/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1')
+ SRC=ROOT
+ FMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')
+ FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'
+-EXPECTED={"service_native_v6_ha_read.rs":["b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf","186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477"],"service_native_v6_ha_install.rs":["ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426","7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607"],"service_native_v6_ha_install_tests.rs":["4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c","32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929"],"service_native_v6_ha_same_root_republication_tests.rs":[None,"7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca"]}
++EXPECTED={"service_native_v6_ha_same_root_republication_tests.rs":["7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a","bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c"]}
+ FORMAT_CONFIG=b'edition = "2024"\n'
+ FORMAT_CONFIG_SHA='f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584'
+ os.umask(0o077)
+@@ -43,9 +43,9 @@
+  fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try: os.fsync(fd)
+  finally: os.close(fd)
+-report={'schema':'heptabao.same-root-publication-input-rustfmt.v1','status':'failed','productExecuted':False,
+- 'compileExecuted':False,'productionChanged':False,'sourceCommit':'6d02ceca629163e1c07480fa1f21520434407143',
+- 'sourceTree':'09aa45b9439741780961c2af76680c27e0773d08','sourceIdentityIsBaseOnly':True,
++report={'schema':'heptabao.same-root-retained-a-input-rustfmt.v1','status':'failed','productExecuted':False,
++ 'compileExecuted':False,'productionChanged':False,'sourceCommit':'1c66541993662f92cf717154e33717abedb2ea74',
++ 'sourceTree':'94ced21a63ff9aaca4538c0d4796efea2150e632','sourceIdentityIsBaseOnly':True,
+  'uncommittedCandidateInputs':True,'edition':'2024',
+  'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}
+ created=False;tool_before=None;config_before=None

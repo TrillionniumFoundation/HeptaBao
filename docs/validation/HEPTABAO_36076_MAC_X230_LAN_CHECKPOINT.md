@@ -1,5 +1,50 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R23 检查点：Mac 61 项核心实测通过，QA 六组件和 X230 围栏闭合；全量替代仍未达标
+
+状态截点为 **2026-11-05T11:30:02Z**。本节冻结已到达并独立回读的原证据；截点后的产物元数据、完整命令归档、ROG 终态和后继执行进入下一检查点，历史失败和 UNKNOWN 均保留。**没有正式切换生产流量，没有删除旧 OpenBao、HeptaBao 服务、二进制或备份资产。**
+
+[本轮完整机器状态](../../qa/evidence/20261104/r23-retained-a-normal61-qa-fence-official271-r1/state.public.json) · [证据清单](../../qa/evidence/20261104/r23-retained-a-normal61-qa-fence-official271-r1/manifest.public.json)。本轮新增 2099 个分包文件，分布于 53 个完整证据包，原文共 37,734,246 B；另保留根审脚本、结果、源码发布原回执和完整官方源码归档。所有分包均核对完整字节、SHA256、Git blob 及 Merkle 树。
+
+### 当前候选与已取得的实际结果
+
+当前候选为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec`，源码树 `eba5e650bd080b8ad41ea52a2bc68867f541d255`，[草稿 PR #159](https://github.com/TrillionniumFoundation/HeptaBao/pull/159) 未合并。相对于唯一父提交 1c665，仅修正新增回归用例：保留第一次实际产生的 A 迁移计划，在 B 之后重新发布该 A。独立再次迁移相同 V5 内容会生成新的随机 object_address_key，不能充当原 A。生产逻辑、原 30 项断言及原 15 秒请求预算均未因此放宽。
+
+| 路径 | 原任务及实际证据 | 本截点结论 |
+|---|---|---|
+| Mac T5 源码 | 41 命令、82 流、两个完整 NUL 清单、14 个固定版本大流分块；T5 UUID 已验证 | 源码导入通过，全部 3914 个文件逐路径、mode、blob 与当前提交一致 |
+| ROG 源码 | 56 命令、112 流及相同两个完整 NUL 清单；独立仓库、旧源码保持 | 源码导入通过；两机完整归档合计根审 722 项通过 |
+| Mac 当前 normal61 | 原任务 `1a1ab60127b-fc05-4d18`，exit 0/full/durable；核心 63478 B，SHA `02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113` | 原 60 项及新增 A→B→A 一项实际通过；48 个 owned 子进程均回收，6 个旧合格文件及 4 个旧失败文件完整身份和全文保持 |
+| 新增 A→B→A | 新项记录、stdout、stderr 已独立整件回读；warm 435 ms、cold 477 ms，原请求预算 15000 ms | 通过。整项含 setup/断言用时 16.7216 秒，不能把它错误地当作单次读取超时 |
+| ROG 当前 normal61 | 精确请求取得唯一 ACK：`1a1ab76cee8-fc05-4e13`，reused=false；外部 intent 已在提交前独立保存 | 已启动，原 12000 秒及全部子预算保留，终态未收入本截点 |
+| QA R3 | 原任务 `1a1ab68bbb6-fc05-4d8a` exit 0/full/durable；六个实际组件全部通过，12 个子进程、输入 FD、9 个别名读取 FD 及 iterator 全部闭合 | 仅 QA 构建/六组件核心通过，已释放共享 target 给 ROG；六测试共享一个原 30 秒命令，不是六份 30 秒 |
+| X230 旧运输围栏 | 原任务 `1a1ab637c5e-fc05-4d3a` exit 0/full/durable，53.414886 ms，10 个 FD 一次关闭；固定 ROOT 独占创建，2709 B marker 独立元数据和固定版本正文匹配 | 精确围栏范围通过；没有启动运输、网络、子进程。旧 relay `1a1aa57458d-fc05-4156` 仍为 UNKNOWN |
+
+Mac release 构建 259.883 秒、libtest 构建 450.369 秒，保持正常默认 feature 与原 profile。Mac 核心根审 112 项通过；**48 个命令的全部原流、三件 retained artifact 的独立 file_info 尚未收入本截点，因此本节未给 WAL/LAN 执行资格。** QA R3 核心根审 83 项通过；动态捕获本次 Cargo 两别名的新 inode，全文比对后创建独立单链接 retained 文件。剩余 22 个命令流与完整 Cargo JSON 仍在归档，不据核心摘要宣称已经完成全部工具资格。
+
+### 保留的失败和未决状态
+
+旧 1c665 Mac normal61 仍记录为“原 60 项通过、新增一项失败”；其中两份 Cargo 大 stdout 的首次完整读回发生 MCP 超时，未重放构建，缺口仍保留。QA R2 仍为 generic single-link 校验拒绝 Cargo 两硬链接的真实失败；后来观察到两别名不改写该失败。R3 还实际抓到取消信号在 handler 恢复过程中被遗漏的反例，最终修复在两原 handler 恢复后再次检查取消，原反例和修复后结果均保存。
+
+X230 固定窗口定位在第 03 窗发现原 R2 围栏，04–12 窗未提交。原 R2 围栏已恢复为 exit 1/full/durable 的已知失败，只关闭已打开的两个 FD，没有创建 ROOT 或 marker。最新拒绝 tuple 未被记录，不能臆测具体哪一字段变化。新 R3 仅对四个共享祖先目录使用 dev/ino/uid/gid/mode 对象身份；旧 control、新 ROOT 和 marker 的完整九字段检查保持。新 ROOT 保留期间可以阻止精确旧 relay 再越过必须的 ROOT.mkdir；它不证明旧进程已经终止。
+
+最近一轮真实三机结果仍为旧 df026 的 **91/98，后续 0/12 未进入**，34MiB（35651584 B）数据实际参与，但这不是当前候选的全 HA 通过证据。原 B01 两个 UNKNOWN、Mac 旧 capture 的内部未决状态及旧 provider/config baseline 均未被重放或改写。
+
+### OpenBao 2.7.1 全量范围已经明确，仍需实现和实测
+
+官方 v2.7.1 的精确提交为 `a5db72cef75c24b920ade02065b18dd8eb666bac`、树 `3a8ba726d8d557a5f9b3f2ed28b406da33632182`。已完整核验 242 个 Go 源文件的字节、双 hash 和树成员关系；6328 个树条目、939 个 Merkle 也已核实。V3 清单保留 **423 个声明、720 个声明操作、1064 个字段、128 个注册/生命周期位置**。这些是源码词法清单，**不是运行时覆盖率分母，也不是 720 项已通过测试**。V3 只纠正 189 个 family 行，反向恢复后其他语义完全一致。
+
+完整清单、完整源码语料和重现依赖分别归档为 gzip/base64 与 tar.gz/base64；具体字节、SHA256、原 V2 数据和初次失败/修正见机器清单及 `official271/persistence-receipt.public.json`。原文件里创建时的 persistence-pending 标记保留；新的归档回执说明实际保存形式，没有冒称另建了未创建的原始 Git blob。
+
+当前 14 个原生能力门槛源文件与 1c665 内容一致。仍需补齐 JWT/Kubernetes/OIDC/MFA/password-policy 的持久化 owner 和冷恢复语义；数据库/Kubernetes/RabbitMQ 外部 lease/effect owner 与 UNKNOWN 对账；PKI ACME/EAB/外部签名及 transit 外部托管；rekey/recovery/root-generation/rotation/raw/system 生命周期；可变插件目录、provider 协议和非默认 namespace/workflow/control-group 等状态。必须实现这些所有权、持久化、撤销和恢复语义，不能删掉当前拒绝 guard 换取绿色结果。
+
+### 接续动作与清理前置条件
+
+继续回收唯一 ROG normal61 终态，完成 Mac 原始命令/产物资格，然后将当前产物绑定到 WAL、H2、34MiB 迁移/恢复与原 98+12 三机断主、自然选主、ReadIndex、持久化及重启验证。所有预算和失败判据保持，禁止强制选主、刷新 deadline 或用新 key 重派 UNKNOWN。
+
+AuthBus 仍需可信生产 cluster 地址、CA、AppRole 凭证来源和完整 AppRole/TLS/KV/Policy/续期/撤销证据。临时 fixture 生成的 SecretID 不等于已经完成生产可信来源。每台主机必须先完成真实凭证读写、重启与回滚，再切流量。Pocket4 manager、X230 当前 consumer、完整客户端与备份迁移仍未闭合；Nov2 capture/Nov3 transport 的九份回执是一条备份链，不能当作九次当前完整备份。ROG 已停用 generation203 及模型/provider/refresh/quota 状态保持。所有客户端与备份路径完成迁移后，才执行旧服务、二进制和可再生资产清理。
+
+
 ## 当前 R22 检查点：同内容根发布修复已形成候选；WAL 十场景与 QA 进程归属实测闭合
 
 状态截点为 **2026-11-05T09:06:41Z**。本节及机器索引冻结该时点已收到的证据：Mac 新源码导入和 Linux QA R2 构建都已取得唯一启动回执，终态尚未收入这个快照。之后收到的终态、完整命令归档和后继运行归入 R23，不回填本节。**完整替代 OpenBao 2.7.1 仍为未达标；没有正式切流，也没有删除旧服务、二进制或恢复材料。**

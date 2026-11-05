@@ -1,0 +1,23 @@
+{
+  "host": "mac",
+  "paths": [
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/normal-release-build.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/build.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/ssh25-list.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/ssh25-list.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/ssh25.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/ssh25.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/mount1-list.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/mount1-list.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/mount1.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/mount1.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/redirect5-list.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/redirect5-list.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/redirect5.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/redirect5.stderr",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/actor2-list.stdout",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/actor2-list.stderr"
+  ],
+  "max_file_bytes": 65536,
+  "max_response_bytes": 262144
+}

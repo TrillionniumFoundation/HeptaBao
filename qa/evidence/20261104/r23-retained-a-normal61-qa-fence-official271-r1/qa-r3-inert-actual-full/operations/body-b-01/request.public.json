@@ -1,0 +1,19 @@
+{
+  "idempotency_key": "qa-r3-inert-93afaf47-body-b-01",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/official_cli_reference_r4.py",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inert-stage.result.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

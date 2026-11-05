@@ -1,0 +1,29 @@
+{
+  "before": {
+    "bytes": 7587,
+    "sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695",
+    "blob": "81211c8129b8d219672f88e5d7a2f9a0e7c3dea2"
+  },
+  "after": {
+    "bytes": 7134,
+    "sha256": "46aec69d278fe51525d920e85c1a183263ad7ace8cd0cc5c56c100fcecfcb3bc",
+    "blob": "d639911d8d97037f0ef7bd21c9d8203b16575ef5"
+  },
+  "diff": {
+    "bytes": 2472,
+    "sha256": "002de6701f794321b4d5e06e4132590e8bc96e4763a1ee284cb5558fc0634967",
+    "blob": "bea373e2f9d52325277b4b994c58afc0428d2548",
+    "hunks": 2
+  },
+  "payload": {
+    "bytes": 12589,
+    "sha256": "42c59ef39fe38133f4ebe5a4b4b934591870c9ebb15feaf7a4051af968ad60bc",
+    "blob": "22db97e1a75381b73880676bb91f26d8819e1e02"
+  },
+  "request": {
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7",
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525"
+  },
+  "strict_forward_inverse": true
+}

@@ -1,0 +1,14 @@
+{
+  "idempotency_key": "qa-r2-build-48f5-result-20261105-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/result.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

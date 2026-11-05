@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.retained-a.mac-normal61.root-go.v1",
+  "go": "ONLY_EXACT_MAC_NORMAL61_ONCE",
+  "source_actual_review": {
+    "name": "r23-retained-a-mac-source-actual-root-result.public.json",
+    "blob": "3e5af92d147f789e4857c99cfd331b5bed15bd78",
+    "bytes": 2844,
+    "sha256": "0844e260bc54f4bd1047934380418e97d599a07c478c5672dd248d4d4bb5158f"
+  },
+  "source_stage_sha256": "0ffc1af8d2455abd976aa12b4b1e64aed910adfccfbe310391ae61b01de8daaf",
+  "request": {
+    "blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4",
+    "bytes": 1056,
+    "sha256": "8d987117ab1c6037b1491a38aab42465e8416b28cd22cfd685fe7d6db0eef40d"
+  },
+  "host": "mac",
+  "idempotency_key": "heptabao-same-root-publication-4e808-mac-normal61-20261105-r2-3a25e709-3e013354",
+  "external_intent_must_finish_before_one_submit": true,
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "budgets": {
+    "original_outer_seconds": 8280,
+    "release_build_seconds": 1800,
+    "libtest_build_seconds": 1800,
+    "listing_seconds": 30,
+    "each_original_or_extra_group_seconds": 600,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "scope": "Exact unchanged normal release/libtest build, original60 and one retained-A same-root regression on physical T5. Preserve original six df026 files plus four failed1c665 receipts, actual tool/source/volume fences and all cleanup predicates. No deadline reset.",
+  "all_original_stage_logs_archival": "Continue separate capture; no assertion that pending raw command archives are already complete. Do not replay source stage.",
+  "no_lan_or_authbus_dispatch_under_this_go": true,
+  "no_production_cutover": true,
+  "no_cleanup_of_old_services": true,
+  "unknown_policy": "Persist original ACK immediately. Recover only original job and owned authority; no replay, new key, forced election or timeout enlargement.",
+  "full_replacement": false
+}

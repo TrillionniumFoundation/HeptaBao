@@ -1,0 +1,22 @@
+--- a/mac_launcher.py
++++ b/mac_launcher.py
+@@ -22,8 +22,8 @@
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == '1c66541993662f92cf717154e33717abedb2ea74'
+-assert args.tree == '94ced21a63ff9aaca4538c0d4796efea2150e632'
++assert args.commit == '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++assert args.tree == 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+@@ -37,7 +37,7 @@
+ 
+ if args.host == 'mac':
+     BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-    ROOT = BASE / 'continuation-20261105-same-root-publication-normal-r1'
++    ROOT = BASE / 'continuation-20261105-same-root-publication-normal-r2'
+     R9 = BASE / 'continuation-20261104-native-http-r9'
+     OLD = BASE / 'continuation-20261104-native-ssh-http-r8'
+     OLD_SOURCE = OLD / 'source'

@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/normal-release-build.stdout",
+  "expected_version": "16777244:72612469:440534:1793870893522358445:1793870893522358445",
+  "offset": 0,
+  "limit": 65536
+}

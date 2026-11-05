@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/result.public.json\",\"sha256\":\"869d0c464025e3742c5794cb86723352133f08e2243caf95e7d08f6260b003e2\",\"size\":3817,\"version\":\"66306:31234951:3817:1793873979472506116:1793873979472506116\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

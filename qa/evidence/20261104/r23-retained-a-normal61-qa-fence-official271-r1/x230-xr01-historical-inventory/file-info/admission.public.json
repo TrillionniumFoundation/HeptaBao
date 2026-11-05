@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.xr01.metadata-admission.r1",
+  "passed": true,
+  "fileInfoApiContract": "successful file_info returns regular target and rejects symlinks/special files",
+  "fileTypeInferredFromPermissionBits": false,
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+  "bytes": 11770,
+  "sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+  "version": "2053:6342414:11770:1793768197683292710:1793768197683292710",
+  "mode": 384,
+  "uid": 1000,
+  "gid": 1000,
+  "linkCount": 1,
+  "originalSdkBytes": 594,
+  "originalSdkSha256": "f97f1ec4b24697d7f76def151793501cb0798120a9a568cb4c078126f61dbe46",
+  "bodyReadNotYetSubmitted": true
+}

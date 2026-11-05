@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+    "--exact",
+    "--list"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.016657458152621984,
+  "exit_code": 0,
+  "label": "ingress-observer-1-list",
+  "outer_cap_seconds": 30.0,
+  "owned_pgid": 80257,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "866cc4ad41624f4a139d8dfe391c723ae74d06d96e9241201f676f9222ec2968",
+  "timed_out": false
+}

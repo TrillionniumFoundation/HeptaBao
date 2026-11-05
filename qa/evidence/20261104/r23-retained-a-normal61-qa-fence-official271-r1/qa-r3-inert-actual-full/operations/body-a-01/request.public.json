@@ -1,0 +1,15 @@
+{
+  "idempotency_key": "qa-r3-inert-93afaf47-body-a-01",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/owned_reference_phaseb_r3.py"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

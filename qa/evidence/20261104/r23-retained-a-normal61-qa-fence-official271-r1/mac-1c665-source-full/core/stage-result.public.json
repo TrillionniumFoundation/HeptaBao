@@ -1,0 +1,422 @@
+{
+  "actual_build_qualification": false,
+  "additional_cold_h2_tests": 9,
+  "additional_existing_tests": 7,
+  "additional_same_root_publication_tests": 1,
+  "canonical_bundle": {
+    "bytes": 28172,
+    "header": {
+      "header_sha256": "88dc360f8985629d3aebc0999075160ae15a760bbd1b4538b9e986769216183d",
+      "heads": [
+        [
+          "1c66541993662f92cf717154e33717abedb2ea74",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      16777244,
+      72605821,
+      501,
+      20,
+      33152,
+      1,
+      28172,
+      1793869466992857372,
+      1793869466992869872
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-same-root-publication-1c665-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15"
+  },
+  "canonical_bundle_published_after_volume_guard": true,
+  "canonical_history_count": 3762,
+  "carrier_sha256": "fca427af46ae04e22c26442f87ca3da63736772fa6651562a23b9f330accb583",
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "039-git-status",
+      "pid": 61780,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "038-git-rev-parse",
+      "pid": 61777,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "037-git-rev-parse",
+      "pid": 61772,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "036-git-status",
+      "pid": 61769,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "035-git-rev-parse",
+      "pid": 61767,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "034-git-rev-parse",
+      "pid": 61765,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "033-git-ls-files",
+      "pid": 61763,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "032-git-ls-tree",
+      "pid": 61761,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "031-git-rev-parse",
+      "pid": 61759,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "030-git-rev-parse",
+      "pid": 61757,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "029-git-fsck",
+      "pid": 61734,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "028-git-status",
+      "pid": 61732,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "027-git-rev-parse",
+      "pid": 61730,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "026-git-rev-parse",
+      "pid": 61728,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "025-git-checkout",
+      "pid": 61724,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "024-git-rev-list",
+      "pid": 61722,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "023-git-rev-list",
+      "pid": 61719,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "022-git-rev-list",
+      "pid": 61717,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "021-git-rev-list",
+      "pid": 61715,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "020-git-show",
+      "pid": 61713,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "019-git-show",
+      "pid": 61711,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "018-git-show",
+      "pid": 61709,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "017-git-show",
+      "pid": 61707,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "016-git-show",
+      "pid": 61705,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "015-git-show",
+      "pid": 61703,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "014-git-show",
+      "pid": 61701,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "013-git-show",
+      "pid": 61699,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "012-git-show",
+      "pid": 61697,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "011-git-show",
+      "pid": 61695,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "010-git-rev-parse",
+      "pid": 61693,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "009-git--c",
+      "pid": 61688,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "008-git-bundle",
+      "pid": 61686,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "007-git-bundle",
+      "pid": 61683,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "006-git-remote",
+      "pid": 61681,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "005-git-remote",
+      "pid": 61679,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "004-independent-local-clone",
+      "pid": 61675,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "003-git-status",
+      "pid": 61673,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "002-git-rev-parse",
+      "pid": 61671,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "001-git-rev-parse",
+      "pid": 61669,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "000-t5-volume-identity",
+      "pid": 61667,
+      "remaining": []
+    }
+  ],
+  "compiler_started": false,
+  "controls": {
+    "launch_normal_same_root_publication.py": {
+      "bytes": 24018,
+      "sha256": "f02a982a9ec9afeb26eebd20f007b261aa042daa46f005336a48fce00348df93"
+    },
+    "mac_normal_same_root_publication_build.py": {
+      "bytes": 35525,
+      "sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02"
+    },
+    "normal-test-groups.public.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    }
+  },
+  "elapsed_seconds_after_cleanup": 3.8789334162138402,
+  "exact_groups": [
+    [
+      "ssh25",
+      25
+    ],
+    [
+      "mount1",
+      1
+    ],
+    [
+      "redirect5",
+      5
+    ],
+    [
+      "actor2",
+      2
+    ],
+    [
+      "ordinary5",
+      5
+    ],
+    [
+      "no_forward6",
+      6
+    ]
+  ],
+  "exact_test_count": 44,
+  "external_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "full_strict_fsck_passed": true,
+  "full_worktree": {
+    "all_tracked_worktree_blobs_and_modes_match": true,
+    "full_leaf_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc",
+    "index_matches_tree": true,
+    "tracked_bytes": 62224861,
+    "tracked_leaf_count": 3914
+  },
+  "host": "mac",
+  "independent_git_directory": true,
+  "new_commits_since_actual_495": [
+    "1c66541993662f92cf717154e33717abedb2ea74",
+    "6d02ceca629163e1c07480fa1f21520434407143",
+    "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "e5de554f5dfe99f0de30012122fe3e248fb60532",
+    "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+    "6d3040a2dbd06661a67f5c62df259ff446eb8515"
+  ],
+  "new_stage_total_seconds": 300,
+  "new_supervisor_seconds": 360,
+  "no_alternates": true,
+  "no_shared_object_links": true,
+  "object_files_checked": 205,
+  "old_source_after": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_before": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "old_source_unchanged": true,
+  "original_60_test_count": 60,
+  "original_clone_cap_seconds": 180,
+  "original_git_leaf_cap_seconds": 90,
+  "production_changed": false,
+  "public_network_fetch_used": false,
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1",
+  "schema": "heptabao.same-root-publication-independent-source-stage.v1",
+  "server_started": false,
+  "sole_parent": "6d02ceca629163e1c07480fa1f21520434407143",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/source",
+  "source_clean": true,
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_ref": "refs/heads/codex/heptabao-same-root-publication-94ced21a-20261105-r1",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "stager_sha256": "e8649ca688456578cea0e388641786404650851e07dc95aca8d231dfce6e2897",
+  "started_ns": 1793869466895062000,
+  "status": "prepared",
+  "terminal_ns": 1793869470755075000,
+  "within_new_stage_deadline": true
+}

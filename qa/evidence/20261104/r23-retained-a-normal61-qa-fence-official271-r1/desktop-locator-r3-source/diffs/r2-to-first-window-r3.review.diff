@@ -1,0 +1,12 @@
+diff --git a/read_fixed_job_request_locator_desktop_first_window_r3.py b/read_fixed_job_request_locator_desktop_first_window_r3.py
+--- a/read_fixed_job_request_locator_desktop_first_window_r3.py
++++ b/read_fixed_job_request_locator_desktop_first_window_r3.py
+@@ -527,6 +527,8 @@
+         report["source_sha256"] = sys.argv[4]
+         report["floor_unix_ms"] = config["floor_unix_ms"]
+         ceiling = time.time_ns() // 1_000_000
++        if scope == "desktop-fence":
++            ceiling = min(ceiling, 1793868160140)
+         need(ceiling >= canonical_job_time(config["anchor_job_id"])
+              >= config["floor_unix_ms"], "observation_time_window")
+         report["ceiling_unix_ms"] = ceiling

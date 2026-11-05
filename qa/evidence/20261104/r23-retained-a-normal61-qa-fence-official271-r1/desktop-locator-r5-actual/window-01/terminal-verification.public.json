@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.fixed-window-terminal-verification.v1",
+  "window_index": "01",
+  "job_id": "1a1ab460d9e-fc05-4be1",
+  "checks": [
+    {
+      "case": "whole_stream_available",
+      "passed": true
+    },
+    {
+      "case": "offset_stdout",
+      "passed": true
+    },
+    {
+      "case": "hex_stdout",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stdout",
+      "passed": true
+    },
+    {
+      "case": "authority_stream_stdout",
+      "passed": true
+    },
+    {
+      "case": "offset_stderr",
+      "passed": true
+    },
+    {
+      "case": "hex_stderr",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_stream_stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_complete_known_zero",
+      "passed": true
+    },
+    {
+      "case": "exact_start_ack",
+      "passed": true
+    },
+    {
+      "case": "source_scope_window",
+      "passed": true
+    },
+    {
+      "case": "full_selected_interval_no_clock_clip",
+      "passed": true
+    },
+    {
+      "case": "original_positive_anchor",
+      "passed": true
+    },
+    {
+      "case": "complete_report",
+      "passed": true
+    },
+    {
+      "case": "every_fd_once_closed",
+      "passed": true
+    },
+    {
+      "case": "iterator_once_closed",
+      "passed": true
+    },
+    {
+      "case": "shared_deadline",
+      "passed": true
+    },
+    {
+      "case": "bounded_counts",
+      "passed": true
+    },
+    {
+      "case": "only_exact_target_matches",
+      "passed": true
+    },
+    {
+      "case": "scope_claims",
+      "passed": true
+    },
+    {
+      "case": "canonical_start_digest",
+      "passed": true
+    },
+    {
+      "case": "approved_request_whole",
+      "passed": true
+    },
+    {
+      "case": "start_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "status0_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "read0_native_vs_mcp_snapshot",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "authority": {
+    "bytes": 733,
+    "sha256": "bc55389fdb2a2e65a6c1117030e0a8df87ccb56830e044d4050d253cbdf8c958",
+    "blob": "a7f2a734b7fac9f64609f0b7a6034720b9fbe6b8"
+  },
+  "stdout": {
+    "bytes": 14063,
+    "sha256": "d05daa22f813e6f2b3bb94f7302e012761bcdbaa45e00342ed4c370699b3f601",
+    "blob": "952db17258e940820cc59fae117da8c271885eba"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "request": {
+    "bytes": 28001,
+    "sha256": "aea219f6650482b5187623de75c8f94091653d947f9fadd2e37b15a3a51fa143",
+    "blob": "8f2de96c35f97fc8f619e148d0779b7837d2d4df"
+  },
+  "matches": [],
+  "not_business_terminal": true,
+  "absence_proven": false,
+  "replay_authorized": false
+}

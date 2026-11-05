@@ -1,0 +1,39 @@
+function verifyMacSourceArchive(raw,audit,u,bs,h,s1,unb64,rebuild,lp,correctedBase64){
+ const checks=[];function ok(v,n){if(!v)throw Error(n);checks.push(n);}
+ const j=p=>lp(raw[p]), pin=new Map(audit.records.map(r=>[r.path,r])), core=j("core/stage-result.public.json");
+ ok(audit.tree==="6bd25aee9d87e3ff8f7f69114d18167e8f541e7d"&&audit.files===206,"whole packet identity");
+ const requests=j("verification/read-requests.public.json"),rq=new Map(requests.map(r=>[r.key,r.request]));
+ for(const [path,text] of Object.entries(raw)){if(!path.startsWith("native/")||!path.endsWith(".sdk.json"))continue;const n=path.replace(/\.sdk\.json$/,".original.json");const sdk=lp(text);ok(sdk.isError!==true&&sdk.content[0].text===raw[n],"exact SDK/native "+n);}
+ let recordRows=0,streamRows=0;const remoteFiles=new Map();
+ for(const [key,request] of rq){if(!key.startsWith("records_batch_")&&!key.startsWith("stream_batch_"))continue;const o=j("native/"+key+".original.json");ok(request.host==="mac"&&request.paths.length<=16&&request.max_file_bytes===65536&&request.max_response_bytes===262144&&!o.truncated&&o.files.length===request.paths.length,"bounded full batch "+key);
+  o.files.forEach((f,i)=>{ok(f.path===request.paths[i]&&f.eof===true&&u(f.text).length===f.size&&h(bs(u(f.text)))===f.sha256,"whole batch member "+key+"/"+i);ok(!remoteFiles.has(f.path),"unique raw file "+key+"/"+i);remoteFiles.set(f.path,f);if(key.startsWith("records"))recordRows++;else streamRows++;});}
+ ok(recordRows===40&&streamRows===78,"all 40 command records and 78 text streams");
+ const binary={};
+ for(const n of ["032","033"]){const key="index_"+n,info=j("native/"+key+"_info.original.json");ok(info.mode===384&&info.metadata.uid===501&&info.metadata.gid===20&&info.metadata.link_count===1,"independent NUL metadata "+n);
+  let data=[],off=0;
+  for(let i=0;i<7;i++){const k=key+"_chunk_"+i,request=rq.get(k),c=j("native/"+k+".original.json"),b=unb64(c.data_base64);ok(request.host==="mac"&&request.path===info.path&&request.expected_version===info.version&&request.offset===off&&request.limit===65536,"exact version-pinned request "+k);ok(c.path===info.path&&c.version===info.version&&c.size===info.size&&c.offset===off&&c.next_offset===off+b.length&&b.length<=65536&&h(bs(b))===c.chunk_sha256&&c.eof===(i===6),"whole sequential chunk "+k);data=data.concat(b);off+=b.length;}
+  ok(off===info.size&&h(bs(data))===info.sha256,"whole NUL output "+n);
+  const label=n==="032"?"032-git-ls-tree":"033-git-ls-files",arch=unb64(raw["commands/"+label+".stdout.base64"].trim());ok(bs(arch)===bs(data),"archived NUL exact "+n);binary[label]={bytes:data,sha256:info.sha256,info};
+ }
+ const clean=new Map(core.cleanup.map(c=>[c.label,c])),commandPaths=audit.records.filter(r=>/^commands\/.*\.public\.json$/.test(r.path)).map(r=>r.path).sort(),seenPids=new Set();
+ ok(commandPaths.length===40&&clean.size===40,"40 unique cleanup records");
+ const commandSummary=[];
+ for(const p of commandPaths){const rec=j(p),label=p.slice(9,-12),remote=core.root+"/control/"+label+".public.json",f=remoteFiles.get(remote),c=clean.get(label);ok(f&&f.text===raw[p],"original command record "+label);ok(rec.exit_code===0&&rec.direct_child_reaped===true&&rec.remaining.length===0&&rec.timed_out===false&&rec.elapsed_seconds>=0&&rec.elapsed_seconds<rec.limit_seconds,"command exit and deadline "+label);ok(c&&c.pid===rec.pid&&c.direct_child_reaped===true&&c.exit_code===0&&c.remaining.length===0,"owned cleanup matched "+label);ok(!seenPids.has(rec.pid),"distinct child "+label);seenPids.add(rec.pid);
+  const cap=label==="000-t5-volume-identity"?30:label==="004-independent-local-clone"?180:90;ok(rec.limit_seconds===cap,"original leaf cap "+label);
+  for(const st of ["stdout","stderr"]){const isBinary=st==="stdout"&&binary[label],v=isBinary?binary[label].sha256:pin.get("commands/"+label+"."+st)?.sha256;ok(v===rec[st+"_sha256"],"original stream hash "+label+"/"+st);if(!isBinary){const text=raw["commands/"+label+"."+st],r=remoteFiles.get(core.root+"/control/"+label+"."+st);ok(r&&r.text===text,"original full text stream "+label+"/"+st);}}
+  commandSummary.push({label,pid:rec.pid,exit_code:rec.exit_code,elapsed_seconds:rec.elapsed_seconds,limit_seconds:rec.limit_seconds});
+ }
+ function dec(b){return decodeURIComponent(b.map(x=>"%"+x.toString(16).padStart(2,"0")).join(""));}
+ const treeText=dec(binary["032-git-ls-tree"].bytes),indexText=dec(binary["033-git-ls-files"].bytes);ok(treeText.endsWith("\0")&&indexText.endsWith("\0"),"NUL complete EOF");
+ const trees=treeText.slice(0,-1).split("\0").map(line=>{const m=/^([0-7]{6}) blob ([0-9a-f]{40})\t([\s\S]+)$/.exec(line);if(!m)throw Error("invalid ls-tree record");return{path:m[3],mode:m[1],type:"blob",sha:m[2]};});
+ const indices=indexText.slice(0,-1).split("\0").map(line=>{const m=/^([0-7]{6}) ([0-9a-f]{40}) 0\t([\s\S]+)$/.exec(line);if(!m)throw Error("invalid stage-0 index");return{path:m[3],mode:m[1],type:"blob",sha:m[2]};});
+ ok(trees.length===3914&&indices.length===3914&&JSON.stringify(trees)===JSON.stringify(indices),"3914 tree and stage-zero entries exact");
+ const ft=rebuild(trees,s1,u);ok(ft.sha==="94ced21a63ff9aaca4538c0d4796efea2150e632"&&ft.tree.filter(e=>e.type==="tree").length+1===358,"independent 358-tree candidate Merkle rebuild");
+ const bi=j("native/bundle_info.original.json"),br=j("native/bundle_read.original.json"),bq=rq.get("bundle_read"),bb=unb64(br.data_base64);
+ ok(bq.host==="mac"&&bq.path===bi.path&&bq.offset===0&&bq.limit===65536&&bq.expected_version===bi.version&&br.version===bi.version&&br.path===bi.path&&br.offset===0&&br.eof&&br.next_offset===28172&&br.size===28172&&bb.length===28172,"whole version-pinned Mac bundle");
+ ok(bi.mode===384&&bi.metadata.uid===501&&bi.metadata.gid===20&&bi.metadata.link_count===1&&bi.sha256==="6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15"&&h(bs(bb))===bi.sha256&&br.chunk_sha256===bi.sha256&&correctedBase64===br.data_base64+"\n"&&bs(unb64(correctedBase64.trim()))===bs(bb),"Mac bundle equals independently pinned input");
+ ok(bs(unb64(raw["bundle/canonical-same-root-publication-from495.bundle.base64"].trim()))===bs(u(bs(bb))),"original bad derived artifact exactly explained by Latin1-to-UTF8 encoding");
+ const auth=j("core/authority.original.json");ok(auth.job_id==="1a1aaf3c0b0-fc05-48f8"&&auth.exit_code===0&&auth.output_complete&&auth.output_durable&&!auth.timed_out&&!auth.cancelled&&!auth.automatic_retry,"source authoritative complete durable zero");
+ ok(core.source_commit==="1c66541993662f92cf717154e33717abedb2ea74"&&core.source_tree===ft.sha&&core.within_new_stage_deadline&&core.elapsed_seconds_after_cleanup<300&&core.compiler_started===false&&core.server_started===false&&core.production_changed===false,"source-only exact scope");
+ return {schema:"heptabao.root.mac-source-full-archive-verification.v1",status:"PASS",packet:audit.tree,packet_files:audit.files,packet_bytes:audit.bytes,checks_passed:checks.length,checks,commands:commandSummary,original_command_files:120,original_text_streams:78,original_NUL_streams:2,exact_version_pinned_NUL_chunks:14,full_source_tree:ft.sha,source_leaf_count:3914,source_merkle_trees:358,mac_bundle_bytes:bb.length,mac_bundle_sha256:bi.sha256,source_job:auth.job_id,source_authoritative_exit_code:0,prior_core_and_control_review:"78e24e478a1fc97f88989a29c1da6ee4ac861cef",derived_bundle_correction_packet:"6779d8a47827bc4f1ca25913c1dc85e465a2cf8a",original_bad_derived_artifact_preserved:"4f5446bdd5a8ba191bb3421db73bc998e650b1fe",initial_root_checker_failure_preserved:"643d1a3cb5108f6e7ca1f53af6455b62aeb7a528",no_remote_reread_or_replay_for_correction:true,no_product_runtime_qualification_inferred:true,ROG_original_stage_job_remains_unknown:true};
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.future-exact-normal-build-template.v1",
+  "ready": false,
+  "reason": "New 4e808 source stage actual authority, controls and immutable result binding are not yet available.",
+  "actual_stage_sha256": null,
+  "candidate_request": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/control/launch_normal_same_root_publication.py",
+      "--host",
+      "mac",
+      "--commit",
+      "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "--tree",
+      "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "--stage-sha256",
+      "__ACTUAL_STAGE_SHA256__",
+      "--runner-sha256",
+      "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+      "--groups-sha256",
+      "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "--r9-resume-sha256",
+      "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+      "--r9-resume-terminal-sha256",
+      "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+      "--r9-resume-authority-sha256",
+      "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "timeout_seconds": 8280,
+    "idempotency_key": "heptabao-same-root-publication-4e808-mac-normal61-20261105-r2-3a25e709-3e013354"
+  }
+}

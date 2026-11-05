@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.x230-fence-r3.root-go.v1",
+  "go": "ONLY_EXACT_CREATE_ONLY_EFFECT_FENCE_ONCE",
+  "root_source_review": {
+    "blob": "48d713eee79b5099dd61e7487c5e3c9dc69d44e6",
+    "bytes": 1929,
+    "sha256": "b7548a636cf9cbccfde4a5d197769cb98daa85d2c950f4943b9e6ec73695b40c"
+  },
+  "independent_peer": {
+    "blob": "86eef7e07b574dd37dc33aa319bbb30ef680c1b5",
+    "bytes": 4582,
+    "sha256": "cda37b60637d089d57f673a0c38dac030dea0033874a68456ba9445e21ad5d3e"
+  },
+  "source_packet": "1789e362da46e998d3c7a7ba6eaf1e654628d828",
+  "exact_request_packet": "d33708ff2d9b5cea5701e704b994633cdab6fc53",
+  "request": {
+    "blob": "77069057a0d67da87f8a2a2228d4921f95d1fd29",
+    "bytes": 23815,
+    "sha256": "a0344a7b1f9180ffaeefcc69ffd4a42b05ddcfde73780f0e2670c2435d83a716"
+  },
+  "request_digest": "d844d40a3dd1313c3d546608163bf85b358f0ce28b59de72994aee5fa8e4d39e",
+  "idempotency_key": "heptabao-x230-original-relay-effect-fence-r3-4b4026a6",
+  "host": "desktop",
+  "external_intent_must_complete_in_separate_call_before_one_submit": true,
+  "original_caps": {
+    "soft_seconds": 15,
+    "supervisor_seconds": 60,
+    "metadata_calls": 128,
+    "descriptors": 10,
+    "read_bytes": 131072,
+    "tombstone_bytes": 8192,
+    "output_bytes": 32768
+  },
+  "allowed_effect": "One create-only reservation of the exact original relay ROOT and one O_EXCL public tombstone after source and held/named parent verification. Any existing entry or competing create refuses; no deletion, replacement, source execution, relay, transport, signal or network.",
+  "original_relay": {
+    "job": "1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN_UNCHANGED",
+    "replay": false,
+    "termination_or_owned_closure_proven": false
+  },
+  "required_actual_closure": "Persist unique original ACK immediately; bind original authority/full stdout/stderr, all exact source pins, full created ROOT/tombstone identities and independent immutable marker readback with current metadata/version. Keep all failed or uncertain outcomes.",
+  "subsequent_new_transport_or_product_go": false,
+  "production_go": false,
+  "old_service_cleanup_go": false,
+  "namespace_limit": "Successful reservation proves the exact observed mkdir effect only; continuing future-effect protection requires this same namespace and marker to remain bound. It does not establish original job termination.",
+  "unknown_policy": "No retry/new key if dispatch is uncertain; recover only the original task.",
+  "full_replacement": false
+}

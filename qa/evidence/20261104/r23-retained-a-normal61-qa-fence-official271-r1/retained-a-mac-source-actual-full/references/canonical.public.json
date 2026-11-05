@@ -1,0 +1,13 @@
+{
+  "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+  "count": 3763,
+  "leaf_count": 3914,
+  "merkle_count": 358,
+  "tracked_bytes": 62227757,
+  "full_leaf_index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092",
+  "prior_index_sha256": "29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc",
+  "source_ref": "refs/heads/codex/heptabao-retained-a-regression-eba5e650-20261105-r1",
+  "git_api_tree_complete": true
+}

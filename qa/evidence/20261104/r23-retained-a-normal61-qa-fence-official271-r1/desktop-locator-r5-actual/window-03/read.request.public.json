@@ -1,0 +1,7 @@
+{
+  "host": "desktop",
+  "job_id": "1a1ab4aacdb-fc05-4c16",
+  "limit": 16384,
+  "stdout_offset": 0,
+  "stderr_offset": 0
+}

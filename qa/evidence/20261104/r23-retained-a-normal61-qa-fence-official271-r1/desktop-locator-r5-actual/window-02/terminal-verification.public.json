@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.fixed-window-terminal-verification.v1",
+  "window_index": "02",
+  "job_id": "1a1ab48a2f9-fc05-4bfa",
+  "checks": [
+    {
+      "case": "page_stdout_offset_0",
+      "passed": true
+    },
+    {
+      "case": "hex_stdout_0",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stdout_0",
+      "passed": true
+    },
+    {
+      "case": "whole_stdout_eof",
+      "passed": true
+    },
+    {
+      "case": "authority_stdout",
+      "passed": true
+    },
+    {
+      "case": "page_stderr_offset_0",
+      "passed": true
+    },
+    {
+      "case": "hex_stderr_0",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stderr_0",
+      "passed": true
+    },
+    {
+      "case": "whole_stderr_eof",
+      "passed": true
+    },
+    {
+      "case": "authority_stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_complete_known_zero",
+      "passed": true
+    },
+    {
+      "case": "exact_start_ack",
+      "passed": true
+    },
+    {
+      "case": "source_scope_window",
+      "passed": true
+    },
+    {
+      "case": "full_selected_interval_no_clock_clip",
+      "passed": true
+    },
+    {
+      "case": "original_positive_anchor",
+      "passed": true
+    },
+    {
+      "case": "complete_report",
+      "passed": true
+    },
+    {
+      "case": "every_fd_once_closed",
+      "passed": true
+    },
+    {
+      "case": "iterator_once_closed",
+      "passed": true
+    },
+    {
+      "case": "shared_deadline",
+      "passed": true
+    },
+    {
+      "case": "bounded_counts",
+      "passed": true
+    },
+    {
+      "case": "only_exact_target_matches",
+      "passed": true
+    },
+    {
+      "case": "scope_claims",
+      "passed": true
+    },
+    {
+      "case": "canonical_start_digest",
+      "passed": true
+    },
+    {
+      "case": "approved_request_whole",
+      "passed": true
+    },
+    {
+      "case": "start_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "status0_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "read0_native_vs_mcp_snapshot",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "authority": {
+    "bytes": 733,
+    "sha256": "ea4db76eae4e8dca97174d4c6542bd2894b00213e183aa79965fc00ef6b437fd",
+    "blob": "75095f07bddc8ea81377ee27778348fb6b64ada1"
+  },
+  "stdout": {
+    "bytes": 10748,
+    "sha256": "b13e95f775f28ea56d154c3b8c11969ed5b5a182e2f69f71f1903bc853394c10",
+    "blob": "b73e5a7b8c87b1893c0aa184ef4f13b8a07474f7"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "request": {
+    "bytes": 28001,
+    "sha256": "a73dc609a2dfda08523f686953030d9d6bf1fc87699e1fd97f4709e0afe52108",
+    "blob": "5b444c54ab428186a7abb8574b2046c5fcd4e392"
+  },
+  "matches": [],
+  "not_business_terminal": true,
+  "absence_proven": false,
+  "replay_authorized": false
+}

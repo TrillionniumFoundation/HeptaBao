@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao-openbao-271-fixed-source-scope-packet-v1",
+  "as_of_utc": "2026-11-04 22:51:38 UTC",
+  "status": "SOURCE_ONLY_ACTIONABLE_PARTIAL_AUDIT",
+  "candidate_source": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "build_running_when_audit_generated": true
+  },
+  "official": {
+    "tag": "v2.7.1",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac"
+  },
+  "readme": "README.md",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 12849,
+      "sha256": "cddfcc26c2ecce8a555cc89c8ede61f07ed174629e757c44b4767a1089b9c87a",
+      "blob": "b29bee676a0f4a79c87bea551288849e78441f74"
+    },
+    {
+      "path": "current-native-gap-map.public.json",
+      "bytes": 17812,
+      "sha256": "db3772b52899347fd82dca9e80402450097a0b275107532320da04f4763c6d5d",
+      "blob": "bb55510d40c7979107beee6b552192be302e05b7"
+    },
+    {
+      "path": "legacy-59-to-current-source.public.json",
+      "bytes": 46804,
+      "sha256": "dcfee224a9d41ce4d34f4c8a4b2374ba2cef2c1d70da124d58cc5bf012034a3b",
+      "blob": "c57450072b537aaefa8f797a4453d6c8ef3b0e86"
+    },
+    {
+      "path": "declared-271-delta-review.public.json",
+      "bytes": 8984,
+      "sha256": "cbf07f4ac35853ad52c7c7fa1ceeadf29ae25419a0642120fd12fe23ee7cc937",
+      "blob": "50c01452da7896a399bcff0d8d02b40105761b2d"
+    },
+    {
+      "path": "source-pins.public.json",
+      "bytes": 8261,
+      "sha256": "e3ed3b7c3d8aab5383d5730c91b2d6630927712161d275440bcb9afa619c9ef7",
+      "blob": "89525b3fc20d73386e4cb6e9eb326a0ec0849ccc"
+    },
+    {
+      "path": "source-excerpts.public.json",
+      "bytes": 30833,
+      "sha256": "2b4dbb84b94f97c788c7f362eac2b8db6ffbc4ccd829dad212f08819aba0b526",
+      "blob": "b167e08df0f55344a339ec33fbf1ab5e451489bb"
+    },
+    {
+      "path": "official-source-tree-observation.public.json",
+      "bytes": 3860,
+      "sha256": "48d295c96ee2f1d3863a548fa0bb96d5ec8494c48da9630c1206ae48289946b5",
+      "blob": "5eed7c7b3471bcf30a3a099af48fe1a04d90c529"
+    },
+    {
+      "path": "official-tag-v2.7.1.raw.json",
+      "bytes": 331,
+      "sha256": "6917fda36c3093a3ec884c6240f2aac24e101c61970c86be8cd4e7872db995c0",
+      "blob": "fec1f5c7b872bff8e89c620c3ad84b7d2851c6f3"
+    },
+    {
+      "path": "official-builtin-registry.go",
+      "bytes": 6385,
+      "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600",
+      "blob": "94af1a84cec148883c926941f50eea138d3644ae"
+    },
+    {
+      "path": "bounded69-case-map.public.json",
+      "bytes": 45700,
+      "sha256": "4bc5b847c6ba2df3cb0afbab9e7744167c0bc18dbb95d2c86b7466a15176c2a2",
+      "blob": "57a2563e6f86b4be7695a11758d97a51bbdf8922"
+    },
+    {
+      "path": "actual-bounded69-summary.public.json",
+      "bytes": 104035,
+      "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+      "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+    },
+    {
+      "path": "actual-bounded69-result.public.json",
+      "bytes": 2109,
+      "sha256": "5d028511da8fd3e6480ff1dcbcd46027ef213aa73d83168483e64652af6a809e",
+      "blob": "1740b22d4483272f949cf266bca61dbf862eb107"
+    }
+  ],
+  "source_files_whole_hash_bound": {
+    "product": 14,
+    "official": 11
+  },
+  "legacy_rows_mapped": 59,
+  "actual_bounded_cases": 69,
+  "declared_delta_counts": {
+    "security": 15,
+    "feature_correctness": 11,
+    "gates": 11
+  },
+  "host_actions": false,
+  "provider_requests": false,
+  "tests_executed": false,
+  "exhaustive_upstream_coverage": false,
+  "full_replacement": false,
+  "production_cutover": false
+}

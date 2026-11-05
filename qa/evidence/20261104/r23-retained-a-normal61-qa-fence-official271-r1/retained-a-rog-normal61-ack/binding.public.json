@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.single-job-ack-binding.v1",
+  "host": "rog",
+  "job_id": "1a1ab76cee8-fc05-4e13",
+  "request_digest": "d79e75bbc8e29d377db05738b0aada8420a42b059031f6c4bea2e84fa94a0fb9",
+  "request_fingerprint": "15536985213864418615",
+  "idempotency_key": "heptabao-same-root-publication-4e808-rog-normal61-20261105-r2-8c0ba96f-93dd6190",
+  "intent_tree": "d42d75bf7406c51979541070daed7ac599d4e526",
+  "request_blob": "0281db23601066bc5fa1d942013c655e61acdf70",
+  "no_replay": true
+}

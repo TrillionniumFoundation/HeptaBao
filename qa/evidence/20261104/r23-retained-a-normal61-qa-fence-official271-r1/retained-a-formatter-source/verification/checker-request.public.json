@@ -1,0 +1,5 @@
+{
+  "cmd": "python3 /tmp/heptabao_retained_a_formatter_source_r1/verify.py /tmp/heptabao_retained_a_formatter_source_r1/inputs.json",
+  "workdir": "/tmp",
+  "max_output_tokens": 3000
+}

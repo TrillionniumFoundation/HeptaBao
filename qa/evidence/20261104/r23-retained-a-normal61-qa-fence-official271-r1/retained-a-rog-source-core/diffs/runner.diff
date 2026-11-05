@@ -1,0 +1,13 @@
+--- a/rog_runner.py
++++ b/rog_runner.py
+@@ -24,8 +24,8 @@
+ OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
+ assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
+-DIAGNOSTIC_TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
++DIAGNOSTIC_COMMIT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++DIAGNOSTIC_TREE = 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",

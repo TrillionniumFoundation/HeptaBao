@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.official271.archive-persistence.v1",
+  "as_of_utc": "2026-11-05T11:30:02Z",
+  "scope": "Complete immutable artifact bodies stored and independently read back before checkpoint tree construction; final branch membership is proven by external post-publication proof.",
+  "artifacts": [
+    {
+      "name": "r23-official271-root_review_v3.py",
+      "blob": "be8bf3ce9d047ae24faaac6e6d217493c97530e6",
+      "bytes": 13081,
+      "sha256": "79c9c8dd016a399a16927c752c5a5c7bc5e002f848108972632c367e347c4025",
+      "path": "official271/root_review_v3.py"
+    },
+    {
+      "name": "r23-official271-root-review-v3-input.public.json",
+      "blob": "a59863eadaea18ebd88def5cc699dd62a5f9de91",
+      "bytes": 23507,
+      "sha256": "f2c4cc5a8af17f7460e40d7ccc8d830f7fdf04c57d6b36421a6e31e3b78c85b1",
+      "path": "official271/root-review-v3-input.public.json"
+    },
+    {
+      "name": "r23-official271-current-native-openbao271-gates.public.json",
+      "blob": "3a614c3e747a9109ebcd117ec98ebe5d1aa696bc",
+      "bytes": 37047,
+      "sha256": "be64cf3a0162a65e6c47421dabb3496228338ab6032c6663ec2dfc091851a9dc",
+      "path": "official271/current-native-openbao271-gates.public.json"
+    },
+    {
+      "name": "r23-official271-root-source-refinement-proof.public.json",
+      "blob": "4acc21bc4fe41d91419162cdb41882906efdeb81",
+      "bytes": 1333,
+      "sha256": "eacc45dba13366b6df1ce53a41c7cd595aea16456ee0f0650ec91113d2b296fa",
+      "path": "official271/root-source-refinement-proof.public.json"
+    },
+    {
+      "name": "r23-official271-official271-source-contract-v3.gzip.base64",
+      "blob": "894812697c942ada4019829b4cf7a9fa6be0edaa",
+      "bytes": 227348,
+      "sha256": "018bf84fbe9082e504b6f2cf5e2e3d87bc15bba1717e3f447a70f17db5507928",
+      "path": "official271/official271-source-contract-v3.gzip.base64"
+    },
+    {
+      "name": "r23-official271-source-corpus-r3.gzip.base64",
+      "blob": "91a3adced156a60e620a12ccc7f89fb366462628",
+      "bytes": 1171668,
+      "sha256": "710cfd029fe35bb01a0690133f744e9f3c1de62a312bf7afd41d3af68dbb3cf9",
+      "path": "official271/source-corpus-r3.gzip.base64"
+    },
+    {
+      "name": "r23-official271-corpus-checkpoint-index.public.json",
+      "blob": "257b719dae17583c6569e59c8f2590109b1636d4",
+      "bytes": 64356,
+      "sha256": "c00ef87b76e9fbaa9ad325fe54a34685908085ff5832278a5cb3dd20b0221a45",
+      "path": "official271/corpus-checkpoint-index.public.json"
+    },
+    {
+      "name": "r23-official271-root-review-v3-artifact-index.public.json",
+      "blob": "9636b0910313df890ebbb219d1c4e96dbfbde991",
+      "bytes": 1730,
+      "sha256": "2cd42b770a8f22c818459cce175f219e287ca3c732393fc4bae8519371f5d50a",
+      "path": "official271/root-review-v3-artifact-index.public.json"
+    },
+    {
+      "name": "r23-official271-root-review-v3-dependencies.tar.gz.base64",
+      "blob": "658ff86312d52c8849f715f2753b0d8421b81ecb",
+      "bytes": 848605,
+      "sha256": "380b36c8f75daffd470603e64bef4360662ef221490790ba86004addb59288c1",
+      "path": "official271/root-review-v3-dependencies.tar.gz.base64"
+    },
+    {
+      "name": "r23-official271-root-review-v3-dependencies.manifest.public.json",
+      "blob": "c4f713dba00cd3f2b51c05e11ba59f95c18d78a8",
+      "bytes": 1672,
+      "sha256": "e42e94033459feba46be26e99af4551652fef5a7b01b21aec06661b3702d68ae",
+      "path": "official271/root-review-v3-dependencies.manifest.public.json"
+    }
+  ],
+  "source_inventory_v3": {
+    "stored_as": "official271/official271-source-contract-v3.gzip.base64",
+    "decoded_JSON_bytes": 2547131,
+    "decoded_JSON_sha256": "4db4c8769945165b65806a4f1c4b9993c9879d86c0453605e51c39e9da79fcd4",
+    "decoded_computed_git_blob": "4d3040e63193f8348dee2c3e3e33beb0f0ef91fc",
+    "decoded_git_blob_directly_created": false,
+    "complete_content_recoverable_from_archive": true
+  },
+  "source_corpus": {
+    "stored_as": "official271/source-corpus-r3.gzip.base64",
+    "all242_sources_present": true,
+    "original36_chunk_index_preserved": "official271/corpus-checkpoint-index.public.json",
+    "whole_base64_archive_stored_instead_of36_chunk_files": true
+  },
+  "dependencies": {
+    "archive": "official271/root-review-v3-dependencies.tar.gz.base64",
+    "manifest": "official271/root-review-v3-dependencies.manifest.public.json",
+    "contains": [
+      "original V2 inventory",
+      "full original product corpus",
+      "official complete tree original JSON",
+      "original V2 extraction program"
+    ],
+    "deterministic_USTAR_gzip_mtime0": true
+  },
+  "creation_time_pending_flags_in_original_artifacts_preserved": true,
+  "no_runtime_qualification_inferred": true
+}

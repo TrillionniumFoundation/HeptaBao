@@ -1,0 +1,13 @@
+{
+  "source_tree": "e49778e26aea2673ed9a05594f935fe21a45c308",
+  "source": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "exact_request_blobs": [
+    "0b05d5dfcae1d37252acc9d84be506636e360eee",
+    "777e74909453e11438f934d2803f562b0aad5252"
+  ],
+  "source_and_caps_unchanged": true
+}

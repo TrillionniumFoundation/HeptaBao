@@ -1,0 +1,51 @@
+{
+  "strict": [
+    {
+      "before_name": "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "after_name": "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "hunks": 4,
+      "strict_forward": true,
+      "strict_reverse": true
+    },
+    {
+      "before_name": "native_v6_pocket_source_postrecovery_cold_1c665_r1.py",
+      "after_name": "native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+      "hunks": 2,
+      "strict_forward": true,
+      "strict_reverse": true
+    },
+    {
+      "before_name": "read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "after_name": "read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "hunks": 1,
+      "strict_forward": true,
+      "strict_reverse": true
+    }
+  ],
+  "unchanged6": [
+    "read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+    "deadline_qa/ha_multihost_live.py",
+    "deadline_qa/native_ha_foreground_watchdog.py",
+    "deadline_qa/native_v6_ha_direct_lan_live.py",
+    "deadline_qa/native_v6_ha_multihost_live.py",
+    "probe_normal_build_r10_r1.py"
+  ],
+  "all227_function_and_class_source_unchanged": true,
+  "all31_local_source_checks_passed": true,
+  "all9_modules_compiled_only": true,
+  "source_module_executions": 0,
+  "host_actions": 0,
+  "prepared": false,
+  "live_authorized": false,
+  "original98_and_additional12_denominators_unchanged": true,
+  "original_budgets_seconds": {
+    "controller": 2400,
+    "postcold": 300,
+    "direction_preparation": 60,
+    "sealed_election": 60,
+    "http": 15,
+    "admission": 8,
+    "supervisor": 3000
+  },
+  "all36_old_fences_unchanged": true
+}

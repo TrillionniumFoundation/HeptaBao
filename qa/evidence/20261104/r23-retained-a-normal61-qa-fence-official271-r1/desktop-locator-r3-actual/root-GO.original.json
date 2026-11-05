@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.root.exact-readonly-observer-go.v1",
+  "decision": "GO_ONCE_EXACT_REQUEST_AFTER_SEPARATE_DURABLE_EXTERNAL_INTENT",
+  "review": {
+    "name": "r23_desktop_first_window_root_review",
+    "blob": "636c40c1bfd01d1a0603b4247cff74e07809edd2",
+    "bytes": 3088,
+    "sha256": "e1e39416dc4a81af2257606006333c8f6f6d9cc02cf3575f8ea98352e8afd672"
+  },
+  "exact_request": {
+    "path": "requests/desktop-first-window.start.public.json",
+    "blob": "3d93621860a034a1d72fc13695f4b5c4716484c1",
+    "bytes": 26630,
+    "sha256": "8b1afc2f15dd39bafba7543ed020f8ebccf8cd46ac27cfc5f68155e288e69d9c",
+    "mode": "100644"
+  },
+  "source": {
+    "path": "source/read_fixed_job_request_locator_desktop_first_window_r3.py",
+    "blob": "4990b7a09030461704461c08cfd7edccd95bb75b",
+    "bytes": 24959,
+    "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe",
+    "mode": "100644"
+  },
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-bounded-job-locator-desktop-first-window-886d2d25-20261105-r3",
+  "timeout_seconds": 45,
+  "requirements": [
+    "Persist exact original request and external dispatch intent in a completed separate call before the one process_start.",
+    "If ACK transport is unknown, preserve UNKNOWN; do not resend the process_start.",
+    "Recover authoritative status and complete original stdout/stderr without expanding the approved reader.",
+    "A miss or bound refusal proves neither target absence nor replay safety. No second window or host mutation is included in this approval."
+  ],
+  "authorization": "Existing user request to resolve HeptaBao blockers through actual host validation; bounded read-only recovery of an uncertain original dispatch."
+}

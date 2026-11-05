@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "scope": "SOURCE-only shared-parent identity correction; original relay remains UNKNOWN; no dispatch request",
+  "files": [
+    {
+      "path": "candidate/x230_original_relay_effect_fence_r3.py",
+      "bytes": 22338,
+      "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+      "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+    },
+    {
+      "path": "candidate/review.diff",
+      "bytes": 4194,
+      "sha256": "e2f32c8dcac0ec4ae45997ea0b8a6a79efdfa851aad9c5f8ec4414299df40444",
+      "blob": "72de9b156fc1e1c95a62a8567d5127988ef02e9d"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 8152,
+      "sha256": "c483509b11d375338abc33e774c984c63cadfc63cd5be7c0db71c2f9ea975c12",
+      "blob": "9bcc8450f7857b67053cb0d8135267ce48380ffb"
+    },
+    {
+      "path": "source-invariance.public.json",
+      "bytes": 1894,
+      "sha256": "ca83c258a2dad45822614891b5fb2090164fd01d073f2325cfbd4ab1c8781be0",
+      "blob": "3d0795456275717688aaea43e2d8ded43d5cbb62"
+    },
+    {
+      "path": "saved-metadata-comparison.public.json",
+      "bytes": 3219,
+      "sha256": "5dac281de33cc1faf253aee2015cc213c610fdcfa55e75d05bbe2f2bea410a30",
+      "blob": "41cb36496afc4444fbcc476fd5a7822486c99af6"
+    },
+    {
+      "path": "components/selected-methods.py",
+      "bytes": 11268,
+      "sha256": "8dab6b4cf2ac8cd6ef23ff65fa538c0341ce1551478d4473ebb5b929347dfc64",
+      "blob": "9ead98daeca60acf96fec569e70c6e2674270a14"
+    },
+    {
+      "path": "components/inputs.public.json",
+      "bytes": 74643,
+      "sha256": "54c621225e95c5d859b46d91ebb9fc752623a7f65021f3c304422725f73867ba",
+      "blob": "01bbfed956a89f0a6677f0db84027532b5f73412"
+    },
+    {
+      "path": "components/stdout.original.json",
+      "bytes": 5548,
+      "sha256": "a2ea99346d45811b58ddd9fa01b485518a8b2d5f3d0edda8dd7e8078c068c744",
+      "blob": "d2da0e16019251745bd7af644754499b584d5ae9"
+    },
+    {
+      "path": "components/executor.original.json",
+      "bytes": 6121,
+      "sha256": "6cec83bff637f5fa1fd0a8ed159b00c172b15c526101cebdadffc28051340439",
+      "blob": "8029bd65bb598ec59d3efaff5e04d42e9a96b7df"
+    },
+    {
+      "path": "references/fence-r2.py",
+      "bytes": 21479,
+      "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+      "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+    },
+    {
+      "path": "references/fence-r1.py",
+      "bytes": 21479,
+      "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89",
+      "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896"
+    },
+    {
+      "path": "references/metadata.stdout.original.json",
+      "bytes": 5656,
+      "sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed",
+      "blob": "62403647a790e255006068666fb71c95965420ba"
+    },
+    {
+      "path": "references/metadata.authority.original.json",
+      "bytes": 731,
+      "sha256": "db2d32d93d13547bbfde97a03412df56b1b3fe044a50f320f1f594ba768f8f8a",
+      "blob": "3850cd3c452068e119c38d2749314452d031445d"
+    },
+    {
+      "path": "references/metadata.authority.sdk-original.json",
+      "bytes": 954,
+      "sha256": "17aa5fe94f333d32525d2e91b66bd8efde6a745e653c9172c075996b836eede4",
+      "blob": "b5cebe61586ff2045c9d742197bc71fa670193b8"
+    },
+    {
+      "path": "references/fence-r2.actual.stdout.original.json",
+      "bytes": 2142,
+      "sha256": "57c7b07b8217a717b558bdbb28e649fb99c157bc5a1a6fcf8c6d642d7d71aaf6",
+      "blob": "85942ed89ccfcc17e7cc117acd75d4e24573af16"
+    },
+    {
+      "path": "references/fence-r2.actual.authority.original.json",
+      "bytes": 728,
+      "sha256": "db08613ca4cc6920812fa0252a7df2e7baa9986e1cbd1c0e1d2d43b035671a36",
+      "blob": "ba76dd2479c947d06280195d40dbc32878d72ed0"
+    },
+    {
+      "path": "references/relay-recovery.assessment.public.json",
+      "bytes": 1982,
+      "sha256": "c267ce24e4878f52142569c530da7ecf0ce6853d02eb77b6d1148c42eb397d97",
+      "blob": "0f96ac2d67dc93173819f4b650162bec44bb6cdc"
+    }
+  ]
+}

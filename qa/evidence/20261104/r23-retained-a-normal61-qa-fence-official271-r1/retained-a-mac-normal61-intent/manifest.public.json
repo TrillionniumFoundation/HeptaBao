@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "dispatch/exact-request.json",
+      "bytes": 1056,
+      "sha256": "8d987117ab1c6037b1491a38aab42465e8416b28cd22cfd685fe7d6db0eef40d",
+      "git_blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4"
+    },
+    {
+      "path": "admission/root-go.public.json",
+      "bytes": 1951,
+      "sha256": "4b0e94f5376aaac814b3cd9c21b3962988df22e8ea328fd023642fa29cd2c5f2",
+      "git_blob": "1a82631bec2ebd4ee4e7eec9682774ab00049fbf"
+    },
+    {
+      "path": "sdk/readonly-request-refetch-error.json",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede",
+      "git_blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2"
+    },
+    {
+      "path": "references/request-provenance.public.json",
+      "bytes": 348,
+      "sha256": "4900a8f71850da4e2138ba375fc2247e52e2df83a7508b392c7833a584649a3e",
+      "git_blob": "190bbb2e1c8dc8359514528ed599878d05124a7f"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 1195,
+      "sha256": "40aee279fa3d798b74f7c342e6b8c421b14dfcfd82aa5e4ed97a230d693b7f0a",
+      "git_blob": "4d98e3d7198aaa2b7be97adf6e26312792a5c7d9"
+    }
+  ]
+}

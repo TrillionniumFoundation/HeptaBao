@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.desktop-locator-fixed-windows-r5.contract.v1",
+  "qualification": "SOURCE ONLY; no request in this packet has been submitted",
+  "original_anchor": {
+    "job_id": "1a1aaa6db3e-fc05-45a6",
+    "floor_unix_ms": 1793864424254,
+    "digest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+    "verified_before_candidate_filter": true,
+    "read_independently_even_outside_selected_window": true
+  },
+  "target": {
+    "request_blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+    "digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5"
+  },
+  "candidate_intervals": {
+    "source": "DESKTOP_QUERY_WINDOWS",
+    "count": 12,
+    "start_inclusive": 1793865024255,
+    "end_inclusive": 1793871896027,
+    "inclusive_cardinality": 6871773,
+    "contiguous": true,
+    "nonoverlapping": true,
+    "max_inclusive_milliseconds": 600000,
+    "selection": "Exactly one canonical --window-index 01..12 per immutable request; no arbitrary start/end accepted",
+    "actual_end": "min(fixed_query_end, the same single actual time.time_ns sample)",
+    "clock_before_selected_start": "known refusal before directory opening",
+    "wall_clock_semantics": "This time is an observation bound, not proof of target submission time"
+  },
+  "unchanged_limits": {
+    "shared_soft_seconds": 15,
+    "outer_seconds": 45,
+    "max_names": 16384,
+    "max_name_bytes": 1048576,
+    "max_candidates": 128,
+    "per_request_bytes": 262144,
+    "total_returned_request_bytes": 8388608,
+    "max_matches": 8,
+    "public_output_bytes": 65536
+  },
+  "execution_protocol": {
+    "not_an_automatic_batch_script": true,
+    "root_actual_authorization_required": true,
+    "external_exact_intent_before_each_start": true,
+    "one_submission_per_key": true,
+    "known_full_terminal_and_raw_streams_and_all_closure_before_next_window": true,
+    "continue_only_after_complete_no_match": true,
+    "stop_and_report_to_root_on_any_match": true,
+    "stop_on_unknown_or_bound_or_closure_failure": true,
+    "no_business_dispatch": true,
+    "no_original_business_replay": true,
+    "no_new_window_outside_table": true
+  },
+  "scope": {
+    "request_json_only": true,
+    "no_stdin_bin": true,
+    "no_child_network_or_write": true,
+    "no_other_job_arguments_output": true,
+    "match_is_stored_binding_only": true,
+    "miss_is_not_absence": true,
+    "complete_directory_snapshot_not_claimed": true
+  },
+  "preserved_actuals": {
+    "r2_desktop_fail_bound_tree": "f6f8da686ce20d87503374895189a153b300b20f",
+    "r3_first_half_fail_bound_tree": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9",
+    "r4_first10min_complete_miss_tree": "92cc1ac7dcf87889d94ce51d11366e547da52895"
+  },
+  "validation": {
+    "prior_25_components_referenced_not_rerun": true,
+    "targeted_time_boundary_anchor_and_ast_checks": 16,
+    "selected_pure_definitions_only": true,
+    "no_reader_or_main_execution": true,
+    "no_host_operation": true
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.root.qa-r2-native-h2-build-go.v1",
+  "status": "GO_ONE_EXACT_QA_BUILD",
+  "asof": "2026-11-05 08:58:12 UTC",
+  "request": {
+    "git_blob": "fc04df3ae645fd745c0414fe1b4fff5eb42c9c8f",
+    "bytes": 647,
+    "sha256": "35010c4f6eeaedb9f8de24a08d94426aa250316d83f0312e828d609041805bd3",
+    "idempotency_key": "heptabao-df026-native-h2-qa-build-c961a54d-d995e45f-20261105-r2"
+  },
+  "builder": {
+    "blob": "015f59e0f2212e4a683ad2b4511088b406a32e61",
+    "bytes": 42820,
+    "sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8"
+  },
+  "binding": {
+    "blob": "092aae1cdf1dccc9a84a17f27761306537cf3ba2",
+    "bytes": 4039,
+    "sha256": "d995e45f61507ba9b99500daf736fa2e179839e95babe4d8db25c3cb11536693"
+  },
+  "evidence": {
+    "source_packet": "91a0ddcdc04448bbb54349cf086bfaa487cc54df",
+    "actual_linux_component_packet": "8a753787c47ac4f203526d7fea434c208162075f",
+    "additional_mock_packet": "56feaaf12c2db0ec46bf852ef7f4addd548b0ec4",
+    "inert_original_job": "1a1aad691c1-fc05-47e5",
+    "inert_actual_packet": "ed84eb1da89500fa4033bffca27fe70ad36cdcf7",
+    "inert_root": {
+      "name": "r22_qa_r2_inert_metadata_root_result",
+      "blob": "397c65573882a802592dbf4a89eb053af86f7101",
+      "bytes": 4562,
+      "sha256": "bc0a544260393c6318c9d313c12890180238ec89722eb2c64ebbdf1ee82b52c6"
+    },
+    "receipt_reconstruction": {
+      "name": "r22_qa_r2_inert_receipt_reconstruction",
+      "blob": "13ab283b41830ea7972fdb4b39043d24a5328fe0",
+      "bytes": 6305,
+      "sha256": "e80fe303a4cba6d0bbd0c989dcba0f1379b22bd9f839bb12ec4886a74245b554"
+    }
+  },
+  "admission_reason": "Inert original authoritative terminal is exit0/full/durable; complete stdout and stderr are recovered through eleven closed immutable read operations. Eight published source/binding byte strings from the admitted carrier match independent native whole-file SHA, size, metadata and exact lossless version. The receipt is losslessly reconstructed from complete stdout by the exact publisher serialization rule; its whole 4208-byte SHA matches independently observed receipt metadata. The builder rechecks its own code, binding, all six inputs, tool identities, source commit/tree/lock, original60 actual result and fixed target before compilation. No mandatory input/ownership gate depends on the three additional body-copy operations.",
+  "limits": {
+    "total_seconds": 600,
+    "outer_seconds": 660,
+    "git_tool_seconds": 15,
+    "lock_seconds": 20,
+    "release_build_seconds": 180,
+    "component_build_seconds": 180,
+    "list_seconds": 15,
+    "six_components_seconds": 30,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "scope": {
+    "new_root": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2",
+    "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "cargo_qa_client_and_six_components_only": true,
+    "product_or_provider_or_cutover": false,
+    "normal_1c665_build_waits_for_this_full_terminal": true
+  },
+  "preserved_boundaries": {
+    "new_file_body_read_success_claimed": false,
+    "three_read_operation_unknowns": true,
+    "original_r1_command_unknown": true,
+    "no_old_job_replay": true,
+    "old_qualifications_not_transferred": true
+  },
+  "dispatch_rule": "Save external intent in a completed call, then submit this exact request once. Preserve original ACK immediately; uncertain launch must be reconciled read-only, never replaced with a new key. Return original authority, all logs/receipts, native tool/input hashes, six exact test outputs and every owned child/stream/group final closure."
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-same-root-mac-normal61-terminal-read-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1ab058659-fc05-4989",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

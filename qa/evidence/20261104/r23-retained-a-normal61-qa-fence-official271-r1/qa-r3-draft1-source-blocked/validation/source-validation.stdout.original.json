@@ -1,0 +1,164 @@
+{
+  "binding_sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+  "build_request_sha256": "4b3f95d4cc1ac55f1ee1f516dd5c58cda282835f048e9b863dec46d5f0475d6a",
+  "builder_main_calls": 0,
+  "check_count": 37,
+  "checks": [
+    {
+      "name": "builder-and-publisher-AST-compile-only",
+      "passed": true
+    },
+    {
+      "name": "publisher-ready-after-actual-alias",
+      "passed": true
+    },
+    {
+      "name": "inert-original-host-python-cwd-cap",
+      "passed": true
+    },
+    {
+      "name": "inert-only-five-args",
+      "passed": true
+    },
+    {
+      "name": "carrier-original-schema",
+      "passed": true
+    },
+    {
+      "name": "carrier-original-524288-cap",
+      "passed": true
+    },
+    {
+      "name": "eight-exact-payload-names",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "payload-whole-build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "carried-builder-exact",
+      "passed": true
+    },
+    {
+      "name": "carried-binding-exact",
+      "passed": true
+    },
+    {
+      "name": "retained-input-rust_source",
+      "passed": true
+    },
+    {
+      "name": "retained-input-test_source",
+      "passed": true
+    },
+    {
+      "name": "retained-input-cargo_manifest",
+      "passed": true
+    },
+    {
+      "name": "retained-input-canonical_lock",
+      "passed": true
+    },
+    {
+      "name": "retained-input-owner_reference",
+      "passed": true
+    },
+    {
+      "name": "retained-input-cli_reference",
+      "passed": true
+    },
+    {
+      "name": "binding-ready",
+      "passed": true
+    },
+    {
+      "name": "same-original-caps",
+      "passed": true
+    },
+    {
+      "name": "df026-identity",
+      "passed": true
+    },
+    {
+      "name": "fresh-r3-literal-roots",
+      "passed": true
+    },
+    {
+      "name": "publisher-exact-control-basename",
+      "passed": true
+    },
+    {
+      "name": "all-six-input-paths",
+      "passed": true
+    },
+    {
+      "name": "build-fixed-host-python-cwd-cap",
+      "passed": true
+    },
+    {
+      "name": "build-exact-executable-source-path",
+      "passed": true
+    },
+    {
+      "name": "exact-five-parser-statements",
+      "passed": true
+    },
+    {
+      "name": "required-binding-argument",
+      "passed": true
+    },
+    {
+      "name": "required-binding-whole-digest",
+      "passed": true
+    },
+    {
+      "name": "required-self-whole-digest",
+      "passed": true
+    },
+    {
+      "name": "publisher-four-literal-inverse-whole-exact",
+      "passed": true
+    },
+    {
+      "name": "existing-private-binding-format-and-mode",
+      "passed": true
+    }
+  ],
+  "compiled_changed_sources": 2,
+  "inert_request_sha256": "1d7d17b2f6811b74b86454a597a231c938e20761ba38d0b20610f368e2bf66f2",
+  "new_host_or_cargo_requests": 0,
+  "original_argparse_statements_executed": 5,
+  "publisher_main_calls": 0,
+  "schema": "heptabao.qa-r3.cargo-copy.source-carrier-validation.v1",
+  "source_sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76",
+  "status": "passed-source-only"
+}

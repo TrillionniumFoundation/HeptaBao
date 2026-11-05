@@ -1,0 +1,5 @@
+# ROG 4e808 source stage: complete originals
+
+This packet extends immutable core 2084d9b4b885c4f929db15814e471138a77f413d. All 56 original command records and all 112 stdout/stderr originals are now included. Every record has exit 0, no timeout, reaped direct child and empty remaining group, with elapsed time below the original clipped limit and exact PID/label matching the terminal core. Eleven small-file read responses and 14 version-pinned binary chunks for the two full NUL indexes are retained in original native and SDK forms. Stream full SHA values match the original command records.
+
+The 3,914 complete tree and index entries match canonical eba5e650 path/mode/blob and are byte-for-byte equal to the independently read Mac originals. The incremental bundle remains the exact original native base64 field. The earlier core's then-pending archival status is retained; the separate full addendum closes only these source originals. The normal61 request only fills the actual stage SHA. It is not submitted, and Linux shared target remains held until root schedules it after QA. No old build or source stage is replayed.

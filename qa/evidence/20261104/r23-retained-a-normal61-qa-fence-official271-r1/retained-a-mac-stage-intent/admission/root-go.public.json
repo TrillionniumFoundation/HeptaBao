@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.retained-a.mac-source.root-go.v1",
+  "go": "ONLY_EXACT_SOURCE_STAGE_ONCE",
+  "review": {
+    "name": "r23-retained-a-mac-bound-root-review.public.json",
+    "blob": "bb84beb9f188e4f5199b9b1268b6eb4c0e7a8977",
+    "bytes": 1481,
+    "sha256": "35d5f249fa2b8212e31f75552f87cd8a7e86fa63de18e2124d07a4b13021aacb"
+  },
+  "request": {
+    "blob": "fb34ab43c47efa3a130923fb7730fdd9eb23af1d",
+    "bytes": 137634,
+    "sha256": "8794b2c05c1867730635d2150d144443be9a230f83e6f30a3d132b4ca0600886"
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+  "idempotency_key": "heptabao-same-root-publication-4e808-mac-source-20261105-r2-aeb8e5b5",
+  "external_intent_must_finish_before_one_submit": true,
+  "bundle": {
+    "bytes": 29953,
+    "sha256": "e5a6b9829a787bbfaea0dd120550aad7e011cc641942ff6947db85a649383b68",
+    "version": "66306:33211693:29953:1793875509266541331:1793875509267541328"
+  },
+  "budgets": {
+    "total_seconds": 300,
+    "git_seconds": 90,
+    "clone_seconds": 180,
+    "volume_guard_seconds": 30,
+    "supervisor_seconds": 360,
+    "stdin_bytes": 262144
+  },
+  "allowed_writes": "Exact create-only Mac T5 r2 source/control and 4e808 bundle after unchanged physical-volume prewrite guard; no Cargo target or product writes.",
+  "before_normal_go": "Original authority, immutable stage result, full source index, controls, old-source/volume preservation, and all owned child closure.",
+  "unknown_policy": "Recover only original request/job; no new key/replay.",
+  "normal_build_go": false,
+  "production_cutover_go": false,
+  "full_replacement": false
+}

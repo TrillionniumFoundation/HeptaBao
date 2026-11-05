@@ -1,0 +1,22 @@
+   Compiling generic-array v0.14.7
+   Compiling aws-lc-rs v1.18.1
+   Compiling typenum v1.20.1
+   Compiling getrandom v0.2.17
+   Compiling ring v0.17.14
+   Compiling tokio v1.53.1
+   Compiling serde_core v1.0.229
+   Compiling rustls v0.23.44
+   Compiling rustls-webpki v0.103.15
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling subtle v2.6.1
+   Compiling tokio-util v0.7.11
+   Compiling tracing v0.1.44
+   Compiling digest v0.10.7
+   Compiling memchr v2.8.3
+   Compiling h2 v0.4.19
+   Compiling serde_json v1.0.151
+   Compiling sha2 v0.10.9
+   Compiling tokio-rustls v0.26.6
+   Compiling heptabao-native-h2-qa v0.1.0 (/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/project)
+    Finished `release` profile [optimized] target(s) in 50.07s

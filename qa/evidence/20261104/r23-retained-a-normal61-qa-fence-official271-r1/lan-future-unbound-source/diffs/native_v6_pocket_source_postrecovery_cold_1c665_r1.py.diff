@@ -1,0 +1,46 @@
+--- a/native_v6_pocket_source_postrecovery_cold_df026_r1.py
++++ b/native_v6_pocket_source_postrecovery_cold_1c665_r1.py
+@@ -35,10 +35,10 @@
+ pre.add_argument('--describe-contract', action='store_true')
+ options, remaining = pre.parse_known_args()
+ SOURCE = options.candidate_source.resolve(strict=True)
+-NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_cold_h2_r1.py')
++NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_same_root_publication_r1.py')
+-NUMERIC_HELPER_SHA256 = 'ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b'
++NUMERIC_HELPER_SHA256 = 'e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f'
+-CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_cold_h2_r1.py')
++CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_same_root_publication_r1.py')
+-CIPHER_HELPER_SHA256 = '961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2'
++CIPHER_HELPER_SHA256 = '0469ffd127f60c60ded67129a0f23868b81e28b6253a6b41584dc28a8afaab27'
+ DEADLINE_QA = Path(__file__).resolve().with_name('deadline_qa')
+ DEADLINE_QA_PINS = {
+     "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+@@ -63,8 +63,8 @@
+ ]
+ CONTROLLER_UNTIL = None
+ R3_SUCCESS_SUMMARY_SHA256 = 'db362c9c2041636912ccfc95076c6ec7948ec7918efc17032af856875e61cd41'
+-COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
+-TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
+ PINS = {
+     'ha_multihost_live.py': '0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de',
+     'native_v6_ha_multihost_live.py': '330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c',
+@@ -139,7 +139,7 @@
+         self.postcold_checks = []
+         self.source_files[str(CIPHER_HELPER)] = CIPHER_HELPER_SHA256
+         self.report.update({
+-            'schema': 'heptabao.normal-cold-h2-pocket-source-postrecovery-cold.v1',
++            'schema': 'heptabao.normal-same-root-publication-pocket-source-postrecovery-cold.v1',
+             'scope': 'new-fresh-direct98-and-independent-postrecovery-cold12',
+             'previous_r3_summary_sha256': R3_SUCCESS_SUMMARY_SHA256,
+             'new_qa_scope_does_not_rewrite_previous_r3_qualification': True,
+@@ -1105,7 +1105,7 @@
+ 
+ if options.describe_contract:
+     print(json.dumps({
+-        'schema': 'heptabao.normal-cold-h2-postrecovery-cold-contract.v1',
++        'schema': 'heptabao.normal-same-root-publication-postrecovery-cold-contract.v1',
+         'deadline_qa_pins': DEADLINE_QA_PINS,
+         'required_extra_checks': list(POSTCOLD_CHECKS), 'required_extra_check_count': 12,
+         'new_shared_postrecovery_seconds': POSTCOLD_SECONDS, 'original_controller_seconds': 2400,

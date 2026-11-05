@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.bounded-job-locator.references.r2",
+  "wholeFetchedVerified": [
+    {
+      "name": "desktop_positive_request",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "c17964a28812bbe989aa364e84cf9f000b9e3959",
+      "bytes": 11117,
+      "sha256": "8f9ee602f59733731ee7a5ce2ded716ad0f3e53c90c270a7a58b63bb7fbedd7b"
+    },
+    {
+      "name": "desktop_positive_ack",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "9c310662aad04df8295348e158c58cb02db891ea",
+      "bytes": 11891,
+      "sha256": "c6b9960fdc12862360f7185648df8d2a14f7da4a9da72a3d7f72a05245d559a8"
+    },
+    {
+      "name": "desktop_target_request",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+      "bytes": 22911,
+      "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554"
+    },
+    {
+      "name": "rog_positive_request",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+      "bytes": 387182,
+      "sha256": "d09dffcf758c9b0b3200a1abb886e06c36e46cc52d0792c96c0aae5997e28377"
+    },
+    {
+      "name": "rog_positive_ack",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "c81aa0effff4d1e26d83380186bbae06fb739b99",
+      "bytes": 7305,
+      "sha256": "13fcf7ed0d436371aaa49e006c07abd285d8b2d64801cc0616560d0b112c1d60"
+    },
+    {
+      "name": "rog_target_request",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+      "bytes": 111195,
+      "sha256": "ee97cca39ecea1910db9cb2f4cb829bf012ed71f386882b096a737dcdfe453e2"
+    },
+    {
+      "name": "desktop_positive_proof",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "8b3f3c6426056e5873014365ef14a4bded4063a6",
+      "bytes": 1717,
+      "sha256": "0446475371b500a9fe3859e30befc4acd58a26543b12df7d416cc1d2dbf5117f"
+    },
+    {
+      "name": "rog_positive_proof",
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "blob": "e3c4beee1089796d0c926fadf401f4bc5ff1bca8",
+      "bytes": 1797,
+      "sha256": "6790dabc941165e4fb61c34e78e5de4457ee3bcdeb50a2eb511fdfa671fbbeeb"
+    },
+    {
+      "name": "runtime_reference",
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+      "bytes": 171794,
+      "sha256": "98344ab61981793fa8b6cda92d777c62639dd6d61b4e3b6db0e94bb96f011fe5"
+    }
+  ],
+  "base": {
+    "blob": "fefc8ccbc254cc1d5af4b97ae110680325eb7561",
+    "bytes": 18882,
+    "sha256": "fdc59d1873b65301a2e75222f0f0a08acd7dd675456f59055692abb40943334f"
+  },
+  "old30ChecksReferenceOnly": {
+    "tree": "88bc088c787ea2840afab9e81894fb32beb0b591",
+    "fixtureBlob": "3a3f04eadac809d59d8824db890d53601e1ce00a",
+    "bytes": 532653,
+    "sha256": "caa88a36061d4258286dcc754122c75aaa4a9082811d4010844b72246bfc6347",
+    "source": "compatibility_audit handoff message; not re-run or claimed as new verification"
+  },
+  "runtimeReferenceSemantics": {
+    "requestBindingLines": [
+      1674,
+      1723
+    ],
+    "launchRequestLines": [
+      3850,
+      3869
+    ],
+    "niceAbsentCanonicalValue": null,
+    "remoteRequestNiceDefault": 0,
+    "idempotencyKeyExcluded": true,
+    "hostIncludedInCanonicalBindingButAbsentInStoredLaunchJSON": true,
+    "storedStdinOmittedAndOptionalStdinPath": true,
+    "unsafeAckIntegersPreservedOnlyInRawOriginal": true
+  }
+}

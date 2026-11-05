@@ -1,0 +1,13 @@
+{
+  "status": "KNOWN_FAIL_ADDITIONAL_REGRESSION",
+  "source": "1c66541993662f92cf717154e33717abedb2ea74",
+  "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "original60": "passed",
+  "additional1_status": "failed",
+  "additional1_exit": 101,
+  "outer_timeout": false,
+  "all48_owned_reaped_groups_empty": true,
+  "retained6_before_after_equal": true,
+  "failure_stage_requires_actual_stdout_stderr": true,
+  "not_replayed": true
+}

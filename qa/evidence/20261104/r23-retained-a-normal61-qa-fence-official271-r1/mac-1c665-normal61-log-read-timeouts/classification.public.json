@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.mac-normal61.cargo-read-partial.v1",
+  "job": "1a1ab058659-fc05-4989",
+  "original_job_known_exit": 1,
+  "original_job_all48_reaped": true,
+  "records48_and_small_streams94_whole_verified": true,
+  "cargo_chunk_calls_attempted": 2,
+  "cargo_chunk_calls_known_whole": 0,
+  "remaining12_not_submitted": true,
+  "no_build_replay": true,
+  "statement": "The two original read SDK errors are preserved; no full Cargo stdout claimed. Source repair priority resumes without reissuing those read calls."
+}

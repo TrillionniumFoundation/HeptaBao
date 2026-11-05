@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.retained-a-rog-source-full-originals.v1",
+  "original_job": "1a1ab4fae51-fc05-4c67",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "all56_command_records_whole": true,
+  "all112_streams_whole": true,
+  "small_streams": 110,
+  "large_NUL_streams": 2,
+  "large_version_pinned_chunks": 14,
+  "all_command_exit0": true,
+  "all_direct_children_reaped": true,
+  "all_remaining_groups_empty": true,
+  "all_elapsed_under_original_limit": true,
+  "all_record_pid_equal_original_core_cleanup": true,
+  "all_stream_sha_equal_original_command_records": true,
+  "full_NUL_index_canonical_equal": true,
+  "normal61_submitted": false,
+  "linux_shared_target": "HOLD",
+  "bound_normal_request": {
+    "bytes": 705,
+    "sha256": "8443c358d5e30b2789eb6e2cc4acd2fed2f7dca7427ae95f556a3939e4f8f756",
+    "blob": "0281db23601066bc5fa1d942013c655e61acdf70"
+  }
+}

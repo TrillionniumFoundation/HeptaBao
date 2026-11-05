@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.public-source-packet.v1",
+  "files": [
+    {
+      "path": "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 12114,
+      "sha256": "bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c",
+      "blob": "318c680054e5ef008a7b194b1c950bad016847bb"
+    },
+    {
+      "path": "references/before/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2"
+    },
+    {
+      "path": "diffs/retained-A-projection.diff",
+      "bytes": 4761,
+      "sha256": "d5b8d050d6d7ee1a2ccd16865301e878006b94b3aca8f245e57857c710138999",
+      "blob": "7c58813ced107ba053cb4a1df9556f1ac604a4fd"
+    },
+    {
+      "path": "references/actual-shared-installer-tests.rs",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b"
+    },
+    {
+      "path": "references/actual-raft-installer-support.rs",
+      "bytes": 8734,
+      "sha256": "2e9f7048c79a01918adfebb2e2be4d3ac568d9b2074623614fb68f63fde5d74c",
+      "blob": "a8aa35b0c077ae874dff089b9fbf98a4205efbce"
+    },
+    {
+      "path": "references/actual-service-records-v6.rs",
+      "bytes": 66207,
+      "sha256": "13d129b0fa46a8869525eb1fc0d4057ee5c3827538e7442bdd22edd492775580",
+      "blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e"
+    },
+    {
+      "path": "references/actual-root-v6.rs",
+      "bytes": 19890,
+      "sha256": "c49cc793aee3ba1769e728c3c9f70831d052affc4b5a692a307eca18cad0a85e",
+      "blob": "81e1ed0492f1492f6882e529e44a7c10e8c72209"
+    },
+    {
+      "path": "verification/source-check.public.json",
+      "bytes": 1477,
+      "sha256": "8266e97b34055cf4f3421238f1d0a43303c5cfb70476f8ea7fe98b8fb51adaa0",
+      "blob": "0e2b301734d207da66d15baf64fee592d0368ce8"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 781,
+      "sha256": "d8aa4e8005853eb52678ffea77e4582b1c8846f8c9d266581d6e18d64db10583",
+      "blob": "bd78b10a3aafa56b1dcc4b2f51431e6910667898"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3898,
+      "sha256": "2a1810a7c3706a31fca7a717f9d25c2e2ef7bf6992510bf618c4040172e01167",
+      "blob": "090e6bc8d09e58e54fcb81428ebf26e28ddd4396"
+    }
+  ]
+}

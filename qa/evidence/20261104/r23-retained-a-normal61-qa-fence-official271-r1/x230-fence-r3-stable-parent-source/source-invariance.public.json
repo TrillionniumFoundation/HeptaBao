@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.shared-parent-fence-source-invariance.v1",
+  "source": {
+    "bytes": 22338,
+    "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+    "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+  },
+  "base": {
+    "bytes": 21479,
+    "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+    "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+  },
+  "diff": {
+    "bytes": 4194,
+    "sha256": "e2f32c8dcac0ec4ae45997ea0b8a6a79efdfa851aad9c5f8ec4414299df40444",
+    "blob": "72de9b156fc1e1c95a62a8567d5127988ef02e9d"
+  },
+  "strict_apply": {
+    "hunks": 7,
+    "before": {
+      "bytes": 21479,
+      "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+      "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+    },
+    "after": {
+      "bytes": 22338,
+      "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+      "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+    },
+    "exact": true
+  },
+  "components": {
+    "count": 38,
+    "exit_code": 0,
+    "actual_host_calls": 0,
+    "actual_fd": 0,
+    "actual_mkdir": 0,
+    "whole_module_executed": false
+  },
+  "unchanged_methods": [
+    "__init__",
+    "handle_signal",
+    "check",
+    "observe",
+    "open_fd",
+    "read_source",
+    "reserve",
+    "publish",
+    "close_all"
+  ],
+  "unchanged_limits": {
+    "soft_seconds": 15,
+    "metadata_calls": 128,
+    "registered_fd": 10,
+    "read_bytes": 131072,
+    "tombstone_bytes": 8192,
+    "output_bytes": 32768
+  },
+  "shared_parent_scope": [
+    "/",
+    "/home",
+    "/home/qian-qi",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1"
+  ],
+  "new_invocation_request_prepared": false,
+  "host_execution_authorized": false,
+  "original_relay_replay_authorized": false,
+  "original_relay_state": "UNKNOWN",
+  "historical_failed_tuple_exact_fields_known": false
+}

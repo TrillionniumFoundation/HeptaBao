@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.x230-stable-shared-parent-independent-source-peer.v1",
+  "scope": "Narrow source-only delta; no host or fake component re-execution",
+  "reviewed_sources": {
+    "before": {
+      "bytes": 21479,
+      "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+      "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+    },
+    "after": {
+      "bytes": 22338,
+      "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+      "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+    },
+    "diff": {
+      "bytes": 4194,
+      "sha256": "e2f32c8dcac0ec4ae45997ea0b8a6a79efdfa851aad9c5f8ec4414299df40444",
+      "blob": "72de9b156fc1e1c95a62a8567d5127988ef02e9d"
+    },
+    "relay": {
+      "bytes": 21085,
+      "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+      "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+    }
+  },
+  "strict_forward_and_reverse": true,
+  "hunks": 7,
+  "checks": [
+    {
+      "name": "four_exact_shared_directories_only",
+      "passed": true
+    },
+    {
+      "name": "directory_flag_and_exact_membership_required",
+      "passed": true
+    },
+    {
+      "name": "pinned_full9_tables_unchanged",
+      "passed": true
+    },
+    {
+      "name": "bind_records_observed_full9_and_original_fixed9",
+      "passed": true
+    },
+    {
+      "name": "original_limits_unchanged",
+      "passed": true
+    },
+    {
+      "name": "all_four_effect_and_closure_functions_byte_identical",
+      "passed": true
+    },
+    {
+      "name": "oldrelay_mkdir_mandatory_before_first_transport_config",
+      "passed": true
+    },
+    {
+      "name": "oldrelay_no_root_deletion_calls",
+      "passed": true
+    }
+  ],
+  "preserved_methods": [
+    {
+      "name": "reserve",
+      "equal": true,
+      "sha256": "9d5688adb7afbcad4c674b8085ae2b29713da76f0c776cea44736442954c981e"
+    },
+    {
+      "name": "publish",
+      "equal": true,
+      "sha256": "f55523e2934ae9edcf68098dadb4cc3bc14e62e6475f3c2a7f1edec59d84f8eb"
+    },
+    {
+      "name": "read_source",
+      "equal": true,
+      "sha256": "ca93e42cc06991c92c1eb48c58a762e097f6b17c3028bfce71433099b1ac0002"
+    },
+    {
+      "name": "close_all",
+      "equal": true,
+      "sha256": "03ea04994ab8f266dba35322e4f3e745d187f6360b1b06dfc548cc1c84ad11c1"
+    }
+  ],
+  "source_blockers": [],
+  "classification": "NO_ADDITIONAL_SOURCE_BLOCKER_IN_NARROW_SCOPE",
+  "analysis": [
+    "Only directories with one of the four exact shared-ancestor paths compare dev/ino/uid/gid/full st_mode. nlink/size/mtime/ctime are retained as observed full nine-field before/after data, but are deliberately not pinned admission identity for these shared directories.",
+    "Every open still uses fixed held-parent dir_fd with no-follow and compares the named and held object's fixed identity at bind and final verification. The fixed controls directory, all three source files, the new reservation directory and tombstone do not enter the four-path exception and retain full nine-field comparisons.",
+    "Controls still require exact owner/group, regular single-link 0600 and twice-read whole SHA256/Git blob. Atomic reservation still performs the fixed held-parent absence check, exactly one mkdir without exist_ok, parent fsync, new-root named/FD identity, O_EXCL tombstone, same-FD readback/fsync, and once-close final ledger.",
+    "Any existing ROOT entry and any mkdir race still refuse; no existing path is removed or rewritten. No new child or network path is introduced. Original 15s shared deadline, read/metadata/FD/output caps and post-flush authoritative acceptance remain unchanged.",
+    "Successful CAS is only a prospective barrier against the exact old relay newly crossing its mandatory ROOT.mkdir. It does not prove the old job terminated or historical cleanup; its finally read-only ps / worker logging may still occur. Namespace stability and complete new authoritative exit0/full durable output with final source/named/FD closure remain required.",
+    "Source review does not attribute either actual prior refusal to a specific metadata field. Independently observed historical tuple changes and a later unknown refusal must remain distinct. This peer does not refresh pins, authorize dispatch, or convert the old relay UNKNOWN."
+  ],
+  "test_scope": "Original 38 fake checks were not re-run and are not claimed as this peer's execution. This verification only hashed full public Git texts, strictly reconstructed the seven-hunk delta both ways, compared fixed method blocks and read the source control flow."
+}

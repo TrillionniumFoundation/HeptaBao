@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/artifacts/heptabao-native-h2-qa-tests",
+    "component_tests::",
+    "--list"
+  ],
+  "completed_monotonic_ns": 207351931949955,
+  "completed_within_deadline": true,
+  "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/project",
+  "deadline_monotonic_ns": 207366926354721,
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.005595234,
+  "exit_code": 0,
+  "label": "components-list",
+  "outer_cap_seconds": 15,
+  "owned_pgid": 2470539,
+  "remaining": [],
+  "started_monotonic_ns": 207351926354721,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "cebfab7307ba716aeebf08514df4cc6cf9a638009579168ced3b621cf8c10d5d",
+  "timed_out": false
+}

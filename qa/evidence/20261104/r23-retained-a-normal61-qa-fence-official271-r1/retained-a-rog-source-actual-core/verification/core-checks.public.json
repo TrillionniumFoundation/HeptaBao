@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.retained-a-4e808-rog-stage-core-evidence.v1",
+  "checks": [
+    {
+      "name": "authority_known_exit0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "stdout_full_hex_text",
+      "passed": true
+    },
+    {
+      "name": "stderr_full_hex_text",
+      "passed": true
+    },
+    {
+      "name": "exact_source",
+      "passed": true
+    },
+    {
+      "name": "stage_prepared_original_deadline",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_compiler",
+      "passed": true
+    },
+    {
+      "name": "all56_cleanup",
+      "passed": true
+    },
+    {
+      "name": "full_tree_index",
+      "passed": true
+    },
+    {
+      "name": "independent_full_fsck",
+      "passed": true
+    },
+    {
+      "name": "old_source_exact",
+      "passed": true
+    },
+    {
+      "name": "old_failed_observer_exact",
+      "passed": true
+    },
+    {
+      "name": "bundle_lossless_actual_identity",
+      "passed": true
+    },
+    {
+      "name": "bundle_whole_header",
+      "passed": true
+    },
+    {
+      "name": "history_3763",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "source_job_known_terminal": true,
+  "all56_cleanup_rows_closed": true,
+  "full_56_command_records_and_streams_archived": false,
+  "raw_command_archival_pending": true,
+  "actual_normal61_run": false,
+  "linux_target_window": "HOLD",
+  "bundle_base64_from": "original native.data_base64 plus one LF; never Latin1 to UTF8 re-encode"
+}

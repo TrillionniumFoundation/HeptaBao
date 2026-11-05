@@ -1,0 +1,429 @@
+diff --git a/bounded_job_locator_r2.py b/bounded_job_locator_r2.py
+--- a/bounded_job_locator_r2.py
++++ b/bounded_job_locator_r2.py
+@@ -6,11 +6,14 @@
+ A match proves a stored request binding, not launch, execution, or termination.
+ A non-match never proves absence or permits replay. Directory membership is
+ not claimed to be a stable snapshot. New/unreadable entries fail this read.
++R2 defers cancellation through returned-FD registration and once-only cleanup.
++Returned request bytes include an unexpected EOF-probe byte before refusal.
+ """
+ import hashlib
+ import json
+ import os
+ import re
++import signal
+ import stat
+ import sys
+ import time
+@@ -91,6 +94,7 @@
+ MAX_MATCHES = 8
+ MAX_JSON_NODES = 65_536
+ MAX_JSON_DEPTH = 64
++MAX_OUTPUT_BYTES = 65_536
+ JOB_NAME = re.compile(r"([0-9a-f]{1,32})-([0-9a-f]{1,8})-([0-9a-f]{1,16})\Z")
+ 
+ 
+@@ -203,41 +207,128 @@
+     return True
+ 
+ 
++class Cancelled(BaseException):
++    pass
++
++
++class Signals:
++    def __init__(self):
++        self.protected = 0
++        self.pending = None
++
++    def handler(self, signum, _frame):
++        if self.pending is None:
++            self.pending = signum
++        if not self.protected:
++            raise Cancelled()
++
++    def install(self):
++        signal.signal(signal.SIGTERM, self.handler)
++        signal.signal(signal.SIGINT, self.handler)
++
++    def check(self):
++        if self.pending is not None:
++            raise Cancelled()
++
++
++def protected_call(method):
++    def call(self, *args, **kwargs):
++        self.signals.protected += 1
++        try:
++            return method(self, *args, **kwargs)
++        finally:
++            self.signals.protected -= 1
++    return call
++
++
++def public_errno(error):
++    value = getattr(error, "errno", None)
++    return value if type(value) is int and 0 < value < 4096 else None
++
++
+ class Reader:
+-    def __init__(self, start):
++    def __init__(self, start, signals):
++        self.signals = signals
+         self.start = start
+         self.until = start + BUDGET_NS
+         self.fds = {}
++        self.fd_rows = []
++        self.open_registration_unknown = False
+         self.close_failures = 0
+         self.opened = 0
+         self.closed = 0
+         self.total_request_bytes = 0
+         self.request_files_read = 0
+         self.scandir_closed = False
++        self.scandir_object = None
++        self.scandir_open_unknown = False
++        self.scandir_created = False
++        self.scandir_close_attempted = False
++        self.scandir_close_error = None
+         self.ancestor_pins = []
+ 
+     def remaining(self):
++        self.signals.check()
+         need(time.monotonic_ns() < self.until, "original_read_deadline")
+ 
+-    def register(self, fd, role):
+-        # os.open is immediately followed by registration; no child operations.
+-        self.fds[fd] = role
++    @protected_call
++    def open_fd(self, path, flags, role, parent=None):
++        self.remaining()
++        # A non-OSError before registration completes is explicitly unknown.
++        # This flag is never used to infer that an unregistered FD was closed.
++        self.open_registration_unknown = True
++        try:
++            fd = os.open(path, flags, dir_fd=parent)
++        except OSError:
++            self.open_registration_unknown = False
++            raise
++        row = {"ordinal": len(self.fd_rows) + 1, "role": role,
++               "close_attempted": False, "closed": False,
++               "close_errno": None, "close_error": None}
++        self.fds[fd] = row
++        self.fd_rows.append(row)
+         self.opened += 1
++        self.open_registration_unknown = False
+         return fd
+ 
++    @protected_call
+     def close_once(self, fd):
+         if fd not in self.fds:
+             return
+-        del self.fds[fd]
++        row = self.fds.pop(fd)
++        row["close_attempted"] = True
+         try:
+             os.close(fd)
+-        except BaseException:
++        except BaseException as error:
++            row["close_error"] = "close_not_confirmed"
++            row["close_errno"] = public_errno(error)
+             self.close_failures += 1
+             raise
+         else:
++            row["closed"] = True
+             self.closed += 1
+ 
++    @protected_call
++    def close_scandir_once(self):
++        if not self.scandir_created or self.scandir_close_attempted:
++            return
++        self.scandir_close_attempted = True
++        try:
++            self.scandir_object.close()
++        except BaseException as error:
++            self.scandir_close_error = {
++                "code": "scandir_close_not_confirmed",
++                "errno": public_errno(error)}
++            raise
++        else:
++            self.scandir_closed = True
++
++    @protected_call
+     def close_all_once(self):
++        try:
++            self.close_scandir_once()
++        except BaseException:
++            pass
+         for fd in list(self.fds)[::-1]:
+             try:
+                 self.close_once(fd)
+@@ -263,11 +354,12 @@
+         need(directory_identity(held) == captured
+              and directory_identity(named) == captured, "directory_identity")
+ 
++    @protected_call
+     def open_fixed_ancestors(self):
+         self.remaining()
+         need(os.geteuid() == 1000, "unexpected_operator_uid")
+         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+-        root_fd = self.register(os.open("/", flags), "ancestor")
++        root_fd = self.open_fd("/", flags, "ancestor")
+         root_stat = os.fstat(root_fd)
+         self.dir_check(root_stat, False)
+         root_identity = directory_identity(root_stat)
+@@ -278,7 +370,7 @@
+             private = index >= len(JOBS_PARTS) - 2
+             before = os.stat(part, dir_fd=parent, follow_symlinks=False)
+             self.dir_check(before, private)
+-            fd = self.register(os.open(part, flags, dir_fd=parent), "ancestor")
++            fd = self.open_fd(part, flags, "ancestor", parent)
+             captured = directory_identity(before)
+             self.compare_named_dir(parent, part, fd, captured, private)
+             self.ancestor_pins.append((parent, part, fd, captured, private))
+@@ -299,13 +391,14 @@
+             else:
+                 self.compare_named_dir(parent, name, fd, captured, private)
+ 
++    @protected_call
+     def read_request(self, jobs_fd, job_id, role):
+         self.remaining()
+         need(canonical_job_time(job_id) is not None, "noncanonical_job_id")
+         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+         before_dir = os.stat(job_id, dir_fd=jobs_fd, follow_symlinks=False)
+         self.dir_check(before_dir, True)
+-        job_fd = self.register(os.open(job_id, flags, dir_fd=jobs_fd), role)
++        job_fd = self.open_fd(job_id, flags, role + "_directory", jobs_fd)
+         file_fd = None
+         try:
+             captured_dir = directory_identity(before_dir)
+@@ -315,11 +408,14 @@
+             need(stat.S_ISREG(before.st_mode) and before.st_uid == os.geteuid()
+                  and before.st_nlink == 1
+                  and stat.S_IMODE(before.st_mode) == 0o600
+-                 and 0 < before.st_size <= MAX_REQUEST_BYTES,
++                 and 0 < before.st_size < MAX_REQUEST_BYTES,
+                  "unsafe_request_file")
+-            file_fd = self.register(
+-                os.open("request.json", os.O_RDONLY | os.O_NOFOLLOW
+-                        | os.O_CLOEXEC, dir_fd=job_fd), role)
++            # Reserve one byte for the EOF probe inside both original caps.
++            need(self.total_request_bytes + before.st_size + 1
++                 <= MAX_TOTAL_REQUEST_BYTES, "total_request_bytes_admission")
++            file_fd = self.open_fd(
++                "request.json", os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
++                role + "_request", job_fd)
+             captured = full_identity(before)
+             need(full_identity(os.fstat(file_fd)) == captured,
+                  "request_open_identity")
+@@ -328,14 +424,19 @@
+             while left:
+                 self.remaining()
+                 block = os.read(file_fd, min(left, 65536))
+-                need(bool(block), "request_short_read")
+-                left -= len(block)
+                 self.total_request_bytes += len(block)
+                 need(self.total_request_bytes <= MAX_TOTAL_REQUEST_BYTES,
+                      "total_request_bytes_bound")
++                need(bool(block) and len(block) <= left, "request_short_read")
++                left -= len(block)
+                 chunks.append(block)
+-            need(os.read(file_fd, 1) == b"", "request_trailing_bytes")
+             self.remaining()
++            tail = os.read(file_fd, 1)
++            self.total_request_bytes += len(tail)
++            need(self.total_request_bytes <= MAX_TOTAL_REQUEST_BYTES,
++                 "total_request_bytes_bound")
++            need(tail == b"", "request_trailing_bytes")
++            self.remaining()
+             need(full_identity(os.fstat(file_fd)) == captured
+                  and full_identity(os.stat("request.json", dir_fd=job_fd,
+                                            follow_symlinks=False)) == captured,
+@@ -349,28 +450,39 @@
+             self.request_files_read += 1
+             return value, len(raw), digest
+         finally:
+-            if file_fd is not None:
+-                self.close_once(file_fd)
+-            self.close_once(job_fd)
++            try:
++                if file_fd is not None:
++                    self.close_once(file_fd)
++            finally:
++                self.close_once(job_fd)
+ 
+-    def candidates(self, jobs_fd, floor):
++    @protected_call
++    def candidates(self, jobs_fd, floor, ceiling):
+         self.remaining()
+         found = []
+         count = 0
+         name_bytes = 0
+-        with os.scandir(jobs_fd) as entries:
+-            for entry in entries:
++        seen = set()
++        self.scandir_open_unknown = True
++        self.scandir_object = os.scandir(jobs_fd)
++        self.scandir_created = True
++        self.scandir_open_unknown = False
++        try:
++            for entry in self.scandir_object:
+                 self.remaining()
+                 count += 1
+                 name_bytes += len(os.fsencode(entry.name))
+                 need(count <= MAX_NAMES and name_bytes <= MAX_NAME_BYTES,
+                      "directory_names_bound")
+                 stamp = canonical_job_time(entry.name)
+-                if stamp is not None and stamp >= floor:
+-                    found.append((stamp, entry.name))
+-                    need(len(found) <= MAX_CANDIDATES,
++                if stamp is not None and floor <= stamp <= ceiling:
++                    need(entry.name not in seen, "duplicate_candidate_name")
++                    seen.add(entry.name)
++                    need(len(found) < MAX_CANDIDATES,
+                          "recent_candidates_bound")
+-        self.scandir_closed = True
++                    found.append((stamp, entry.name))
++        finally:
++            self.close_scandir_once()
+         self.remaining()
+         self.verify_ancestors()
+         return [name for _stamp, name in sorted(found)], count, name_bytes
+@@ -378,9 +490,10 @@
+ 
+ def main():
+     start = time.monotonic_ns()
+-    reader = Reader(start)
++    signals = Signals()
++    reader = Reader(start, signals)
+     report = {
+-        "schema": "heptabao.fixed-worker-request-locator.v1",
++        "schema": "heptabao.fixed-worker-request-locator.v2",
+         "status": "failed",
+         "absence_proven": False,
+         "replay_authorized": False,
+@@ -391,7 +504,12 @@
+         "matches": [],
+     }
+     failure = None
++    # Install the handler only after protecting the complete resource lifetime.
++    # Explicit remaining() checkpoints still raise cancellation; a second
++    # signal cannot escape the entry to the one cleanup attempt.
++    signals.protected += 1
+     try:
++        signals.install()
+         need(len(sys.argv) == 5 and sys.argv[1] == "--scope"
+              and sys.argv[3] == "--self-sha256", "argv_contract")
+         scope = sys.argv[2]
+@@ -408,6 +526,10 @@
+         report["configured_host"] = config["host"]
+         report["source_sha256"] = sys.argv[4]
+         report["floor_unix_ms"] = config["floor_unix_ms"]
++        ceiling = time.time_ns() // 1_000_000
++        need(ceiling >= canonical_job_time(config["anchor_job_id"])
++             >= config["floor_unix_ms"], "observation_time_window")
++        report["ceiling_unix_ms"] = ceiling
+         jobs_fd = reader.open_fixed_ancestors()
+         anchor, size, digest = reader.read_request(
+             jobs_fd, config["anchor_job_id"], "known_anchor")
+@@ -421,7 +543,7 @@
+         }
+         del anchor
+         names, count, name_bytes = reader.candidates(
+-            jobs_fd, config["floor_unix_ms"])
++            jobs_fd, config["floor_unix_ms"], ceiling)
+         report["directory_entries_observed"] = count
+         report["directory_name_bytes_observed"] = name_bytes
+         report["candidate_count"] = len(names)
+@@ -433,27 +555,32 @@
+             if value.get("request_digest") == config["target_digest"]:
+                 verify_request(value, name, config["target_digest"],
+                                config["target_fields"])
++                need(len(report["matches"]) < MAX_MATCHES, "matches_bound")
+                 report["matches"].append({
+                     "job_id": name,
+                     "request_digest": config["target_digest"],
+                     "request_file_bytes": size,
+                     "request_file_sha256": digest,
+                 })
+-                need(len(report["matches"]) <= MAX_MATCHES, "matches_bound")
+             del value
+         reader.verify_ancestors()
+         reader.remaining()
+         report["status"] = "bounded_read_completed"
++    except Cancelled:
++        failure = {"code": "cancelled"}
+     except Refused as error:
+         failure = {"code": error.code}
+     except OSError as error:
+-        failure = {"code": "os_error", "errno": error.errno}
++        failure = {"code": "os_error", "errno": public_errno(error)}
+     except (ValueError, UnicodeError, RecursionError):
+         failure = {"code": "request_parse_error"}
+     except BaseException:
+         failure = {"code": "unexpected_reader_error"}
+     finally:
+-        reader.close_all_once()
++        try:
++            reader.close_all_once()
++        finally:
++            signals.protected -= 1
+     completed = time.monotonic_ns()
+     report["elapsed_after_closure_ns"] = completed - start
+     report["within_original_deadline_after_closure"] = completed < reader.until
+@@ -461,19 +588,49 @@
+     report["fds_closed_once"] = reader.closed
+     report["fd_close_failures"] = reader.close_failures
+     report["fds_remaining"] = len(reader.fds)
++    report["fd_closure_rows"] = reader.fd_rows
++    report["open_registration_unknown"] = reader.open_registration_unknown
+     report["scandir_closed"] = reader.scandir_closed
++    report["scandir_created"] = reader.scandir_created
++    report["scandir_close_attempted"] = reader.scandir_close_attempted
++    report["scandir_close_error"] = reader.scandir_close_error
++    report["scandir_open_unknown"] = reader.scandir_open_unknown
++    report["cancel_signal"] = signals.pending
++    closures = (
++        not reader.open_registration_unknown and not reader.scandir_open_unknown
++        and not reader.close_failures and not reader.fds
++        and reader.opened == reader.closed == len(reader.fd_rows)
++        and all(row["close_attempted"] and row["closed"]
++                and row["close_error"] is None for row in reader.fd_rows)
++        and (not reader.scandir_created or
++             (reader.scandir_close_attempted and reader.scandir_closed
++              and reader.scandir_close_error is None)))
++    report["all_registered_resources_closed"] = closures
+     report["request_files_read"] = reader.request_files_read
+     report["request_bytes_read"] = reader.total_request_bytes
+-    if (failure is not None or reader.close_failures or reader.fds
++    if (failure is not None or not closures or signals.pending is not None
+             or completed >= reader.until):
+         report["status"] = "failed"
+     report["failure"] = failure
+     # Publication is stdout only; a successful authority exit also requires the
+     # post-flush check below. There is no reset of the original 15-second clock.
+-    print(json.dumps(report, sort_keys=True, separators=(",", ":")), flush=True)
+-    if time.monotonic_ns() >= reader.until:
+-        return 1
+-    return 0 if report["status"] == "bounded_read_completed" else 1
++    payload = json.dumps(report, sort_keys=True, separators=(",", ":"))
++    if len(payload.encode("utf-8")) > MAX_OUTPUT_BYTES:
++        payload = json.dumps({
++            "schema": report["schema"], "status": "failed",
++            "failure": {"code": "public_output_bound"},
++            "absence_proven": False, "replay_authorized": False,
++            "job_execution_or_termination_proven": False,
++            "all_registered_resources_closed": closures}, sort_keys=True)
++        report["status"] = "failed"
++    signals.protected += 1
++    try:
++        print(payload, flush=True)
++        if time.monotonic_ns() >= reader.until or signals.pending is not None:
++            return 1
++        return 0 if report["status"] == "bounded_read_completed" else 1
++    finally:
++        signals.protected -= 1
+ 
+ 
+ if __name__ == "__main__":

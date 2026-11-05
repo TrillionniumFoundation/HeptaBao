@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.source-evidence-table-correction.v1",
+  "original_tree": "ffe3225a906d654e4728307041087ff66ebe7a86",
+  "original_table": "canonical/unchanged-qa-members.public.json",
+  "original_table_scope": "A manually selected four-leaf convenience subset, including watchdog, rather than the exact five QA_PINS members.",
+  "correction": "Use the five literal QA_PINS names from the unchanged launcher. Each exact current canonical leaf equals the actual 1c665 index member. No source code, checks, deadlines, artifact bindings or host request changes.",
+  "original_table_retained_in_original_tree": true,
+  "all9_candidate_source_bytes_unchanged": true,
+  "source_qualification_not_transferred": true
+}

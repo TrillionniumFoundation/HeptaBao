@@ -1,0 +1,8 @@
+remote helper on desktop-ts failed with 1
+stdout:
+
+stderr:
+Traceback (most recent call last):
+  File "<string>", line 6, in <module>
+  File "<string>", line 25, in private_job_directory
+FileNotFoundError: [Errno 2] No such file or directory: '1a1aa57458d-fc05-4156'

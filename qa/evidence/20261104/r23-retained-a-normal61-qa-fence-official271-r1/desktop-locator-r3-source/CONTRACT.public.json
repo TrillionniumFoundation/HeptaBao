@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.desktop-locator-first-fixed-window.contract.r3",
+  "state": "SOURCE_ONLY_NOT_SUBMITTED",
+  "base_source": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "new_source": {
+    "bytes": 24959,
+    "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe",
+    "blob": "4990b7a09030461704461c08cfd7edccd95bb75b"
+  },
+  "diff": {
+    "bytes": 704,
+    "sha256": "a0153f86d93557b225bcffb7aaaa1afead0ff4664c0321ca16f3ec8483c53f63",
+    "blob": "fe4995d95b13c909b27162f43b06f64659d56709"
+  },
+  "exact_request": {
+    "bytes": 26630,
+    "sha256": "8b1afc2f15dd39bafba7543ed020f8ebccf8cd46ac27cfc5f68155e288e69d9c",
+    "blob": "3d93621860a034a1d72fc13695f4b5c4716484c1"
+  },
+  "host": "desktop",
+  "scope": "desktop-fence",
+  "idempotency_key": "heptabao-bounded-job-locator-desktop-first-window-886d2d25-20261105-r3",
+  "floor_unix_ms": 1793864424254,
+  "fixed_ceiling_unix_ms": 1793868160140,
+  "ceiling_rule": "min(one actual wall-clock millisecond sample, 1793868160140)",
+  "unsearched_original_remainder": {
+    "from_unix_ms": 1793868160141,
+    "through_unix_ms": 1793871896027
+  },
+  "does_not_guarantee_target_in_window": true,
+  "no_match_proves_absence": false,
+  "no_match_authorizes_replay": false,
+  "unchanged": {
+    "configs_and_target_and_anchor": true,
+    "all_old_bytes_after_removing_exact_two_inserted_lines": true,
+    "inherited_128_candidates": true,
+    "inherited_8388608_aggregate_bytes": true,
+    "inherited_262144_including_EOF": true,
+    "inherited_15_seconds_shared": true,
+    "observer_outer_45_seconds": true,
+    "cancellation_and_all_closure_logic": true,
+    "request_except_source_hash_and_new_observer_key": true
+  },
+  "prior_actual": {
+    "tree": "f6f8da686ce20d87503374895189a153b300b20f",
+    "desktop_job": "1a1ab18d402-fc05-4a4c",
+    "status": "KNOWN_BOUND_REFUSAL",
+    "target_still_unknown": true,
+    "old_failure_not_rewritten": true
+  },
+  "prior25Components": {
+    "source_tree": "e49778e26aea2673ed9a05594f935fe21a45c308",
+    "stdout_blob": "ec45d410327a4a9b589110bb6a2b4077f791ebd0",
+    "executor_blob": "b9a3edfb307b803f197c97e5928689b1b37161da",
+    "rerun": false,
+    "scope": "Unchanged cancellation/Reader/cleanup logic; not claimed as a new host run."
+  },
+  "new_pure_verification": {
+    "exit_code": 0,
+    "checks": 10,
+    "selected_time_statements_only": true,
+    "whole_candidate_module_executed": false,
+    "host_IO": false
+  }
+}

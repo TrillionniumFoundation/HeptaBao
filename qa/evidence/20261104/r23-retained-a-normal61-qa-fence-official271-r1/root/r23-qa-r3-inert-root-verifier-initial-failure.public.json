@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root.verifier-initial-failure.v1",
+  "scope": "Independent inert packet verifier before any QA build GO or submission",
+  "error": "exact15_closed_operation_labels",
+  "source_present": true,
+  "stack": [
+    "ck (verifyQaR3InertActual line2)",
+    "verifyQaR3InertActual line17"
+  ],
+  "candidate_source_changed": false,
+  "qa_build_dispatched": false
+}

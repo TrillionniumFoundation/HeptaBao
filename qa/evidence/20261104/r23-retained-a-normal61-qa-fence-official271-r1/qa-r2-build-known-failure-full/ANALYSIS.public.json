@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.native-h2-qa-r2.failed-build-core-scope.v1",
+  "job_id": "1a1aaf3772d-fc05-48f5",
+  "status": "known_failed",
+  "core": {
+    "path": "actual/result.public.original.json",
+    "bytes": 36782,
+    "sha256": "d19183df9ef0db22852c95d69ad2db4e8275c924b33481cc35d1cbab6cb073d9",
+    "blob": "f7b29972d3400198a8735019fb1ed7f0b77fcfdb"
+  },
+  "failure_stage": "offline_locked_binary",
+  "failure_code": "regular_single_link_file_required",
+  "authority_exit_code": 1,
+  "command_count": 6,
+  "command_labels": [
+    "source-before-commit",
+    "source-before-tree",
+    "source-before-status",
+    "rustc-version",
+    "lock",
+    "build"
+  ],
+  "command_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "command_outcome_unknown": false,
+  "incomplete_command_labels": [],
+  "owned_cleanup_count": 6,
+  "all_owned_stopped": true,
+  "all_input_fds_closed": true,
+  "component_builds_started": 0,
+  "component_tests_executed": 0,
+  "product_or_http_requests": 0,
+  "cargo_build_seconds": 50.121520125,
+  "cargo_build_cap_seconds": 180,
+  "remaining_archival": [
+    "six independent intent/command records and twelve command streams; fixed reads admitted",
+    "exact Cargo compiler artifact metadata has not yet been observed"
+  ],
+  "qualification": {
+    "qa_build_pass": false,
+    "h2_component_pass": false,
+    "http2_native_request_pass": false,
+    "official_cli_phaseb_pass": false
+  },
+  "interpretation": [
+    "Cargo build command returned 0 under its original budget.",
+    "The combined regular-file and single-link predicate refused compiler artifact retention; the failed actual stat fields are not present in the core.",
+    "The original six command outcome and cleanup records are complete; original command streams are being archived without replay.",
+    "No reinterpretation of the prior R1 command identity guard failure."
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root.retained-A-regression-source-review.v1",
+  "status": "SOURCE_REVIEW_PASS_FORMAT_AND_COMPILE_PENDING",
+  "packet": {
+    "tree": "0d51f6e38e57cf3bdf04d4230189fca70b976f88",
+    "files": 11,
+    "bytes": 176276,
+    "merkle_trees": 6
+  },
+  "parent_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "parent_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "candidate": {
+    "path": "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+    "blob": "318c680054e5ef008a7b194b1c950bad016847bb",
+    "bytes": 12114,
+    "sha256": "bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c",
+    "mode": "100644"
+  },
+  "strict_diff": {
+    "hunks": 4,
+    "byte_exact": true
+  },
+  "source_bindings": [
+    {
+      "reference": "references/actual-raft-installer-support.rs",
+      "source_path": "crates/heptabao-server/src/ha_native_v6_install_test_support.rs",
+      "blob": "a8aa35b0c077ae874dff089b9fbf98a4205efbce",
+      "bytes": 8734,
+      "sha256": "2e9f7048c79a01918adfebb2e2be4d3ac568d9b2074623614fb68f63fde5d74c"
+    },
+    {
+      "reference": "references/actual-root-v6.rs",
+      "source_path": "crates/heptabao-server/src/state_record_root_v6.rs",
+      "blob": "81e1ed0492f1492f6882e529e44a7c10e8c72209",
+      "bytes": 19890,
+      "sha256": "c49cc793aee3ba1769e728c3c9f70831d052affc4b5a692a307eca18cad0a85e"
+    },
+    {
+      "reference": "references/actual-service-records-v6.rs",
+      "source_path": "crates/heptabao-server/src/service_records_v6.rs",
+      "blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e",
+      "bytes": 66207,
+      "sha256": "13d129b0fa46a8869525eb1fc0d4057ee5c3827538e7442bdd22edd492775580"
+    },
+    {
+      "reference": "references/actual-shared-installer-tests.rs",
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929"
+    },
+    {
+      "reference": "references/before/service_native_v6_ha_same_root_republication_tests.rs",
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a"
+    }
+  ],
+  "checks": [
+    "test-local helper exact mechanically derived modulo terminal separating blank line",
+    "all30 original assertion lines byte exact",
+    "third root equality through final cold reopens byte exact",
+    "original B actual mutation and publication byte exact",
+    "first A migration once and retained plan never assigned deadline",
+    "current source original NUL leaf inventory3914",
+    "exact current-source membership references/actual-raft-installer-support.rs",
+    "exact current-source membership references/actual-root-v6.rs",
+    "exact current-source membership references/actual-service-records-v6.rs",
+    "exact current-source membership references/actual-shared-installer-tests.rs",
+    "exact current-source membership references/before/service_native_v6_ha_same_root_republication_tests.rs"
+  ],
+  "reason": "Each fresh V5-to-V6 plan generates a random address key; its encoded keyed root identity cannot represent the first immutable A projection. Actual third-root equality failed before repair execution.",
+  "semantics": [
+    "Retain the first complete A plan and Arc-backed immutable object graph within its original deadline.",
+    "Build fresh closure, intent, proposal, actual Raft Stage/Publish and increasing generation/index for each publication.",
+    "Original B mutation and old helper unchanged; original root equality, all30 assertions, warm/cold repairs and final reopen checks unchanged.",
+    "The first A plan retains its absolute15s lifetime through intermediate work; expiry fails closed. No refreshed deadline or reused old publication authority.",
+    "Only the newly introduced test module changes. Existing production code, shared helpers and original60 regression definitions remain unchanged."
+  ],
+  "qualification": {
+    "formatter": false,
+    "rust_compile": false,
+    "actual_61": false,
+    "lan": false,
+    "full_openbao_271_replacement": false
+  }
+}

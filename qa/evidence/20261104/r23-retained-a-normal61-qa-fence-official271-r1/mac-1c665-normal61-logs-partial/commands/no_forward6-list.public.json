@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "no_forward271_",
+    "--list"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.0164445829577744,
+  "exit_code": 0,
+  "label": "no_forward6-list",
+  "outer_cap_seconds": 30,
+  "owned_pgid": 80039,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "f01d6389794270b21392033a9980b69b49891785a6100b265f9f6e49d64c715f",
+  "timed_out": false
+}

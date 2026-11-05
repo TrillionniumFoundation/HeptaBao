@@ -1,0 +1,5 @@
+{
+  "error": "Error: rog.source_stage_only",
+  "stack": "Error: rog.source_stage_only\n    at ck (eval at <anonymous> (exec_main.mjs:60:15), <anonymous>:2:41)\n    at verifyRetainedAFullSourceArchives (eval at <anonymous> (exec_main.mjs:60:15), <anonymous>:51:3)\n    at exec_main.mjs:60:64",
+  "cause": "Root verifier overgeneralized Mac no-network property to ROG. ROG original authorized Git source fetch is true; no product/compiler/server execution. Correction only host-specific expected network flag."
+}

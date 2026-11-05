@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "qa-r2-build-48f5-cargo-stdout-000000-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/build.stdout",
+      "expected_version": "66306:28492024:62672:1793869496695294129:1793869496695294129",
+      "offset": 0,
+      "limit": 65536
+    }
+  }
+}

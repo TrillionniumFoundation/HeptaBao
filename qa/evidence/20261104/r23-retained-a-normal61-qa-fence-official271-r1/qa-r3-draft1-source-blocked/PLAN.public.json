@@ -1,0 +1,69 @@
+{
+  "actual_alias_observer_result": {
+    "actual_alias": "heptabao_native_h2_qa-524c7b86fe50735e",
+    "actual_exit_code": 0,
+    "authority_blob": "98de429df06cbb0a9c085193fbf69097d0fbe56f",
+    "root_qualification_pending": false,
+    "stdout_blob": "1dd22a3f7319684cc9a711e23c3f99dbe12bda3e",
+    "stdout_sha256": "3b5d09723d4a4eb14e0c0607a911e86a6ce6f7e6a2d9630073cf5bb670d8ab3e",
+    "tree": "fe83035581620849158f1e5d47b1b60e0693e191",
+    "root_review_result_blob": "7cd43ebe7ff34e6e8f46af6a57599a35f6744a50",
+    "root_review_result_sha256": "6a75d48a44c5753b7fe378a00aa953e235f0fd1cfef828372e3aab4ebec5ced7",
+    "root_verifier_blob": "8a83d5df5b2f1e8fa95c402f73f2859dd07af17b",
+    "root_check_count": 38
+  },
+  "alias_observer_source_tree": "61abd0674a20e009b409ba00ab9103ec85c638d3",
+  "byte_contract": {
+    "new_eof_probe_returned_bytes_limit": 2,
+    "no_source_body_or_inode_or_hash_reused_from_failed_r2": true,
+    "normal_alias_bodies_limit": "twice the captured size, each bounded by the original per-artifact maximum",
+    "original_per_artifact_maximum": 134217728,
+    "total_returned_bytes_limit": "twice captured size plus 2"
+  },
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "caps_unchanged": {
+    "build_seconds": 180,
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "components_build_seconds": 180,
+    "components_seconds": 30,
+    "git_seconds": 15,
+    "list_seconds": 15,
+    "lock_seconds": 20,
+    "tool_seconds": 15,
+    "total_seconds": 600
+  },
+  "dispatch_is_source_only_not_authorization": true,
+  "future_paths": {
+    "control": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3",
+    "root": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3",
+    "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3"
+  },
+  "necessary_next_gates": [
+    "root R3 builder source and concrete binding review",
+    "new create-only inert publication",
+    "root exact new R3 build GO in exclusive shared target window"
+  ],
+  "no_runtime_dispatch_in_this_packet": false,
+  "outer_seconds_unchanged": 660,
+  "previous_actual_failed_tree": "2330415885906e53da1b89563e9b86e65cb03ed2",
+  "ready": true,
+  "resource_contract": [
+    "whole local observation lifetime defers SIGTERM/SIGINT; checkpoints stop on pending",
+    "restore prior owner signal handlers only after one resource cleanup attempt",
+    "independent FD and iterator rows retain unknown registration/close results",
+    "uncertain artifact resource closure sets original global FD failure gate"
+  ],
+  "retention_contract": [
+    "successful complete Cargo JSON and one declared normal binary first",
+    "only target/release/heptabao-native-h2-qa can use the new reader",
+    "normal binary must be regular uid/gid1000 mode0700 nlink2",
+    "bounded fixed release/deps census must account for exactly one matching same-full9 alias",
+    "both selected alias FDs and named paths stay exact; both bodies hash identically",
+    "returned memory bytes go through original create-only retained write and single-link readback",
+    "test executable and all inputs/controls still use unchanged generic nlink1 reader"
+  ],
+  "schema": "heptabao.qa-r3.cargo-output-copy.source-plan.v1",
+  "source_only": true
+}

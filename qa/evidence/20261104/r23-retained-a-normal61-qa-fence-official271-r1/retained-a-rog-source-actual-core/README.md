@@ -1,0 +1,5 @@
+# 4e808 ROG source stage core
+
+One original job `1a1ab4fae51-fc05-4c67` completed with authoritative exit 0, full durable 372-byte stdout and zero-byte stderr. The complete stage result reports 56 owned children reaped with empty groups after 21.1782365149993 seconds. The source is exact 4e808 / eba5e650, 3,914 leaves and 62,227,757 tracked bytes; original 495 and failed observer fences are unchanged. This packet contains the original SDK wrappers, unmodified native responses, independent whole-file versions for the core and bundle, and exact five control readbacks with independent file metadata. Raw per-command records and streams will follow separately.
+
+The 29,953-byte Git bundle is incremental with sole prerequisite 495033 and sole HEAD 4e808, not a standalone bundle. Its base64 artifact is copied directly from the original binary-read response. It is suitable as an input for independent Mac clone/import/fsck/index checks; it confers no Mac or normal-build qualification. No Cargo or product was run. Linux normal remains held for target scheduling.

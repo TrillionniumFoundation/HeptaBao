@@ -1,0 +1,165 @@
+{
+  "schema": "heptabao.bounded-job-locator.contract.r2",
+  "status": "SOURCE_ONLY_AWAIT_ROOT_REVIEW",
+  "source": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "requests": {
+    "desktop-fence": {
+      "bytes": 26526,
+      "sha256": "9962b351b3c17b1207048b57ab683dc225d0c8cf38729e9b27bc86e6b71981e7",
+      "git_blob": "0b05d5dfcae1d37252acc9d84be506636e360eee",
+      "host": "desktop",
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-e1148f85-20261105-r2",
+      "executable": "/usr/bin/python3",
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "args_shape": [
+        "-I",
+        "-S",
+        "-B",
+        "-c",
+        "EXACT_SOURCE",
+        "--scope",
+        "desktop-fence",
+        "--self-sha256",
+        "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a"
+      ],
+      "timeout_seconds": 45,
+      "submitted": false
+    },
+    "rog-source": {
+      "bytes": 26483,
+      "sha256": "37c26b4180f293ab161205e971b75ee1df87534e52435fcc580e9dbafb20a559",
+      "git_blob": "777e74909453e11438f934d2803f562b0aad5252",
+      "host": "rog",
+      "idempotency_key": "heptabao-bounded-job-locator-rog-e1148f85-20261105-r2",
+      "executable": "/usr/bin/python3",
+      "cwd": "/home/qian-qi",
+      "args_shape": [
+        "-I",
+        "-S",
+        "-B",
+        "-c",
+        "EXACT_SOURCE",
+        "--scope",
+        "rog-source",
+        "--self-sha256",
+        "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a"
+      ],
+      "timeout_seconds": 45,
+      "submitted": false
+    }
+  },
+  "jobsPath": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs",
+  "configs": {
+    "desktop-fence": {
+      "host": "desktop",
+      "floor_unix_ms": 1793864424254,
+      "anchor_job_id": "1a1aaa6db3e-fc05-45a6",
+      "anchor_digest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+      "anchor_fields": {
+        "executable": "/usr/bin/python3",
+        "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+        "args_count": 6,
+        "args_json_sha256": "f30d8359ac3a48c8fdf7ff80cc66ba1bd687816abde3b07944af218b55a3a56d",
+        "env": {},
+        "timeout_seconds": 60,
+        "nice": 0,
+        "cpu_quota_percent": null,
+        "memory_max_bytes": null,
+        "has_stdin": false
+      },
+      "target_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+      "target_fields": {
+        "executable": "/usr/bin/python3",
+        "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+        "args_count": 6,
+        "args_json_sha256": "26f457b4bd7ed964c9a614cb21c575975d813637db0e9f442418d0efb9627e79",
+        "env": {},
+        "timeout_seconds": 60,
+        "nice": 0,
+        "cpu_quota_percent": null,
+        "memory_max_bytes": null,
+        "has_stdin": false
+      }
+    },
+    "rog-source": {
+      "host": "rog",
+      "floor_unix_ms": 1793864424254,
+      "anchor_job_id": "1a1aad691c1-fc05-47e5",
+      "anchor_digest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+      "anchor_fields": {
+        "executable": "/usr/bin/python3",
+        "cwd": "/home/qian-qi",
+        "args_count": 5,
+        "args_json_sha256": "a6517813a4abb8c0a0e49e67556e2586adb3a1cf82783476caefe9347bd1bae6",
+        "env": {},
+        "timeout_seconds": 60,
+        "nice": 0,
+        "cpu_quota_percent": null,
+        "memory_max_bytes": null,
+        "has_stdin": true
+      },
+      "target_digest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+      "target_fields": {
+        "executable": "/usr/bin/python3",
+        "cwd": "/home/qian-qi",
+        "args_count": 9,
+        "args_json_sha256": "d5e91a7f658c471a263d009e12020ca9192fd68032bd92be5ba259f8216d8e18",
+        "env": {},
+        "timeout_seconds": 360,
+        "nice": 0,
+        "cpu_quota_percent": null,
+        "memory_max_bytes": null,
+        "has_stdin": true
+      }
+    }
+  },
+  "limits": {
+    "original_soft_seconds": 15,
+    "new_supervisor_seconds": 45,
+    "max_directory_names": 16384,
+    "max_directory_name_bytes": 1048576,
+    "max_recent_candidates": 128,
+    "max_request_bytes_including_reserved_EOF_probe": 262144,
+    "max_all_returned_request_bytes": 8388608,
+    "max_matches": 8,
+    "max_JSON_nodes": 65536,
+    "max_JSON_depth": 64,
+    "new_max_public_output_bytes": 65536
+  },
+  "permissionScope": {
+    "only_candidate_request_json": true,
+    "stdin_bin": false,
+    "children": false,
+    "network": false,
+    "host_signal_send": false,
+    "file_write": false,
+    "host_execution_by_author": false,
+    "proof_scope": "Stored request binding only; no execution, terminal, complete inventory, absence, deployed source identity or replay authorization."
+  },
+  "successContract": [
+    "exact source SHA argument and fixed scope",
+    "host-specific known anchor full request digest/typed fields/args hash passes before enumeration",
+    "bounded finite candidate reads complete with ancestor and leaf identity checks",
+    "all tracked FDs and explicit scandir close completed once; no registration-unknown or pending signal",
+    "original monotonic 15s includes closure and final stdout flush",
+    "authoritative exit zero, complete durable stdout, and original status bounded_read_completed must all hold"
+  ],
+  "failureContract": [
+    "preserve original status and all prior UNKNOWN",
+    "no new key for a retry; never replay original business on no-match",
+    "unregistered resource failure and failed close are never called all closed",
+    "known partial matches remain only observations even if later failure occurs"
+  ],
+  "observableLimitations": [
+    "Directory membership is sequential, not atomic or stable; full name scan is bounded.",
+    "Scandir ledger records one explicit iterator-object close; Python may auto-close internally at exhaustion.",
+    "Synchronous OS calls cannot be hard-preempted by the soft clock; late returns fail and external 45s supervisor remains separate.",
+    "Original stdin participates in reproduced digest but this observer does not read or re-hash stored stdin.bin.",
+    "Public runtime source is a reference, not deployed-code attestation.",
+    "Both floors retain 1793864424254; ROG scope intentionally includes time before its own anchor. Ceiling is sampled once before I/O."
+  ]
+}

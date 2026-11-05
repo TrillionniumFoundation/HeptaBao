@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.root.desktop-first-window-locator-actual-verification.v1",
+  "status": "PASS",
+  "scope": "Original desktop first-window observer; target remains unknown",
+  "checks_count": 28,
+  "checks": [
+    "desktop start SDK raw native bytes exact",
+    "desktop status0 SDK raw native bytes exact",
+    "desktop read0 SDK raw native bytes exact",
+    "desktop intent contains exact request",
+    "desktop intent request whole SHA",
+    "desktop unique ACK and host binding",
+    "desktop exact executable argv cwd key",
+    "desktop canonical request digest",
+    "desktop authority full durable terminal",
+    "desktop read0 job binding",
+    "desktop read0 stdout cursor",
+    "desktop read0 stdout exact hex",
+    "desktop stdout full original EOF",
+    "desktop stdout authoritative complete byte count",
+    "desktop read0 job binding",
+    "desktop read0 stderr cursor",
+    "desktop read0 stderr exact hex",
+    "desktop stderr full original EOF",
+    "desktop stderr authoritative complete byte count",
+    "desktop no widened authority",
+    "desktop source and time binding",
+    "desktop closure within original15",
+    "desktop complete once-close FD ledger",
+    "desktop iterator once closed",
+    "desktop original read caps",
+    "desktop anchor typed exact",
+    "desktop known bound refusal before candidate bodies",
+    "desktop original anchor"
+  ],
+  "summary": {
+    "desktop": {
+      "observer_job": "1a1ab2e87e1-fc05-4b2d",
+      "observer_exit": 1,
+      "observer_status": "failed",
+      "request_files_read": 1,
+      "request_bytes_read": 11633,
+      "fds_closed_once": 9,
+      "elapsed_after_closure_ns": 61649532,
+      "matches": [],
+      "absence_proven": false,
+      "replay_authorized": false
+    }
+  },
+  "exact_fixed_ceiling": 1793868160140,
+  "packet": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9",
+  "initial_checker_failure": {
+    "name": "r23_desktop_first_window_actual_root_checker_initial_failure",
+    "blob": "8d5325a8c034ad0ea932f51d357e15d55ded21ad",
+    "bytes": 374,
+    "sha256": "a6033273819ccb0d9c50739084e5799529503b097d36fc3380cb729801f0ed0a"
+  }
+}

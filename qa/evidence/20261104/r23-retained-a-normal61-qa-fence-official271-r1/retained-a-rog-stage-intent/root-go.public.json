@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.retained-a.rog-source.root-go.v1",
+  "go": "ONLY_EXACT_SOURCE_STAGE_ONCE",
+  "source_review": {
+    "name": "r23-retained-a-rog-source-root-review.public.json",
+    "blob": "b3ad744cf0b8dd21d001ab9ef87cc14007b2db70",
+    "bytes": 1932,
+    "sha256": "4bd3ab7d17f156259afe8f2c66340b0a2e1c4a9a5ffaff7d7caab475ef31fb61"
+  },
+  "source_packet": "9109835702ba5c001f4c021ff359e6ea5ff70ac1",
+  "request": {
+    "blob": "b520b336d6e4015d1162346bb48a41855064fa4b",
+    "bytes": 111334,
+    "sha256": "278a9cf3052f1d540848a5c876ce08c3a3c4b0c0bec25fe02f063830f20c8c3f"
+  },
+  "idempotency_key": "heptabao-same-root-publication-4e808-rog-source-20261105-r2-3971051a",
+  "host": "rog",
+  "external_intent_must_finish_before_one_submit": true,
+  "original_budgets": {
+    "total": 300,
+    "git": 90,
+    "clone": 180,
+    "supervisor": 360
+  },
+  "allowed_writes": "Create-only fresh r2 source/control root by exact reviewed stager; no Cargo target or product writes.",
+  "before_next_action": "Bind original ACK, authority, full immutable stage result, source index, controls, bundle and all child closure evidence. UNKNOWN means recover original only; do not re-submit.",
+  "normal_build_go": false,
+  "shared_cargo_target_owner": "QA R3; Linux normal build remains held",
+  "mac_stage_requires_actual_bundle_binding": true,
+  "full_replacement": false
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.retained-a.source.ack-check.v1",
+  "job": "1a1ab4fae51-fc05-4c67",
+  "host": "rog",
+  "key": "heptabao-same-root-publication-4e808-rog-source-20261105-r2-3971051a",
+  "request_digest": "19c71409a067b7746e7e7f9fb1e57188c25f0416f1b05683ffafc4244f7c5cd2",
+  "original_request_blob": "b520b336d6e4015d1162346bb48a41855064fa4b",
+  "intent_tree": "b9d513c7f02bbb29a5dfe38de9125cbbcd1c9419",
+  "submitted_once": true,
+  "reused": false,
+  "launch_state": "launched",
+  "exact_argv_and_cwd": true,
+  "unsafe_integer_lexemes_preserved_in_original_payload": true,
+  "qualification": "ACK_ONLY_NO_TERMINAL_CLAIM"
+}

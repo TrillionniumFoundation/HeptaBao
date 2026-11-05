@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a25690",
+  "wall_time_seconds": 0.000027542,
+  "exit_code": 0,
+  "original_token_count": 170,
+  "output": "{\n  \"actual_children\": 0,\n  \"actual_fds\": 0,\n  \"actual_host_calls\": 0,\n  \"actual_signals\": 0,\n  \"actual_temporary_handler_pending\": 15,\n  \"counterexample_reproduced\": true,\n  \"fake_cleanup_calls\": 1,\n  \"full_module_executed\": false,\n  \"injected_point\": \"fake signal.signal restoring first original handler, after final report pending check\",\n  \"old_handlers_restored\": true,\n  \"old_owner_handler_calls\": 0,\n  \"report_cancel_signal\": null,\n  \"report_status\": \"observed_two_aliases\",\n  \"returned_output_after_cancel\": true,\n  \"schema\": \"heptabao.qa-reader-pending-signal-counterexample.v1\",\n  \"source_sha256\": \"42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76\"\n}\n"
+}

@@ -1,0 +1,12 @@
+{
+  "intent_tree": "1fb39d18ec5f4d81bbb5fa4035b2550dbc3c888f",
+  "request_blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4",
+  "job_id": "1a1ab60127b-fc05-4d18",
+  "host": "mac",
+  "request_digest": "704a05df17d7fea3f4f43f8e7ae009d092085bc897e08e8d73d9eeedfc0fe8c5",
+  "one_submit": true,
+  "reused": false,
+  "argv_exact": true,
+  "original60_plus_independent1": true,
+  "no_lan_or_authbus": true
+}

@@ -1,0 +1,40 @@
+{
+  "archive": {
+    "base64_bytes": 848605,
+    "base64_sha256": "380b36c8f75daffd470603e64bef4360662ef221490790ba86004addb59288c1",
+    "gzip_bytes": 636451,
+    "gzip_sha256": "5cc964299bc23efb53ef62e29a029b8733d48e2db3480b2e6676e599a75ee482",
+    "name": "root-review-v3-dependencies.tar.gz.base64",
+    "tar_bytes": 5304320,
+    "tar_sha256": "ac3742ee4845d300c51230f2d607ffe502e4410905c86eff9fdf01a8a5004f5f"
+  },
+  "contains_private_data": false,
+  "files": [
+    {
+      "bytes": 2505503,
+      "git_blob": "cb264686774aa102184a12e1d431b323e5b16509",
+      "name": "official271-source-contract-declarations-v2.public.json",
+      "sha256": "239492f70e7e66aaa193c4c322d88edc1dc2e9b8c0c4379f9c9b20971ccaadac"
+    },
+    {
+      "bytes": 1210315,
+      "git_blob": "5d901280cbd044abb3e682908e7c403390ef1edf",
+      "name": "product-corpus.json",
+      "sha256": "d1f17d4a194aef6e443a87f3d2c207043a04bd2755b70bbb18dcea093ebf9ea6"
+    },
+    {
+      "bytes": 1563104,
+      "git_blob": "ba52dabf9a0203560906cdf76b19138a3b5e0a35",
+      "name": "official-tree.original.json",
+      "sha256": "046a0a3c864e5f4f844d8ef4f8027f7d51816f0afe6a62b326365ab32f1545d0"
+    },
+    {
+      "bytes": 13457,
+      "git_blob": "76cc4bd345f3678e9338bdba881cb1ed71476cff",
+      "name": "extract_contract_declarations_v2.py",
+      "sha256": "d00ed4c8450a3411ad9366cdfb243e6c8c03da7ec760f50054a58a41b97239b0"
+    }
+  ],
+  "schema": "heptabao.official271.root-review-dependencies.v1",
+  "scope": "Original public inputs for root_review_v3.py. Source corpus r3 is separately complete in source-corpus-r3.gzip.base64. All raw input failures and source refinement limits remain distinct."
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.original-relay-readonly-recovery.v1",
+  "observed_utc": "2026-11-05T10:50:14.670Z",
+  "host": "desktop",
+  "job_id": "1a1aa57458d-fc05-4156",
+  "key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+  "request_digest": "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47",
+  "original_packet_tree": "a6ac5db43375143d877da029da353807bf13600f",
+  "scope": "Existing job authority and log read only",
+  "outcome": "UNKNOWN",
+  "original_process_exit_code": null,
+  "original_process_timed_out": null,
+  "original_process_stdout_observed": false,
+  "original_process_stderr_observed": false,
+  "original_owned_processes_stopped": null,
+  "observation": {
+    "status": {
+      "is_error": true,
+      "error_code": "INVALID_ARGUMENT",
+      "error": "private_job_directory FileNotFoundError",
+      "native": {
+        "bytes": 265,
+        "sha256": "69d8ffcf8a0295596e0244dc15e71bc326be0b9831826a16e9ed4db246e79ff6",
+        "blob": "d7b22f86861e9a6ec16b1971faf0c6c33662bd00"
+      }
+    },
+    "read0": {
+      "is_error": true,
+      "error_code": "INVALID_ARGUMENT",
+      "error": "private_job_directory FileNotFoundError",
+      "native": {
+        "bytes": 265,
+        "sha256": "69d8ffcf8a0295596e0244dc15e71bc326be0b9831826a16e9ed4db246e79ff6",
+        "blob": "d7b22f86861e9a6ec16b1971faf0c6c33662bd00"
+      }
+    }
+  },
+  "constraints": {
+    "errors_do_not_prove_nonexecution": true,
+    "tool_traceback_empty_stdout_is_not_original_job_stream": true,
+    "no_replay_authorization": true,
+    "no_original_business_replayed": true,
+    "no_extra_paths_probed": true,
+    "no_signals": true,
+    "no_mutation": true
+  },
+  "distinct_fence": {
+    "job_id": "1a1aac6213e-fc05-4714",
+    "actual_tree": "36ccdc50549694479d0ee189ed8e606bacbf2d05",
+    "outcome": "KNOWN_PREMUTATION_FAILURE",
+    "does_not_settle_relay": true
+  },
+  "next": "SOURCE-only directory identity analysis; no original relay or fence resubmission."
+}

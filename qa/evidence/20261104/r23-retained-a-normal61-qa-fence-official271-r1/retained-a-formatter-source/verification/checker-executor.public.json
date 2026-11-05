@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8af371",
+  "wall_time_seconds": 0.000021372,
+  "exit_code": 0,
+  "original_token_count": 237,
+  "output": "{\n  \"candidate_module_executed\": false,\n  \"check_count\": 20,\n  \"checks\": [\n    \"new_controller_ast_compile_only\",\n    \"five_helpers_ast_identical\",\n    \"all_remaining_module_nodes_exact\",\n    \"one_fixed_filename\",\n    \"candidate_pin\",\n    \"original_pin\",\n    \"controller_sha\",\n    \"request_fields\",\n    \"request_exact_argv\",\n    \"outer60\",\n    \"key_binds_source\",\n    \"stdin_one_exact_source\",\n    \"stdin_original_bound\",\n    \"stdin_whole_sha\",\n    \"root_fresh_literal\",\n    \"tool_pin_unchanged\",\n    \"format_configuration_exact\",\n    \"base_identity_and_no_execution_claim\",\n    \"original_controller_and_child_limits\",\n    \"six_fixed_output_contract\"\n  ],\n  \"cloud_io_scope\": \"reads this public JSON input and Python script/stdlib only\",\n  \"host_calls\": 0,\n  \"rust_compiled\": false,\n  \"rustfmt_executed\": false,\n  \"schema\": \"heptabao.retained-a-formatter-offline-source-check.v1\",\n  \"status\": \"passed\",\n  \"subprocesses_created_by_verifier\": 0\n}\n"
+}

@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-05T09:06:41Z",
+  "as_of_utc": "2026-11-05T11:30:02Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -8808,6 +8808,284 @@
       "two_documents_append_updated_only": true,
       "product_code_and_active_services_unchanged_by_checkpoint": true,
       "post_freeze_results_not_retrofilled": true
+    }
+  },
+  "r23_current": {
+    "schema": "heptabao.replacement-checkpoint.r23.v1",
+    "as_of_utc": "2026-11-05T11:30:02Z",
+    "previous_checkpoint": {
+      "commit": "661d591f61e27559a3937e44d0b9280267ba64cf",
+      "tree": "7679993617430fb6cb3a838e11c52d575a210a92"
+    },
+    "evidence_prefix": "qa/evidence/20261104/r23-retained-a-normal61-qa-fence-official271-r1",
+    "overall": {
+      "full_openbao_2_7_1_replacement": false,
+      "production_cutover": false,
+      "old_service_binary_asset_cleanup": false,
+      "all_clients_and_backups_migrated": false,
+      "no_failure_or_unknown_reclassified_as_pass": true
+    },
+    "evidence": {
+      "packets": 53,
+      "packet_files": 2099,
+      "packet_bytes": 37734246,
+      "packet_Merkle_trees": 327,
+      "root_verified_leaves_before_state_manifest_and_persistence_receipt": 102
+    },
+    "candidate": {
+      "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+      "canonical_leaves": 3914,
+      "canonical_bytes": 62227757,
+      "canonical_history_commits": 3763,
+      "worktree_index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092",
+      "draft_PR": 159,
+      "PR_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/159",
+      "one_changed_test_vs_sole_parent": true,
+      "production_source_changed_by_test_successor": false,
+      "fixture_fix": "Retain and republish the first real NativeRootMigrationPlan for A after B; independent V5-to-V6 migration uses fresh object_address_key and is not the original A.",
+      "request_deadline_ms": 15000,
+      "all_existing30_assertions_and_tail_preserved": true,
+      "PR_not_merged": true
+    },
+    "current_source_stages": {
+      "root_full_archive_checks": 722,
+      "root_review": "04b3c48583c6d52dc6d955d00e539dcf31c763f6",
+      "mac": {
+        "job": "1a1ab595aa2-fc05-4ce1",
+        "authority": "exit0/full/durable",
+        "core_blob": "05f3c12a962dc60660b092567c52a4b7499ab3d1",
+        "full_packet": "16bb1439f5cea1fd37a3d8a1319d2c37b21f6de8",
+        "commands": 41,
+        "streams": 82,
+        "full_NUL_streams": 2,
+        "version_pinned_chunks": 14,
+        "elapsed_seconds": 4.600696458015591,
+        "T5_UUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+        "network_fetch": false
+      },
+      "rog": {
+        "job": "1a1ab4fae51-fc05-4c67",
+        "authority": "exit0/full/durable",
+        "core_blob": "079369dac398d8fab512bd52c00657af7357467c",
+        "full_packet": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+        "commands": 56,
+        "streams": 112,
+        "full_NUL_streams": 2,
+        "version_pinned_chunks": 14,
+        "elapsed_seconds": 21.1782365149993,
+        "authorized_public_Git_source_fetch": true
+      },
+      "source_stage_only_not_product_qualification": true
+    },
+    "mac_normal61": {
+      "job": "1a1ab60127b-fc05-4d18",
+      "authority": "exit0/full/durable",
+      "core_packet": "94864d3311d217777454934cb81370d3dfad3645",
+      "core_blob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+      "core_bytes": 63478,
+      "core_sha256": "02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113",
+      "root_checks": 112,
+      "root_review": "b47a9d3e2259a4525cd170c861aaeee2b7961ad6",
+      "actual_tests": 61,
+      "original60_passed": true,
+      "new_same_root_republication_passed": true,
+      "old6plus4_artifacts_full9_and_whole_unchanged": true,
+      "owned_children_closed": 48,
+      "warm_ms": 435,
+      "cold_ms": 477,
+      "per_request_budget_ms": 15000,
+      "new_test_entire_setup_assertions_seconds": 16.72162637487054,
+      "release_build_seconds": 259.8831564588472,
+      "libtest_build_seconds": 450.3692048341036,
+      "full48_command_archive": "pending separately",
+      "independent_retained_artifact_infos": "pending separately",
+      "WAL_or_LAN_GO": false
+    },
+    "rog_normal61": {
+      "request_blob": "0281db23601066bc5fa1d942013c655e61acdf70",
+      "root_go": "b706278f14288c6b57e435805cddc4ae6ca4a5a3",
+      "intent_packet": "d42d75bf7406c51979541070daed7ac599d4e526",
+      "ack_packet": "26f94a973f79b192789736e80fbb5fccf5baa003",
+      "job": "1a1ab76cee8-fc05-4e13",
+      "request_digest": "d79e75bbc8e29d377db05738b0aada8420a42b059031f6c4bea2e84fa94a0fb9",
+      "state": "UNIQUE_START_ACK_LAUNCHED_TERMINAL_PENDING",
+      "original_outer_seconds": 12000,
+      "result_qualification": false,
+      "no_replay": true
+    },
+    "QA_R3": {
+      "scope": "offline QA instrument on retained df026; not current 4e808 product qualification",
+      "builder_sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+      "binding_sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a",
+      "inert": {
+        "job": "1a1ab50b1b9-fc05-4c6e",
+        "packet": "91596e5bfab8434c718a83afa4556dbdceb91d19",
+        "authority": "exit0/full/durable",
+        "root_checks": 180,
+        "inputs": 8,
+        "independent_infos": 9,
+        "read_operations": 15,
+        "original_SDK_pages": 35
+      },
+      "build": {
+        "job": "1a1ab68bbb6-fc05-4d8a",
+        "core_packet": "73f0117cd63781c4c72287730972729503c44503",
+        "authority": "exit0/full/durable",
+        "root_checks": 83,
+        "root_review": "9d46fa64ba455089d6f0ae1f2331f570fabf4f87",
+        "core_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196",
+        "actual_components_passed": 6,
+        "all_six_share_one_30s_command": true,
+        "owned_children_closed": 12,
+        "input_FDs_closed": true,
+        "alias_FDs_once_closed": 9,
+        "alias_iterator_once_closed": true,
+        "new_Cargo_alias_inode": "31634075",
+        "retained_executable_bytes": 4616576,
+        "retained_executable_sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+        "retained_component_binary_bytes": 3004312,
+        "retained_component_binary_sha256": "2262437307b759a736a4606da48442e26b097c8a8e13bd5fbac244ee1df5786f",
+        "new_retained_files_mode": "0500",
+        "new_retained_files_links": 1,
+        "remaining22_streams_and_full_Cargo_JSON": "pending original archive",
+        "shared_target_released_to_exact_ROG_normal61": true
+      },
+      "late_cancel_counterexample_preserved": true,
+      "corrected_after_both_handlers_restored_check": true,
+      "no_H2_fixture_or_product_HTTP_run": true
+    },
+    "X230": {
+      "fixed_locator": {
+        "windows01_02_zero_matches": true,
+        "window03_unique_original_fence_match": true,
+        "windows04_to12_not_dispatched": true,
+        "root_checks": 65
+      },
+      "recovered_R2_fence": {
+        "job": "1a1aac6213e-fc05-4714",
+        "state": "KNOWN_FAILURE",
+        "exit_code": 1,
+        "reason": "fixed_identity_mismatch during fixed directory bind",
+        "only2FD_closed": true,
+        "no_root_or_marker_created": true,
+        "latest_rejected_full9_not_observed": true
+      },
+      "original_relay": {
+        "job": "1a1aa57458d-fc05-4156",
+        "state": "UNKNOWN",
+        "latest_status_and_read": "INVALID_ARGUMENT private_job_directory FileNotFound; not original terminal authority",
+        "no_replay": true
+      },
+      "R3_effect_fence": {
+        "job": "1a1ab637c5e-fc05-4d3a",
+        "packet": "1529130c98ac8bf5770ccdda4ccb6f3c26cca024",
+        "authority": "exit0/full/durable",
+        "root_checks": 54,
+        "root_review": "5c08a1afd96a020c69b73bf71189017356100c7c",
+        "elapsed_ns": 53414886,
+        "FDs_once_closed": 10,
+        "metadata_calls": 113,
+        "read_bytes": 122403,
+        "marker_bytes": 2709,
+        "marker_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+        "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+        "fixed_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1",
+        "root_identity_source": "actual held/named controller checks; not independent directory stat",
+        "future_effect_scope": "Exact old relay mandatory ROOT.mkdir cannot pass while this namespace reservation remains bound",
+        "old_relay_termination_proven": false,
+        "new_transport_started": false
+      }
+    },
+    "historical_failures": {
+      "mac_1c665_normal61": {
+        "job": "1a1ab058659-fc05-4989",
+        "original60_passed": true,
+        "extra1_failed": true,
+        "reason": "test independently re-migrated A to random-address-key A-prime",
+        "full_archive_incomplete": true,
+        "two_Cargo_stdout_complete_read_pending_after_MCP_timeouts": true
+      },
+      "QA_R2": {
+        "job": "1a1aaf3772d-fc05-48f5",
+        "state": "KNOWN_FAILURE",
+        "reason": "generic single-link admission rejected Cargo two-link executable",
+        "whole99_file_archive": true,
+        "subsequent_alias_observation_did_not_reclassify_failure": true
+      },
+      "root_checker_errors_preserved": [
+        "formatter whitespace checker missed optional trailing comma",
+        "inert operation selector counted index as operation",
+        "source archive verifier incorrectly generalized Mac no-network property to authorized ROG source fetch",
+        "official271 original PKI anchor exceeded source line count"
+      ],
+      "physical_LAN_latest": {
+        "candidate": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "job": "1a1aa914172-fc05-4473",
+        "pre_cold_passed": 91,
+        "pre_cold_total": 98,
+        "post_cold_executed": 0,
+        "post_cold_total": 12,
+        "large_KV_plaintext_bytes": 35651584,
+        "state": "FAILED_NOT_RECLASSIFIED",
+        "current4e808_run": false
+      }
+    },
+    "remaining": {
+      "KV2": "Current candidate full formal migration/save/restore/cold-read/rollback with original 34MiB corpus remains pending.",
+      "HA": "Current Mac/ROG/Pocket4 real leader kill, natural election, ReadIndex, persistence/restart and original98+12 remain unexecuted.",
+      "AuthBus": "Actual current WAL capture, trusted production cluster address/CA/AppRole source, TLS/KV/policy/renew/revoke and per-host private credential reads/writes/restart/rollback remain unqualified.",
+      "clients": "Mac5 and ROG6 records are bounded prior observations; Pocket4 manager and X230 current consumer remain unresolved. ROG disabled generation203 and provider/model/refresh/quota flags are preserved.",
+      "backups": "Nov2 capture/Nov3 transport is one 9-receipt/23-file chain, not nine current complete backups or a global atomic snapshot.",
+      "cleanup": "No old OpenBao or HeptaBao service/binary/backup/intermediate removed; conditioned on full client+backup migration."
+    },
+    "official271": {
+      "version": "2.7.1",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182",
+      "whole_source_files": 242,
+      "whole_source_bytes": 3894129,
+      "tree_entries": 6328,
+      "tree_Merkles": 939,
+      "lexical_declarations": 423,
+      "declared_operations": 720,
+      "fields": 1064,
+      "registration_lifecycle_sites": 128,
+      "not_a_runtime_denominator": true,
+      "source_inventory_revision": 3,
+      "corrected_family_rows": 189,
+      "all_other_semantics_inverse_equal": true,
+      "current_native_gate_files": 14,
+      "gate_files_byte_equal_between1c665_and4e808": true,
+      "source_contract_complete_archive": "official271/official271-source-contract-v3.gzip.base64",
+      "source_corpus_complete_archive": "official271/source-corpus-r3.gzip.base64",
+      "reproduction_dependencies": "official271/root-review-v3-dependencies.tar.gz.base64",
+      "native_implementation_blockers": [
+        "Durable JWT/Kubernetes/OIDC/MFA/password-policy owners and identity/renew/revoke/cold codecs; current admission guards correctly keep unsupported state empty.",
+        "Durable external database/Kubernetes/RabbitMQ lease and effect owners with UNKNOWN reconciliation.",
+        "Native PKI ACME/EAB/external signer/KMS and transit external custody coverage.",
+        "Rekey/recovery/root-generation/rotation/raw and unowned sys/lifecycle transitions.",
+        "Mutable plugin catalog/runtime external provider protocol and durable reconciliation.",
+        "Protected namespace/workflow/control-group/nondefault administrative Raft and namespace lease owners.",
+        "Runtime backend/tooling/HTTP-method/dynamic-factory denominator beyond lexical source rows."
+      ],
+      "guard_removal_not_a_solution": true
+    },
+    "next_required": [
+      "Finish current Mac original archive and independent retained artifact pins, then minimally bind current WAL source.",
+      "Reconcile only original ROG normal61 terminal; preserve its exact budgets and no-replay rule.",
+      "Finish QA Cargo JSON/original streams, then actual H2 binder and 12-file transfer with exact artifact pins.",
+      "Prepare fresh X230 transport ROOT only after qualified current Linux artifacts and sustained old relay fence binding.",
+      "Run actual current LAN98+12 and CLI snapshot save/restore/standby/restart; diagnose failures without forced elections or widened deadlines.",
+      "Complete trusted AuthBus and each real client credential cycle/rollback before cutover.",
+      "Implement and validate uncovered native owners against exact official2.7.1 contracts before asserting full replacement."
+    ],
+    "history": {
+      "all_previous_checkpoint_raw_content_preserved": true,
+      "old_UNKNOWNs_not_replayed": true,
+      "post_freeze_results_go_to_next_checkpoint": true,
+      "checkpoint_changes_only_two_documents_and_new_evidence": true
     }
   }
 }

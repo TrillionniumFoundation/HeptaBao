@@ -1,0 +1,22 @@
+{
+  "files": [
+    {
+      "path": "dispatch/exact-request.json",
+      "bytes": 137634,
+      "sha256": "8794b2c05c1867730635d2150d144443be9a230f83e6f30a3d132b4ca0600886",
+      "git_blob": "fb34ab43c47efa3a130923fb7730fdd9eb23af1d"
+    },
+    {
+      "path": "admission/root-go.public.json",
+      "bytes": 1659,
+      "sha256": "e9ccc9cabf673be3ea423d335fc2d18d7443691149741e0fa3ee5a202eff56cc",
+      "git_blob": "e8db8cc865e499297a88f7861db2d22bcc2dc491"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 887,
+      "sha256": "91302cb8825e8ecd296cf09802ae6033c1646cd263365b19a0673990b867e980",
+      "git_blob": "ae95a0a88ccfcc4cef0ffa71009960b39e1be54c"
+    }
+  ]
+}

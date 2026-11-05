@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.bounded-job-locator.actual-recap.r2",
+  "scope": "rog-source",
+  "configured_host": "rog",
+  "locator_job_id": "1a1ab1ad546-fc05-4a74",
+  "exact_key": "heptabao-bounded-job-locator-rog-e1148f85-20261105-r2",
+  "start_request": {
+    "bytes": 26483,
+    "sha256": "37c26b4180f293ab161205e971b75ee1df87534e52435fcc580e9dbafb20a559",
+    "blob": "777e74909453e11438f934d2803f562b0aad5252"
+  },
+  "original_external_intent": {
+    "bytes": 28995,
+    "sha256": "3535f1565cba10b5380900c31eb08b68604971659cfec685bcdfb74d5524e0a7",
+    "blob": "8b64fbd5fe26bf4b51858a5b660dd7b0522b1d7b"
+  },
+  "authority": {
+    "name": "status0.native-original",
+    "bytes": 733,
+    "sha256": "3254293bbd5ab6dfa3d983aff867960d000059d5c299971facd5cf338d106839",
+    "blob": "8f7634d2431313426f7041eeca48a7dbdd550165"
+  },
+  "stdout": {
+    "name": "stdout",
+    "bytes": 32008,
+    "sha256": "ae6a750d07b4224c77bafdae891bd701dcbaf3d2d610505a5b4e8216a33b9022",
+    "blob": "1151dbf6f5e4f8dbe0a42dda6787c834186d6c39"
+  },
+  "stderr": {
+    "name": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "known_authoritative_exit": 0,
+  "complete_and_durable": true,
+  "supervisor_timed_out": false,
+  "report_status": "bounded_read_completed",
+  "report_failure": null,
+  "known_anchor": {
+    "job_id": "1a1aad691c1-fc05-47e5",
+    "request_digest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+    "request_file_bytes": 7174,
+    "request_file_sha256": "7ba78d648df39a8af30455bfb7a4ac9abde76c1e0005336552fbf3041eb4c450",
+    "typed_fields_match": true
+  },
+  "matches": [
+    {
+      "job_id": "1a1aae5a5c7-fc05-4882",
+      "request_digest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+      "request_file_bytes": 29889,
+      "request_file_sha256": "a51eb0e9adad3ca64f0e4e0e9a9e2c8bb1eb5a938c261f78567452331c1cd534"
+    }
+  ],
+  "reported_candidate_count": 125,
+  "reported_directory_count": 1903,
+  "request_files_read": 125,
+  "request_bytes_read": 550391,
+  "resources": {
+    "fds_opened": 257,
+    "fds_closed_once": 257,
+    "fd_close_failures": 0,
+    "fds_remaining": 0,
+    "fd_ledger_rows": 257,
+    "iterator_closed": true,
+    "open_registration_unknown": false,
+    "scandir_open_unknown": false,
+    "all_registered_resources_closed": true
+  },
+  "elapsed_after_closure_ns": 23025089,
+  "within_original_deadline_after_closure": true,
+  "source": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "stored_request_binding_only": true,
+  "original_job_execution_or_terminal_reconciled": false,
+  "original_business_replayed": false,
+  "no_match_absence_proven": false,
+  "prior_unknowns_unchanged": true,
+  "scope_conclusion": "COMPLETE_BOUNDED_STORED_BINDING_MATCH: one original target job ID identified. Parent delegated its independent authority/stream reconciliation to ha_validation."
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.qa-h2-build-r2.dispatch-intent.v1",
+  "request_blob": "fc04df3ae645fd745c0414fe1b4fff5eb42c9c8f",
+  "request_sha256": "35010c4f6eeaedb9f8de24a08d94426aa250316d83f0312e828d609041805bd3",
+  "root_go_blob": "3733eaafc141a6354c6adf7744b92f434964bf38",
+  "host": "rog",
+  "key": "heptabao-df026-native-h2-qa-build-c961a54d-d995e45f-20261105-r2",
+  "outer_seconds": 660,
+  "inner_total_seconds": 600,
+  "build_seconds": 180,
+  "components_build_seconds": 180,
+  "components_seconds": 30,
+  "cleanup_term_seconds": 5,
+  "cleanup_kill_seconds": 5,
+  "shared_target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "old_r1_unknown_preserved": true,
+  "inert_readonly_three_unknowns_preserved": true
+}

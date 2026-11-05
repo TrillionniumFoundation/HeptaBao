@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.native-h2-qa.r3-draft2.inert-actual-closure.v1",
+  "scope": "inert_publication_and_independent_complete_readback_only",
+  "job_id": "1a1ab50b1b9-fc05-4c6e",
+  "source_tree": "c39a25545380825bbe5d56949563bb08095f9730",
+  "approved_request": {
+    "blob": "f8dfbeb06ac9f50b67fef4a7bdbe8349ff1cfc05",
+    "bytes": 409810,
+    "sha256": "428533673ecff4a142ab0e728b64b365c8ec4a7f65919261b636fcb7e6b33804"
+  },
+  "root_go": {
+    "blob": "4ae55d21e122ff5669d045e98c7fbe2c5c7a8df9",
+    "bytes": 1396,
+    "sha256": "7a2cebcff047081b20f663b81fc85609af8261fcb07d315b241951544bcad4b1"
+  },
+  "actual": {
+    "host": "rog",
+    "status": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "timed_out": false,
+    "observed_publication_elapsed_ns": "71250584",
+    "outer_seconds": 60,
+    "whole_input_bodies": 8,
+    "independent_file_infos": 9,
+    "closed_read_operations": 15,
+    "immutable_pages": 35,
+    "original_stderr_warnings": 2,
+    "actual_receipt": {
+      "path": "readback/inert-stage.result.public.json",
+      "bytes": 4208,
+      "sha256": "a56ed3d9b64b4db58e07783c25023167f0389da01c63c490dfe6360826729855",
+      "blob": "24278da312c18e56abf15a8d3a0694a4e2acff2b"
+    }
+  },
+  "verification": {
+    "scope": "lossless offline comparison; no host or source execution",
+    "checks": 132,
+    "status": "passed-inert-only",
+    "files": [
+      {
+        "path": "verification/verify_actual_inert_r3.py",
+        "bytes": 9389,
+        "sha256": "ce39e4cef2e84de907ca6cf6c11142d38bf1b266193feca8f7a6b532216a6513",
+        "blob": "90a599bb2a1e0a7b85b773ac7bd9dd7da2c6f001"
+      },
+      {
+        "path": "verification/input.original.json",
+        "bytes": 820815,
+        "sha256": "359fbf5ba161ffa5f3383fabcbf63ef7aa1758eb9011bceccd17140f4d1f8e34",
+        "blob": "f84e1382aad250da5a383ccbbaf495803a43053f"
+      },
+      {
+        "path": "verification/stdout.original.json",
+        "bytes": 10756,
+        "sha256": "ee6d728eb5bc2cb5af1f00a4daf33f31622e867b801157c09d94ea02a2d377f9",
+        "blob": "3e8fd8f41fe9588434022f083f6a20bb38b8d092"
+      },
+      {
+        "path": "verification/exec.original.json",
+        "bytes": 12264,
+        "sha256": "81b6214d946cdcdb1255a9a05f0e020af0fa038ffdbf85b4d8fdad817a272b1f",
+        "blob": "5d861331d14ba5e18d85ebbf5d83a317e5bdcd5c"
+      }
+    ]
+  },
+  "limits": {
+    "builder_main_executed": false,
+    "cargo_executed": false,
+    "qa_components_executed": false,
+    "product_requests_sent": false,
+    "build_go": false,
+    "read_status_delivery_proven": false,
+    "read_status_remote_termination_confirmed": false,
+    "native_terminal_authority_and_complete_payloads_preserved": true,
+    "old_failure_and_counterexample_unchanged": true
+  },
+  "next_proposed_build_request": {
+    "blob": "f5f5bf6412857f8eafab235bbf38435d040132e9",
+    "bytes": 647,
+    "sha256": "a33f479bb171642ca82104c6295670b2caba0e8eb47679a94660a8da9f5a4ed9",
+    "executed": false,
+    "requires_separate_root_go": true
+  }
+}

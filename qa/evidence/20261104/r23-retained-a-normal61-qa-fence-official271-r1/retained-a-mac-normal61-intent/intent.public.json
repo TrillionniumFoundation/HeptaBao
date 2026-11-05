@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.external-once-intent.v1",
+  "operation": "retained-a-4e808-mac-normal61",
+  "host": "mac",
+  "key": "heptabao-same-root-publication-4e808-mac-normal61-20261105-r2-3a25e709-3e013354",
+  "request_blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4",
+  "request_bytes": 1056,
+  "request_sha256": "8d987117ab1c6037b1491a38aab42465e8416b28cd22cfd685fe7d6db0eef40d",
+  "root_go": "1a82631bec2ebd4ee4e7eec9682774ab00049fbf",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "stage_sha256": "0ffc1af8d2455abd976aa12b4b1e64aed910adfccfbe310391ae61b01de8daaf",
+  "prior_submission": false,
+  "one_submission_only": true,
+  "external_intent_completed_before_process_start": true,
+  "no_automatic_retry": true,
+  "original_budgets": {
+    "original_outer_seconds": 8280,
+    "release_build_seconds": 1800,
+    "libtest_build_seconds": 1800,
+    "listing_seconds": 30,
+    "each_original_or_extra_group_seconds": 600,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "no_lan": true,
+  "no_authbus": true,
+  "no_production_cutover": true,
+  "keep_old_six_df026_and_four_failed_1c665": true
+}

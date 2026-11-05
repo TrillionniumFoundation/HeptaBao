@@ -1,0 +1,160 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 59791,
+      "identity": [
+        66306,
+        33710100,
+        1000,
+        1000,
+        33152,
+        1,
+        59791,
+        1793875555779834699,
+        1793875555781107063
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build_native_h2_client_r1.py",
+      "publication": "created",
+      "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+    },
+    {
+      "bytes": 19382,
+      "identity": [
+        66306,
+        33710101,
+        1000,
+        1000,
+        33152,
+        1,
+        19382,
+        1793875555781432155,
+        1793875555783378037
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client.rs",
+      "publication": "created",
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd"
+    },
+    {
+      "bytes": 8942,
+      "identity": [
+        66306,
+        33710102,
+        1000,
+        1000,
+        33152,
+        1,
+        8942,
+        1793875555784571573,
+        1793875555785451802
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/native_h2_client_tests.rs",
+      "publication": "created",
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2"
+    },
+    {
+      "bytes": 957,
+      "identity": [
+        66306,
+        33710103,
+        1000,
+        1000,
+        33152,
+        1,
+        957,
+        1793875555786744163,
+        1793875555787844945
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/Cargo.toml",
+      "publication": "created",
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5"
+    },
+    {
+      "bytes": 101193,
+      "identity": [
+        66306,
+        33710104,
+        1000,
+        1000,
+        33152,
+        1,
+        101193,
+        1793875555789058628,
+        1793875555790243678
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/canonical.Cargo.lock",
+      "publication": "created",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    {
+      "bytes": 61210,
+      "identity": [
+        66306,
+        33710105,
+        1000,
+        1000,
+        33152,
+        1,
+        61210,
+        1793875555791587486,
+        1793875555792683389
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/owned_reference_phaseb_r3.py",
+      "publication": "created",
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    {
+      "bytes": 46586,
+      "identity": [
+        66306,
+        33710106,
+        1000,
+        1000,
+        33152,
+        1,
+        46586,
+        1793875555793805791,
+        1793875555794776239
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/inputs/official_cli_reference_r4.py",
+      "publication": "created",
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    },
+    {
+      "bytes": 4039,
+      "identity": [
+        66306,
+        33710107,
+        1000,
+        1000,
+        33152,
+        1,
+        4039,
+        1793875555795493743,
+        1793875555796496852
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json",
+      "publication": "created",
+      "sha256": "ac127d3e67971ad6b9ae987c0fc6437f8882ff00d9480acbc12ed149796dd12a"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.native-h2-qa-build-inert.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793875555726274294,
+  "status": "prepared",
+  "stdin_bytes": 403207,
+  "stdin_sha256": "eb776f6c6224825da1460f87b37cb0f6db58f49d66e511195e3379f7a6e3cbc0",
+  "terminal_ns": 1793875555797524878
+}

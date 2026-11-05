@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao-271-finite-source-excerpts-v1",
+  "note": "Exact line slices from fully hash-bound source; excerpt content is derived, not an original complete source file.",
+  "spans": [
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/service.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+      },
+      "lines": {
+        "start": 5113,
+        "end": 5198
+      },
+      "text": "            if self.native_root.is_some()\n                && !namespace.is_empty()\n                && !(native_cg_ingress\n                    || native_local_auth\n                    || native_local_identity\n                    || native_kv2_mount\n                    || native_kv1_mount\n                    || native_metadata_read\n                    || native_remount\n                    || native_missing_route\n                    || admitted\n                        .engines\n                        .ordinary_kv_mount_binding(namespace, path)\n                        .is_some())\n            {\n                return Response::error(\n                    501,\n                    \"native child namespace route has no closed operation owner\",\n                );\n            }\n            if self.native_root.is_some()\n                && !native_cg_ingress\n                && !native_snapshot_route\n                && !native_local_auth\n                && !native_local_wrapping\n                && !native_local_identity\n                && !native_capabilities\n                && !native_missing_route\n                && !native_metadata_read\n                && !native_raft_observation\n                && !native_local_transit\n                && !native_local_totp\n                && !native_local_pki\n                && !native_local_ssh\n                && !native_kv2_mount\n                && !native_kv1_mount\n                && !native_remount\n                && path != \"sys/migration/openbao/kv2\"\n                && path != crate::engines::kv2_native_large::PATH\n                && path != native_kv2_storage_witness::PATH\n                && path != crate::engines::kv2_lossless_export::PATH\n                && admitted\n                    .engines\n                    .ordinary_kv_mount_binding(namespace, path)\n                    .is_none()\n                && !(matches!(method, \"GET\" | \"HEAD\")\n                    && matches!(\n                        path,\n                        \"sys/mounts\"\n                            | \"sys/auth\"\n                            | \"sys/internal/storage/capacity\"\n                            | \"sys/internal/capacity\"\n                            | \"sys/seal-status\"\n                            | \"sys/health\"\n                    ))\n                && path != \"sys/seal\"\n                && path != \"sys/step-down\"\n            {\n                return Response::error(\n                    501,\n                    \"native candidate supports root ordinary KV, local Transit, local authentication and seal observations\",\n                );\n            }\n            if self.native_root.is_some()\n                && let Err(error) =\n                    namespaces::native_plain::PlainNamespaceScope::capture(&admitted, namespace)\n            {\n                return error;\n            }\n            if self.native_root.is_some()\n                && (namespaces::owns(path)\n                    || (path.starts_with(\"sys/remount\") && !native_remount)\n                    || path.starts_with(\"sys/restore\")\n                    || path.starts_with(\"sys/replication\")\n                    || path.starts_with(\"sys/raft\")\n                    || (path.starts_with(\"sys/storage/raft\")\n                        && !native_snapshot_route\n                        && !native_raft_observation)\n                    || path.starts_with(\"sys/rekey\")\n                    || path.starts_with(\"sys/raw\")\n                    || path.starts_with(\"sys/migrate\"))\n            {\n                return Response::error(\n                    501,\n                    \"native candidate requires an admitted namespace and storage owner\",\n                );\n",
+      "bytes": 3665,
+      "sha256": "6df6b69cc9a855bb2df13ac72c7cb90a0b007cc88d1d6933df889fcd05572211",
+      "blob": "7bf8cb8e015393ca196711d99dd130ce125b2e45"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/service_native_storage.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/service_native_storage.rs",
+        "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+        "bytes": 8921,
+        "sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+      },
+      "lines": {
+        "start": 130,
+        "end": 160
+      },
+      "text": "    /// Reject unsupported live owners before activation or restore can commit.\n    /// This does not remove state or turn a successful migration into a claim\n    /// that every secret engine and authentication backend is native-ready.\n    pub(super) fn require_native_storage_state(&self, state: &State) -> Result<(), Response> {\n        if self.native_storage_profile.is_none() {\n            return Ok(());\n        }\n        if self.rekey.is_some()\n            || initialization_recovery_pending(&self.data_dir)\n                .map_err(|_| Response::error(503, \"initialization recovery state is unavailable\"))?\n        {\n            return Err(Response::error(\n                409,\n                \"finish initialization acknowledgement and rekey before native V6 activation or restore\",\n            ));\n        }\n        if !state.raft_admin.is_default() {\n            return Err(Response::error(\n                409,\n                \"native V6 storage requires default Raft administration; retain the V5 owner until its management policy is migrated\",\n            ));\n        }\n        if !state.database.is_empty()\n            || namespaces::native_plain::profile(state).is_err()\n            || !native_controlgroups::supported_state(state)\n        {\n            return Err(Response::error(\n                409,\n                \"native V6 root storage supports KV, local Transit, local token/AppRole/certificate authentication and root token cubbyhole; unsupported live owners require separate migration\",\n            ));\n        }\n",
+      "bytes": 1538,
+      "sha256": "550c78246e652143413356da7240656bc09d26ca8bb14925b19a8c26bea5b107",
+      "blob": "ee0443213bf97bf1897c91cd8eec5eb606581e5f"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+        "bytes": 21719,
+        "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+      },
+      "lines": {
+        "start": 112,
+        "end": 229
+      },
+      "text": "    fn native_v6_storage_profile(&self, paths: Option<&BTreeSet<String>>) -> bool {\n        let admitted = |namespace: &String| {\n            namespace.is_empty() || paths.is_some_and(|paths| paths.contains(namespace))\n        };\n        self.identity_mfa.is_none()\n            && self.native_wrapping_storage_supported()\n            && self.native_v6_control_groups_supported(paths)\n            && self.sdk_auth_catalog.is_none()\n            && self.sdk_auth_clock.is_none()\n            && self.sdk_advanced_format.is_none()\n            && self.sdk_credential_leases.is_none()\n            && self.sdk_auth_retirements.is_none()\n            && self.sdk_namespace_custody.is_none()\n            && self\n                .namespace_batch_registry\n                .as_ref()\n                .is_none_or(|registry| match paths {\n                    None => registry.native_v6_flat_incarnation_profile(),\n                    Some(paths) => registry.native_v6_plain_incarnation_profile(paths),\n                })\n            && self.namespace_deletions.is_none()\n            && self.native_v6_userpass_state_supported()\n            && self.recovery_attempt.is_none()\n            && self.recovery_intent.is_none()\n            && self.recovery_delivery.is_none()\n            && self.password_policies.values().all(BTreeMap::is_empty)\n            && self.jwt_mounts.values().all(BTreeMap::is_empty)\n            && self.kubernetes_mounts.values().all(BTreeMap::is_empty)\n            && self.oidc_mounts.values().all(BTreeMap::is_empty)\n            && self.ldap_mounts.values().all(BTreeMap::is_empty)\n            && self.ldap_groups.values().all(BTreeMap::is_empty)\n            && self.ldap_native_users.values().all(BTreeMap::is_empty)\n            && self.radius_mounts.values().all(BTreeMap::is_empty)\n            && self.radius_native_users.values().all(BTreeMap::is_empty)\n            && self.kerberos_mounts.values().all(BTreeMap::is_empty)\n            && self.plugin_auth_mounts.values().all(BTreeMap::is_empty)\n            && self.auth_mounts.iter().all(|(namespace, mounts)| {\n                if namespace.is_empty() {\n                    mounts.values().all(|mount| {\n                        matches!(\n                            mount.kind.as_str(),\n                            \"token\" | \"approle\" | \"cert\" | \"userpass\"\n                        )\n                    })\n                } else if paths.is_some_and(|paths| paths.contains(namespace)) {\n                    mounts.values().all(|mount| {\n                        matches!(mount.kind.as_str(), \"token\" | \"approle\" | \"cert\")\n                            && matches!(\n                                mount.token_type.unwrap_or_default(),\n                                batch_issuance::MountTokenType::DefaultService\n                                    | batch_issuance::MountTokenType::Service\n                            )\n                    })\n                } else {\n                    // Only exact fresh, flat metadata is locally serviceable.\n                    // Service still binds every child to its visible catalog,\n                    // incarnation and paired batch ledger before publication.\n                    !namespace.contains('/')\n                        && self.namespace_is_empty(namespace)\n                        && mounts == &userpass_names::fresh_default_auth_mounts()\n                }\n            })\n            && self.policies.keys().all(admitted)\n            && self.roles.keys().all(admitted)\n            && self.mounted_roles.keys().all(admitted)\n            && self.cert_roles.keys().all(admitted)\n            && self.token_roles.keys().all(admitted)\n            && self.tokens.values().all(|token| {\n                admitted(&token.namespace)\n                    && (token.namespace.is_empty()\n                        || (token.cubbyhole.native_is_empty() && token.wrapping.is_none()))\n                    && token.cubbyhole.supports_native_root()\n                    && (token.namespace.is_empty()\n                        || !matches!(\n                            token.auth_provenance,\n                            Some(TokenAuthProvenance::Userpass { .. })\n                        ))\n                    && matches!(\n                        token.auth_provenance,\n                        None | Some(TokenAuthProvenance::TokenApi { .. })\n                            | Some(TokenAuthProvenance::AppRole { .. })\n                            | Some(TokenAuthProvenance::Cert { .. })\n                            | Some(TokenAuthProvenance::Userpass { .. })\n                    )\n            })\n    }\n\n    // This is only the Auth half of the closed profile. Service additionally\n    // binds every controlled policy/request to its actual namespace KV2 data mount.\n    // Unsupported controlled Auth/workflow/wrapped/batch owners stay blocked.\n    fn native_v6_control_groups_supported(&self, paths: Option<&BTreeSet<String>>) -> bool {\n        self.validate_control_group_state().is_ok()\n            && self.policies.values().flat_map(BTreeMap::values)\n                .flat_map(|p| p.control_groups.values()).flatten()\n                .all(|stanza| stanza.control.factors.iter().all(|factor| {\n                    factor.controlled_capabilities.as_ref().is_some_and(|caps| {\n                        !caps.is_empty() && caps.iter().all(|cap| matches!(cap.as_str(), \"create\" | \"update\" | \"read\"))\n                    })\n                }))\n            && self.control_groups.requests.values().all(|owner| {\n                (if owner.namespace.is_empty() {\n                    owner.namespace_id == \"root\" && owner.namespace_incarnation == 0\n                } else {\n                    paths.is_some_and(|paths| paths.contains(&owner.namespace))\n                        && owner.namespace_id != \"root\" && owner.namespace_incarnation > 0\n                }) && owner.credential.is_none()\n                    && owner.logical_data.is_none() && owner.wrap_ttl_seconds.is_none_or(|v| v == 0)\n                    && matches!(\n                        (owner.method.as_str(), owner.capability.as_str()),\n                        (\"POST\" | \"PUT\", \"create\" | \"update\") | (\"GET\", \"read\")\n                    )\n                    && !owner.requires_sudo\n                    && owner.transport_namespace == owner.namespace\n                    && owner.transport_method == owner.method\n                    && owner.transport_path == owner.path && owner.transport_body == owner.body\n                    && matches!(&owner.resource_binding, control_groups::ResourceBinding::Secret { owner: mount } if mount.is_kv(&owner.path))\n                    && owner.authorizations.values().all(|approval| approval.credential.is_none())\n            })\n",
+      "bytes": 6714,
+      "sha256": "afd1cd7150c9852c9cec9c6d370df8727ecdebb457188460bccbe3df7fe79231",
+      "blob": "c4192b9649bf1267dd21d3e9208f390b48571c83"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/engines.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/engines.rs",
+        "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+        "bytes": 153342,
+        "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+      },
+      "lines": {
+        "start": 188,
+        "end": 213
+      },
+      "text": "#[cfg(feature = \"native-v6-storage\")]\nimpl EngineState {\n    /// The configured V6 root profile must not strand a previously enabled\n    /// engine behind its deliberately bounded request dispatcher. This checks\n    /// live owners only; KV data remains authenticated by the normal graph.\n    pub(crate) fn supports_native_v6_root_storage(&self) -> bool {\n        self.sdk_catalog.is_empty()\n            && self.sdk_retired_logical.is_none()\n            && self.namespace_record_owners.is_empty()\n            && self.namespaces.iter().all(|(name, owner)| {\n                name.is_empty()\n                    && owner.sdk_owners.is_empty()\n                    && owner.sdk_leases.is_empty()\n                    && owner.external_keys.is_empty()\n                    && owner.mounts.values().all(|mount| match &mount.backend {\n                        Backend::Kv1(_)\n                        | Backend::Kv1Records\n                        | Backend::Kv2(_)\n                        | Backend::Kv2Native(_) => true,\n                        Backend::Transit(engine) => !engine.has_external_state(),\n                        Backend::Totp(_) | Backend::Ssh(_) => true,\n                        Backend::Pki(engine) => engine.native_local_profile(),\n                        _ => false,\n                    })\n            })\n    }\n",
+      "bytes": 1319,
+      "sha256": "237282ccac136533f394b7922849daafab530bf132874145d9aefd3dc96175cf",
+      "blob": "b3690617a6eae4607dcf95c980282a650f3fcea7"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/engines/pki_native.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/engines/pki_native.rs",
+        "blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+        "bytes": 1182,
+        "sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed"
+      },
+      "lines": {
+        "start": 1,
+        "end": 30
+      },
+      "text": "//! Eligibility for the local signer profile. This does not grant an operation:\n//! native request/maintenance capsules own every actual domain invocation.\nuse super::*;\n\nimpl Pki {\n    pub(in crate::engines) fn native_local_profile(&self) -> bool {\n        self.external.is_empty()\n            && !self.has_external_signer_history()\n            && self.root.as_ref().is_none_or(|root| !root.is_external())\n            && self.acme_protocol.is_none()\n            && AcmeConfig::is_default(&self.acme)\n    }\n\n    pub(in crate::engines) fn native_local_route(path: &str) -> bool {\n        // The domain has only local effects under the profile above. ACME and\n        // KMS selectors retain their separate provider/actor owners; neither\n        // route text nor local key ownership can grant those effects here.\n        path != \"config/acme\"\n            && path != \"acme\"\n            && path != \"eab\"\n            && !path.starts_with(\"eab/\")\n            && !path.starts_with(\"acme/\")\n            && !path.contains(\"/acme/\")\n            && !matches!(\n                path,\n                \"root/generate/kms\" | \"intermediate/generate/kms\" | \"keys/generate/kms\"\n            )\n    }\n}\n\n",
+      "bytes": 1183,
+      "sha256": "a0d4203dca69070b42e93b043c98c90f662130badd91b2573df5d083b4a6f99d",
+      "blob": "18bb8ae177a5a20310ddeaf8adf09a2a080451fd"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/service_plugin.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "bytes": 92517,
+        "sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+      },
+      "lines": {
+        "start": 1084,
+        "end": 1128
+      },
+      "text": "            .authorize_sudo_request(principal, namespace, path, capability, *now)\n        {\n            return Response::error(error.status, &error.message);\n        }\n        if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {\n            return Response::error(501, \"plugin catalog responses cannot be wrapped\");\n        }\n        if body.as_object().is_none_or(|object| !object.is_empty()) {\n            return Response::error(400, \"plugin catalog accepts an empty request body\");\n        }\n        let (kind, suffix, plugins) =\n            if let Some(suffix) = path.strip_prefix(\"sys/plugins/catalog/secret\") {\n                (\"secret\", suffix, &self.plugins)\n            } else if let Some(suffix) = path.strip_prefix(\"sys/plugins/catalog/auth\") {\n                (\"auth\", suffix, &self.auth_plugins)\n            } else if let Some(suffix) = path.strip_prefix(\"sys/plugins/catalog/database\") {\n                (\"database\", suffix, &self.database_plugins)\n            } else if let Some(suffix) = path.strip_prefix(\"sys/plugins/catalog/kms\") {\n                (\"kms\", suffix, &self.kms_plugins)\n            } else {\n                return Response::error(404, \"plugin catalog not found\");\n            };\n        if suffix.is_empty() {\n            if !matches!(*method, \"GET\" | \"HEAD\" | \"LIST\" | \"SCAN\") {\n                return Response::error(501, \"runtime plugin catalog mutation is not implemented\");\n            }\n            return Response::ok(json!({\n                \"data\": {\n                    \"keys\": plugins.keys().cloned().collect::<Vec<_>>()\n                }\n            }));\n        }\n        let Some(plugin_id) = suffix\n            .strip_prefix('/')\n            .filter(|value| !value.is_empty() && !value.contains('/'))\n        else {\n            return Response::error(404, \"plugin catalog entry not found\");\n        };\n        if !matches!(*method, \"GET\" | \"HEAD\") {\n            return Response::error(501, \"runtime plugin catalog mutation is not implemented\");\n        }\n        let Some(host) = plugins.get(plugin_id) else {\n            return Response::error(404, \"plugin catalog entry not found\");\n        };\n        let host = match host.lock() {\n",
+      "bytes": 2177,
+      "sha256": "1429bbe8fbd770580d8b800b7a3b0fd194a9b77c6f4284ec23685cd011f7568e",
+      "blob": "e916c98c47262ead89fe95cabd7bfc3796744dfe"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/service_plugin.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "bytes": 92517,
+        "sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+      },
+      "lines": {
+        "start": 2315,
+        "end": 2335
+      },
+      "text": "            .authorize_request(&principal, namespace, path, capability, *now)\n        {\n            return Response::error(e.status, &e.message);\n        }\n        if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {\n            return Response::error(\n                501,\n                \"response wrapping is not implemented for external plugins\",\n            );\n        }\n        if !matches!(*method, \"GET\" | \"HEAD\" | \"LIST\" | \"SCAN\") {\n            return Response::error(\n                501,\n                \"write-capable plugins require durable external-effect reconciliation\",\n            );\n        }\n        if self.pending_plugin_read.is_some() {\n            return Response::error(503, \"another plugin invocation is pending\");\n        }\n        let Some(host) = self.plugins.get(&plugin_id).cloned() else {\n            return Response::error(\n",
+      "bytes": 853,
+      "sha256": "c676cb995e3dc2d11fc82288e462423dbdfa0fed21fec642ffa158ad08687d0c",
+      "blob": "e08d1cf096011c1d0a22e4efbe481478829a15fc"
+    },
+    {
+      "repository": "TrillionniumFoundation/HeptaBao",
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "source_pin": {
+        "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "blob": "91ed324a0bb20151c50bb2e1f141e70b08ad835b",
+        "bytes": 12426,
+        "sha256": "e88de0bcf6e9788046ba91aa2d7cfd26b9962626e8cc0b6a823aadbb69ec6c30"
+      },
+      "lines": {
+        "start": 1,
+        "end": 46
+      },
+      "text": "//! Ordinary child namespaces retain the same root-barrier NativeProof as root.\n//! This profile never opens independent namespace keys or opaque custody parcels.\n//! Each request additionally retains the real catalog identity and incarnation.\nuse super::*;\n\nfn unavailable() -> Response {\n    Response::error(503, \"native plain namespace ownership unavailable\")\n}\n\nimpl NamespaceRegistry {\n    fn native_plain_paths(&self) -> Result<BTreeSet<String>, Response> {\n        self.native_flat_catalog_paths()\n    }\n}\n\npub(in crate::service) fn profile(state: &State) -> Result<(), Response> {\n    if state.namespace_protected.is_some() || !state.namespace_leases.is_empty() {\n        return Err(unavailable());\n    }\n    state.validate_native_flat_retirement_state(None)?;\n    state.namespaces.validate(&state.cluster_id)?;\n    state.validate_namespace_factory_state()?;\n    let paths = state.namespaces.native_plain_paths()?;\n    if let Some(actual) = state.namespaces.batch_lifecycle.as_ref() {\n        let expected = crate::auth::batch_namespace::Registry::adopt_visible(\n            &state.cluster_id,\n            state\n                .namespaces\n                .entries\n                .iter()\n                .map(|(path, entry)| (path.clone(), entry.incarnation))\n                .collect(),\n            state.namespaces.next_incarnation.clone(),\n        )\n        .map_err(|_| unavailable())?;\n        if actual != &expected {\n            return Err(unavailable());\n        }\n    }\n    state.validate_namespace_batch_state()?;\n    if !state.auth.native_plain_namespace_auth_profile(&paths)\n        || !state.engines.native_plain_namespace_engine_profile(&paths)\n    {\n        return Err(unavailable());\n    }\n    Ok(())\n",
+      "bytes": 1726,
+      "sha256": "6bbe51bf96cf3208764a060a29a8e25061f7f6d08d7f461bc455cdee0435869f",
+      "blob": "99d33195c6acc62074bd5236210a3dd7012d48a6"
+    },
+    {
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/vault/logical_system.go",
+      "source_pin": {
+        "path": "internal/vault/logical_system.go",
+        "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+        "bytes": 174841,
+        "sha256": "766eceff5b7e4a6f47208f9e1501d3db8ae3ac17fe81e83a32117380d122dc6e"
+      },
+      "lines": {
+        "start": 134,
+        "end": 175
+      },
+      "text": "\tb.Paths = append(b.Paths, b.configPaths()...)\n\tb.Paths = append(b.Paths, b.rekeyPaths()...)\n\tb.Paths = append(b.Paths, b.rotatePaths()...)\n\tb.Paths = append(b.Paths, b.generateRootPaths()...)\n\tb.Paths = append(b.Paths, b.sealPaths()...)\n\tb.Paths = append(b.Paths, b.statusPaths()...)\n\tb.Paths = append(b.Paths, b.pluginsCatalogListPaths()...)\n\tb.Paths = append(b.Paths, b.pluginsCatalogCRUDPath())\n\tb.Paths = append(b.Paths, b.pluginsReloadPath())\n\tb.Paths = append(b.Paths, b.auditPaths()...)\n\tb.Paths = append(b.Paths, b.mountPaths()...)\n\tb.Paths = append(b.Paths, b.authPaths()...)\n\tb.Paths = append(b.Paths, b.lockedUserPaths()...)\n\tb.Paths = append(b.Paths, b.leasePaths()...)\n\tb.Paths = append(b.Paths, b.policyPaths()...)\n\tb.Paths = append(b.Paths, b.namespaceSealPaths()...)\n\tb.Paths = append(b.Paths, b.namespacePaths()...)\n\tb.Paths = append(b.Paths, b.wrappingPaths()...)\n\tb.Paths = append(b.Paths, b.toolsPaths()...)\n\tb.Paths = append(b.Paths, b.capabilitiesPaths()...)\n\tb.Paths = append(b.Paths, b.internalPaths()...)\n\tb.Paths = append(b.Paths, b.pprofPaths()...)\n\tb.Paths = append(b.Paths, b.remountPaths()...)\n\tb.Paths = append(b.Paths, b.metricsPath())\n\tb.Paths = append(b.Paths, b.monitorPath())\n\tb.Paths = append(b.Paths, b.inFlightRequestPath())\n\tb.Paths = append(b.Paths, b.hostInfoPath())\n\tb.Paths = append(b.Paths, b.quotasPaths()...)\n\tb.Paths = append(b.Paths, b.loginMFAPaths()...)\n\tb.Paths = append(b.Paths, b.introspectionPaths()...)\n\tb.Paths = append(b.Paths, b.workflowPaths()...)\n\tb.Paths = append(b.Paths, b.externalKeysPaths()...)\n\n\tif core.rawEnabled {\n\t\tb.Paths = append(b.Paths, b.rawPaths()...)\n\t}\n\tif backend := core.GetRaftBackend(); backend != nil {\n\t\tb.Paths = append(b.Paths, b.raftStoragePaths()...)\n\t}\n\n\tif core.allowUnauthedWorkflows {\n\t\tb.PathsSpecial.Unauthenticated = append(b.PathsSpecial.Unauthenticated, \"workflows/unauthed-execute/*\")\n",
+      "bytes": 1885,
+      "sha256": "553ea428ce1c1b58c13d885a8eb9ab88cd5fa658d764c66c2b5ba485adabf323",
+      "blob": "99a1060164b4d996e8256243b3ba068643096b95"
+    },
+    {
+      "repository": "openbao/openbao",
+      "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/helper/builtinplugins/registry.go",
+      "source_pin": {
+        "path": "internal/helper/builtinplugins/registry.go",
+        "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+        "bytes": 6385,
+        "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600"
+      },
+      "lines": {
+        "start": 56,
+        "end": 96
+      },
+      "text": "func newRegistry() *registry {\n\treg := &registry{\n\t\tcredentialBackends: map[string]credentialBackend{\n\t\t\t\"approle\":    {Factory: credAppRole.Factory},\n\t\t\t\"cert\":       {Factory: credCert.Factory},\n\t\t\t\"jwt\":        {Factory: credJWT.Factory},\n\t\t\t\"kubernetes\": {Factory: credKube.Factory},\n\t\t\t\"oidc\":       {Factory: credJWT.Factory},\n\t\t\t\"userpass\":   {Factory: credUserpass.Factory},\n\t\t},\n\t\tdatabasePlugins: map[string]databasePlugin{\n\t\t\t// These four plugins all use the same mysql implementation but with\n\t\t\t// different username settings passed by the constructor.\n\t\t\t\"mysql-database-plugin\":        {Factory: dbMysql.New(dbMysql.DefaultUserNameTemplate)},\n\t\t\t\"mysql-aurora-database-plugin\": {Factory: dbMysql.New(dbMysql.DefaultLegacyUserNameTemplate)},\n\t\t\t\"mysql-rds-database-plugin\":    {Factory: dbMysql.New(dbMysql.DefaultLegacyUserNameTemplate)},\n\t\t\t\"mysql-legacy-database-plugin\": {Factory: dbMysql.New(dbMysql.DefaultLegacyUserNameTemplate)},\n\n\t\t\t\"cassandra-database-plugin\":  {Factory: dbCass.New},\n\t\t\t\"influxdb-database-plugin\":   {Factory: dbInflux.New},\n\t\t\t\"postgresql-database-plugin\": {Factory: dbPostgres.New},\n\t\t\t\"redis-database-plugin\":      {Factory: dbValkey.New},\n\t\t\t\"valkey-database-plugin\":     {Factory: dbValkey.New},\n\t\t},\n\t\tlogicalBackends: map[string]logicalBackend{\n\t\t\t\"kubernetes\": {Factory: logicalKube.Factory},\n\t\t\t\"kv\":         {Factory: logicalKv.Factory},\n\t\t\t\"pki\":        {Factory: logicalPki.Factory},\n\t\t\t\"rabbitmq\":   {Factory: logicalRabbit.Factory},\n\t\t\t\"ssh\":        {Factory: logicalSsh.Factory},\n\t\t\t\"totp\":       {Factory: logicalTotp.Factory},\n\t\t\t\"transit\":    {Factory: logicalTransit.Factory},\n\t\t},\n\t}\n\n\taddExternalPlugins(reg)\n\n\treturn reg\n}\n\nfunc addExtPluginsImpl(r *registry) {}\n",
+      "bytes": 1728,
+      "sha256": "307dd8e47d40ffa93c359ebece82f0787f9d8b930080fb1c5cad2bbb0bba6cac",
+      "blob": "43e2be4a4339c7122288be9fa75eea4b133541d9"
+    }
+  ],
+  "no_runtime": true
+}

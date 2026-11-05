@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.same-root-original-job-authority-recovery.v1",
+  "mac": {
+    "job": "1a1ab058659-fc05-4989",
+    "exit": 1,
+    "failure_stage": "pending original streams and runner result",
+    "replay": false
+  },
+  "rog": {
+    "job": "1a1aae5a5c7-fc05-4882",
+    "exit": 0,
+    "locator_stdout_blob": "1151dbf6f5e4f8dbe0a42dda6787c834186d6c39",
+    "exact_request_digest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+    "original_start_rpc_timeout_preserved": true,
+    "launch_replayed": false
+  },
+  "original_sdk_bytes_preserved": true,
+  "operation_result_pages_verified": {
+    "eof": true,
+    "offset": 0,
+    "bytes_sha256": true
+  },
+  "status_queries_only": true,
+  "new_product_or_build_launches": 0
+}

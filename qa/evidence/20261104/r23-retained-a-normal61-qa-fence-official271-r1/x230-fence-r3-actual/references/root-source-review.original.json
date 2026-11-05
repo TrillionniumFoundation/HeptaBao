@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root.shared-parent-fence-r3.source-review.v1",
+  "status": "SOURCE_AND_EXACT_REQUEST_REVIEWED_PEER_PENDING",
+  "source_tree": "1789e362da46e998d3c7a7ba6eaf1e654628d828",
+  "source_files": 18,
+  "source_bytes": 196573,
+  "request_tree": "d33708ff2d9b5cea5701e704b994633cdab6fc53",
+  "request_files": 8,
+  "request_bytes": 125089,
+  "check_count": 14,
+  "checks": [
+    "strict_seven_hunk_whole_source",
+    "source_exact_bytes_sha",
+    "exact_directory_identity_predicate",
+    "selected_component_inputs_exact",
+    "actual38check_executor_and_whole_stdout",
+    "no_host_or_full_module_test_execution",
+    "correctly_limited_historical_inference",
+    "all_eight_saved_metadata_bindings_exact",
+    "historical_mutable_metadata_two_paths_only",
+    "request_embeds_whole_candidate_and_sha",
+    "only_source_sha_key_request_fields_change",
+    "request_strict_one_hunk_whole",
+    "independent_exact_request_digest",
+    "all_original_budgets_unchanged"
+  ],
+  "request_digest": "d844d40a3dd1313c3d546608163bf85b358f0ce28b59de72994aee5fa8e4d39e",
+  "review_decision": "Four exact shared directory objects use immutable object fields at every pre-open and held/named boundary; namespace metadata remains observed, never absence authority. All existing entries still refuse atomic mkdir; source controls, new reservation and tombstone retain full9 and body pins. Only three Fence methods change; reserve/publish/read_source/close_all and lifecycle limits remain exact.",
+  "changed_field_at_latest_failed_attempt": "unobserved",
+  "original_relay_state": "UNKNOWN",
+  "original_job_termination_proven": false,
+  "replay_authorized": false,
+  "full_replacement": false,
+  "verifier": {
+    "name": "r23-x230-fence-r3-root-source-verifier.js",
+    "blob": "56593389e7d8b3975c2b32a148bb36fc41cd82df",
+    "bytes": 5411,
+    "sha256": "5a3970688cce47a64cbfc6d3da0a61e4d95f6496ba275cfc79ad0d5c92a20ffa"
+  }
+}

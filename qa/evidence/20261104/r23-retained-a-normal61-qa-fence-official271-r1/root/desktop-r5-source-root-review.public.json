@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.desktop-fixed-windows-r5-source-review.v1",
+  "status": "SOURCE_REVIEW_PASS",
+  "packet": {
+    "tree": "4b38bfbde2c39fc0751e5c261475261a21e40ae6",
+    "files": 28,
+    "bytes": 591610,
+    "trees_verified": 7
+  },
+  "source": {
+    "path": "source/bounded_request_locator_desktop_fixed_windows_r5.py",
+    "blob": "220587bf729d74f5cd79a9b29f884092c34e78e9",
+    "bytes": 26240,
+    "sha256": "7595dc5fa2c8dc800dfa986cb486d687d9a725510d3db4a7e5fed26ace36798c",
+    "mode": "100644"
+  },
+  "requests_table": {
+    "path": "REQUESTS.public.json",
+    "blob": "470d99555cb494a051e192e8890eecfed2f7e2d8",
+    "bytes": 6749,
+    "sha256": "5a364f3039b6b3aa498a9b540f8e5a68cb1ef5740b0306594a0c78f0efa6eed1",
+    "mode": "100644"
+  },
+  "prior_complete_first10min_review": {
+    "name": "r23_desktop_first10min_actual_root_result",
+    "blob": "80fdcd49fa382cf4136f321b2b411f871b3fec38",
+    "bytes": 1876,
+    "sha256": "65ee748e8f2879cc87325d16ab7a4da52282f5643fd37d2f271fb20c34f38f41"
+  },
+  "checks": {
+    "strict_five_hunks_exact": true,
+    "six_literal_changes_inverse_all_bytes": true,
+    "all_original_reader_and_signal_and_closure_definitions_unchanged": true,
+    "original_anchor_block_byte_exact_before_candidate_census": true,
+    "original_anchor_config_floor_and_target_digest_unchanged": true,
+    "twelve_requests_exact_source_hash_selector_and_original_host_executable_cwd45": true,
+    "twelve_unique_keys": true,
+    "contiguous_no_overlap_6871773ms": true,
+    "only_end_clamped_to_single_actual_now": true,
+    "original15s_128candidate_8MiB_returned_262144file_16384names_1MiBnames_8matches_64KiBoutput_unchanged": true,
+    "author16_selected_pure_checks_exit0_reviewed": true,
+    "previous25_not_rerun": true
+  },
+  "peer": {
+    "path": "reviews/ha-source-peer.public.json",
+    "blob": "4ef6a2b9b38c76a1015937e8f2b561c4f2bf4dc1",
+    "bytes": 3046,
+    "sha256": "8fa3feed82f35c3a4e3b53ad87e8c6e99f66e93a0e4f83dd4229794b3234e9c8",
+    "mode": "100644"
+  },
+  "scope": "Fixed chronological read-only windows of stored request bindings; no original business replay or absence inference.",
+  "host_execution_yet": false
+}

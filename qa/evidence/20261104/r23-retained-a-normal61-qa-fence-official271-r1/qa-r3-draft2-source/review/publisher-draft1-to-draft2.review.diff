@@ -1,0 +1,13 @@
+--- before/publish_h2_qa_inputs.py
++++ after/publish_h2_qa_inputs.py
+@@ -13,8 +13,8 @@
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "build_native_h2_client_r1.py": [
+-        59653,
+-        "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76"
++        59791,
++        "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15"
+     ],
+     "inputs/native_h2_client.rs": [
+         19382,

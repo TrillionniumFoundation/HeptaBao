@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.mac-stage-derived-base64-correction.v1",
+  "scope": "Correction of one derived archive encoding only; no host or product action",
+  "original_packet_tree": "6bd25aee9d87e3ff8f7f69114d18167e8f541e7d",
+  "original_path": "bundle/canonical-same-root-publication-from495.bundle.base64",
+  "original_bad_artifact": {
+    "bytes": 56309,
+    "sha256": "027116cff763a23d887919f9325f657149e44cd89694efc6d36d326c38721795",
+    "blob": "4f5446bdd5a8ba191bb3421db73bc998e650b1fe"
+  },
+  "original_bad_decoded": {
+    "bytes": 42231,
+    "sha256": "4b036a3adc7c5f81cce27bc966f95e2a32e0ad9de26d5ee41e256abac27182b8"
+  },
+  "root_checker_failure_blob": "643d1a3cb5108f6e7ca1f53af6455b62aeb7a528",
+  "correct_artifact": {
+    "bytes": 37565,
+    "sha256": "ced45f933ef350dcea7e6918ea6cb6fa75bd6f2676bcb8310555723e4e106d77",
+    "blob": "0ffef4baba0eb915bf5547c0271d1c946dbedcfa"
+  },
+  "correct_decoded": {
+    "bytes": 28172,
+    "sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15"
+  },
+  "source_native_path": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-same-root-publication-1c665-from495.bundle",
+  "source_native_version": "16777244:72605821:28172:1793869466992857372:1793869466992869872",
+  "source_native_chunk_sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+  "source_native_data_base64_chars": 37564,
+  "derivation": "exact original native binary_read data_base64 string plus one LF; no decode/re-encode step",
+  "cause": "The reused helper accepts a Unicode text string and UTF8-encodes it before Base64. Passing a Latin1 byte-string therefore expanded non-ASCII binary bytes. Independent comparison proves old decoded payload equals UTF8(original raw byte-string).",
+  "old_decoded_equals_utf8_of_original_raw_bytes": true,
+  "first_differing_offset": 186,
+  "first_bad_byte": 194,
+  "first_correct_byte": 148,
+  "original_packet_unchanged": true,
+  "original_native_and_file_info_unchanged": true,
+  "normal_job_unchanged": "1a1ab058659-fc05-4989",
+  "actual_mac_staged_bundle_remains_28172_correct": true,
+  "no_host_calls": true
+}

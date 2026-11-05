@@ -1,0 +1,58 @@
+{
+  "base_sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+  "candidate_sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe",
+  "checks": [
+    {
+      "case": "exact_two_inserted_lines_inverse_whole_equal",
+      "passed": true
+    },
+    {
+      "case": "both_original_configs_exact",
+      "passed": true
+    },
+    {
+      "case": "selected_actual_sample_clamp_and_original_gate",
+      "passed": true
+    },
+    {
+      "case": "midpoint_and_unsearched_remainder_contiguous",
+      "passed": true
+    },
+    {
+      "case": "later_now_clamps_to_fixed_end",
+      "passed": true
+    },
+    {
+      "case": "equal_now_uses_same_end",
+      "passed": true
+    },
+    {
+      "case": "earlier_now_is_never_exceeded",
+      "passed": true
+    },
+    {
+      "case": "anchor_boundary_keeps_original_gate",
+      "passed": true
+    },
+    {
+      "case": "clock_before_anchor_refuses",
+      "passed": true
+    },
+    {
+      "case": "unselected_rog_branch_remains_dynamic",
+      "passed": true
+    }
+  ],
+  "count": 10,
+  "schema": "heptabao.desktop-locator-fixed-window.pure-time-checks.r3",
+  "scope": {
+    "actual_children_network_or_signals": 0,
+    "actual_file_or_directory_IO": 0,
+    "actual_selected_time_statements_only": true,
+    "host_calls": 0,
+    "prior_25_components_rerun": false,
+    "whole_module_executed": false,
+    "whole_source_AST_compile_only": true
+  },
+  "status": "passed"
+}

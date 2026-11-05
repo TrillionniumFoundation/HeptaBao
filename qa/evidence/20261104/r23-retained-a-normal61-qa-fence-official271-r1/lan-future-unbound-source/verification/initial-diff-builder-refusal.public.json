@@ -1,0 +1,6 @@
+{
+  "scope": "offline generation only",
+  "error": "edit alignment: final COMPARISON_PINS edit block omitted trailing LF required by strict diff builder",
+  "candidate_published": false,
+  "host_calls": 0
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.xr01.public-runtime-config.intent.r1",
+  "authority": "Root XR01 finite public read GO in this session",
+  "host": "x230",
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+  "expectedWholeSha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+  "maximumFileBytes": 2097152,
+  "constraints": {
+    "onlyExactPath": true,
+    "noController": true,
+    "noDirectoryScan": true,
+    "noPrivateBody": true,
+    "noSqlite": true,
+    "noChild": true,
+    "noWrite": true,
+    "noProviderOrJ3160": true,
+    "noRetryOnUnknown": true
+  },
+  "fileInfoRequest": {
+    "idempotency_key": "heptabao-x230-public-runtime-config-fileinfo-df94b577-20261105-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "x230",
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json"
+      }
+    }
+  },
+  "subsequentRead": "Only after regular/no-symlink/version/size/SHA admission, version-pinned binary_read at API <=65536 bytes; original SDK payload and every chunk hash retained.",
+  "priorSource": {
+    "referenceBlob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+    "pointer": "/hosts/3/runtime_receipt"
+  },
+  "notYetDispatched": true
+}

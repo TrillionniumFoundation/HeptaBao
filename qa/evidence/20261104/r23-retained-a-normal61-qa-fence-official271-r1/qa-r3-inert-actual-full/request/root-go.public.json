@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.qa-r3.draft2.inert-root-go.v1",
+  "go": "ONLY_EXACT_INERT_PUBLICATION_ONCE",
+  "review": {
+    "name": "r23-qa-r3-draft2-root-source-review.public.json",
+    "blob": "8192aa7903074942b2fb789ed2abc0c580a36df4",
+    "bytes": 2320,
+    "sha256": "449e429d642e3bcc84ea586ef834dedb06edb9bbc6213c953b425a0ea2e88504"
+  },
+  "source_packet": "c39a25545380825bbe5d56949563bb08095f9730",
+  "request": {
+    "blob": "f8dfbeb06ac9f50b67fef4a7bdbe8349ff1cfc05",
+    "bytes": 409810,
+    "sha256": "428533673ecff4a142ab0e728b64b365c8ec4a7f65919261b636fcb7e6b33804"
+  },
+  "idempotency_key": "heptabao-df026-native-h2-qa-inert-93afaf47-20261105-r3",
+  "host": "rog",
+  "outer_seconds": 60,
+  "external_intent_must_finish_before_one_submit": true,
+  "create_only_root": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3",
+  "scope": "Only eight reviewed inert inputs and immutable publication result; Python compile-only; no source execution, Cargo, product process, traffic or source checkout writes.",
+  "actual_closure_required_before_build_go": "Original ACK and authority; whole original streams and result; all eight full byte pins and actual file identities from exact host publication, with independent readback.",
+  "build_go": false,
+  "unknown_policy": "Keep original job/key; no replay or alternate root after uncertain dispatch.",
+  "full_replacement": false
+}

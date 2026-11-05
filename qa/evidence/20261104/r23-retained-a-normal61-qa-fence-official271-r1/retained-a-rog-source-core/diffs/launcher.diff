@@ -1,0 +1,22 @@
+--- a/rog_launcher.py
++++ b/rog_launcher.py
+@@ -22,8 +22,8 @@
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == '1c66541993662f92cf717154e33717abedb2ea74'
+-assert args.tree == '94ced21a63ff9aaca4538c0d4796efea2150e632'
++assert args.commit == '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++assert args.tree == 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+@@ -60,7 +60,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1')
++    ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'

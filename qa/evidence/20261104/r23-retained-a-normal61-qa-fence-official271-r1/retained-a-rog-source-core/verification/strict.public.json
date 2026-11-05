@@ -1,0 +1,20 @@
+[
+  {
+    "source": "rog_runner",
+    "hunks": 1,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "rog_launcher",
+    "hunks": 2,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "rog_stager",
+    "hunks": 4,
+    "forward": true,
+    "reverse": true
+  }
+]

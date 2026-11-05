@@ -1,0 +1,173 @@
+{
+  "actual_host_calls": 0,
+  "checks": [
+    {
+      "name": "compile_only:read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:native_v6_pocket_source_postrecovery_cold_1c665_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:deadline_qa/ha_multihost_live.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:deadline_qa/native_ha_foreground_watchdog.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:deadline_qa/native_v6_ha_direct_lan_live.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:deadline_qa/native_v6_ha_multihost_live.py",
+      "passed": true
+    },
+    {
+      "name": "compile_only:probe_normal_build_r10_r1.py",
+      "passed": true
+    },
+    {
+      "name": "old32fences_all_exact_and_four_added",
+      "passed": true
+    },
+    {
+      "name": "12postcold_names_order_exact",
+      "passed": true
+    },
+    {
+      "name": "product_source_exact",
+      "passed": true
+    },
+    {
+      "name": "original_canonical_QA5_whole_pins_exact",
+      "passed": true
+    },
+    {
+      "name": "original_private_deadline_overlay4_exact",
+      "passed": true
+    },
+    {
+      "name": "original_postcold_300_constant",
+      "passed": true
+    },
+    {
+      "name": "all_definition_bodies_same_after_metadata_literals:read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+      "passed": true
+    },
+    {
+      "name": "all_definition_bodies_same_after_metadata_literals:read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "passed": true
+    },
+    {
+      "name": "all_definition_bodies_same_after_metadata_literals:native_v6_pocket_source_postrecovery_cold_1c665_r1.py",
+      "passed": true
+    },
+    {
+      "name": "all_definition_bodies_same_after_metadata_literals:launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "passed": true
+    },
+    {
+      "name": "10artifactpins_explicit_unbound",
+      "passed": true
+    },
+    {
+      "name": "unbound_all10_rejected",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:linux:artifacts/heptabao-seed",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:linux:artifacts/heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:linux:normal-release-build.stdout",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:linux:native-build.public.json",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:linux:normal-release-result.public.json",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:mac:artifacts/heptabao-seed",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:mac:artifacts/heptabao-server",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:mac:normal-release-build.stdout",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:mac:native-build.public.json",
+      "passed": true
+    },
+    {
+      "name": "one_missing_pin_rejected:mac:normal-release-result.public.json",
+      "passed": true
+    },
+    {
+      "name": "synthetic_shape_only_positive_not_actual_admission",
+      "passed": true
+    },
+    {
+      "name": "relative_cargo_rejected",
+      "passed": true
+    },
+    {
+      "name": "missing_prior_fence_rejected",
+      "passed": true
+    },
+    {
+      "name": "unbound_guard_precedes_any_probe_call",
+      "passed": true
+    },
+    {
+      "name": "actual_self_basename_guard:launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "passed": true
+    },
+    {
+      "name": "actual_self_basename_guard:launch_normal_cold_h2_pocket_postrecovery_cold_r1.py",
+      "passed": true
+    },
+    {
+      "name": "actual_self_basename_guard:unexpected.py",
+      "passed": true
+    }
+  ],
+  "cloud_filesystem_scope": "read this public input JSON and this verification script only; stdlib Python import",
+  "compiled_sources": 9,
+  "failed": 0,
+  "main_or_qa_module_executed": false,
+  "native_os_api_calls": 0,
+  "original32_fences_plus4": 36,
+  "original98_and_extra12_not_executed_or_requalified": true,
+  "passed": 38,
+  "product_children": 0,
+  "schema": "heptabao.same-root-lan-source-selected-component-review.v1",
+  "selected_original_guard_only": true,
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "status": "passed",
+  "synthetic_digest_positive_is_qualification": false,
+  "unbound10_preserved": true
+}

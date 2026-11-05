@@ -1,0 +1,150 @@
+{
+  "checks": [
+    {
+      "name": "reviewed-reference-exact-Cancelled",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-Signals",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-protected_call",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-public_errno",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-Observation.open_fd",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-Observation.close_once",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-Observation.close_scandir_once",
+      "passed": true
+    },
+    {
+      "name": "reviewed-reference-exact-Observation.close_all_once",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-TARGET",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-PRIMARY",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-TARGET_IDENTITY",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-EXPECTED_VERSION",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-EXPECTED_SHA256",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-EXPECTED_BYTES",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-EXPECTED_NLINK",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-EXPECTED_MODE",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-MAX_NAMES",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-MAX_NAME_BYTES",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-MAX_QA_NAMES",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-ALIAS_NAME",
+      "passed": true
+    },
+    {
+      "name": "original-constant-AST-exact-BUDGET_NS",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-Refused",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-need",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-full_id",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-dir_id",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-version",
+      "passed": true
+    },
+    {
+      "name": "original-top-definition-exact-sha",
+      "passed": true
+    },
+    {
+      "name": "original-method-exact-check_dir",
+      "passed": true
+    },
+    {
+      "name": "original-method-exact-verify_dirs",
+      "passed": true
+    },
+    {
+      "name": "open-dirs-only-protected-open-callsite-replacement",
+      "passed": true
+    },
+    {
+      "name": "checked-file-only-protected-open-callsite-replacement",
+      "passed": true
+    },
+    {
+      "name": "lifetime-protected-before-install",
+      "passed": true
+    },
+    {
+      "name": "cleanup-before-lifetime-release",
+      "passed": true
+    },
+    {
+      "name": "single-cancellation-status-gate",
+      "passed": true
+    },
+    {
+      "name": "single-postflush-clock-and-pending-gate",
+      "passed": true
+    }
+  ],
+  "count": 35,
+  "host_access": false,
+  "module_main_executed": false,
+  "schema": "heptabao.qa-alias-r2.source-invariance.v1",
+  "source_sha256": "4e72160c838092ff1706fc1b14f826b500edfef2ea68f335d80df5b1148ebf12",
+  "status": "passed-source-only"
+}

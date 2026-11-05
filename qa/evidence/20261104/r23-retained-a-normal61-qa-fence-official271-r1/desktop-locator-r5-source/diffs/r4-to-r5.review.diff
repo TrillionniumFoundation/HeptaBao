@@ -1,0 +1,82 @@
+diff --git a/bounded_request_locator_desktop_fixed_windows_r5.py b/bounded_request_locator_desktop_fixed_windows_r5.py
+--- a/bounded_request_locator_desktop_fixed_windows_r5.py
++++ b/bounded_request_locator_desktop_fixed_windows_r5.py
+@@ -96,6 +96,20 @@
+ MAX_JSON_DEPTH = 64
+ MAX_OUTPUT_BYTES = 65_536
+ JOB_NAME = re.compile(r"([0-9a-f]{1,32})-([0-9a-f]{1,8})-([0-9a-f]{1,16})\Z")
++DESKTOP_QUERY_WINDOWS = {
++    "01": (1793865024255, 1793865624254),
++    "02": (1793865624255, 1793866224254),
++    "03": (1793866224255, 1793866824254),
++    "04": (1793866824255, 1793867424254),
++    "05": (1793867424255, 1793868024254),
++    "06": (1793868024255, 1793868624254),
++    "07": (1793868624255, 1793869224254),
++    "08": (1793869224255, 1793869824254),
++    "09": (1793869824255, 1793870424254),
++    "10": (1793870424255, 1793871024254),
++    "11": (1793871024255, 1793871624254),
++    "12": (1793871624255, 1793871896027),
++}
+ 
+ 
+ class Refused(Exception):
+@@ -488,6 +502,15 @@
+         return [name for _stamp, name in sorted(found)], count, name_bytes
+ 
+ 
++def fixed_query_window(window_id, observed_ceiling):
++    need(type(window_id) is str and window_id in DESKTOP_QUERY_WINDOWS,
++         "fixed_window_index")
++    query_start, fixed_query_end = DESKTOP_QUERY_WINDOWS[window_id]
++    need(type(observed_ceiling) is int and observed_ceiling >= query_start,
++         "query_window_not_reached")
++    return query_start, min(fixed_query_end, observed_ceiling), fixed_query_end
++
++
+ def main():
+     start = time.monotonic_ns()
+     signals = Signals()
+@@ -510,10 +533,12 @@
+     signals.protected += 1
+     try:
+         signals.install()
+-        need(len(sys.argv) == 5 and sys.argv[1] == "--scope"
+-             and sys.argv[3] == "--self-sha256", "argv_contract")
++        need(len(sys.argv) == 7 and sys.argv[1] == "--scope"
++             and sys.argv[3] == "--self-sha256"
++             and sys.argv[5] == "--window-index", "argv_contract")
+         scope = sys.argv[2]
+         need(scope in CONFIGS, "scope_not_fixed")
++        need(scope == "desktop-fence", "fixed_desktop_window_scope")
+         original = sys.orig_argv
+         need(original.count("-c") == 1, "exact_source_argument")
+         position = original.index("-c")
+@@ -527,11 +552,15 @@
+         report["source_sha256"] = sys.argv[4]
+         report["floor_unix_ms"] = config["floor_unix_ms"]
+         ceiling = time.time_ns() // 1_000_000
+-        if scope == "desktop-fence":
+-            ceiling = min(ceiling, 1793865024254)
++        query_start, query_end, fixed_query_end = fixed_query_window(
++            sys.argv[6], ceiling)
+         need(ceiling >= canonical_job_time(config["anchor_job_id"])
+              >= config["floor_unix_ms"], "observation_time_window")
+         report["ceiling_unix_ms"] = ceiling
++        report["window_index"] = sys.argv[6]
++        report["query_start_unix_ms"] = query_start
++        report["query_end_unix_ms"] = query_end
++        report["fixed_query_end_unix_ms"] = fixed_query_end
+         jobs_fd = reader.open_fixed_ancestors()
+         anchor, size, digest = reader.read_request(
+             jobs_fd, config["anchor_job_id"], "known_anchor")
+@@ -545,7 +574,7 @@
+         }
+         del anchor
+         names, count, name_bytes = reader.candidates(
+-            jobs_fd, config["floor_unix_ms"], ceiling)
++            jobs_fd, query_start, query_end)
+         report["directory_entries_observed"] = count
+         report["directory_name_bytes_observed"] = name_bytes
+         report["candidate_count"] = len(names)

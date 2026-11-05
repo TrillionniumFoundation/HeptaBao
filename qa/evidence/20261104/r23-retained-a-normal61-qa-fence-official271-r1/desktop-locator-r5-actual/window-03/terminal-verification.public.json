@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.fixed-window-terminal-verification.v1",
+  "window_index": "03",
+  "job_id": "1a1ab4aacdb-fc05-4c16",
+  "checks": [
+    {
+      "case": "page_stdout_offset_0",
+      "passed": true
+    },
+    {
+      "case": "hex_stdout_0",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stdout_0",
+      "passed": true
+    },
+    {
+      "case": "whole_stdout_eof",
+      "passed": true
+    },
+    {
+      "case": "authority_stdout",
+      "passed": true
+    },
+    {
+      "case": "page_stderr_offset_0",
+      "passed": true
+    },
+    {
+      "case": "hex_stderr_0",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stderr_0",
+      "passed": true
+    },
+    {
+      "case": "whole_stderr_eof",
+      "passed": true
+    },
+    {
+      "case": "authority_stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_complete_known_zero",
+      "passed": true
+    },
+    {
+      "case": "exact_start_ack",
+      "passed": true
+    },
+    {
+      "case": "source_scope_window",
+      "passed": true
+    },
+    {
+      "case": "full_selected_interval_no_clock_clip",
+      "passed": true
+    },
+    {
+      "case": "original_positive_anchor",
+      "passed": true
+    },
+    {
+      "case": "complete_report",
+      "passed": true
+    },
+    {
+      "case": "every_fd_once_closed",
+      "passed": true
+    },
+    {
+      "case": "iterator_once_closed",
+      "passed": true
+    },
+    {
+      "case": "shared_deadline",
+      "passed": true
+    },
+    {
+      "case": "bounded_counts",
+      "passed": true
+    },
+    {
+      "case": "only_exact_target_matches",
+      "passed": true
+    },
+    {
+      "case": "scope_claims",
+      "passed": true
+    },
+    {
+      "case": "canonical_start_digest",
+      "passed": true
+    },
+    {
+      "case": "approved_request_whole",
+      "passed": true
+    },
+    {
+      "case": "start_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "status0_native_vs_mcp_snapshot",
+      "passed": true
+    },
+    {
+      "case": "read0_native_vs_mcp_snapshot",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "authority": {
+    "bytes": 733,
+    "sha256": "116197cfadc2f87826ea346c179c365110feef670ec9d675d4d70a05eae8dbb1",
+    "blob": "9f0b308de0831aee90bea0794f0ab051db295056"
+  },
+  "stdout": {
+    "bytes": 14058,
+    "sha256": "93ea8675f3c7e6b8d62cc52052d4948fbe22dd005fd19e3d67f90ab7a9e3e430",
+    "blob": "249efb20ffe76c25217631b4620470eb34fb79fd"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "request": {
+    "bytes": 28001,
+    "sha256": "6201fdf9cee59169497e4d04cb32a923a0751352d541503475ef230f8112a345",
+    "blob": "cc17346bcbafe386317caeafd6392ce6728f86a1"
+  },
+  "matches": [
+    {
+      "job_id": "1a1aac6213e-fc05-4714",
+      "request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+      "request_file_bytes": 23435,
+      "request_file_sha256": "a56d3c621bba6654c48aefcbfd0cb547eb617a71a90ff6f034284a954a33a72d"
+    }
+  ],
+  "not_business_terminal": true,
+  "absence_proven": false,
+  "replay_authorized": false
+}

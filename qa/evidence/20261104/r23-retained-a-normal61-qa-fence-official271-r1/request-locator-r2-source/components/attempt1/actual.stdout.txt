@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "<stdin>", line 407, in <module>
+  File "<stdin>", line 20, in check
+AssertionError: actual_main_hides_nonmatching_argv_and_preserves_no_replay

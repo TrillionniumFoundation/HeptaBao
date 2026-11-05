@@ -1,0 +1,38 @@
+{
+  "all423_declaration_ids_unique": true,
+  "all_operation_and_field_declaration_ids_resolved": true,
+  "artifacts": [
+    {
+      "bytes": 23507,
+      "git_blob": "a59863eadaea18ebd88def5cc699dd62a5f9de91",
+      "name": "root-review-v3-input.public.json",
+      "sha256": "f2c4cc5a8af17f7460e40d7ccc8d830f7fdf04c57d6b36421a6e31e3b78c85b1"
+    },
+    {
+      "bytes": 2547131,
+      "git_blob": "4d3040e63193f8348dee2c3e3e33beb0f0ef91fc",
+      "name": "official271-source-contract-declarations-v3.public.json",
+      "sha256": "4db4c8769945165b65806a4f1c4b9993c9879d86c0453605e51c39e9da79fcd4"
+    },
+    {
+      "bytes": 37047,
+      "git_blob": "3a614c3e747a9109ebcd117ec98ebe5d1aa696bc",
+      "name": "current-native-openbao271-gates.public.json",
+      "sha256": "be64cf3a0162a65e6c47421dabb3496228338ab6032c6663ec2dfc091851a9dc"
+    }
+  ],
+  "family_inverse_exact": true,
+  "family_rows_changed": 189,
+  "full_replacement": false,
+  "full_runtime_denominator": false,
+  "official_files_all_whole_git_sha1_sha256_and_membership_verified": 242,
+  "product_current_files_all_whole_git_sha1_sha256_and_binding_verified": 14,
+  "same_declarations_operations_fields_lifecycle_counts": [
+    423,
+    720,
+    1064,
+    128
+  ],
+  "schema": "heptabao.root.official271-source-refinement-proof.v1",
+  "status": "PASS_SOURCE_ONLY"
+}

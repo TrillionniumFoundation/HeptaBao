@@ -1,0 +1,9 @@
+# ROG retained-A successor source stage: exact 4e808
+
+This SOURCE-only proposal binds commit 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec / tree eba5e650bd080b8ad41ea52a2bc68867f541d255, sole parent 1c66541993662f92cf717154e33717abedb2ea74, history 3763, 3914 tracked leaves and 62227757 tracked bytes. The full expected worktree index SHA is 4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092. Independent Git tree reconstruction verifies all 358 tree objects and exactly one test leaf replacement; actual source-stage validation remains required.
+
+The source stager changes only the new r2 root, canonical identities/ancestry/ref/count/index and exact runner/launcher pins. Its 21 top-level definition occurrences, including both owned definitions, remain byte-identical. Runner changes only two canonical literals; all normal release/libtest/list/run/cleanup code and all 44+7+9+1 test names and caps remain byte-identical. Launcher changes canonical literals and the new root, with all functions identical. Strict forward/reverse diffs are 4/1/2 hunks.
+
+Source stage is a separate one-shot request: 300 internal, Git90, clone180, outer360. It independently clones original 495 using --no-hardlinks/--dissociate, verifies full fsck/index/ancestry and publishes a new incremental public bundle. It does not touch the Cargo target or start a product. The old source and failed-observer fences are retained.
+
+Normal61 remains a future, unbound request. Its 12000 outer / release1800 / libtest3600 / original groups600 / each extra group600 and same-PID origin remain unchanged. The six retained df026 files are read in full before and after, outside the reusable Cargo target. The target-normal-r3 release lock overlaps Compat QA; root must release that window and separately authorize normal61 after source closure. No host submission, product compile, ref or PR mutation is performed by this packet.

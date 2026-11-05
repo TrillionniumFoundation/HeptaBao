@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.retained-a.rog-normal61.external-intent.v1",
+  "created_at_utc": "2026-11-05T11:25:55.928Z",
+  "state": "intent_before_single_submit",
+  "request_blob": "0281db23601066bc5fa1d942013c655e61acdf70",
+  "request_sha256": "8443c358d5e30b2789eb6e2cc4acd2fed2f7dca7427ae95f556a3939e4f8f756",
+  "request_bytes": 705,
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "host": "rog",
+  "idempotency_key": "heptabao-same-root-publication-4e808-rog-normal61-20261105-r2-8c0ba96f-93dd6190",
+  "root_go_blob": "b706278f14288c6b57e435805cddc4ae6ca4a5a3",
+  "shared_target_release_review": {
+    "name": "r23-qa-r3-build-core-root-result.public.json",
+    "blob": "9d46fa64ba455089d6f0ae1f2331f570fabf4f87",
+    "bytes": 7263,
+    "sha256": "86c456c1486ac501dd5facea8165ad82f6591fabc0f6cdf7b73bd97b24a62143"
+  },
+  "source_full_archive": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+  "one_submit_only": true,
+  "unknown_no_replay": true
+}

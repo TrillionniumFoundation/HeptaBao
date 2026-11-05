@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.desktop-first10min-locator-r4.terminal-verification.v1",
+  "host": "desktop",
+  "job_id": "1a1ab3787f9-fc05-4b71",
+  "checks": [
+    {
+      "case": "actual_job",
+      "passed": true
+    },
+    {
+      "case": "authority_terminal",
+      "passed": true
+    },
+    {
+      "case": "stdout_whole_offsets",
+      "passed": true
+    },
+    {
+      "case": "stdout_hex",
+      "passed": true
+    },
+    {
+      "case": "stdout_hex_text",
+      "passed": true
+    },
+    {
+      "case": "stdout_length",
+      "passed": true
+    },
+    {
+      "case": "stdout_authority_closure",
+      "passed": true
+    },
+    {
+      "case": "stderr_whole_offsets",
+      "passed": true
+    },
+    {
+      "case": "stderr_hex",
+      "passed": true
+    },
+    {
+      "case": "stderr_hex_text",
+      "passed": true
+    },
+    {
+      "case": "stderr_length",
+      "passed": true
+    },
+    {
+      "case": "stderr_authority_closure",
+      "passed": true
+    },
+    {
+      "case": "source_scope",
+      "passed": true
+    },
+    {
+      "case": "exact_window",
+      "passed": true
+    },
+    {
+      "case": "complete_report",
+      "passed": true
+    },
+    {
+      "case": "positive_anchor",
+      "passed": true
+    },
+    {
+      "case": "actual_match_counts",
+      "passed": true
+    },
+    {
+      "case": "all_91_fd_once_closed",
+      "passed": true
+    },
+    {
+      "case": "iterator_closure",
+      "passed": true
+    },
+    {
+      "case": "deadline",
+      "passed": true
+    },
+    {
+      "case": "limited_claims",
+      "passed": true
+    },
+    {
+      "case": "exact_approved_request",
+      "passed": true
+    },
+    {
+      "case": "start_ack_launch",
+      "passed": true
+    },
+    {
+      "case": "ack_exact_typed_request",
+      "passed": true
+    },
+    {
+      "case": "canonical_digest_exact",
+      "passed": true
+    },
+    {
+      "case": "original_outer_source",
+      "passed": true
+    },
+    {
+      "case": "window_precedes_actual_start",
+      "passed": true
+    },
+    {
+      "case": "all_observed_bounds",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "authority": {
+    "bytes": 733,
+    "sha256": "dc9cfb0b1861ddc9f0b0039044de8e7d75f5605fa1579fd4643f3f512a4ede77",
+    "blob": "2baff1bf7e1042bbbe07786360dfa89821cb63df"
+  },
+  "stdout": {
+    "bytes": 12034,
+    "sha256": "f9b3b7bffead4d14ab2725fd58c9841a3a1b0eab004729341365cb574bcb267c",
+    "blob": "0d0e99d26bc5ceddb9c5d5e1d717ef50ff842d51"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "request": {
+    "bytes": 26628,
+    "sha256": "bcff14a7c0e88ce460b03e5d7f19205a1db25f0d71a8602fc88e4dcf5f028014",
+    "blob": "2f7c2dbb1b8402057167fba7c824bb4d717b874b"
+  },
+  "known_result": "BOUNDED_READ_COMPLETED_NO_TARGET_MATCH",
+  "absence_proven": false,
+  "original_business_terminal_proven": false,
+  "replay_authorized": false
+}

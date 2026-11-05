@@ -1,0 +1,19 @@
+{
+  "source_stage": {
+    "job": "1a1ab4fae51-fc05-4c67",
+    "core_blob": "079369dac398d8fab512bd52c00657af7357467c",
+    "core_sha256": "1bbe84d728f91058ecca7045483a231b993e1409577d2bc87191fa14af972bce",
+    "full_archive": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+    "root_two_host_archive_review": "04b3c48583c6d52dc6d955d00e539dcf31c763f6"
+  },
+  "runner": {
+    "blob": "5e50290e953939bfab3b095244a50a7eb77d092d",
+    "bytes": 35452,
+    "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+  },
+  "launcher": {
+    "blob": "7b42cf15a40c4c16b5f473714baf7abea88bef1f",
+    "bytes": 35592,
+    "sha256": "8c0ba96f4953ba934d2dd067ef8bc7de2534f93181d99816fe38b056f564ab96"
+  }
+}

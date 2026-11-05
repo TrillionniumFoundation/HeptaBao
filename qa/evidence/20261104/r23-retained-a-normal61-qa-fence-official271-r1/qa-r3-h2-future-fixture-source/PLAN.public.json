@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.native-h2-fixture.qa-r3-binder-successor-source.v1",
+  "source_only": true,
+  "ready": false,
+  "base_source_tree": "1262d0c035246c05bbab3a630be8c658a86901a4",
+  "base_root_source_review_blob": "59304830338ad5ab0573751e2d25b084b6f3a55f",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "delta": [
+    "Bind the exact R3 draft2 reviewed QA builder whole SHA.",
+    "Require its v3 result schema."
+  ],
+  "unchanged": [
+    "Entire native_h2_gate_r1.py controller.",
+    "All other binder bytes after reversing the two literals.",
+    "Original six actual component names, exact stdout/listing and command/custody requirements.",
+    "Canonical dependency subset, actual normal44+7+9, native source and retained executable guards.",
+    "Original fixture deadlines, H1 control and two explicit single-request H2 operations."
+  ],
+  "actual_qa_build_receipt": null,
+  "actual_qa_executable": null,
+  "transport_ready": false,
+  "fixture_runtime_ready": false,
+  "next_sequence": [
+    "Root reviews complete R3 inert actual and issues a separate exact build GO.",
+    "One unique QA build must pass all original guards, six real Rust components and owned cleanup.",
+    "Root accepts its original full evidence before new artifact metadata/transport.",
+    "Bind current actual twelve source artifacts; independent create-only transfer and complete readback require separate GO.",
+    "Concrete fixture binding and readonly prepare are reviewed before any H1/H2 runtime GO."
+  ],
+  "original_unknown_phaseb_requests_remain_unknown": true,
+  "no_runtime_dispatch_in_this_packet": true,
+  "alias_reader_scope": "Only normal QA Cargo binary retention; unchanged binder also requires exact reviewed builder SHA and all complete build/custody fields. No legacy qualification is transferred."
+}

@@ -1,0 +1,22 @@
+--- a/native_v6_pocket_source_postrecovery_cold_1c665_r1.py
++++ b/native_v6_pocket_source_postrecovery_cold_4e808_r1.py
+@@ -38,7 +38,7 @@
+ NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_same_root_publication_r1.py')
+ NUMERIC_HELPER_SHA256 = 'e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f'
+ CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_same_root_publication_r1.py')
+-CIPHER_HELPER_SHA256 = '0469ffd127f60c60ded67129a0f23868b81e28b6253a6b41584dc28a8afaab27'
++CIPHER_HELPER_SHA256 = '62be0f577ace2ce3a7754b10d310dfc3f7cc6aa667f566b883c8575d320366b5'
+ DEADLINE_QA = Path(__file__).resolve().with_name('deadline_qa')
+ DEADLINE_QA_PINS = {
+     "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+@@ -63,8 +63,8 @@
+ ]
+ CONTROLLER_UNTIL = None
+ R3_SUCCESS_SUMMARY_SHA256 = 'db362c9c2041636912ccfc95076c6ec7948ec7918efc17032af856875e61cd41'
+-COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
+-TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
++COMMIT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE = 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ PINS = {
+     'ha_multihost_live.py': '0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de',
+     'native_v6_ha_multihost_live.py': '330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c',

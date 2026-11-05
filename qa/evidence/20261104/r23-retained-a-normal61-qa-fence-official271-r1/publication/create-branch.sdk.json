@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "branch": "codex/heptabao-retained-a-regression-eba5e650-20261105-r1"
+  },
+  "isError": false
+}

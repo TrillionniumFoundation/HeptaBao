@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.fixed-window-actual-recap.v1",
+  "window_index": "01",
+  "job_id": "1a1ab460d9e-fc05-4be1",
+  "root_go": {
+    "bytes": 8923,
+    "sha256": "cd6371e23e9be671ed94c91d6e96589b402e30bf52991b2fc3e7d65ed7cf393a",
+    "blob": "79763cbb96e52a117809587aaf536b6f78c754ac"
+  },
+  "source_tree": "4b38bfbde2c39fc0751e5c261475261a21e40ae6",
+  "fixed_interval": {
+    "window_index": "01",
+    "query_start_unix_ms": 1793865024255,
+    "fixed_query_end_unix_ms": 1793865624254,
+    "inclusive_milliseconds": 600000,
+    "idempotency_key": "heptabao-bounded-job-locator-desktop-w01-7595dc5f-20261105-r5",
+    "exact_request": {
+      "bytes": 28001,
+      "sha256": "aea219f6650482b5187623de75c8f94091653d947f9fadd2e37b15a3a51fa143",
+      "blob": "8f2de96c35f97fc8f619e148d0779b7837d2d4df"
+    },
+    "relative_path": "requests/window-01.public.json"
+  },
+  "exact_actual_interval": {
+    "query_start_unix_ms": 1793865024255,
+    "query_end_unix_ms": 1793865624254,
+    "fixed_query_end_unix_ms": 1793865624254,
+    "observation_ceiling_unix_ms": 1793874859178
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "bc55389fdb2a2e65a6c1117030e0a8df87ccb56830e044d4050d253cbdf8c958",
+    "blob": "a7f2a734b7fac9f64609f0b7a6034720b9fbe6b8"
+  },
+  "stdout": {
+    "bytes": 14063,
+    "sha256": "d05daa22f813e6f2b3bb94f7302e012761bcdbaa45e00342ed4c370699b3f601",
+    "blob": "952db17258e940820cc59fae117da8c271885eba"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "authority_exit": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "observations": {
+    "candidate_count": 49,
+    "request_files_read": 50,
+    "request_bytes_read": 178254,
+    "directory_entries_observed": 7972,
+    "directory_name_bytes_observed": 165638,
+    "matches": [],
+    "fds_opened": 107,
+    "fds_closed_once": 107,
+    "scandir_closed": true,
+    "elapsed_after_closure_ns": 1438877803
+  },
+  "all_terminal_checks_passed": true,
+  "known_complete_no_match": true,
+  "sequence_stop": null,
+  "absence_proven": false,
+  "original_business_terminal_proven": false,
+  "replay_authorized": false,
+  "raw_storage_statement": "Native tool text and log text/hex are preserved exactly. MCP snapshots serialize returned envelopes; unsafe numeric tokens are retained in native originals."
+}

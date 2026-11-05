@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.retained-a.single-file-format.external-intent.v1",
+  "created_at_utc": "2026-11-05 10:18:41 UTC",
+  "disposition": "EXACT_ONCE_NOT_YET_SUBMITTED",
+  "host": "rog",
+  "key": "heptabao-same-root-retained-a-rustfmt-20261105-r1-46aec69d",
+  "request": {
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525",
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7"
+  },
+  "root_go": {
+    "blob": "c87079a5351937d05ff91e09870edde139192f41",
+    "bytes": 1751,
+    "sha256": "f5888842a59403b5dc1e8cd9aaa055196352d3894e960f29b282b86d2ee4baf7"
+  },
+  "root_review_blob": "db2bcd67fa1c8751ddfc7c57a02b4be7faacde0c",
+  "source_tree": "4bae542c3868ae7363e7df18452ac0a2b130e2f9",
+  "effect": "One pinned rustfmt on one test module; create-only public output root. No Cargo, product, repository or target writes.",
+  "unknown_policy": "Preserve original submission and reconcile read-only; never replay or change key.",
+  "original_seconds": {
+    "controller": 50,
+    "child": 10,
+    "outer": 60
+  }
+}

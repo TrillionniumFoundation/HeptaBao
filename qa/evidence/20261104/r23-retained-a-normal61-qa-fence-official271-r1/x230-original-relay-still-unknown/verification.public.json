@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.original-relay-readonly-recovery-checks.v1",
+  "checks": [
+    {
+      "name": "original_packet_31_files_sha_git_merkle",
+      "pass": true
+    },
+    {
+      "name": "original_manifests_all_entries",
+      "pass": true
+    },
+    {
+      "name": "request_ack_intent_exact_host_job_digest",
+      "pass": true
+    },
+    {
+      "name": "external_intent_completed_before_call",
+      "pass": true
+    },
+    {
+      "name": "only_exact_status_and_read0",
+      "pass": true
+    },
+    {
+      "name": "status_is_error",
+      "pass": true
+    },
+    {
+      "name": "read_is_error",
+      "pass": true
+    },
+    {
+      "name": "errors_sole_native_text_preserved",
+      "pass": true
+    },
+    {
+      "name": "status_and_read_same_error_bytes",
+      "pass": true
+    },
+    {
+      "name": "core_create_whole_readback",
+      "pass": true
+    },
+    {
+      "name": "no_process_authority_returned",
+      "pass": true
+    },
+    {
+      "name": "no_original_stream_or_eof_returned",
+      "pass": true
+    }
+  ],
+  "total": 12,
+  "passed": 12,
+  "host_calls": 2,
+  "mutating_host_calls": 0,
+  "new_process_start_calls": 0
+}

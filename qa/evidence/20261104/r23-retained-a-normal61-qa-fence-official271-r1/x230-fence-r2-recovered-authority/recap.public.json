@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.recovered-fence-readonly-recap.v1",
+  "located_job": "1a1aac6213e-fc05-4714",
+  "locator_sequence_tree": "5daf9c11e6c975ae13e9fac15d5e274f0f96d2e2",
+  "stored_request_binding": {
+    "job_id": "1a1aac6213e-fc05-4714",
+    "request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+    "request_file_bytes": 23435,
+    "request_file_sha256": "a56d3c621bba6654c48aefcbfd0cb547eb617a71a90ff6f034284a954a33a72d"
+  },
+  "exact_original_dispatch_request": {
+    "bytes": 22911,
+    "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554",
+    "blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+    "expected_blob": "fb197792ced7efbd7c60da559514b9209e1affd4"
+  },
+  "controller": {
+    "bytes": 21479,
+    "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+    "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21"
+  },
+  "observed_authority": {
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "stdout_bytes": 2142,
+    "stderr_bytes": 0
+  },
+  "actual_fence_result": {
+    "status": "failed",
+    "error": {
+      "errno": null,
+      "phase": "bind_fixed_directory",
+      "reason": "fixed_identity_mismatch",
+      "type": "Refused"
+    },
+    "metadata_calls": 7,
+    "body_bytes_read": 0,
+    "mkdir_attempted": false,
+    "tombstone_create_attempted": false,
+    "transport_started": false,
+    "children_started": 0,
+    "registered_descriptors": 2,
+    "all_registered_descriptors_closed": true,
+    "elapsed_ns": 328435
+  },
+  "fixed_marker_observation": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "api": "file_info",
+    "is_error": true,
+    "reported_errno": "ENOENT",
+    "reported_missing_component": "normal-cold-h2-x230-transfer-r1",
+    "body_read": false,
+    "scope": "This one later lookup is not a directory inventory or a claim that the original relay could never produce effects."
+  },
+  "source_sequence_inference": {
+    "inferred_next_guard": "/home/qian-qi before-open full nine-field identity comparison",
+    "basis": "Exact source bind() lines115-120; main lines359-362. Two fully appended nodes (/ and /home) and seven metadata calls are consistent with rejection at the third bind's first stat comparison.",
+    "actual_mismatching_field_not_observed": true,
+    "new_directory_metadata_obtained": false
+  },
+  "preserved_limits": {
+    "original_relay_job": "1a1aa57458d-fc05-4156",
+    "original_relay_execution_state": "unknown",
+    "original_relay_terminal_or_cleanup_proven": false,
+    "future_effect_fence_established": false,
+    "original_relay_replayed": false,
+    "original_fence_replayed": false,
+    "marker_written_or_modified": false,
+    "new_business_authorized": false
+  },
+  "original_response_handling": "Raw native text retains exact integer tokens. Recap never reserializes full parsed inode/time identities as original evidence."
+}

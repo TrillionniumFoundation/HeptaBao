@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.qa-r3.draft2.build-root-go.v1",
+  "go": "ONLY_EXACT_QA_BUILD_AND_ORIGINAL_SIX_COMPONENTS_ONCE",
+  "source_review": {
+    "blob": "8192aa7903074942b2fb789ed2abc0c580a36df4",
+    "sha256": "449e429d642e3bcc84ea586ef834dedb06edb9bbc6213c953b425a0ea2e88504"
+  },
+  "inert_actual_review": {
+    "name": "r23-qa-r3-inert-actual-root-result.public.json",
+    "blob": "22381554e11193daf45aa066b4fb7b9e15745b63",
+    "bytes": 9367,
+    "sha256": "b520167bd028498baffe6c04b41fe2917f9e4f920b461b258e1c1500bb519e5b"
+  },
+  "request": {
+    "blob": "f5f5bf6412857f8eafab235bbf38435d040132e9",
+    "bytes": 647,
+    "sha256": "a33f479bb171642ca82104c6295670b2caba0e8eb47679a94660a8da9f5a4ed9"
+  },
+  "idempotency_key": "heptabao-df026-native-h2-qa-build-7ea25347-ac127d3e-20261105-r3",
+  "host": "rog",
+  "external_intent_must_finish_in_separate_call_before_one_submit": true,
+  "exclusive_shared_target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "other_linux_product_cargo_held_until_this_original_job_closed": true,
+  "scope": "Only exact offline/locked QA release build, test build, six original components and create-only retained-copy/readback under R3 fresh output root. Do not execute H2 protocol fixtures or product/server migration under this GO.",
+  "original_caps": {
+    "total_seconds": 600,
+    "supervisor_seconds": 660,
+    "release_build_seconds": 180,
+    "component_build_seconds": 180,
+    "each_component_seconds": 30,
+    "git_seconds": 15,
+    "tools_seconds": 15,
+    "lock_seconds": 20,
+    "list_seconds": 15,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "artifact_copy_contract": "Normal Cargo alias pair must be dynamically admitted from this successful Cargo JSON. Capture new full9, bytes/SHA and exact two-alias census before retained single-link copy. No old R2 binary hash/inode substitution; cancellation or uncertain closure cannot return qualified artifact.",
+  "required_actual_closure": "Original unique ACK, authoritative terminal/full streams, all command/tool/Cargo JSON and six exact component results, all original children and FD closure, actual new artifact full body hash/metadata and immutable retained copy, unchanged old fences; no result inheritance.",
+  "unknown_policy": "Persist ACK immediately and recover original only. No retry/new key and no deadline reset.",
+  "product_qualification": false,
+  "production_go": false,
+  "full_replacement": false
+}

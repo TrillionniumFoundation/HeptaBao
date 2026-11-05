@@ -1,0 +1,7 @@
+{
+  "chunk_id": "454040",
+  "wall_time_seconds": 0.480276823,
+  "exit_code": 0,
+  "original_token_count": 259,
+  "output": "{\n  \"artifact_or_target_reads\": 0,\n  \"case_count\": 8,\n  \"cases\": [\n    {\n      \"name\": \"one-exact-alias\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"missing-alias\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"two-alias-names-refused\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"same-inode-full9-drift-refused\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"unselected-inode-not-opened\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"expired-before-scandir\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"iterator-close-failure-not-complete\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"failed-close-is-once-and-not-clean\",\n      \"passed\": true\n    }\n  ],\n  \"main_calls\": 0,\n  \"real_os_alias_reads\": 0,\n  \"schema\": \"heptabao.qa-r2.artifact-alias.pure-components.v1\",\n  \"scope\": \"selected methods with synthetic os metadata; no actual alias claim\",\n  \"source_bytes\": 11447,\n  \"source_sha256\": \"fe799527395ca86a02fa25f3778873aa2ca85977925c734f8918ee1fc259b243\",\n  \"status\": \"passed-source-components-only\"\n}\n"
+}

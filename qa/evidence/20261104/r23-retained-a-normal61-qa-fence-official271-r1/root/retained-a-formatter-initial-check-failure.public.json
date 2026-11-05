@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.root.format-checker-initial-failure.v1",
+  "error": "one formatter hunk strict forward bytes",
+  "cause": "Root additionally required whitespace-only equivalence. The exact one-hunk rustfmt diff also removes one optional trailing comma while collapsing the same publish_retained_projection call. Whole output retrieval and strict diff application were already checked; no host result changed.",
+  "correction": "Validate the sole exact multiline-call to same-arguments single-call replacement; keep strict one-hunk, exact full source, all30 assertions and tail invariance."
+}

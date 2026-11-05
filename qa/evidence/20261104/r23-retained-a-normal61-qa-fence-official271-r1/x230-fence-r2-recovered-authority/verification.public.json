@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.recovered-fence-readonly-verification.v1",
+  "job_id": "1a1aac6213e-fc05-4714",
+  "checks": [
+    {
+      "case": "fixed_job",
+      "passed": true
+    },
+    {
+      "case": "known_failure_authority",
+      "passed": true
+    },
+    {
+      "case": "full_stdout",
+      "passed": true
+    },
+    {
+      "case": "hex_stdout",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stdout",
+      "passed": true
+    },
+    {
+      "case": "authority_stdout",
+      "passed": true
+    },
+    {
+      "case": "full_stderr",
+      "passed": true
+    },
+    {
+      "case": "hex_stderr",
+      "passed": true
+    },
+    {
+      "case": "hex_text_stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_stderr",
+      "passed": true
+    },
+    {
+      "case": "exact_fence_source",
+      "passed": true
+    },
+    {
+      "case": "actual_failure",
+      "passed": true
+    },
+    {
+      "case": "premutation_zero_body",
+      "passed": true
+    },
+    {
+      "case": "two_fd_closed",
+      "passed": true
+    },
+    {
+      "case": "two_completed_bind_nodes",
+      "passed": true
+    },
+    {
+      "case": "original_deadline",
+      "passed": true
+    },
+    {
+      "case": "original_relay_unknown_preserved",
+      "passed": true
+    },
+    {
+      "case": "fixed_marker_current_lookup_enoent",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "classification": "KNOWN_PREMUTATION_FENCE_FAILURE",
+  "authority": {
+    "bytes": 728,
+    "sha256": "db08613ca4cc6920812fa0252a7df2e7baa9986e1cbd1c0e1d2d43b035671a36",
+    "blob": "ba76dd2479c947d06280195d40dbc32878d72ed0"
+  },
+  "stdout": {
+    "bytes": 2142,
+    "sha256": "57c7b07b8217a717b558bdbb28e649fb99c157bc5a1a6fcf8c6d642d7d71aaf6",
+    "blob": "85942ed89ccfcc17e7cc117acd75d4e24573af16"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "marker_lookup": {
+    "bytes": 148,
+    "sha256": "a663cb0a1aa0ae14e2147e792e12f1fc5850853c5430185120a77823f94f2aef",
+    "blob": "2c5dd98c892d4c8440a667ec385be1949c94cb34"
+  },
+  "marker_body_read": false
+}

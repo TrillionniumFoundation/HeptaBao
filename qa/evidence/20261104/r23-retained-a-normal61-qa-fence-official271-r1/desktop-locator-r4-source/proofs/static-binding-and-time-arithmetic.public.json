@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.desktop-locator-first10min.static-binding-checks.r4",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "single_cutoff_literal",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk_whole_reconstruction",
+      "passed": true
+    },
+    {
+      "name": "inverse_whole_bytes_equal",
+      "passed": true
+    },
+    {
+      "name": "source_size_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_floor_and_anchor_unchanged",
+      "passed": true
+    },
+    {
+      "name": "cutoff_exactly_ten_minutes_after_floor",
+      "passed": true
+    },
+    {
+      "name": "cutoff_inside_previous_first_window",
+      "passed": true
+    },
+    {
+      "name": "request_only_source_selfhash_observerkey_changed",
+      "passed": true
+    }
+  ],
+  "kind": "V8 pure source/JSON arithmetic only",
+  "hunks": 1,
+  "base": {
+    "bytes": 24959,
+    "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe",
+    "blob": "4990b7a09030461704461c08cfd7edccd95bb75b"
+  },
+  "candidate": {
+    "bytes": 24959,
+    "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf",
+    "blob": "b8925b32564e60e36bd259bf44fb13f83ef42421"
+  },
+  "floor_unix_ms": 1793864424254,
+  "ceiling_unix_ms": 1793865024254,
+  "interval_milliseconds": 600000,
+  "original_now_sample_and_min_clamp_preserved": true,
+  "prior25_and_prior10_components_rerun": false,
+  "host_calls": 0,
+  "candidate_executed": false,
+  "query_body_or_budget_changes": false
+}

@@ -1,0 +1,12 @@
+{
+  "files": 2,
+  "bytes": 889176,
+  "version_pinned_chunks": 14,
+  "complete_whole_sha": true,
+  "tree_and_index_exact": true,
+  "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "leaves": 3914,
+  "per_path_blob_and_mode_exact": true,
+  "two_host_full_original_NUL_bytes_equal": true
+}

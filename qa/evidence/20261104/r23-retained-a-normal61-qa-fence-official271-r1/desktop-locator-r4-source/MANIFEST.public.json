@@ -1,0 +1,85 @@
+{
+  "schema": "heptabao.desktop-locator-first10min.source-packet.r4",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "files": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8cbc742e8b0552ce0bade7cf78ea2841e2f0173f",
+      "bytes": 1771,
+      "sha256": "38d1646380fc8073562a38a300b98dbdd4296fb6a6b85af4061d014fd7e519d1"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a3ab79ca2280edc2e56ee3d74c00c826b89a91e",
+      "bytes": 2367,
+      "sha256": "52ebaef7e6b1c8f1d15bab4ac064dee519405d4964a79a8f267247a61b1fb584"
+    },
+    {
+      "path": "source/read_fixed_job_request_locator_desktop_first10min_r4.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8925b32564e60e36bd259bf44fb13f83ef42421",
+      "bytes": 24959,
+      "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf"
+    },
+    {
+      "path": "diffs/r3-to-first10min-r4.review.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9141df28c4c3ab480e676a09c2e58d55c10a35e3",
+      "bytes": 700,
+      "sha256": "f032bdfaff2896de48943997e2306851e530a4bbffda3e8412d4a0bb1cc0ff17"
+    },
+    {
+      "path": "requests/desktop-first10min.start.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f7c2dbb1b8402057167fba7c824bb4d717b874b",
+      "bytes": 26628,
+      "sha256": "bcff14a7c0e88ce460b03e5d7f19205a1db25f0d71a8602fc88e4dcf5f028014"
+    },
+    {
+      "path": "proofs/static-binding-and-time-arithmetic.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b3979944001cf75bbd9fc6c0af9b672b441dd4e8",
+      "bytes": 1510,
+      "sha256": "7419c630b62192fcf6e9b375ab0758ee2c27be4ac22d8d5a82cd118aae59e00b"
+    },
+    {
+      "path": "references/read_fixed_job_request_locator_firstwindow_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4990b7a09030461704461c08cfd7edccd95bb75b",
+      "bytes": 24959,
+      "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe"
+    },
+    {
+      "path": "references/desktop-r3.stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "99378d5fd40330d59174e845bc0e078cda9464f4",
+      "bytes": 2273,
+      "sha256": "826498922abd554862fc5374f7107c3888159db39a768fecc13d5a67c7ef97d1"
+    },
+    {
+      "path": "references/desktop-r3.authority.native-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0dc79e8fada1faeff7279cbdce26f654f76b93ed",
+      "bytes": 728,
+      "sha256": "4029b617620ed6c494045f2472d1d6e35c2b1878197888031f307ef81270ad6f"
+    }
+  ],
+  "payload_files": 9,
+  "payload_bytes": 85895,
+  "previous_source_tree": "323bfe65e03a17324b3e649960a86b77dae0b34e",
+  "previous_actual_tree": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9",
+  "changes": "One fixed ceiling literal and derived source/hash/observer key only.",
+  "old_components_rerun": false,
+  "original_target_unknown_unchanged": true
+}

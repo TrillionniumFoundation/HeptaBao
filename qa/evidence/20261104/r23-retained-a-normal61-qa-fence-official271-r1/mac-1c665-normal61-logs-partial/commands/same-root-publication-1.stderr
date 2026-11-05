@@ -1,0 +1,10 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+
+thread 'service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors' (62512064) panicked at crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs:208:5:
+assertion `left == right` failed
+  left: [188, 145, 212, 102, 5, 3, 72, 253, 189, 53, 110, 134, 104, 179, 219, 189, 150, 137, 36, 238, 155, 104, 135, 72, 254, 130, 7, 212, 60, 247, 197, 163]
+ right: [197, 150, 153, 237, 173, 156, 75, 43, 218, 207, 55, 68, 85, 251, 160, 57, 165, 29, 95, 168, 29, 165, 95, 128, 20, 173, 210, 73, 233, 51, 133, 184]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

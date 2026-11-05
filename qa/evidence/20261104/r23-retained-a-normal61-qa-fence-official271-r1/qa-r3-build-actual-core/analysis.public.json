@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.qa-r3.core-first.actual-scope.v1",
+  "job_id": "1a1ab68bbb6-fc05-4d8a",
+  "scope": "Original core, twelve exact standalone command records, actual six-test stdout/list, independent retained file_info, unique ACK and complete terminal streams; original immutable read pages are already durable blobs indexed here.",
+  "status_from_original_core": "passed",
+  "authority_exit_code": 0,
+  "six_actual_component_count": 6,
+  "command_count": 12,
+  "cleanup_count": 12,
+  "normal_alias_fd_closed_once": 9,
+  "normal_alias_iterator_closed_once": true,
+  "no_product_or_http_requests": true,
+  "whole_core_blob": "b0a8ae6fb5454f80f0d89258f2003f1b2cf6a196",
+  "source_tree": "c39a25545380825bbe5d56949563bb08095f9730",
+  "full_other_command_streams_and_cargo_json_not_in_this_core_packet": true,
+  "full_evidence_archiving_continues": true,
+  "original_unknown_failures_not_relabelled": true,
+  "lossless_raw_json_preserved": true,
+  "local_verification_attempt_not_run_due_executor_argument_limit": true
+}

@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-C",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2",
+  "deadline_monotonic_ns": 199670429761887,
+  "label": "source-before-commit",
+  "outer_cap_seconds": 15,
+  "started_monotonic_ns": 199655429761887
+}

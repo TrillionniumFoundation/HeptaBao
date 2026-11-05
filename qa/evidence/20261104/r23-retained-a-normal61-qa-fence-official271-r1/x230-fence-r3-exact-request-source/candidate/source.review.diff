@@ -1,0 +1,79 @@
+diff --git a/x230_original_relay_effect_fence_r3.py b/x230_original_relay_effect_fence_r3.py
+--- a/x230_original_relay_effect_fence_r3.py
++++ b/x230_original_relay_effect_fence_r3.py
+@@ -19,6 +19,7 @@
+ ORIGINAL_REQUEST_DIGEST = "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47"
+ BINDING_READY = True
+ METADATA_EVIDENCE_SHA256 = "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed"
++SHARED_PARENT_PATHS = ("/", "/home", "/home/qian-qi", BASE)
+ EXPECTED_DIRECTORIES = {
+     "/": [2050, 2, 0, 0, 16877, 26, 4096, 1792626742716890237, 1792626742716890237],
+     "/home": [2050, 49807361, 0, 0, 16877, 4, 4096, 1783933443288708081, 1783933443288708081],
+@@ -48,6 +49,11 @@
+     return [s.st_dev, s.st_ino, s.st_uid, s.st_gid, s.st_mode, s.st_nlink,
+             s.st_size, s.st_mtime_ns, s.st_ctime_ns]
+ 
++def same_bound_identity(path, directory, actual, expected):
++    if directory and path in SHARED_PARENT_PATHS:
++        return actual[:5] == expected[:5]
++    return actual == expected
++
+ def require_invocation():
+     if not (len(sys.argv) == 2 and sys.argv[0] == "-c"
+             and len(sys.orig_argv) == 7
+@@ -116,7 +122,7 @@
+         self.phase = "bind_fixed_directory" if directory else "bind_public_source"
+         before = self.observe(lambda: os.stat(name, dir_fd=parent_fd,
+                                               follow_symlinks=False))
+-        if identity(before) != expected:
++        if not same_bound_identity(path, directory, identity(before), expected):
+             raise Refused("fixed_identity_mismatch")
+         if directory:
+             if not stat.S_ISDIR(before.st_mode):
+@@ -130,10 +136,12 @@
+         held = self.observe(lambda: os.fstat(fd))
+         named = self.observe(lambda: os.stat(name, dir_fd=parent_fd,
+                                              follow_symlinks=False))
+-        if identity(held) != expected or identity(named) != expected:
++        if not (same_bound_identity(path, directory, identity(held), expected)
++                and same_bound_identity(path, directory, identity(named), expected)):
+             raise Refused("opened_named_held_identity_mismatch")
+         node = {"path": path, "name": name, "parent_fd": parent_fd, "fd": fd,
+-                "identity_before": expected, "expected_current": expected,
++                "identity_before": identity(before), "expected_current": identity(before),
++                "expected_fixed_identity": expected,
+                 "directory": directory, "identity_after": None}
+         self.nodes.append(node)
+         return node
+@@ -142,7 +150,8 @@
+         held = self.observe(lambda: os.fstat(node["fd"]))
+         named = self.observe(lambda: os.stat(node["name"],
+             dir_fd=node["parent_fd"], follow_symlinks=False))
+-        if identity(held) != identity(named):
++        if not same_bound_identity(node["path"], node["directory"],
++                                   identity(held), identity(named)):
+             raise Refused("current_named_held_identity_mismatch")
+         return identity(held)
+ 
+@@ -150,7 +159,8 @@
+         self.phase = "verify_fixed_named_held"
+         for node in self.nodes:
+             actual = self.current_identity(node)
+-            if actual != node["expected_current"]:
++            if not same_bound_identity(node["path"], node["directory"],
++                                       actual, node["expected_current"]):
+                 raise Refused("fixed_identity_changed")
+             node["identity_after"] = actual
+ 
+@@ -337,7 +347,10 @@
+ 
+ def main():
+     state = Fence()
+-    report = {"schema": "heptabao.x230-original-relay-effect-fence.v1",
++    report = {"schema": "heptabao.x230-original-relay-effect-fence.v2",
++              "shared_parent_object_identity_fields": ["dev", "ino", "uid", "gid", "mode"],
++              "shared_parent_paths": list(SHARED_PARENT_PATHS),
++              "shared_parent_mutable_metadata_proves_absence": False,
+               "status": "failed", "original_job": ORIGINAL_JOB,
+               "original_key": ORIGINAL_KEY, "original_execution_state": "unknown",
+               "source_sha256": None, "metadata_evidence_sha256": METADATA_EVIDENCE_SHA256,

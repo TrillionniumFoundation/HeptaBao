@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.retained-a.formatted-test-only-successor-proposal.v1",
+  "parent_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "parent_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "expected_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "total_leaves": 3914,
+  "unchanged_leaves": 3913,
+  "modified_leaves": 1,
+  "new_leaves": 0,
+  "merkle_trees": 358,
+  "edit": {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+    "mode": "100644",
+    "before": {
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2"
+    },
+    "after": {
+      "bytes": 12043,
+      "sha256": "973bb75ed4def7d7675f6cf38be77832b7c512d243c4569d12601dab1eec4372",
+      "blob": "23de9b168cab82ee928211214ed996da2b77d3da"
+    }
+  },
+  "authority_job": "1a1ab3898ba-fc05-4b73",
+  "source_review_blob": "154590538f2508d96b288b7d905fe762780fd36f",
+  "formatted_output_version": "66306:31234950:12043:1793873979457506167:1793873979457506167",
+  "root_commit_ref_pr_mutation_performed": false,
+  "product_source_bytes_changed": false,
+  "original_60_test_names_assertions_unchanged": true,
+  "new_regression_still_requires_actual_success": true,
+  "independent_prior_CI154_503_causes_resolved": false,
+  "qualification": "FORMATTED_SOURCE_PROPOSAL_ONLY"
+}

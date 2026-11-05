@@ -1,0 +1,6 @@
+{
+  "cmd": "python3 -I -S -B /tmp/heptabao_same_root_lan_source_r1/verify.py /tmp/heptabao_same_root_lan_source_r1/inputs.json",
+  "workdir": "/tmp",
+  "max_output_tokens": 10000,
+  "yield_time_ms": 10000
+}

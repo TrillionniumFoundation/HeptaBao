@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root.mac-4e808-actual-bundle-binding.v1",
+  "status": "PASS_EXACT_SOURCE_STAGE_READY",
+  "packet": "4c1e0753b4b5778976ee2f59aa0ba4f9a4883b47",
+  "files": 24,
+  "bytes": 981949,
+  "merkle_trees": 10,
+  "check_count": 14,
+  "checks": [
+    "strict_one_hunk_exact_source",
+    "only_two_none_literals_bound",
+    "carrier_only_actual_base64_changed",
+    "actual_bundle_whole_bytes_sha",
+    "actual_bundle_same_version_original_field",
+    "same_root_reviewed_rog_actual_bundle",
+    "request_same_fixed_fields_and_host",
+    "request_exact_source_and_self_sha",
+    "request_exact_carrier_and_sha",
+    "request_exact_bundle_args",
+    "request_other_args_unchanged",
+    "request_exact_source_bound_key",
+    "actual_selected_checks_exec_whole_stdout",
+    "actual25checks_source_only"
+  ],
+  "source_sha256": "aeb8e5b510c6b82cfff2df62c9126c84d8732cdf8c4ba69a108f234db084818f",
+  "carrier_sha256": "d7a0856b9fdfc16917d062c78214a7177f588326c67fecb556662e63047a6999",
+  "bundle": {
+    "bytes": 29953,
+    "sha256": "e5a6b9829a787bbfaea0dd120550aad7e011cc641942ff6947db85a649383b68",
+    "version": "66306:33211693:29953:1793875509266541331:1793875509267541328"
+  },
+  "normal_build_go": false,
+  "full_replacement": false,
+  "verifier": {
+    "name": "r23-retained-a-mac-bound-root-verifier.js",
+    "blob": "e711faf0abe5d789e8e09eff5fcb6472c81d0e28",
+    "bytes": 3940,
+    "sha256": "ed55ea38475d6031b3c30a11ba70231e3580a8d76d85ed1903c9427ce94956ec"
+  }
+}

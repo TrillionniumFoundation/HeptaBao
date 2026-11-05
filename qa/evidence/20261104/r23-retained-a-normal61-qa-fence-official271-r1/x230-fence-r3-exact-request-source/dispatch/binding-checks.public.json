@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.shared-parent-fence-exact-dispatch-source-checks.v1",
+  "base_request": {
+    "bytes": 22911,
+    "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554",
+    "blob": "fb197792ced7efbd7c60da559514b9209e1affd4"
+  },
+  "candidate_request": {
+    "bytes": 23815,
+    "sha256": "a0344a7b1f9180ffaeefcc69ffd4a42b05ddcfde73780f0e2670c2435d83a716",
+    "blob": "77069057a0d67da87f8a2a2228d4921f95d1fd29"
+  },
+  "source": {
+    "bytes": 22338,
+    "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+    "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+  },
+  "base_request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+  "candidate_request_digest": "d844d40a3dd1313c3d546608163bf85b358f0ce28b59de72994aee5fa8e4d39e",
+  "changed_json_fields": [
+    "args[4]",
+    "args[5]",
+    "idempotency_key"
+  ],
+  "all_other_fields_and_order_unchanged": true,
+  "inverse_reconstruction_byte_exact": true,
+  "strict_request_diff_hunks": 1,
+  "source_embedded_byte_exact": true,
+  "source_sha_arg_exact": true,
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "source_soft_seconds": 15,
+  "outer_timeout_seconds": 60,
+  "proposed_key": "heptabao-x230-original-relay-effect-fence-r3-4b4026a6",
+  "request_submitted": false,
+  "host_calls": 0,
+  "runtime_authorization": false,
+  "original_relay_state": "UNKNOWN",
+  "old_business_replay_authorized": false
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.checkpoint-tree-proof.v1",
+  "as_of_utc": "2026-11-05T09:06:41Z",
+  "previous_commit": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+  "base_tree": "7b30d785654ee7365a8a70be6772e3e26499ed08",
+  "candidate_tree": "7679993617430fb6cb3a838e11c52d575a210a92",
+  "prior_blobs": 12970,
+  "unchanged_prior_blobs": 12968,
+  "updated_prior_blobs": 2,
+  "new_blobs": 830,
+  "new_blob_bytes": 19509327,
+  "total_blobs": 13800,
+  "merkle_trees_including_root": 1922,
+  "deleted_blobs": 0,
+  "create_tree_elements": 100,
+  "relative_document_links_verified": [
+    "qa/evidence/20261104/r22-same-root-wal-qa-source-closures-r1/state.public.json",
+    "qa/evidence/20261104/r22-same-root-wal-qa-source-closures-r1/manifest.public.json"
+  ],
+  "all_input_packet_audits_verified": true,
+  "raw_prior_doc_preserved": true,
+  "raw_prior_index_preserved_except_top_asof": true,
+  "github_created_root_readback_match": true,
+  "commit": "661d591f61e27559a3937e44d0b9280267ba64cf",
+  "sole_parent": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+  "branch": "codex/heptabao-validation-20261104",
+  "CAS": {
+    "expected_sha": "d32f0706b733ed3e9c66f2c4fefa75dddcba7d97",
+    "force": false,
+    "success": true,
+    "readback_sha": "661d591f61e27559a3937e44d0b9280267ba64cf"
+  },
+  "document": {
+    "name": "r22_checkpoint_new_doc",
+    "blob": "baff8f152f3257b1295bca849b63954c2a132d6d",
+    "bytes": 228799,
+    "sha256": "64f19524f9e0005f4a37f97cd5e6b234c07a4b5f0adea9c877c70a8713e66185"
+  },
+  "index": {
+    "name": "r22_checkpoint_new_index",
+    "blob": "80b55bd6b071305fabfd1e9658839bb096ba69f1",
+    "bytes": 369874,
+    "sha256": "644fddd86cfab61ad3c9b12d8180266289f2a32cf1850c406504f4e010da18ee"
+  },
+  "state": {
+    "name": "r22_checkpoint_state",
+    "blob": "1fc0abe91915c2cb6753b4ab1e0cf535fa0520f4",
+    "bytes": 18654,
+    "sha256": "4130b78d386ea6c4e97eed25c73e95cf634e74cc2f3bcc0583e2a3eca011e844"
+  },
+  "manifest": {
+    "name": "r22_checkpoint_manifest",
+    "blob": "774ddaa87b3083051010079ccbbcfba01f09ab6f",
+    "bytes": 24483,
+    "sha256": "ad393c850f138b16183abd2077a35a9d63aba20953e74a651964c7958d81605c"
+  },
+  "scope": "This post-publication proof is external to its own commit and will be mounted in the next checkpoint; no self-reference."
+}

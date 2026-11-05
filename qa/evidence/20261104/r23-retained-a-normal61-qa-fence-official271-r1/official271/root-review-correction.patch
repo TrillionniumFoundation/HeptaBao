@@ -1,0 +1,27 @@
+*** Begin Patch
+*** Update File: /workspace/scratch/f86faac821c4/official271-matrix-review-r1/root_review_v3.py
+@@
+-    for anchor in row["source_anchors"]:
++    for anchor_index, anchor in enumerate(row["source_anchors"]):
+         path = anchor[0]
+         if path in bindings:
+             assert type(anchor[1]) is int and type(anchor[2]) is int
+             lines = product["sources"][path].splitlines()
+-            assert 1 <= anchor[1] <= anchor[2] <= len(lines)
++            end_line = anchor[2]
++            if path == "crates/heptabao-server/src/engines/pki_native.rs" and anchor == [path, 1, 32]:
++                assert len(lines) == 29 and bindings[path]["current_blob"] == "39d2a76d45894fb377a391e400cee7fe894ad9c1"
++                end_line = 29
++                new["source_anchors"][anchor_index] = [path, 1, end_line]
++                new.setdefault("historical_anchor_corrections", []).append({
++                    "path": path, "previous_line_range": [1, 32], "current_exact_line_range": [1, 29],
++                    "reason": "The previous partial source map cited past EOF. The entire verified file has29 lines; its original blob is preserved.",
++                })
++            assert 1 <= anchor[1] <= end_line <= len(lines)
+             new["current_source_anchor_bindings"].append({
+-                "path": path, "line_start": anchor[1], "line_end": anchor[2],
++                "path": path, "line_start": anchor[1], "line_end": end_line,
+                 "blob": bindings[path]["current_blob"], "whole_sha256": bindings[path]["sha256"],
+-                "excerpt_sha256": digest(("\n".join(lines[anchor[1]-1:anchor[2]])+"\n").encode()),
++                "excerpt_sha256": digest(("\n".join(lines[anchor[1]-1:end_line])+"\n").encode()),
+*** End Patch

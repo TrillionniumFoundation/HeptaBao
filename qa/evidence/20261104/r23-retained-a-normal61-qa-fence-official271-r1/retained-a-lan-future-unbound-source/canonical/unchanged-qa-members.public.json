@@ -1,0 +1,47 @@
+[
+  {
+    "path": "qa/openbao-acceptance/ha_multihost_live.py",
+    "mode": "100644",
+    "blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0",
+    "bytes": 77805,
+    "declared_sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "same_blob_as_actual_1c665_source": true
+  },
+  {
+    "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+    "mode": "100644",
+    "blob": "423cfe07588310fccf3846f4b291ad484639c58b",
+    "bytes": 75357,
+    "declared_sha256": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "same_blob_as_actual_1c665_source": true
+  },
+  {
+    "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+    "mode": "100644",
+    "blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+    "bytes": 13391,
+    "declared_sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "same_blob_as_actual_1c665_source": true
+  },
+  {
+    "path": "qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+    "mode": "100644",
+    "blob": "639df2f7f742b4570a3bacc63c3cccd1707aa96f",
+    "bytes": 35247,
+    "declared_sha256": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "same_blob_as_actual_1c665_source": true
+  },
+  {
+    "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+    "mode": "100644",
+    "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+    "bytes": 9920,
+    "declared_sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+    "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "same_blob_as_actual_1c665_source": true
+  }
+]

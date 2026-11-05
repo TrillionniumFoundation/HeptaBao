@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/launch_normal_same_root_publication.py\",\"sha256\":\"8c0ba96f4953ba934d2dd067ef8bc7de2534f93181d99816fe38b056f564ab96\",\"size\":35592,\"version\":\"66306:33211564:35592:1793875489335215708:1793875489335215708\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.qa-cargo-reader-r3.independent-repair-addendum.v1",
+  "verdict": "PRIOR_SPECIFIC_LATE_CANCEL_BLOCKER_CLOSED_SOURCE_ONLY",
+  "prior_review": {
+    "blob": "fc5704b22d8887edf68900d6e10b5eddca39fe90",
+    "sha256": "66f4b1df2caa06b1a475f322fb49a45fefca87845ed7923d57487bfa91b0cb8d"
+  },
+  "before": {
+    "bytes": 59653,
+    "sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76",
+    "blob": "d5dac1a373857515b8efbe5a16571bef9ecd54a8"
+  },
+  "after": {
+    "bytes": 59791,
+    "sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+    "blob": "e42655d8e5d2ac89bc05f1f8ccba83b86e8ef361"
+  },
+  "diff": {
+    "bytes": 508,
+    "sha256": "906a5e53fddc6e3b472ac6b228a1a7472085645bc8040b4dc951d98d5732d41f",
+    "blob": "8e0ebf03711d3c554b8c489fc388c756e04b4386"
+  },
+  "mechanical": {
+    "strict_hunks": 1,
+    "whole_reconstruction": true,
+    "removing_exact_four_added_lines_recovers_prior_source": true
+  },
+  "finding_resolution": "After restoring both original handlers, the function refreshes report.cancel_signal, marks pending cancellation failed, and invokes the actual Signals.check before any output return. A pending signal received in the old restoration gap now raises Cancelled, so the retained-copy path is not reached.",
+  "unchanged_scope": [
+    "All reader and once-only FD/iterator closure code remains byte-identical.",
+    "No budget, retry, alias policy, test=True reader or retained-copy code changed.",
+    "If handler restoration itself raises, the pre-existing exception path still exits without return; this addendum does not claim successful restoration in that failure."
+  ],
+  "reviewed_existing_regression": {
+    "script": {
+      "bytes": 3509,
+      "sha256": "95dd50dd0cde067f97b80b26d83f6eef52570e28104e6a052893f2406f367e01",
+      "blob": "eb33d6968f9ba71e3205f73fa3828a0c0e12234d"
+    },
+    "stdout": {
+      "bytes": 701,
+      "sha256": "d6daaa23dedde08ae0f4d50bf0f7cfe4a2c615f2cdc9d9b9a00aeffcb833a1e1",
+      "blob": "bf6a509d4e43ea3fe238432a3c1b868bfc026350"
+    },
+    "executor": {
+      "bytes": 890,
+      "sha256": "5dd3645bf7fa3fb4c5b880ce016d619ddd36a7dbdc06e38f655ae5164b96ce19",
+      "blob": "b0f633cf72a614cf154f8bcd2b71b5861a53e730"
+    },
+    "executor_exit_code": 0,
+    "executor_output_equals_whole_stdout": true,
+    "same_actual_six_definitions_and_fake_injection": true,
+    "result": {
+      "pending": 15,
+      "report_status": "failed",
+      "cancelled_raised_before_return": true,
+      "returned_output": false,
+      "cleanup_calls": 1,
+      "old_handlers_restored": true
+    }
+  },
+  "independent_execution": false,
+  "regression_reexecuted": false,
+  "host_access": false,
+  "actual_signals": 0,
+  "qualification_limits": "This closes only the reported signal handoff gap. Original negative evidence remains preserved. No full-builder, Cargo, installed runtime, or host qualification is asserted."
+}

@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py"
+    ],
+    "created_unix_ms": 1793859208589,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1aa57458d-fc05-4156",
+    "idempotency_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+    "launch_error": "Remote launch outcome unavailable",
+    "launch_state": "launch_unknown",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1aa57458d-fc05-4156",
+    "request_digest": "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47",
+    "request_fingerprint": 12316247344904300531,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1aa57458d-fc05-4156"
+  },
+  "launch": {
+    "automatic_retry": false,
+    "job_id": "1a1aa57458d-fc05-4156",
+    "outcome": "unknown",
+    "reconcile_via": "process_status",
+    "state": "launch_unknown",
+    "status_authoritative": false
+  },
+  "local_record_pending": false,
+  "reused": false
+}

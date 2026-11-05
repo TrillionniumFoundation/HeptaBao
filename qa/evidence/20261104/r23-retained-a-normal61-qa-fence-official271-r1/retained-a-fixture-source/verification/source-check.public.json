@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.same-root-regression-retained-projection-source-check.v1",
+  "before": {
+    "bytes": 9147,
+    "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a",
+    "blob": "6b01df5c21492e28b94619cff01a05eb777360e2"
+  },
+  "after": {
+    "bytes": 12114,
+    "sha256": "bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c",
+    "blob": "318c680054e5ef008a7b194b1c950bad016847bb"
+  },
+  "diff": {
+    "bytes": 4761,
+    "sha256": "d5b8d050d6d7ee1a2ccd16865301e878006b94b3aca8f245e57857c710138999",
+    "blob": "7c58813ced107ba053cb4a1df9556f1ac604a4fd",
+    "hunks": 4
+  },
+  "strict_forward_exact": true,
+  "strict_reverse_exact": true,
+  "helper_reconstructed_from_actual_shared_publish_exact_except": [
+    "function name and first parameter type",
+    "capture already-owned original deadline and check instead of new migration",
+    "pass plan reference without an extra borrow"
+  ],
+  "all_existing_assertion_lines_exact": true,
+  "assertion_line_count": 30,
+  "original_test_name_unchanged": true,
+  "existing_shared_test_module_changed": false,
+  "production_sources_changed": false,
+  "retained_a_deadline_never_assigned": true,
+  "first_a_migration_once": true,
+  "third_a_has_new_intent_from_current_b": true,
+  "rustfmt_executed": false,
+  "rust_compile_executed": false,
+  "host_calls": 0,
+  "original_third_root_equality_and_all_subsequent_code_exact": true,
+  "original_B_mutation_and_publish_block_exact": true
+}

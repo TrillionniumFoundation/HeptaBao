@@ -1,0 +1,12 @@
+{
+  "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+  "branch": "codex/heptabao-retained-a-regression-eba5e650-20261105-r1",
+  "whole_source_leaves": 3914,
+  "source_bytes": 62227757,
+  "trees_verified": 358,
+  "unchanged_leaves": 3913,
+  "modified_leaves": 1,
+  "qualification": "SOURCE_COMMITTED_DRAFT_REVIEW_ONLY"
+}

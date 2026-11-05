@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"ref\":\"refs/heads/codex/heptabao-validation-20261104\",\"node_id\":\"REF_kwDOUGncwNoALXJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tdmFsaWRhdGlvbi0yMDI2MTEwNA\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-validation-20261104\",\"object\":{\"sha\":\"661d591f61e27559a3937e44d0b9280267ba64cf\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/661d591f61e27559a3937e44d0b9280267ba64cf\"}}",
+    "title": "heptabao-validation-20261104",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-validation-20261104",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-validation-20261104",
+    "display_title": "heptabao-validation-20261104",
+    "structuredContent": {
+      "title": "heptabao-validation-20261104",
+      "content": "{\"ref\":\"refs/heads/codex/heptabao-validation-20261104\",\"node_id\":\"REF_kwDOUGncwNoALXJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tdmFsaWRhdGlvbi0yMDI2MTEwNA\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-validation-20261104\",\"object\":{\"sha\":\"661d591f61e27559a3937e44d0b9280267ba64cf\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/661d591f61e27559a3937e44d0b9280267ba64cf\"}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-validation-20261104"
+    }
+  },
+  "isError": false
+}

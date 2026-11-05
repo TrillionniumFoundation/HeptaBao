@@ -1,0 +1,2 @@
+Previous HEAD position was 49503322 test: witness authenticated native state in NoForward HA regressions
+HEAD is now at 4e808d0e test(ha): retain the first A projection for same-root republication

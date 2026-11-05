@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "core.hooksPath=/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/control/empty-hooks",
+    "-c",
+    "protocol.allow=never",
+    "-c",
+    "protocol.file.allow=always",
+    "clone",
+    "--no-hardlinks",
+    "--dissociate",
+    "--no-checkout",
+    "--template=/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/control/empty-template",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.5798264998011291,
+  "exit_code": 0,
+  "limit_seconds": 180,
+  "pid": 23212,
+  "remaining": [],
+  "stderr_sha256": "478ecd7a3a12b75afc1cd9fa493316e6765229767fd98126668263328b7e3b83",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timed_out": false
+}

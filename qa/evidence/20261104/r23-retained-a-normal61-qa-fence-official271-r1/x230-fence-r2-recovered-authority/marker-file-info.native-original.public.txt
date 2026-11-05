@@ -1,0 +1,5 @@
+remote helper on desktop-ts failed with 1
+stdout:
+
+stderr:
+FileNotFoundError: [Errno 2] No such file or directory: 'normal-cold-h2-x230-transfer-r1'

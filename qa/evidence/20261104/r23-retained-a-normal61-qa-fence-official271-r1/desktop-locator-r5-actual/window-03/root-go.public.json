@@ -1,0 +1,202 @@
+{
+  "schema": "heptabao.root.fixed-readonly-window-sequence-go.v2",
+  "decision": "GO_FIXED_SEQUENCE_ONCE_EACH_WITH_MANDATORY_STOP_CONDITIONS",
+  "review": {
+    "name": "r23_desktop_fixed_windows_root_review",
+    "blob": "fdf35febc0f6936fd310b00ce5a90df3ea4cd659",
+    "bytes": 2172,
+    "sha256": "23aba592d2c27f38081677a4eff9746646718683116a2e42053066222d23cdee"
+  },
+  "source": {
+    "path": "source/bounded_request_locator_desktop_fixed_windows_r5.py",
+    "blob": "220587bf729d74f5cd79a9b29f884092c34e78e9",
+    "bytes": 26240,
+    "sha256": "7595dc5fa2c8dc800dfa986cb486d687d9a725510d3db4a7e5fed26ace36798c",
+    "mode": "100644"
+  },
+  "requests_table": {
+    "path": "REQUESTS.public.json",
+    "blob": "470d99555cb494a051e192e8890eecfed2f7e2d8",
+    "bytes": 6749,
+    "sha256": "5a364f3039b6b3aa498a9b540f8e5a68cb1ef5740b0306594a0c78f0efa6eed1",
+    "mode": "100644"
+  },
+  "exact_requests": [
+    {
+      "window_index": "01",
+      "query_start_unix_ms": 1793865024255,
+      "fixed_query_end_unix_ms": 1793865624254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w01-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "aea219f6650482b5187623de75c8f94091653d947f9fadd2e37b15a3a51fa143",
+        "blob": "8f2de96c35f97fc8f619e148d0779b7837d2d4df"
+      },
+      "relative_path": "requests/window-01.public.json"
+    },
+    {
+      "window_index": "02",
+      "query_start_unix_ms": 1793865624255,
+      "fixed_query_end_unix_ms": 1793866224254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w02-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "a73dc609a2dfda08523f686953030d9d6bf1fc87699e1fd97f4709e0afe52108",
+        "blob": "5b444c54ab428186a7abb8574b2046c5fcd4e392"
+      },
+      "relative_path": "requests/window-02.public.json"
+    },
+    {
+      "window_index": "03",
+      "query_start_unix_ms": 1793866224255,
+      "fixed_query_end_unix_ms": 1793866824254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w03-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "6201fdf9cee59169497e4d04cb32a923a0751352d541503475ef230f8112a345",
+        "blob": "cc17346bcbafe386317caeafd6392ce6728f86a1"
+      },
+      "relative_path": "requests/window-03.public.json"
+    },
+    {
+      "window_index": "04",
+      "query_start_unix_ms": 1793866824255,
+      "fixed_query_end_unix_ms": 1793867424254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w04-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "5ae4482772fa9576e16a6ce30a0127fda1b07f07564525188fa1ae8483d0ed41",
+        "blob": "a27a727ce14cca45802ec533b1e9545666f8d0f7"
+      },
+      "relative_path": "requests/window-04.public.json"
+    },
+    {
+      "window_index": "05",
+      "query_start_unix_ms": 1793867424255,
+      "fixed_query_end_unix_ms": 1793868024254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w05-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "6b5fc7dc497ae9aad05b04193acf38666e490d3c42ed9f4cdfa17ff62598cd20",
+        "blob": "9b866be06c03bb41c4ec7ca20a579c64935e0909"
+      },
+      "relative_path": "requests/window-05.public.json"
+    },
+    {
+      "window_index": "06",
+      "query_start_unix_ms": 1793868024255,
+      "fixed_query_end_unix_ms": 1793868624254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w06-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "2b3508395df8c9b78e3b9ebee036da35d54d58f1506b8bb5b4bc3acab1dc9849",
+        "blob": "323d18935a4b69c0fd11fca7930714da8652880e"
+      },
+      "relative_path": "requests/window-06.public.json"
+    },
+    {
+      "window_index": "07",
+      "query_start_unix_ms": 1793868624255,
+      "fixed_query_end_unix_ms": 1793869224254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w07-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "48d1631600206ca1317111e85569de814e7052e24066b2cb736b498524b038a8",
+        "blob": "c507c45d7fea69040a32c4e9560b0de8e7c5fe2c"
+      },
+      "relative_path": "requests/window-07.public.json"
+    },
+    {
+      "window_index": "08",
+      "query_start_unix_ms": 1793869224255,
+      "fixed_query_end_unix_ms": 1793869824254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w08-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "8e79ec47687fb1ce76c47133adabf0ffd463bd0e7264aa4e37d6306fd292ab1b",
+        "blob": "837647dcb8c88d85fdeaec01a687cb3a0e4a4ca0"
+      },
+      "relative_path": "requests/window-08.public.json"
+    },
+    {
+      "window_index": "09",
+      "query_start_unix_ms": 1793869824255,
+      "fixed_query_end_unix_ms": 1793870424254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w09-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "f800c2c124c60d460401c6f2e0edb3d317d91d2cb50066ca22fc9243e5d09190",
+        "blob": "0585569194ec36bced573effb70de63b114f0f0b"
+      },
+      "relative_path": "requests/window-09.public.json"
+    },
+    {
+      "window_index": "10",
+      "query_start_unix_ms": 1793870424255,
+      "fixed_query_end_unix_ms": 1793871024254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w10-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "357c31cece903f1efd0b3fba794cff7fd334d98392913a97803ea032705081ff",
+        "blob": "f757266f6c6373f0949f6d49466f5fa9a2a929d3"
+      },
+      "relative_path": "requests/window-10.public.json"
+    },
+    {
+      "window_index": "11",
+      "query_start_unix_ms": 1793871024255,
+      "fixed_query_end_unix_ms": 1793871624254,
+      "inclusive_milliseconds": 600000,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w11-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "cb3e8ef4e64e416391badebbcd32e9a9606e4693dbf479d3bdce795968e98eee",
+        "blob": "06ec6030c7d5c6d46c839ae96433ea6ae55a8267"
+      },
+      "relative_path": "requests/window-11.public.json"
+    },
+    {
+      "window_index": "12",
+      "query_start_unix_ms": 1793871624255,
+      "fixed_query_end_unix_ms": 1793871896027,
+      "inclusive_milliseconds": 271773,
+      "idempotency_key": "heptabao-bounded-job-locator-desktop-w12-7595dc5f-20261105-r5",
+      "exact_request": {
+        "bytes": 28001,
+        "sha256": "67447941be31b67e1d50f680f3b4b140af84ad3873881aa9861b95a419d9e967",
+        "blob": "05ffe03cabeebe83ef1c37bfe45beb94d1c60099"
+      },
+      "relative_path": "requests/window-12.public.json"
+    }
+  ],
+  "host": "desktop",
+  "per_window_soft_seconds": 15,
+  "per_window_outer_seconds": 45,
+  "ordering": "01 through12 only; at most one observer in flight",
+  "requirements": [
+    "Before each window independently persist that exact request and external dispatch intent in a completed call, then submit process_start exactly once.",
+    "Continue to the next frozen window only after authoritative known exit0/full/durable, complete original stdout/stderr, exact selected interval/source/anchor binding and all once-close ledgers within original deadline, and zero matches.",
+    "Stop immediately on any match, transport UNKNOWN, missing authority, bound refusal, cancellation, changed identity or incomplete resource closure. Report original evidence before any additional action.",
+    "No implicit retries, new keys for failed windows, broader windows, arbitrary time parameters, stdin reads, other-job argument export, write/child/network operations, or original business dispatch are included.",
+    "A completed miss in some or all windows is not absence proof and grants no replay authority.",
+    "For continuation, actual query_start_unix_ms, fixed_query_end_unix_ms and query_end_unix_ms must exactly match the selected table window; query_end must equal fixed_query_end. Any clock-clipped shorter observation stops the sequence and cannot count as complete fixed-window coverage."
+  ],
+  "source_only_proofs_are_not_runtime_success": true,
+  "original_target_still_unknown": true,
+  "supersedes_before_any_host_submission": {
+    "name": "r23_desktop_fixed_windows_root_go",
+    "blob": "a1ed1fbe107c6899299eb152f50a0660488fe376",
+    "bytes": 8376,
+    "sha256": "1b10107a81435e59bba799ed466f251609e3028f671038d87368fd9d22e662ad"
+  }
+}

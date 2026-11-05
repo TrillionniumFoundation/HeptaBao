@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "qa-alias-r2-4e72160c-streams-01",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1ab2db7e2-fc05-4b25",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "unbound_full_source_tree": "233a4e95dc603acb29482f95131bebb48fe5df27",
+  "rog_actual_core_tree": "2084d9b4b885c4f929db15814e471138a77f413d",
+  "rog_original_job": "1a1ab4fae51-fc05-4c67",
+  "rog_request_blob": "b520b336d6e4015d1162346bb48a41855064fa4b",
+  "mac_original_unbound_stager": "6fe4519c07fe89a848ee5e482c76696c1398557b",
+  "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "linux_normal_window": "HOLD",
+  "this_packet_has_no_host_submit": true
+}

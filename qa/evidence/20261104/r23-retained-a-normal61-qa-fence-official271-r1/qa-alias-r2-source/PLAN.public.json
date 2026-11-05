@@ -1,0 +1,56 @@
+{
+  "binding_actuality": "The artifact full version is the later nlink=2 observation; no at-failure stat is fabricated.",
+  "components": {
+    "actual_host_alias_reads": 0,
+    "actual_signal_delivery": 0,
+    "main_calls": 0,
+    "original_case_names_retained": 8,
+    "targeted_additional_cases": 10
+  },
+  "host_execution_authorized_by_this_packet": false,
+  "next_step": "Only after root exact GO, run this read-only observation once; Cargo/copy remain unapproved.",
+  "only_changes": [
+    "protected whole resource lifetime and copied once-close ledger",
+    "explicit open/iterator/close uncertainty prevents success",
+    "body and EOF returned bytes counted before validity checks",
+    "remaining byte capacity admitted before each read",
+    "new schema/source hash/request key and necessary component adaptation"
+  ],
+  "original_qa_r2_failure_unchanged": true,
+  "previous_source_tree": "ff51179db63a3a5c2269ad56be370eade26fbfc1",
+  "read_budget": {
+    "body_bytes": 9233152,
+    "complete_case_eof_returned_bytes": 0,
+    "maximum_eof_read_calls": 2,
+    "maximum_eof_returned_bytes": 2,
+    "maximum_total_returned_bytes": 9233154,
+    "not_a_body_budget_increase": true,
+    "soft_deadline_not_forced_syscall_interrupt": true
+  },
+  "reviewed_lifecycle_reference": {
+    "blob": "b28c4b681346e19d71d4b022013346937818270f",
+    "bytes": 24872,
+    "executed_or_revalidated_here": false,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a"
+  },
+  "schema": "heptabao.qa-r2.fixed-cargo-alias-observer.source-plan.v2",
+  "source_only": true,
+  "success_requires": [
+    "fixed metadata and two aliases fully account nlink2",
+    "both complete bodies match actual expected whole SHA",
+    "all held paths/FDs remain exact",
+    "all registered FD and iterator closures proven",
+    "no registration unknown, close uncertainty or pending cancellation",
+    "authority exit0 after stdout flush within original 15-second clock"
+  ],
+  "unchanged": [
+    "fixed target and primary path",
+    "target five-field identity",
+    "artifact original full version/SHA/bytes/nlink/mode/uid/gid",
+    "bounded deps census and exact same-full9 alias set",
+    "whole SHA and FD plus named checks",
+    "15-second original soft deadline",
+    "45-second outer proposal",
+    "no Cargo/process/network/product/file mutation"
+  ]
+}

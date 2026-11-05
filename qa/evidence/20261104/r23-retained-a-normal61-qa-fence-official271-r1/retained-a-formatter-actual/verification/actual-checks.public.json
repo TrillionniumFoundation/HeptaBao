@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.retained-a.format-actual-binding-checks.v1",
+  "strict_formatter_hunks": 1,
+  "strict_combined_hunks": 4,
+  "strict_forward_reverse_exact": true,
+  "formatter_delta_only_call_layout": true,
+  "assertion_lines_exact": true,
+  "final_equality_to_eof_exact": true,
+  "full_original_parent_merkle_exact": true,
+  "old_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "expected_new_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "actual_6_outputs": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 12114,
+      "sha256": "bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c",
+      "blob": "318c680054e5ef008a7b194b1c950bad016847bb",
+      "version": "66306:31234947:12114:1793873979423506282:1793873979423506282",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/formatted/service_native_v6_ha_same_root_republication_tests.rs",
+      "bytes": 12043,
+      "sha256": "973bb75ed4def7d7675f6cf38be77832b7c512d243c4569d12601dab1eec4372",
+      "blob": "23de9b168cab82ee928211214ed996da2b77d3da",
+      "version": "66306:31234950:12043:1793873979457506167:1793873979457506167",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+      "bytes": 12043,
+      "sha256": "973bb75ed4def7d7675f6cf38be77832b7c512d243c4569d12601dab1eec4372",
+      "blob": "23de9b168cab82ee928211214ed996da2b77d3da",
+      "version": "66306:31234949:12043:1793873979456506170:1793873979456506170",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "version": "66306:31234948:0:1793873979455506174:1793873979455506174",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "index": 4,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/rustfmt.toml",
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "blob": "f216078d96fdb19df0b120685e346b3197a47e89",
+      "version": "66306:31234946:17:1793873979422506285:1793873979422506285",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    },
+    {
+      "index": 5,
+      "path": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/result.public.json",
+      "bytes": 3817,
+      "sha256": "869d0c464025e3742c5794cb86723352133f08e2243caf95e7d08f6260b003e2",
+      "blob": "c1cd994308c718b8fc2e873e1f14980026d62e6d",
+      "version": "66306:31234951:3817:1793873979472506116:1793873979472506116",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      }
+    }
+  ],
+  "command_exit0_reaped": true,
+  "all_owned_stopped": true,
+  "original_50_10_60_preserved": true,
+  "tool_config_before_after_exact_lossless": true,
+  "terminal_hex_text_and_authority_complete_equal": true
+}

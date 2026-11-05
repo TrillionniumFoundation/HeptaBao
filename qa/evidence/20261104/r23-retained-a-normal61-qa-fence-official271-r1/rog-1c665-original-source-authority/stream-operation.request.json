@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-same-root-rog-source-located-terminal-read-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aae5a5c7-fc05-4882",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

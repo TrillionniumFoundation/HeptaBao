@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.same-root-regression-retained-projection-proposal.v1",
+  "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+  "parent_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "modified_paths": [
+    "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs"
+  ],
+  "production_modified": false,
+  "existing_tests_modified": false,
+  "additional_test_name_unchanged": true,
+  "root_commits_or_refs_created": false,
+  "source_status": "UNFORMATTED_UNCOMPILED_SOURCE_ONLY",
+  "actual_failure_core_tree": "4bf2374c282fd07ce262bbdb84210dff3d684cab",
+  "cause_tree": "5301a5c1cfdae858fb7480b6490662143b228f97",
+  "request_seconds": 15,
+  "new_regression_group_seconds": 600,
+  "original60_qualification_not_inherited_by_new_source": true
+}

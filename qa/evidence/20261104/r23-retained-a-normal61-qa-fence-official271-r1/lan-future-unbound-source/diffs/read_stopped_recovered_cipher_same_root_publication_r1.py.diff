@@ -1,0 +1,16 @@
+--- a/read_stopped_recovered_cipher_cold_h2_r1.py
++++ b/read_stopped_recovered_cipher_same_root_publication_r1.py
+@@ -13,10 +13,10 @@
+ import sys
+ import time
+ 
+-ROOT = "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/cold-h2-pocket3-mac1-postrecovery-cold-node1-r1"
++ROOT = "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/same-root-publication-pocket3-mac1-postrecovery-cold-node1-r1"
+ UID = 501
+-COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
++COMMIT = "1c66541993662f92cf717154e33717abedb2ea74"
+-TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
++TREE = "94ced21a63ff9aaca4538c0d4796efea2150e632"
+ MAX_REFERENCE = MAX_OUTPUT = 1024 * 1024
+ MAX_LEAVES = 4096
+ MAX_LEAF = 1024 * 1024

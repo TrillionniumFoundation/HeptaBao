@@ -1,0 +1,45 @@
+{
+  "artifact_or_target_reads": 0,
+  "case_count": 8,
+  "cases": [
+    {
+      "name": "one-exact-alias",
+      "passed": true
+    },
+    {
+      "name": "missing-alias",
+      "passed": true
+    },
+    {
+      "name": "two-alias-names-refused",
+      "passed": true
+    },
+    {
+      "name": "same-inode-full9-drift-refused",
+      "passed": true
+    },
+    {
+      "name": "unselected-inode-not-opened",
+      "passed": true
+    },
+    {
+      "name": "expired-before-scandir",
+      "passed": true
+    },
+    {
+      "name": "iterator-close-failure-not-complete",
+      "passed": true
+    },
+    {
+      "name": "failed-close-is-once-and-not-clean",
+      "passed": true
+    }
+  ],
+  "main_calls": 0,
+  "real_os_alias_reads": 0,
+  "schema": "heptabao.qa-r2.artifact-alias.pure-components.v1",
+  "scope": "selected methods with synthetic os metadata; no actual alias claim",
+  "source_bytes": 11447,
+  "source_sha256": "fe799527395ca86a02fa25f3778873aa2ca85977925c734f8918ee1fc259b243",
+  "status": "passed-source-components-only"
+}

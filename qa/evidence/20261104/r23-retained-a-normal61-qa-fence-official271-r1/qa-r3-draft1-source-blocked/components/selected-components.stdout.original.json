@@ -1,0 +1,47 @@
+{
+  "builder_main_calls": 0,
+  "case_count": 8,
+  "cases": [
+    {
+      "name": "exact-two-alias-body-return-with-once-closure-and-restored-handlers",
+      "passed": true
+    },
+    {
+      "name": "third-same-inode-name-refused-before-body-read",
+      "passed": true
+    },
+    {
+      "name": "same-inode-full9-drift-refused-before-body-read",
+      "passed": true
+    },
+    {
+      "name": "normal-binary-reader-does-not-generalize-link-count",
+      "passed": true
+    },
+    {
+      "name": "unexpected-tail-byte-is-counted-and-refused",
+      "passed": true
+    },
+    {
+      "name": "cancel-after-open-registers-and-closes-before-original-handlers-restored",
+      "passed": true
+    },
+    {
+      "name": "one-close-failure-is-not-retried-and-blocks-global-fd-success",
+      "passed": true
+    },
+    {
+      "name": "unexpected-cleanup-error-preserves-unknown-and-blocks-fd-success",
+      "passed": true
+    }
+  ],
+  "child_or_cargo_or_product_calls": 0,
+  "real_alias_or_target_reads": 0,
+  "real_signal_install_or_delivery": 0,
+  "retained_file_write_executed": false,
+  "schema": "heptabao.qa-cargo-alias-copy.selected-components.v1",
+  "scope": "Artifact reader only, synthetic OS metadata/data/signals. Generic copy/read path proven separately byte-identical.",
+  "source_bytes": 59653,
+  "source_sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76",
+  "status": "passed-selected-source-components-only"
+}

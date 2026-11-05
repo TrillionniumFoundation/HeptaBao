@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.qa-cargo-reader-r3.independent-limited-review.v1",
+  "verdict": "SOURCE_BLOCKER_CONFIRMED_BY_PURE_COUNTEREXAMPLE",
+  "scope": [
+    "read_cargo_binary temporary signal ownership and restoration",
+    "CargoBinaryRead once-close lifetime",
+    "test=False normal binary path into retained create-only copy"
+  ],
+  "candidate": {
+    "bytes": 59653,
+    "sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76",
+    "blob": "d5dac1a373857515b8efbe5a16571bef9ecd54a8"
+  },
+  "base": {
+    "bytes": 42820,
+    "sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8",
+    "blob": "015f59e0f2212e4a683ad2b4511088b406a32e61"
+  },
+  "diff": {
+    "bytes": 19504,
+    "sha256": "a0632d7bc16328a7fbe6066789ed8296358152f6d8036c8c979cd71e60399565",
+    "blob": "3e8c291d91177ce3cff9e1f37eedae0dec21808e"
+  },
+  "strict_diff": {
+    "hunks": 4,
+    "whole_exact": true
+  },
+  "finding": {
+    "id": "late_temporary_signal_not_propagated",
+    "severity": "blocking",
+    "source_lines": [
+      570,
+      578,
+      579,
+      580,
+      581,
+      582,
+      583
+    ],
+    "condition": "A signal reaches the temporary Signals.handler after the last signals.pending predicate and before that signal's old handler has been restored.",
+    "effect": "The protected handler records pending without raising. No subsequent check reads the new pending value. The function can return binary bytes with observed_two_aliases and stale cancel_signal=null; the original Owner handler receives no event, so the retained-copy path can proceed.",
+    "minimal_fix": "After all previous handlers are restored, refresh the public pending field and fail closed/propagate any actual pending cancellation before returning. Preserve existing deadlines and once-only resource closure."
+  },
+  "counterexample": {
+    "executor_exit_code": 0,
+    "selected_actual_definitions": [
+      "BindingError",
+      "Cancelled",
+      "Signals",
+      "need",
+      "remaining",
+      "read_cargo_binary"
+    ],
+    "fake_dependencies": [
+      "signal",
+      "time",
+      "CargoBinaryRead"
+    ],
+    "injection": "fake first old-handler restoration invokes the currently installed actual temporary handler",
+    "actual_result": {
+      "actual_children": 0,
+      "actual_fds": 0,
+      "actual_host_calls": 0,
+      "actual_signals": 0,
+      "actual_temporary_handler_pending": 15,
+      "counterexample_reproduced": true,
+      "fake_cleanup_calls": 1,
+      "full_module_executed": false,
+      "injected_point": "fake signal.signal restoring first original handler, after final report pending check",
+      "old_handlers_restored": true,
+      "old_owner_handler_calls": 0,
+      "report_cancel_signal": null,
+      "report_status": "observed_two_aliases",
+      "returned_output_after_cancel": true,
+      "schema": "heptabao.qa-reader-pending-signal-counterexample.v1",
+      "source_sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76"
+    },
+    "full_module_executed": false
+  },
+  "accepted_narrow_properties": [
+    "Protected resource lifetime covers the reader's open/registration and once-only cleanup.",
+    "The normal test=False branch alone uses the two-link reader; test=True preserves the old single-link reader.",
+    "The subsequent retained create-only copy and whole digest comparison are unchanged."
+  ],
+  "base_correction": {
+    "earlier_04dd6e": "This 35155-byte earlier builder was not the diff's base. That local strict-apply refusal was not a candidate failure. Author supplied exact 42820-byte 015f59e0 base and strict full reconstruction now passes."
+  },
+  "limitations": [
+    "No host, actual signal, descriptor, directory, Cargo or product action.",
+    "No whole-builder or runtime qualification.",
+    "No rerun of the author's broader component suite.",
+    "Old source and negative counterexample remain immutable; this review does not approve any forthcoming repair."
+  ]
+}

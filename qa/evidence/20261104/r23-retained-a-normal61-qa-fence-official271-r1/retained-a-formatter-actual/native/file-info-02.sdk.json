@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1/service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout\",\"sha256\":\"973bb75ed4def7d7675f6cf38be77832b7c512d243c4569d12601dab1eec4372\",\"size\":12043,\"version\":\"66306:31234949:12043:1793873979456506170:1793873979456506170\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

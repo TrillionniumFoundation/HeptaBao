@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-alias-r2-4e72160c-authority-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1ab2db7e2-fc05-4b25"
+    }
+  }
+}

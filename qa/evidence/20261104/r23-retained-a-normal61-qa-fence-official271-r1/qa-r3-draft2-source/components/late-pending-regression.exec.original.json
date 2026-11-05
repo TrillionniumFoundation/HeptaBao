@@ -1,0 +1,7 @@
+{
+  "chunk_id": "3856a1",
+  "wall_time_seconds": 0.000029865,
+  "exit_code": 0,
+  "original_token_count": 176,
+  "output": "{\n  \"actual_children\": 0,\n  \"actual_fds\": 0,\n  \"actual_host_calls\": 0,\n  \"actual_signals\": 0,\n  \"actual_temporary_handler_pending\": 15,\n  \"cancelled_raised_before_return\": true,\n  \"fake_cleanup_calls\": 1,\n  \"full_module_executed\": false,\n  \"injected_point\": \"fake signal.signal restoring first original handler, after final report pending check\",\n  \"old_handlers_restored\": true,\n  \"old_owner_handler_calls\": 0,\n  \"prior_counterexample_refused\": true,\n  \"report_cancel_signal\": 15,\n  \"report_status\": \"failed\",\n  \"returned_output_after_cancel\": false,\n  \"schema\": \"heptabao.qa-reader-late-pending-regression.v1\",\n  \"source_sha256\": \"7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15\"\n}\n"
+}

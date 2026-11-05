@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.future-same-root-lan-normal61-binding.v1",
+  "status": "SOURCE_ONLY_UNBOUND",
+  "ready": false,
+  "dispatch_authorized": false,
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "independent_normal61_required": {
+    "linux": {
+      "canonical_source_root": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/source",
+      "output": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/normal-release-tests-r1",
+      "driver_sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+      "source_authority_closed": false,
+      "normal_result_sha256": null,
+      "normal_result_blob": null,
+      "authoritative_terminal_blob": null,
+      "root_review_blob": null
+    },
+    "mac": {
+      "canonical_source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/source",
+      "output": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1",
+      "driver_sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
+      "source_authority_closed": true,
+      "source_core_blob": "0413aae492192fe378acadcc43be896c964dc742",
+      "normal_job": "1a1ab058659-fc05-4989",
+      "normal_result_sha256": null,
+      "normal_result_blob": null,
+      "authoritative_terminal_blob": null,
+      "root_review_blob": null
+    }
+  },
+  "each_platform_original60": 60,
+  "each_platform_additional_same_root_regression": 1,
+  "additional_test_name": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+  "all10_actual_artifact_pins": {
+    "linux": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_native_build_host": "rog",
+      "alias": "rog-ts",
+      "build": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/normal-release-tests-r1",
+      "source": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1/source",
+      "python": "/usr/bin/python3",
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build_driver_sha256": "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a",
+      "files": {
+        "artifacts/heptabao-seed": null,
+        "artifacts/heptabao-server": null,
+        "normal-release-build.stdout": null,
+        "native-build.public.json": null,
+        "normal-release-result.public.json": null
+      }
+    },
+    "mac": {
+      "abi": "aarch64-apple-darwin",
+      "actual_native_build_host": "mac",
+      "alias": "mac-ts",
+      "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/normal-release-tests-r1",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/source",
+      "python": "/opt/homebrew/bin/python3",
+      "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "build_driver_sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
+      "files": {
+        "artifacts/heptabao-seed": null,
+        "artifacts/heptabao-server": null,
+        "normal-release-build.stdout": null,
+        "native-build.public.json": null,
+        "normal-release-result.public.json": null
+      }
+    }
+  },
+  "desktop_source": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "actual_complete_import_sha256": null,
+    "exists_claimed": false
+  },
+  "normal_qualification_is_external_root_gate": true,
+  "artifact_hash_shape_component_is_not_qualification": true
+}

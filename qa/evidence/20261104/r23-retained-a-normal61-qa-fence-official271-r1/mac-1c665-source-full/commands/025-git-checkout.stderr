@@ -1,0 +1,2 @@
+Previous HEAD position was 49503322 test: witness authenticated native state in NoForward HA regressions
+HEAD is now at 1c665419 Fix HA catch-up for same-content later publications

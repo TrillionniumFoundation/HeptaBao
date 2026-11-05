@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.x230-fence-r3-actual-recap.v1",
+  "host": "desktop",
+  "job_id": "1a1ab637c5e-fc05-4d3a",
+  "key": "heptabao-x230-original-relay-effect-fence-r3-4b4026a6",
+  "request": {
+    "bytes": 23815,
+    "sha256": "a0344a7b1f9180ffaeefcc69ffd4a42b05ddcfde73780f0e2670c2435d83a716",
+    "blob": "77069057a0d67da87f8a2a2228d4921f95d1fd29"
+  },
+  "intent": {
+    "bytes": 25041,
+    "sha256": "23130e34a58e5d54981e871e6921641118522c1d3e35afc237c32ad6d42e35b3",
+    "blob": "b42d134c77ce9ffee957ebf4a80be1b4c96f733a"
+  },
+  "status": "PASS_EXACT_CREATE_ONLY_FENCE_SCOPE",
+  "authority_exit_code": 0,
+  "complete": true,
+  "durable": true,
+  "timed_out": false,
+  "source_sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+  "source_packet": "1789e362da46e998d3c7a7ba6eaf1e654628d828",
+  "original_limits": {
+    "shared_seconds": 15,
+    "supervisor_seconds": 60,
+    "metadata_calls": 128,
+    "registered_fds": 10,
+    "read_bytes": 131072,
+    "tombstone_bytes": 8192,
+    "stdout_bytes": 32768
+  },
+  "actual": {
+    "elapsed_ns": 53414886,
+    "metadata_calls": 113,
+    "registered_fds": 10,
+    "all_registered_fds_closed": true,
+    "read_bytes": 122403,
+    "stdout_bytes": 11422,
+    "stderr_bytes": 0,
+    "source_pins": [
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/sender.py",
+        "bytes": 8862,
+        "sha256": "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742",
+        "blob": "5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/receiver.py",
+        "bytes": 29900,
+        "sha256": "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d",
+        "blob": "4a302b89c1de1473844b4e364cb44e51d1310a1a"
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py",
+        "bytes": 21085,
+        "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+        "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+      }
+    ],
+    "source_before_after_lossless_equal": true
+  },
+  "created": {
+    "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1",
+    "root_final_identity_decimal_strings": [
+      "2050",
+      "7237358",
+      "1000",
+      "1000",
+      "16832",
+      "2",
+      "4096",
+      "1793876790283098805",
+      "1793876790283098805"
+    ],
+    "marker": {
+      "bytes": 2709,
+      "sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+      "blob": "57e60bde940b51814c47af72fd3b1880cc8cb41e"
+    },
+    "marker_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json",
+    "marker_identity_decimal_strings": [
+      "2050",
+      "7237359",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "2709",
+      "1793876790283098805",
+      "1793876790283098805"
+    ],
+    "marker_expected_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "same_fd_write_readback_and_fsync": true,
+    "independent_marker_file_info_and_pinned_whole": true
+  },
+  "closure_scope": {
+    "root_identity": "In-controller actual held/named full9 checks; no additional independent directory stat",
+    "marker_identity": "In-controller actual held/named full9 plus independent regular-file metadata and expected_version whole read",
+    "no_product_or_relay_execution": true,
+    "no_transport": true,
+    "no_children": true,
+    "no_network": true,
+    "no_signals": true,
+    "no_existing_file_or_directory_modified_by_fence": true
+  },
+  "original_relay": {
+    "job_id": "1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN",
+    "termination_or_owned_cleanup_proven": false,
+    "replay_authorized": false,
+    "read_only_recovery_tree": "8b9b9de427fdd4f375c5a396e56197d65fcba751"
+  },
+  "namespace_scope": "The successful exclusive mkdir reserves this exact old relay name. Continuing prospective protection requires the same namespace and marker to remain bound; no assertion of original job termination.",
+  "future_new_transport_or_product_authorized": false,
+  "old_service_cleanup_authorized": false,
+  "actual_verification": {
+    "count": 46,
+    "passed": 46,
+    "raw": {
+      "bytes": 4229,
+      "sha256": "1ed12145230e9e2dc390119a8d8f3b61493efc2b9f112503323fb2914f4493bb",
+      "blob": "a59814954c66101b87461e090b85aa7822efb56d"
+    }
+  }
+}

@@ -1,0 +1,803 @@
+{
+  "as_of_utc": "2026-11-05 10:35:04 UTC",
+  "conditional_or_nondefault_contracts_not_invented": [
+    {
+      "finding": "Native refusal alone is not proof of missing mandatory official behavior. Exact official source lists replication/status as an unauthenticated special path, but this audit has not established a registered operational replication backend. Keep unresolved/conditional, not an automatic new product requirement.",
+      "subject": "sys/replication*"
+    },
+    {
+      "finding": "Official operator migrate directly instantiates physical source/destination backends and copies encrypted data; a native sys/migrate refusal is not a substitute for checking that CLI contract or proof that this HTTP route is required.",
+      "subject": "sys/migrate"
+    },
+    {
+      "finding": "Present in old59 scope but absent from the exact default builtin plugin registry. May be an explicitly configured external-plugin or historical project requirement; do not count as default2.7.1 builtins from UI/client helper names alone.",
+      "subject": "LDAP/RADIUS/Kerberos/OpenLDAP"
+    },
+    {
+      "finding": "Current native EngineState explicitly admits SSH; a real typed native SSH owner and OTP lease methods exist. Do not reuse superseded old unsupported-SSH expectations as current gaps.",
+      "subject": "SSH"
+    }
+  ],
+  "implementation_principle": "Implement typed native owner, migration/cold codec, authorization, mandatory audit, revocation/renewal and unknown external-effect reconciliation before widening admission guards.",
+  "limits": [
+    "Counts are lexical source declarations. Dynamic factories, conditional registration, framework-generated routes, HTTP method/existence-check mapping, help, configuration and lifecycle remain unresolved.",
+    "A complete API inventory would still require real behavior, state, errors, authority and recovery tests; source registration is not a test result.",
+    "Current native guards show concrete admission gaps. Existing legacy implementations and scoped tests do not qualify a full migration of those states into native storage.",
+    "Installed-client cutover is a separate finite migration claim; it cannot establish universal OpenBao2.7.1 compatibility.",
+    "No host operations, credentials, provider effects, product tests, cutover or deletion were performed by this data analysis."
+  ],
+  "native_product_binding": {
+    "bytes": 1168433,
+    "commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "files": 14,
+    "normal_features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+    "verified_current_files": [
+      {
+        "bytes": 518245,
+        "current_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "path": "crates/heptabao-server/src/service.rs",
+        "prior_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "same": true,
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+      },
+      {
+        "bytes": 153342,
+        "current_blob": "d4eb181702573cab33fb48de07765a47d870c713",
+        "path": "crates/heptabao-server/src/engines.rs",
+        "prior_blob": "d4eb181702573cab33fb48de07765a47d870c713",
+        "same": true,
+        "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+      },
+      {
+        "bytes": 21719,
+        "current_blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+        "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+        "prior_blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+        "same": true,
+        "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+      },
+      {
+        "bytes": 8921,
+        "current_blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+        "path": "crates/heptabao-server/src/service_native_storage.rs",
+        "prior_blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+        "same": true,
+        "sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+      },
+      {
+        "bytes": 137388,
+        "current_blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "prior_blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+        "same": true,
+        "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf"
+      },
+      {
+        "bytes": 92517,
+        "current_blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "prior_blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "same": true,
+        "sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+      },
+      {
+        "bytes": 22801,
+        "current_blob": "038a43099f7cffc373c10b9548a705d93b43165b",
+        "path": "crates/heptabao-server/src/engine_native_pki.rs",
+        "prior_blob": "038a43099f7cffc373c10b9548a705d93b43165b",
+        "same": true,
+        "sha256": "d45c1fdb593c0947dc21164957ded292b9613e5561a5daf5f39d1926582e95f9"
+      },
+      {
+        "bytes": 19047,
+        "current_blob": "d2c2c5c686f106a7fac29e4531ab82ad1a77569b",
+        "path": "crates/heptabao-server/src/engine_native_ssh.rs",
+        "prior_blob": "d2c2c5c686f106a7fac29e4531ab82ad1a77569b",
+        "same": true,
+        "sha256": "3866c284c234f2598fb0d0a7c983f41e324db25dbda6927a342f8804e8da05c1"
+      },
+      {
+        "bytes": 1182,
+        "current_blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+        "path": "crates/heptabao-server/src/engines/pki_native.rs",
+        "prior_blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+        "same": true,
+        "sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed"
+      },
+      {
+        "bytes": 33183,
+        "current_blob": "8dbd8d86d1d8f1834bba530dc8e2898eedbf7607",
+        "path": "crates/heptabao-server/src/service_raft_admin.rs",
+        "prior_blob": "8dbd8d86d1d8f1834bba530dc8e2898eedbf7607",
+        "same": true,
+        "sha256": "e6f871bf9055b9250746cc6a7a484ae0e30ad03a837cd95a2725c0cf8fab00b8"
+      },
+      {
+        "bytes": 12612,
+        "current_blob": "4fd9f8cd0c6bde2d6d7d57d0eee68ec0d3fee891",
+        "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+        "prior_blob": "4fd9f8cd0c6bde2d6d7d57d0eee68ec0d3fee891",
+        "same": true,
+        "sha256": "621ddba65bfb429614154c21a5912ab52aa72e9157f09234491ca88d01525e47"
+      },
+      {
+        "bytes": 50683,
+        "current_blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+        "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+        "prior_blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+        "same": true,
+        "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+      },
+      {
+        "bytes": 35170,
+        "current_blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+        "path": "crates/heptabao-server/src/http_snapshot.rs",
+        "prior_blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+        "same": true,
+        "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2"
+      },
+      {
+        "bytes": 61623,
+        "current_blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "prior_blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "same": true,
+        "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+      }
+    ]
+  },
+  "official": {
+    "canonical_entries_sha256": "0901ae75c6dd466c7cae62fa1fe909380b5c8683bfeeb9cbceec75f211765077",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "entries": 6328,
+    "repository": "openbao/openbao",
+    "root_merkle_trees_verified": 939,
+    "source_bytes_in_corpus": 3894129,
+    "source_files_in_corpus": 242,
+    "tag": "v2.7.1",
+    "tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182"
+  },
+  "official_default_registry": {
+    "addExtPluginsImpl_empty_in_exact_default_source": true,
+    "core_backends_not_in_this_plugin_registry": [
+      "token",
+      "identity",
+      "cubbyhole",
+      "system"
+    ],
+    "credential_plugin_names": [
+      "approle",
+      "cert",
+      "jwt",
+      "kubernetes",
+      "oidc",
+      "userpass"
+    ],
+    "database_plugin_names": [
+      "mysql-database-plugin",
+      "mysql-aurora-database-plugin",
+      "mysql-rds-database-plugin",
+      "mysql-legacy-database-plugin",
+      "cassandra-database-plugin",
+      "influxdb-database-plugin",
+      "postgresql-database-plugin",
+      "redis-database-plugin",
+      "valkey-database-plugin"
+    ],
+    "legacy_59_names_not_in_this_default_registry": [
+      "ldap",
+      "radius",
+      "kerberos",
+      "openldap"
+    ],
+    "not_a_total_surface_count": true,
+    "registry_only_has_registry_go_and_test_in_frozen_tree": true,
+    "secret_plugin_names": [
+      "kubernetes",
+      "kv",
+      "pki",
+      "rabbitmq",
+      "ssh",
+      "totp",
+      "transit"
+    ]
+  },
+  "open_work": [
+    {
+      "current_boundary": "Current 1c665 Mac run passed the original60 and failed the additional same-root test before entering the repair checks. Successor4e808 changes only that test fixture and is source-only at this audit. Last physical df026 LAN run stopped at91/98 with post-cold0/12 unentered. Separate snapshot/CLI and trusted AuthBus gates remain open; historical unknown operations are not replayed.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "c3b7b93f337088d19a892470872dab109cf59ecfcfd67c6b4e83104fa1c3b1ad",
+          "line_end": 4089,
+          "line_start": 4074,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        },
+        {
+          "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+          "excerpt_sha256": "f37f25dbddaea5450a6ae5555bb776cad474477d38d91658ea981b17ab1b0f51",
+          "line_end": 485,
+          "line_start": 374,
+          "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          "whole_sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+        },
+        {
+          "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+          "excerpt_sha256": "684033e6aed787bef0e622c63b2de4905b08b93082539aa410728b885d6df5d6",
+          "line_end": 945,
+          "line_start": 828,
+          "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          "whole_sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+        },
+        {
+          "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+          "excerpt_sha256": "dcc91fa99f13b86b971caa30e28228621686a62235eb3da3e5aff6d7d36d1caa",
+          "line_end": 395,
+          "line_start": 338,
+          "path": "crates/heptabao-server/src/http_snapshot.rs",
+          "whole_sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2"
+        },
+        {
+          "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+          "excerpt_sha256": "f13de5136605def1cbd82d86ade5266c4e4e7281111a8afa958be7591df231d3",
+          "line_end": 789,
+          "line_start": 681,
+          "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+          "whole_sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "historical_boundary_retained": "R10 strict wire records default native standby redirect differences. Actual Phase B B01 leader save returned 503 and CLI exit 2, with outcome unknown and no valid archive. 3cb adds bounded observation only; its build is in progress and is not a behavioral fix.",
+      "id": "native_snapshot_cli_and_standby",
+      "legacy_surfaces": [
+        "HB-SURFACE-STORAGE-RAFT",
+        "HB-SURFACE-CLUSTER-FORWARDING",
+        "HB-SURFACE-MIGRATION-SNAPSHOT",
+        "HB-SURFACE-CLI-ROOT"
+      ],
+      "official_contract": "Raft snapshot save/restore and official CLI behavior; ordinary standby forwarding under the declared valid archive contract.",
+      "priority": "current_migration_gate",
+      "qa_gap": "Bounded69 has no snapshot/CLI case. Preserve the original unknown; new valid archives A/B, two versions, API readback and cold restart are required by the separate Phase B contract.",
+      "required_work": "Pass actual successor normal61 on Mac and Linux, then the original physical98 plus independent post-cold12. Use newly qualified artifacts for the bounded current-WAL diagnosis, actual valid A/B archives with two-version API readback and cold restart, and the separate reviewed standby transfer custody. Do not infer archive success from redirects or CLI exit alone.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/service.rs",
+          4074,
+          4089
+        ],
+        [
+          "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          374,
+          485
+        ],
+        [
+          "crates/heptabao-server/src/service_snapshot_transfer.rs",
+          828,
+          945
+        ],
+        [
+          "crates/heptabao-server/src/http_snapshot.rs",
+          338,
+          395
+        ],
+        [
+          "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+          681,
+          789
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "Auth::native_v6_storage_profile requires identity_mfa=None and empty password-policy/JWT/Kubernetes/OIDC state; root auth mounts are limited to token/AppRole/cert/userpass, admitted child mounts to token/AppRole/cert. Activation/restore checks reject unsupported live owners; the native dispatcher rejects unowned requests.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+          "excerpt_sha256": "d7b650468ccf6957412176633d2f12cbba2110b8b3367386212a71c3e51d5ded",
+          "line_end": 197,
+          "line_start": 112,
+          "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          "whole_sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+        },
+        {
+          "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+          "excerpt_sha256": "550c78246e652143413356da7240656bc09d26ca8bb14925b19a8c26bea5b107",
+          "line_end": 160,
+          "line_start": 130,
+          "path": "crates/heptabao-server/src/service_native_storage.rs",
+          "whole_sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+        },
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "6df6b69cc9a855bb2df13ac72c7cb90a0b007cc88d1d6933df889fcd05572211",
+          "line_end": 5198,
+          "line_start": 5113,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "native_auth_and_mfa",
+      "legacy_surfaces": [
+        "HB-SURFACE-AUTH-JWT-OIDC",
+        "HB-SURFACE-AUTH-KUBERNETES",
+        "HB-SURFACE-IDENTITY",
+        "HB-SURFACE-POLICY-ACL"
+      ],
+      "official_contract": "JWT/OIDC and Kubernetes are actual default registry entries; SystemBackend registers login MFA. Native identity, password policy and refresh/revocation semantics must survive cold recovery.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "69 covers AppRole3, userpass1, token10 and identity6 only. It does not prove JWT/OIDC, Kubernetes renewal or MFA. Existing non-native source modules or historical profile names do not qualify the native consumer.",
+      "required_work": "Add actual typed native state and operation owners, cold codecs, revocation/renewal and current identity binding before widening any allowlist. Keep unsupported original stores intact until migration is proven.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          112,
+          197
+        ],
+        [
+          "crates/heptabao-server/src/service_native_storage.rs",
+          130,
+          160
+        ],
+        [
+          "crates/heptabao-server/src/service.rs",
+          5113,
+          5198
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "require_native_storage_state rejects nonempty database state. Native EngineState admits only KV1/KV2, local Transit, TOTP, SSH and local PKI, and requires SDK catalog/owners/leases/external_keys empty. Generic audited external-effect code exists but is not admission for these native owners.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+          "excerpt_sha256": "0622654cfb93e0e9e21e1fafb5d920eceaac4a1e5d632b2425c7b9d5e1817777",
+          "line_end": 159,
+          "line_start": 146,
+          "path": "crates/heptabao-server/src/service_native_storage.rs",
+          "whole_sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+        },
+        {
+          "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+          "excerpt_sha256": "237282ccac136533f394b7922849daafab530bf132874145d9aefd3dc96175cf",
+          "line_end": 213,
+          "line_start": 188,
+          "path": "crates/heptabao-server/src/engines.rs",
+          "whole_sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+        },
+        {
+          "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+          "excerpt_sha256": "2949bd9603786b46e8bacef00bfe5078f7a1cbbcbf6729f0eb79b91c5563b7eb",
+          "line_end": 3529,
+          "line_start": 3503,
+          "path": "crates/heptabao-server/src/engines.rs",
+          "whole_sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "native_external_secret_and_database_owners",
+      "legacy_surfaces": [
+        "HB-SURFACE-SECRET-DATABASE",
+        "HB-SURFACE-SECRET-KUBERNETES",
+        "HB-SURFACE-SECRET-RABBITMQ",
+        "HB-SURFACE-DB-POSTGRESQL",
+        "HB-SURFACE-DB-MYSQL",
+        "HB-SURFACE-DB-CASSANDRA",
+        "HB-SURFACE-DB-INFLUXDB",
+        "HB-SURFACE-DB-VALKEY",
+        "HB-SURFACE-PLUGIN-DATABASE"
+      ],
+      "official_contract": "Default registry includes database plugins, Kubernetes and RabbitMQ secret backends; provider-side creation, rotation, revoke and renewal are externally observable effects.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "No database, RabbitMQ or Kubernetes case in bounded69. Actual provider tests must be distinct from plugin transport or fake-provider tests.",
+      "required_work": "Implement a durable native external-effect owner and reconciliation contract for each admitted backend, including unknown provider result and lease retirement. Bring actual provider fixtures and migration/cold tests; do not remove the profile guard to reuse flat-state dispatch.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/service_native_storage.rs",
+          146,
+          159
+        ],
+        [
+          "crates/heptabao-server/src/engines.rs",
+          188,
+          213
+        ],
+        [
+          "crates/heptabao-server/src/engines.rs",
+          3503,
+          3529
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "Pki::native_local_profile requires no external signer/history and default ACME state; native_local_route excludes ACME/EAB and KMS key-generation selectors. Native Transit excludes external state. An existing generic plugin/KMS bridge is a different scope.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+          "excerpt_sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed",
+          "line_end": 29,
+          "line_start": 1,
+          "path": "crates/heptabao-server/src/engines/pki_native.rs",
+          "whole_sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed"
+        },
+        {
+          "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+          "excerpt_sha256": "c5b8bdee5bdff2947f6cc69e3b3eaed6d7cb01c76fe4d12741cbbe33fef7f569",
+          "line_end": 210,
+          "line_start": 201,
+          "path": "crates/heptabao-server/src/engines.rs",
+          "whole_sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+        },
+        {
+          "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+          "excerpt_sha256": "8c500faf9e7add2357b03b2e97a653cacd757378cd31c2ed226d69b1c5f67e6d",
+          "line_end": 1505,
+          "line_start": 1492,
+          "path": "crates/heptabao-server/src/service_plugin.rs",
+          "whole_sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "historical_anchor_corrections": [
+        {
+          "current_exact_line_range": [
+            1,
+            29
+          ],
+          "path": "crates/heptabao-server/src/engines/pki_native.rs",
+          "previous_line_range": [
+            1,
+            32
+          ],
+          "reason": "The previous partial source map cited past EOF. The entire verified file has29 lines; its original blob is preserved."
+        }
+      ],
+      "id": "local_pki_vs_acme_external_kms",
+      "legacy_surfaces": [
+        "HB-SURFACE-SECRET-PKI",
+        "HB-SURFACE-SECRET-TRANSIT",
+        "HB-SURFACE-PLUGIN-KMS"
+      ],
+      "official_contract": "Official 2.7.1 has PKI ACME/EAB and external key APIs; existing 2.7 admission file explicitly requires external KMS/HSM and ACME hostile cases.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "69 PKI12 and Transit10 cases are local. They are not ACME/EAB, external signer, HSM, PQC or all route parity.",
+      "required_work": "Add typed native ACME and external-key ownership with provider admission, audit, durable request/result custody and no unknown replay. Preserve local-only behavior and prove the exact external contract independently.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/engines/pki_native.rs",
+          1,
+          29
+        ],
+        [
+          "crates/heptabao-server/src/engines.rs",
+          201,
+          210
+        ],
+        [
+          "crates/heptabao-server/src/service_plugin.rs",
+          1492,
+          1505
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "Native service explicitly refuses rekey/raw and unowned system routes. Activation requires no pending rekey/recovery. Generic wrapper unseal/migration and PGP rekey backup have separate 501 refusals.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "c04b2d8c24a2649af886843d1297d3c9b4358d22d8266b3d3a2a0d50f210a8df",
+          "line_end": 5198,
+          "line_start": 5182,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        },
+        {
+          "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+          "excerpt_sha256": "7f2c913719f96458491ab08f00118b2032bda256d1ec1887dbf9d5785e478507",
+          "line_end": 159,
+          "line_start": 137,
+          "path": "crates/heptabao-server/src/service_native_storage.rs",
+          "whole_sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+        },
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "fd0dd9f787a229d9231cc9f9cf2425f2801674431d340fd39acab7b5bd5e67f7",
+          "line_end": 8831,
+          "line_start": 8789,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        },
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "0edfa4d1eb4f74debd723c32abdc75114c370008118c5ff226fd40fab2b79d12",
+          "line_end": 9523,
+          "line_start": 9463,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "native_system_lifecycle",
+      "legacy_surfaces": [
+        "HB-SURFACE-SYSTEM-BACKEND",
+        "HB-SURFACE-OPERATIONS",
+        "HB-SURFACE-NAMESPACE-SEAL"
+      ],
+      "official_contract": "Actual official SystemBackend registers rekey, rotate, generate-root and namespace seal paths; raw storage is conditional on rawEnabled.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "69 has init-status1 and seal-status1; no rekey, root generation, key rotation or namespace seal completion.",
+      "required_work": "Implement typed native lifecycle owners and key/epoch transitions with fail-closed mandatory audit and cold recovery. Explicitly define rawEnabled parity instead of making raw data access generally available.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/service.rs",
+          5182,
+          5198
+        ],
+        [
+          "crates/heptabao-server/src/service_native_storage.rs",
+          137,
+          159
+        ],
+        [
+          "crates/heptabao-server/src/service.rs",
+          8789,
+          8831
+        ],
+        [
+          "crates/heptabao-server/src/service.rs",
+          9463,
+          9523
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "service_plugin returns 501 for catalog mutations and refuses generic write-capable plugin operations without durable external-effect reconciliation. Native Auth and EngineState also require plugin/SDK owners absent.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+          "excerpt_sha256": "1429bbe8fbd770580d8b800b7a3b0fd194a9b77c6f4284ec23685cd011f7568e",
+          "line_end": 1128,
+          "line_start": 1084,
+          "path": "crates/heptabao-server/src/service_plugin.rs",
+          "whole_sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+        },
+        {
+          "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+          "excerpt_sha256": "c676cb995e3dc2d11fc82288e462423dbdfa0fed21fec642ffa158ad08687d0c",
+          "line_end": 2335,
+          "line_start": 2315,
+          "path": "crates/heptabao-server/src/service_plugin.rs",
+          "whole_sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+        },
+        {
+          "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+          "excerpt_sha256": "21bae818fbab7f2e301ac2174d1208819adbbee8c3879d4b6a4423700828d302",
+          "line_end": 147,
+          "line_start": 116,
+          "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          "whole_sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+        },
+        {
+          "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+          "excerpt_sha256": "b524a73cb456ebe32fa114d99669aa1645bf15c9012f07198b88491943b366dd",
+          "line_end": 202,
+          "line_start": 193,
+          "path": "crates/heptabao-server/src/engines.rs",
+          "whole_sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "runtime_plugin_catalog_and_sdk_owners",
+      "legacy_surfaces": [
+        "HB-SURFACE-PLUGIN-AUTH",
+        "HB-SURFACE-PLUGIN-SECRET",
+        "HB-SURFACE-PLUGIN-DATABASE",
+        "HB-SURFACE-PLUGIN-KMS"
+      ],
+      "official_contract": "Official SystemBackend includes plugin catalog CRUD and reload, with root namespace and command path restrictions.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "No plugin case in bounded69; historical external plugin profile labels are inventory of scoped work, not whole-surface admission.",
+      "required_work": "Preserve command path/root-only security constraints while adding real registered plugin lifecycle and native durable ownership. Startup metadata, checksum pinning, wrappers and transport tests are not catalog CRUD or provider semantics.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/service_plugin.rs",
+          1084,
+          1128
+        ],
+        [
+          "crates/heptabao-server/src/service_plugin.rs",
+          2315,
+          2335
+        ],
+        [
+          "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          116,
+          147
+        ],
+        [
+          "crates/heptabao-server/src/engines.rs",
+          193,
+          202
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "Current native namespace profile rejects protected namespace custody and namespace leases. Native control groups deliberately constrain operation owners. require_native_storage_state demands default raft_admin state, so prior nondefault management policy is not generally migrated.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [
+        {
+          "blob": "4fd9f8cd0c6bde2d6d7d57d0eee68ec0d3fee891",
+          "excerpt_sha256": "034cc4c2f51e96e73c86a16286b69cb5e0c49688d2d9834ecae8546ee9836e73",
+          "line_end": 45,
+          "line_start": 1,
+          "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+          "whole_sha256": "621ddba65bfb429614154c21a5912ab52aa72e9157f09234491ca88d01525e47"
+        },
+        {
+          "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+          "excerpt_sha256": "d5ac62255fc148dd77c82cb7fdd5d53382526fb948124b3dd7e5b7ca6e5f5ba9",
+          "line_end": 240,
+          "line_start": 199,
+          "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          "whole_sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+        },
+        {
+          "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+          "excerpt_sha256": "0622654cfb93e0e9e21e1fafb5d920eceaac4a1e5d632b2425c7b9d5e1817777",
+          "line_end": 159,
+          "line_start": 146,
+          "path": "crates/heptabao-server/src/service_native_storage.rs",
+          "whole_sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+        },
+        {
+          "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+          "excerpt_sha256": "8a73cb85b55f6da98236298650dce4a43b988353e0043f80b54d36180aa57be2",
+          "line_end": 5132,
+          "line_start": 5113,
+          "path": "crates/heptabao-server/src/service.rs",
+          "whole_sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+        }
+      ],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "native_namespaces_policy_workflow_admin",
+      "legacy_surfaces": [
+        "HB-SURFACE-NAMESPACE-TREE",
+        "HB-SURFACE-NAMESPACE-SEAL",
+        "HB-SURFACE-PROFILES-WORKFLOWS",
+        "HB-SURFACE-CLUSTER-AUTOPILOT",
+        "HB-SURFACE-CLUSTER-STEPDOWN"
+      ],
+      "official_contract": "Official SystemBackend registers namespace seals/tree, workflow, quotas, MFA and conditional Raft administration; 2.7 admission adds control groups and indexed consistency.",
+      "priority": "full_replacement_product_blocker",
+      "qa_gap": "Actual HA128/Direct98 qualify their original physical failure scenarios, not every admin operation, namespace sealing, workflow or complete upgrade surface.",
+      "required_work": "Add the missing protected-namespace/admin/workflow operation owners and paired state migration; preserve real namespace incarnation, policy cache, finite actor and approval semantics.",
+      "source_anchors": [
+        [
+          "crates/heptabao-server/src/service_native_plain_namespace.rs",
+          1,
+          45
+        ],
+        [
+          "crates/heptabao-server/src/auth_native_v6_routes.rs",
+          199,
+          240
+        ],
+        [
+          "crates/heptabao-server/src/service_native_storage.rs",
+          146,
+          159
+        ],
+        [
+          "crates/heptabao-server/src/service.rs",
+          5113,
+          5132
+        ]
+      ],
+      "status": "OPEN"
+    },
+    {
+      "current_boundary": "The historical 59 corpus is 2.6.2; the 2.7 admission supplement explicitly says it is structural and non-exhaustive. Wrapper/tooling and KV-only migration paths do not prove full asset migration or all 2.7 behaviors.",
+      "current_candidate_runtime_qualified": false,
+      "current_source_anchor_bindings": [],
+      "evidence_kind": "CURRENT_NATIVE_SOURCE_GUARD_OR_SEPARATELY_IDENTIFIED_RUNTIME_GATE",
+      "id": "tooling_storage_and_2_7_deltas",
+      "legacy_surfaces": [
+        "HB-SURFACE-CLI-ROOT",
+        "HB-SURFACE-AGENT",
+        "HB-SURFACE-PROXY",
+        "HB-SURFACE-OPENAPI-UI",
+        "HB-SURFACE-STORAGE-POSTGRESQL",
+        "HB-SURFACE-MIGRATION-LOGICAL",
+        "HB-SURFACE-MIGRATION-SNAPSHOT",
+        "HB-SURFACE-MIGRATION-CUTOVER"
+      ],
+      "official_contract": "The exact 2.7.1 distribution includes CLI/Agent/Proxy, storage adapters, packaging defaults and separate 2.7 security/correctness changes, beyond core API families.",
+      "priority": "full_replacement_contract_and_evidence",
+      "qa_gap": "Bounded69 explicitly excludes other backends, persistent restart, HA, migration, upgrade, agent/proxy/CLI and production security. Other tests exist, but cannot be inferred from these 69.",
+      "required_work": "Create an explicit 2.7.1 route/operation/backend/tooling denominator from exact upstream source and the finite installed-consumer scope, map each to actual current-candidate evidence, and keep deployment-specific migration separate from universal compatibility.",
+      "source_anchors": [
+        [
+          "planning/HEPTABAO_SURFACE_WORK_V1.json",
+          "target",
+          "OpenBao 2.6.2"
+        ],
+        [
+          "planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+          "security_delta/feature_and_correctness_delta",
+          "15 + 11 declared rows"
+        ],
+        [
+          "scripts/validate_openbao_271_release_denominator.py",
+          1,
+          5
+        ]
+      ],
+      "status": "OPEN"
+    }
+  ],
+  "qualifications": {
+    "all_consumers_and_backups_migrated": false,
+    "all_official_runtime_routes_resolved": false,
+    "current_authbus_complete": false,
+    "current_lan_complete": false,
+    "old_versions_deletion": false,
+    "production_cutover": false,
+    "whole_openbao271_replacement": false
+  },
+  "schema": "heptabao.root.current-native-openbao271-gates.v1",
+  "source_inventory": {
+    "behavior_coverage": false,
+    "declarations": 423,
+    "declared_fields": 1064,
+    "declared_operations": 720,
+    "family_operation_counts": {
+      "auth/approle": 54,
+      "auth/cert": 14,
+      "auth/jwt": 22,
+      "auth/kubernetes": 11,
+      "auth/token": 22,
+      "auth/userpass": 10,
+      "identity": 112,
+      "sdk-generic-framework": 9,
+      "secret/cubbyhole": 5,
+      "secret/database": 20,
+      "secret/kubernetes": 10,
+      "secret/kv": 37,
+      "secret/pki": 102,
+      "secret/rabbitmq": 8,
+      "secret/ssh": 25,
+      "secret/totp": 6,
+      "secret/transit": 34,
+      "sys": 214,
+      "sys/raw": 5
+    },
+    "registration_and_lifecycle_sites": 128,
+    "runtime_denominator": false
+  },
+  "status": "FULL_REPLACEMENT_FALSE_OPEN_IMPLEMENTATION_AND_RUNTIME_GATES",
+  "successor": {
+    "all14_native_guard_files_unchanged": true,
+    "changed_path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "runtime_qualification_transferred": false,
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-r3-inert-93afaf47-file-info-08",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3/build-binding.private.json"
+    }
+  }
+}

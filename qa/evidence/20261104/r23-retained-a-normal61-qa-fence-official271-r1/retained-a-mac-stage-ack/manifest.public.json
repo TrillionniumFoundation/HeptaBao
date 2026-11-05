@@ -1,0 +1,22 @@
+{
+  "files": [
+    {
+      "path": "sdk/ack.json",
+      "bytes": 29171,
+      "sha256": "62523b060138cf569c896532093ab12f038e27c3aa8cc7a7599a4a4f6e4f19da",
+      "git_blob": "b1e0f6547459015daaa9d57c0c8976e4ebbcb65d"
+    },
+    {
+      "path": "native/ack.json",
+      "bytes": 28281,
+      "sha256": "0bcd75aa714ef055cea76163f0b4b457ce028b9bf61ad7bfaf1a914450b53937",
+      "git_blob": "0cc7a27f19187878f5341a98a04d529e5c1faa13"
+    },
+    {
+      "path": "binding.public.json",
+      "bytes": 362,
+      "sha256": "e8bd1b9890ea899f65f7f1dfcda75cd5542fff3e8d4a8bec1260344166c2cf2c",
+      "git_blob": "4653734d4a4d2e91862df20b40fb442f62a8c6fe"
+    }
+  ]
+}

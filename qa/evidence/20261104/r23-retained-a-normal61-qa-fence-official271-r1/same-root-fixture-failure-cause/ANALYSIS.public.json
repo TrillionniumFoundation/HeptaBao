@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.same-root-publication-first-real-regression-failure-analysis.v1",
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "actual": {
+    "job": "1a1ab058659-fc05-4989",
+    "core_blob": "da5827d733a433f768bc624730e1a5ce3880462e",
+    "original60": "passed",
+    "new1": "failed",
+    "failure_line": 208,
+    "failure_assertion": "third.root_digest() == first.root_digest()",
+    "new_test_exit_code": 101,
+    "new_test_timeout": false,
+    "all48_owned_closed": true,
+    "first_and_third_roots_observed_different": true
+  },
+  "source_chain": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "lines": [
+        163,
+        171,
+        191,
+        208
+      ],
+      "fact": "first and third invoke shared publish on source_a; exact equality required before old selection, repair or cold reopen"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "lines": [
+        184,
+        195
+      ],
+      "fact": "every publish call projects the V5 owner again through prepare_native_root_migration_paged"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_records_v6.rs",
+      "lines": [
+        527,
+        531,
+        535,
+        679
+      ],
+      "fact": "every migration constructs a fresh random 32-byte object_address_key; unchanged V5 content does not preserve prior V6 root identity"
+    },
+    {
+      "path": "crates/heptabao-server/src/state_record_root_v6.rs",
+      "lines": [
+        471,
+        476,
+        489,
+        495,
+        516,
+        522
+      ],
+      "fact": "canonical root identity is keyed by object_address_key and commits to the complete encoded root"
+    }
+  ],
+  "classification": "new regression fixture failed its true A-to-B-to-A setup; neither new warm nor cold same-root repair was reached",
+  "not_proven": [
+    "new installer bug by this failure",
+    "new installer success",
+    "CI154 failures fixed",
+    "normal61 qualification"
+  ],
+  "proposed_minimum": "Retain the first real complete A migration plan and use its exact root and object graph for a new Raft publication after B. Do not generate A again, edit its address key, force a leader, reuse an old publication certificate, remove equality, or reset the retained plan OriginalDeadline. A detailed source-only change must preserve all owner/graph checks and original 15-second scope; actual rerun requires separate root admission.",
+  "source_pins": [
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs",
+      "blob": "6b01df5c21492e28b94619cff01a05eb777360e2",
+      "bytes": 9147,
+      "sha256": "7febcb5cb0072ff509e6ab6bc07d5370f35d1bc6f28582d17580b61f0646859a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "blob": "fa80cf84e67edbc0e7979313799a79362a52322b",
+      "bytes": 46885,
+      "sha256": "32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_records_v6.rs",
+      "blob": "919758c509a1332bc6752beb8be52a7a8a4ca17e",
+      "bytes": 66207,
+      "sha256": "13d129b0fa46a8869525eb1fc0d4057ee5c3827538e7442bdd22edd492775580"
+    },
+    {
+      "path": "crates/heptabao-server/src/state_record_root_v6.rs",
+      "blob": "81e1ed0492f1492f6882e529e44a7c10e8c72209",
+      "bytes": 19890,
+      "sha256": "c49cc793aee3ba1769e728c3c9f70831d052affc4b5a692a307eca18cad0a85e"
+    }
+  ],
+  "host_actions_after_failure": "read-only original job evidence only"
+}

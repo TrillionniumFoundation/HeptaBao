@@ -1,0 +1,10 @@
+{
+  "source": "previously independently whole-read Git packet",
+  "tree": "dfe8fbefc0ffce817f37e864ae7e724b826c019c",
+  "path": "dispatch/normal61.bound-awaiting-go.json",
+  "blob": "a2d6a3c1cfc659c50b4788bb0fc63e37128a70f4",
+  "readback_true": true,
+  "new_fetch_failed": true,
+  "new_fetch_failure_preserved": true,
+  "request_unchanged": true
+}

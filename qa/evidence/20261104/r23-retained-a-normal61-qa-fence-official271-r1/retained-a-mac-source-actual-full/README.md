@@ -1,0 +1,5 @@
+# Mac 4e808 source stage: complete original command archive
+
+This packet extends the immutable core dfe8fbefc0ffce817f37e864ae7e724b826c019c. It closes all 41 original command records and all 82 original stdout/stderr files. Eight complete small-file read responses and two independently version-pinned NUL streams with 14 complete binary chunks are included as original SDK and native responses. Every record has exit 0, no timeout, direct-child reap and empty remaining group; PID labels match the original core. Every stream full SHA equals its original record.
+
+The two complete NUL files independently enumerate 3,914 tree/index entries. All paths, modes and object IDs are equal to the exact canonical eba5e650 tree. Both raw NUL contents roundtrip UTF8 back to the actual binary bytes before Git storage; no arbitrary binary data is passed through Latin1-to-UTF8. Core and authority remain original. The earlier core-checks receipt is preserved with its then-pending status; this addendum closes that source archive only. It does not confer normal61 pass or rewrite the preceding 1c665 failed regression.

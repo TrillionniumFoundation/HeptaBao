@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.desktop-locator-first-fixed-window.source-packet.r3",
+  "source_only": true,
+  "host_submitted": false,
+  "payload_files": 14,
+  "payload_bytes": 221340,
+  "files": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "becde126b21f69dcf817104ce0c317179b428bf1",
+      "bytes": 3129,
+      "sha256": "bc7b4a071f4bdda75d55be0f767dd92f204dbc37a39206282537faeadf41320a"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "672317b55af5cb0c1e62a5f195ac65dc71967c5b",
+      "bytes": 2569,
+      "sha256": "aaa11532a5745e3670afc4296ea4eb17dfec2d1c73a90dc613b69c1821c14dcd"
+    },
+    {
+      "path": "source/read_fixed_job_request_locator_desktop_first_window_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4990b7a09030461704461c08cfd7edccd95bb75b",
+      "bytes": 24959,
+      "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe"
+    },
+    {
+      "path": "diffs/r2-to-first-window-r3.review.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fe4995d95b13c909b27162f43b06f64659d56709",
+      "bytes": 704,
+      "sha256": "a0153f86d93557b225bcffb7aaaa1afead0ff4664c0321ca16f3ec8483c53f63"
+    },
+    {
+      "path": "requests/desktop-first-window.start.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d93621860a034a1d72fc13695f4b5c4716484c1",
+      "bytes": 26630,
+      "sha256": "8b1afc2f15dd39bafba7543ed020f8ebccf8cd46ac27cfc5f68155e288e69d9c"
+    },
+    {
+      "path": "references/read_fixed_job_request_locator_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b28c4b681346e19d71d4b022013346937818270f",
+      "bytes": 24872,
+      "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a"
+    },
+    {
+      "path": "references/desktop-r2-actual.stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29c3cf340257eaf8407b2595c83b7f27c9490d00",
+      "bytes": 2274,
+      "sha256": "45b82d9e9b5d7a8b4107fe10ce38238e6dfad1613fbc15f1c6e39dcdd18e7f9c"
+    },
+    {
+      "path": "references/desktop-r2-authority.native-original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ed2d45c3fb0f1e4dd4f5423600c550d6aec5243a",
+      "bytes": 728,
+      "sha256": "f882d07380c8434d513076727585f5a195058678f7943dcf38002d3c9abb4131"
+    },
+    {
+      "path": "references/existing-time-evidence.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ab20677dd83fc84f24af537189495edeb274fe6",
+      "bytes": 3066,
+      "sha256": "99fd4d77619d88f8741971be36c3ea8beea50fd09dbe72987a723b7845c5bf65"
+    },
+    {
+      "path": "components/selected-time-checks.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c360b64b0cc96018cd1996b7dd439ef89312fb8",
+      "bytes": 3332,
+      "sha256": "d2d6615452d942c975db9d4eee0d455dcb5007570902726464a5fe05aa054b8b"
+    },
+    {
+      "path": "components/selected-time-checks.input.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "524a8500c910a293b1deac96a453542029202234",
+      "bytes": 52331,
+      "sha256": "b267b115df1ed01afaa35a509b3e634227172d78b2f84aa96a83fae0f785511f"
+    },
+    {
+      "path": "components/selected-time-checks.intent.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a084daaa2ffa991089eb9394eeda53973b542ff",
+      "bytes": 73550,
+      "sha256": "b8f2b0a7d45448dd5215380a8a5b57327c46abb8724632292c423df5bf563d34"
+    },
+    {
+      "path": "components/selected-time-checks.actual.exec.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "062cc792c1a3254b5dd2bd82f9543025f6dbfc91",
+      "bytes": 1739,
+      "sha256": "4bb7a7cbac3bc044f4d6a0147663674f04e4f1471d1642f42848ffaf00e3aaca"
+    },
+    {
+      "path": "components/selected-time-checks.actual.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3b126cdfef9b734a87216b16de7fd68e1a30776",
+      "bytes": 1457,
+      "sha256": "290b59f8c8494158c2d8cc312b9dc2c032513cc38590071860702425b5736848"
+    }
+  ],
+  "prior_source_tree": "e49778e26aea2673ed9a05594f935fe21a45c308",
+  "prior_actual_tree": "f6f8da686ce20d87503374895189a153b300b20f",
+  "original_business_unknown_unchanged": true
+}

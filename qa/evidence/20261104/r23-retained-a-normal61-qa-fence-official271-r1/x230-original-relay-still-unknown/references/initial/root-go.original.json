@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.root.x230-normal7-inert-actual-and-relay-go.r20",
+  "status": "GO_EXACT_RELAY_ONCE_ONLY",
+  "as_of_utc": "2026-11-05 06:12:39 UTC",
+  "inert_actual_packet": {
+    "tree": "64281e8618156b19b818d00082755724d66f38b3",
+    "files": 21,
+    "bytes": 328825,
+    "merkle_trees": 6,
+    "job": "1a1aa4fa1ba-fc05-40c1",
+    "root_checks": [
+      "authority exact job successful full durable",
+      "stdout1472 and stderr0",
+      "stdout exact hex/text contiguous eof",
+      "stderr exact hex/text contiguous eof",
+      "stdout receipt semantic lossless equality",
+      "inert expected no executions",
+      "stdin exact binding",
+      "four complete UTF8 returned read rows",
+      "sender.py full body matches published",
+      "sender.py file_info exact body and nofollow custody",
+      "sender.py receipt9tuple equals independentinfo",
+      "receiver.py full body matches published",
+      "receiver.py file_info exact body and nofollow custody",
+      "receiver.py receipt9tuple equals independentinfo",
+      "relay.py full body matches published",
+      "relay.py file_info exact body and nofollow custody",
+      "relay.py receipt9tuple equals independentinfo",
+      "inert-stage.result.public.json full body matches published",
+      "inert-stage.result.public.json file_info exact body and nofollow custody",
+      "body time exactly 947234726ns"
+    ],
+    "ack_matches_exact_request": true
+  },
+  "launch_contract": {
+    "whole_module_execution": false,
+    "receiver_actual_remote_command_roundtrip": true,
+    "exact_guard_lines": [
+      486,
+      487,
+      488,
+      489,
+      490
+    ],
+    "valid_actual_argv": true,
+    "missing_wrong_extra_rejected": true,
+    "sender_relay_self_sha_argument_not_required": true,
+    "local_checker_first_selection_failure": "StopIteration before actual receiver guard execution; corrected selection only; source and host unchanged",
+    "proof": {
+      "name": "r20_x230_relay_argv_actual_guard_proof",
+      "blob": "b6300b8023936c23fb57a183885de218349ba925",
+      "bytes": 496,
+      "sha256": "55bcfd588c0988d6093230acd656a186bfc57f4b6d4b79fb218f3df46c84ac38"
+    }
+  },
+  "authorized_request": {
+    "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+    "bytes": 324,
+    "sha256": "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7"
+  },
+  "scope": {
+    "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "files": 7,
+    "total_bytes": 133866542,
+    "receiver_seconds": 300,
+    "relay_seconds": 300,
+    "sender_seconds": 90,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "supervisor_seconds": 360,
+    "term_seconds": 5,
+    "kill_seconds": 5,
+    "target_root": "/home/qian/heptabao-cold-h2-normal-20261105-r1",
+    "actions": "transfer exact seven verified public artifacts and perform exact standalone full clone/fsck/materialization only",
+    "old_source_and_495_root_untouched": true,
+    "product_tests_authorized": false,
+    "server_execution_authorized": false,
+    "production_cutover_authorized": false,
+    "unknown_stops_without_replay": true
+  },
+  "next": "Collect authoritative terminal, full streams, all command records and stdout/stderr, receiver receipt, 7 independent file infos and source proof. No later wrapper launch by this GO."
+}

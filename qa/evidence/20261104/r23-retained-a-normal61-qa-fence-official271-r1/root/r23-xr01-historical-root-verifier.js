@@ -1,0 +1,20 @@
+function verifyXR01(raw,lp,u,bs,h,un){
+ const checks=[];function ok(v,n){if(!v)throw Error(n);checks.push(n);}const j=p=>lp(raw[p]);
+ for(const prefix of ["file-info","body"]){for(const stem of ["ack","status","result-page0"]){const sdk=j(prefix+"/"+stem+".mcp-snapshot.json"),native=raw[prefix+"/"+stem+".native.json"];ok(sdk.isError!==true&&sdk.content[0].text===native,"outer SDK exact "+prefix+"/"+stem);}
+  const ack=j(prefix+"/ack.native.json"),status=j(prefix+"/status.native.json"),page=j(prefix+"/result-page0.native.json"),sdkraw=raw[prefix+"/original-sdk.json"],payload=un(page.data_base64);
+  ok(!ack.reused&&!ack.automatic_retry&&status.operation_id===ack.operation_id&&page.operation_id===ack.operation_id,"original read operation identity "+prefix);
+  ok(status.async_state==="completed"&&status.result_state==="stored_observed"&&status.payload_available&&!status.owned_future_active&&!status.automatic_retry,"immutable terminal read "+prefix);
+  ok(page.offset===0&&page.eof&&page.immutable_snapshot&&page.next_offset===payload.length&&page.total_bytes===payload.length&&bs(payload)===bs(u(sdkraw))&&h(bs(payload))===page.result_sha256,"whole original SDK payload "+prefix);
+ }
+ const info=j("file-info/file-info.public.json"),read=j("body/binary-read.public.json"),rq=j("body/read-intent.public.json"),report=raw["runtime-and-config-r1.original.public.json"],reportObj=lp(report);
+ ok(j("file-info/original-sdk.json").content[0].text===raw["file-info/file-info.public.json"]&&j("body/original-sdk.json").content[0].text===raw["body/binary-read.public.json"],"native original SDK/body exact");
+ ok(info.path==="/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json"&&info.size===11770&&info.sha256==="df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff"&&info.mode===384&&info.metadata.uid===1000&&info.metadata.gid===1000&&info.metadata.link_count===1,"independent expected public report metadata");
+ const q=rq.operation.arguments;
+ ok(rq.operation.tool==="binary_read"&&q.host==="x230"&&q.path===info.path&&q.expected_version===info.version&&q.offset===0&&q.limit===11770,"one exact version-pinned body request");
+ const b=un(read.data_base64);ok(read.path===info.path&&read.version===info.version&&read.size===info.size&&read.offset===0&&read.next_offset===11770&&read.eof&&b.length===11770&&h(bs(b))===info.sha256&&read.chunk_sha256===info.sha256&&bs(b)===bs(u(report)),"whole historical public report");
+ ok(reportObj.created_at==="2026-11-04T04:56:35.468832+00:00"&&reportObj.status==="bounded_observation_with_gaps"&&reportObj.credential_binding_discovery==="current_config_not_decoded"&&reportObj.configured_agents.length===0,"historical observation and unresolved denominator");
+ ok(reportObj.errors.length===1&&reportObj.errors[0].path==="/home/qian/.openclaw/openclaw.json"&&reportObj.errors[0].errno===2&&reportObj.errors[0].phase==="credential_binding_path_preflight","exact historical ENOENT scope");
+ const rs=j("recovered-readset.public.json");ok(rs.recoveredExactPaths.length===1&&rs.recoveredExactPaths[0]==="/home/qian/.openclaw/openclaw.json"&&JSON.stringify(rs.originalQualification)===JSON.stringify(reportObj.qualification),"derived readset preserves original unqualified state");
+ ok(reportObj.read_only===true&&reportObj.network_connection_attempted===false&&reportObj.service_or_configuration_mutation===false&&reportObj.credential_file_payloads_opened===false,"original report observation-only scope");
+ return {schema:"heptabao.root.xr01-history-read-review.v1",status:"HISTORICAL_PUBLIC_REPORT_RECOVERED",packet:"e317853d6dc9d33bda79d7e6e947b95215f48738",checks_passed:checks.length,checks,report_git_blob:"b8df3efcf2ba7eb510abd5b9a203d68b4f12d856",report_bytes:11770,report_sha256:info.sha256,report_created_at:reportObj.created_at,expected_version:info.version,recovered_exact_path:rs.recoveredExactPaths[0],current_path_reobserved:false,current_client_denominator_known:false,absence_of_which_path_component_known:false,cutover_qualified:false,cleanup_qualified:false};
+}

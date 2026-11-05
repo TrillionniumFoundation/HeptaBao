@@ -1,0 +1,446 @@
+--- before/build_native_h2_client.py
++++ after/build_native_h2_client.py
+@@ -24,8 +24,8 @@
+ COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+ TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+ SOURCE = Path("/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source")
+-CONTROL = Path("/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r2")
+-ROOT = Path("/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2")
++CONTROL = Path("/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3")
++ROOT = Path("/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3")
+ TOOL_ROOT = Path("/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin")
+ CARGO_HOME = Path("/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home")
+ NORMAL_RUNNER_SHA = "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
+@@ -185,6 +185,407 @@
+             **identity(before), "path": str(path), "sha256": digest.hexdigest()}
+     finally:
+         close_fd(fd)
++
++class Cancelled(BaseException):
++    pass
++
++class Signals:
++    def __init__(self):
++        self.protected = 0
++        self.pending = None
++
++    def handler(self, signum, _frame):
++        if self.pending is None:
++            self.pending = signum
++        if not self.protected:
++            raise Cancelled()
++
++    def install(self):
++        signal.signal(signal.SIGTERM, self.handler)
++        signal.signal(signal.SIGINT, self.handler)
++
++    def check(self):
++        if self.pending is not None:
++            raise Cancelled()
++
++def protected_call(method):
++    def call(self, *args, **kwargs):
++        self.signals.protected += 1
++        try:
++            return method(self, *args, **kwargs)
++        finally:
++            self.signals.protected -= 1
++    return call
++
++def public_errno(error):
++    value = getattr(error, "errno", None)
++    return value if type(value) is int and 0 < value < 4096 else None
++
++def full_id(value):
++    return (value.st_dev, value.st_ino, value.st_uid, value.st_gid,
++            value.st_mode, value.st_nlink, value.st_size,
++            value.st_mtime_ns, value.st_ctime_ns)
++
++def dir_id(value):
++    return (value.st_dev, value.st_ino, value.st_uid, value.st_gid,
++            stat.S_IMODE(value.st_mode))
++
++
++class CargoBinaryRead:
++    """Own only the single normal QA binary's two Cargo hardlink names.
++
++    Inputs and test executables still use the original single-link reader.
++    This reader is entered only after a successful, complete Cargo JSON result.
++    It never writes or executes either cache alias. It returns verified bytes
++    to the existing create-only retained-copy path.
++    """
++    def __init__(self, target, target_pin, maximum, until, signals):
++        self.signals = signals
++        self.started = time.monotonic_ns()
++        self.until = until
++        self.target = target
++        self.target_pin = tuple(target_pin[key] for key in (
++            "device", "inode", "uid", "gid", "mode"))
++        self.maximum = maximum
++        self.fds = {}
++        self.fd_rows = []
++        self.open_registration_unknown = False
++        self.opened = 0
++        self.closed = 0
++        self.close_failures = 0
++        self.dirs = []
++        self.scandir_closed = False
++        self.scandir_object = None
++        self.scandir_open_unknown = False
++        self.scandir_created = False
++        self.scandir_close_attempted = False
++        self.scandir_close_error = None
++        self.bytes_read = 0
++        self.body_bytes_read = 0
++        self.eof_bytes_read = 0
++        self.eof_probe_calls = 0
++        self.aliases = []
++
++    def remaining(self):
++        self.signals.check()
++        remaining(self.until)
++
++    @protected_call
++    def open_fd(self, path, flags, role, parent=None):
++        self.remaining()
++        # A non-OSError before registration completes is explicitly unknown.
++        # This flag is never used to infer that an unregistered FD was closed.
++        self.open_registration_unknown = True
++        try:
++            fd = os.open(path, flags, dir_fd=parent)
++        except OSError:
++            self.open_registration_unknown = False
++            raise
++        row = {"ordinal": len(self.fd_rows) + 1, "role": role,
++               "close_attempted": False, "closed": False,
++               "close_errno": None, "close_error": None}
++        self.fds[fd] = row
++        self.fd_rows.append(row)
++        self.opened += 1
++        self.open_registration_unknown = False
++        return fd
++
++    @protected_call
++    def close_once(self, fd):
++        if fd not in self.fds:
++            return
++        row = self.fds.pop(fd)
++        row["close_attempted"] = True
++        try:
++            os.close(fd)
++        except BaseException as error:
++            row["close_error"] = "close_not_confirmed"
++            row["close_errno"] = public_errno(error)
++            self.close_failures += 1
++            raise
++        else:
++            row["closed"] = True
++            self.closed += 1
++
++    @protected_call
++    def close_scandir_once(self):
++        if not self.scandir_created or self.scandir_close_attempted:
++            return
++        self.scandir_close_attempted = True
++        try:
++            self.scandir_object.close()
++        except BaseException as error:
++            self.scandir_close_error = {
++                "code": "scandir_close_not_confirmed",
++                "errno": public_errno(error)}
++            raise
++        else:
++            self.scandir_closed = True
++
++    @protected_call
++    def close_all_once(self):
++        try:
++            self.close_scandir_once()
++        except BaseException:
++            pass
++        for fd in list(self.fds)[::-1]:
++            try:
++                self.close_once(fd)
++            except BaseException:
++                # No second close of an uncertain descriptor number.
++                pass
++
++    def closures_proven(self):
++        return (
++            not self.open_registration_unknown and not self.scandir_open_unknown
++            and not self.close_failures and not self.fds
++            and self.opened == self.closed == len(self.fd_rows)
++            and all(row["close_attempted"] and row["closed"]
++                    and row["close_error"] is None for row in self.fd_rows)
++            and (not self.scandir_created or
++                 (self.scandir_close_attempted and self.scandir_closed
++                  and self.scandir_close_error is None)))
++
++    def check_dir(self, value):
++        need(stat.S_ISDIR(value.st_mode)
++             and value.st_uid in (0, os.geteuid())
++             and not stat.S_IMODE(value.st_mode) & 0o002,
++             "unsafe_directory")
++
++    def open_dirs(self):
++        need(os.geteuid() == 1000, "operator_uid")
++        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
++        self.remaining()
++        root = self.open_fd("/", flags, "ancestor")
++        captured = os.fstat(root)
++        self.check_dir(captured)
++        self.dirs.append((None, "/", root, dir_id(captured)))
++        parent = root
++        target_fd = None
++        parts = (str(self.target) + "/release/deps").lstrip("/").split("/")
++        for index, name in enumerate(parts):
++            self.remaining()
++            before = os.stat(name, dir_fd=parent, follow_symlinks=False)
++            self.check_dir(before)
++            fd = self.open_fd(name, flags, "ancestor", parent)
++            held = os.fstat(fd)
++            self.check_dir(held)
++            need(dir_id(held) == dir_id(before)
++                 and dir_id(os.stat(name, dir_fd=parent,
++                                    follow_symlinks=False)) == dir_id(before),
++                 "directory_open_identity")
++            self.dirs.append((parent, name, fd, dir_id(before)))
++            if index == len(parts) - 3:
++                target_fd = fd
++                need(dir_id(held) == self.target_pin, "exact_target_identity")
++            parent = fd
++        need(target_fd is not None, "target_fd_missing")
++        return self.dirs[-2][2], self.dirs[-1][2]
++
++    def verify_dirs(self):
++        for parent, name, fd, captured in self.dirs:
++            self.remaining()
++            held = os.fstat(fd)
++            named = os.stat(name, dir_fd=parent, follow_symlinks=False)
++            self.check_dir(held)
++            self.check_dir(named)
++            need(dir_id(held) == captured and dir_id(named) == captured,
++                 "directory_named_identity")
++
++    def checked_file(self, parent, name, expected_identity=None):
++        self.remaining()
++        before = os.stat(name, dir_fd=parent, follow_symlinks=False)
++        need(stat.S_ISREG(before.st_mode) and before.st_uid == 1000
++             and before.st_gid == 1000 and before.st_nlink == 2
++             and stat.S_IMODE(before.st_mode) == 0o700
++             and 0 < before.st_size <= self.maximum,
++             "cargo_binary_two_link_metadata")
++        captured = full_id(before)
++        if expected_identity is not None:
++            need(captured == expected_identity, "cargo_alias_full_identity")
++        fd = self.open_fd(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
++                          "cargo_binary", parent)
++        need(full_id(os.fstat(fd)) == captured, "cargo_binary_open_identity")
++        return fd, captured
++
++    @protected_call
++    def read_body(self, fd, parent, name, captured, retain):
++        self.remaining()
++        size = captured[6]
++        body_limit = size * 2
++        total_limit = body_limit + 2
++        need(self.body_bytes_read + size <= body_limit
++             and self.bytes_read + size + 1 <= total_limit
++             and self.eof_probe_calls < 2, "cargo_binary_read_admission")
++        digest = hashlib.sha256()
++        data = bytearray() if retain else None
++        left = size
++        while left:
++            self.remaining()
++            count = min(left, 65536, body_limit - self.body_bytes_read,
++                        total_limit - self.bytes_read)
++            need(count > 0, "cargo_binary_read_remaining")
++            block = os.read(fd, count)
++            self.body_bytes_read += len(block)
++            self.bytes_read += len(block)
++            need(self.body_bytes_read <= body_limit and self.bytes_read <= total_limit,
++                 "cargo_binary_read_bound")
++            need(0 < len(block) <= count, "cargo_binary_short_or_oversized_read")
++            left -= len(block)
++            digest.update(block)
++            if data is not None:
++                data.extend(block)
++        self.remaining()
++        need(self.eof_probe_calls < 2 and self.eof_bytes_read + 1 <= 2
++             and self.bytes_read + 1 <= total_limit, "cargo_binary_eof_admission")
++        self.eof_probe_calls += 1
++        tail = os.read(fd, 1)
++        self.eof_bytes_read += len(tail)
++        self.bytes_read += len(tail)
++        need(self.eof_bytes_read <= 2 and self.bytes_read <= total_limit,
++             "cargo_binary_read_bound")
++        need(tail == b"", "cargo_binary_trailing_bytes")
++        self.remaining()
++        need(full_id(os.fstat(fd)) == captured
++             and full_id(os.stat(name, dir_fd=parent, follow_symlinks=False)) == captured,
++             "cargo_binary_hash_final_identity")
++        return (bytes(data) if data is not None else None), digest.hexdigest()
++
++    @protected_call
++    def find_alias(self, deps, captured):
++        self.remaining()
++        names_seen = 0
++        name_bytes = 0
++        candidates = []
++        self.scandir_open_unknown = True
++        self.scandir_object = os.scandir(deps)
++        self.scandir_created = True
++        self.scandir_open_unknown = False
++        try:
++            for entry in self.scandir_object:
++                self.remaining()
++                names_seen += 1
++                name_bytes += len(os.fsencode(entry.name))
++                need(names_seen <= 16384 and name_bytes <= 1048576,
++                     "directory_names_bound")
++                if re.fullmatch(r"heptabao[-_]native[-_]h2[-_]qa-[0-9a-f]{16}", entry.name):
++                    candidates.append(entry.name)
++                    need(len(candidates) <= 32, "qa_names_bound")
++        finally:
++            self.close_scandir_once()
++        self.remaining()
++        matches = []
++        for name in sorted(candidates):
++            self.remaining()
++            value = os.stat(name, dir_fd=deps, follow_symlinks=False)
++            if (value.st_dev, value.st_ino) == captured[:2]:
++                need(full_id(value) == captured, "alias_census_identity")
++                matches.append(name)
++        need(len(matches) + 1 == 2,
++             "link_count_not_fully_accounted_for")
++        return matches[0], names_seen, name_bytes, len(candidates)
++
++    def inspect(self):
++        release, deps = self.open_dirs()
++        primary_name = "heptabao-native-h2-qa"
++        primary_fd, captured = self.checked_file(release, primary_name)
++        alias, seen, name_bytes, candidates = self.find_alias(deps, captured)
++        alias_fd, alias_identity = self.checked_file(deps, alias, captured)
++        contents, primary_sha = self.read_body(
++            primary_fd, release, primary_name, captured, True)
++        _, alias_sha = self.read_body(alias_fd, deps, alias, alias_identity, False)
++        need(primary_sha == alias_sha, "cargo_alias_whole_sha_mismatch")
++        self.verify_dirs()
++        for fd, parent, name in (
++                (primary_fd, release, primary_name), (alias_fd, deps, alias)):
++            need(full_id(os.fstat(fd)) == captured
++                 and full_id(os.stat(name, dir_fd=parent, follow_symlinks=False)) == captured,
++                 "cargo_final_alias_set_identity")
++        self.remaining()
++        primary_path = self.target / "release" / primary_name
++        self.aliases = [str(primary_path), str(self.target / "release/deps" / alias)]
++        self.summary = {
++            "full_identity": [str(value) for value in captured],
++            "aliases": self.aliases, "expected_links": 2,
++            "link_count_fully_accounted_for": True,
++            "same_full_identity": True, "same_whole_sha256": True,
++            "sha256": primary_sha, "body_bytes_limit": captured[6] * 2,
++            "eof_probe_bytes_limit": 2, "total_returned_bytes_limit": captured[6] * 2 + 2,
++            "directory_entries_seen": seen, "directory_name_bytes": name_bytes,
++            "qa_prefix_candidates": candidates,
++        }
++        return contents, {**identity(os.fstat(primary_fd)),
++                          "path": str(primary_path), "sha256": primary_sha}
++
++
++def read_cargo_binary(built, target, target_pin, maximum, until, report):
++    """Temporary signal ownership covers only this post-Cargo file observation."""
++    global FD_CLOSE_FAILED
++    need(built == target / "release" / "heptabao-native-h2-qa",
++         "cargo_declared_normal_binary_path")
++    signals = Signals()
++    reader = CargoBinaryRead(target, target_pin, maximum, until, signals)
++    previous = {number: signal.getsignal(number) for number in (signal.SIGTERM, signal.SIGINT)}
++    output = None
++    report.update({"status": "failed", "path": str(built),
++                   "original_deadline_monotonic_ns": until,
++                   "source_cache_written": False, "source_cache_executed": False,
++                   "all_registered_resources_closed": False,
++                   "resource_outcome_unknown": True})
++    signals.protected += 1
++    try:
++        signals.install()
++        output = reader.inspect()
++        report.update(reader.summary)
++        report["status"] = "observed_two_aliases"
++    except BaseException as error:
++        report["failure_code"] = fixed_error(error)
++        raise
++    finally:
++        closures = False
++        try:
++            reader.close_all_once()
++            closures = reader.closures_proven()
++            completed = time.monotonic_ns()
++            report.update({
++                "fd_closure_rows": reader.fd_rows,
++                "fds_opened": reader.opened, "fds_closed_once": reader.closed,
++                "fds_remaining": len(reader.fds), "fd_close_failures": reader.close_failures,
++                "open_registration_unknown": reader.open_registration_unknown,
++                "iterator_open_unknown": reader.scandir_open_unknown,
++                "iterator_created": reader.scandir_created,
++                "iterator_close_attempted": reader.scandir_close_attempted,
++                "iterator_closed_once": reader.scandir_closed,
++                "iterator_close_error": reader.scandir_close_error,
++                "all_registered_resources_closed": closures,
++                "resource_outcome_unknown": not closures,
++                "cancel_signal": signals.pending,
++                "body_bytes_read": reader.body_bytes_read,
++                "eof_probe_calls": reader.eof_probe_calls,
++                "eof_probe_bytes_read": reader.eof_bytes_read,
++                "total_bytes_read": reader.bytes_read,
++                "completed_monotonic_ns": completed,
++                "within_original_deadline": completed < until,
++            })
++            if not closures or signals.pending is not None or completed >= until:
++                report["status"] = "failed"
++        finally:
++            if not closures:
++                FD_CLOSE_FAILED = True
++                report["status"] = "failed"
++                report["resource_outcome_unknown"] = True
++                report.setdefault("failure_code", "cargo_binary_cleanup_unconfirmed")
++            for number, handler in previous.items():
++                signal.signal(number, handler)
++            signals.protected -= 1
++    report["cancel_signal"] = signals.pending
++    if signals.pending is not None:
++        report["status"] = "failed"
++    signals.check()
++    need(report["status"] == "observed_two_aliases", "cargo_binary_observation_incomplete")
++    remaining(until)
++    return output
++
+ 
+ def pin_file(pin: dict, until: int, *, retain: bool = False) -> tuple[bytes | None, dict]:
+     need(type(pin) is dict and set(pin) == {"path", "sha256", "bytes", "uid", "mode"}, "exact_file_pin_fields")
+@@ -530,7 +931,7 @@
+     (ROOT / "project").mkdir(mode=0o700)
+     (ROOT / "artifacts").mkdir(mode=0o700)
+     project = ROOT / "project"
+-    result = {"schema": "heptabao.native-h2-qa.build.v2", "status": "failed",
++    result = {"schema": "heptabao.native-h2-qa.build.v3", "status": "failed",
+               "candidate_commit": COMMIT, "candidate_tree": TREE,
+               "controller_sha256": self_file["sha256"], "binding_sha256": args.binding_sha256,
+               "normal_product_result_sha256": normal_observed["sha256"],
+@@ -675,7 +1076,14 @@
+             built = exact_path(event["executable"])
+             need(built.is_relative_to(target) and not built.is_relative_to(SOURCE),
+                  "qa_artifact_bound_target")
+-            contents, source_meta = read_file(built, 128 * 1024 * 1024, until)
++            if test:
++                contents, source_meta = read_file(built, 128 * 1024 * 1024, until)
++            else:
++                source_custody = {}
++                result["normal_qa_binary_alias_observation"] = source_custody
++                contents, source_meta = read_cargo_binary(
++                    built, target, spec["target_identity"], 128 * 1024 * 1024,
++                    until, source_custody)
+             need(source_meta["uid"] == os.getuid() and bool(source_meta["mode"] & 0o100),
+                  "actual_qa_artifact_custody")
+             write_new(destination, contents)

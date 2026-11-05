@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.bounded-job-locator.binding-checks.r2",
+  "runtimeReference": {
+    "name": "runtime_reference",
+    "repository": "TrillionniumFoundation/hepta-runtime",
+    "blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+    "bytes": 171794,
+    "sha256": "98344ab61981793fa8b6cda92d777c62639dd6d61b4e3b6db0e94bb96f011fe5"
+  },
+  "checks": [
+    {
+      "name": "desktop_positive_request",
+      "requestBlob": "c17964a28812bbe989aa364e84cf9f000b9e3959",
+      "canonicalDigest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+      "serializedBindingBytes": 11059,
+      "expectedFieldsExact": true,
+      "scope": "desktop-fence",
+      "host": "desktop",
+      "actualAckDigestExact": true,
+      "actualAckHostExact": true,
+      "actualJobId": "1a1aaa6db3e-fc05-45a6",
+      "workerDirDerivedFromOwnAck": true
+    },
+    {
+      "name": "desktop_target_request",
+      "requestBlob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+      "canonicalDigest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+      "serializedBindingBytes": 22861,
+      "expectedFieldsExact": true,
+      "scope": "desktop-fence",
+      "host": "desktop"
+    },
+    {
+      "name": "rog_positive_request",
+      "requestBlob": "9997d51c8457bfc240fd8654af62f25eaab5d0a0",
+      "canonicalDigest": "51752897890cc752bfa1819ce557ccb6eb293586681cc46b81200a368439f3ed",
+      "serializedBindingBytes": 387119,
+      "expectedFieldsExact": true,
+      "scope": "rog-source",
+      "host": "rog",
+      "actualAckDigestExact": true,
+      "actualAckHostExact": true,
+      "actualJobId": "1a1aad691c1-fc05-47e5",
+      "workerDirDerivedFromOwnAck": true
+    },
+    {
+      "name": "rog_target_request",
+      "requestBlob": "381b26a95d4efdbf2082d72e7a4b7c98c8730a1d",
+      "canonicalDigest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+      "serializedBindingBytes": 111098,
+      "expectedFieldsExact": true,
+      "scope": "rog-source",
+      "host": "rog"
+    }
+  ],
+  "stdinBinRead": false,
+  "physicalDeploymentSourceIdentityProven": false,
+  "floorSemantics": "Both fixed configs retain the original handoff's1793864424254 lower bound. For ROG this is an explicit wider search floor, not its positive creation time or a host equivalence. A single actual wall-clock ceiling is sampled before IO; no absent/replay conclusion follows.",
+  "old64BitFingerprintsUsedForIdentity": false,
+  "originalAckBytesRetainedLosslessly": true,
+  "unsafeParsedIntegersNotReserializedAsOriginal": true
+}

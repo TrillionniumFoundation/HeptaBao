@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-C",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+    "rev-parse",
+    "HEAD^{tree}"
+  ],
+  "completed_monotonic_ns": 207351993039246,
+  "completed_within_deadline": true,
+  "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3",
+  "deadline_monotonic_ns": 207366986873563,
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.006165683,
+  "exit_code": 0,
+  "label": "source-after-tree",
+  "outer_cap_seconds": 15,
+  "owned_pgid": 2470548,
+  "remaining": [],
+  "started_monotonic_ns": 207351986873563,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "b2cec45720e59e9218f487ebb8b965b1f1fc5fccb8430d61c3a660fab40ead36",
+  "timed_out": false
+}

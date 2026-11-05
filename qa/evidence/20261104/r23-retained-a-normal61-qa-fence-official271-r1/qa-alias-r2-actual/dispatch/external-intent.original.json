@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.qa-r2.alias-observation.external-intent.v1",
+  "created_utc": "2026-11-05 10:07:13 UTC",
+  "host": "rog",
+  "root_go": {
+    "blob": "9b4fd0a9721ccba3592f27f949a4070c6aaddccb",
+    "sha256": "068e00522b9699674c34162682e3d5f20688c0536908d02ff456ca35f4026fb6"
+  },
+  "exact_request": {
+    "blob": "0e23798f8b21a8867c86c8a64b2c80d0b4fbc3be",
+    "bytes": 18980,
+    "sha256": "7238ba7ba0909a8a881ab85b83b42e0476f8fb2ded7074d5575b5623f9ea2890"
+  },
+  "idempotency_key": "heptabao-qa-r2-cargo-alias-observation-4e72160c-20261105-r2",
+  "timeout_seconds": 45,
+  "source_sha256": "4e72160c838092ff1706fc1b14f826b500edfef2ea68f335d80df5b1148ebf12",
+  "single_submission_required": true,
+  "observer_only": true,
+  "cargo_or_product_authorized": false,
+  "pre_submit": true
+}

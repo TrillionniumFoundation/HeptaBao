@@ -1,0 +1,13 @@
+--- before/build_native_h2_client.py
++++ after/build_native_h2_client.py
+@@ -578,6 +578,10 @@
+             for number, handler in previous.items():
+                 signal.signal(number, handler)
+             signals.protected -= 1
++    report["cancel_signal"] = signals.pending
++    if signals.pending is not None:
++        report["status"] = "failed"
++    signals.check()
+     need(report["status"] == "observed_two_aliases", "cargo_binary_observation_incomplete")
+     remaining(until)
+     return output

@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.desktop-first10min-locator-r4.actual.v1",
+  "job_id": "1a1ab3787f9-fc05-4b71",
+  "root_authorization_blob": "e7c17a2a4f4a23185cb55ae73b3613ff84873068",
+  "source_tree": "8545da44146c8ee51aebde15ed84b54eb518cc68",
+  "source": {
+    "blob": "b8925b32564e60e36bd259bf44fb13f83ef42421",
+    "bytes": 24959,
+    "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf"
+  },
+  "request": {
+    "bytes": 26628,
+    "sha256": "bcff14a7c0e88ce460b03e5d7f19205a1db25f0d71a8602fc88e4dcf5f028014",
+    "blob": "2f7c2dbb1b8402057167fba7c824bb4d717b874b"
+  },
+  "intent": {
+    "bytes": 29227,
+    "sha256": "18e6bed7e3f55726a01041caefdf4f4b0e12255c60ccb780b297eeeb2adab524",
+    "blob": "310efd51c9e8387967fd593c502cadcef6ec67c7"
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "dc9cfb0b1861ddc9f0b0039044de8e7d75f5605fa1579fd4643f3f512a4ede77",
+    "blob": "2baff1bf7e1042bbbe07786360dfa89821cb63df"
+  },
+  "stdout": {
+    "bytes": 12034,
+    "sha256": "f9b3b7bffead4d14ab2725fd58c9841a3a1b0eab004729341365cb574bcb267c",
+    "blob": "0d0e99d26bc5ceddb9c5d5e1d717ef50ff842d51"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "authority_outcome": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "fixed_window": {
+    "floor_unix_ms": 1793864424254,
+    "ceiling_unix_ms": 1793865024254,
+    "seconds": 600,
+    "claim": "This first-ten-minute observation does not guarantee target coverage. No other window was observed by this job."
+  },
+  "observations": {
+    "candidate_count": 42,
+    "request_files_read": 42,
+    "request_bytes_read": 139222,
+    "directory_entries_observed": 7942,
+    "directory_name_bytes_observed": 165008,
+    "matches": [],
+    "fd_closures": 91,
+    "scandir_closed": true,
+    "elapsed_after_closure_ns": 323092723
+  },
+  "limits": {
+    "shared_soft_seconds": 15,
+    "outer_seconds": 45,
+    "max_candidates": 128,
+    "max_total_returned_request_bytes": 8388608,
+    "max_names": 16384,
+    "max_name_bytes": 1048576
+  },
+  "qualification": {
+    "bounded_read_complete": true,
+    "target_found": false,
+    "absence_proven": false,
+    "original_business_terminal_proven": false,
+    "original_unknown_unchanged": true,
+    "replay_authorized": false,
+    "next_window_authorized": false
+  },
+  "prior_failures_preserved": [
+    {
+      "tree": "f6f8da686ce20d87503374895189a153b300b20f",
+      "scope": "desktop R2",
+      "outcome": "FAIL_BOUND"
+    },
+    {
+      "tree": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9",
+      "scope": "desktop R3 first fixed half window",
+      "outcome": "FAIL_BOUND"
+    }
+  ],
+  "raw_storage_statement": "Native response text and log byte streams are retained exactly. MCP snapshots are JSON serializations of the returned tool envelope, not unobserved wire bytes. Parsed unsafe numeric fields are not reserialized as original evidence."
+}

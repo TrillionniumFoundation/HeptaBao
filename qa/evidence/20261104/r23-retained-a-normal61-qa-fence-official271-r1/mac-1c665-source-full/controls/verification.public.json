@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.actual-source-controls-readback.v1",
+  "job_id": "1a1aaf3c0b0-fc05-48f8",
+  "source_core_tree": "76f0071ba3d91ffb3a445a2db031ecfe333773e7",
+  "source_core_sha256": "8434e18f42b638f035ab58d98245816179018cc14cf635461ab082b7f3ae3bba",
+  "actual_controls": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/control/mac_normal_same_root_publication_build.py",
+      "bytes": 35525,
+      "sha256": "61ee0154712b2ee6f764e1bf077fe2c107b7f8e05ed3fb0c8651393bdc232c02",
+      "version": "16777244:72605827:35525:1793869466993602330:1793869466993607955",
+      "whole_equals_reviewed_source": true,
+      "independent_file_info_same_version_sha_size": true,
+      "mode": 384,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/control/launch_normal_same_root_publication.py",
+      "bytes": 24018,
+      "sha256": "f02a982a9ec9afeb26eebd20f007b261aa042daa46f005336a48fce00348df93",
+      "version": "16777244:72605828:24018:1793869466993874455:1793869466993880497",
+      "whole_equals_reviewed_source": true,
+      "independent_file_info_same_version_sha_size": true,
+      "mode": 384,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/control/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "version": "16777244:72605829:6249:1793869466994125580:1793869466994131497",
+      "whole_equals_reviewed_source": true,
+      "independent_file_info_same_version_sha_size": true,
+      "mode": 384,
+      "uid": 501,
+      "gid": 20,
+      "nlink": 1
+    }
+  ],
+  "normal_submitted": false
+}

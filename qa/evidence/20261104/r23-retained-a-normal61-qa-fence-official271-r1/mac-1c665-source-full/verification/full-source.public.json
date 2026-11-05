@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-stage-full-original-source-verification.v1",
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "tracked_leaf_count": 3914,
+  "computed_merkle_trees": 358,
+  "two_original_nul_outputs_whole_read": true,
+  "two_outputs_same_leaf_objects_modes_paths": true,
+  "all14_original_binary_chunks_expected_version_exact": true,
+  "mac_bundle_equals_independently_read_rog_input": true,
+  "whole_bundle_bytes": 28172,
+  "whole_bundle_sha256": "6536aaddeda6ee24ccceecd1fa7a270d000611ebb567362581c855953f5a1e15",
+  "command_count": 40,
+  "raw_command_files": 120,
+  "small_streams": 78,
+  "large_streams": 2,
+  "command_receipt_pid_and_cleanup_matched": true,
+  "all_command_exit0_reaped_no_remaining": true,
+  "command_deadlines_preserved": true,
+  "normal_build_started": false,
+  "rog_original_job_closure_remains_unknown": true
+}

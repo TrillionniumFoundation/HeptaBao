@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.locator-r5.references.v1",
+  "base_source": "b8925b32564e60e36bd259bf44fb13f83ef42421",
+  "base_source_tree": "8545da44146c8ee51aebde15ed84b54eb518cc68",
+  "base_actual_tree": "92cc1ac7dcf87889d94ce51d11366e547da52895",
+  "original_r2_source": "b28c4b681346e19d71d4b022013346937818270f",
+  "original_r2_packet": "e49778e26aea2673ed9a05594f935fe21a45c308",
+  "original_25_component_script": "b2a9fffb3dd3c851bf7a5545a1a553ce099ccff9",
+  "original_25_input": "1fdaf7f2bfe82ed876bee958b4a89b87ab833f0a",
+  "original_25_stdout": "ec45d410327a4a9b589110bb6a2b4077f791ebd0",
+  "original_25_executor": "b9a3edfb307b803f197c97e5928689b1b37161da",
+  "new_ha_source_peer": "4ef6a2b9b38c76a1015937e8f2b561c4f2bf4dc1"
+}

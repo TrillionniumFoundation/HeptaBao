@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.recovered-fence-readonly-intent.v1",
+  "authorization": "Root explicit read-only recovered job authority/fullstreams and exact marker; no start/replay/write",
+  "located_job": "1a1aac6213e-fc05-4714",
+  "locator_actual_tree": "159715df29d60d4bda3956a6bbfa93de6ec5c19d",
+  "stored_request_binding": {
+    "job_id": "1a1aac6213e-fc05-4714",
+    "request_digest": "2cd54d3522e4fccfef1e26edd4e86f7908e08e9183e1bb2bfdd8caad83ee4bf5",
+    "request_file_bytes": 23435,
+    "request_file_sha256": "a56d3c621bba6654c48aefcbfd0cb547eb617a71a90ff6f034284a954a33a72d"
+  },
+  "original_dispatch_request_blob": "fb197792ced7efbd7c60da559514b9209e1affd4",
+  "controller_sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9",
+  "marker_source": {
+    "base_literal": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "root_name_literal": "normal-cold-h2-x230-transfer-r1",
+    "tombstone_name_literal": "relay-effect-fence.public.json",
+    "source_lines": [
+      12,
+      14,
+      15
+    ]
+  },
+  "calls": {
+    "status": {
+      "host": "desktop",
+      "job_id": "1a1aac6213e-fc05-4714"
+    },
+    "read0": {
+      "host": "desktop",
+      "job_id": "1a1aac6213e-fc05-4714",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    },
+    "marker_info": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-r1/relay-effect-fence.public.json"
+    }
+  },
+  "stream_page_limit": 16384,
+  "controller_stdout_cap": 32768,
+  "marker_body_cap": 8192,
+  "binary_body_precondition": "Only after regular-file metadata; pin expected_version from that metadata and verify whole hash against metadata and actual report if present",
+  "business_dispatch": false,
+  "marker_writes": false,
+  "prior_relay_job": "1a1aa57458d-fc05-4156",
+  "prior_relay_job_not_in_readset": true
+}

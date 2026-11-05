@@ -1,0 +1,88 @@
+{
+  "added_targeted_case_names": 10,
+  "artifact_or_target_reads": 0,
+  "case_count": 18,
+  "cases": [
+    {
+      "name": "one-exact-alias",
+      "passed": true
+    },
+    {
+      "name": "missing-alias",
+      "passed": true
+    },
+    {
+      "name": "two-alias-names-refused",
+      "passed": true
+    },
+    {
+      "name": "same-inode-full9-drift-refused",
+      "passed": true
+    },
+    {
+      "name": "unselected-inode-not-opened",
+      "passed": true
+    },
+    {
+      "name": "expired-before-scandir",
+      "passed": true
+    },
+    {
+      "name": "iterator-close-failure-not-complete",
+      "passed": true
+    },
+    {
+      "name": "failed-close-is-once-and-not-clean",
+      "passed": true
+    },
+    {
+      "name": "signal-after-open-registers-before-cancel-and-closes-once",
+      "passed": true
+    },
+    {
+      "name": "open-registration-exception-retains-unknown-not-fake-closed",
+      "passed": true
+    },
+    {
+      "name": "signal-after-scandir-registers-and-closes-once",
+      "passed": true
+    },
+    {
+      "name": "scandir-acquisition-exception-retains-unknown",
+      "passed": true
+    },
+    {
+      "name": "pending-and-repeated-signal-cannot-escape-cleanup-or-repeat-close",
+      "passed": true
+    },
+    {
+      "name": "two-bodies-and-two-eof-probes-have-separate-fixed-limits",
+      "passed": true
+    },
+    {
+      "name": "unexpected-eof-byte-is-counted-before-refusal",
+      "passed": true
+    },
+    {
+      "name": "returned-body-bytes-counted-before-invalid-length-refusal",
+      "passed": true
+    },
+    {
+      "name": "exhausted-eof-allowance-refuses-before-next-read",
+      "passed": true
+    },
+    {
+      "name": "cancel-after-read-still-accounts-returned-bytes",
+      "passed": true
+    }
+  ],
+  "main_calls": 0,
+  "real_os_alias_reads": 0,
+  "real_signal_install_or_delivery": 0,
+  "retained_original_case_names": 8,
+  "schema": "heptabao.qa-r2.artifact-alias.pure-components.v2",
+  "scope": "selected methods with synthetic os metadata/signals; no actual alias claim",
+  "source_bytes": 17919,
+  "source_sha256": "4e72160c838092ff1706fc1b14f826b500edfef2ea68f335d80df5b1148ebf12",
+  "status": "passed-source-components-only"
+}

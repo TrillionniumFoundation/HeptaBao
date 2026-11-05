@@ -1,0 +1,7 @@
+{
+  "chunk_id": "b9a02f",
+  "wall_time_seconds": 0.146860852,
+  "exit_code": 1,
+  "original_token_count": 47,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 407, in <module>\n  File \"<stdin>\", line 20, in check\nAssertionError: actual_main_hides_nonmatching_argv_and_preserves_no_replay\n"
+}

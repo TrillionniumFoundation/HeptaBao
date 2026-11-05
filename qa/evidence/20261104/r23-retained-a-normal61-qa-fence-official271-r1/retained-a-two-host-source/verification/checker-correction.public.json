@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.static-checker.scope-correction.v1",
+  "candidate_sources_changed": false,
+  "reason": "The initial checker mapped definitions by name, which collapsed the two existing owned definitions. Replaced only its selector by an ordered list, preserving both occurrences; all six source candidates remain unchanged.",
+  "before_result": "80 checks passed, 20 unique stager definition names",
+  "after_result": "80 checks passed, all 21 ordered stager definition occurrences exact",
+  "host_calls": 0
+}

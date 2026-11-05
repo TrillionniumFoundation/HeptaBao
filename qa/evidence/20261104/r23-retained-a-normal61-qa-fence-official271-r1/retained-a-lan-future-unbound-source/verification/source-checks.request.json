@@ -1,0 +1,6 @@
+{
+  "cmd": "python3 /tmp/heptabao_retained_a_lan_unbound_r1/verify.py",
+  "workdir": "/tmp",
+  "yield_time_ms": 10000,
+  "max_output_tokens": 7000
+}

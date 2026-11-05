@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.retained-a.rog-source.external-intent.v1",
+  "created_at_utc": "2026-11-05 10:44:18 UTC",
+  "request_blob": "b520b336d6e4015d1162346bb48a41855064fa4b",
+  "request_sha256": "278a9cf3052f1d540848a5c876ce08c3a3c4b0c0bec25fe02f063830f20c8c3f",
+  "root_go_blob": "df127794ca64b5c313700961d78f9401bac02ea1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "host": "rog",
+  "idempotency_key": "heptabao-same-root-publication-4e808-rog-source-20261105-r2-3971051a",
+  "state": "FROZEN_NOT_YET_SUBMITTED",
+  "scope": "Only create-only new r2 source/control checkout and incremental public bundle; no Cargo/product.",
+  "unknown_policy": "Preserve original request/SDK; reconcile only. Never resubmit or switch key.",
+  "original_seconds": {
+    "stage": 300,
+    "git": 90,
+    "clone": 180,
+    "supervisor": 360
+  },
+  "normal_build_authorized": false
+}

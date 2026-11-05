@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.peer.fixed-desktop-locator-twelve-window.v1",
+  "conclusion": "NO_NEW_SOURCE_BLOCKER_IN_NARROW_DELTA",
+  "source": {
+    "base_blob": "b8925b32564e60e36bd259bf44fb13f83ef42421",
+    "candidate_blob": "220587bf729d74f5cd79a9b29f884092c34e78e9",
+    "candidate_bytes": 26240,
+    "candidate_sha256": "7595dc5fa2c8dc800dfa986cb486d687d9a725510d3db4a7e5fed26ace36798c",
+    "diff_blob": "5a06e0c1073f5979e9d9b968f93308340e01971e",
+    "strict_hunks": 5
+  },
+  "reviewed": [
+    "Full before/after/diff fetched and independently whole SHA256/Git checked; strict diff reconstructs all candidate bytes.",
+    "Twelve inclusive windows cover exactly 1793865024255..1793871896027 with no overlap or gap, directly following old ceiling 1793865024254. Each contains at most 600000 milliseconds.",
+    "Selector accepts only fixed string keys; future not-yet-reached start refuses. Observed ceiling clips only selected query end and is reported, not treated as full-window absence.",
+    "Actual main restricts scope to desktop-fence before opening ancestors. The original anchor floor and exact anchor binding remain independent; known anchor is read and verified before candidates.",
+    "Whole Reader body and main exception/closure/publication tail are byte-identical. Original 15s shared clock, global-per-attempt read/names/output caps, FD/iterator once-close and pending-cancel checks are preserved.",
+    "No signal, process launch, stdin payload read, job replay or write path is added."
+  ],
+  "limits": [
+    "Source review only; no host or module execution, no rerun of prior 25 selected components.",
+    "No result yet for any window. A bounded miss proves neither absence nor original terminal/cleanup; source report keeps these propositions false.",
+    "Each future exact request and its single-run scheduling still requires root admission; this review does not grant runtime."
+  ],
+  "fixed_windows": [
+    {
+      "id": "01",
+      "start": 1793865024255,
+      "end": 1793865624254
+    },
+    {
+      "id": "02",
+      "start": 1793865624255,
+      "end": 1793866224254
+    },
+    {
+      "id": "03",
+      "start": 1793866224255,
+      "end": 1793866824254
+    },
+    {
+      "id": "04",
+      "start": 1793866824255,
+      "end": 1793867424254
+    },
+    {
+      "id": "05",
+      "start": 1793867424255,
+      "end": 1793868024254
+    },
+    {
+      "id": "06",
+      "start": 1793868024255,
+      "end": 1793868624254
+    },
+    {
+      "id": "07",
+      "start": 1793868624255,
+      "end": 1793869224254
+    },
+    {
+      "id": "08",
+      "start": 1793869224255,
+      "end": 1793869824254
+    },
+    {
+      "id": "09",
+      "start": 1793869824255,
+      "end": 1793870424254
+    },
+    {
+      "id": "10",
+      "start": 1793870424255,
+      "end": 1793871024254
+    },
+    {
+      "id": "11",
+      "start": 1793871024255,
+      "end": 1793871624254
+    },
+    {
+      "id": "12",
+      "start": 1793871624255,
+      "end": 1793871896027
+    }
+  ],
+  "host_calls": 0,
+  "source_module_executions": 0
+}

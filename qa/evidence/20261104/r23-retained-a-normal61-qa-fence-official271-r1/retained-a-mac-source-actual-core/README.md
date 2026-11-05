@@ -1,0 +1,5 @@
+# Mac 4e808 source stage: core and future normal61 binding
+
+The single original job completed with authoritative exit 0 and full durable 404-byte stdout/zero-byte stderr. The original stage receipt reports 4.600696458015591 seconds, all 41 children reaped with empty groups, the unchanged T5 UUID prewrite guard, local incremental bundle import, strict full fsck and independent 3,914-leaf/62,227,757-byte worktree/index matching canonical eba5e650. Old 495 source remains unchanged. Four actual control texts are independently full-read and compared to exact source payloads, then matched to independent file_info versions and metadata.
+
+This small packet deliberately records that the per-command originals and two raw full NUL indexes are still being archived. The normal61 request fills exactly one previously unresolved stage-result SHA. It has not been submitted; a separate root GO is required. No normal61 result or new product qualification is inferred from source-stage success. The original 60 plus independent retained-A regression remain separately counted with all original budgets. Linux shared target scheduling is independent and still held.

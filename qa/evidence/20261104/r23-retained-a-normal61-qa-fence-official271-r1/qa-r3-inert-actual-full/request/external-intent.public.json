@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.qa-r3.draft2.inert-external-intent.v1",
+  "created_utc": "2026-11-05 10:45:12 UTC",
+  "operation": "one exact process_start after this external intent is durably saved",
+  "root_go_blob": "4ae55d21e122ff5669d045e98c7fbe2c5c7a8df9",
+  "root_go_sha256": "7a2cebcff047081b20f663b81fc85609af8261fcb07d315b241951544bcad4b1",
+  "source_tree": "c39a25545380825bbe5d56949563bb08095f9730",
+  "request_blob": "f8dfbeb06ac9f50b67fef4a7bdbe8349ff1cfc05",
+  "request_bytes": 409810,
+  "request_sha256": "428533673ecff4a142ab0e728b64b365c8ec4a7f65919261b636fcb7e6b33804",
+  "host": "rog",
+  "idempotency_key": "heptabao-df026-native-h2-qa-inert-93afaf47-20261105-r3",
+  "outer_seconds": 60,
+  "create_only_root": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r3",
+  "cargo_or_product_authorized": false,
+  "dispatch_count_before_intent": 0,
+  "unknown_policy": "retain original key and any returned job; never replay business request after uncertainty"
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.h2-binder-qa-r3.source-invariance.v1",
+  "status": "source-only",
+  "literal_changes": 2,
+  "inverse_whole_exact": true,
+  "old_builder_sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35",
+  "new_builder_sha256": "7ea25347f71764f1ed3d459d24b92750ef82c361878e9c856c7a7e8fe699bc15",
+  "new_result_schema": "heptabao.native-h2-qa.build.v3",
+  "before_bytes": 37800,
+  "after_bytes": 37800,
+  "before_sha256": "4313eb8064624d7112722d64f13a89b431aff82ba246471e675b8b37eb3ff010",
+  "after_sha256": "79ec24515f7067f162d60da0bc32969100b432bdbd7221ce09f7270488c8baac",
+  "compiled_source_count": 2,
+  "constructor_or_verifier_executed": false,
+  "actual_qa_artifacts_bound": false,
+  "host_or_cargo_calls": 0
+}

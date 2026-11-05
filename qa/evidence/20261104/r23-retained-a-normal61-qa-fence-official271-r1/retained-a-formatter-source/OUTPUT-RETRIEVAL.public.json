@@ -1,0 +1,35 @@
+{
+  "root": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1",
+  "fixed_outputs": [
+    "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+    "formatted/service_native_v6_ha_same_root_republication_tests.rs",
+    "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+    "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr",
+    "rustfmt.toml",
+    "result.public.json"
+  ],
+  "independent_retrieval": "On authoritative known completion, file_info each exact output; expected_version whole binary read; verify full bytes, stream hash, eof and same version. No scans/replay.",
+  "metadata_fields": "full returned POSIX metadata and immutable version strings retained losslessly",
+  "rustfmt_tool": {
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "bytes": 5255144,
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "format_config": {
+    "text": "edition = \"2024\"\n",
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "original_seconds": {
+    "controller": 50,
+    "child": 10,
+    "outer": 60
+  },
+  "new_root_create_only": true,
+  "source_repositories_or_targets_opened": false,
+  "candidate_source_status": "unformatted and uncompiled",
+  "request": {
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7",
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525"
+  }
+}

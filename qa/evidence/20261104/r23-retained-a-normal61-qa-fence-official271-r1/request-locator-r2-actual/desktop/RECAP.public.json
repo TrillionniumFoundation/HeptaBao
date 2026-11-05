@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.bounded-job-locator.actual-recap.r2",
+  "scope": "desktop-fence",
+  "configured_host": "desktop",
+  "locator_job_id": "1a1ab18d402-fc05-4a4c",
+  "exact_key": "heptabao-bounded-job-locator-desktop-e1148f85-20261105-r2",
+  "start_request": {
+    "bytes": 26526,
+    "sha256": "9962b351b3c17b1207048b57ab683dc225d0c8cf38729e9b27bc86e6b71981e7",
+    "blob": "0b05d5dfcae1d37252acc9d84be506636e360eee"
+  },
+  "original_external_intent": {
+    "bytes": 29041,
+    "sha256": "1435624a85deb2e2772828b9fc18297e60ea9dfa447bd964d44ee0b0bcdf8b0f",
+    "blob": "0ef4f53d39bb3a8e06f26668b494321013386813"
+  },
+  "authority": {
+    "name": "status0.native-original",
+    "bytes": 728,
+    "sha256": "f882d07380c8434d513076727585f5a195058678f7943dcf38002d3c9abb4131",
+    "blob": "ed2d45c3fb0f1e4dd4f5423600c550d6aec5243a"
+  },
+  "stdout": {
+    "name": "stdout",
+    "bytes": 2274,
+    "sha256": "45b82d9e9b5d7a8b4107fe10ce38238e6dfad1613fbc15f1c6e39dcdd18e7f9c",
+    "blob": "29c3cf340257eaf8407b2595c83b7f27c9490d00"
+  },
+  "stderr": {
+    "name": "stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "known_authoritative_exit": 1,
+  "complete_and_durable": true,
+  "supervisor_timed_out": false,
+  "report_status": "failed",
+  "report_failure": {
+    "code": "recent_candidates_bound"
+  },
+  "known_anchor": {
+    "job_id": "1a1aaa6db3e-fc05-45a6",
+    "request_digest": "39297690cdf83252668d9aa1a0656dc677544816c8b6653513c15a4876a04486",
+    "request_file_bytes": 11633,
+    "request_file_sha256": "bea7a26f66f4fd04d97c849ba912f7f2a0f65ee0b654ade4daff726f97132b59",
+    "typed_fields_match": true
+  },
+  "matches": [],
+  "reported_candidate_count": null,
+  "reported_directory_count": null,
+  "request_files_read": 1,
+  "request_bytes_read": 11633,
+  "resources": {
+    "fds_opened": 9,
+    "fds_closed_once": 9,
+    "fd_close_failures": 0,
+    "fds_remaining": 0,
+    "fd_ledger_rows": 9,
+    "iterator_closed": true,
+    "open_registration_unknown": false,
+    "scandir_open_unknown": false,
+    "all_registered_resources_closed": true
+  },
+  "elapsed_after_closure_ns": 439256854,
+  "within_original_deadline_after_closure": true,
+  "source": {
+    "bytes": 24872,
+    "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+    "git_blob": "b28c4b681346e19d71d4b022013346937818270f"
+  },
+  "stored_request_binding_only": true,
+  "original_job_execution_or_terminal_reconciled": false,
+  "original_business_replayed": false,
+  "no_match_absence_proven": false,
+  "prior_unknowns_unchanged": true,
+  "scope_conclusion": "KNOWN_LOCATOR_BOUND_REFUSAL: positive anchor passed; candidate enumeration exceeded original 128 cap before any candidate body read. Original target remains unresolved."
+}

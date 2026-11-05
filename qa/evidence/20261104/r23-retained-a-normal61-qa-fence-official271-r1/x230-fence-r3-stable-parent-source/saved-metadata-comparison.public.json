@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.shared-parent-fence-saved-metadata-comparison.v1",
+  "historical_source_blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896",
+  "r2_source_blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21",
+  "saved_metadata_blob": "62403647a790e255006068666fb71c95965420ba",
+  "saved_metadata_sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed",
+  "rows": [
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/home",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [
+        {
+          "field": "nlink",
+          "historical_expected": "605",
+          "later_observed": "607"
+        },
+        {
+          "field": "mtime_ns",
+          "historical_expected": "1793857598066648108",
+          "later_observed": "1793862453712255117"
+        },
+        {
+          "field": "ctime_ns",
+          "historical_expected": "1793857598066648108",
+          "later_observed": "1793862453712255117"
+        }
+      ],
+      "path": "/home/qian-qi",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [
+        {
+          "field": "nlink",
+          "historical_expected": "194",
+          "later_observed": "195"
+        },
+        {
+          "field": "mtime_ns",
+          "historical_expected": "1793858713862347110",
+          "later_observed": "1793863012520353264"
+        },
+        {
+          "field": "ctime_ns",
+          "historical_expected": "1793858713862347110",
+          "later_observed": "1793863012520353264"
+        }
+      ],
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/sender.py",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/receiver.py",
+      "stable_object_first_five_equal": true
+    },
+    {
+      "expected_r2_equals_saved_metadata": true,
+      "historical_to_later_observed_changes": [],
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py",
+      "stable_object_first_five_equal": true
+    }
+  ],
+  "not_a_current_host_observation": true,
+  "does_not_identify_specific_rejected_r2_field": true
+}

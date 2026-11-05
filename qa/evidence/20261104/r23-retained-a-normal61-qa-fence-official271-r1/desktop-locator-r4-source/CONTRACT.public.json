@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.desktop-locator-first10min.contract.r4",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "base_source": {
+    "bytes": 24959,
+    "sha256": "886d2d25836d3fe2dbaa3fdbea8ee921d6f7c4be35b6e394fa39445dc2971cbe",
+    "blob": "4990b7a09030461704461c08cfd7edccd95bb75b"
+  },
+  "source": {
+    "bytes": 24959,
+    "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf",
+    "blob": "b8925b32564e60e36bd259bf44fb13f83ef42421"
+  },
+  "diff": {
+    "bytes": 700,
+    "sha256": "f032bdfaff2896de48943997e2306851e530a4bbffda3e8412d4a0bb1cc0ff17",
+    "blob": "9141df28c4c3ab480e676a09c2e58d55c10a35e3"
+  },
+  "exact_request": {
+    "bytes": 26628,
+    "sha256": "bcff14a7c0e88ce460b03e5d7f19205a1db25f0d71a8602fc88e4dcf5f028014",
+    "blob": "2f7c2dbb1b8402057167fba7c824bb4d717b874b"
+  },
+  "host": "desktop",
+  "key": "heptabao-bounded-job-locator-desktop-first10min-9c7461d2-20261105-r4",
+  "scope": "desktop-fence",
+  "fixed_floor_unix_ms": 1793864424254,
+  "fixed_maximum_ceiling_unix_ms": 1793865024254,
+  "ceiling_rule": "min(the same single actual wall-clock sample, 1793865024254)",
+  "window_utc": [
+    "2026-11-05T07:40:24.254Z",
+    "2026-11-05T07:50:24.254Z"
+  ],
+  "target_and_anchor_original_configs_unchanged": true,
+  "original_limits": {
+    "candidate_count": 128,
+    "total_returned_request_bytes": 8388608,
+    "single_request_including_EOF": 262144,
+    "soft_seconds": 15,
+    "supervisor_seconds": 45
+  },
+  "all_reader_signal_cleanup_and_publication_bytes_unchanged": true,
+  "prior_observations": {
+    "r2_tree": "f6f8da686ce20d87503374895189a153b300b20f",
+    "r3_tree": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9",
+    "both_desktop_refusals_preserved": true,
+    "original_target_still_unknown": true
+  },
+  "inherited_component_references": {
+    "r2_25_source_tree": "e49778e26aea2673ed9a05594f935fe21a45c308",
+    "r2_25_stdout": "ec45d410327a4a9b589110bb6a2b4077f791ebd0",
+    "r2_25_exec": "b9a3edfb307b803f197c97e5928689b1b37161da",
+    "r3_10_source_tree": "323bfe65e03a17324b3e649960a86b77dae0b34e",
+    "r3_10_stdout": "a3b126cdfef9b734a87216b16de7fd68e1a30776",
+    "r3_10_exec": "062cc792c1a3254b5dd2bd82f9543025f6dbfc91",
+    "rerun": false
+  },
+  "does_not_establish_target_inside_window": true,
+  "miss_is_not_absence": true,
+  "replay_authorized": false,
+  "later_windows_authorized": false
+}

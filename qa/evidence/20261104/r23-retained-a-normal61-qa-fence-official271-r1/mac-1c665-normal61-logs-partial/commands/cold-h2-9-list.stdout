@@ -1,0 +1,3 @@
+http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity: test
+
+1 test, 0 benchmarks

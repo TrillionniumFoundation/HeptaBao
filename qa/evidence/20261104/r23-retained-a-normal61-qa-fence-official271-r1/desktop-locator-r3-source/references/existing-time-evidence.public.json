@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.desktop-locator-existing-time-evidence.r1",
+  "status": "SOURCE_ANALYSIS_ONLY_NO_NEW_HOST",
+  "references": [
+    {
+      "name": "bound_review",
+      "blob": "632d29831f394f99e4a143575657f32c17939ef7",
+      "bytes": 1919,
+      "sha256": "3b22a141def2ff7e91b82e897ac32898cb934223ca05a642f4d66f9f9bb0b451"
+    },
+    {
+      "name": "candidate_source",
+      "blob": "fa0b8eabe31d1666377d73052ddb5025bff3df21",
+      "bytes": 21479,
+      "sha256": "8c930805ec72acd55a626d230abc475679c8f3645ff134de45b3409f27e6d3b9"
+    },
+    {
+      "name": "metadata_native",
+      "blob": "62403647a790e255006068666fb71c95965420ba",
+      "bytes": 5656,
+      "sha256": "a892643e8ed82f2ff8bb73dfe2acffff2fbbbcea85ee165ffceacaa45395f1ed"
+    },
+    {
+      "name": "metadata_authority",
+      "blob": "3850cd3c452068e119c38d2749314452d031445d",
+      "bytes": 731,
+      "sha256": "db2d32d93d13547bbfde97a03412df56b1b3fe044a50f320f1f594ba768f8f8a"
+    },
+    {
+      "name": "metadata_sdk",
+      "blob": "b5cebe61586ff2045c9d742197bc71fa670193b8",
+      "bytes": 954,
+      "sha256": "17aa5fe94f333d32525d2e91b66bd8efde6a745e653c9172c075996b836eede4"
+    }
+  ],
+  "actual_original_observation": {
+    "floor_unix_ms": 1793864424254,
+    "floor_utc": "2026-11-05T07:40:24.254Z",
+    "ceiling_unix_ms": 1793871896027,
+    "ceiling_utc": "2026-11-05T09:44:56.027Z"
+  },
+  "factual_findings": [
+    "Known anchor ACK created_unix_ms is 1793864424254; this is the original scan's lower floor.",
+    "Metadata authority at_unix_ms is 1793864425771 and records its own terminal status observation, not the fence target's submission timestamp.",
+    "Candidate source/target request have no target created/submitted wall-clock field.",
+    "Bound source review 632d... says fence_not_yet_executed=true but supplies no timestamp; it cannot establish a numerical submission cutoff.",
+    "File/directory mtime/ctime identities bind filesystem inputs, not the time an unknown process_start was submitted."
+  ],
+  "conclusion": "No narrower interval proven to contain every possible target submission was recovered from these exact existing originals. Do not convert their times or untimed source-review state into a target execution timestamp.",
+  "optional_fixed_subrange_design": {
+    "classification": "PROPOSED_NUMERICAL_SUBRANGE_NOT_A_PROVEN_TARGET_SUBMISSION_WINDOW",
+    "first": {
+      "floor_unix_ms": 1793864424254,
+      "ceiling_unix_ms": 1793868160140
+    },
+    "unsearched_remainder": {
+      "floor_unix_ms": 1793868160141,
+      "ceiling_unix_ms": 1793871896027
+    },
+    "cut_basis": "Exact midpoint of the already observed original desktop window; no host aliases or new physical observations.",
+    "source_change_if_authorized": "Fixed ceiling for the desktop scan only, preserving the known original anchor inside that first window and all original 128/15s/read/closure caps; a miss still has no absence/replay meaning.",
+    "host_request_prepared": false,
+    "host_request_submitted": false
+  },
+  "original_unknowns_unchanged": true
+}

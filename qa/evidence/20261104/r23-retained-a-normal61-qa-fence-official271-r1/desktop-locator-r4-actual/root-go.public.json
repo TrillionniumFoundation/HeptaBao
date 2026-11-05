@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.root.exact-readonly-observer-go.v1",
+  "decision": "GO_ONCE_EXACT_REQUEST_AFTER_SEPARATE_DURABLE_EXTERNAL_INTENT",
+  "review": {
+    "name": "r23_desktop_first10min_root_review",
+    "blob": "f1d230a109255f535695fb4ae5b6f4e68e59a949",
+    "bytes": 1813,
+    "sha256": "6c7b1410a8f7ef96916e6808eed8173515994664d9deb84b54e3dc3b387bf826"
+  },
+  "source": {
+    "path": "source/read_fixed_job_request_locator_desktop_first10min_r4.py",
+    "blob": "b8925b32564e60e36bd259bf44fb13f83ef42421",
+    "bytes": 24959,
+    "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf",
+    "mode": "100644"
+  },
+  "exact_request": {
+    "path": "requests/desktop-first10min.start.public.json",
+    "blob": "2f7c2dbb1b8402057167fba7c824bb4d717b874b",
+    "bytes": 26628,
+    "sha256": "bcff14a7c0e88ce460b03e5d7f19205a1db25f0d71a8602fc88e4dcf5f028014",
+    "mode": "100644"
+  },
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-bounded-job-locator-desktop-first10min-9c7461d2-20261105-r4",
+  "timeout_seconds": 45,
+  "requirements": [
+    "Persist external intent and exact request in a completed separate call before one process_start.",
+    "No missing-ACK or transport-UNKNOWN resubmission.",
+    "Retrieve original authority and whole original stdout/stderr.",
+    "No next window, widened bounds, business replay, host mutation, or absence inference is included."
+  ]
+}

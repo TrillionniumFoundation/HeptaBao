@@ -1,0 +1,86 @@
+{
+  "read_stopped_postrecovery_frontier_same_root_publication_r1.py": {
+    "original_name": "read_stopped_postrecovery_frontier_cold_h2_r1.py",
+    "original": {
+      "bytes": 16282,
+      "sha256": "ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b",
+      "blob": "844f08d06356da8fdbd50ca15a3313c95a833e02"
+    },
+    "candidate_name": "read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+    "candidate": {
+      "bytes": 16310,
+      "sha256": "e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f",
+      "blob": "d2fc9a7d79240a32a026f8cd096b7e3d37a9bc23"
+    },
+    "diff": {
+      "bytes": 924,
+      "sha256": "dac615d1dc7c035e761ded91445dc13330c86483cbebba55fdb0851d3f1e823d",
+      "blob": "af4412c77015d2d9b2b0a27938199f21e2c2dd65"
+    },
+    "hunks": 1,
+    "forward_inverse_exact": true
+  },
+  "read_stopped_recovered_cipher_same_root_publication_r1.py": {
+    "original_name": "read_stopped_recovered_cipher_cold_h2_r1.py",
+    "original": {
+      "bytes": 13211,
+      "sha256": "961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2",
+      "blob": "d1176cceefa907a4b975994e98af0386706704d5"
+    },
+    "candidate_name": "read_stopped_recovered_cipher_same_root_publication_r1.py",
+    "candidate": {
+      "bytes": 13225,
+      "sha256": "0469ffd127f60c60ded67129a0f23868b81e28b6253a6b41584dc28a8afaab27",
+      "blob": "694dd87e1414dce7daadd441f14f94323f155398"
+    },
+    "diff": {
+      "bytes": 751,
+      "sha256": "88e3e3536a90f36ecf263640639a85054bda6fcb22a05c64797c892ba7c79571",
+      "blob": "21eb6546e9bdab47ef85cddb6a957a0bafe63ef4"
+    },
+    "hunks": 1,
+    "forward_inverse_exact": true
+  },
+  "native_v6_pocket_source_postrecovery_cold_1c665_r1.py": {
+    "original_name": "native_v6_pocket_source_postrecovery_cold_df026_r1.py",
+    "original": {
+      "bytes": 72697,
+      "sha256": "83046e6f486c0b62d979623f6a2feed540acd3b2bd8955dbfc084312134359c4",
+      "blob": "916081f5d1ebec6f4bad6e25b49adebc2e9fe177"
+    },
+    "candidate_name": "native_v6_pocket_source_postrecovery_cold_1c665_r1.py",
+    "candidate": {
+      "bytes": 72753,
+      "sha256": "6438d429371e7a7e96d56c4c490d07b05df566efd454000452b316beff9195cd",
+      "blob": "e16cc7501cf82cfebc04b111592c6f5d31594f28"
+    },
+    "diff": {
+      "bytes": 2902,
+      "sha256": "c92fa61c58d1344cde71d66fb138638560a861e6573d30c243dcf76837118f44",
+      "blob": "60d9185053102293a72b05e987dcd386968d93e5"
+    },
+    "hunks": 4,
+    "forward_inverse_exact": true
+  },
+  "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py": {
+    "original_name": "launch_normal_cold_h2_pocket_postrecovery_cold_r1.py",
+    "original": {
+      "bytes": 24819,
+      "sha256": "664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3",
+      "blob": "aeeb6d3d0c0b7e896679a0cf4d344a724870ef3c"
+    },
+    "candidate_name": "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+    "candidate": {
+      "bytes": 25259,
+      "sha256": "24b36a810a7da72bc7d3673df0ea077def9b58de3ef8ac1f446b4a748676ce8f",
+      "blob": "fbfcd374bc596dc490545b400392c916d304c763"
+    },
+    "diff": {
+      "bytes": 12859,
+      "sha256": "9a0dc3087e7313960fb4845b71d448615b5b888ccd2d733452599d66bb82ea81",
+      "blob": "7fd03e86e62c53da6cae954494ef2bd44f3d3d01"
+    },
+    "hunks": 9,
+    "forward_inverse_exact": true
+  }
+}

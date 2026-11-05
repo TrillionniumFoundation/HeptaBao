@@ -1,0 +1,1687 @@
+{
+  "schema": "official271-immutable-source-corpus-checkpoint-v1",
+  "official_repository": "openbao/openbao",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "official_tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182",
+  "source_count": 242,
+  "source_bytes": 3894129,
+  "corpus_json_bytes": 4335721,
+  "corpus_json_sha256": "bc478d26bf1a58720bb5195e9894f648cd2aa9968aecd79a529950146f1d5f6d",
+  "gzip_bytes": 878749,
+  "gzip_sha256": "1cf3a186b8916041712e60cc394c2260cab5845537e741e95dd3a73517d13baa",
+  "base64_bytes": 1171668,
+  "encoding": "concatenate ordered base64 text chunks, base64 decode, gzip decompress; original full JSON retained",
+  "chunks": [
+    {
+      "index": 0,
+      "name": "corpus/chunk-000.base64",
+      "bytes": 32768,
+      "sha256": "a983b2a54155f3f6f69ce777308282777583972ecaa923a5fd53f2e4ab0dfffa"
+    },
+    {
+      "index": 1,
+      "name": "corpus/chunk-001.base64",
+      "bytes": 32768,
+      "sha256": "db8c8addd9231f801922c62c0e403c2b14f72efb5547e0419ee4d9a94ebf55b4"
+    },
+    {
+      "index": 2,
+      "name": "corpus/chunk-002.base64",
+      "bytes": 32768,
+      "sha256": "3cf0d51670ba3803ffb4db720c73aa10b8e8c6d04b8d7cb5a56c7fc8ae16ed0b"
+    },
+    {
+      "index": 3,
+      "name": "corpus/chunk-003.base64",
+      "bytes": 32768,
+      "sha256": "e80cd4eaf55b6a8865858680a50594b2c4c695463cd99b2caf7675bea9ea9648"
+    },
+    {
+      "index": 4,
+      "name": "corpus/chunk-004.base64",
+      "bytes": 32768,
+      "sha256": "527e26f091f4153e50374163d06ff1497c23d759f5562581e7bec2becfc37720"
+    },
+    {
+      "index": 5,
+      "name": "corpus/chunk-005.base64",
+      "bytes": 32768,
+      "sha256": "8ce71b41770251ff8c1c15d69e26a9ad65fcfd283752cc7034f3cec8bf525d04"
+    },
+    {
+      "index": 6,
+      "name": "corpus/chunk-006.base64",
+      "bytes": 32768,
+      "sha256": "048aca9bbe2b9232bd613d1cc756561d6b917ee646f97d91f2a6a7477b752fd9"
+    },
+    {
+      "index": 7,
+      "name": "corpus/chunk-007.base64",
+      "bytes": 32768,
+      "sha256": "f64020966041ab96e09cb6e537edf1e6739a1a3e34363fdd3ada9c453f1c2c2b"
+    },
+    {
+      "index": 8,
+      "name": "corpus/chunk-008.base64",
+      "bytes": 32768,
+      "sha256": "a81779043772751c0b7591978f78efab0c8fb6cbd59a68b49694df3e88b62781"
+    },
+    {
+      "index": 9,
+      "name": "corpus/chunk-009.base64",
+      "bytes": 32768,
+      "sha256": "3c7a3d465c33243b3ed49f45bc0f062d0885a44a9eb0aa8297d8dce6386af293"
+    },
+    {
+      "index": 10,
+      "name": "corpus/chunk-010.base64",
+      "bytes": 32768,
+      "sha256": "6b9dc936fb36e254f1a94f5ebaf757beeba6e6379612309efcf780957f52139c"
+    },
+    {
+      "index": 11,
+      "name": "corpus/chunk-011.base64",
+      "bytes": 32768,
+      "sha256": "7878d8e2951e0a803c2990e0ea0ef1ef65e01a9d7329d2fa8dbadd77e6379b59"
+    },
+    {
+      "index": 12,
+      "name": "corpus/chunk-012.base64",
+      "bytes": 32768,
+      "sha256": "34b6b2a1c585685981fe4b5431860f47da501d28aa3253a98186ad729af1cc7d"
+    },
+    {
+      "index": 13,
+      "name": "corpus/chunk-013.base64",
+      "bytes": 32768,
+      "sha256": "3df8ac45a9b4a6ee7fb3bea2f5ea18e6882efb5bbb02fa3d42429fbea0ae3727"
+    },
+    {
+      "index": 14,
+      "name": "corpus/chunk-014.base64",
+      "bytes": 32768,
+      "sha256": "fa649cc4876c344324b98bcaf4a25e0f86f449bee37c91a56407bd1815c76163"
+    },
+    {
+      "index": 15,
+      "name": "corpus/chunk-015.base64",
+      "bytes": 32768,
+      "sha256": "07b30ccd14137826ee0be1fe93ddb8bef1849d1238c6f6133919f8aff535218a"
+    },
+    {
+      "index": 16,
+      "name": "corpus/chunk-016.base64",
+      "bytes": 32768,
+      "sha256": "4e604b79c2f4d4173a3c4ec7941219032837a60e21abb77a5f8e7070c2cb035f"
+    },
+    {
+      "index": 17,
+      "name": "corpus/chunk-017.base64",
+      "bytes": 32768,
+      "sha256": "90d5497057fc8f7c45a5ab2c75c20ae1b94b0fbfd0f8c4a123e55de3507cc908"
+    },
+    {
+      "index": 18,
+      "name": "corpus/chunk-018.base64",
+      "bytes": 32768,
+      "sha256": "472cce8859b4989d0f44507a396be5762b432a56836a30bece2121f6c9f4ea7a"
+    },
+    {
+      "index": 19,
+      "name": "corpus/chunk-019.base64",
+      "bytes": 32768,
+      "sha256": "5ba7195f98b8a534c6203cb916dee69483914101eb602b256b3b0f9c569cd1e1"
+    },
+    {
+      "index": 20,
+      "name": "corpus/chunk-020.base64",
+      "bytes": 32768,
+      "sha256": "bc3f43055230c0cb5172b032e312a4fb90860a63b6bef9b3849ffe163320f8af"
+    },
+    {
+      "index": 21,
+      "name": "corpus/chunk-021.base64",
+      "bytes": 32768,
+      "sha256": "74677a44a912396cb9af781af0a6c3b57161cfc635b62f255e856ae4f012cfca"
+    },
+    {
+      "index": 22,
+      "name": "corpus/chunk-022.base64",
+      "bytes": 32768,
+      "sha256": "a0862d220d02f7b3828a1f757a5f9eea0de09a053d037cf8935549f833c99949"
+    },
+    {
+      "index": 23,
+      "name": "corpus/chunk-023.base64",
+      "bytes": 32768,
+      "sha256": "2551a1ff47ca07fa27c0db39fcdde7f3eaebf22d71a47c832fe3c114d860e699"
+    },
+    {
+      "index": 24,
+      "name": "corpus/chunk-024.base64",
+      "bytes": 32768,
+      "sha256": "ea9ce5ef744a9428f7881e4813ac936b138404bb1b2e2053e9680987bb021709"
+    },
+    {
+      "index": 25,
+      "name": "corpus/chunk-025.base64",
+      "bytes": 32768,
+      "sha256": "9f87582d111f5905fe6299c7c7a8525b1a6d6c403a6ea71f3df49aab2d110fe4"
+    },
+    {
+      "index": 26,
+      "name": "corpus/chunk-026.base64",
+      "bytes": 32768,
+      "sha256": "c0baf4866933e7bdfffb5355f56eee509434b78ac695fe68dd76b1f8293dbb3f"
+    },
+    {
+      "index": 27,
+      "name": "corpus/chunk-027.base64",
+      "bytes": 32768,
+      "sha256": "0d085f2d84d71443343a8b25892eba2261aeda361300f245ca7faf50146e217e"
+    },
+    {
+      "index": 28,
+      "name": "corpus/chunk-028.base64",
+      "bytes": 32768,
+      "sha256": "bbad60630bb90a596099a8ff779248a84c78c2a2d21dc009375fc24bb0dc8334"
+    },
+    {
+      "index": 29,
+      "name": "corpus/chunk-029.base64",
+      "bytes": 32768,
+      "sha256": "1b7931aa1e4e8d77e7b030955a0ee710ae8e7467e7890ed0a0f764a521de95cb"
+    },
+    {
+      "index": 30,
+      "name": "corpus/chunk-030.base64",
+      "bytes": 32768,
+      "sha256": "228592ac13be138be305b2252624aaa6cf9e0d2f4045392d84b5803fca8ec642"
+    },
+    {
+      "index": 31,
+      "name": "corpus/chunk-031.base64",
+      "bytes": 32768,
+      "sha256": "127a0d59773eb56f7432cc7db4beddf5eea3a3da993de114cc13bde02e9f5c89"
+    },
+    {
+      "index": 32,
+      "name": "corpus/chunk-032.base64",
+      "bytes": 32768,
+      "sha256": "754d65b365fd80c6340412c6815e6b74122314a38ab92a13ab3253e50554b6e3"
+    },
+    {
+      "index": 33,
+      "name": "corpus/chunk-033.base64",
+      "bytes": 32768,
+      "sha256": "704d66e99261154c43eb8b8914fc3163bcfece722cdd90eaef0c53435cda6f0e"
+    },
+    {
+      "index": 34,
+      "name": "corpus/chunk-034.base64",
+      "bytes": 32768,
+      "sha256": "897a57132f8d12bc93c303ed4ab6003d80025ba491a7a1769642909950ac29d5"
+    },
+    {
+      "index": 35,
+      "name": "corpus/chunk-035.base64",
+      "bytes": 24788,
+      "sha256": "9a47df1fcff3d2697d5969f05b9ce511078f2352d09590df70fe8a307638e564"
+    }
+  ],
+  "sources": [
+    {
+      "path": "internal/builtin/credential/approle/backend.go",
+      "blob": "8ed8b292da4651daf9253675d1146d7675833a3a",
+      "bytes": 5978,
+      "sha256": "e3ea129dd6f090b01f37dfbbd8109252e3f5fc1b9a5cb7b4e0fc2238ab4dd2eb"
+    },
+    {
+      "path": "internal/builtin/credential/approle/path_login.go",
+      "blob": "931e7b7f6592d44d531c4670ee1a4033610faed0",
+      "bytes": 13474,
+      "sha256": "b458cde569abf089b45f1cfc345a93ef7e8c1d9ff138cf7af9fda5dac821ee5e"
+    },
+    {
+      "path": "internal/builtin/credential/approle/path_role.go",
+      "blob": "99dfed2b0ec7d731389e8d1884e3893eb74c64c3",
+      "bytes": 119471,
+      "sha256": "1c80fc07440c08340d5cf7040e7fb6205ac672b13805d30ad2c5b1c64a286d25"
+    },
+    {
+      "path": "internal/builtin/credential/approle/path_tidy_user_id.go",
+      "blob": "8421f6864e50b1bb4ad6313f85508b37a2ae3fa7",
+      "bytes": 9013,
+      "sha256": "0aa89d1dc1b688b7d8ed32c8d3efd2c9de14751ab1b8643d25de781695dc314b"
+    },
+    {
+      "path": "internal/builtin/credential/approle/validation.go",
+      "blob": "e96960f9600cfd4976cc3097391a58ecca891265",
+      "bytes": 15240,
+      "sha256": "d37b52a04126a988117bde7226eb1a95d5fe1926d6d2f3057b3519af5383473d"
+    },
+    {
+      "path": "internal/builtin/credential/cert/backend.go",
+      "blob": "5ce186887d7fee5f042992716879825daddd1f7c",
+      "bytes": 4218,
+      "sha256": "e3dfdedec451b8bd4058e72912211763935cac2ddca09287b783baf59a465530"
+    },
+    {
+      "path": "internal/builtin/credential/cert/cli.go",
+      "blob": "ffdb1baf0de4dd6db75625e7700ac242fda1452c",
+      "bytes": 1440,
+      "sha256": "7a55d32882cfd037552c3183c145ee76eed496320fbc4ee64fd99aafe718588c"
+    },
+    {
+      "path": "internal/builtin/credential/cert/path_certs.go",
+      "blob": "a57f97edc748a08540b0c23d7e5923faf5f4c10c",
+      "bytes": 18981,
+      "sha256": "2f1cb7017d36cfbe9a0214845c587288e5c576dd85a48b12ee2ec2d77d0ed451"
+    },
+    {
+      "path": "internal/builtin/credential/cert/path_config.go",
+      "blob": "f92d46ce18534d0f68857a8d06757c3299599e14",
+      "bytes": 3857,
+      "sha256": "05ffe87649e01a6ed36709b41c39f98ce08c41a9ee3646b0f4981ff5d7f34a90"
+    },
+    {
+      "path": "internal/builtin/credential/cert/path_crls.go",
+      "blob": "32908a89fa51df889c0a06898cf2736de257cf20",
+      "bytes": 8996,
+      "sha256": "fb294b16c7560c34a1b031ee07e3169cb91b33ef205dc0bc941fbd7d505f96b7"
+    },
+    {
+      "path": "internal/builtin/credential/cert/path_login.go",
+      "blob": "582351412733c1e6ea8903b2db1e0a05a85f667a",
+      "bytes": 24536,
+      "sha256": "7945be5f2b28cb4ad3f357918ee615b2fbf7cc386e516c5289e12504b1822cda"
+    },
+    {
+      "path": "internal/builtin/credential/cert/test_responder.go",
+      "blob": "733d29e0b819ea090bccd5d9e8a65c7cd90aa199",
+      "bytes": 10963,
+      "sha256": "d6b04fee0040e4356b884ab9b48ccf3a67c308f933c87b942eee2e243e05c688"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/claims.go",
+      "blob": "60de778a671f4479eff59a6294d759ce61d3cd6d",
+      "bytes": 5837,
+      "sha256": "39be2ecbbd1fb27772c7db89bd8cbb45396d0089adb0724bc18f5a18d0b03882"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/cli_auth_no_sigtstp.go",
+      "blob": "a65d866d3267205a66d8f80f3aac8521a81c083e",
+      "bytes": 281,
+      "sha256": "0f02e6b3203714243e0dd82751ee3e50bc21b277e39b4e55459d0a3db695f638"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/cli_auth_sigtstp.go",
+      "blob": "0341705a859ec58d453f5428dbb4a086e10349e3",
+      "bytes": 308,
+      "sha256": "22abd743bad8f07e00ef42a9484742a92b46c0b8c7f4464fd86479e88cbeec6b"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/cli_qr.go",
+      "blob": "7f68aedc365aed971104c09d5b016fbe4a82b709",
+      "bytes": 1909,
+      "sha256": "3a89d9c9041b4f19242fb473713032b4964efccde16a4ad2929bd0be1d2ebff0"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/cli.go",
+      "blob": "e4a8db615baebeeea73e1f82a0a20cfee8d00411",
+      "bytes": 12179,
+      "sha256": "f7dd6161338bbc1886a24cb36807fa6ff6d3b9f36095bd3d3f78bebb6a1e3fda"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/html_responses.go",
+      "blob": "875e0aba5531552fcd58bdb3cb72aa13a00e204e",
+      "bytes": 183810,
+      "sha256": "8d9f6cc1ed587af85a04645bfcc49466bfe4d33b0601826f674fcccfda967a37"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_cel_login.go",
+      "blob": "f3c240cca757df85dee684a70f01722498ea8364",
+      "bytes": 7441,
+      "sha256": "f412bed40c8cdb6b38132ea070389fec5a4d9f754812d299bc7d6a47466f1f5b"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_cel_role.go",
+      "blob": "82d852593d291bd1153282b29ac46fb72057dda8",
+      "bytes": 12717,
+      "sha256": "827974112692860a4edb279ac0eac90aa37e5d7011a9ceb2db95eeafb0a5b157"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_login.go",
+      "blob": "099b2c2ce4cb9dac44420a2898304983e4c4230b",
+      "bytes": 11437,
+      "sha256": "39088e521c0972e9cbfbeb51254ab50445cd2b65090092a6b46131af5dfcd4b8"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_oidc.go",
+      "blob": "d5ff88dca5b9b6f3464950107eb8152799866f5e",
+      "bytes": 29350,
+      "sha256": "c72432bd6d9c2fc84040e2fb920c6590ef8afbb02f63581b8051c39697f509d3"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_azure.go",
+      "blob": "f9ba9fd46c8c72ef1d2ce32e5919c9b0f7cbcc5f",
+      "bytes": 6544,
+      "sha256": "6201fbb0a3d654fdacb49c59a1fb255b2eebfd75f3854d0baa3e6d6526bf8bdd"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_config.go",
+      "blob": "d1c50c70898f1e8399fb42a77b1df7ff2cee3c1a",
+      "bytes": 2670,
+      "sha256": "bd0de7c44f0091d4ab08b9945d2943f3a7d750982fece0cce512c6695e600215"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_gsuite.go",
+      "blob": "980d3c4ff47f82511dd95f3d61f8667afcae2cee",
+      "bytes": 9163,
+      "sha256": "9cecb6b9ca28038c0aefdf2565487dbc18adbde96d7c5161475b11dff02e5e16"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_ibmisam.go",
+      "blob": "d7dedc2c56f805fe8592b46fd7131366f4eae02e",
+      "bytes": 1546,
+      "sha256": "b282be13fac3a8b2227ae81fb1900a4f81f332239f0b1ab2ca35fde06c1925d8"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_kubernetes.go",
+      "blob": "497280c0f244349796898d08bfe6364951a9e231",
+      "bytes": 5517,
+      "sha256": "a394e2812d737bd313be1874c2c55d847a67dd3d48b26f89081092efc0be0d47"
+    },
+    {
+      "path": "internal/builtin/credential/jwt/provider_secureauth.go",
+      "blob": "8248ba2d9d50355e7c3fb38303c07f0d02b7149d",
+      "bytes": 1597,
+      "sha256": "03992dc62487933e31dc02da8c48a1675fbfa0a4954c947fa71c52e735c78543"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/backend.go",
+      "blob": "dde5dc119552ffc0166e640b146557d3912ab026",
+      "bytes": 13936,
+      "sha256": "5d54f0e2b33245ac8e02b0035c462062f171f9a502a0465ef8cb1f68dc0f9a95"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/caching_file_reader.go",
+      "blob": "62fafefa4695eaf33a42b322492c35f9cc6f2f3f",
+      "bytes": 1698,
+      "sha256": "351331b662e271118b76d9307ff377ff55cb7ba7f549a1cf6b7a4ea960384b26"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/cli.go",
+      "blob": "856ccc39c92fdd7fdad0c29796f18de60747cba6",
+      "bytes": 1923,
+      "sha256": "02d1c3eaa511f4ab9a06a37c225762823c0ec710a385f9052a4d2a5a41034bd1"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/helpers.go",
+      "blob": "694895048f713ff8f26f2cf59471a8dbc707d65a",
+      "bytes": 426,
+      "sha256": "13422b7d13a6f4ab1c372cf3af95396664d01a5c78f148f9bdd8f66c46945a3e"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/namespace_validator.go",
+      "blob": "22caf039265b5684da077f43e639ade4661bf09b",
+      "bytes": 4191,
+      "sha256": "2386d50885d5d42cbb42bfc02db877104467dfe24b69fdd270c43bed4d4dd85e"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/path_config.go",
+      "blob": "fddc3ab77b11f2a2ff718f5f47e9073be142863c",
+      "bytes": 7570,
+      "sha256": "f7df88cd35701241bb8f5c524d0013204092529d667e9dfc86058a1c097f01ba"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/path_login.go",
+      "blob": "3db1a9bd3fcb4ee825b2cc32fd0d982f9dd5e108",
+      "bytes": 16314,
+      "sha256": "f57d70660125d36bcda4b81ecab3133e2a55abda984ac18cd3f803eaef0a3a9b"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/path_role.go",
+      "blob": "0d56cb39ac55cc5be0d06c8bd4829ecf769490d8",
+      "bytes": 15545,
+      "sha256": "d142fea8267967be3a2b83e7b8807c49214129bbe53317faa4c8259b3fb04164"
+    },
+    {
+      "path": "internal/builtin/credential/kubernetes/token_review.go",
+      "blob": "5c921f7902de5b3f5cdbc0569f56d4479e122a79",
+      "bytes": 5942,
+      "sha256": "e1cf723e42be6e3e9f55e00520bbd74c2d46820c5881603518bfd035ce4626e4"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/backend.go",
+      "blob": "b019d0ec27c69165e327d9893804bd41ffeddb8d",
+      "bytes": 1240,
+      "sha256": "e83d2af50bbe9405d77ec4c8eb38b108ce7d5ae47ceb0295a6fc62649c495637"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/cli.go",
+      "blob": "e736c3f530d2a2cb36069783a476dd49ed035cb9",
+      "bytes": 2106,
+      "sha256": "d19d4556b76795f38c72a13e5681874dbc9d572b96866a7342b8d3de3ea3527b"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/path_login.go",
+      "blob": "91a58e428d3784350de532646a82219d19d26f03",
+      "bytes": 5127,
+      "sha256": "6fab74d4e81628de21dc6df5878302657cbf44b5d60e45bdd7cce1ea76647656"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/path_user_password.go",
+      "blob": "7399e067826b545156e1c2b503169d695a93927c",
+      "bytes": 4807,
+      "sha256": "4fff3be03d43f10ac58b9acb8b4d93956ebd0b71a32e2d3d7710c92f39a1ea23"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/path_user_policies.go",
+      "blob": "ee74f5775dd975c51bc327e850a3ee088109c25f",
+      "bytes": 2779,
+      "sha256": "118b4ab4e932de2a37daa04c4c72170b52270b0736bdd30afdc03c61f4994e2c"
+    },
+    {
+      "path": "internal/builtin/credential/userpass/path_users.go",
+      "blob": "d5900762abc10587d6df48cddb146fc388d0799e",
+      "bytes": 9388,
+      "sha256": "77c7db1e3701985c726b6b0641f5d29e9c8ef2f2c97aed2356fe5556a8ac5b83"
+    },
+    {
+      "path": "internal/builtin/logical/database/backend.go",
+      "blob": "877c27f7f54f8933ffd8cbd2bb71c5648016accc",
+      "bytes": 10807,
+      "sha256": "1de037eed089f8b748cfec1f1fc52272cfced423494de4bcf9dea78b0f130f80"
+    },
+    {
+      "path": "internal/builtin/logical/database/credentials.go",
+      "blob": "3773608a4e8ad9f9e06a2931d0479ac0ddf5de09",
+      "bytes": 11217,
+      "sha256": "2d72b02184f8fb05f56b6f9cf38a5cf54a00debe68ba50705c4ac5ce9f549bef"
+    },
+    {
+      "path": "internal/builtin/logical/database/mockv4.go",
+      "blob": "dab512fbd67f28aea5dca013001c0975cd596936",
+      "bytes": 3676,
+      "sha256": "844f0a5959eb20c0ea423c21bf3bf2adc36a4a26b01f76bad927466bc27c3aa5"
+    },
+    {
+      "path": "internal/builtin/logical/database/mockv5.go",
+      "blob": "7a17237dd6ad503576d7d251a4604dcaf7d86812",
+      "bytes": 2115,
+      "sha256": "187575bf09b87694c0a043db8e100956980c675227098479f286e8ea9f6c6f59"
+    },
+    {
+      "path": "internal/builtin/logical/database/path_config_connection.go",
+      "blob": "6ce9effde043ad6b453e0aa9beefc050bd152479",
+      "bytes": 18600,
+      "sha256": "cbbddb0ebae0d9d9abd74f3c1a583034e48ae8d9944ff705fa53a129d2b43232"
+    },
+    {
+      "path": "internal/builtin/logical/database/path_creds_create.go",
+      "blob": "e6385b88a2045178ee9c7ae8cd057302188d3e15",
+      "bytes": 9712,
+      "sha256": "e3d11d0d7f987e1bc5e19ba550ebba293ecd2c91fcd474e17e5a9e99480dc537"
+    },
+    {
+      "path": "internal/builtin/logical/database/path_roles.go",
+      "blob": "34a1bf9ecb22b77cd68ab53c8870bcbf815ec640",
+      "bytes": 29890,
+      "sha256": "e778cfaed74b751fb5111990fd6af7407c36a322d8ff0ff1b92f7fd8a4f24dc0"
+    },
+    {
+      "path": "internal/builtin/logical/database/path_rotate_credentials.go",
+      "blob": "485d2cc4e1934eb7cd38a2a7ad5c64ad0ce4e265",
+      "bytes": 8222,
+      "sha256": "99b16e080c3f6c7b72cf67d2ed7e9c75ef3dd3ff1abcacb20e62ec8ceab40e21"
+    },
+    {
+      "path": "internal/builtin/logical/database/rollback.go",
+      "blob": "6d98188304c428fbcfed7a7126a28075f22616dc",
+      "bytes": 3960,
+      "sha256": "c134860fa745ebbf11574cfc10f0e2419377a028efe28a0fad0bc7535468cb9d"
+    },
+    {
+      "path": "internal/builtin/logical/database/rotation.go",
+      "blob": "8e996a59ebb46036afa78c69a536f3c4a8d9b8b2",
+      "bytes": 23578,
+      "sha256": "a740b29fb7826dd50c0b0ebbd62778b5b7e0d056bfaa4f5e28cc3a223c0206ec"
+    },
+    {
+      "path": "internal/builtin/logical/database/secret_creds.go",
+      "blob": "868f59a8faaef16a6aa204d60a22290c3dacc0d4",
+      "bytes": 5380,
+      "sha256": "eb1c8771f7f0446ac3984b6befa93674e4a32ae668e76e1cfbd29db4077fce9c"
+    },
+    {
+      "path": "internal/builtin/logical/database/version_wrapper.go",
+      "blob": "a8221ea4928265a88f2b61d0397065d4b005b54b",
+      "bytes": 8554,
+      "sha256": "c58f69dfaca27e7a43e5bd4e44b07295b863ee5b8e4bdf0f09cd7520d3003e99"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/backend.go",
+      "blob": "9f20e3053de21260c2667114e1bcc72202b8d5af",
+      "bytes": 3646,
+      "sha256": "24b2681c61634387d557bb156123e6a6c904e6c7c4112bd43d95109dc8d62264"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/client.go",
+      "blob": "1bcf58dc49b1b688fdc5f2be019733fff7c75dc8",
+      "bytes": 7774,
+      "sha256": "bcbac13b193a468d61892195b6d2f40a310eb5b9f043663704f8c1d9c14c9438"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/kube_service_account.go",
+      "blob": "af1e581324a5d9af1ccb9d485f4e2c11f535bfd2",
+      "bytes": 2373,
+      "sha256": "49d28fb5c5b9c6a2ad503d5ecbc3974d8f148a78cfc13ceed4af0ac10bfba192"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/path_check.go",
+      "blob": "b74dc79fd0992959e1e175f44c1676072428dafd",
+      "bytes": 1598,
+      "sha256": "7a16665d1579a21dd692d3cb0a6f9a4d713f85430721bee04932182bbf280fb8"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/path_config.go",
+      "blob": "6e13abdbc92fb87bd63ecf79991beafac47a62c2",
+      "bytes": 8059,
+      "sha256": "a6b42d88f59a714de41228fc041198ae25879ccc45bd4ebc46f2f12c5f88a75b"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/path_creds.go",
+      "blob": "6e2187f11e9858405177ec6a5e23e446e40d7e73",
+      "bytes": 15896,
+      "sha256": "2bb74876e81d766087733a648ca690009edac200de0b631537a7352fd310a704"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/path_roles.go",
+      "blob": "cc849ab07ce1c3e5a233a2a2ba2f02279121d102",
+      "bytes": 14140,
+      "sha256": "60e974bb2d0f42d686721024970672d5c8ce3c4a587bce76e99dc0591146d73c"
+    },
+    {
+      "path": "internal/builtin/logical/kubernetes/wal.go",
+      "blob": "ad599805aafc6a7e9d2b35f8cb6b553713b92537",
+      "bytes": 4024,
+      "sha256": "b8e42c2962bd1c55a7dcb8ee7d99c65e45146caf14263e6123126c5ee14d698b"
+    },
+    {
+      "path": "internal/builtin/logical/kv/backend.go",
+      "blob": "917631f9cef1bec7b234e04579f9573ffce37615",
+      "bytes": 13498,
+      "sha256": "d771bfdae489d5fe78dc4299c223a11efe903d17fd5d864f607bf1e1060be9bd"
+    },
+    {
+      "path": "internal/builtin/logical/kv/delete_version_after.go",
+      "blob": "1ceb25af0d373dd4fb5a6b2843d71e17b2dcb396",
+      "bytes": 1503,
+      "sha256": "af92c4e203d975d97ce0dae45baedf5245aa49af58e66f69acf6b3535657b992"
+    },
+    {
+      "path": "internal/builtin/logical/kv/passthrough.go",
+      "blob": "4e20407afbb54cf8faef2963c76b4423da887ae0",
+      "bytes": 9252,
+      "sha256": "fcd95c69c44fa8c26cf9e9f3d5f66f989094f31a64c54c630c46b639ca22ded4"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_config.go",
+      "blob": "4073d440f9e3b9991d29bdd69066dd7b84e9138f",
+      "bytes": 5512,
+      "sha256": "466d0712e57029023010a7b2f28d18538dfb2b928d5ae6d9951c40ef6026d58e"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_data.go",
+      "blob": "2cacdd062071156a351693d62d898c9e514b2786",
+      "bytes": 22501,
+      "sha256": "a3ae613f3832365f075c98fab671724c8e1fa810a94d9a2498121b32a5adb04c"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_delete.go",
+      "blob": "85cff844b8d999d9751ac4aa71e06c78ddc029b0",
+      "bytes": 6594,
+      "sha256": "7037d5c0189be1ba07c22a9156586ad95df645b71355d5058b46cba186b74823"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_destroy.go",
+      "blob": "de05be291dc6d13aa68a29937e52c16ccec72cca",
+      "bytes": 3182,
+      "sha256": "45f84a1de308518449627ed44554ec22fb36645ccd86dbfd67b417c1b20680d3"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_metadata.go",
+      "blob": "4a3815642a4aa6dcc9f52e2bccd0bd689350713d",
+      "bytes": 25200,
+      "sha256": "a5f3ce2063a1e709d28c2f084a43a773610b9b07a3159e305981358515e5c5fc"
+    },
+    {
+      "path": "internal/builtin/logical/kv/path_subkeys.go",
+      "blob": "80dd625ea82fad9d0523fcca1b235c96600d0e89",
+      "bytes": 6243,
+      "sha256": "ef32f9905e84634c13d84363b42c758733041d7084b9173cffa8083c214b74c8"
+    },
+    {
+      "path": "internal/builtin/logical/kv/types.pb.go",
+      "blob": "c20ca20b3f2d00eac16bfc640ef1dcaaac243b20",
+      "bytes": 19715,
+      "sha256": "58bab65718179460717fb3ba5230fea0e4321562049c3648674136c7ec9143ae"
+    },
+    {
+      "path": "internal/builtin/logical/kv/upgrade.go",
+      "blob": "693528018bc25a377bb7653669cddf00536316d8",
+      "bytes": 7372,
+      "sha256": "f4eaa8fba47a08bba3d9324a159982cd9f0d7e84859008706a0dee32c2f0546f"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_authorizations.go",
+      "blob": "16439cc1ab9ab6453d6aa734fcf0520917e2fcbb",
+      "bytes": 5291,
+      "sha256": "3d987e07bbf6cc818ea7429060348ea6fa7f2f09f67c8a45ac0c504670cd462d"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_challenge_engine.go",
+      "blob": "1698419ae7dc31ff84b8756c320c9cff43ed6490",
+      "bytes": 20665,
+      "sha256": "063e161401802da3d401fadce1ca21166d4903378a0e0121b96f6f182621d47b"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_challenges.go",
+      "blob": "674f3b08bb1b554ebb53034dda70e0edab42c23e",
+      "bytes": 18812,
+      "sha256": "b1d5e43df964ccf776c3fac381f5c2596416ef24920dffe330628864fc205dd3"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_eab_policy.go",
+      "blob": "9a96f3af269e50aba24275c83f486511ca0f612c",
+      "bytes": 2173,
+      "sha256": "96baf84e06ce1c8bdc84a341bca610fff43ca051ef6a5cd87378f35c62b8026e"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_errors.go",
+      "blob": "2e8da11d3a838ad317d28a374e3c09d662accc17",
+      "bytes": 8381,
+      "sha256": "d488c5f8a21becd6f24ed021524feecca99e049ee587d0c958b85350147a497d"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_jws.go",
+      "blob": "9f4a34bff863b42890d51aa22c778920ba9de04a",
+      "bytes": 8018,
+      "sha256": "ab995dbada4c3811a49bed8607b6f3eafee9b2e52468fbfad9e61d2370b1a959"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_state.go",
+      "blob": "77cd0d8c1acd17ed3857dc40e7de3dc8c931f9d7",
+      "bytes": 20091,
+      "sha256": "b8e374bcb94d7b17f2e7878326c0925eeec9e9e95a4da02a9a98afe0795f1585"
+    },
+    {
+      "path": "internal/builtin/logical/pki/acme_wrappers.go",
+      "blob": "23914f21b09b4546a5e5242f3dd2f4947c76b110",
+      "bytes": 14262,
+      "sha256": "5780f506298241b13493bb3148777413b59bf073426465c2a32c591b7c48442a"
+    },
+    {
+      "path": "internal/builtin/logical/pki/backend.go",
+      "blob": "889ef95a98d77d1b3a81ff471b33f45cca9bf484",
+      "bytes": 29751,
+      "sha256": "4c619f1d44d2010416b80e64e519ddf1e0918fab305ab63065a82fb45b8eb4ba"
+    },
+    {
+      "path": "internal/builtin/logical/pki/ca_util.go",
+      "blob": "fb15d662e7418ba29402f7841ca79231616ce5b2",
+      "bytes": 10172,
+      "sha256": "e9b6c72779a8153a495ee5da0fa1b9dfc43aa97aa69742437f280fbfd39da894"
+    },
+    {
+      "path": "internal/builtin/logical/pki/cert_template.pb.go",
+      "blob": "322a987e721bf91e87374d6940eb2f666d358cb1",
+      "bytes": 52290,
+      "sha256": "7f2485379b3a152e965b8618c1dfc6a7c0e7b571646eb7654c7f04aa6e832c4c"
+    },
+    {
+      "path": "internal/builtin/logical/pki/cert_util.go",
+      "blob": "33227a228da947a42873e6870a65c0c9240492a0",
+      "bytes": 68155,
+      "sha256": "cea8d57f98dc270fa1cc32d8b68a8de920052485064bb4ae19408640adc68eec"
+    },
+    {
+      "path": "internal/builtin/logical/pki/chain_util.go",
+      "blob": "436b911208204eb146d0110e4a9acc0a484b7ea6",
+      "bytes": 48926,
+      "sha256": "e7ff86471f31df461639014ea2251e3ad39e0d3bd463d0cafdbfd7f1a6658833"
+    },
+    {
+      "path": "internal/builtin/logical/pki/config_util.go",
+      "blob": "80814550c75315cdc2a76a8b8a87456c08befd81",
+      "bytes": 3224,
+      "sha256": "434080d82dda3f47fa61fd20bea99cda1750755ba1a46e4701be2a16eae3c501"
+    },
+    {
+      "path": "internal/builtin/logical/pki/crl_util.go",
+      "blob": "69b0ae460c21792900fa32a906c55cc9285e3eea",
+      "bytes": 52661,
+      "sha256": "b4d47d547e0192dc8a82f0e0e61ece6b74c3b019317880bcdd56ca7ce46d6640"
+    },
+    {
+      "path": "internal/builtin/logical/pki/fields.go",
+      "blob": "fbdb853a4d8a4f7de151e252d6c5a46904e1053b",
+      "bytes": 25414,
+      "sha256": "bb528e0d6404d2d332961a2ee6b9577ba32b55c8a7ce45d910d1119a97551490"
+    },
+    {
+      "path": "internal/builtin/logical/pki/key_util.go",
+      "blob": "446e8ad0ddc0c1913b04309bb60589d8647f6ad8",
+      "bytes": 2761,
+      "sha256": "95cec52db74cf9a065e7762266f292f224253399b4656eb647acb32085cfacd8"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_account.go",
+      "blob": "a20022af8ac3fa079fd5c9ec296aabbdf2399616",
+      "bytes": 15462,
+      "sha256": "975e3af1078790290ba50c797cad71855199d06f736bcc43da7ad200f31810e7"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_authorizations.go",
+      "blob": "0e9febd09e00b3cbf93c44f047dd365638d39e05",
+      "bytes": 3321,
+      "sha256": "3bbc6822cdc16e2f31c1d4d1e8a3df53c7cfa5f16a722e974198be2e3f04de95"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_challenges.go",
+      "blob": "a1569e2b536e97989eba8efb437f034cf111c2fe",
+      "bytes": 3900,
+      "sha256": "ff7cef799792ef5122c5b3668c84ff33e622ec19f3e9a32019c2083786cc6688"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_directory.go",
+      "blob": "e51b74c660b81907521e2b7315186ddccf55d16b",
+      "bytes": 2284,
+      "sha256": "464ecc904e9bd0c2adf52278ccba5b68e28fe077d2c3f8e9062f5609c079f6ae"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_eab.go",
+      "blob": "b847bf1f4662e28a57ef551d6a1cec62e891a02c",
+      "bytes": 9403,
+      "sha256": "841ee6ebfa62706f6569cfd23f23c4d361d8fd69151e689fd35997d8f662a6a6"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_nonce.go",
+      "blob": "3992c6878eb2b9e8fbb52d4bbc36af56b0905d61",
+      "bytes": 2061,
+      "sha256": "26682f619a7fe03f291a528e2ffaec9691e9cdeb928895858b77ff35a90a2648"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_order.go",
+      "blob": "5358d734aef31d9ffa5d611f7dc0584c2eb4c321",
+      "bytes": 35745,
+      "sha256": "20ff758cc37708b4910dce6056848ba126f4f891cedb48085e9c8b0bed859216"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_acme_revoke.go",
+      "blob": "343598356909fb102e5fc3e7e6995d1ef8fc3b57",
+      "bytes": 6913,
+      "sha256": "ea3be9c3fe23499302cdf110a069efbf8d5f19e34d9617c1afb794f9903379e1"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_cel.go",
+      "blob": "7e1d7d3388cd2cb635aa7fe366b4efe60d801587",
+      "bytes": 8161,
+      "sha256": "29bee8250c7d0a21c6dd9b8b07d35c4124f1408567c01966414bfc8c575bcd08"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_config_acme.go",
+      "blob": "44599c4b4fa0f2e9acc8ed082a792ee74850d688",
+      "bytes": 13962,
+      "sha256": "82713fc98dfa05f9a84916fdc8eeda47355117a3352f7a79ce797e93da184d8f"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_config_ca.go",
+      "blob": "2a0bcea82c15de7c97e6e8d43d18063034f43793",
+      "bytes": 13701,
+      "sha256": "1e0ac96affb9720be99402c24451ba4ef7938288f02471feaa0a01fc95122cf8"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_config_cluster.go",
+      "blob": "91cc4b99cfe804382b560931d922a7d5c7a1df6e",
+      "bytes": 6508,
+      "sha256": "46778d2069086c81710d15446456a52296e267fbccd2703a6f389eae59e2a3d8"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_config_crl.go",
+      "blob": "6e3dffcbc3d5e7b373478d2ca05f7edafb8333f9",
+      "bytes": 13772,
+      "sha256": "f6730cbb4284fae5adf3b38d00fa7d18400c75a2f7528b1e71986c7238c345fc"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_config_urls.go",
+      "blob": "16abc57b37bf525cf24703459fdd3fca03fe04b9",
+      "bytes": 11053,
+      "sha256": "1085a338f84d88f4eb5ebaca99091a27bcc7d82d6ce39b178c0ee311dd9bc663"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_fetch_issuers.go",
+      "blob": "e5938f1cae3bd1d39fc8706ba4b69bf2a53a4b10",
+      "bytes": 43838,
+      "sha256": "e6657616888faf42f843fbf2000ab04f81604ac6b5fa4738ec4140a1b4c3f300"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_fetch_keys.go",
+      "blob": "85722a39fd2c2783851570498c3e611225a729e3",
+      "bytes": 10414,
+      "sha256": "a7769acce56a46a66a93589627305108dc5a7f029278701945d8d228ba7fdc4c"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_fetch.go",
+      "blob": "3484b2c310ff5dc3d1f67d97e684c8084ec33bed",
+      "bytes": 18269,
+      "sha256": "57136121941e6789681e1eaaa4586a43e8f431fcfadcf5a1460e008d9cdb0d51"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_intermediate.go",
+      "blob": "e2a109f03ffae8be83d9aef1f18412744db8f577",
+      "bytes": 6720,
+      "sha256": "5448f5b961b63a76abc1ac7be027746c1cd34f2da4e6ff7a7a8fc147a4b67af5"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_issue_sign.go",
+      "blob": "d41db2869fece8bf86c301925073a00d43be0c22",
+      "bytes": 39310,
+      "sha256": "763164801f8e9ae8da5229e82bde5d68d1685b1b3d1f940563a2ad8ed7245674"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_manage_issuers.go",
+      "blob": "8e4b431497d5bc15688797e2a7a6ca33c01fb877",
+      "bytes": 30553,
+      "sha256": "d6fd0d809cf45882ff3ccef5166b17beec562d34366c06934048ee919c9c419b"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_manage_keys.go",
+      "blob": "187ce4ed0185fe3c7e325ede0e58f69612df5343",
+      "bytes": 10210,
+      "sha256": "77fb789818dc0bc2b36da1010f2a5f62e0f879d7a6880d93b3a2ef852ea87431"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_ocsp.go",
+      "blob": "949ab445dd5bb90419e8f8e0d0bdaf2f8e1ce1a0",
+      "bytes": 15490,
+      "sha256": "14afbbfe9c1b2cc022a51bd5f2487e28be07c1e366260700bf253d73dc477c22"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_resign_crls.go",
+      "blob": "4ac85486c98f57973e316a2a5aaa5391ce260a2d",
+      "bytes": 20526,
+      "sha256": "d33036224e65084ccc2b3dbbbd7687de7a0b534cf24d828467511c3917a17f0a"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_revoke.go",
+      "blob": "6d71618255e966a5b3de1a4903332abd6106bc26",
+      "bytes": 22229,
+      "sha256": "a376e1c7df4dd49a6f0c9f4f9c16f00068dcffdc8134c80c4adabb3beaa7bb0e"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_roles.go",
+      "blob": "9799b5ef28c1a53ac263951aa027886dc43932c2",
+      "bytes": 71400,
+      "sha256": "ea2b17c7759ac54848c7a22e6e5f20b6f071c859dc3e82ca6e94809a68ec8e17"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_root.go",
+      "blob": "598887b0440198343d178eb0f940c9d66ca004f4",
+      "bytes": 23227,
+      "sha256": "cf899d563bf73f58c145b4f49b2bd0b1bd17ea07083367ec6658d94df1ccd18d"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_sign_issuers.go",
+      "blob": "8d264635dd745aaed792075289becbb0a46aee0c",
+      "bytes": 8607,
+      "sha256": "53403bb9be40d13bb63d69ec924db2548a2954b6972b718ba55b53924f4908a8"
+    },
+    {
+      "path": "internal/builtin/logical/pki/path_tidy.go",
+      "blob": "c9f98005a33ff6de76b7f1c489e6a10b72bab995",
+      "bytes": 72845,
+      "sha256": "320387771c1a78206cc7bf439fb4033aa8040128ae810c2382ca5795c8848244"
+    },
+    {
+      "path": "internal/builtin/logical/pki/secret_certs.go",
+      "blob": "f52e49368f356aab60bfe298046b2aed10cf445b",
+      "bytes": 2398,
+      "sha256": "b742d3964c93f40b0b002a39126e56a0aab32bc15c46313e029517f163245b86"
+    },
+    {
+      "path": "internal/builtin/logical/pki/storage_migrations.go",
+      "blob": "f0f64922180035fa6c6d66956c8978486f925f8e",
+      "bytes": 7642,
+      "sha256": "c0b1bbca1c5d80ebe40d6db2e0b08e6c689cefafa5ea9b6f5169813ada754660"
+    },
+    {
+      "path": "internal/builtin/logical/pki/storage.go",
+      "blob": "fbf8e86b94fc89f0bb6c5442716b13f18ef1af42",
+      "bytes": 49632,
+      "sha256": "a124df38e6c7b65afadcad21ad7793b18f246525255fafcecbf88ea0d0bda71a"
+    },
+    {
+      "path": "internal/builtin/logical/pki/test_helpers.go",
+      "blob": "e4912ae936b6084fbfa1c51478fa80318f00d623",
+      "bytes": 11858,
+      "sha256": "f21b059307b0ccca72956d998f804093e6bddfbd81f71bf1b0b0d526e801abdc"
+    },
+    {
+      "path": "internal/builtin/logical/pki/translate_cert.go",
+      "blob": "ae236b661131d1f08bb3a578ee866403e6638d75",
+      "bytes": 7991,
+      "sha256": "535864e40d69dab4c8161d6b3426392b41b6306ea0a60ce431cec5ff0a6ce82c"
+    },
+    {
+      "path": "internal/builtin/logical/pki/util.go",
+      "blob": "f8388119f3a2370387f5ab02fb4b4edae1f221f1",
+      "bytes": 8034,
+      "sha256": "642f8f3a5d0313eec8a7f83e52dd87526fa7236e7fe61a5c3349131475da4f79"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/backend.go",
+      "blob": "62199badda9fc6ffe9fea4441bbe49913ec1af54",
+      "bytes": 3001,
+      "sha256": "f607581b9ad379e883e2092731895ffa14cf83195de0c2598b3ab95f730ab51b"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/passwords.go",
+      "blob": "8ba08a0afa4b55f03b599111681c49996866bba8",
+      "bytes": 384,
+      "sha256": "1279a9f2a71d4ccf248040526e1fb2431c26552ee927bab6caf057759ae22d6a"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/path_config_connection.go",
+      "blob": "b99bece6e5695d9793fb14b29933ffe4751283c7",
+      "bytes": 5624,
+      "sha256": "19f4fd6e0e6fda428e6c59ae8c9a5d4012ca41837dae15e115738bd624c90063"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/path_config_lease.go",
+      "blob": "04cececfd278d34e9ca4aed2c3923e12df224e6b",
+      "bytes": 2930,
+      "sha256": "9c600c36555634e67851a5dc5998e2a9272e7d2e8ed7ca854fd798cb7fa38639"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/path_role_create.go",
+      "blob": "47433f303bcdc07f3185cdb2c265285fcaa00719",
+      "bytes": 6896,
+      "sha256": "913c3014a7d32ba423880c2125d488c3726d58ec68d21ef46509e3a42dfe261f"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/path_roles.go",
+      "blob": "bcd2d10d06ec52c42ea2e8939b63ccdf194f3c8d",
+      "bytes": 7913,
+      "sha256": "28d212dc5f06afe7f29a303eaaab00b22d1a21a0c62afbc3976bf4098a43c676"
+    },
+    {
+      "path": "internal/builtin/logical/rabbitmq/secret_creds.go",
+      "blob": "15e41cea9dce469e336e4080a78a7ac9e930183b",
+      "bytes": 1835,
+      "sha256": "f5da8657d0aa2a1ba61de2999739444afff89f35a1c66c182c6ea5f0d48992d9"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/backend.go",
+      "blob": "66ae77f9b6468bef93f020d8b034e4a1f98e4aaa",
+      "bytes": 4416,
+      "sha256": "df281a36fe20a5d65d6c1d72b87fba57c6c29c0663cc84899ef85814e1f81cbd"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/fields.go",
+      "blob": "6b02acbd7c62fbf4110d7b016d8aa54dc1b2eb36",
+      "bytes": 2725,
+      "sha256": "2ca7c96af5d1282a8f625323ad3c83e900bbb7c282b558972298f61d3cb13086"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_cleanup_dynamic_host_keys.go",
+      "blob": "3f7f2509bcfab2abffac5bc6e6fcef12371179f5",
+      "bytes": 1718,
+      "sha256": "76b63e220a15108099c1eb3e01e18f2c7ed0b90877b6bdb2e26f1416eae3f9d9"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_config_ca.go",
+      "blob": "bb84bafe2b22aab78074dfba663ccf08e65ffb4e",
+      "bytes": 5885,
+      "sha256": "a97589a33717c9892e57df5584d586b26055b3d7a088b547b27506b5c66055ed"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_config_issuers.go",
+      "blob": "21e555975376a1af775a668decf5abc7a7c79d42",
+      "bytes": 4452,
+      "sha256": "65975dafc6b7f94197ab7928aab97a5b785cdb8fc01c09c568900bc6cafc3105"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_config_zeroaddress.go",
+      "blob": "4c07103154f40332fafdc5b0cc5b3f47608f958d",
+      "bytes": 5331,
+      "sha256": "ce078ec0b6f1573eefce21f2301fa6ebee27399aa359a9ad064b5c3900dab13d"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_creds_create.go",
+      "blob": "c394a268c6ad5c451d342b8bd4e8d9b317db1043",
+      "bytes": 8506,
+      "sha256": "aa4e3655e6f0480ad602fc253e8ea6c7dbe450f4d3649b0545e4da0deb7d4387"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_fetch.go",
+      "blob": "5ba28f40558551d61d4726dda3113285847c9402",
+      "bytes": 1392,
+      "sha256": "815dc8a60b8f615da39224353c7c6052145513c3165f8681018d884af0d21a80"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_issue_sign.go",
+      "blob": "92183bf9de186ca87cabd2675875ec094255287c",
+      "bytes": 18314,
+      "sha256": "eb7aa68adf6779cf91c11a1fe9084835bb824c461a54c5e088a2752e7548a694"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_issue.go",
+      "blob": "9f4c24f374dbffe1fb1b2d2af95fdb321e62f65d",
+      "bytes": 5755,
+      "sha256": "45aec39868bbfc30f15763c3c5138840da4dfbd46aa32556a8745b1408307979"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_issuers.go",
+      "blob": "3246f4da4df9b1c227dfe54fa74a1519c2850306",
+      "bytes": 15708,
+      "sha256": "d10576954f7db8950f039f7e53e13828e77658bf6094f257d4cef649d189a374"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_lookup.go",
+      "blob": "b7e7880e2622439117a568c68a8481648029a2bc",
+      "bytes": 3344,
+      "sha256": "c08814f4904381ec25cd2bfd1875aff3e357604f97006279d279d50aae6ad061"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_roles.go",
+      "blob": "710bb04a486d24c9e7ba30cdcd96a04a9d12b44f",
+      "bytes": 33554,
+      "sha256": "b803f181581e082119d7aa746b0486e27714231a2fedcd5750c500d91717488b"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_sign.go",
+      "blob": "1e6b4e8458b0dc062f51f53ff5a14172979c1cee",
+      "bytes": 3683,
+      "sha256": "b478e099b41dd8fd7e73001a9b284c7206e03380c4c2b2ad5f08a4659313aa9a"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/path_verify.go",
+      "blob": "33e469b2598bb39a7b2151aa216fa634b49e4d25",
+      "bytes": 3298,
+      "sha256": "692b77c8cc81e8d642c11c3ac8d1d50b2cc2af7c0cda5a8560880f5b5c509aab"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/secret_otp.go",
+      "blob": "54bd246eb0be01b5985eabf52eb5206d68c2a6ce",
+      "bytes": 1056,
+      "sha256": "c87e6cb2d741c263fba099cbc6ac607895635db494c619cc30c981586d4b95b0"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/storage_migrations.go",
+      "blob": "eff1b18a623a0c6a201773c94dbbf4d27f6bbeaf",
+      "bytes": 3859,
+      "sha256": "59d1d28380ac93c33cf5a10dd7884bb47a108e372b1b743db7ea8356c77f41a3"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/storage.go",
+      "blob": "b5b66351ceb5f1599402547184483f98d68d521e",
+      "bytes": 10946,
+      "sha256": "066b6aa71e57053f94796ea50c20ebc7e9966c1b6df8982ee60c6ee72dee31a3"
+    },
+    {
+      "path": "internal/builtin/logical/ssh/util.go",
+      "blob": "397ee4f31b68970cb04363fafbd09394f005fd16",
+      "bytes": 7898,
+      "sha256": "32db976e20d44b5571a15fcf94c977611be89e843c187d528398ebe4aa7e60ea"
+    },
+    {
+      "path": "internal/builtin/logical/totp/backend.go",
+      "blob": "ff2b910e1dbb5a2b086d2c55ddc4636ab80ab9d2",
+      "bytes": 1097,
+      "sha256": "6e84dd88f3fab5826503c71d39ecb1a886789b143dfbc05b6d0fdaeb58314fa6"
+    },
+    {
+      "path": "internal/builtin/logical/totp/path_code.go",
+      "blob": "b384bffeec4f6d9653a12ec59d2d5bd9c478d661",
+      "bytes": 4660,
+      "sha256": "5728b12d4a39c3055a35c7be3a9a7d30887030689b1ba1d80df5a5da13e3e3ce"
+    },
+    {
+      "path": "internal/builtin/logical/totp/path_keys.go",
+      "blob": "9157f66c26634921505e95414c606a612dc1d045",
+      "bytes": 12641,
+      "sha256": "65e34565a371d15faf2103d5f62480a15b8910cff5671f9392c6e3c1fac7df3f"
+    },
+    {
+      "path": "internal/builtin/logical/transit/backend.go",
+      "blob": "d9f6f4614621b1de1cfe5c309138d7595d58be8f",
+      "bytes": 8734,
+      "sha256": "7bdd07a2776b091ab887c0ed1161deead3b1aef8b843e55eaee27765468b0ecc"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_backup.go",
+      "blob": "c152957a36fe05260fe26fd9ebac1f60d5cbe234",
+      "bytes": 1333,
+      "sha256": "5ab0c93809ed2c1d4eb39ca3132a863a76b4678e1648cff60efe5c51546df220"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_byok.go",
+      "blob": "c713b503682750593c7d1cc8b6688cb74f1c7fe7",
+      "bytes": 6327,
+      "sha256": "add63ec4de57803c85032bdad92e603d1b770c573e31f4c9ddb791f0d6cb55c5"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_cache_config.go",
+      "blob": "adad590c80f20ba1ce3c7bbfddc17b1a9adc6930",
+      "bytes": 3380,
+      "sha256": "e33a9bd4cc6e012b051d0475d0c7facdd3cc8fe50cdc65b867901e56003fcd74"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_certificates.go",
+      "blob": "2f8949f74d4f430107eb5538456339fa9ce85976",
+      "bytes": 8394,
+      "sha256": "2f1b13becb1195b04664fe48ececc0f0eb27f05963bc4b5cc64e43f0224bc1b1"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_config_keys.go",
+      "blob": "8f0703897bfcbe6cba8853a68b9d722905eb9970",
+      "bytes": 3545,
+      "sha256": "0915209263d4e78ec5a254602854ca7d605118d72d5c582063907688cb8e87aa"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_datakey.go",
+      "blob": "d5cf0488ddb88e33d6ed3be9cd1003f64c68157b",
+      "bytes": 5302,
+      "sha256": "32dd25046690e87dfa276cebe62549cf059e0cfb14d95d4f84a2b23cb0fd85be"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_decrypt.go",
+      "blob": "0d1cb742b8857e1e6f849e28570d7e756c8f6c01",
+      "bytes": 7066,
+      "sha256": "943bf01c040ed7489658540b2a3c3e00da7e5f335c9f0bdc83a79ba8e0e41c20"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_derive_key.go",
+      "blob": "dba7b8ce3af06769b3f52d4002660de137877d8f",
+      "bytes": 5242,
+      "sha256": "a8283bf18a224d39a18a98bf40fa05d712ff2925bc67f71648081ac632818675"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_encrypt.go",
+      "blob": "c0dfedac44c27a2e91a9e84fa23368ca01ee0fd0",
+      "bytes": 18017,
+      "sha256": "84b33c212df66aea37a992ac077a4b6e63392b44764d0dde441f9ac2590db570"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_export.go",
+      "blob": "45f2df4d193d450855562cf872532b3fa78bbce6",
+      "bytes": 15486,
+      "sha256": "b76cff5b71f9d7e02caab5bc9eacc68ebaa25feec40a6f8238ab6ba7fb347ca5"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_hash.go",
+      "blob": "bf5e30a7badacf40774bf9ca3d4120d343585f07",
+      "bytes": 3337,
+      "sha256": "40a21c8365ee2754ad1400669f2f23eb18c30b4a35f55f6b81d16813f31fc446"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_hmac.go",
+      "blob": "745d7b5d52a6a06a831f39f8b4d47cac66d9aab0",
+      "bytes": 11396,
+      "sha256": "cc01ad824e77ed75009b8a6b21fc2adc2cf40d2da9933bf141328063f0d0c012"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_import.go",
+      "blob": "5639fe17509a155e33e04051f08b6b2c32d31ed6",
+      "bytes": 13984,
+      "sha256": "c7e74c7e01f3efbc8611d963efea062fde295f4c5a6e7ead744879d00e9f5a98"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_keys_config.go",
+      "blob": "e83d70c40ffc1be6f513c4df4df02d672b2920b2",
+      "bytes": 8174,
+      "sha256": "753818795e6c0da12c2835831052a7229c6e9541c5c6208e071975335680ee22"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_keys.go",
+      "blob": "59b973545cd9d3eed37c6f1864b0251e60705ff3",
+      "bytes": 19317,
+      "sha256": "e7e48b3ccbf678a81d0a3b23a6bdfaf5cf2ef434d2d6a7d7ec8124b575bf460c"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_random.go",
+      "blob": "c61131731e5f3e541c8fa5d0498ef9b4d9db2e7b",
+      "bytes": 1959,
+      "sha256": "2d35575416880de700af0cc63b8404799d290a43d0940612e4d25fe801d908b9"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_restore.go",
+      "blob": "e71df5073df778c18f83a229fad0381b6ff92c25",
+      "bytes": 2132,
+      "sha256": "092f0848bd67aa77f9d7e43ab8e6798952331884a50da6c0405899315446faf3"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_rewrap.go",
+      "blob": "74951c6c5581c8fd78e16b439ba13b2a63634be5",
+      "bytes": 5651,
+      "sha256": "5f382a5a5bad34dcb1bbe3eca81a61ba1c1fbce426ff338c076a413008a9d15f"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_rotate.go",
+      "blob": "072cfd6b9fbdac34c49e865f3d8b7b8b82384f1d",
+      "bytes": 2932,
+      "sha256": "113f371169eea4b1f88441444be520d28f528ebd1380125f3319e863d5360caa"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_sign_verify.go",
+      "blob": "d0089646c115abb1eb28109c8f0397d9553d6043",
+      "bytes": 23900,
+      "sha256": "a1d6acf986a38898a1864b2701aeba1850c159dc5e5afb15de1f57febc86c7e3"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_trim.go",
+      "blob": "f8cf35dfa6146b230f7208f43657497726252040",
+      "bytes": 3901,
+      "sha256": "7429690856aac87638b34746dba7f9b02e6876f9354cef53f7b1a0b63e5e8665"
+    },
+    {
+      "path": "internal/builtin/logical/transit/path_wrapping_key.go",
+      "blob": "5e89839fce87e998730b5e01fe871d4db7236bcb",
+      "bytes": 2599,
+      "sha256": "acd97b7e5a346830aecb17c161b907cc3c1ef35e601ddc35ff18b941327d509f"
+    },
+    {
+      "path": "internal/helper/builtinplugins/registry.go",
+      "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+      "bytes": 6385,
+      "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600"
+    },
+    {
+      "path": "internal/http/handler.go",
+      "blob": "ee3c7bc5c0e342d379cf4d6334a5f9f0d4233ff3",
+      "bytes": 41113,
+      "sha256": "fb3c080c1a5e4bb200d4fffdc147909d329fa73a6583ed26630dd359370ac838"
+    },
+    {
+      "path": "internal/http/logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+      "bytes": 15421,
+      "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451"
+    },
+    {
+      "path": "internal/http/sys_generate_root.go",
+      "blob": "3aca325b8f8c33dd98323da19becb5c8f0c86b1d",
+      "bytes": 6353,
+      "sha256": "93710f149bdb3fd50c9cb1916a67aed56d4423c886a0457a9534ed62139ef110"
+    },
+    {
+      "path": "internal/http/sys_health.go",
+      "blob": "b8a13da0cbdc433c03fc3ba505bfac4b950a6487",
+      "bytes": 4838,
+      "sha256": "a6534e77d09dcc77a89ec5859020300eb15907d471e8b67c909c497242e206a6"
+    },
+    {
+      "path": "internal/http/sys_in_flight_requests.go",
+      "blob": "b966fb3c5370b785c843966d32c9f5c734fe9bcb",
+      "bytes": 516,
+      "sha256": "354cb7afdb6e59952dc29cd9c57913f6851b6880a52c80d70cce48ebb5e97f42"
+    },
+    {
+      "path": "internal/http/sys_init.go",
+      "blob": "7042ed481ced195d2dac47d3c9fccd91a73fcf5b",
+      "bytes": 4920,
+      "sha256": "86308d2836b96e46cf6a444fa33571432c3263711d2c72324b3054033fcf8b1c"
+    },
+    {
+      "path": "internal/http/sys_leader.go",
+      "blob": "c28a6f121cfa6f84d2f01ac6ac22f8d4dda0e98a",
+      "bytes": 745,
+      "sha256": "f6bec7f00cce0b3daceeea05dd04138f1015307a04ca7ea15be4a834c0b81f71"
+    },
+    {
+      "path": "internal/http/sys_metrics.go",
+      "blob": "bed63239afd66e3eb4cb302d85bec6d92f448756",
+      "bytes": 1357,
+      "sha256": "cff4a20994a9a6b741ee476aca390d5ea450d38a769501dcbf9144577b84dc7e"
+    },
+    {
+      "path": "internal/http/sys_raft.go",
+      "blob": "e0e07aafb680d7419a2170c749fb2d7d02c35792",
+      "bytes": 3251,
+      "sha256": "5579f8c20548f33ca1c7e5fb8ff8a099fb1d541ed53ea9a3f0c2fc53c637d1af"
+    },
+    {
+      "path": "internal/http/sys_rekey.go",
+      "blob": "904eb4d6e1373849f64b70652b882275fec2f563",
+      "bytes": 11319,
+      "sha256": "934afbd395203921b22b1255e765a7ed2e4fe3a02f99ee86953f49ebb9331ca9"
+    },
+    {
+      "path": "internal/http/sys_seal.go",
+      "blob": "3920185f3f3d2758be1e535fe77ceb2c974aaaf2",
+      "bytes": 4895,
+      "sha256": "478c3a6e936bbd08fbd2df8c2e0ab268a7394d7f34fe16f9eb94a694c5c81229"
+    },
+    {
+      "path": "internal/vault/auth.go",
+      "blob": "f0f1d24a7913c3894c5b8ee7b7df93a33eab48f3",
+      "bytes": 42066,
+      "sha256": "cbb70e61c539378902fd47eb7af404fe6f325e869982bd5947aaac5e289adee6"
+    },
+    {
+      "path": "internal/vault/identity_store.go",
+      "blob": "fa5bf7c48cd4b4423877c9458cf93e573dccebba",
+      "bytes": 2524,
+      "sha256": "a68b836ccc11af5d7e86f81e059fbe8387013c3b5ee5e30ab7515ceb92dfb3f6"
+    },
+    {
+      "path": "internal/vault/identity/lookup.go",
+      "blob": "79a793bbda1d733fff05356e00b1876ae4d4cc38",
+      "bytes": 8380,
+      "sha256": "6b13bb2b054b8a7a5e6cdbe536f9436b15a523f5e9b5d139dad7f71cacf2626c"
+    },
+    {
+      "path": "internal/vault/identity/mfa.go",
+      "blob": "b23974780a48c1644566e02452ac96cdda21c0f8",
+      "bytes": 26975,
+      "sha256": "0e5c455f934512e141a5ffc05365ebf9817d8d1e072b6e32c6d5b90ace9e2bfc"
+    },
+    {
+      "path": "internal/vault/identity/store_aliases.go",
+      "blob": "14983e144a0c5228e5e704201b12b6c3974cd978",
+      "bytes": 20820,
+      "sha256": "48b7bdc3429f201f166689ee030735aec66eca78d376098a15feae5ef8e30558"
+    },
+    {
+      "path": "internal/vault/identity/store_entities.go",
+      "blob": "e6a6de03cc7dcb134be17e6faf8869d6d386ffb3",
+      "bytes": 36334,
+      "sha256": "436e7b468a3ec1086a00e58cabb7726d5ba92e9a60cde239ff6b90eb5279834f"
+    },
+    {
+      "path": "internal/vault/identity/store_group_aliases.go",
+      "blob": "79b57af631c576f23239dd1027000be72ff9e9e0",
+      "bytes": 11985,
+      "sha256": "2390610b97746b604d96bcf3e627558f263d5f2d522470a7250d86d11ce49f31"
+    },
+    {
+      "path": "internal/vault/identity/store_groups.go",
+      "blob": "332445e22820e7b3649dd0fa083e0f5509d5cba7",
+      "bytes": 17434,
+      "sha256": "01dc29087f9f4ec783d2b8db68e55320e49d83a653cd361f9f4071ed28710f4b"
+    },
+    {
+      "path": "internal/vault/identity/store_oidc_provider.go",
+      "blob": "bd8c036db52759c5ff08414df1796553312603d7",
+      "bytes": 103336,
+      "sha256": "28b1921e857f72e0855c21a286a73d31ca936aa5d02a3d42cfb4cfaf90c5396d"
+    },
+    {
+      "path": "internal/vault/identity/store_oidc.go",
+      "blob": "d414428a81a59617dd3f4a65960a6712ba365d5e",
+      "bytes": 61380,
+      "sha256": "d33539cf5d596149e15bbe785f55a46b212ebc08e7d985363ca2f23a15960097"
+    },
+    {
+      "path": "internal/vault/identity/store_schema.go",
+      "blob": "1a9ba3cdfd14d3a4ed11904e8e5014d9221568d3",
+      "bytes": 5446,
+      "sha256": "3b7825a6a05296916dc7f8bd3fef651a0c96c6b3d2636b557d5296ca70f95e9e"
+    },
+    {
+      "path": "internal/vault/identity/store_structs.go",
+      "blob": "7070bf18782d006a4adc83256f61ad88afc2acb6",
+      "bytes": 4119,
+      "sha256": "fe421d069cf64496c7649ee01457f5de029bc8ce010d5ea98b6b761f1bedb590"
+    },
+    {
+      "path": "internal/vault/identity/store_upgrade.go",
+      "blob": "972b7a9bbca1c9e68f55c65f522f041c09a249a5",
+      "bytes": 7066,
+      "sha256": "9cd7b3838846fe602b720b717aca4c32306728dba1b930f5c549aab96465191f"
+    },
+    {
+      "path": "internal/vault/identity/store_util.go",
+      "blob": "b235423f44f63da080658733b164a02d0e5e7123",
+      "bytes": 64701,
+      "sha256": "170836d9f2becc0f9fe94a307985d40e829ce4b89b4e240498022ee5f6f6776e"
+    },
+    {
+      "path": "internal/vault/identity/store.go",
+      "blob": "e59f96f1d7df59c3bd465acf3abcd04fb02065c4",
+      "bytes": 49396,
+      "sha256": "0fc175a105c55f98ac5545f127e99afa5688f75acc3e602349ff07c9c71bc7de"
+    },
+    {
+      "path": "internal/vault/logical_cubbyhole.go",
+      "blob": "291adbe65974986f6fdb5e08f44ec85f70da0087",
+      "bytes": 7998,
+      "sha256": "111ff33f5026b315185d85250fe2d1422b787f938318510ae3196bb8952aab67"
+    },
+    {
+      "path": "internal/vault/logical_raw.go",
+      "blob": "8d69def7a5ec34cbe97ad58d21c8c07de21b77de",
+      "bytes": 12974,
+      "sha256": "3d940be2daefbef24c8d3f6dfd97282d32c51dc5916d94fa2878c06fada1015b"
+    },
+    {
+      "path": "internal/vault/logical_system_external_keys.go",
+      "blob": "6a7d6cfbe407f3a23b3c2c8d37d328175be18761",
+      "bytes": 19172,
+      "sha256": "3c626103b5f8a7526a4ab2695380b8db4d2a4b4c786c78e5d4116bee19f5b0e6"
+    },
+    {
+      "path": "internal/vault/logical_system_generate_root.go",
+      "blob": "2fc97cb48442b6c6fd20ca1bb35c8e92ddb5d578",
+      "bytes": 13940,
+      "sha256": "64eb4f0aa644efc24b0ea58fe1da0f7c991f81973deaaf979f07006cb268ade5"
+    },
+    {
+      "path": "internal/vault/logical_system_namespaces_seals.go",
+      "blob": "2d833cfab83032bcb37f711b1ba70d31fbe94ec6",
+      "bytes": 9997,
+      "sha256": "4697f9e4a98cccf8191ebf483e6fdb9b621fba818db7c658874053fec36feb77"
+    },
+    {
+      "path": "internal/vault/logical_system_namespaces.go",
+      "blob": "cce473da60425858754e87d0f5588527e1e9106c",
+      "bytes": 18228,
+      "sha256": "5dadfc9b92d8d91d073b2b9d0d804da170d6ca23b6abf928229edc74fcd4c99a"
+    },
+    {
+      "path": "internal/vault/logical_system_paths.go",
+      "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+      "bytes": 140958,
+      "sha256": "96863601a69c77d83f624266890c3a1566cba60c5e1845f7e19ca2a751d2878c"
+    },
+    {
+      "path": "internal/vault/logical_system_pprof.go",
+      "blob": "5104b69c206428257e2ebc598926047adf6c79c0",
+      "bytes": 12346,
+      "sha256": "4127f796ef3de6a1ffe953a24f99dd8dcd5172b8a2f973afeb2645555a07d63f"
+    },
+    {
+      "path": "internal/vault/logical_system_quotas.go",
+      "blob": "02f0f9deecbb540bfd94d86a36c8fb43cd9b85cb",
+      "bytes": 15387,
+      "sha256": "3937f46725642e4c2e7b779992dbeb97a2338eaa2ec35ff6657c215ae66f74c4"
+    },
+    {
+      "path": "internal/vault/logical_system_raft.go",
+      "blob": "d18d66bc0ec259093e4b757f8d23e81be109d26b",
+      "bytes": 27234,
+      "sha256": "31a6d3eb5a8ae09b73628fad4be064e8fac49028fa00969715643da94383358b"
+    },
+    {
+      "path": "internal/vault/logical_system_rotate.go",
+      "blob": "5afcb41aad76dddd6c4c96d408cbc0dc2782213b",
+      "bytes": 33074,
+      "sha256": "8951dcbfb0769356c0547ae2fe2cc4c84cbad028e3fdabecea15f456fa81e0f6"
+    },
+    {
+      "path": "internal/vault/logical_system_user_lockout.go",
+      "blob": "689ca53566112cde52f5d4ac9ae1ee110b988c47",
+      "bytes": 6037,
+      "sha256": "4f47787930550835a5f6c74dc8e6b281efef0d1ed82ffacef4769cc25bf8bd0a"
+    },
+    {
+      "path": "internal/vault/logical_system_workflows.go",
+      "blob": "4598f2f0fbb4914e4294feedef184b41a431b924",
+      "bytes": 13196,
+      "sha256": "1da0a92e295ce371cd5a92ec170a77bf3138a29dd18b05298dc355a0da228e66"
+    },
+    {
+      "path": "internal/vault/logical_system.go",
+      "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+      "bytes": 174841,
+      "sha256": "766eceff5b7e4a6f47208f9e1501d3db8ae3ac17fe81e83a32117380d122dc6e"
+    },
+    {
+      "path": "internal/vault/mount.go",
+      "blob": "1d7cb9e449c93a79c55c1910c35ba3d69976d021",
+      "bytes": 74403,
+      "sha256": "f664b052e7b4fcf90ae1af760c6d5d83703b06461679653a91f9cdb5bd513e9a"
+    },
+    {
+      "path": "internal/vault/token_store.go",
+      "blob": "364aa23ec85ff14cbde889e06048121b461dbdbc",
+      "bytes": 144068,
+      "sha256": "7a51ce868a36bee1a07b99e96f644af61b50bf7219ec712226e78c5c6e041ed1"
+    },
+    {
+      "path": "sdk/framework/backend.go",
+      "blob": "6fe8a43873b56e6d071bf30c262131fda7cb87bc",
+      "bytes": 22322,
+      "sha256": "8885a385564dbf0885626a1ae6cea86b0bbb1092b28048bcb1a81031633771e7"
+    },
+    {
+      "path": "sdk/logical/request.go",
+      "blob": "472884208afd784479b62fc25f33f0871a282a61",
+      "bytes": 18496,
+      "sha256": "8c80e6e32a1e2b42974d26b4fcf8f62dd970bad78a70c7b2ef94ac88d861978d"
+    },
+    {
+      "path": "internal/vault/login_mfa.go",
+      "blob": "f64d1adeacb6f73c559c79be31debba498e544a0",
+      "bytes": 63941,
+      "sha256": "d510b4dbccad07249b308cc8483eaaa308f6b0c46bde7318064c56697966c9c3"
+    },
+    {
+      "path": "internal/http/help.go",
+      "blob": "c46516215be138d7199d2cf802bfd5d3b747e1bc",
+      "bytes": 1675,
+      "sha256": "e29da4f9cce2399c1a5f00d2f4bb1550ac5e46d039012b03173fe691a6f90625"
+    },
+    {
+      "path": "internal/http/index.go",
+      "blob": "7338e5b80f8bb024e1bb0ba82cea1d8dc04db3d3",
+      "bytes": 6960,
+      "sha256": "cd59f307090f51c5da05d19c49ebbcecd89723eb6d0d95a9c9fdfc4649cb5bcc"
+    },
+    {
+      "path": "internal/http/cors.go",
+      "blob": "3bc5cfd66227c45d959da4f79cb2806f762db2fa",
+      "bytes": 1956,
+      "sha256": "830ab526edd85defb4ed69e81b25f109d9d517b7193470fae4e06a187d9f3fb0"
+    },
+    {
+      "path": "internal/http/util.go",
+      "blob": "dcae672588649b62be651e5fe36296155153a3a9",
+      "bytes": 11385,
+      "sha256": "33d4af7e2d39583da9635340b7280a8fb7b21e166aa32d972ec426cddf3dc140"
+    },
+    {
+      "path": "internal/http/metrics.go",
+      "blob": "b3082c73d441f85c67ff1a4c35e3f4f5711a4f61",
+      "bytes": 1992,
+      "sha256": "2564817cace4eceaee5fa5b9135e745126b80cc11a8f46753fc5202870ff552f"
+    },
+    {
+      "path": "internal/http/json.go",
+      "blob": "fdecf6e049b04c33a31a412c1e2968646d2e8dcc",
+      "bytes": 4791,
+      "sha256": "4565a598dcaff0e99a6e1c3ddc34c494c37e61ff361db01f68bfa2dcc40b65a6"
+    },
+    {
+      "path": "sdk/framework/path.go",
+      "blob": "65d0fcfcc0a7288727e323a4d7ad47607b21ad31",
+      "bytes": 16446,
+      "sha256": "80436063e870de2ceb6d4435f3783f0efe2fa29e961c9df58744757f9887d8ae"
+    },
+    {
+      "path": "sdk/framework/path_map.go",
+      "blob": "b51a120ce67935776b45956b1e9a38ed98b62c74",
+      "bytes": 7285,
+      "sha256": "c4712ad0c7c1337d460a74f07a2d3e0a20603d868565d37ad7d971c4c3183149"
+    },
+    {
+      "path": "sdk/framework/path_struct.go",
+      "blob": "5d2171e428349fe885faccde08da56be5774ed43",
+      "bytes": 3056,
+      "sha256": "26aa5528029ede0a0665fc75e0fb7ae502ff3b953fa0d1a3272c17a98587c217"
+    },
+    {
+      "path": "sdk/framework/secret.go",
+      "blob": "4d910cae7219f5fa237ef2dad6b2c4ebb7f3b1ff",
+      "bytes": 2436,
+      "sha256": "8f799c7136416d949156dbea41ad2f8e7ba729bc90158ed6fcb1bddff2b3d79a"
+    },
+    {
+      "path": "sdk/framework/lease.go",
+      "blob": "5cf45a2dd3163c16fc106761b26867c80394ed44",
+      "bytes": 3596,
+      "sha256": "823fbfc629d3ed46f6bc9ffb9d4af4ea510c751f32c9c05a641bd53b1741eb94"
+    },
+    {
+      "path": "sdk/framework/wal.go",
+      "blob": "3a2fa0081a800e8b3e66fe6c5c0d8d6b028f3638",
+      "bytes": 2640,
+      "sha256": "25386485513f74adc89ef52ce97961a48088bba409076c5244325cb3a51c7058"
+    },
+    {
+      "path": "sdk/framework/policy_map.go",
+      "blob": "bdd93c67c2f76ea23bbb3e65aade2853d346e562",
+      "bytes": 1412,
+      "sha256": "2accc9ee34d95abd5aa390d88d1e8b45fb3d24e47389c065f1a1318774ef6bf2"
+    },
+    {
+      "path": "sdk/framework/field_data.go",
+      "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+      "bytes": 14785,
+      "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+    },
+    {
+      "path": "sdk/framework/field_type.go",
+      "blob": "5f0224b041a4fad82714806f97eb17d6b7715dc3",
+      "bytes": 4185,
+      "sha256": "188f8f0c864ac5d557145ec167a8cb0b68726a5200c01d3af2578354c6a1ebcc"
+    },
+    {
+      "path": "sdk/framework/openapi.go",
+      "blob": "b298ae18abbcfbab8752ff856bac0837c1f2cf45",
+      "bytes": 38567,
+      "sha256": "0b1fa4a3e7c460548d361f7a6d56428b9c1e2e7fd4406d669bb9a173fb97ad1d"
+    }
+  ],
+  "runtime_or_complete_denominator_qualification": false
+}

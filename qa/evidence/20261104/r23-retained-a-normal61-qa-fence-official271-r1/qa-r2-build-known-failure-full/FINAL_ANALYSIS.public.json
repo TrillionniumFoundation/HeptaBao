@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.native-h2-qa-r2.failed-build-full-scope.v1",
+  "original_job_id": "1a1aaf3772d-fc05-48f5",
+  "status": "known_failed_original_preserved",
+  "command_count": 6,
+  "exact_command_records": 6,
+  "exact_command_intents": 6,
+  "command_streams": 12,
+  "owned_process_groups": 6,
+  "all_reaped_and_empty": true,
+  "all_input_fds_closed": true,
+  "command_outcome_unknown": false,
+  "core": {
+    "path": "actual/result.public.original.json",
+    "bytes": 36782,
+    "sha256": "d19183df9ef0db22852c95d69ad2db4e8275c924b33481cc35d1cbab6cb073d9",
+    "blob": "f7b29972d3400198a8735019fb1ed7f0b77fcfdb"
+  },
+  "cargo_stdout": {
+    "path": "commands/build.stdout",
+    "bytes": 62672,
+    "sha256": "3f072394c22e9fe9e20ec374870abab5378a55600af12ea459d2e12b0bea83aa",
+    "blob": "ff8cd6f027a03417d476c4e0bb6fe7aea6d978ca"
+  },
+  "cargo_event_count": 75,
+  "cargo_actual_build_finished_success": true,
+  "qa_compiler_artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "path+file:///home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/project#heptabao-native-h2-qa@0.1.0",
+    "manifest_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/project/Cargo.toml",
+    "target": {
+      "kind": [
+        "bin"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "heptabao-native-h2-qa",
+      "src_path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r2/project/native_h2_client.rs",
+      "edition": "2024",
+      "doc": true,
+      "doctest": false,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "3",
+      "debuginfo": 0,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "features": [],
+    "filenames": [
+      "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-native-h2-qa"
+    ],
+    "executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-native-h2-qa",
+    "fresh": false
+  },
+  "later_actual_artifact_file_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 2,
+      "metadata_platform": "linux",
+      "mode": 448,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 448,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-native-h2-qa",
+    "sha256": "1f1c6eccf1ac9652a69572cb270b1d3d99a3402eaabf6d7feed6e4b2c4d55b13",
+    "size": 4616576,
+    "version": "66306:31633993:4616576:1793869496670294192:1793869496695294129"
+  },
+  "failed_predicate": "read_file: stat.S_ISREG(before.st_mode) and before.st_nlink == 1",
+  "later_observation": {
+    "regular_target_verified_by_native_file_info_contract": true,
+    "link_count": 2,
+    "alias_set_not_yet_observed": true,
+    "at_failure_stat_not_directly_recorded": true
+  },
+  "qualification": {
+    "retained_qa_executable": false,
+    "component_build_started": false,
+    "component_tests_executed": 0,
+    "qa_client_execution_count": 0,
+    "product_or_http_requests": 0,
+    "complete_qa_build_pass": false
+  },
+  "scope_notes": [
+    "The Cargo command and six command custody/cleanup records are complete.",
+    "The old R1 failed custody and three old inert source-body read UNKNOWN observations remain unchanged.",
+    "All original SDK/native read payloads for this full failed-build packet are preserved; artifact file_info is explicitly a later read.",
+    "Do not run this old R2 job again; any retention change requires a new reviewed identity.",
+    "Build scripts may run under the Cargo process group; zero QA-client execution does not mean Cargo has no build-script subprocesses."
+  ]
+}

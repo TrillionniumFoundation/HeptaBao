@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/159",
+    "number": 159,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": true,
+    "body": "## Problem\n\nThe A → B → A regression added with the same-root cursor fix failed on the Mac before exercising the installer. Each call to the shared publication helper made a fresh V5-to-V6 migration plan, which generates a random object address key. The third projection therefore had a different root identity even though the V5 source was unchanged.\n\n## Change\n\nRetain the first complete A projection and reuse that immutable graph for a new publication after B. A test-local helper constructs a new closure, intent, proposal, and actual Raft Stage/Publish using B as the predecessor and a new generation and index. It keeps the first plan's original absolute deadline and rejects expiry.\n\nOnly the new test module changes relative to `1c66541993662f92cf717154e33717abedb2ea74`. All 30 assertions, the intermediate B mutation and publication, and every byte from the third-root equality through the warm/cold repairs and final reopens are preserved. Production code and the original 60 test definitions are unchanged. This candidate includes the preceding same-root cursor fix from draft #158.\n\n## Validation and limits\n\nPinned ROG rustfmt completed successfully with one child reaped, complete durable output, unchanged tool/config identities, and six independently version-pinned output reads. Root review verified all 3,914 source leaves and rebuilt all 358 Git trees: 3,913 leaves unchanged and one test changed.\n\nThe previous Mac candidate remains **60 existing tests passed + 1 new regression failed**; it has not been relabelled. The new candidate still requires actual Mac/Linux compilation and 61-test runs, followed by physical LAN failover, ReadIndex, restart, migration, and AuthBus validation. No production cutover or deletion is authorized by this PR.\n\nParent: `1c66541993662f92cf717154e33717abedb2ea74`\n\nTree: `eba5e650bd080b8ad41ea52a2bc68867f541d255`\n\nRoot formatted-source verification: `c56d8b9900e82d64f4bc91360e6e1998bd7f1c33`\n",
+    "title": "test(ha): preserve A projection for actual same-root republication",
+    "base": "main",
+    "base_sha": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "head": "codex/heptabao-retained-a-regression-eba5e650-20261105-r1",
+    "head_sha": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "head_repo_id": 1349115072,
+    "head_repo_full_name": "TrillionniumFoundation/HeptaBao",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "Franksudoman",
+      "name": "Franksudoman",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "id": 273670192
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-05T10:28:51Z",
+    "updated_at": "2026-11-05T10:28:51Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 2048,
+    "changed_files": 3484,
+    "additions": 1085607,
+    "deletions": 8830,
+    "display_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/159",
+    "display_title": "test(ha): preserve A projection for actual same-root republication"
+  },
+  "isError": false
+}

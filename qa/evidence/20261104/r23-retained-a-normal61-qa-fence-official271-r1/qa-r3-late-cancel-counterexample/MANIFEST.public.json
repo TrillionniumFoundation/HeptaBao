@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.review-packet-manifest.v1",
+  "files": [
+    {
+      "path": "review.public.json",
+      "git_blob": "fc5704b22d8887edf68900d6e10b5eddca39fe90",
+      "bytes": 3970,
+      "sha256": "66f4b1df2caa06b1a475f322fb49a45fefca87845ed7923d57487bfa91b0cb8d"
+    },
+    {
+      "path": "candidate.py",
+      "git_blob": "d5dac1a373857515b8efbe5a16571bef9ecd54a8",
+      "bytes": 59653,
+      "sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76"
+    },
+    {
+      "path": "reference.py",
+      "git_blob": "015f59e0f2212e4a683ad2b4511088b406a32e61",
+      "bytes": 42820,
+      "sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8"
+    },
+    {
+      "path": "review.diff",
+      "git_blob": "3e8c291d91177ce3cff9e1f37eedae0dec21808e",
+      "bytes": 19504,
+      "sha256": "a0632d7bc16328a7fbe6066789ed8296358152f6d8036c8c979cd71e60399565"
+    },
+    {
+      "path": "counterexample.py",
+      "git_blob": "d36d43ea130971d9174975425bae6509ddf10393",
+      "bytes": 3283,
+      "sha256": "496b57fb813330cfbbc5e828baac71e20b6919ba2441a8dbca7a73deb6755a91"
+    },
+    {
+      "path": "counterexample-input.public.json",
+      "git_blob": "c3a8fb9c7921f2e80eedc6053e8fac7513336fcf",
+      "bytes": 62626,
+      "sha256": "65bdee820a6edc597e22db096a179ff63b16463678368ad56ac558761d271a4c"
+    },
+    {
+      "path": "counterexample-intent.public.json",
+      "git_blob": "27fccd3c4e94133746cd549f3811b9cc7dc29fcd",
+      "bytes": 88133,
+      "sha256": "8bb46e0db97656249374e6a3ee9e2cfb1b32217318d899001e53d12598c6c64c"
+    },
+    {
+      "path": "counterexample-executor.public.json",
+      "git_blob": "3e3fe459820790908de9d690e3ca0de48d3793c6",
+      "bytes": 863,
+      "sha256": "e8c53eca66d84ff9d4e1b3bdafdfd31b5510e9f998bef235406a1cbc8341b204"
+    },
+    {
+      "path": "counterexample-stdout.public.json",
+      "git_blob": "8c4717a9b4554dd0e4e49081cdcb933cab7d8b02",
+      "bytes": 677,
+      "sha256": "d30d77981c150e6cebf9559a551453c6e862581816d53635b6e2760829aad0af"
+    }
+  ]
+}

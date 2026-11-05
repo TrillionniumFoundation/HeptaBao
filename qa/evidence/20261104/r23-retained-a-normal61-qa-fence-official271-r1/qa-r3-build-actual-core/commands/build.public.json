@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "--bin",
+    "heptabao-native-h2-qa",
+    "--message-format=json-render-diagnostics"
+  ],
+  "completed_monotonic_ns": 207347473969463,
+  "completed_within_deadline": true,
+  "cwd": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r3/project",
+  "deadline_monotonic_ns": 207521081927541,
+  "direct_child_reaped": true,
+  "elapsed_seconds": 6.392041922,
+  "exit_code": 0,
+  "label": "build",
+  "outer_cap_seconds": 180,
+  "owned_pgid": 2470301,
+  "remaining": [],
+  "started_monotonic_ns": 207341081927541,
+  "stderr_sha256": "49b77fae6ebd9d43ee36ec84f601c981fac795954fcaa817f7c1c72f758cb5a7",
+  "stdout_sha256": "de4956b253c93cfd3f0d4f9c3623d5f2c5f007e8ab0bf51d1152d6a5f88b7829",
+  "timed_out": false
+}

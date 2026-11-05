@@ -1,0 +1,38 @@
+[
+  {
+    "source": "rog_runner",
+    "hunks": 1,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "rog_launcher",
+    "hunks": 2,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "rog_stager",
+    "hunks": 4,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "mac_runner",
+    "hunks": 2,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "mac_launcher",
+    "hunks": 2,
+    "forward": true,
+    "reverse": true
+  },
+  {
+    "source": "mac_stager",
+    "hunks": 5,
+    "forward": true,
+    "reverse": true
+  }
+]

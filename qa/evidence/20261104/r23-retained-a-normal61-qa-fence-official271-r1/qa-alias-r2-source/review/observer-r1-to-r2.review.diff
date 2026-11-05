@@ -1,0 +1,373 @@
+--- reference/read_failed_qa_cargo_aliases_r1.py
++++ source/read_failed_qa_cargo_aliases_r2.py
+@@ -11,6 +11,7 @@
+ import json
+ import os
+ import re
++import signal
+ import stat
+ import sys
+ import time
+@@ -28,6 +29,9 @@
+ MAX_QA_NAMES = 32
+ ALIAS_NAME = re.compile(r"heptabao[-_]native[-_]h2[-_]qa-[0-9a-f]{16}\Z")
+ BUDGET_NS = 15_000_000_000
++MAX_BODY_BYTES = EXPECTED_BYTES * EXPECTED_NLINK
++MAX_EOF_PROBE_BYTES = EXPECTED_NLINK
++MAX_RETURNED_BYTES = MAX_BODY_BYTES + MAX_EOF_PROBE_BYTES
+ 
+ 
+ class Refused(Exception):
+@@ -60,35 +64,144 @@
+     return hashlib.sha256(raw).hexdigest()
+ 
+ 
++class Cancelled(BaseException):
++    pass
++
++class Signals:
++    def __init__(self):
++        self.protected = 0
++        self.pending = None
++
++    def handler(self, signum, _frame):
++        if self.pending is None:
++            self.pending = signum
++        if not self.protected:
++            raise Cancelled()
++
++    def install(self):
++        signal.signal(signal.SIGTERM, self.handler)
++        signal.signal(signal.SIGINT, self.handler)
++
++    def check(self):
++        if self.pending is not None:
++            raise Cancelled()
++
++def protected_call(method):
++    def call(self, *args, **kwargs):
++        self.signals.protected += 1
++        try:
++            return method(self, *args, **kwargs)
++        finally:
++            self.signals.protected -= 1
++    return call
++
++def public_errno(error):
++    value = getattr(error, "errno", None)
++    return value if type(value) is int and 0 < value < 4096 else None
++
++
+ class Observation:
+-    def __init__(self):
++    def __init__(self, signals=None):
++        self.signals = Signals() if signals is None else signals
+         self.started = time.monotonic_ns()
+         self.until = self.started + BUDGET_NS
+-        self.fds = []
++        self.fds = {}
++        self.fd_rows = []
++        self.open_registration_unknown = False
+         self.opened = 0
+         self.closed = 0
+-        self.close_errors = 0
++        self.close_failures = 0
+         self.dirs = []
+-        self.iterator_closed = False
++        self.scandir_closed = False
++        self.scandir_object = None
++        self.scandir_open_unknown = False
++        self.scandir_created = False
++        self.scandir_close_attempted = False
++        self.scandir_close_error = None
+         self.bytes_read = 0
++        self.body_bytes_read = 0
++        self.eof_bytes_read = 0
++        self.eof_probe_calls = 0
+ 
+     def remaining(self):
++        self.signals.check()
+         need(time.monotonic_ns() < self.until, "original_read_deadline")
+ 
+-    def opened_fd(self, fd):
+-        self.fds.append(fd)
++    @protected_call
++    def open_fd(self, path, flags, role, parent=None):
++        self.remaining()
++        # A non-OSError before registration completes is explicitly unknown.
++        # This flag is never used to infer that an unregistered FD was closed.
++        self.open_registration_unknown = True
++        try:
++            fd = os.open(path, flags, dir_fd=parent)
++        except OSError:
++            self.open_registration_unknown = False
++            raise
++        row = {"ordinal": len(self.fd_rows) + 1, "role": role,
++               "close_attempted": False, "closed": False,
++               "close_errno": None, "close_error": None}
++        self.fds[fd] = row
++        self.fd_rows.append(row)
+         self.opened += 1
++        self.open_registration_unknown = False
+         return fd
+ 
++    @protected_call
++    def close_once(self, fd):
++        if fd not in self.fds:
++            return
++        row = self.fds.pop(fd)
++        row["close_attempted"] = True
++        try:
++            os.close(fd)
++        except BaseException as error:
++            row["close_error"] = "close_not_confirmed"
++            row["close_errno"] = public_errno(error)
++            self.close_failures += 1
++            raise
++        else:
++            row["closed"] = True
++            self.closed += 1
++
++    @protected_call
++    def close_scandir_once(self):
++        if not self.scandir_created or self.scandir_close_attempted:
++            return
++        self.scandir_close_attempted = True
++        try:
++            self.scandir_object.close()
++        except BaseException as error:
++            self.scandir_close_error = {
++                "code": "scandir_close_not_confirmed",
++                "errno": public_errno(error)}
++            raise
++        else:
++            self.scandir_closed = True
++
++    @protected_call
+     def close_all_once(self):
+-        for fd in self.fds[::-1]:
++        try:
++            self.close_scandir_once()
++        except BaseException:
++            pass
++        for fd in list(self.fds)[::-1]:
+             try:
+-                os.close(fd)
++                self.close_once(fd)
+             except BaseException:
+-                self.close_errors += 1
+-            else:
+-                self.closed += 1
+-        self.fds.clear()
++                # No second close of an uncertain descriptor number.
++                pass
++
++    def closures_proven(self):
++        return (
++            not self.open_registration_unknown and not self.scandir_open_unknown
++            and not self.close_failures and not self.fds
++            and self.opened == self.closed == len(self.fd_rows)
++            and all(row["close_attempted"] and row["closed"]
++                    and row["close_error"] is None for row in self.fd_rows)
++            and (not self.scandir_created or
++                 (self.scandir_close_attempted and self.scandir_closed
++                  and self.scandir_close_error is None)))
+ 
+     def check_dir(self, value):
+         need(stat.S_ISDIR(value.st_mode)
+@@ -100,7 +213,7 @@
+         need(os.geteuid() == 1000, "operator_uid")
+         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+         self.remaining()
+-        root = self.opened_fd(os.open("/", flags))
++        root = self.open_fd("/", flags, "ancestor")
+         captured = os.fstat(root)
+         self.check_dir(captured)
+         self.dirs.append((None, "/", root, dir_id(captured)))
+@@ -111,7 +224,7 @@
+             self.remaining()
+             before = os.stat(name, dir_fd=parent, follow_symlinks=False)
+             self.check_dir(before)
+-            fd = self.opened_fd(os.open(name, flags, dir_fd=parent))
++            fd = self.open_fd(name, flags, "ancestor", parent)
+             held = os.fstat(fd)
+             self.check_dir(held)
+             need(dir_id(held) == dir_id(before)
+@@ -148,27 +261,47 @@
+         captured = full_id(before)
+         if expected_identity is not None:
+             need(captured == expected_identity, "alias_full_identity")
+-        fd = self.opened_fd(os.open(
+-            name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent))
++        fd = self.open_fd(
++            name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
++            "artifact", parent)
+         need(full_id(os.fstat(fd)) == captured, "artifact_open_identity")
+         return fd, captured
+ 
++    @protected_call
+     def hash_file(self, fd, parent, name, captured):
+         self.remaining()
++        need(self.body_bytes_read + EXPECTED_BYTES <= MAX_BODY_BYTES
++             and self.bytes_read + EXPECTED_BYTES + 1 <= MAX_RETURNED_BYTES
++             and self.eof_probe_calls < MAX_EOF_PROBE_BYTES,
++             "whole_read_bytes_admission")
+         digest = hashlib.sha256()
+         left = EXPECTED_BYTES
+         while left:
+             self.remaining()
+-            block = os.read(fd, min(65536, left))
+-            need(bool(block), "artifact_short_read")
++            count = min(65536, left, MAX_BODY_BYTES - self.body_bytes_read,
++                        MAX_RETURNED_BYTES - self.bytes_read)
++            need(count > 0, "whole_read_bytes_remaining")
++            block = os.read(fd, count)
++            self.body_bytes_read += len(block)
++            self.bytes_read += len(block)
++            need(self.body_bytes_read <= MAX_BODY_BYTES
++                 and self.bytes_read <= MAX_RETURNED_BYTES,
++                 "whole_read_bytes_bound")
++            need(0 < len(block) <= count, "artifact_short_or_oversized_read")
+             left -= len(block)
+-            self.bytes_read += len(block)
+-            need(self.bytes_read <= EXPECTED_BYTES * EXPECTED_NLINK,
+-                 "whole_read_bytes_bound")
+             digest.update(block)
+         self.remaining()
++        need(self.eof_probe_calls < MAX_EOF_PROBE_BYTES
++             and self.eof_bytes_read + 1 <= MAX_EOF_PROBE_BYTES
++             and self.bytes_read + 1 <= MAX_RETURNED_BYTES,
++             "eof_probe_bytes_admission")
++        self.eof_probe_calls += 1
+         tail = os.read(fd, 1)
++        self.eof_bytes_read += len(tail)
+         self.bytes_read += len(tail)
++        need(self.eof_bytes_read <= MAX_EOF_PROBE_BYTES
++             and self.bytes_read <= MAX_RETURNED_BYTES,
++             "whole_read_bytes_bound")
+         need(tail == b"", "artifact_trailing_bytes")
+         self.remaining()
+         need(full_id(os.fstat(fd)) == captured
+@@ -179,14 +312,18 @@
+         need(actual == EXPECTED_SHA256, "artifact_whole_sha256")
+         return actual
+ 
++    @protected_call
+     def find_alias(self, deps, captured):
+         self.remaining()
+         names_seen = 0
+         name_bytes = 0
+         candidates = []
+-        iterator = os.scandir(deps)
+-        try:
+-            for entry in iterator:
++        self.scandir_open_unknown = True
++        self.scandir_object = os.scandir(deps)
++        self.scandir_created = True
++        self.scandir_open_unknown = False
++        try:
++            for entry in self.scandir_object:
+                 self.remaining()
+                 names_seen += 1
+                 name_bytes += len(os.fsencode(entry.name))
+@@ -196,8 +333,7 @@
+                     candidates.append(entry.name)
+                     need(len(candidates) <= MAX_QA_NAMES, "qa_names_bound")
+         finally:
+-            iterator.close()
+-            self.iterator_closed = True
++            self.close_scandir_once()
+         self.remaining()
+         matches = []
+         for name in sorted(candidates):
+@@ -212,15 +348,21 @@
+ 
+ 
+ def main():
+-    observation = Observation()
++    signals = Signals()
++    observation = Observation(signals)
+     result = {
+-        "schema": "heptabao.qa-r2.fixed-cargo-alias-observation.v1",
++        "schema": "heptabao.qa-r2.fixed-cargo-alias-observation.v2",
+         "status": "failed", "aliases": [], "binary_executions": 0,
+         "child_starts": 0, "file_writes": 0, "network_requests": 0,
+         "original_qa_r2_result_remains_failed": True,
+     }
+     error = None
++    # Protect the complete resource lifetime before installing the handlers.
++    # remaining() responds to pending cancellation; a later signal cannot
++    # escape entry to the one cleanup attempt.
++    signals.protected += 1
+     try:
++        signals.install()
+         need(len(sys.argv) == 2 and re.fullmatch(r"[0-9a-f]{64}", sys.argv[1]),
+              "argv_contract")
+         original = sys.orig_argv
+@@ -261,31 +403,56 @@
+             "same_full_identity": True,
+             "link_count_fully_accounted_for": True,
+         })
++    except Cancelled:
++        error = {"code": "cancelled"}
+     except Refused as failure:
+         error = {"code": str(failure)}
+     except OSError as failure:
+-        error = {"code": "os_error", "errno": failure.errno}
++        error = {"code": "os_error", "errno": public_errno(failure)}
+     except BaseException:
+         error = {"code": "unexpected_observation_error"}
+     finally:
+-        observation.close_all_once()
++        try:
++            observation.close_all_once()
++        finally:
++            signals.protected -= 1
+     completed = time.monotonic_ns()
++    closures = observation.closures_proven()
+     result.update({
+         "elapsed_after_closure_ns": completed - observation.started,
+         "within_original_read_deadline_after_closure": completed < observation.until,
+         "fds_opened": observation.opened, "fds_closed_once": observation.closed,
+-        "fd_close_failures": observation.close_errors,
++        "fd_close_failures": observation.close_failures,
+         "fds_remaining": len(observation.fds),
+-        "iterator_closed_once": observation.iterator_closed,
+-        "bytes_read": observation.bytes_read, "error": error,
++        "fd_closure_rows": observation.fd_rows,
++        "open_registration_unknown": observation.open_registration_unknown,
++        "iterator_created": observation.scandir_created,
++        "iterator_close_attempted": observation.scandir_close_attempted,
++        "iterator_closed_once": observation.scandir_closed,
++        "iterator_close_error": observation.scandir_close_error,
++        "iterator_open_unknown": observation.scandir_open_unknown,
++        "all_registered_resources_closed": closures,
++        "resource_outcome_unknown": not closures,
++        "cancel_signal": signals.pending,
++        "body_bytes_read": observation.body_bytes_read,
++        "body_bytes_limit": MAX_BODY_BYTES,
++        "eof_probe_calls": observation.eof_probe_calls,
++        "eof_probe_bytes_read": observation.eof_bytes_read,
++        "eof_probe_bytes_limit": MAX_EOF_PROBE_BYTES,
++        "bytes_read": observation.bytes_read,
++        "total_returned_bytes_limit": MAX_RETURNED_BYTES, "error": error,
+     })
+-    if (error is not None or observation.close_errors or observation.fds
++    if (error is not None or not closures or signals.pending is not None
+             or completed >= observation.until):
+         result["status"] = "failed"
+-    print(json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
+-    if time.monotonic_ns() >= observation.until:
+-        return 1
+-    return 0 if result["status"] == "observed_fixed_two_aliases" else 1
++    signals.protected += 1
++    try:
++        print(json.dumps(result, sort_keys=True, separators=(",", ":")), flush=True)
++        if time.monotonic_ns() >= observation.until or signals.pending is not None:
++            return 1
++        return 0 if result["status"] == "observed_fixed_two_aliases" else 1
++    finally:
++        signals.protected -= 1
+ 
+ 
+ if __name__ == "__main__":

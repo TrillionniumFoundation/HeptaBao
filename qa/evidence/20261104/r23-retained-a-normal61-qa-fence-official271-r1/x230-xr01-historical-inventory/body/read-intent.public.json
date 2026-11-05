@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-x230-public-runtime-config-body-df94b577-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+      "expected_version": "2053:6342414:11770:1793768197683292710:1793768197683292710",
+      "offset": 0,
+      "limit": 11770
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.root.checker-initial-failure.v1",
+  "status": "ROOT_CHECKER_FAILED",
+  "error": "TypeError: Cannot read properties of undefined (reading sha256)",
+  "cause": "Root reused R2 observer intent request_pin field name before inspecting R3 intent schema; no host request or result changed.",
+  "actual_packet": "535fcebdcfe84a12ebf4da09b52f9c7ed889b8c9"
+}

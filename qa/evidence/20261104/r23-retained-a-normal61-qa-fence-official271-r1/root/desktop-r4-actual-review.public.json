@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.root.desktop-first10min-locator-actual-verification.v1",
+  "status": "PASS",
+  "scope": "Original desktop first ten-minute observer; completed miss is not absence",
+  "checks_count": 28,
+  "checks": [
+    "desktop start SDK raw native bytes exact",
+    "desktop status0 SDK raw native bytes exact",
+    "desktop read0 SDK raw native bytes exact",
+    "desktop intent contains exact request",
+    "desktop intent request whole SHA",
+    "desktop unique ACK and host binding",
+    "desktop exact executable argv cwd key",
+    "desktop canonical request digest",
+    "desktop authority full durable terminal",
+    "desktop read0 job binding",
+    "desktop read0 stdout cursor",
+    "desktop read0 stdout exact hex",
+    "desktop stdout full original EOF",
+    "desktop stdout authoritative complete byte count",
+    "desktop read0 job binding",
+    "desktop read0 stderr cursor",
+    "desktop read0 stderr exact hex",
+    "desktop stderr full original EOF",
+    "desktop stderr authoritative complete byte count",
+    "desktop no widened authority",
+    "desktop source and time binding",
+    "desktop closure within original15",
+    "desktop complete once-close FD ledger",
+    "desktop iterator once closed",
+    "desktop original read caps",
+    "desktop anchor typed exact",
+    "desktop known complete bounded window miss",
+    "desktop original anchor"
+  ],
+  "summary": {
+    "desktop": {
+      "observer_job": "1a1ab3787f9-fc05-4b71",
+      "observer_exit": 0,
+      "observer_status": "bounded_read_completed",
+      "request_files_read": 42,
+      "request_bytes_read": 139222,
+      "fds_closed_once": 91,
+      "elapsed_after_closure_ns": 323092723,
+      "matches": [],
+      "absence_proven": false,
+      "replay_authorized": false
+    }
+  },
+  "packet": "92cc1ac7dcf87889d94ce51d11366e547da52895",
+  "exact_fixed_ceiling": 1793865024254
+}

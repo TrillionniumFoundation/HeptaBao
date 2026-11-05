@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.qa-r2.fixed-cargo-alias-observer.source-manifest.v2",
+  "scope": "source-only; actual observer has not been submitted",
+  "source_runtime_qualification": false,
+  "previous_source_tree": "ff51179db63a3a5c2269ad56be370eade26fbfc1",
+  "files": [
+    {
+      "path": "components/selected_method_components_r2.py",
+      "bytes": 12498,
+      "sha256": "8fde1f46398aea145352de5ed241d0d5fd43fa833d3cda38b1796b1b12232c2b",
+      "blob": "982b4b3db9a97f27e6664935740f02c14c87e5b8"
+    },
+    {
+      "path": "components/selected-methods.exec.original.json",
+      "bytes": 2560,
+      "sha256": "3289a95a059e5a433a097e67055e901e03c6dc79b76a966bf47b127d689e9ce2",
+      "blob": "db6157521912ace0e7ac8f74c3e4541333a7dff4"
+    },
+    {
+      "path": "components/selected-methods.stdout.original.json",
+      "bytes": 2202,
+      "sha256": "75407c308200c711a8ab3ebcfbd55f8e4e8661a061201b64537e585c8db0af58",
+      "blob": "2d4846b6301b8c79eb1e0c38cf3d6b7dee3a7309"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 2359,
+      "sha256": "0da24a4f42f93ce7f3b79b2635ae7691f9f0b030785b8375f647d655ed4da9fa",
+      "blob": "a41fa1ce1afa150dda49669d0d552c8d398a1714"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1960,
+      "sha256": "6230add19f8c0f04a3dfe7568b43f227401c55f9467b0b65147bf99a80e0106a",
+      "blob": "21f2883fa8771bc6ac9f3f005581c9f0d9163d1b"
+    },
+    {
+      "path": "reference/r1/components/pure-components.exec.original.json",
+      "bytes": 1285,
+      "sha256": "c082399053b4231d802fa1a822ba5a9793cfacbe78916a2e0e9a72ffc545b942",
+      "blob": "23b77618dc1c5fc8e3138df9bdb5fa46ec10deaf"
+    },
+    {
+      "path": "reference/r1/components/pure-components.stdout.original.json",
+      "bytes": 1036,
+      "sha256": "937682d382b3411c824b6cd03b4fb2d4135914fd392239392415a02dc808fe7c",
+      "blob": "8f84edebe454d55f7dc64974d223ab100409b737"
+    },
+    {
+      "path": "reference/r1/reference/artifact-info.native.original.json",
+      "bytes": 488,
+      "sha256": "765d7c84cafe09f8a7f7e29757e1f072f793a4927b11b3bfd400a40cabd1aab1",
+      "blob": "fd128a9308863bc6bd2036c695904b38dec09ad2"
+    },
+    {
+      "path": "reference/r1/reference/compiler-artifact.event.original.json",
+      "bytes": 824,
+      "sha256": "a7a5601858717e3e07e56e987a99cb2ccbd66afb08abe0e188b858785e0aa985",
+      "blob": "f77cfe8f4ab2dc503fc1b36de90d9e8707ea70c6"
+    },
+    {
+      "path": "reference/r1/reference/failed-core.original.json",
+      "bytes": 36782,
+      "sha256": "d19183df9ef0db22852c95d69ad2db4e8275c924b33481cc35d1cbab6cb073d9",
+      "blob": "f7b29972d3400198a8735019fb1ed7f0b77fcfdb"
+    },
+    {
+      "path": "reference/read_failed_qa_cargo_aliases_r1.py",
+      "bytes": 11447,
+      "sha256": "fe799527395ca86a02fa25f3778873aa2ca85977925c734f8918ee1fc259b243",
+      "blob": "3e32a9ac8b5dfd9cd17ea3e141f4361731f6849e"
+    },
+    {
+      "path": "reference/reviewed_locator_r2.py",
+      "bytes": 24872,
+      "sha256": "e1148f858a7afcbb71f7e582e7a3fc6ed4a203bd9037b764feb45a44eaca968a",
+      "blob": "b28c4b681346e19d71d4b022013346937818270f"
+    },
+    {
+      "path": "reference/selected_method_components_r1.py",
+      "bytes": 4664,
+      "sha256": "0ec405ac9eec4ba15c115afc7747a6c97087c52d894424b82dd9a231cfa7b97f",
+      "blob": "b3324d859c5f8038a94aa49bd84118395465f541"
+    },
+    {
+      "path": "requests/observe.proposed.exact.json",
+      "bytes": 18980,
+      "sha256": "7238ba7ba0909a8a881ab85b83b42e0476f8fb2ded7074d5575b5623f9ea2890",
+      "blob": "0e23798f8b21a8867c86c8a64b2c80d0b4fbc3be"
+    },
+    {
+      "path": "review/observer-r1-to-r2.review.diff",
+      "bytes": 14206,
+      "sha256": "5f5ecf6b25fb6f29acb01860dd8973f0299ea31b0b443d27f2d7bd135e55f798",
+      "blob": "9d0c2374d5ce38c9d62f68da5f9ea290f94d9c20"
+    },
+    {
+      "path": "review/source-invariance.public.json",
+      "bytes": 3463,
+      "sha256": "8c3e7aa9c378a860a7600c1cf46507f4d8202050bd3c143dd41991e479250a91",
+      "blob": "37977fde03b6ff3fc0fb298874b4e5271c2695a9"
+    },
+    {
+      "path": "source/read_failed_qa_cargo_aliases_r2.py",
+      "bytes": 17919,
+      "sha256": "4e72160c838092ff1706fc1b14f826b500edfef2ea68f335d80df5b1148ebf12",
+      "blob": "be390a5374470e4f4a7eb280620d115a12d52a36"
+    }
+  ]
+}

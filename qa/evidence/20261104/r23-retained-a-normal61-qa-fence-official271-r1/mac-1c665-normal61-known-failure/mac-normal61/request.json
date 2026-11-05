@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-same-root-mac-normal61-status-2-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1ab058659-fc05-4989"
+    }
+  }
+}

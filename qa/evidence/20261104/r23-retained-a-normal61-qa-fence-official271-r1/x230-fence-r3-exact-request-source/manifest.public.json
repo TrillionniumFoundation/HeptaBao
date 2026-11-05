@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "source_tree": "1789e362da46e998d3c7a7ba6eaf1e654628d828",
+  "scope": "Exact fence R3 request SOURCE only; no actual dispatch authorization",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1919,
+      "sha256": "13e82c84a15e6c667be35e23218916deb95edd9cbfba765a90dce200863f3444",
+      "blob": "45319666541581d1e2a0fbf151710c2957ff5b96"
+    },
+    {
+      "path": "candidate/x230_original_relay_effect_fence_r3.py",
+      "bytes": 22338,
+      "sha256": "4b4026a62458793162a4abf05b5a193240b56adeff33e405a85c975f7fa724ae",
+      "blob": "b4efff4867e639d85ad07b001c11c0a43feab3a6"
+    },
+    {
+      "path": "candidate/source.review.diff",
+      "bytes": 4194,
+      "sha256": "e2f32c8dcac0ec4ae45997ea0b8a6a79efdfa851aad9c5f8ec4414299df40444",
+      "blob": "72de9b156fc1e1c95a62a8567d5127988ef02e9d"
+    },
+    {
+      "path": "dispatch/process-start.proposed.json",
+      "bytes": 23815,
+      "sha256": "a0344a7b1f9180ffaeefcc69ffd4a42b05ddcfde73780f0e2670c2435d83a716",
+      "blob": "77069057a0d67da87f8a2a2228d4921f95d1fd29"
+    },
+    {
+      "path": "dispatch/request.review.diff",
+      "bytes": 46614,
+      "sha256": "5c3d68fdae51dbe725324a2e9b876bb13c60f174c876536a6393dfc84f228192",
+      "blob": "a881118518b984a52920a8e471c87a452f289fb9"
+    },
+    {
+      "path": "dispatch/binding-checks.public.json",
+      "bytes": 1509,
+      "sha256": "d3aeeefff66e027649537ee4abbe87c386054e9b3e76e488ed4c5665647c43af",
+      "blob": "431223bc77840ef8654e4d9398affebe1c2001ca"
+    },
+    {
+      "path": "references/process-start.r2.original.json",
+      "bytes": 22911,
+      "sha256": "1a947d62af5b27a424095a045b2e853a61eb606a77273ff88fe3e9020f08a554",
+      "blob": "fb197792ced7efbd7c60da559514b9209e1affd4"
+    }
+  ]
+}

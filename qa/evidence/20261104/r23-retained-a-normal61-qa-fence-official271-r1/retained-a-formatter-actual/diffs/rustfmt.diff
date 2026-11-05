@@ -1,0 +1,19 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_same_root_republication_tests.rs
+@@ -226,14 +226,8 @@
+         let plan = source_a
+             .prepare_native_root_migration_paged(&|| Ok(()))
+             .map_err(|_| "actual source A native projection")?;
+-        let (first, count) = publish_retained_projection(
+-            &plan,
+-            &cluster,
+-            &enrollment,
+-            source_digest,
+-            0,
+-            index,
+-        )?;
++        let (first, count) =
++            publish_retained_projection(&plan, &cluster, &enrollment, source_digest, 0, index)?;
+         (first, count, plan)
+     };
+     assert!(count > heptabao_durable_service::MAX_ATOMIC_MUTATIONS);

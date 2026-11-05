@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.xr01.actual-read-recap.r1",
+  "status": "PASS_EXACT_PUBLIC_REPORT_RETRIEVAL_ONLY",
+  "requestedPath": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/runtime-and-config-r1.public.json",
+  "expectedWholeSha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+  "authority": "Root XR01 exact finite read GO; no process job was created.",
+  "operations": [
+    {
+      "tool": "file_info",
+      "key": "heptabao-x230-public-runtime-config-fileinfo-df94b577-20261105-r1",
+      "operationId": "ad452b50a5c152e593d57955cf4d573b7e37219d1b74fffa0cc293e75f51c289",
+      "state": "completed",
+      "ownedFutureActive": false,
+      "originalSdkSha256": "f97f1ec4b24697d7f76def151793501cb0798120a9a568cb4c078126f61dbe46"
+    },
+    {
+      "tool": "binary_read",
+      "key": "heptabao-x230-public-runtime-config-body-df94b577-20261105-r1",
+      "operationId": "588453ed4aa8d5e7a57e4eaa828c6b8ff7261804d41ecefa5cae36a2d3f95c92",
+      "state": "completed",
+      "ownedFutureActive": false,
+      "originalSdkSha256": "4a0941012cbad8f02b1d783a7c6156aad1f9376a379216099c0fecc63c092e8f"
+    }
+  ],
+  "metadata": {
+    "bytes": 11770,
+    "version": "2053:6342414:11770:1793768197683292710:1793768197683292710",
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "linkCount": 1,
+    "successfulApiRegularFileContract": true,
+    "permissionBitsUsedToInferType": false
+  },
+  "binary": {
+    "offset": 0,
+    "nextOffset": 11770,
+    "eof": true,
+    "returnedBytes": 11770,
+    "chunkSha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+    "wholeSha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+    "gitBlob": "b8df3efcf2ba7eb510abd5b9a203d68b4f12d856",
+    "versionEqualsFileInfo": true
+  },
+  "originalSdk": {
+    "fileInfo": {
+      "offsets": [
+        0
+      ],
+      "bytes": 594,
+      "wholeSha256": "f97f1ec4b24697d7f76def151793501cb0798120a9a568cb4c078126f61dbe46"
+    },
+    "binaryRead": {
+      "offsets": [
+        0
+      ],
+      "bytes": 16126,
+      "wholeSha256": "4a0941012cbad8f02b1d783a7c6156aad1f9376a379216099c0fecc63c092e8f"
+    },
+    "originalEmbeddedTextPreserved": true,
+    "base64VerifiedBeforeParse": true,
+    "reportNotReserialized": true
+  },
+  "scope": {
+    "nativeFileInfoDispatches": 1,
+    "nativeBinaryReadDispatches": 1,
+    "pathsRead": 1,
+    "secondPathRead": false,
+    "controllerOrProcessStartCalls": 0,
+    "sqlCalls": 0,
+    "serviceCalls": 0,
+    "providerOrJ3160Calls": 0,
+    "privateCredentialBodiesRead": false,
+    "directoryScanning": false,
+    "hostWrites": false,
+    "replay": false,
+    "handlerInternalFdLedgerNotExposedByApi": true,
+    "explicitChildOrFDClosureClaimForApiInternals": false
+  },
+  "finding": {
+    "historicalReportDate": "2026-11-04T04:56:35.468832+00:00",
+    "exactStandardConfigPaths": [
+      "/home/qian/.openclaw/openclaw.json"
+    ],
+    "originalStatus": "bounded_observation_with_gaps",
+    "currentHostAbsenceClaimed": false,
+    "installedConsumerDenominatorQualified": false
+  },
+  "followup": "Return this exact historical readset to root. No further host call has been made or is authorized by this recap."
+}

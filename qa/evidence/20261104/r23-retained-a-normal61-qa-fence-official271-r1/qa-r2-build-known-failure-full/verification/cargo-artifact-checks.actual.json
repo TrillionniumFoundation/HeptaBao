@@ -1,0 +1,33 @@
+{
+  "alias_set_observed": false,
+  "artifact_execution_count": 0,
+  "artifact_info_is_later_observation": true,
+  "cargo_exit_code": 0,
+  "check_count": 19,
+  "checks": [
+    "cargo-whole-size-sha",
+    "all-75-events",
+    "one-build-success",
+    "one-qa-artifact",
+    "exact-compiler-output",
+    "default-qa-features",
+    "original-profile",
+    "actual-new-compile",
+    "exact-owned-manifest",
+    "native-info-path",
+    "actual-artifact-size",
+    "actual-artifact-sha",
+    "actual-artifact-version",
+    "actual-artifact-owner-mode",
+    "actual-nlink-two",
+    "generic-single-link-predicate-false",
+    "expected-failure-boundary",
+    "no-component-execution",
+    "no-product-execution"
+  ],
+  "component_tests_executed": 0,
+  "original_combined_status": "failed",
+  "original_failure_not_replayed": true,
+  "schema": "heptabao.qa-r2.cargo-and-artifact-observation-checks.v1",
+  "status": "passed-evidence-checks-only"
+}

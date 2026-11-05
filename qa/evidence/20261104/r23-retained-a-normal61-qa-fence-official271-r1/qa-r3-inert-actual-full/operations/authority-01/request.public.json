@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "qa-r3-inert-93afaf47-authority-01",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1ab50b1b9-fc05-4c6e"
+    }
+  }
+}

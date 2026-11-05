@@ -1,0 +1,104 @@
+{
+  "schema": "openbao-271-official-source-tree-observation-v1",
+  "tag": "v2.7.1",
+  "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "api_tree_sha": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "entry_count": 6328,
+  "truncated": false,
+  "raw": {
+    "bytes": 1563103,
+    "sha256": "bd645c77febf88b9fe045945b0732d54e645fa31a8dc61557e9ac3a58a6503cc",
+    "blob": "deb6df7923392af0305ebf6ebb4236c8c6a2f6eb"
+  },
+  "registry_directory_entries": [
+    {
+      "path": "internal/helper/builtinplugins/registry.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94af1a84cec148883c926941f50eea138d3644ae",
+      "size": 6385,
+      "url": "https://api.github.com/repos/openbao/openbao/git/blobs/94af1a84cec148883c926941f50eea138d3644ae"
+    },
+    {
+      "path": "internal/helper/builtinplugins/registry_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "914fea44d232ccf3baf1afe7eb82a17b68a1c738",
+      "size": 8294,
+      "url": "https://api.github.com/repos/openbao/openbao/git/blobs/914fea44d232ccf3baf1afe7eb82a17b68a1c738"
+    }
+  ],
+  "source_blob_members": [
+    {
+      "path": "internal/helper/builtinplugins/registry.go",
+      "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+      "bytes": 6385,
+      "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600"
+    },
+    {
+      "path": "internal/vault/logical_system_paths.go",
+      "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+      "bytes": 140958,
+      "sha256": "96863601a69c77d83f624266890c3a1566cba60c5e1845f7e19ca2a751d2878c"
+    },
+    {
+      "path": "internal/vault/logical_system_external_keys.go",
+      "blob": "6a7d6cfbe407f3a23b3c2c8d37d328175be18761",
+      "bytes": 19172,
+      "sha256": "3c626103b5f8a7526a4ab2695380b8db4d2a4b4c786c78e5d4116bee19f5b0e6"
+    },
+    {
+      "path": "internal/vault/logical_system_generate_root.go",
+      "blob": "2fc97cb48442b6c6fd20ca1bb35c8e92ddb5d578",
+      "bytes": 13940,
+      "sha256": "64eb4f0aa644efc24b0ea58fe1da0f7c991f81973deaaf979f07006cb268ade5"
+    },
+    {
+      "path": "internal/vault/logical_system_namespaces_seals.go",
+      "blob": "2d833cfab83032bcb37f711b1ba70d31fbe94ec6",
+      "bytes": 9997,
+      "sha256": "4697f9e4a98cccf8191ebf483e6fdb9b621fba818db7c658874053fec36feb77"
+    },
+    {
+      "path": "go.mod",
+      "blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+      "bytes": 16740,
+      "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56"
+    },
+    {
+      "path": "internal/vault/logical_system.go",
+      "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+      "bytes": 174841,
+      "sha256": "766eceff5b7e4a6f47208f9e1501d3db8ae3ac17fe81e83a32117380d122dc6e"
+    },
+    {
+      "path": "internal/command/operator_migrate.go",
+      "blob": "b18b0e1a9987467b0cb65962f531824051176a15",
+      "bytes": 11518,
+      "sha256": "5b3dbf2b6e7603c7426982aa2844841ad21c622abf8547dd29284a9f1a08dafa"
+    },
+    {
+      "path": "internal/vault/identity/mfa.go",
+      "blob": "b23974780a48c1644566e02452ac96cdda21c0f8",
+      "bytes": 26975,
+      "sha256": "0e5c455f934512e141a5ffc05365ebf9817d8d1e072b6e32c6d5b90ace9e2bfc"
+    },
+    {
+      "path": "internal/vault/login_mfa.go",
+      "blob": "f64d1adeacb6f73c559c79be31debba498e544a0",
+      "bytes": 63941,
+      "sha256": "d510b4dbccad07249b308cc8483eaaa308f6b0c46bde7318064c56697966c9c3"
+    },
+    {
+      "path": "internal/vault/logical_system_raft.go",
+      "blob": "d18d66bc0ec259093e4b757f8d23e81be109d26b",
+      "bytes": 27234,
+      "sha256": "31a6d3eb5a8ae09b73628fad4be064e8fac49028fa00969715643da94383358b"
+    }
+  ],
+  "full_tree_file_listing_observed": true,
+  "all_upstream_code_semantics_reviewed": false,
+  "raw_blob_field_is_computed_content_git_id_not_a_claim_of_publication": true,
+  "host_actions": false,
+  "full_replacement": false
+}

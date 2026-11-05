@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.native-h2-fixture.qa-r3-binder-source-manifest.v1",
+  "scope": "two literal binder successor; no runtime or artifact qualification",
+  "files": [
+    {
+      "path": "future-transfer-paths.unbound.public.json",
+      "bytes": 4070,
+      "sha256": "556d89086e1199d626c65185e94f8610331ee5bb41bb83d200d89b7475a9c4a5",
+      "blob": "e28cc34aeef999aebc58ec5e59f2993b29f4b631"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 1894,
+      "sha256": "f6dd65d02125adbd6645c7e7973cbc2069252fac936d2c3d0fb8b3bdd548827d",
+      "blob": "32ff38a5c25aed93b052bacc5cdc6da87bc66df7"
+    },
+    {
+      "path": "reference/native_h2_binding_r1.py",
+      "bytes": 37800,
+      "sha256": "4313eb8064624d7112722d64f13a89b431aff82ba246471e675b8b37eb3ff010",
+      "blob": "4764335f5771f8159387ecb64701f6fc965f69e6"
+    },
+    {
+      "path": "reference/original-root-source-review.public.json",
+      "bytes": 2409,
+      "sha256": "f5fe0cfa613d3bd5c3bf291fc7113e80d10e894888277e8eec58675efa0ff655",
+      "blob": "59304830338ad5ab0573751e2d25b084b6f3a55f"
+    },
+    {
+      "path": "review/binder-two-literal.review.diff",
+      "bytes": 1113,
+      "sha256": "dfccfb725bee049f7a9721b53e3470fbda3c1a6ddad744607ff06a6268330f7f",
+      "blob": "93e6e0d566bb823f31460ab0a3a88bd7261df73e"
+    },
+    {
+      "path": "source/native_h2_binding_r1.py",
+      "bytes": 37800,
+      "sha256": "79ec24515f7067f162d60da0bc32969100b432bdbd7221ce09f7270488c8baac",
+      "blob": "215d6db91333b5a74e4814c3fe66051e858d5e0e"
+    },
+    {
+      "path": "source/native_h2_gate_r1.py",
+      "bytes": 61973,
+      "sha256": "2f5470874d7d0ca983563c1f0bcd3a2421e8056757a245c47ed3a9d24caa9ae3",
+      "blob": "f04d3a94f7f5ec3cdf50736202054f801c2dabca"
+    },
+    {
+      "path": "verification/exec.original.json",
+      "bytes": 2180,
+      "sha256": "efac776d81e9e6e237021a88390d480b89e189d9cca321f61960fb4a57972510",
+      "blob": "0783cd50745be0745352a4ff80bfcb797ed96244"
+    },
+    {
+      "path": "verification/source-invariance.public.json",
+      "bytes": 750,
+      "sha256": "c8bf303f9a36995fa50a6967a8e40f0370f73e7afd917cecde757bcd34b9b255",
+      "blob": "8f904b42ebb01d065ab746bed06a2832e6329095"
+    }
+  ]
+}

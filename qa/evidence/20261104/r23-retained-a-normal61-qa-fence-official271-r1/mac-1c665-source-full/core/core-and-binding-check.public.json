@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.same-root-mac-source-core-bound-request.v1",
+  "status": "MAC_SOURCE_PREPARED_NORMAL_NOT_SUBMITTED",
+  "host": "mac",
+  "job_id": "1a1aaf3c0b0-fc05-48f8",
+  "request_blob": "e455bac514894112c694cc518e93e3b4c8799591",
+  "ack_tree": "d4a52224bc61900647dcfa886df28829c6c1e738",
+  "terminal_tree": "7b212c019fb90d26957748ec7845b367a74410dc",
+  "source_result": {
+    "bytes": 10334,
+    "sha256": "8434e18f42b638f035ab58d98245816179018cc14cf635461ab082b7f3ae3bba",
+    "blob": "0413aae492192fe378acadcc43be896c964dc742"
+  },
+  "source_result_version": "16777244:72610735:10334:1793869470755279229:1793869470755288687",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r1/source",
+  "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+  "source_tree": "94ced21a63ff9aaca4538c0d4796efea2150e632",
+  "source_child_count": 40,
+  "all_source_children_reaped_exit0_empty": true,
+  "core_elapsed_after_cleanup": 3.8789334162138402,
+  "source_claims_require_full_original_command_archive": true,
+  "build_request_only_actual_stage_placeholder_changed": true,
+  "build_request_timeout_seconds": 8280,
+  "normal_build_submitted": false,
+  "normal_build_requires_separate_root_go": true,
+  "rog_original_source_job_authority": "UNKNOWN",
+  "rog_shared_target": "HOLD_FOR_EXCLUSIVE_QA_JOB_1a1aaf3772d-fc05-48f5"
+}

@@ -1,0 +1,216 @@
+{
+  "schema": "heptabao.locator-r5.source-and-request-invariance.v1",
+  "base": {
+    "bytes": 24959,
+    "sha256": "9c7461d2d983d15a14137f3773856687f6178e6252099728ec2538e0efa231bf",
+    "blob": "b8925b32564e60e36bd259bf44fb13f83ef42421"
+  },
+  "candidate": {
+    "bytes": 26240,
+    "sha256": "7595dc5fa2c8dc800dfa986cb486d687d9a725510d3db4a7e5fed26ace36798c",
+    "blob": "220587bf729d74f5cd79a9b29f884092c34e78e9"
+  },
+  "diff": {
+    "bytes": 3543,
+    "sha256": "09556f25435458424d8df15b9664f1c5122fecac7ce07795c6c66d9c7399da17",
+    "blob": "5a06e0c1073f5979e9d9b968f93308340e01971e"
+  },
+  "strict_hunks": 5,
+  "exact_literal_changes": [
+    {
+      "before": "JOB_NAME = re.compile(r\"([0-9a-f]{1,32})-([0-9a-f]{1,8})-([0-9a-f]{1,16})\\Z\")\n",
+      "after": "JOB_NAME = re.compile(r\"([0-9a-f]{1,32})-([0-9a-f]{1,8})-([0-9a-f]{1,16})\\Z\")\nDESKTOP_QUERY_WINDOWS = {\n    \"01\": (1793865024255, 1793865624254),\n    \"02\": (1793865624255, 1793866224254),\n    \"03\": (1793866224255, 1793866824254),\n    \"04\": (1793866824255, 1793867424254),\n    \"05\": (1793867424255, 1793868024254),\n    \"06\": (1793868024255, 1793868624254),\n    \"07\": (1793868624255, 1793869224254),\n    \"08\": (1793869224255, 1793869824254),\n    \"09\": (1793869824255, 1793870424254),\n    \"10\": (1793870424255, 1793871024254),\n    \"11\": (1793871024255, 1793871624254),\n    \"12\": (1793871624255, 1793871896027),\n}\n",
+      "reason": "fixed twelve intervals"
+    },
+    {
+      "before": "def main():\n",
+      "after": "def fixed_query_window(window_id, observed_ceiling):\n    need(type(window_id) is str and window_id in DESKTOP_QUERY_WINDOWS,\n         \"fixed_window_index\")\n    query_start, fixed_query_end = DESKTOP_QUERY_WINDOWS[window_id]\n    need(type(observed_ceiling) is int and observed_ceiling >= query_start,\n         \"query_window_not_reached\")\n    return query_start, min(fixed_query_end, observed_ceiling), fixed_query_end\n\n\ndef main():\n",
+      "reason": "pure fixed interval selector"
+    },
+    {
+      "before": "        need(len(sys.argv) == 5 and sys.argv[1] == \"--scope\"\n             and sys.argv[3] == \"--self-sha256\", \"argv_contract\")\n        scope = sys.argv[2]\n        need(scope in CONFIGS, \"scope_not_fixed\")\n",
+      "after": "        need(len(sys.argv) == 7 and sys.argv[1] == \"--scope\"\n             and sys.argv[3] == \"--self-sha256\"\n             and sys.argv[5] == \"--window-index\", \"argv_contract\")\n        scope = sys.argv[2]\n        need(scope in CONFIGS, \"scope_not_fixed\")\n        need(scope == \"desktop-fence\", \"fixed_desktop_window_scope\")\n",
+      "reason": "bounded canonical window argument"
+    },
+    {
+      "before": "        if scope == \"desktop-fence\":\n            ceiling = min(ceiling, 1793865024254)\n",
+      "after": "        query_start, query_end, fixed_query_end = fixed_query_window(\n            sys.argv[6], ceiling)\n",
+      "reason": "replace old single cutoff with fixed selected interval"
+    },
+    {
+      "before": "        report[\"ceiling_unix_ms\"] = ceiling\n",
+      "after": "        report[\"ceiling_unix_ms\"] = ceiling\n        report[\"window_index\"] = sys.argv[6]\n        report[\"query_start_unix_ms\"] = query_start\n        report[\"query_end_unix_ms\"] = query_end\n        report[\"fixed_query_end_unix_ms\"] = fixed_query_end\n",
+      "reason": "explicit original observation ceiling and candidate interval"
+    },
+    {
+      "before": "        names, count, name_bytes = reader.candidates(\n            jobs_fd, config[\"floor_unix_ms\"], ceiling)\n",
+      "after": "        names, count, name_bytes = reader.candidates(\n            jobs_fd, query_start, query_end)\n",
+      "reason": "candidate-only selected interval after unchanged anchor"
+    }
+  ],
+  "checks": [
+    {
+      "case": "exact_window_argument_01",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_01",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_01",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_02",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_02",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_02",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_03",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_03",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_03",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_04",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_04",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_04",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_05",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_05",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_05",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_06",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_06",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_06",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_07",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_07",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_07",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_08",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_08",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_08",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_09",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_09",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_09",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_10",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_10",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_10",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_11",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_11",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_11",
+      "passed": true
+    },
+    {
+      "case": "exact_window_argument_12",
+      "passed": true
+    },
+    {
+      "case": "request_inverse_to_approved_r4_12",
+      "passed": true
+    },
+    {
+      "case": "request_source_host_budget_12",
+      "passed": true
+    },
+    {
+      "case": "twelve_unique_observer_keys",
+      "passed": true
+    },
+    {
+      "case": "sixteen_targeted_pure_checks_terminal",
+      "passed": true
+    },
+    {
+      "case": "full_source_inverse_exact",
+      "passed": true
+    },
+    {
+      "case": "strict_five_hunks",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "old_reader_signals_closure_changed": false,
+  "prior_25_components_rerun": false
+}

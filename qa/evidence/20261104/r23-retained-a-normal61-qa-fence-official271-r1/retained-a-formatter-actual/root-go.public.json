@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.root.exact-format-job-go.v1",
+  "decision": "GO_ONCE_EXACT_REQUEST_AFTER_SEPARATE_DURABLE_EXTERNAL_INTENT",
+  "review": {
+    "name": "r23_retained_a_formatter_root_review",
+    "blob": "db2bcd67fa1c8751ddfc7c57a02b4be7faacde0c",
+    "bytes": 3445,
+    "sha256": "907fc7c1c2e4a586cd3c385a4a2edc79beaef4e9fa149560b67e2f7352ea8302"
+  },
+  "request": {
+    "path": "dispatch/request.public.json",
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525",
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7",
+    "mode": "100644"
+  },
+  "controller": {
+    "path": "candidate/format-retained-a-controller.py",
+    "blob": "d639911d8d97037f0ef7bd21c9d8203b16575ef5",
+    "bytes": 7134,
+    "sha256": "46aec69d278fe51525d920e85c1a183263ad7ace8cd0cc5c56c100fcecfcb3bc",
+    "mode": "100644"
+  },
+  "payload": {
+    "path": "candidate/stdin.public.json",
+    "blob": "22db97e1a75381b73880676bb91f26d8819e1e02",
+    "bytes": 12589,
+    "sha256": "42c59ef39fe38133f4ebe5a4b4b934591870c9ebb15feaf7a4051af968ad60bc",
+    "mode": "100644"
+  },
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi",
+  "idempotency_key": "heptabao-same-root-retained-a-rustfmt-20261105-r1-46aec69d",
+  "timeout_seconds": 60,
+  "expected_child_count": 1,
+  "requirements": [
+    "Persist exact request and external intent in a completed separate call before process_start.",
+    "Submit exact frozen request once, never retry on missing ACK.",
+    "Observe original authority and complete streams, six fixed outputs, pinned tool/config before-after and child closure.",
+    "No product compile, fixture execution or successor source commit is included in this formatting approval."
+  ]
+}

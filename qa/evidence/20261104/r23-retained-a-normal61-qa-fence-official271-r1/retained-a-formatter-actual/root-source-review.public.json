@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.root.retained-a-single-file-formatter-review.v1",
+  "status": "SOURCE_REVIEW_PASS_NO_HOST_EXECUTION_YET",
+  "packet": {
+    "tree": "4bae542c3868ae7363e7df18452ac0a2b130e2f9",
+    "files": 18,
+    "bytes": 144708,
+    "trees_verified": 6
+  },
+  "candidate_source": {
+    "path": "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+    "blob": "318c680054e5ef008a7b194b1c950bad016847bb",
+    "bytes": 12114,
+    "sha256": "bac005efe583ce31493a7b524bea3a4a1c5bdf5cd3e5066cac2042daeb7f962c",
+    "mode": "100644"
+  },
+  "controller": {
+    "path": "candidate/format-retained-a-controller.py",
+    "blob": "d639911d8d97037f0ef7bd21c9d8203b16575ef5",
+    "bytes": 7134,
+    "sha256": "46aec69d278fe51525d920e85c1a183263ad7ace8cd0cc5c56c100fcecfcb3bc",
+    "mode": "100644"
+  },
+  "payload": {
+    "path": "candidate/stdin.public.json",
+    "blob": "22db97e1a75381b73880676bb91f26d8819e1e02",
+    "bytes": 12589,
+    "sha256": "42c59ef39fe38133f4ebe5a4b4b934591870c9ebb15feaf7a4051af968ad60bc",
+    "mode": "100644"
+  },
+  "request": {
+    "path": "dispatch/request.public.json",
+    "blob": "e729b52c738a36112506e488ee5b9b17c57f3525",
+    "bytes": 20648,
+    "sha256": "a8941c39ec35ae3de746dcbd02a7124b51a8c49bf0438d75306ee2aebe85dfc7",
+    "mode": "100644"
+  },
+  "source_semantics_review": {
+    "name": "r23_fixture_correction_root_source_review",
+    "blob": "154590538f2508d96b288b7d905fe762780fd36f",
+    "bytes": 4334,
+    "sha256": "376e2b411ebef75aa24dc3a9f40dcf58af90c509f40faf40edef7e5e28453f73"
+  },
+  "prior_actual_request_blob": "52fe787d5b68896d16156740f719c74118a12a0b",
+  "checks": {
+    "prior_controller_exact_from_original_request": true,
+    "strict_diff_hunks": 2,
+    "diff_yields_candidate_exact": true,
+    "only_root_expected_schema_and_base_identity_changed": true,
+    "same_five_helpers_and_child_loop_reviewed": true,
+    "twenty_author_pure_AST_and_binding_checks_actual0_reviewed": true,
+    "one_exact_reviewed_test_source_in_stdin": true
+  },
+  "bounds": {
+    "internal_seconds": 50,
+    "child_seconds": 10,
+    "outer_seconds": 60,
+    "stdin_bytes": 262144,
+    "owned_root": "/home/qian-qi/heptabao-same-root-retained-a-format-20261105-r1",
+    "outputs": [
+      "candidate/service_native_v6_ha_same_root_republication_tests.rs",
+      "formatted/service_native_v6_ha_same_root_republication_tests.rs",
+      "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stdout",
+      "service_native_v6_ha_same_root_republication_tests.rs.rustfmt.stderr",
+      "rustfmt.toml",
+      "result.public.json"
+    ]
+  },
+  "tool": {
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+    "edition": "2024",
+    "config_sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584"
+  },
+  "scope": "Create-only formatting of one test module in fresh owned root, pinned rustfmt once, original tool/config before-after and child closure. No repository/Cargo target writes or product compile/execution.",
+  "limits": [
+    "Unknown original dispatch is never replayed.",
+    "Successful formatting is not source commit qualification or actual regression success.",
+    "Retrieve fixed six outputs with independent version-pinned whole reads and terminal authority; preserve original and formatted bytes."
+  ],
+  "full_replacement": false
+}

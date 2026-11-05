@@ -1,0 +1,547 @@
+{
+  "actual_build_go": false,
+  "actual_disk_receipt_bytes": 4208,
+  "actual_whole_input_bodies": 8,
+  "builder_main_or_cargo_calls": 0,
+  "check_count": 132,
+  "checks": [
+    {
+      "name": "exact-approved-request",
+      "passed": true
+    },
+    {
+      "name": "go-request-and-source-tree",
+      "passed": true
+    },
+    {
+      "name": "external-intent-exact-key-and-request",
+      "passed": true
+    },
+    {
+      "name": "fixed-host-cwd-executable-outer",
+      "passed": true
+    },
+    {
+      "name": "ack-unique-launched",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-host",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-cwd",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-executable",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-args",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-idempotency_key",
+      "passed": true
+    },
+    {
+      "name": "authority-job-and-known-success",
+      "passed": true
+    },
+    {
+      "name": "authority-output_complete",
+      "passed": true
+    },
+    {
+      "name": "authority-output_durable",
+      "passed": true
+    },
+    {
+      "name": "authority-terminal_publication_confirmed",
+      "passed": true
+    },
+    {
+      "name": "authority-no-automatic_retry",
+      "passed": true
+    },
+    {
+      "name": "authority-no-cancelled",
+      "passed": true
+    },
+    {
+      "name": "authority-no-timed_out",
+      "passed": true
+    },
+    {
+      "name": "streams-same-job",
+      "passed": true
+    },
+    {
+      "name": "stdout-whole-hex-utf8",
+      "passed": true
+    },
+    {
+      "name": "stdout-full-boundary",
+      "passed": true
+    },
+    {
+      "name": "stdout-authority-byte-counts",
+      "passed": true
+    },
+    {
+      "name": "stdout-synced-no-truncation-or-error",
+      "passed": true
+    },
+    {
+      "name": "stderr-whole-hex-utf8",
+      "passed": true
+    },
+    {
+      "name": "stderr-full-boundary",
+      "passed": true
+    },
+    {
+      "name": "stderr-authority-byte-counts",
+      "passed": true
+    },
+    {
+      "name": "stderr-synced-no-truncation-or-error",
+      "passed": true
+    },
+    {
+      "name": "actual-receipt-equals-complete-stdout-value",
+      "passed": true
+    },
+    {
+      "name": "actual-receipt-original-format",
+      "passed": true
+    },
+    {
+      "name": "complete-stdout-original-format",
+      "passed": true
+    },
+    {
+      "name": "two-original-compile-warnings-preserved",
+      "passed": true
+    },
+    {
+      "name": "receipt-schema-prepared-compile-only",
+      "passed": true
+    },
+    {
+      "name": "no-artifact_transfer_started",
+      "passed": true
+    },
+    {
+      "name": "no-compiler_started",
+      "passed": true
+    },
+    {
+      "name": "no-git_started",
+      "passed": true
+    },
+    {
+      "name": "no-service_started",
+      "passed": true
+    },
+    {
+      "name": "no-source_executed",
+      "passed": true
+    },
+    {
+      "name": "observed-publication-under-original-outer",
+      "passed": true
+    },
+    {
+      "name": "exact-stdin-whole",
+      "passed": true
+    },
+    {
+      "name": "eight-fixed-payloads",
+      "passed": true
+    },
+    {
+      "name": "all-independent-metadata-present",
+      "passed": true
+    },
+    {
+      "name": "metadata-exact-path-set",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-0",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-1",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-2",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-3",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-4",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-5",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-6",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-7",
+      "passed": true
+    },
+    {
+      "name": "metadata-custody-8",
+      "passed": true
+    },
+    {
+      "name": "publication-created-0",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-0",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-0",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-0",
+      "passed": true
+    },
+    {
+      "name": "publication-created-1",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-1",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-1",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-1",
+      "passed": true
+    },
+    {
+      "name": "publication-created-2",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-2",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-2",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-2",
+      "passed": true
+    },
+    {
+      "name": "publication-created-3",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-3",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-3",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-3",
+      "passed": true
+    },
+    {
+      "name": "publication-created-4",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-4",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-4",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-4",
+      "passed": true
+    },
+    {
+      "name": "publication-created-5",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-5",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-5",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-5",
+      "passed": true
+    },
+    {
+      "name": "publication-created-6",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-6",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-6",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-6",
+      "passed": true
+    },
+    {
+      "name": "publication-created-7",
+      "passed": true
+    },
+    {
+      "name": "publication-full9-shape-7",
+      "passed": true
+    },
+    {
+      "name": "publication-current-body-pin-7",
+      "passed": true
+    },
+    {
+      "name": "publication-lossless-version-7",
+      "passed": true
+    },
+    {
+      "name": "independent-batch-not-truncated-0",
+      "passed": true
+    },
+    {
+      "name": "unique-body-0",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-0",
+      "passed": true
+    },
+    {
+      "name": "unique-body-1",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-1",
+      "passed": true
+    },
+    {
+      "name": "independent-batch-not-truncated-1",
+      "passed": true
+    },
+    {
+      "name": "unique-body-2",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-2",
+      "passed": true
+    },
+    {
+      "name": "unique-body-3",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-3",
+      "passed": true
+    },
+    {
+      "name": "unique-body-4",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-4",
+      "passed": true
+    },
+    {
+      "name": "unique-body-5",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-5",
+      "passed": true
+    },
+    {
+      "name": "unique-body-6",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-6",
+      "passed": true
+    },
+    {
+      "name": "unique-body-7",
+      "passed": true
+    },
+    {
+      "name": "whole-read-body-7",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-metadata-0",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-sha-boundary-0",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-metadata-1",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-sha-boundary-1",
+      "passed": true
+    },
+    {
+      "name": "lock-two-chunks-whole",
+      "passed": true
+    },
+    {
+      "name": "nine-whole-readback-bodies",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-0",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-1",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-2",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-3",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-4",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-5",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-6",
+      "passed": true
+    },
+    {
+      "name": "actual-body-exact-carrier-7",
+      "passed": true
+    },
+    {
+      "name": "actual-disk-receipt-full-body-and-pin",
+      "passed": true
+    },
+    {
+      "name": "fifteen-unique-closed-read-labels",
+      "passed": true
+    },
+    {
+      "name": "fifteen-read-statuses-present",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-authority-01",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-streams-01",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-01",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-02",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-03",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-04",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-05",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-06",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-07",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-08",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-file-info-09",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-body-a-01",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-body-b-01",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-lock-chunk-000000",
+      "passed": true
+    },
+    {
+      "name": "closed-stored-read-lock-chunk-065536",
+      "passed": true
+    }
+  ],
+  "independent_file_info_count": 9,
+  "job_id": "1a1ab50b1b9-fc05-4c6e",
+  "observed_publication_elapsed_ns": "71250584",
+  "original_warnings_retained": 2,
+  "qa_component_runtime_qualified": false,
+  "read_operations_closed": 15,
+  "schema": "heptabao.qa-r3-draft2.inert-actual-lossless-verification.v1",
+  "status": "passed-inert-only",
+  "unsafe_ns_values_preserved_as_python_integers": true,
+  "verification_host_calls": 0
+}

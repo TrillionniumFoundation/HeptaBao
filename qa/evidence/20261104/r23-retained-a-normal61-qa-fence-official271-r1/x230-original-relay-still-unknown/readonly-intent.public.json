@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.original-relay-readonly-recovery-intent.v1",
+  "created_utc": "2026-11-05T10:49:01.540Z",
+  "original_packet_tree": "a6ac5db43375143d877da029da353807bf13600f",
+  "original_request": {
+    "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935",
+    "bytes": 324,
+    "sha256": "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280",
+    "request_digest": "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47"
+  },
+  "original_ack_blob": "411945876e968db03983dda973ea84dd1613f1e6",
+  "original_intent_blob": "a1bd804cd7bf9faea99a374b90019a2605852c63",
+  "binding": {
+    "host": "desktop",
+    "job_id": "1a1aa57458d-fc05-4156",
+    "key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7",
+    "request_digest": "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47"
+  },
+  "calls": {
+    "status": {
+      "host": "desktop",
+      "job_id": "1a1aa57458d-fc05-4156"
+    },
+    "read0": {
+      "host": "desktop",
+      "job_id": "1a1aa57458d-fc05-4156",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  },
+  "authority_scope": "Only actual status/log return can establish original process state; read errors remain unknown.",
+  "no_replay": true,
+  "no_new_key": true,
+  "no_signals": true,
+  "no_new_paths": true,
+  "no_business_start": true,
+  "no_mutation": true
+}

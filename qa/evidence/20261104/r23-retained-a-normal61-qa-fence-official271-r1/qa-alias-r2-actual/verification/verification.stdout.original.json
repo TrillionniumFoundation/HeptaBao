@@ -1,0 +1,210 @@
+{
+  "check_count": 50,
+  "checks": [
+    {
+      "name": "exact-request-whole",
+      "passed": true
+    },
+    {
+      "name": "root-go-whole",
+      "passed": true
+    },
+    {
+      "name": "exact-source-in-argv",
+      "passed": true
+    },
+    {
+      "name": "exact-python-argv-prefix",
+      "passed": true
+    },
+    {
+      "name": "actual-launch-known-not-reused",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-host",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-executable",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-args",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-cwd",
+      "passed": true
+    },
+    {
+      "name": "ack-exact-idempotency_key",
+      "passed": true
+    },
+    {
+      "name": "same-actual-job",
+      "passed": true
+    },
+    {
+      "name": "original-outer45",
+      "passed": true
+    },
+    {
+      "name": "authority-complete-zero",
+      "passed": true
+    },
+    {
+      "name": "authority-not-timeout-or-cancel",
+      "passed": true
+    },
+    {
+      "name": "stdout-lossless-hex-text",
+      "passed": true
+    },
+    {
+      "name": "stdout-complete-eof",
+      "passed": true
+    },
+    {
+      "name": "stdout-authority-length",
+      "passed": true
+    },
+    {
+      "name": "stdout-authority-synced",
+      "passed": true
+    },
+    {
+      "name": "stderr-lossless-hex-text",
+      "passed": true
+    },
+    {
+      "name": "stderr-complete-eof",
+      "passed": true
+    },
+    {
+      "name": "stderr-authority-length",
+      "passed": true
+    },
+    {
+      "name": "stderr-authority-synced",
+      "passed": true
+    },
+    {
+      "name": "stderr-empty",
+      "passed": true
+    },
+    {
+      "name": "stdout-whole",
+      "passed": true
+    },
+    {
+      "name": "observed-status-and-source",
+      "passed": true
+    },
+    {
+      "name": "no-observation-error",
+      "passed": true
+    },
+    {
+      "name": "same-later-full9",
+      "passed": true
+    },
+    {
+      "name": "same-later-version",
+      "passed": true
+    },
+    {
+      "name": "two-exact-alias-paths",
+      "passed": true
+    },
+    {
+      "name": "two-alias-bytes-sha",
+      "passed": true
+    },
+    {
+      "name": "same-identity-complete-linkset",
+      "passed": true
+    },
+    {
+      "name": "bounded-census",
+      "passed": true
+    },
+    {
+      "name": "body-budget-unchanged",
+      "passed": true
+    },
+    {
+      "name": "eof-accounting",
+      "passed": true
+    },
+    {
+      "name": "returned-byte-accounting",
+      "passed": true
+    },
+    {
+      "name": "original15-after-closure",
+      "passed": true
+    },
+    {
+      "name": "all-nine-fds-closed-once",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-1",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-2",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-3",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-4",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-5",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-6",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-7",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-8",
+      "passed": true
+    },
+    {
+      "name": "fd-once-closed-9",
+      "passed": true
+    },
+    {
+      "name": "iterator-once-closed",
+      "passed": true
+    },
+    {
+      "name": "no-resource-unknown",
+      "passed": true
+    },
+    {
+      "name": "no-binary-child-network-write",
+      "passed": true
+    },
+    {
+      "name": "original-failed-run-preserved",
+      "passed": true
+    }
+  ],
+  "conclusion": "Actual later alias set observed; original failed QA R2 is unchanged. No artifact-copy build qualification.",
+  "host_requests": 0,
+  "main_or_observer_executed": false,
+  "schema": "heptabao.qa-alias-observer.actual-lossless-verification.v1",
+  "status": "passed-existing-evidence-only"
+}

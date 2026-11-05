@@ -1,0 +1,43 @@
+{
+  "after_sha256": "42d46adbee13e150beedc3dd79295e90d594d4ee168a7c439b498be082ae1c76",
+  "all_original_commands_flags_caps_owner_and_six_component_names_unchanged": true,
+  "all_original_constants_except_roots_unchanged": true,
+  "before_sha256": "c961a54dfc35332be035bb16fc1ae697199e35da496b0c9ea52c35dc3f8455d8",
+  "builder_main_or_cargo_executed": false,
+  "full_inverse_exact": true,
+  "generic_read_file_single_link_guard_unchanged": true,
+  "only_nonadditive_changes": [
+    "fresh ROOT and CONTROL r3 literals",
+    "result schema v3",
+    "test=False Cargo artifact read uses added binary-specific observer"
+  ],
+  "original_cli_and_owner_reference_not_modified": true,
+  "original_top_definitions_unchanged": [
+    "BindingError",
+    "open_fd",
+    "close_fd",
+    "need",
+    "remaining",
+    "sha",
+    "identity",
+    "exact_path",
+    "no_symlink_ancestors",
+    "duplicate_free",
+    "parse",
+    "read_file",
+    "pin_file",
+    "load_verified_module",
+    "lock_subset",
+    "write_new",
+    "write_json",
+    "fixed_error",
+    "target_identity",
+    "qa_command_owner_class"
+  ],
+  "original_top_definitions_unchanged_count": 20,
+  "retained_write_chmod_single_link_readback_bytes_unchanged": true,
+  "schema": "heptabao.qa-r3.cargo-output-copy.source-invariance.v1",
+  "test_true_generic_artifact_read_unchanged": true,
+  "actual_alias_root_acceptance_received": true,
+  "future_inert_and_build_root_go_still_required": true
+}

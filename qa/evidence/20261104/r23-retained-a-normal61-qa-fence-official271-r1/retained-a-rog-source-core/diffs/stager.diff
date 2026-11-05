@@ -1,0 +1,69 @@
+--- a/rog_stager.py
++++ b/rog_stager.py
+@@ -19,16 +19,17 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r1')
++ROOT = Path('/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = '1c66541993662f92cf717154e33717abedb2ea74'
+-TREE = '94ced21a63ff9aaca4538c0d4796efea2150e632'
+-PARENT = '6d02ceca629163e1c07480fa1f21520434407143'
++COMMIT = '4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE = 'eba5e650bd080b8ad41ea52a2bc68867f541d255'
++PARENT = '1c66541993662f92cf717154e33717abedb2ea74'
+ ANCESTRY = (
++    ('4e808d0ecb1bcded22870a7ec960dfb2491cf6ec', '1c66541993662f92cf717154e33717abedb2ea74'),
+     ('1c66541993662f92cf717154e33717abedb2ea74', '6d02ceca629163e1c07480fa1f21520434407143'),
+     ('6d02ceca629163e1c07480fa1f21520434407143', '19ba09ab5c494f25a3531749b0b99fc5c651d56c'),
+     ('19ba09ab5c494f25a3531749b0b99fc5c651d56c', 'e69e52f28c653d28c5ae36dbbf6eb51b844536bc'),
+@@ -43,8 +44,8 @@
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "normal_same_root_publication_build.py": (35452, "8b02c5f8f3f0d80286aff0bffcf8a249bb86696b4c25370447e31a953604d33a"),
+-    "launch_normal_same_root_publication.py": (35592, "4100395fd799c160bf2c4c8375278f1e8e2ed5253a1056481f44ecce86021d02"),
++    "normal_same_root_publication_build.py": (35452, "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"),
++    "launch_normal_same_root_publication.py": (35592, "8c0ba96f4953ba934d2dd067ef8bc7de2534f93181d99816fe38b056f564ab96"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+     "prior-observer-build-authority.public.json": (726, "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"),
+ }
+@@ -441,8 +442,8 @@
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+           'server_started': False, 'compiler_started': False, 'production_changed': False,
+-          'source_ref': 'refs/heads/codex/heptabao-same-root-publication-94ced21a-20261105-r1',
+-          'canonical_history_count': 3762, 'actual_build_qualification': False,
++          'source_ref': 'refs/heads/codex/heptabao-retained-a-regression-eba5e650-20261105-r1',
++          'canonical_history_count': 3763, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+@@ -479,18 +480,18 @@
+     for child_commit, parent_commit in ANCESTRY:
+         assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
+     added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
+-    assert len(added) == 10 and set(added) == {row[0] for row in ANCESTRY}
++    assert len(added) == 11 and set(added) == {row[0] for row in ANCESTRY}
+     result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3762'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3763'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62224861
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '29e37c957a78ef27b75f9f56a75ef2a69099c64a065a1ab2afd889cb8ba732fc'
++    assert result['full_worktree']['tracked_bytes'] == 62227757
++    assert result['full_worktree']['full_leaf_index_sha256'] == '4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+ 
+     canonical_path = CONTROL / 'canonical-same-root-publication-from495.bundle'

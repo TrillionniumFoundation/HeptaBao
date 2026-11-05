@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.native-h2-qa-r3.build-external-intent.v1",
+  "prepared_utc": "2026-11-05 11:11:40 UTC",
+  "root_go": {
+    "blob": "fd933ac85c29dcfc2da761f1cd6aa2569dd16332",
+    "bytes": 2471,
+    "sha256": "3f0507d6b175528153db6058593b448d19596bb624ef4610dbb68e9dc9dea428"
+  },
+  "exact_request": {
+    "blob": "f5f5bf6412857f8eafab235bbf38435d040132e9",
+    "bytes": 647,
+    "sha256": "a33f479bb171642ca82104c6295670b2caba0e8eb47679a94660a8da9f5a4ed9"
+  },
+  "idempotency_key": "heptabao-df026-native-h2-qa-build-7ea25347-ac127d3e-20261105-r3",
+  "host": "rog",
+  "timeout_seconds": 660,
+  "source_tree": "c39a25545380825bbe5d56949563bb08095f9730",
+  "inert_actual_tree": "91596e5bfab8434c718a83afa4556dbdceb91d19",
+  "submission_attempted": false,
+  "scope": "One original offline QA build and six existing components; no product or H2 request.",
+  "unknown_no_replay": true
+}

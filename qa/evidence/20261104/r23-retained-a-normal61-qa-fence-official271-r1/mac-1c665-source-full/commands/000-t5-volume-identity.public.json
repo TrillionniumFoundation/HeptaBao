@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/usr/sbin/diskutil",
+    "info",
+    "-plist",
+    "/Volumes/T5"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.09665241604670882,
+  "exit_code": 0,
+  "limit_seconds": 30,
+  "pid": 61667,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "44b7fc6102e369c1f68af3a0a9716d6fb6ab105241452b4783a822ece1dabe81",
+  "timed_out": false
+}

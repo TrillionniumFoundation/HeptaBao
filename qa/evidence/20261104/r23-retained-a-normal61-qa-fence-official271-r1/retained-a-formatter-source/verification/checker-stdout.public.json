@@ -1,0 +1,33 @@
+{
+  "candidate_module_executed": false,
+  "check_count": 20,
+  "checks": [
+    "new_controller_ast_compile_only",
+    "five_helpers_ast_identical",
+    "all_remaining_module_nodes_exact",
+    "one_fixed_filename",
+    "candidate_pin",
+    "original_pin",
+    "controller_sha",
+    "request_fields",
+    "request_exact_argv",
+    "outer60",
+    "key_binds_source",
+    "stdin_one_exact_source",
+    "stdin_original_bound",
+    "stdin_whole_sha",
+    "root_fresh_literal",
+    "tool_pin_unchanged",
+    "format_configuration_exact",
+    "base_identity_and_no_execution_claim",
+    "original_controller_and_child_limits",
+    "six_fixed_output_contract"
+  ],
+  "cloud_io_scope": "reads this public JSON input and Python script/stdlib only",
+  "host_calls": 0,
+  "rust_compiled": false,
+  "rustfmt_executed": false,
+  "schema": "heptabao.retained-a-formatter-offline-source-check.v1",
+  "status": "passed",
+  "subprocesses_created_by_verifier": 0
+}

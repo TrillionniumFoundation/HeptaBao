@@ -1,0 +1,7 @@
+{
+  "chunk_id": "b15f03",
+  "wall_time_seconds": 0.000021192,
+  "exit_code": 0,
+  "original_token_count": 235,
+  "output": "{\n  \"alias_set_observed\": false,\n  \"artifact_execution_count\": 0,\n  \"artifact_info_is_later_observation\": true,\n  \"cargo_exit_code\": 0,\n  \"check_count\": 19,\n  \"checks\": [\n    \"cargo-whole-size-sha\",\n    \"all-75-events\",\n    \"one-build-success\",\n    \"one-qa-artifact\",\n    \"exact-compiler-output\",\n    \"default-qa-features\",\n    \"original-profile\",\n    \"actual-new-compile\",\n    \"exact-owned-manifest\",\n    \"native-info-path\",\n    \"actual-artifact-size\",\n    \"actual-artifact-sha\",\n    \"actual-artifact-version\",\n    \"actual-artifact-owner-mode\",\n    \"actual-nlink-two\",\n    \"generic-single-link-predicate-false\",\n    \"expected-failure-boundary\",\n    \"no-component-execution\",\n    \"no-product-execution\"\n  ],\n  \"component_tests_executed\": 0,\n  \"original_combined_status\": \"failed\",\n  \"original_failure_not_replayed\": true,\n  \"schema\": \"heptabao.qa-r2.cargo-and-artifact-observation-checks.v1\",\n  \"status\": \"passed-evidence-checks-only\"\n}\n"
+}

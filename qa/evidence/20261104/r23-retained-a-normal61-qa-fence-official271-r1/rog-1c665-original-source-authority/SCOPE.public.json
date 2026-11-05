@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.original-source-job-located-authority.v1",
+  "job_id": "1a1aae5a5c7-fc05-4882",
+  "host": "rog",
+  "locator_stdout_blob": "1151dbf6f5e4f8dbe0a42dda6787c834186d6c39",
+  "locator_authority_blob": "8f7634d2431313426f7041eeca48a7dbdd550165",
+  "request_digest": "bae96736cb7abc92a03e93f7e55f5c108a152dcf5f5aeb237643b935218df42b",
+  "requestfile_sha256": "a51eb0e9adad3ca64f0e4e0e9a9e2c8bb1eb5a938c261f78567452331c1cd534",
+  "original_start_timeout_preserved": true,
+  "original_request_replayed": false,
+  "authority_exit0_full_durable": true,
+  "stdout372_stderr0_hex_text_eof_verified": true,
+  "all55_reported_children_reaped_empty": true,
+  "controls4_whole_and_independent_file_info_bound": true,
+  "complete55_command_raw_archive_pending": true,
+  "normal_build_not_started": true
+}

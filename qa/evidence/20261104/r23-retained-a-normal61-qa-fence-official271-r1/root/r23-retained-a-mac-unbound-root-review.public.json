@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.retained-a.mac-unbound-root-source-review.v1",
+  "status": "SOURCE_REVIEWED_WAIT_ACTUAL_ROG_BUNDLE",
+  "packet": "233a4e95dc603acb29482f95131bebb48fe5df27",
+  "files": 48,
+  "bytes": 3391369,
+  "merkle_trees": 14,
+  "check_count": 10,
+  "checks": [
+    "stager.strict_exact_diff",
+    "runner.strict_exact_diff",
+    "launcher.strict_exact_diff",
+    "actual80_source_checks_exec_whole",
+    "80_source_only_results",
+    "ordered_definition_counts_preserve_duplicate_owned",
+    "mac_bundle_unbound_no_dispatch",
+    "carried_control.mac_normal_same_root_publication_build.py",
+    "carried_control.launch_normal_same_root_publication.py",
+    "original_groups_whole"
+  ],
+  "prior_1c665_failure_fence_refs": [
+    "da5827d733a433f768bc624730e1a5ce3880462e",
+    "ad95f330fd1ff8ae702384a945d2323c731e6a78",
+    "61d4efd4221660bbf69fd47d7f2d4c10c0336f44",
+    "eeeb07aaec75096ee8c4f950c8c55629b02dc4a2"
+  ],
+  "fence_note": "Four immutable existing actual bytes are bound; 0600 is future on-host admission, not a newly sampled mode claim. Existing same preserve helper and original six df026 fences retained.",
+  "reviewed_diffs": "stager only source identity, roots, original actual bundle unbinding and derived canonical counts; runner identity plus four failed receipts; launcher identity and fresh root. Original function bodies, normal60+1 tail, original clocks unchanged.",
+  "must_bind": "Actual new ROG bundle whole bytes/SHA/base64, then exact stager/request/carrier and separate source-stage GO.",
+  "source_stage_go": false,
+  "normal_build_go": false,
+  "full_replacement": false
+}

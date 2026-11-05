@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.qa-r3-draft2.metadata-corrections.v1",
+  "old_source_packet": "a0b9d7a5901cfad7d625bc7fff21108ab97d1077",
+  "changes": [
+    {
+      "path": "PLAN.public.json",
+      "field": "no_runtime_dispatch_in_this_packet",
+      "before": false,
+      "after": true,
+      "reason": "Requests are proposed source; no inert or Cargo dispatch occurred."
+    },
+    {
+      "before_path": "reference/alias-observer-root-verifier.py",
+      "after_path": "reference/alias-observer-root-verifier.js",
+      "blob_unchanged": "8a83d5df5b2f1e8fa95c402f73f2859dd07af17b",
+      "reason": "The root verifier's actual language is JavaScript."
+    },
+    {
+      "path": "reference/draft1/components/",
+      "reason": "The eight prior selected-component executions apply to draft1. They are retained and were not rerun or relabelled as this successor."
+    }
+  ],
+  "execution_semantics_changed_by_metadata": false
+}
