@@ -461,8 +461,7 @@ fn load_cold_native_ha_inner(
     })
     .inspect_err(|_| cold_stage_failed("final_local_generation"))
     .map_err(storage_rejected)?;
-    observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, &mut gate)
-        .map_err(storage_rejected)?;
+    observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, gate).map_err(storage_rejected)?;
     #[cfg(feature = "private-ha-forward-diagnostic")]
     phase.finish(true);
     #[cfg(feature = "private-ha-forward-diagnostic")]
