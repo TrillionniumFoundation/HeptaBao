@@ -204,7 +204,7 @@ impl FormalApiListener {
                     &reply,
                     snapshot::NativeReply::Json(response) if response.status == 204
                 );
-                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                write_http1_reply(&mut stream, reply, head, &namespace, deadline)?;
                 observe("server_reply_written");
                 if redirect {
                     observe("server_redirect_close_begin");

@@ -749,7 +749,7 @@ impl RedirectTlsFixture {
                 deadline,
             );
             let native_redirect = matches!(&reply, NativeReply::Redirect { .. });
-            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+            write_http1_reply(&mut stream, reply, head, &namespace, deadline)?;
             if native_redirect {
                 finish_redirect_connection(&mut stream);
             }

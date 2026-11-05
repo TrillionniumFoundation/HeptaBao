@@ -257,7 +257,7 @@ impl HttpsFixture {
                 consistency::Settings::default(),
                 deadline,
             );
-            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+            write_http1_reply(&mut stream, reply, head, &namespace, deadline)?;
             stream.conn.send_close_notify();
             stream.flush()?;
             if Instant::now() >= deadline {
