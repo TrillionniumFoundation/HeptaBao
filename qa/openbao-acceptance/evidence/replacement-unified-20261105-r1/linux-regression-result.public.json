@@ -1,0 +1,144 @@
+{
+  "attempted_once": 176,
+  "automatic_retry": false,
+  "expected": 176,
+  "failed": 2,
+  "failures": [
+    {
+      "elapsed_seconds": 0.045042034005746245,
+      "exact_one_test_proved": false,
+      "execution_group": "original-redirect5",
+      "name": "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+      "process_receipt": "test-0028.public.json",
+      "requested_by_groups": [
+        "original-redirect5"
+      ],
+      "status": "failed",
+      "suite": "server"
+    },
+    {
+      "elapsed_seconds": 3.7332370250078384,
+      "exact_one_test_proved": false,
+      "execution_group": "new-snapshot-acl",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "process_receipt": "test-0128.public.json",
+      "requested_by_groups": [
+        "new-snapshot-acl"
+      ],
+      "status": "failed",
+      "suite": "server"
+    }
+  ],
+  "fixture_data_only": true,
+  "full34_allowed": false,
+  "full_denominator_retained": true,
+  "full_replacement_qualified": false,
+  "ha_live_allowed": false,
+  "libtest_build_receipt": {
+    "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/libtest-build-r1/build-result.public.json",
+    "sha256": "40c6aa1d318184b548fb03146fee23a1f42a2579452360480552cd9e8c5bd26b"
+  },
+  "missing": 0,
+  "native_build_receipt": {
+    "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/normal-release-r1/native-build.public.json",
+    "sha256": "e913792f5cea1105b3cff442a2e92e77e167cfb0a54981e12ca2035a38fbff02"
+  },
+  "old_assets_deleted": false,
+  "original_60_denominator": 60,
+  "original_60_passed": 59,
+  "passed": 174,
+  "production_changed": false,
+  "schema": "heptabao.unified-linux-regression-aggregate.v1",
+  "single_request_budgets_changed": false,
+  "source_clean_after": true,
+  "source_commit": "9208e0765f566f3bd7908e6567d2e39008156b9b",
+  "source_tree": "3a353adca3300eb46dbe8622c36eaa1f6d3fa7ce",
+  "status": "failed",
+  "suites": {
+    "ha": {
+      "all_owned_groups_empty": true,
+      "attempted_once": 9,
+      "binary": {
+        "bytes": 19674160,
+        "cargo_events_sha256": "db9c176e2f386a73d5f8dc38598bcdb4be650dd84aee05fc38abe551c23e20b1",
+        "compiler_executable": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/target/release/deps/heptabao_ha_service-0fc66defbf7d3377",
+        "features": [
+          "default",
+          "native-v6-peer-ingress"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/libtest-build-r1/retained-heptabao-ha-service-libtest",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": true
+        },
+        "sha256": "bc928e5c2072bbaed1d17bdd5aa4036f2b2ae084ada028a8c05f62c31b795fb6"
+      },
+      "binary_unchanged": true,
+      "counts": {
+        "passed": 9
+      },
+      "executor": {
+        "exit_code": 0,
+        "job_id": "1a1aa4640c1-fc05-4042",
+        "output_complete": true,
+        "output_durable": true,
+        "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/control/ha-regressions-executor-terminal.public.json",
+        "sha256": "0f1ed72ee4e896d1d7abc5863cf5e0647bf334a675f64bebc07012e5517ef190",
+        "state": "succeeded"
+      },
+      "expected": 9,
+      "passed": 9,
+      "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/ha-regressions-r1/result.public.json",
+      "sha256": "8db6b6fcbb0e11781d65d7a3528ed5fe22798e8cd95de5a80fa96edd4a673d7d",
+      "source_unchanged": true
+    },
+    "server": {
+      "all_owned_groups_empty": true,
+      "attempted_once": 167,
+      "binary": {
+        "bytes": 186747264,
+        "cargo_events_sha256": "1755a61ef0619267190bd55e7e33e15d884a41fd1c3500e60979952f689d3b73",
+        "compiler_executable": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/target/release/deps/heptabao_server-46a8765afad8ea76",
+        "features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "fresh": false,
+        "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/libtest-build-r1/retained-heptabao-server-libtest",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": true,
+          "test": true
+        },
+        "sha256": "2ace358d0edcb4182e3c84f1ce1f094c689e679ff95b91924fd3c283660dea32"
+      },
+      "binary_unchanged": true,
+      "counts": {
+        "failed": 2,
+        "passed": 165
+      },
+      "executor": {
+        "exit_code": 1,
+        "job_id": "1a1aa427890-fc05-3ffb",
+        "output_complete": true,
+        "output_durable": true,
+        "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/control/server-regressions-executor-terminal.public.json",
+        "sha256": "94a54d2064bf489f103e6f803b7b24810ca4e0929023687641e05dac6da43d44",
+        "state": "failed"
+      },
+      "expected": 167,
+      "passed": 165,
+      "path": "/home/qian-qi/heptabao-replacement-unified-20261105-r1/server-regressions-r1/result.public.json",
+      "sha256": "3f589b37f56020bd095990fe9762c2bbf44f2fb654523d3d90318d89b5a8ee24",
+      "source_unchanged": true
+    }
+  },
+  "traffic_cutover": false
+}

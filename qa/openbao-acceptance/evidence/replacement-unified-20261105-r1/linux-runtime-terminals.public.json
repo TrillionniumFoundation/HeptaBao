@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.regression-runtime-terminal-observations.v1",
+  "host": "rog",
+  "source_commit": "9208e0765f566f3bd7908e6567d2e39008156b9b",
+  "source_tree": "3a353adca3300eb46dbe8622c36eaa1f6d3fa7ce",
+  "observations": [
+    {
+      "kind": "linux_libtest_terminal",
+      "observation": {
+        "at_unix_ms": 1793857692138,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1aa2cb2b5-fc05-3eae",
+        "launch_nonce": "4db9b946b05702c440dd7057af85bac9",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1012,
+            "stored": 1012
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "kind": "linux_server_terminal",
+      "observation": {
+        "at_unix_ms": 1793858004620,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 1,
+        "job_id": "1a1aa427890-fc05-3ffb",
+        "launch_nonce": "aceff1db27c61d4327bdb283f94acd8a",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 276,
+            "stored": 276
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "failed",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    },
+    {
+      "kind": "linux_ha_terminal",
+      "observation": {
+        "at_unix_ms": 1793858104480,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1aa4640c1-fc05-4042",
+        "launch_nonce": "8f344a65bd15e8fa903670e26fa94543",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 267,
+            "stored": 267
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      }
+    }
+  ],
+  "production_changed": false,
+  "full_replacement_qualified": false
+}
