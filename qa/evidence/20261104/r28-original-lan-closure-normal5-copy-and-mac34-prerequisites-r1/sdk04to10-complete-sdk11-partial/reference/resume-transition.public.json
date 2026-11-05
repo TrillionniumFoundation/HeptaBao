@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.mac-sdk-body-read-resumption.v1",
+  "root_go": "2e3c3c8c3791c0ed9e7f38020b003e2148f52d84",
+  "original_request_tree": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "previous_error": {
+    "schema": "heptabao.mac-harness-sdk-body-admission-stopped.v1",
+    "sequence": 3,
+    "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+    "error_name": "Error",
+    "message": "MCP isError before parse",
+    "public_stage": "result_5",
+    "sdk_blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "native_blob": "2bc15a5e63d2c8371f42ce25e1fc4939608bd46d",
+    "new_admissions_stopped": true,
+    "original_operation_replayed": false
+  },
+  "previous_partial": "df282bad33bae04e947cea7a6d823dc7e1bf18e5",
+  "root_same_id_tail_adoption": "9e7e3bb7c7e3e891506ca7109625a28d3f8a8fa0",
+  "resume_at_sequence": 4,
+  "sequence_4_to_13_not_previously_submitted": true,
+  "maximum_native_futures_this_line": 1,
+  "one_intentional_same_identity_reconciliation_after_transport_error": true,
+  "no_sdk_execution": true
+}

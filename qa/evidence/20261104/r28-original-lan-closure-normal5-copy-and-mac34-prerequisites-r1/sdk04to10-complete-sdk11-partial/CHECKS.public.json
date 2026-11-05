@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.sdk-resume-partial-checks.v1",
+  "checks": [
+    {
+      "name": "sequence_4_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_4_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_4_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_5_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_5_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_5_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_6_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_6_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_6_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_7_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_7_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_7_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_8_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_8_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_8_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_9_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_9_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_9_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_10_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_10_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_10_known_complete",
+      "passed": true
+    },
+    {
+      "name": "sequence_11_intent_before_recorded_ack",
+      "passed": true
+    },
+    {
+      "name": "sequence_11_same_known_closed_operation",
+      "passed": true
+    },
+    {
+      "name": "sequence_11_incomplete_no_replay",
+      "passed": true
+    },
+    {
+      "name": "sequence_11_two_preserved_transport_errors",
+      "passed": true
+    },
+    {
+      "name": "sequence_12_never_submitted",
+      "passed": true
+    },
+    {
+      "name": "sequence_13_never_submitted",
+      "passed": true
+    },
+    {
+      "name": "completed_count_exact_10",
+      "passed": true
+    },
+    {
+      "name": "stop_current_exact_11_result_1",
+      "passed": true
+    }
+  ],
+  "passed": 29,
+  "total": 29,
+  "runtime_calls": 0
+}

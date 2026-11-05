@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-lan-original-candidate-request-body-r1-1a1ac1641eb",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/request.json",
+      "offset": 0,
+      "limit": 16384,
+      "expected_version": "2050:10231079:8101:1793888504931155055:1793888504931155055"
+    }
+  }
+}

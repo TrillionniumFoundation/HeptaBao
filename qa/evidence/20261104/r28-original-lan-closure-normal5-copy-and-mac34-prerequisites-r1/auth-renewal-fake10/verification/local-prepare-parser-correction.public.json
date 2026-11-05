@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.local-preparation-parser-correction.v1",
+  "original_request": "adb1829b1a8d19229737ff49575234b52604fc9e",
+  "original_executor": "c1fee6b109528bf39da6f634be3ae59f44321696",
+  "actual_exit_code": 0,
+  "prior_local_orchestration_error": "Local prepare incomplete",
+  "cause": "The orchestration incorrectly treated the presence of original_token_count as truncation; the executor reported 42 tokens and complete JSON.",
+  "correction": "Use exit_code/session/output JSON completion and retain original_token_count as metadata.",
+  "same_actual_output_reused": true,
+  "command_repeated": false,
+  "test_executed": false,
+  "directory": "/tmp/heptabao_renewal_fake_r2_grf3_e7n",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+}

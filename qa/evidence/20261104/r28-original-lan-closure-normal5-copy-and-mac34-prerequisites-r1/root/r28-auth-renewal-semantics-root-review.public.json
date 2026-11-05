@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.current-approle-renewal-semantics-root-review.r1",
+  "status": "SOURCE_SEMANTICS_CONSISTENT_TARGETED_FAKE_INPUT_GAPS_IDENTIFIED",
+  "packet": "2d3023fa1d4efd5b34148901fefe9c7bdb2600d3",
+  "candidate_blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+  "checks_passed": 27,
+  "checks": [
+    "exact_blob_auth.rs",
+    "canonical_member_auth.rs",
+    "exact_blob_service_native_auth.rs",
+    "canonical_member_service_native_auth.rs",
+    "exact_blob_auth_approle_renewal.rs",
+    "canonical_member_auth_approle_renewal.rs",
+    "exact_blob_auth_native_token.rs",
+    "canonical_member_auth_native_token.rs",
+    "exact_blob_auth_token_precision.rs",
+    "canonical_member_auth_token_precision.rs",
+    "exact_blob_auth_approle_renewal_tests.rs",
+    "canonical_member_auth_approle_renewal_tests.rs",
+    "exact_blob_renewal-candidate.py",
+    "exact_blob_selected-checks.py",
+    "fixed_candidate_unbound",
+    "empty_increment_default",
+    "default_ttl_and_absolute_max",
+    "current_integer_lookup",
+    "http_echo_contract",
+    "revoke_chain_before_delta",
+    "same_credential_accessor",
+    "only_positive_expiry_proves_extension",
+    "final_extension_gate_after_inverse_region",
+    "manual_arithmetic_same_integer_second",
+    "manual_arithmetic_later_integer_second",
+    "manual_arithmetic_already_at_maximum_absolute_expiry_after_prior_renewal",
+    "preserved_fake_time_gap"
+  ],
+  "canonical_source": [
+    {
+      "file": "auth.rs",
+      "path": "crates/heptabao-server/src/auth.rs",
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+      "bytes": 395371,
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+      "reviewed_ranges": [
+        [
+          1910,
+          1921
+        ],
+        [
+          2062,
+          2084
+        ],
+        [
+          3453,
+          3474
+        ],
+        [
+          6886,
+          6967
+        ],
+        [
+          7059,
+          7064
+        ],
+        [
+          7121,
+          7194
+        ],
+        [
+          8283,
+          8298
+        ],
+        [
+          9006,
+          9054
+        ],
+        [
+          9185,
+          9256
+        ]
+      ]
+    },
+    {
+      "file": "service_native_auth.rs",
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "reviewed_ranges": [
+        [
+          2539,
+          2569
+        ]
+      ]
+    },
+    {
+      "file": "auth_approle_renewal.rs",
+      "path": "crates/heptabao-server/src/auth_approle_renewal.rs",
+      "blob": "6ebf2075dd10652c782e24cba894d066b5aada27",
+      "bytes": 7819,
+      "sha256": "d06e6d7edbb66acdaf37c52ca6080c205e9292a4677899e067eea27b8ffa8bf8",
+      "reviewed_ranges": [
+        [
+          135,
+          219
+        ]
+      ]
+    },
+    {
+      "file": "auth_native_token.rs",
+      "path": "crates/heptabao-server/src/auth_native_token.rs",
+      "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8",
+      "bytes": 4382,
+      "sha256": "c676a4c710279451933defd7e50a06526d2441052d208ceda1e9db1033d76b56",
+      "reviewed_ranges": [
+        [
+          23,
+          62
+        ]
+      ]
+    },
+    {
+      "file": "auth_token_precision.rs",
+      "path": "crates/heptabao-server/src/auth_token_precision.rs",
+      "blob": "bcd36fe645269dacce42fe8f162f838f40b74bb6",
+      "bytes": 22522,
+      "sha256": "d027fd3bc29e53b688aaa778842e252190a4538add0ce33fab7532af128d5d56",
+      "reviewed_ranges": [
+        [
+          67,
+          88
+        ],
+        [
+          127,
+          131
+        ],
+        [
+          301,
+          326
+        ]
+      ]
+    },
+    {
+      "file": "auth_approle_renewal_tests.rs",
+      "path": "crates/heptabao-server/src/auth_approle_renewal_tests.rs",
+      "blob": "ab5ddf0e8fef1e521666f7f76789bfac758719e9",
+      "bytes": 10210,
+      "sha256": "e7ea3b22236a99cc3e8c86b1b5896af3d5c559a5e39459aeb400626ddb95c82d",
+      "reviewed_ranges": [
+        [
+          108,
+          183
+        ]
+      ]
+    }
+  ],
+  "manual_arithmetic": [
+    {
+      "name": "same_integer_second",
+      "pre_ttl": 180,
+      "new_expiry": 1180,
+      "post_ttl": 180,
+      "lease": 180,
+      "delta": 0
+    },
+    {
+      "name": "later_integer_second",
+      "pre_ttl": 170,
+      "new_expiry": 1195,
+      "post_ttl": 179,
+      "lease": 180,
+      "delta": 15
+    },
+    {
+      "name": "already_at_maximum_absolute_expiry_after_prior_renewal",
+      "pre_ttl": 100,
+      "new_expiry": 1600,
+      "post_ttl": 98,
+      "lease": 99,
+      "delta": 0
+    }
+  ],
+  "author_findings": [
+    "T01",
+    "T02",
+    "T03"
+  ],
+  "scope": "Read exact named route, lookup, TTL, echo and candidate lifecycle sections. Arithmetic examples are not product runtime. Current coarse nonperiodic AppRole fixture only.",
+  "product_edited": false,
+  "candidate_edited": false,
+  "budgets_changed": false,
+  "actual_renewal_qualified": false,
+  "actual_sdk_owner_qualified": false,
+  "full_replacement_qualified": false,
+  "minimal_test_only_followup_authorized": true
+}

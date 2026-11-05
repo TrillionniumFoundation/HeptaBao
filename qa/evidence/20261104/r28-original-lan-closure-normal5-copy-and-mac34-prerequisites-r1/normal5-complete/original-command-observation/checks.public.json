@@ -1,0 +1,130 @@
+[
+  {
+    "name": "complete_independent_file_batch_not_atomic_snapshot",
+    "passed": true
+  },
+  {
+    "name": "file0_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file0_version_size",
+    "passed": true
+  },
+  {
+    "name": "file1_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file1_version_size",
+    "passed": true
+  },
+  {
+    "name": "file2_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file2_version_size",
+    "passed": true
+  },
+  {
+    "name": "file3_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file3_version_size",
+    "passed": true
+  },
+  {
+    "name": "file4_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file4_version_size",
+    "passed": true
+  },
+  {
+    "name": "file5_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file5_version_size",
+    "passed": true
+  },
+  {
+    "name": "file6_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file6_version_size",
+    "passed": true
+  },
+  {
+    "name": "file7_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file7_version_size",
+    "passed": true
+  },
+  {
+    "name": "file8_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file8_version_size",
+    "passed": true
+  },
+  {
+    "name": "file9_exact_path_eof_whole",
+    "passed": true
+  },
+  {
+    "name": "file9_version_size",
+    "passed": true
+  },
+  {
+    "name": "record_rog-ts-effective-config_equals_core",
+    "passed": true
+  },
+  {
+    "name": "record_send-rog_equals_core",
+    "passed": true
+  },
+  {
+    "name": "record_receive-desktop_equals_core",
+    "passed": true
+  },
+  {
+    "name": "sender_raw_receipt_lossless_equals_core",
+    "passed": true
+  },
+  {
+    "name": "receiver_raw_receipt_lossless_equals_core",
+    "passed": true
+  },
+  {
+    "name": "preflight_raw_lossless_equals_core",
+    "passed": true
+  },
+  {
+    "name": "effective_stdout_whole_equals_preflight",
+    "passed": true
+  },
+  {
+    "name": "expected_empty_streams",
+    "passed": true
+  },
+  {
+    "name": "initial_intent_controller_and_helpers",
+    "passed": true
+  },
+  {
+    "name": "initial_intent_trust_and_old_controller",
+    "passed": true
+  },
+  {
+    "name": "initial_intent_five_files_and_source",
+    "passed": true
+  }
+]

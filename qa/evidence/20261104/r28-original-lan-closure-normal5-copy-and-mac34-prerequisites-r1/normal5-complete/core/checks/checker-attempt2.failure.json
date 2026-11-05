@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao.ha.current-normal5.offline-checker-attempt2.failure.v1",
+  "failed_check": "five_literal_files_exact_total",
+  "checks_completed": [
+    {
+      "name": "original_operation_completed_stored_inactive",
+      "passed": true
+    },
+    {
+      "name": "whole_core_matches_independent_info",
+      "passed": true
+    },
+    {
+      "name": "body_version_equals_independent_info",
+      "passed": true
+    },
+    {
+      "name": "original_authority_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "core_schema_identity",
+      "passed": true
+    },
+    {
+      "name": "transfer_known_complete",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_runtime_qualification",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_caps",
+      "passed": true
+    },
+    {
+      "name": "three_unique_original_commands",
+      "passed": true
+    },
+    {
+      "name": "command_rog-ts-effective-config",
+      "passed": true
+    },
+    {
+      "name": "command_send-rog",
+      "passed": true
+    },
+    {
+      "name": "command_receive-desktop",
+      "passed": true
+    },
+    {
+      "name": "all_started_children_closed_once",
+      "passed": true
+    },
+    {
+      "name": "trust_and_original_controller_unchanged",
+      "passed": true
+    },
+    {
+      "name": "controller_source_pin",
+      "passed": true
+    },
+    {
+      "name": "helper_receiver.py",
+      "passed": true
+    },
+    {
+      "name": "helper_sender.py",
+      "passed": true
+    },
+    {
+      "name": "strict_ssh_public_projection",
+      "passed": true
+    },
+    {
+      "name": "sender_schema_and_identity",
+      "passed": true
+    },
+    {
+      "name": "sender_complete_and_caps",
+      "passed": true
+    },
+    {
+      "name": "sender_exact_file_count",
+      "passed": true
+    },
+    {
+      "name": "receiver_schema_and_identity",
+      "passed": true
+    },
+    {
+      "name": "receiver_complete_and_caps",
+      "passed": true
+    },
+    {
+      "name": "receiver_exact_file_count",
+      "passed": true
+    },
+    {
+      "name": "receiver_create_only_fsync_preserves_raw_receipts",
+      "passed": true
+    },
+    {
+      "name": "five_literal_files_exact_total",
+      "passed": false
+    }
+  ],
+  "verifier": "function(){\n const p=\"ha_current_normal5_relay_actual_\",u=eval(\"(\"+load(\"ha_helper_reconstructed_r1_utf8\")+\")\"),h=eval(\"(\"+load(\"ha_helper_reconstructed_r1_sha256\")+\")\");\n const v=load(p+\"result_whole_value_r1\"),info=load(p+\"result_info_native_value_r1\"),a=load(p+\"authority_native_value_r1\"),st=load(p+\"result_body_closed_status_r1\"),plan=load(p+\"destination_fixed_plan_r1\"),frozen=load(p+\"actual_source_files_literal_r1\"),checks=[];\n const ck=(name,ok)=>{checks.push({name,passed:!!ok});store(p+\"core_recovery_checks_r1\",checks);if(!ok)throw Error(\"core check \"+name);},eq=(x,y)=>JSON.stringify(x)===JSON.stringify(y);\n ck(\"original_operation_completed_stored_inactive\",st.operation_id===\"ba463b00bbd59bf90f034f0c81c9c2f58cd858cec2683e6b240047504571f544\"&&st.async_state===\"completed\"&&st.result_state===\"stored_observed\"&&st.owned_future_active===false&&st.payload_available===true);\n ck(\"whole_core_matches_independent_info\",u(load(p+\"result_whole_text_r1\")).length===18565&&h(u(load(p+\"result_whole_text_r1\")))===info.sha256&&info.sha256===\"de4d20a2eb6551a3f0237f7f6093623f14d06fc08a8af9f75491f00a31bbcbb4\");\n ck(\"body_version_equals_independent_info\",load(p+\"result_body_native_value_r1\").version===info.version);\n ck(\"original_authority_zero_full_durable\",a.job_id===\"1a1ac4bdf19-fc05-5366\"&&a.exit_code===0&&a.output_complete===true&&a.output_durable===true&&a.terminal_publication_confirmed===true&&!a.timed_out&&!a.cancelled);\n ck(\"core_schema_identity\",v.schema===\"heptabao.4e808.shared-public-normal-artifacts-relay.v1\"&&v.source_commit===\"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\"&&v.source_tree===\"eba5e650bd080b8ad41ea52a2bc68867f541d255\");\n ck(\"transfer_known_complete\",v.status===\"transferred\"&&v.all_local_owned_stopped&&v.all_owned_stopped&&v.remote_endpoint_completion_verified&&!v.remote_cleanup_unknown&&v.cleanup_errors.length===0);\n ck(\"no_product_or_runtime_qualification\",v.runtime_qualification===false&&v.production_changed===false&&v.server_started===false&&v.compiler_started===false&&v.git_operations===0&&v.automatic_retry===false);\n ck(\"unchanged_original_caps\",v.overall_seconds===300&&v.endpoint_seconds===90&&v.ssh_child_seconds===90&&v.elapsed_seconds<300);\n ck(\"three_unique_original_commands\",v.commands.length===3&&new Set(v.commands.map(c=>c.label)).size===3&&eq(v.commands.map(c=>c.label).sort(),[\"receive-desktop\",\"rog-ts-effective-config\",\"send-rog\"]));\n for(const c of v.commands)ck(\"command_\"+c.label,c.exit_code===0&&c.direct_child_reaped===true&&c.remaining.length===0&&c.timed_out===false&&c.elapsed_seconds<c.limit_seconds&&c.limit_seconds===90);\n ck(\"all_started_children_closed_once\",v.cleanup.length===3&&new Set(v.cleanup.map(c=>c.pid)).size===3&&v.cleanup.every(c=>c.direct_child_reaped===true&&c.exit_code===0&&Array.isArray(c.remaining)&&c.remaining.length===0));\n ck(\"trust_and_original_controller_unchanged\",eq(v.trust_before,v.trust_after)&&eq(v.original_ha_controller_before,v.original_ha_controller_after));\n ck(\"controller_source_pin\",v.controller.bytes===16719&&v.controller.sha256===h(u(load(p+\"relay_source_text_r1\"))));\n for(const [n,k] of [[\"receiver.py\",\"receiver_source_text_r1\"],[\"sender.py\",\"sender_source_text_r1\"]])ck(\"helper_\"+n,v.helpers[n].sha256===h(u(load(p+k)))&&v.helpers[n].bytes===u(load(p+k)).length);\n const proj=v.ssh_preflight[\"rog-ts\"].projection;\n ck(\"strict_ssh_public_projection\",proj.hostname===\"192.168.0.10\"&&proj.user===\"qian-qi\"&&proj.port===\"22\"&&proj.hostkeyalias===\"hepta-node-rog\"&&proj.stricthostkeychecking===\"true\"&&proj.batchmode===\"yes\"&&proj.controlpath===null&&proj.controlmaster===\"false\"&&proj.updatehostkeys===\"false\"&&proj.connectionattempts===\"1\"&&proj.connecttimeout===\"10\");\n for(const k of [\"sender\",\"receiver\"]){let z=v[k];ck(k+\"_schema_and_identity\",z.schema===\"heptabao.4e808.fixed-public-normal-endpoint.v1\"&&z.source_commit===v.source_commit&&z.source_tree===v.source_tree&&z.role===k);ck(k+\"_complete_and_caps\",z.status===\"complete\"&&z.request_seconds===90&&z.elapsed_seconds<90&&z.within_original_deadline&&z.all_owned_stopped&&z.cleanup_errors.length===0&&z.cleanup.length===0&&!z.compiler_started&&!z.server_started&&z.git_operations===0);ck(k+\"_exact_file_count\",z.files.length===5);}\n ck(\"receiver_create_only_fsync_preserves_raw_receipts\",v.receiver.destination_created_exclusive&&v.receiver.destination_directory_mode===320&&v.receiver.destination_fsynced&&v.receiver.normal_release_provenance_verified&&v.receiver.raw_receipts_preserved&&v.receiver.partial_directory_retained_on_failure);\n ck(\"five_literal_files_exact_total\",frozen.length===5&&frozen.reduce((n,x)=>n+x.bytes,0)===110287359&&eq(v.files,frozen));\n for(let i=0;i<5;i++){const e=frozen[i],s=v.sender.files[i],r=v.receiver.files[i],q=plan[i];\n ck(\"file\"+i+\"_fixed_order_paths_sizes_hashes\",e.name===q.name&&e.bytes===q.expected_bytes&&e.sha256===q.expected_sha256&&s.name===e.name&&s.source===e.path&&r.name===e.name&&r.path===q.path&&r.bytes===e.bytes&&r.sha256===e.sha256);\n ck(\"file\"+i+\"_source_whole_and_stream\",s.initial_file.bytes===e.bytes&&s.initial_file.sha256===e.sha256&&eq(s.initial_file,s.stream));\n ck(\"file\"+i+\"_source_full9_and_version\",eq(s.source_identity_before,s.source_identity_after)&&s.source_identity_before.length===9&&s.source_version===e.version&&[s.source_identity_before[0],s.source_identity_before[1],s.source_identity_before[6],s.source_identity_before[7],s.source_identity_before[8]].join(\":\")===e.version&&(s.source_identity_before[4]&4095)===e.source_mode&&s.source_identity_before[5]===1);\n ck(\"file\"+i+\"_receiver_same_fd_whole\",r.same_fd_readback.bytes===e.bytes&&r.same_fd_readback.sha256===e.sha256&&r.fsynced&&r.create_only);\n ck(\"file\"+i+\"_receiver_identity_permissions\",r.identity.length===9&&r.identity[2]===1000&&r.identity[3]===1000&&r.identity[5]===1&&r.identity[6]===e.bytes&&r.mode===e.target_mode&&r.mode===q.expected_mode&&(r.identity[4]&4095)===r.mode);\n }\n return {checks:checks.length,all_passed:true};\n}\n",
+  "runtime_calls": 0
+}

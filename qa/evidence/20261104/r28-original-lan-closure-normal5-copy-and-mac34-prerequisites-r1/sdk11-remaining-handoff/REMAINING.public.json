@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.fixed-sdk-original-continuation-plan.v2",
+  "runtime_authorized_now": false,
+  "current_line_paused": true,
+  "root_pause_handoff": "6e6e472415916dfde5a08063dcbaaecba1c4fdb0",
+  "original_request_packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "actual_partial_tree": "6fc7c9b76208bfdba84106373644eef97fb7cb3f",
+  "complete_sequences": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "sequence_11": {
+    "original_request": "3d69268de77fe52a32a9aa617b7ee91e6451d490",
+    "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "original_native_read_completed": true,
+    "owned_future_active": false,
+    "first_immutable_result_page": {
+      "offset": 0,
+      "next_offset": 16384,
+      "sdk": "87b76e99dd899cef4c806d44a1476cd41876c732",
+      "native": "2490e5048ddb6786b5c616f4fb4c0ff3f5e887ef"
+    },
+    "original_payload_total": 87804,
+    "original_payload_sha256": "baa65dd47007b282ee88b093f9e06cc5b7752c9add95b4ba10be53e436ad3bdb",
+    "remaining_pages": [
+      {
+        "request": {
+          "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+          "offset": 16384,
+          "limit": 16384
+        },
+        "already_attempted": true,
+        "prior_result": "MCP timeout for first two; otherwise not submitted",
+        "max_page_bytes": 16384,
+        "new_native_operation": false,
+        "reconciliation_or_collection": "Requires root resumption; keep original ID and offset"
+      },
+      {
+        "request": {
+          "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+          "offset": 32768,
+          "limit": 16384
+        },
+        "already_attempted": true,
+        "prior_result": "MCP timeout for first two; otherwise not submitted",
+        "max_page_bytes": 16384,
+        "new_native_operation": false,
+        "reconciliation_or_collection": "Requires root resumption; keep original ID and offset"
+      },
+      {
+        "request": {
+          "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+          "offset": 49152,
+          "limit": 16384
+        },
+        "already_attempted": false,
+        "prior_result": "MCP timeout for first two; otherwise not submitted",
+        "max_page_bytes": 16384,
+        "new_native_operation": false,
+        "reconciliation_or_collection": "Requires root resumption; keep original ID and offset"
+      },
+      {
+        "request": {
+          "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+          "offset": 65536,
+          "limit": 16384
+        },
+        "already_attempted": false,
+        "prior_result": "MCP timeout for first two; otherwise not submitted",
+        "max_page_bytes": 16384,
+        "new_native_operation": false,
+        "reconciliation_or_collection": "Requires root resumption; keep original ID and offset"
+      },
+      {
+        "request": {
+          "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+          "offset": 81920,
+          "limit": 16384
+        },
+        "already_attempted": false,
+        "prior_result": "MCP timeout for first two; otherwise not submitted",
+        "max_page_bytes": 5884,
+        "new_native_operation": false,
+        "reconciliation_or_collection": "Requires root resumption; keep original ID and offset"
+      }
+    ]
+  },
+  "never_submitted": [
+    {
+      "sequence": 12,
+      "blob": "6a358ed8b0c816a252ac857371415b113b8d705b",
+      "bytes": 414,
+      "sha256": "860cdf33eece03dda857068c4e7a1100bb38925e5e06b1a6c84b95949b0fb286",
+      "exact_request": {
+        "idempotency_key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o655360-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+            "expected_version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+            "offset": 655360,
+            "limit": 18108
+          }
+        }
+      }
+    },
+    {
+      "sequence": 13,
+      "blob": "601c0c0b77ee3bc2dc92b54af4c3491245fd098b",
+      "bytes": 405,
+      "sha256": "a61b6af6cdb8a2f3eb5cfaf61d7a8979da41f0b4b336e9d840157471a8f479df",
+      "exact_request": {
+        "idempotency_key": "heptabao-mac-harness-sdk-body-registry-a845875a-o000000-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+            "expected_version": "16777233:405238784:3135:1784843461892399454:1784843461892399454",
+            "offset": 0,
+            "limit": 3135
+          }
+        }
+      }
+    }
+  ],
+  "no_selected_owner_conclusion": true
+}

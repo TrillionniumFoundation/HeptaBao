@@ -1,0 +1,38 @@
+{
+  "actual_python": {
+    "bytes": 34640,
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "actual_source_blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540",
+  "actual_source_bytes": 62662,
+  "actual_source_sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82",
+  "all_function_definitions_byte_equal": true,
+  "inverse_whole_equal": true,
+  "new_host_calls": 0,
+  "new_metadata_request_submitted": false,
+  "new_regular_file_info_still_unobserved": true,
+  "new_source_sha256": "039034faff156ee8a617cac9d16ce21daeb4b0f093de8187a19c4fcaf7c3baca",
+  "prior_metadata_request_submitted": false,
+  "prior_source_sha256": "99504e0cb86801282b26fcc1cb2549dfaebd91574f3a92753ba9fa66d890aa74",
+  "schema": "heptabao.current-mac-full34-observed-python-binding.v1",
+  "selected_actual_field_path": "runtime.runtime.pythonExecutable",
+  "status": "source_only_passed",
+  "substitutions": [
+    {
+      "after": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "before": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "count": 2
+    },
+    {
+      "after": "'python': 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13', 'git': None, 'openssl': 'f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7'",
+      "before": "'python': None, 'git': None, 'openssl': 'f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7'",
+      "count": 1
+    },
+    {
+      "after": "'python': 34640, 'git': None, 'openssl': 1130832",
+      "before": "'python': None, 'git': None, 'openssl': 1130832",
+      "count": 1
+    }
+  ]
+}

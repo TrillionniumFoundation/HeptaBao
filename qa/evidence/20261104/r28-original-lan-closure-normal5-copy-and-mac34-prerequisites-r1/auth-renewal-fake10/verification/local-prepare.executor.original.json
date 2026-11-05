@@ -1,0 +1,7 @@
+{
+  "chunk_id": "5ec4ee",
+  "wall_time_seconds": 0.000029805,
+  "exit_code": 0,
+  "original_token_count": 42,
+  "output": "{\"directory\": \"/tmp/heptabao_renewal_fake_r2_grf3_e7n\", \"local_only\": true, \"network_used\": false, \"python\": \"3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]\"}\n"
+}

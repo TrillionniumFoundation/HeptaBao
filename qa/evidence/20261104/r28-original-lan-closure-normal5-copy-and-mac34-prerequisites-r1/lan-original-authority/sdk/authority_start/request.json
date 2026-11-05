@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-lan-original-inert-authority-r1-1a1ac1641eb",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ac1641eb-fc05-521f"
+    }
+  }
+}

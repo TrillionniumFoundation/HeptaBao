@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-lan-original-candidate-stdin-info-r1-1a1ac1641eb",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/stdin.bin"
+    }
+  }
+}

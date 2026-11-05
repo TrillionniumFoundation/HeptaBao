@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.renewal-pure-fake-test-only-successor.r2",
+  "scope": "Local pure fake only; no actual product renewal, SDK selection, fixture, provider, credential, or Runtime qualification.",
+  "canonicalCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonicalTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "priorSemanticsReview": "884cfa040cdcadf5968c34cd07d77b37eb3d11c2",
+  "before": {
+    "bytes": 7895,
+    "sha256": "bd3e8ad155b9d219b992c091f124a61a1fc82470008629584ca423055a630f28",
+    "blob": "62602cd0b487afc6e06da71e29c04739dc3bb42b"
+  },
+  "after": {
+    "bytes": 10039,
+    "sha256": "be4f7012b28e5bbaf64e18da0d732d496ecbe37e57a4614a5bdd2ca50d3bf52b",
+    "blob": "379619eb5702e7ebe08d898007a28c7daedbef72"
+  },
+  "diff": {
+    "bytes": 6352,
+    "sha256": "ceb2507041abbfaf8a3c4a7fb594ba6f7cbb1fe4470f2ac69f1127866c7ce1e9",
+    "blob": "83a456c992488242624a5b9af0976f0263761aa8",
+    "hunks": 5,
+    "strictForwardAndInverseExact": true
+  },
+  "candidateUnchanged": {
+    "bytes": 71496,
+    "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+    "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+  },
+  "previousCandidateUnchanged": {
+    "bytes": 68348,
+    "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+    "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+  },
+  "productChanged": false,
+  "guardChanged": false,
+  "emptyJsonChanged": false,
+  "callCountsChanged": false,
+  "budgetsChanged": false,
+  "sleepOrRetryAdded": false,
+  "oldUnknownChanged": false,
+  "actual": {
+    "localPython": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "singleFakeExecution": true,
+    "exitCode": 0,
+    "caseCount": 10,
+    "stdout": "79d98731a635e0ec5a88cc138bf59a282896f874",
+    "executor": "eb97bf9c64f01c35d4d890dbb2970129e4c28910",
+    "completeCandidateModuleOnlyAstParsedAndCompiled": true,
+    "completeCandidateImportedOrExecuted": false,
+    "selectedPureFunctions": 3,
+    "actualHost": 0,
+    "actualNetwork": 0,
+    "actualSqlite": 0,
+    "actualChild": 0,
+    "actualCredential": 0
+  },
+  "targetedChanges": [
+    "Consistent integer pre/renew/post timestamps derive all mock TTL values; same-second has180/180 and1180/1180.",
+    "One correct-renewed-token/wrong-accessor response must be rejected with no following call.",
+    "One live maximum saturation response has mock200, lease99, lookupTTL100→98, expiry1600→1600, delta0 and no extension."
+  ],
+  "unchangedOriginalScope": "The decreasing-expiry case remains a response-classification negative, not a prediction of an unchanged-role product renewal.",
+  "mockHttpStatusScope": "The fake client records and supplies the expected-status success shape; there was no HTTP server or actual200/403/204 observation.",
+  "mechanicalDefinitionsModified": [
+    "FakeClient",
+    "run_chain"
+  ],
+  "mechanicalDefinitionsUnchanged": [
+    "Refused",
+    "need",
+    "exact_data",
+    "lookup",
+    "FakeGuard",
+    "record"
+  ],
+  "localPreparationCorrection": "The local preparation command succeeded once; an orchestrator initially misinterpreted original_token_count as truncation. Its original exit0 and correction are retained; no command or fake execution was repeated.",
+  "sdkReadLine": {
+    "complete": 10,
+    "partialOriginalOperation": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "missingResultPagesUnchanged": true,
+    "requests12and13Unsubmitted": true
+  }
+}

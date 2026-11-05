@@ -1,0 +1,199 @@
+{
+  "schema": "heptabao.lan-original-inert-identity-recovered.r1",
+  "status": "EXACT_ORIGINAL_REQUEST_AND_STDIN_BOUND_TERMINAL_PENDING",
+  "host": "desktop",
+  "job_id": "1a1ac1641eb-fc05-521f",
+  "job_identity_bound": true,
+  "original_request": {
+    "blob": "70f27390d318755075562482091b3bf27946b37d",
+    "bytes": 484591,
+    "sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+    "typed_request_digest": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+    "digest_proof_blob": "2c75dc334d4b2fb8ffbc540748f771149ff8017e"
+  },
+  "actual_request": {
+    "path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/request.json",
+    "blob": "11760b8f9d94126912ef592ea41943617411f0e7",
+    "bytes": 8101,
+    "sha256": "2993475e130b2ec033443871b7f99dfd6abc65b5036f9751e7fb462d07b90a78",
+    "version": "2050:10231079:8101:1793888504931155055:1793888504931155055",
+    "request_digest": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+    "remote_request_fingerprint": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+    "launch_nonce": "3167ec8b77b9105a9d3188a79065a3a7",
+    "terminal_publication_protocol": 1
+  },
+  "actual_stdin_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/stdin.bin",
+    "sha256": "2fa460dc1a032ca1f1e453dd4845e80a8e937dcc47e6bc5477b2301fa267f610",
+    "size": 477056,
+    "version": "2050:10231078:477056:1793888504695366393:1793888504695366393"
+  },
+  "checks": [
+    {
+      "name": "body_future_closed",
+      "passed": true
+    },
+    {
+      "name": "file_info_future_closed",
+      "passed": true
+    },
+    {
+      "name": "fixed_path",
+      "passed": true
+    },
+    {
+      "name": "fixed_version",
+      "passed": true
+    },
+    {
+      "name": "whole8101",
+      "passed": true
+    },
+    {
+      "name": "whole_sha_matches_independent_info",
+      "passed": true
+    },
+    {
+      "name": "dict",
+      "passed": true
+    },
+    {
+      "name": "closed_reference_metadata_keys",
+      "passed": true
+    },
+    {
+      "name": "exact_target_digest",
+      "passed": true
+    },
+    {
+      "name": "remote_fingerprint_uses_full_digest",
+      "passed": true
+    },
+    {
+      "name": "exact_job_id",
+      "passed": true
+    },
+    {
+      "name": "exact_job_dir",
+      "passed": true
+    },
+    {
+      "name": "exact_stdin_path",
+      "passed": true
+    },
+    {
+      "name": "exact_executable",
+      "passed": true
+    },
+    {
+      "name": "exact_argc_and_all_arg_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_cwd",
+      "passed": true
+    },
+    {
+      "name": "exact_empty_env",
+      "passed": true
+    },
+    {
+      "name": "exact_original_timeout60",
+      "passed": true
+    },
+    {
+      "name": "documented_nice_default0",
+      "passed": true
+    },
+    {
+      "name": "original_cpu_quota_none",
+      "passed": true
+    },
+    {
+      "name": "original_memory_none",
+      "passed": true
+    },
+    {
+      "name": "no_inline_stdin_or_host_or_key",
+      "passed": true
+    },
+    {
+      "name": "linux_operator",
+      "passed": true
+    },
+    {
+      "name": "launch_nonce_shape",
+      "passed": true
+    },
+    {
+      "name": "terminal_protocol1",
+      "passed": true
+    },
+    {
+      "name": "derived_policy_flags_typed",
+      "passed": true
+    },
+    {
+      "name": "derived_unit_typed",
+      "passed": true
+    },
+    {
+      "name": "default_cwd_public_absolute",
+      "passed": true
+    },
+    {
+      "name": "exact_reference_whole",
+      "passed": true
+    },
+    {
+      "name": "request_metadata_exact29",
+      "passed": true
+    },
+    {
+      "name": "stdin_future_closed",
+      "passed": true
+    },
+    {
+      "name": "stdin_fixed_actual_path",
+      "passed": true
+    },
+    {
+      "name": "stdin_exact_size",
+      "passed": true
+    },
+    {
+      "name": "stdin_exact_sha",
+      "passed": true
+    },
+    {
+      "name": "stdin_regular_private_metadata",
+      "passed": true
+    },
+    {
+      "name": "stdin_version_shape",
+      "passed": true
+    }
+  ],
+  "original_delivery_timeout_preserved": {
+    "error_blob": "1ad99cfaaa0b26ad690b59654ef4783ef5771587",
+    "unknown_packet_tree": "90fb803c6c686008e6c13fca3208fa08e6347f7f",
+    "original_ack_observed": false,
+    "replayed": false
+  },
+  "limitations": [
+    "Original remote request.json has no host or idempotency_key fields; host is the explicit observed desktop endpoint. This does not invent an original ACK or claim key observation.",
+    "The matching stored request and stdin identify the original frozen public effect; process authority and output are separate pending observations.",
+    "The exact runtime source is a reference and is not asserted as the installed controller whole identity."
+  ]
+}

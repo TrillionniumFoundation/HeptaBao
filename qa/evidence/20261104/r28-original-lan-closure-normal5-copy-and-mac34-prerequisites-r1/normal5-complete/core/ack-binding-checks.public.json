@@ -1,0 +1,12 @@
+{
+  "host": true,
+  "key": true,
+  "args": true,
+  "executable": true,
+  "cwd": true,
+  "env": true,
+  "digest": true,
+  "fingerprint": true,
+  "known_ack": true,
+  "id": true
+}

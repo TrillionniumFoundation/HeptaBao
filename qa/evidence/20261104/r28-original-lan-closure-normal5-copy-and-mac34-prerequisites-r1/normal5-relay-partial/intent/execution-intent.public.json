@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.current-normal5-relay-exact-external-intent.r1",
+  "state": "INTENT_ONLY_ORIGINAL_SUBMISSION_NOT_YET_STARTED",
+  "request_blob": "337709a2869237259b8576b63623e7b74f138fb8",
+  "request_bytes": 383,
+  "request_sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-normal5-artifact-relay-r1-075193b0"
+  },
+  "original_source_go": "57b7f674265078565f7d215bf3519feed5fc4fdc",
+  "hold_release_go": "91fd8f3b6289c176e9ec1f0a5156e3bc61ca5dd9",
+  "actual_inert_root_review": "8dae54de9916da7322c1f9fa544b3223de781120",
+  "execution_binding_tree": "8526311cc368f5e8332feb6fbdc1ddd54c1b08af",
+  "lan_original_identity_terminal_recovered_core": "e531af591121f5ea15ed92a81ea1a582f4ebd6c5",
+  "lan_receipt_closed_tree": "e99062f02573e0300c1a8c64495411e86eb15667",
+  "lan_first_source_info_closed_operation": "72486fc80c6373a944d561265184c01a2ccd806e554baf4e02f75b09c9cd54f9",
+  "lan_unsubmitted_source_observations_paused": true,
+  "artifacts": 5,
+  "total_public_bytes": 110287359,
+  "budgets_seconds": {
+    "outer": 360,
+    "relay": 300,
+    "endpoints": 90,
+    "connect": 10,
+    "cleanup_TERM": 5,
+    "cleanup_KILL": 5
+  },
+  "no_product_or_consumer_binding": true,
+  "once_only": true,
+  "unknown_no_new_key_or_replay": true,
+  "prior_process_start_calls_for_this_request": 0
+}

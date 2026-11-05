@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.original-operation-status-read-intent.v1",
+  "role": "server",
+  "operation_id": "fd94be0391e3e4d203ce05455e45b66d9714107d8725f39c284cf0da0f76a93e",
+  "no_new_native_dispatch": true
+}

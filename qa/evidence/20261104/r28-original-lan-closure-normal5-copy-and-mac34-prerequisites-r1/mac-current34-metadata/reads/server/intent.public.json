@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.current-mac-full34-prereq-metadata-read-intent.v1",
+  "role": "server",
+  "original_request": {
+    "blob": "374f558048d50e69f77d67ce8ce8c141f5d71804",
+    "bytes": 339,
+    "sha256": "5a4ba77dfdc4add97abcc9d22759b2e74eee01b6371e692fa1ebc0a0263d7a95"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-server-20261105-r1",
+    "operation": {
+      "arguments": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server"
+      },
+      "tool": "file_info"
+    }
+  },
+  "root_review_blob": "69c6625843b887e51029846d8ac44249d19b0fa8",
+  "root_readline_handoff_blob": "6e6e472415916dfde5a08063dcbaaecba1c4fdb0",
+  "runtime_submission_in_this_intent_call": false,
+  "read_only_whole_hash_io": true,
+  "no_process_start": true,
+  "only_one_native_future": true
+}

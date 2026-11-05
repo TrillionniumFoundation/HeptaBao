@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.sdk-original-status-reconciliation-decision.v1",
+  "sequence": 10,
+  "operation_id": "e2ce91fdf5140badf6c17f30a4e9921f02bf79ac85c5dc03e543457a0952e3b4",
+  "root_go": "2e3c3c8c3791c0ed9e7f38020b003e2148f52d84",
+  "original_error": "bb0212da2c4ee53cbfef34174404ee3c6f203475",
+  "reconciliation_intent": "eec55a04b5d86525322242a9d56a338771de5e6b",
+  "original_status_sdk": "56950cc2398cc82ee0367a0d407d8e6170e585c5",
+  "original_status_native": "aa587338ffbc4990b53491069b78a685f9b65f58",
+  "completed": true,
+  "stored_observed": true,
+  "owned_future_active": false,
+  "only_resume_original_immutable_payload": true,
+  "original_error_preserved": true,
+  "new_operation_started": false
+}

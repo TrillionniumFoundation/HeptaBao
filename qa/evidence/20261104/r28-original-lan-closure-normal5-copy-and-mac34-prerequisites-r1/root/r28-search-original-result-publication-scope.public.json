@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.original-digest-search-publication-scope.r1",
+  "original_sdk": {
+    "name": "r28-original-digest-search-result.sdk.json",
+    "blob": "73e5b65bc89b4f0c60af557a7f67801cdee35003",
+    "bytes": 2244,
+    "sha256": "fdc055d3f26f08e65dba64d509bb89726369ea4d63fa12ce217ecae5b249a38b"
+  },
+  "original_native": {
+    "name": "r28-original-digest-search-result.native.json",
+    "blob": "7dfdde595b18ebdee2e590f5b6bc3a2727765e9f",
+    "bytes": 1964,
+    "sha256": "103933602c200283cb90dd79bf4689781db963cc0b0aff848b7a3891dc6cf648"
+  },
+  "public_preview_binding_root_review": "297b09a7c779c30cac2fe8abadda78ae538db7c7",
+  "exact_match": "One returned 512-byte preview equals the verified original public request.json prefix. No unrelated request body is included in this result.",
+  "native_internal_read_scope": "Search scanned 103 selected candidate metadata files and returned only one matching preview; it did not only read that one file.",
+  "no_global_inventory_absence_assertion": true
+}

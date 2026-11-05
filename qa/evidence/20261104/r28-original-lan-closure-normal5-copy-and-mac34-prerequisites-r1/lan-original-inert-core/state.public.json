@@ -1,0 +1,254 @@
+{
+  "schema": "heptabao.lan-original-inert-recovered-core.r1",
+  "status": "ORIGINAL_INERT_EXIT0_FULL_STREAMS_EXACT_SOURCE_PINS",
+  "host": "desktop",
+  "job_id": "1a1ac1641eb-fc05-521f",
+  "authority_exit_code": 0,
+  "original_delivery_error_preserved": true,
+  "replayed_process_start": false,
+  "identity_packet_tree": "c99fe571b39012301c8c2273b02414b9be5ff0d7",
+  "authority_packet_tree": "a5795dd12ccfcc81c141dede62bc79d873cb3473",
+  "stdout_bytes": 5991,
+  "stdout_sha256": "807dd4b4c1e6829b5776b83af7aae7733f27cfa5fe693cd4266852e8e448a00c",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "self_reported_wall_interval_ns": "1051212823",
+  "checks": [
+    {
+      "name": "original_job_bound",
+      "passed": true
+    },
+    {
+      "name": "authority_matches_original_request",
+      "passed": true
+    },
+    {
+      "name": "stream_observer_closed",
+      "passed": true
+    },
+    {
+      "name": "full_stdout_stderr_bytes_hex_and_text",
+      "passed": true
+    },
+    {
+      "name": "status_prepared",
+      "passed": true
+    },
+    {
+      "name": "schema_exact",
+      "passed": true
+    },
+    {
+      "name": "no_source_git_cargo_service",
+      "passed": true
+    },
+    {
+      "name": "stdin_exact_original",
+      "passed": true
+    },
+    {
+      "name": "files9",
+      "passed": true
+    },
+    {
+      "name": "syntax9",
+      "passed": true
+    },
+    {
+      "name": "file0_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file0_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file0_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file0_identity9",
+      "passed": true
+    },
+    {
+      "name": "file0_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file1_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file1_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file1_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file1_identity9",
+      "passed": true
+    },
+    {
+      "name": "file1_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file2_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file2_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file2_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file2_identity9",
+      "passed": true
+    },
+    {
+      "name": "file2_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file3_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file3_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file3_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file3_identity9",
+      "passed": true
+    },
+    {
+      "name": "file3_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file4_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file4_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file4_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file4_identity9",
+      "passed": true
+    },
+    {
+      "name": "file4_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file5_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file5_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file5_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file5_identity9",
+      "passed": true
+    },
+    {
+      "name": "file5_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file6_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file6_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file6_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file6_identity9",
+      "passed": true
+    },
+    {
+      "name": "file6_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file7_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file7_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file7_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file7_identity9",
+      "passed": true
+    },
+    {
+      "name": "file7_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "file8_fixedpath",
+      "passed": true
+    },
+    {
+      "name": "file8_wholepin",
+      "passed": true
+    },
+    {
+      "name": "file8_created_mode",
+      "passed": true
+    },
+    {
+      "name": "file8_identity9",
+      "passed": true
+    },
+    {
+      "name": "file8_syntax_only",
+      "passed": true
+    },
+    {
+      "name": "positive_self_report_wall_interval",
+      "passed": true
+    }
+  ],
+  "source_created": 9,
+  "syntax_only": 9,
+  "receipt_independent_readback_complete": false,
+  "source_independent_readbacks_complete": false,
+  "prepare_authorized": false,
+  "live_authorized": false,
+  "normal5_relay_hold": true,
+  "notes": [
+    "Carrier emits no aggregate per-FD ledger; none is invented. Authority exit0 and reviewed source/final publication establish only this inert stage boundary.",
+    "The original process_start MCP timeout and missing original ACK remain historical facts. This packet adds later exact identity and terminal observations.",
+    "Readback of receipt and nine source files remains pending; no imported canonical source or product qualification is inferred."
+  ]
+}

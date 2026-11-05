@@ -1,0 +1,24 @@
+{
+  "attempts": [
+    {
+      "correct_actual_directory": "acceptance_tree",
+      "exit_code": 1,
+      "expected_directory_wrong": "single_tree",
+      "failure": "member_owned_process.py",
+      "receipt_components_started": false
+    },
+    {
+      "correct_actual_filename": "openbao271_kv2_native_large_migrate.py",
+      "exit_code": 1,
+      "expected_spelling_wrong": "openbao_kv2_native_large_migrate.py",
+      "failure": "member_openbao_kv2_native_large_migrate.py",
+      "receipt_components_started": false
+    }
+  ],
+  "candidate_changed": false,
+  "correction_scope": "verifier mapping only, from actual canonical Git tree entries",
+  "final_verifier_sha256": "18faf417e270a7ff1d63e7833fb15e9342a5ac9f4b870b2e349584de4b968cc6",
+  "initial_verifier_sha256": "f98408a1524088515c8c913cc26f766052c12676da8b3dcd87cacb0d287869c9",
+  "runtime_calls": 0,
+  "schema": "heptabao.offline-verifier-membership-correction.v1"
+}

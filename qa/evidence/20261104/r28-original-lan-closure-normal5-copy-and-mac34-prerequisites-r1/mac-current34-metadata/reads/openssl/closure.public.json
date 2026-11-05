@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.current-mac-full34-fixed-file-info-closure.v1",
+  "role": "openssl",
+  "request_blob": "f2bce81ba7d864127553e934788c74d066dd9ae8",
+  "operation_id": "7d595b8c59ed7292b8e310e92b4a1dc33404c4ba4c0a9970fe5f79e487df3256",
+  "completed": true,
+  "result_state": "stored_observed",
+  "owned_future_active": false,
+  "immutable_payload_bytes": 534,
+  "immutable_payload_sha256": "dd100a0730cad3055ab6de173b22a70a8bc842226ae9c66c31fa82cc7dac48d0",
+  "payload_eof": true,
+  "file_info_blob": "3194d65f17b64cf44b0eac8e5a4cccc5edac6601",
+  "path": "/usr/bin/openssl",
+  "bytes": 1130832,
+  "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+  "version": "16777233:1152921500312572476:1130832:1786589515000000000:1786589515000000000",
+  "mode_permissions": 493,
+  "link_count": 1,
+  "full9_projection_pending_python_lossless": true,
+  "new_process_started": false
+}

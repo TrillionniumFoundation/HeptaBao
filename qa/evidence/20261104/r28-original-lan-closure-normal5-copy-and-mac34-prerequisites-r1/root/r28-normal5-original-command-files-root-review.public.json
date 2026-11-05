@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.normal5-original-command-files-root-review.r1",
+  "status": "ORIGINAL_THREE_COMMAND_RECORDS_AND_FIVE_SAVED_STREAMS_COMPLETE",
+  "packet": "e049198ac8e32db82bedbd1ebc1a1f88eec3c71d",
+  "previous_core_destination_review": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+  "checks_passed": 67,
+  "checks": [
+    "original_command_archive_ack_isError_false",
+    "original_command_archive_ack_one_native_text",
+    "original_command_archive_status_isError_false",
+    "original_command_archive_status_one_native_text",
+    "original_command_archive_typed_start",
+    "original_command_archive_closed_original_operation",
+    "original_command_archive_page0_isError_false",
+    "original_command_archive_page0_one_native_text",
+    "original_command_archive_page_identity_0",
+    "original_command_archive_immutable_original_payload_0",
+    "original_command_archive_page_bounds_0",
+    "original_command_archive_page8192_isError_false",
+    "original_command_archive_page8192_one_native_text",
+    "original_command_archive_page_identity_8192",
+    "original_command_archive_immutable_original_payload_8192",
+    "original_command_archive_page_bounds_8192",
+    "original_command_archive_page16384_isError_false",
+    "original_command_archive_page16384_one_native_text",
+    "original_command_archive_page_identity_16384",
+    "original_command_archive_immutable_original_payload_16384",
+    "original_command_archive_page_bounds_16384",
+    "original_command_archive_page24576_isError_false",
+    "original_command_archive_page24576_one_native_text",
+    "original_command_archive_page_identity_24576",
+    "original_command_archive_immutable_original_payload_24576",
+    "original_command_archive_page_bounds_24576",
+    "original_command_archive_complete_byte_exact_payload",
+    "original_command_archive_original_isError_false",
+    "original_command_archive_original_one_native_text",
+    "original_command_archive_native_equal",
+    "exact_fixed_request",
+    "ten_exact_paths",
+    "whole_original_file_intent.public.json",
+    "whole_original_file_ssh-preflight.public.json",
+    "whole_original_file_rog-ts-effective-config.public.json",
+    "whole_original_file_send-rog.public.json",
+    "whole_original_file_receive-desktop.public.json",
+    "whole_original_file_rog-ts-effective-config.stdout",
+    "whole_original_file_rog-ts-effective-config.stderr",
+    "whole_original_file_send-rog.stderr",
+    "whole_original_file_receive-desktop.stderr",
+    "whole_original_file_receive-desktop.stdout",
+    "exact_saved_total",
+    "three_actual_command_records",
+    "original_record_equals_core_rog-ts-effective-config",
+    "original_record_equals_core_send-rog",
+    "original_record_equals_core_receive-desktop",
+    "sender_raw_stderr_equals_core",
+    "receiver_raw_stderr_equals_core",
+    "preflight_equals_core",
+    "config_stdout_whole_sha",
+    "two_exact_empty_saved_streams",
+    "no_fabricated_sender_stdout",
+    "intent_to_terminal_controller",
+    "intent_to_terminal_helpers",
+    "intent_to_terminal_files",
+    "intent_to_terminal_source_commit",
+    "intent_to_terminal_source_tree",
+    "intent_to_terminal_destination_root",
+    "intent_to_terminal_source_alias",
+    "intent_to_terminal_destination_host",
+    "intent_to_terminal_overall_seconds",
+    "intent_to_terminal_endpoint_seconds",
+    "intent_to_terminal_ssh_child_seconds",
+    "intent_to_terminal_trust_before",
+    "intent_existing_controller",
+    "intent_create_only"
+  ],
+  "observations": [
+    {
+      "label": "original_command_archive",
+      "operation_id": "66240a8a692918188a724209638def59906eaa80fd12673bf3a2dbbdc01a8c40",
+      "tool": "read_multiple_files",
+      "original_payload_bytes": 25020,
+      "original_payload_sha256": "f86a2ad2c6de78b04939c87591f76efe2daedc4c832b8afec512a083c31994eb",
+      "closed": true
+    }
+  ],
+  "files": [
+    {
+      "name": "intent.public.json",
+      "bytes": 5143,
+      "sha256": "2059b739720aace2cf6b954d9282c380b67bec15303736a2ca3b3cf60402cb8e",
+      "version": "2050:7361010:5143:1793892017781857684:1793892017781857684"
+    },
+    {
+      "name": "ssh-preflight.public.json",
+      "bytes": 990,
+      "sha256": "5d6a3e0bc62db7f528641b0cb0c56c116441e27bdaa953851cb8f4e3715fbd3a",
+      "version": "2050:7361433:990:1793892017873133506:1793892017873133506"
+    },
+    {
+      "name": "rog-ts-effective-config.public.json",
+      "bytes": 214,
+      "sha256": "582c56dc4be5e2caee2a8b9c91344ed33a14b759e71b91919161989b3f7fbdec",
+      "version": "2050:7361336:214:1793892017859567523:1793892017859567523"
+    },
+    {
+      "name": "send-rog.public.json",
+      "bytes": 198,
+      "sha256": "f03107bee62ae1fe97bb3a1072ff02068420b58e670054e4e176f766dae5b9c3",
+      "version": "2050:7361502:198:1793892021202951958:1793892021202951958"
+    },
+    {
+      "name": "receive-desktop.public.json",
+      "bytes": 205,
+      "sha256": "3567cad29fae6603ef7b560b0bcd883a0de4438f97b3691779bef7d1e66a931e",
+      "version": "2050:7361510:205:1793892021263836067:1793892021263836067"
+    },
+    {
+      "name": "rog-ts-effective-config.stdout",
+      "bytes": 4313,
+      "sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+      "version": "2050:7361030:4313:1793892017811568308:1793892017811568308"
+    },
+    {
+      "name": "rog-ts-effective-config.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:7361024:0:1793892017799568504:1793892017799568504"
+    },
+    {
+      "name": "send-rog.stderr",
+      "bytes": 3936,
+      "sha256": "cb122cd468aa167dd48607a2be8e89da0d43cf2812a1bf35797faf7446669342",
+      "version": "2050:7361457:3936:1793892019496540722:1793892019496540722"
+    },
+    {
+      "name": "receive-desktop.stderr",
+      "bytes": 3392,
+      "sha256": "475617150d4799dadfd1fc8749b0ac59a4e7fa1324205593ec7574075766f80b",
+      "version": "2050:7361447:3392:1793892021166513319:1793892021166513319"
+    },
+    {
+      "name": "receive-desktop.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "2050:7361452:0:1793892017886567082:1793892017886567082"
+    }
+  ],
+  "original_file_bytes": 18391,
+  "original_command_records": 3,
+  "original_saved_streams": 5,
+  "other_files": 2,
+  "sender_stdout": "Original binary pipe, no separately saved file or invented file.",
+  "initial_intent_status": "The pre-execution intent retains its initialized status failed; actual later authority and terminal core prove success.",
+  "atomic_snapshot_claimed": false,
+  "original_command_archive_pending": false,
+  "aggregate_fd_ledger_present": false,
+  "copy_verified": true,
+  "consumer_runtime_started": false,
+  "LAN_prepare_or_live_go": false,
+  "full_replacement_qualified": false
+}

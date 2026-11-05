@@ -1,0 +1,117 @@
+[
+  {
+    "index": 0,
+    "name": "heptabao-server",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+    "expected_bytes": 110219600,
+    "expected_sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+    "expected_mode": 320,
+    "expected_uid": 1000,
+    "expected_gid": 1000,
+    "expected_nlink": 1,
+    "actual_info": null,
+    "info_request": {
+      "idempotency_key": "ha-4e808-normal5-destination0-info-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 1,
+    "name": "native-build.public.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+    "expected_bytes": 786,
+    "expected_sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+    "expected_mode": 256,
+    "expected_uid": 1000,
+    "expected_gid": 1000,
+    "expected_nlink": 1,
+    "actual_info": null,
+    "info_request": {
+      "idempotency_key": "ha-4e808-normal5-destination1-info-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 2,
+    "name": "normal-release-result.public.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+    "expected_bytes": 3192,
+    "expected_sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+    "expected_mode": 256,
+    "expected_uid": 1000,
+    "expected_gid": 1000,
+    "expected_nlink": 1,
+    "actual_info": null,
+    "info_request": {
+      "idempotency_key": "ha-4e808-normal5-destination2-info-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 3,
+    "name": "normal-release-tests-result.public.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+    "expected_bytes": 57532,
+    "expected_sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+    "expected_mode": 256,
+    "expected_uid": 1000,
+    "expected_gid": 1000,
+    "expected_nlink": 1,
+    "actual_info": null,
+    "info_request": {
+      "idempotency_key": "ha-4e808-normal5-destination3-info-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json"
+        }
+      }
+    },
+    "submitted": false
+  },
+  {
+    "index": 4,
+    "name": "groups.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+    "expected_bytes": 6249,
+    "expected_sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "expected_mode": 256,
+    "expected_uid": 1000,
+    "expected_gid": 1000,
+    "expected_nlink": 1,
+    "actual_info": null,
+    "info_request": {
+      "idempotency_key": "ha-4e808-normal5-destination4-info-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json"
+        }
+      }
+    },
+    "submitted": false
+  }
+]

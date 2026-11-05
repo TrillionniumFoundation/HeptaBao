@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-normal5-relay-streams-r1-1a1ac4bdf19",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ac4bdf19-fc05-5366",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

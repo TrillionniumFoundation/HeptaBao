@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.sdk-original-operation-single-status-reconciliation-intent.v1",
+  "created_utc": "2026-11-05 15:25:05 UTC",
+  "sequence": 10,
+  "root_go": "2e3c3c8c3791c0ed9e7f38020b003e2148f52d84",
+  "original_request": "b2c92e92721193ea322807adf98db5c1d89cb089",
+  "original_ack": "879b50458eeca951473b7db4a1f673789df14827",
+  "original_error_sdk": "0cede4881f37869cfd279b69b738c87eb62b4889",
+  "original_error_native": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487",
+  "original_error_record": "bb0212da2c4ee53cbfef34174404ee3c6f203475",
+  "exact_request": {
+    "operation_id": "e2ce91fdf5140badf6c17f30a4e9921f02bf79ac85c5dc03e543457a0952e3b4"
+  },
+  "attempt": 1,
+  "new_operation_start": false,
+  "subsequent_native_admissions": false,
+  "on_second_unresolved": "stop_line_and_report"
+}

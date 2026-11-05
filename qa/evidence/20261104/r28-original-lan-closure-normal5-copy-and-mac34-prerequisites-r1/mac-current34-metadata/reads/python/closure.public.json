@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.current-mac-full34-fixed-file-info-closure.v1",
+  "role": "python",
+  "request_blob": "7357e682b1f079f6fad8fc235fe4cf387c8238e6",
+  "operation_id": "7be5d7c7da95c471e95d0202cadbf7498a6dc3f637ae067a6b62d61892c21800",
+  "completed": true,
+  "result_state": "stored_observed",
+  "owned_future_active": false,
+  "immutable_payload_bytes": 605,
+  "immutable_payload_sha256": "3f16108d4c65f300da0b954c9265dc09c1c8ced5df33850c9736cb75e6dba2ee",
+  "payload_eof": true,
+  "file_info_blob": "aa9a0a5b4a421c6e55dd4a303e52b0ca59bb056c",
+  "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "bytes": 34640,
+  "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+  "version": "16777233:587518380:34640:1793798038915516382:1793798038915695047",
+  "mode_permissions": 493,
+  "link_count": 1,
+  "full9_projection_pending_python_lossless": true,
+  "new_process_started": false
+}

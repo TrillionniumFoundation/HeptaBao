@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.current-mac-full34-fixed-file-info-closure.v1",
+  "role": "oracle_binary",
+  "request_blob": "de9a867d9a0b81cc3bab43ebe6d7f013fa1985fd",
+  "operation_id": "3ccaeb502f43b14b2bd2d1014595d1815bdb0319b3a2669b47a80d2a7b42b1bf",
+  "completed": true,
+  "result_state": "stored_observed",
+  "owned_future_active": false,
+  "immutable_payload_bytes": 595,
+  "immutable_payload_sha256": "a6ad1aab4777e04e785afe5a926a8e7606dc40935a0511e75200f7c3c7104a59",
+  "payload_eof": true,
+  "file_info_blob": "64acf3c18fac00756d3f7c6284ee0370c3716eb7",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao",
+  "bytes": 177888914,
+  "sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+  "version": "16777244:65550548:177888914:1790862000000000000:1792120619730365564",
+  "mode_permissions": 448,
+  "link_count": 1,
+  "full9_projection_pending_python_lossless": true,
+  "new_process_started": false
+}

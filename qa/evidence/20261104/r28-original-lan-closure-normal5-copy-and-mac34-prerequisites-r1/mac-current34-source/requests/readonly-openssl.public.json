@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-openssl-20261105-r1",
+  "operation": {
+    "arguments": {
+      "host": "mac",
+      "path": "/usr/bin/openssl"
+    },
+    "tool": "file_info"
+  }
+}

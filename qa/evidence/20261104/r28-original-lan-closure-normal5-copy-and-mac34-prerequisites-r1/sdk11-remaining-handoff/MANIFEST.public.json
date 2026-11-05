@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "path": "REMAINING.public.json",
+      "bytes": 4927,
+      "sha256": "31ea75d2f277d5d08e6bd62ca746bae2a7fffed31bfbf7ce49fd52faf0ea8e3a",
+      "blob": "20646d685ea26e1494077c253b115427e7ff0998"
+    },
+    {
+      "path": "PREFIX-PROVENANCE.public.json",
+      "bytes": 3220,
+      "sha256": "a817454c2a6c9eb0b418c16be02ef146c1b872c5702149ad4d91807ac1125eb8",
+      "blob": "8a57b1f3f4aafc9d49af3956dd3a4b0f3332bf87"
+    },
+    {
+      "path": "READING-GUIDE.md",
+      "bytes": 2260,
+      "sha256": "474e401706b1f64760aef64a46b74528fbc493f4e278596a57af62647334fb11",
+      "blob": "49c30e63f0c51c9703c86cc292fda24f08b3ae34"
+    }
+  ],
+  "runtime_calls": 0
+}

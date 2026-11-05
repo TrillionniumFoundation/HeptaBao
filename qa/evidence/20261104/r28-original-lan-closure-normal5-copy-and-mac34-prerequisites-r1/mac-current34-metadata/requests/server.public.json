@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-server-20261105-r1",
+  "operation": {
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server"
+    },
+    "tool": "file_info"
+  }
+}

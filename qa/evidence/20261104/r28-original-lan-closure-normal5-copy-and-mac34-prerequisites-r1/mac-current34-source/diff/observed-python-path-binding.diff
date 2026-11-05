@@ -1,0 +1,17 @@
+--- initial-invocation-path-draft.py
++++ run_current_mac_full34_r1.py
+@@ -11,10 +11,10 @@
+ INPUT_METADATA={'oracle_binary': None, 'oracle_archive': None, 'server': None, 'python': None, 'git': None, 'openssl': None}
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1');REPO=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source');OUT=ROOT/'actual-r1'
+ PRODUCT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1')
+-PYTHON='/opt/homebrew/opt/python@3.14/bin/python3.14'
+-INPUT_PATHS={'oracle_binary': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao', 'oracle_archive': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz', 'server': '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server', 'python': '/opt/homebrew/opt/python@3.14/bin/python3.14', 'git': '/usr/bin/git', 'openssl': '/usr/bin/openssl'}
+-EXPECTED_SHA={'oracle_binary': '50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c', 'oracle_archive': '15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91', 'server': 'c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63', 'python': None, 'git': None, 'openssl': 'f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7'}
+-EXPECTED_BYTES={'oracle_binary': None, 'oracle_archive': None, 'server': 92398928, 'python': None, 'git': None, 'openssl': 1130832}
++PYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'
++INPUT_PATHS={'oracle_binary': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao', 'oracle_archive': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz', 'server': '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server', 'python': '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14', 'git': '/usr/bin/git', 'openssl': '/usr/bin/openssl'}
++EXPECTED_SHA={'oracle_binary': '50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c', 'oracle_archive': '15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91', 'server': 'c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63', 'python': 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13', 'git': None, 'openssl': 'f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7'}
++EXPECTED_BYTES={'oracle_binary': None, 'oracle_archive': None, 'server': 92398928, 'python': 34640, 'git': None, 'openssl': 1130832}
+ NEW_PREPARE_SECONDS=60
+ ORIGINAL_RUNTIME_OUTER_SECONDS=1800
+ _PREPARE_UNTIL=None

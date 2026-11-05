@@ -1,0 +1,206 @@
+[
+  {
+    "name": "original_operation_completed_stored_inactive",
+    "passed": true
+  },
+  {
+    "name": "whole_core_matches_independent_info",
+    "passed": true
+  },
+  {
+    "name": "body_version_equals_independent_info",
+    "passed": true
+  },
+  {
+    "name": "original_authority_zero_full_durable",
+    "passed": true
+  },
+  {
+    "name": "core_schema_identity",
+    "passed": true
+  },
+  {
+    "name": "transfer_known_complete",
+    "passed": true
+  },
+  {
+    "name": "no_product_or_runtime_qualification",
+    "passed": true
+  },
+  {
+    "name": "unchanged_original_caps",
+    "passed": true
+  },
+  {
+    "name": "three_unique_original_commands",
+    "passed": true
+  },
+  {
+    "name": "command_rog-ts-effective-config",
+    "passed": true
+  },
+  {
+    "name": "command_send-rog",
+    "passed": true
+  },
+  {
+    "name": "command_receive-desktop",
+    "passed": true
+  },
+  {
+    "name": "all_started_children_closed_once",
+    "passed": true
+  },
+  {
+    "name": "trust_and_original_controller_unchanged",
+    "passed": true
+  },
+  {
+    "name": "controller_source_pin",
+    "passed": true
+  },
+  {
+    "name": "helper_receiver.py",
+    "passed": true
+  },
+  {
+    "name": "helper_sender.py",
+    "passed": true
+  },
+  {
+    "name": "strict_ssh_public_projection",
+    "passed": true
+  },
+  {
+    "name": "sender_schema_and_identity",
+    "passed": true
+  },
+  {
+    "name": "sender_complete_and_caps",
+    "passed": true
+  },
+  {
+    "name": "sender_exact_file_count",
+    "passed": true
+  },
+  {
+    "name": "receiver_schema_and_identity",
+    "passed": true
+  },
+  {
+    "name": "receiver_complete_and_caps",
+    "passed": true
+  },
+  {
+    "name": "receiver_exact_file_count",
+    "passed": true
+  },
+  {
+    "name": "receiver_create_only_fsync_preserves_raw_receipts",
+    "passed": true
+  },
+  {
+    "name": "five_literal_files_exact_total",
+    "passed": true
+  },
+  {
+    "name": "file0_fixed_order_paths_sizes_hashes",
+    "passed": true
+  },
+  {
+    "name": "file0_source_whole_and_stream",
+    "passed": true
+  },
+  {
+    "name": "file0_source_full9_and_version",
+    "passed": true
+  },
+  {
+    "name": "file0_receiver_same_fd_whole",
+    "passed": true
+  },
+  {
+    "name": "file0_receiver_identity_permissions",
+    "passed": true
+  },
+  {
+    "name": "file1_fixed_order_paths_sizes_hashes",
+    "passed": true
+  },
+  {
+    "name": "file1_source_whole_and_stream",
+    "passed": true
+  },
+  {
+    "name": "file1_source_full9_and_version",
+    "passed": true
+  },
+  {
+    "name": "file1_receiver_same_fd_whole",
+    "passed": true
+  },
+  {
+    "name": "file1_receiver_identity_permissions",
+    "passed": true
+  },
+  {
+    "name": "file2_fixed_order_paths_sizes_hashes",
+    "passed": true
+  },
+  {
+    "name": "file2_source_whole_and_stream",
+    "passed": true
+  },
+  {
+    "name": "file2_source_full9_and_version",
+    "passed": true
+  },
+  {
+    "name": "file2_receiver_same_fd_whole",
+    "passed": true
+  },
+  {
+    "name": "file2_receiver_identity_permissions",
+    "passed": true
+  },
+  {
+    "name": "file3_fixed_order_paths_sizes_hashes",
+    "passed": true
+  },
+  {
+    "name": "file3_source_whole_and_stream",
+    "passed": true
+  },
+  {
+    "name": "file3_source_full9_and_version",
+    "passed": true
+  },
+  {
+    "name": "file3_receiver_same_fd_whole",
+    "passed": true
+  },
+  {
+    "name": "file3_receiver_identity_permissions",
+    "passed": true
+  },
+  {
+    "name": "file4_fixed_order_paths_sizes_hashes",
+    "passed": true
+  },
+  {
+    "name": "file4_source_whole_and_stream",
+    "passed": true
+  },
+  {
+    "name": "file4_source_full9_and_version",
+    "passed": true
+  },
+  {
+    "name": "file4_receiver_same_fd_whole",
+    "passed": true
+  },
+  {
+    "name": "file4_receiver_identity_permissions",
+    "passed": true
+  }
+]

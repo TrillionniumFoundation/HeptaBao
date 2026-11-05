@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.source-review-evidence-packet.v1",
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 7940,
+      "sha256": "d4a4fea2ed597b840c92cb6f0371d4c6b03b1b86e859f1483631b39ec7b9e81d",
+      "blob": "884cfa040cdcadf5968c34cd07d77b37eb3d11c2"
+    },
+    {
+      "path": "FINDINGS.public.json",
+      "bytes": 9104,
+      "sha256": "5e1156603b352d938a0bbb783889777c370e75b33934aefbdb6d3fce8ac8b8f3",
+      "blob": "4156958d63dc5a3139889754f3740199888f9da2"
+    },
+    {
+      "path": "reference/candidate-renewal.py",
+      "bytes": 71496,
+      "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+      "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+    },
+    {
+      "path": "reference/selected-checks.py",
+      "bytes": 7895,
+      "sha256": "bd3e8ad155b9d219b992c091f124a61a1fc82470008629584ca423055a630f28",
+      "blob": "62602cd0b487afc6e06da71e29c04739dc3bb42b"
+    },
+    {
+      "path": "reference/CONTRACT.public.json",
+      "bytes": 8577,
+      "sha256": "48bdd7bb279edcd6d12b165de40f15afe2a91f0a5dea65d765e578ca83640954",
+      "blob": "c1446c8e00703e55f255a6c0e70755c96db82c54"
+    },
+    {
+      "path": "reference/product/auth.rs",
+      "bytes": 395371,
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2"
+    },
+    {
+      "path": "reference/product/service_native_auth.rs",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738"
+    },
+    {
+      "path": "reference/product/auth_approle_renewal.rs",
+      "bytes": 7819,
+      "sha256": "d06e6d7edbb66acdaf37c52ca6080c205e9292a4677899e067eea27b8ffa8bf8",
+      "blob": "6ebf2075dd10652c782e24cba894d066b5aada27"
+    },
+    {
+      "path": "reference/product/auth_native_token.rs",
+      "bytes": 4382,
+      "sha256": "c676a4c710279451933defd7e50a06526d2441052d208ceda1e9db1033d76b56",
+      "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8"
+    },
+    {
+      "path": "reference/product/auth_token_precision.rs",
+      "bytes": 22522,
+      "sha256": "d027fd3bc29e53b688aaa778842e252190a4538add0ce33fab7532af128d5d56",
+      "blob": "bcd36fe645269dacce42fe8f162f838f40b74bb6"
+    },
+    {
+      "path": "reference/product/auth_approle_renewal_tests.rs",
+      "bytes": 10210,
+      "sha256": "e7ea3b22236a99cc3e8c86b1b5896af3d5c559a5e39459aeb400626ddb95c82d",
+      "blob": "ab5ddf0e8fef1e521666f7f76789bfac758719e9"
+    },
+    {
+      "path": "provenance/canonical-commit.original.json",
+      "bytes": 2041,
+      "sha256": "1eacc5bcd400fd5d3b818843eb7b8fb21c1600cb9f331853d6602cc60841d0bc",
+      "blob": "e115d2d3bc4b6e71e256a70516bd7c41553e2a6f"
+    },
+    {
+      "path": "provenance/canonical-tree.original.json",
+      "bytes": 1203601,
+      "sha256": "57635e54624430eca4647e4c3c14af905fd0181d6caa9985b6c563503a4f4293",
+      "blob": "786c849bc8a6de0761443b461bb2342a934e8807"
+    }
+  ],
+  "no_runtime_or_execution": true
+}

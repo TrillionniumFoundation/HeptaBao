@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.r27.post-publication-proof.v1",
+  "commit": "eee0e46af0891db43c1e3c6317f09f777abadf23",
+  "tree": "b525875daea4978ffceafd60f72e7591f43db859",
+  "sole_parent": "e29583fdc0729854377376450fe19a4465747364",
+  "branch": "codex/heptabao-validation-20261104",
+  "expected_previous": "e29583fdc0729854377376450fe19a4465747364",
+  "force": false,
+  "branch_read_exact": true,
+  "commit_tree_and_sole_parent_exact": true,
+  "root_26_entries_exact": true,
+  "independently_rebuilt_full_tree_equal": true,
+  "total_leaves": 18831,
+  "new_evidence_files": 368,
+  "preserved_prior_non_document_leaves": 18461,
+  "modified_documents": 2,
+  "deleted_leaves": 0,
+  "packets": 12,
+  "packet_files": 321,
+  "packet_bytes": 5031781,
+  "root_files": 47,
+  "freeze": "2026-11-05T15:01:07Z",
+  "no_product_source_changes": true,
+  "no_legacy_cleanup": true,
+  "no_production_cutover": true,
+  "full_openbao271_qualification": false,
+  "published_sdk": {
+    "create_tree": {
+      "name": "r27-checkpoint-create-tree.sdk.json",
+      "blob": "57f835ed251168bf669f7e229c060ac9c5454120",
+      "bytes": 143,
+      "sha256": "6cda457b89d754cbe6c4c2cd2665b4e770c14aa064856912be5b4606f3d20edd"
+    },
+    "root_read": {
+      "name": "r27-checkpoint-root-tree-read.sdk.json",
+      "blob": "5c1ec7bf74b17d5a4d2ad6abe116a6f4df35dac2",
+      "bytes": 13822,
+      "sha256": "d3c06dd4969b20f52bfa011d5bbeaafe8bc3492818e0e0f170d682a04a6ebe0b"
+    },
+    "create_commit": {
+      "name": "r27-checkpoint-create-commit.sdk.json",
+      "blob": "9afd82725f43f4718fb120088853ad21ec51be5d",
+      "bytes": 143,
+      "sha256": "d6162da0275e0207808b79721bdfde8761be318b713b956699222ed0af22572d"
+    },
+    "commit_read": {
+      "name": "r27-checkpoint-commit-read.sdk.json",
+      "blob": "c6954ad246df38972e7afd16903281f644e96883",
+      "bytes": 3418,
+      "sha256": "c9764d8a76be39470b09e8c56ad992d2399269d7d761305cd21ef69c491108d4"
+    },
+    "update_ref": {
+      "name": "r27-checkpoint-update-ref.sdk.json",
+      "blob": "25c0785cffec588b7b3b24bf3b643fd5c1f37705",
+      "bytes": 109,
+      "sha256": "40222101ee97b4f8d77eb5c78634ffda639fe20753cc498a6e8652a6cf156550"
+    },
+    "branch_read": {
+      "name": "r27-checkpoint-branch-read.sdk.json",
+      "blob": "8891f339a5e95f9ed4f1e9dd3a71388acb67105b",
+      "bytes": 9337,
+      "sha256": "e9390b41ef5e343457db548073df22601a2a80ed6e5e3d174231226661b3d6fb"
+    }
+  }
+}

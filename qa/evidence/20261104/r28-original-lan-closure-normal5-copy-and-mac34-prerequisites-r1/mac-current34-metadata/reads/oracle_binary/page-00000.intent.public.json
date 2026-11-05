@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.original-operation-payload-page-intent.v1",
+  "role": "oracle_binary",
+  "exact_request": {
+    "operation_id": "3ccaeb502f43b14b2bd2d1014595d1815bdb0319b3a2669b47a80d2a7b42b1bf",
+    "offset": 0,
+    "limit": 16384
+  }
+}

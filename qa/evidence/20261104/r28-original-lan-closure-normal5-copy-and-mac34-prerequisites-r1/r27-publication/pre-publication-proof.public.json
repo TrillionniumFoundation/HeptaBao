@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.r27.pre-publication-tree-proof.v1",
+  "freeze": "2026-11-05T15:01:07Z",
+  "previous_commit": "e29583fdc0729854377376450fe19a4465747364",
+  "previous_tree": "c56f0af25d6f86e7d3f13e9e467d959da2585ccb",
+  "expected_tree": "b525875daea4978ffceafd60f72e7591f43db859",
+  "base_leaves": 18463,
+  "new_leaves": 368,
+  "total_leaves": 18831,
+  "preserved_prior_non_document_leaves": 18461,
+  "modified_existing_documents": 2,
+  "deleted_leaves": 0,
+  "packet_files": 321,
+  "root_files": 47,
+  "tree_elements": 61,
+  "exact_packet_subtree_hashes_verified": 12,
+  "branch_expected_sha": "e29583fdc0729854377376450fe19a4465747364",
+  "force": false
+}

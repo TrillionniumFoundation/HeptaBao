@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.current-mac-full34-fixed-file-info-closure.v1",
+  "role": "server",
+  "request_blob": "374f558048d50e69f77d67ce8ce8c141f5d71804",
+  "operation_id": "fd94be0391e3e4d203ce05455e45b66d9714107d8725f39c284cf0da0f76a93e",
+  "completed": true,
+  "result_state": "stored_observed",
+  "owned_future_active": false,
+  "immutable_payload_bytes": 657,
+  "immutable_payload_sha256": "ae3c0196091c29989a8fdafbbf2671c3973eb76dafe11b198207ed8a0dc105a9",
+  "payload_eof": true,
+  "file_info_blob": "491baf66132791ec1836a27a6d283e6f53fa0c06",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+  "bytes": 92398928,
+  "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+  "version": "16777244:72626763:92398928:1793876826299674364:1793876826322472740",
+  "mode_permissions": 320,
+  "link_count": 1,
+  "full9_projection_pending_python_lossless": true,
+  "new_process_started": false
+}

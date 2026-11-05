@@ -1,0 +1,6 @@
+{
+  "cmd": "python3 -I -S -B -c 'import json,sys,tempfile\np=tempfile.mkdtemp(prefix='\\''heptabao_renewal_fake_r2_'\\'',dir='\\''/tmp'\\'')\nprint(json.dumps({'\\''directory'\\'':p,'\\''python'\\'':sys.version,'\\''local_only'\\'':True,'\\''network_used'\\'':False},sort_keys=True))\n'",
+  "workdir": "/tmp",
+  "max_output_tokens": 1000,
+  "yield_time_ms": 10000
+}

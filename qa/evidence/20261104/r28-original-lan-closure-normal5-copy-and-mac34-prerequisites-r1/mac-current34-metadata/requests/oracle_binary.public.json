@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-oracle-binary-20261105-r1",
+  "operation": {
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao"
+    },
+    "tool": "file_info"
+  }
+}

@@ -1,5 +1,50 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R28：原 LAN 发布确认、normal5 实际传输与 Mac 34MiB 前置输入
+
+状态截点 **2026-11-05T15:59:15Z**。产品继续固定为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 尚未达标；未正式切流，未删除旧服务、二进制、备份或中间资产。** Mac 与 ROG 已有 normal61 的实际通过证据；当前34MiB、物理三机HA、官方CLI和真实凭证切换仍分别需要证据。
+
+[机器状态](../../qa/evidence/20261104/r28-original-lan-closure-normal5-copy-and-mac34-prerequisites-r1/state.public.json) · [完整清单](../../qa/evidence/20261104/r28-original-lan-closure-normal5-copy-and-mac34-prerequisites-r1/manifest.public.json)。本冻结纳入 **15 个完整归档包、734 份包内文件、7,575,816 B**，另有 33 份根审、原始 SDK 与调度记录，以及状态和清单。全部文件按整字节校验 SHA-256、Git blob 与目录 Merkle；归档完整不改变 SOURCE-only、partial 或未达标的分类。
+
+### 本轮实际推进
+
+| 项目 | 已证事实 | 仍保留的边界 |
+|---|---|---|
+| LAN 九源原发布任务 | 原 `1a1ac1641eb-fc05-521f` 已由完整远端 request、原 typed digest、477,056 B stdin 哈希绑定。原任务 exit0/full/durable，stdout5,991 B、stderr0；九份公开源357,306 B只作 create-only/compile-only 发布。原 receipt7,519 B独立全文与stdout语义完全一致。根审114+67+45项。 | 原 process_start ACK仍未收到，未补造ACK或重发。九份源的全部独立读回尚不在本冻结；没有 prepare、启动产品或三机HA实测。 |
+| normal5公共构建资产 | 原任务 `1a1ac4bdf19-fc05-5366` 仅提交一次，exit0/full/durable。五个文件共110,287,359 B；源身份前后不变，接收端同FD整文件读回，五个独立目标file_info的大小、SHA、权限及完整版本全部吻合。 | 这是已完成的文件传输，不是目标源码导入、X230验证或HA通过。消费者尚未执行。 |
+| normal5命令与清理证据 | 三个实际子进程均exit0、已回收、无残留；远端完成已证，没有cleanup UNKNOWN。三份命令记录、五份实际保存的stream、intent和preflight共18,391 B全部原文取齐。根审214+67项。 | sender stdout原本是到receiver stdin的二进制管道，没有捏造不存在的独立stdout文件；没有宣称汇总FD账本。 |
+| Mac当前34MiB前置输入 | 当前原31项QA源码、Macnormal61、保留server及独立官方2.7.1 oracle绑定均已审。六个原file_info全部completed/stored/inactive且原payload完整，根审138项；无传输错误。 | `/usr/bin/git` 实际是root:root、0755、78个硬链接，原通用单链接封装会拒绝。封装原件未改、ready=false；专用系统Git读取器仅获源码提案许可。尚无inert/prepare/live提交。 |
+| AuthBus公共SDK源 | 冻结内13个原请求已完整10个：loader6,047 B与selector连续前缀589,824 B。04–10七条原SDK完整重建，根审363项。 | 第11 native read已closed，但原87,804 B payload只有首16,384 B归档，五页缺失；12–13未提交。selector及registry全文、实际selected harness owner均未证明；没有执行SDK。 |
+| AppRole续期语义与测试 | 当前固定非周期AppRole的空JSON续期、整数expiry、token/accessor/creation链与产品源码一致。修正模拟时钟并增加max饱和及renew-only错误accessor后，单次纯fake实际10/10通过；原候选与产品字节未改。 | 200不保证expiry延长；同秒或最大寿命饱和可合法delta0。fake没有真实HTTP200/403/204或凭证，实际续期、撤销、inverse与关闭仍待完整链验证。 |
+
+### 原任务恢复没有改变历史错误
+
+LAN最初的process_start MCP timeout、无ACK记录和外部提交意图全部保留。其后只读取原任务元数据、版本固定的原request和stdin，再取得原authority及原输出。实际匹配的typed digest为 `5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0`。该恢复证明原效果身份与完成，不代表已经取回丢失的ACK。搜索预览和时间接近未被单独用作任务身份。
+
+normal5原receipt读取 `ba463b00bbd59bf90f034f0c81c9c2f58cd858cec2683e6b240047504571f544` 首次status同样MCP timeout；随后同ID恢复，四页重建25,216 B原SDK payload，得到18,565 B原receipt，未重新发native body read或relay。SDK第10状态超时及第11两页超时也都保留，没有把未取齐的原结果计作完成。
+
+### Mac34MiB的具体门槛
+
+六项实际输入为官方2.7.1 binary与发行归档、当前保留HeptaBao server、实际Homebrew Python、`/usr/bin/git` 和 `/usr/bin/openssl`。原始不安全整数inode及纳秒值均按十进制原值保留，不能经过JavaScript浮点转换后再绑定。五项满足通用单链接检查；Git的78链接是已知输入兼容性问题，不是读取失败或UNKNOWN。
+
+允许后继仅对固定Git路径新增专用系统工具读取器，固定其实际118,640 B、SHA `b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9`、root:root、0755、exact nlink78与完整身份；通用 `fixed_file` 字节保持不变。仍须检查原名、FD、EOF、整文件哈希及前后身份。没有证据证明Git是shim，也未盘点78个alias，不作这些推断。专用后继源码、发布与执行不在本冻结。
+
+原31项业务检查、HTTP15秒、迁移360秒及原outer1800秒不变；独立prepare使用新的60秒预算。Mac原有Popen兼容分支保持，不能冒用Linux affine Owner或有界失败清理结论。旧Mac正式34MiB记录仅供来源核对：逻辑payload35,651,584 B，实际压缩snapshot9,007,344 B，不能称为34MiB压缩归档通过，更不能转移为当前4e808合格。
+
+### 接下来按原门槛继续
+
+1. 闭合LAN九源独立读回，绑定已独立核验的normal5，再分别审查prepare与Mac/ROG/Pocket4原98+12真实断主、自然选主、ReadIndex、持久化和重启。
+2. 完成Mac专用Git源码绑定后，依次create-only发布、只读prepare、原31项当前34MiB迁移/save/restore/cold-read/history/CAS验证。X230的同类正式验证仍须其七项输入及原UNKNOWN隔离门槛。
+3. 恢复SDK第11原结果页、取得原12–13，再核实实际selected owner；保留enabled插件集合及provider/model/refresh/quota，不靠删插件通过guard。
+4. 完成原源码导出81份命令/stream记录、bundle carrier与目标canonical import；独立验证CLI/H2窗口、每台真实凭证链、重启和回滚。
+5. 证明所有客户端及备份路径已迁移后再正式切流和旧版清理。当前原生产、旧OpenBao和旧HeptaBao资产均保留。
+
+本冻结时，lineA已获准继续LAN只读回收，lineB已获准按原ID/offset恢复SDK缺页；稍后取得但不在清单中的结果进入下一检查点。下方完整保留R27及全部更早原文，不能把历史截点里的pending误当成本节当前状态，也不能把本节的新事实反写成过去已知。
+
+---
+
+# HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
+
 ## 当前 R27：原始读取恢复、发布回执定位与当前版本验证源码
 
 状态截点 **2026-11-05T15:01:07Z**。产品仍为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 未达标；没有正式切流，也没有删除旧服务、二进制或备份资产。** Mac 与 ROG 的 normal61 已有原任务实际证据；它们不能替代当前 34MiB、物理三机 HA、官方 CLI 或真实凭证回归。

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"MTY2NTEzMzE5OjE3OTM4OTIwMjExNjY1MTMzMTlcIn0se1wiZW9mXCI6dHJ1ZSxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGVwdGFiYW8taGEtY2xvc3VyZS0yMDI2MTEwMy1yMS9ub3JtYWwtc2FtZS1yb290LXB1YmxpY2F0aW9uLXNoYXJlZC1hcnRpZmFjdHMtcjEvY29udHJvbC9yZWNlaXZlLWRlc2t0b3Auc3Rkb3V0XCIsXCJzaGEyNTZcIjpcImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTVcIixcInNpemVcIjowLFwidGV4dFwiOlwiXCIsXCJ2ZXJzaW9uXCI6XCIyMDUwOjczNjE0NTI6MDoxNzkzODkyMDE3ODg2NTY3MDgyOjE3OTM4OTIwMTc4ODY1NjcwODJcIn1dLFwic25hcHNob3Rfc2NvcGVcIjpcImluZGVwZW5kZW50X2ZpbGVcIixcInRydW5jYXRlZFwiOmZhbHNlfSJ9XSwiaXNFcnJvciI6ZmFsc2V9\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":25020,\"offset\":24576,\"operation_id\":\"66240a8a692918188a724209638def59906eaa80fd12673bf3a2dbbdc01a8c40\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"f86a2ad2c6de78b04939c87591f76efe2daedc4c832b8afec512a083c31994eb\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":25020}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

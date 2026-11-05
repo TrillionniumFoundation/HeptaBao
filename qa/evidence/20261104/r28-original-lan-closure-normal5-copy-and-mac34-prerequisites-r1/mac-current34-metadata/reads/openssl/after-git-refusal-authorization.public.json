@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.mac-full34-final-read-after-known-binding-refusal-intent.v1",
+  "root_instruction_exact": "先保持ready=false、不改generic fixed_file guard。第五项是已知binding拒绝，非native失败/UNKNOWN；已授权独立只读第6OpenSSL exact original request继续，仍一future，原SDK先外存、closed/full才解析；完成封六项。与此同时仅纯Git查已有Mac actual receipt/source中的真实Git executable证据：能否找到已观察的CLI tools git regular singleton路径，或/usr/bin/git确为系统shim的证据；不得猜alias集合/未见路径、不新发探测命令。请给最小SOURCE选项与具体不变量，暂不修改wrapper或start任何process。root将独立审。",
+  "previous_binding_refusal_unchanged": {
+    "role": "git",
+    "expected_nlink": 1,
+    "observed_nlink": 78
+  },
+  "only_resumed_operation": "file_info",
+  "only_resumed_role": "openssl",
+  "original_request_blob": "f2bce81ba7d864127553e934788c74d066dd9ae8",
+  "no_wrapper_guard_change": true,
+  "ready_remains_false": true,
+  "submission_in_this_call": false
+}

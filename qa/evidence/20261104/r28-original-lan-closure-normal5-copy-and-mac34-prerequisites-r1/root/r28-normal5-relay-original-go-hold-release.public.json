@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.normal5-relay-original-go-hold-release.r1",
+  "decision": "RESUME_ORIGINAL_EXACT_CREATE_ONLY_PUBLIC_ARTIFACT_TRANSFER",
+  "original_go": "57b7f674265078565f7d215bf3519feed5fc4fdc",
+  "exact_request": {
+    "blob": "337709a2869237259b8576b63623e7b74f138fb8",
+    "bytes": 383,
+    "sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff"
+  },
+  "unchanged_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-normal5-artifact-relay-r1-075193b0"
+  },
+  "original_hold_prerequisite_satisfied": {
+    "job": "1a1ac1641eb-fc05-521f",
+    "original_request_identity_and_authority_root_review": "297b09a7c779c30cac2fe8abadda78ae538db7c7",
+    "identity_authority_root_checks": 114,
+    "original_full_streams_core_root_review": "4635e272531eaeaa0763afa9185201d2fb4d29cb",
+    "streams_core_root_checks": 67,
+    "original_job_exit0_full_durable": true,
+    "original_stdout_bytes": 5991,
+    "original_stderr_bytes": 0,
+    "process_start_replayed": false
+  },
+  "scope": {
+    "only_original_five_public_artifacts": true,
+    "total_bytes": 110287359,
+    "source": "rog",
+    "destination": "desktop",
+    "no_seed_binary": true,
+    "no_product_server_or_CLI_execution": true,
+    "no_LAN_prepare_live": true,
+    "no_production_cutover": true,
+    "no_legacy_deletion": true
+  },
+  "sequence": [
+    "Close and archive the already in-flight original LAN receipt-info operation without cancellation, replay or a new key. Pause unsubmitted LAN receipt-body/nine-source readbacks.",
+    "Publish and complete a separate exact execution intent before one original process_start for blob337709a…; original ACK external before semantic parsing.",
+    "Then reconcile only that original job ID with original finite deadlines and owned cleanup. UNKNOWN never permits a fresh key/start or destination recreation.",
+    "Require exit0/full/durable, complete original sender/receiver/controller evidence and independent destination metadata before any consumer binding. Resume the independent LAN receipt/source readback after this artifact transfer."
+  ],
+  "other_work": "Auth original SDK reads may continue in its existing single-native-future read line; root will not add Runtime calls.",
+  "budgets_seconds": {
+    "outer": 360,
+    "relay": 300,
+    "endpoints": 90,
+    "connect": 10,
+    "cleanup_TERM": 5,
+    "cleanup_KILL": 5
+  },
+  "LAN_source_independent_receipt_readbacks_still_pending": true,
+  "no_qualification_transfer_from_tool_or_publication_success": true
+}

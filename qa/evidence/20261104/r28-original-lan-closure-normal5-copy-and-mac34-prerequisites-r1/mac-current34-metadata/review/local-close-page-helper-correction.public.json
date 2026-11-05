@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.mac-full34-local-verifier-correction.v1",
+  "initial_source": {
+    "path": "review/initial-close-page-helper.js",
+    "bytes": 3119,
+    "sha256": "a18a6260ea12d3e1b289b3ea33d633c55cc514f02ee84425d62f965e094d3640",
+    "blob": "042b9f54c57efc3eb7660c1f395a3d7c71536b69"
+  },
+  "observed_error": "Error: file info binding at closePage; local helper regex represented a literal backslash-d instead of digit class",
+  "scope": "LOCAL_DATA_VALIDATOR_ONLY",
+  "native_operation_id": "53f205799514b801395bcd37f20a42cae66ac2738f63fd087ee65e43f9105f80",
+  "native_operation_completed_inactive_previously_proven": true,
+  "original_payload_received_whole": true,
+  "metadata_path_sha_size_match_expected": true,
+  "no_runtime_request_replayed": true,
+  "next_server_admission_not_submitted": true,
+  "correction": "Only reduce the escaped digit class in the generated helper regex; original SDK and file_info bytes unchanged."
+}

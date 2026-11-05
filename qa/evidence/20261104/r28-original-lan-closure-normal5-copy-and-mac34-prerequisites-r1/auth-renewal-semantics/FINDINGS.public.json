@@ -1,0 +1,280 @@
+{
+  "schema": "heptabao.current-renewal-product-semantics-source-review.v1",
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "actual_leaf_count": 3914,
+    "leaf_merkle_verified": true
+  },
+  "candidate": {
+    "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+    "bytes": 71496,
+    "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+    "tree": "fcb76baae4e87b159fc7704ae13185c862de3854",
+    "binding_ready": false
+  },
+  "conclusion": "No newly identified source blocker in the exact fresh nonperiodic AppRole fixture's receipt fields or same-token expiry comparison. This is not actual renewal qualification.",
+  "semantics": {
+    "empty_json_renew": "Absent increment becomes zero, selecting the current role/mount default TTL rather than adding time to the old expiry.",
+    "coarse_approle_expiry": "AppRole issuance uses token_api_precision=None and renewal stores u64 expires_at; lookup exposes expire_time_unix and integer ttl directly.",
+    "identity": "HTTP layer echoes the presented token; backend accessor and retained creation_time must also agree. Echo alone is not independent identity authentication.",
+    "maximum": "Nonperiodic expiry is limited by original issue time plus effective current maximum and any explicit cap captured at issue. Renewable=true does not assert unused maximum-TTL headroom.",
+    "observable_extension": "Only post.expire_time_unix > pre.expire_time_unix proves an increased stored expiry for this exact coarse AppRole scope; TTL need not increase.",
+    "same_second_or_cap": "A successful 200 with unchanged expiry can be correct and yields an evidence gap, not a renewal backend error.",
+    "no_guarantee": "Moving pre lookup before existing KV/ACL work increases opportunity for a clock boundary but guarantees neither a full integer second nor enough remaining lease time.",
+    "revoke": "Typed pre/post snapshots followed by original revoke-self 204 and denied GET 403 happen before the returned delta classification; final two-phase extension check occurs after inverses and original validations.",
+    "unknown": "Any dispatched HTTP/validation/deadline/closure failure retains the original conservative unknown behavior; the known same-expiry evidence-gap conclusion applies only when every relevant response and owned closure is known."
+  },
+  "blind_spots": [
+    {
+      "id": "T01",
+      "source": "62602cd0b487afc6e06da71e29c04739dc3bb42b",
+      "lines": [
+        25,
+        40,
+        43,
+        73,
+        77
+      ],
+      "classification": "test-data consistency gap, not a product bug",
+      "detail": "The same-second fake uses pre ttl170/expiry1180 and post ttl175/expiry1180, implying coarse now1010->1005 rather than a same-second observation. It proves delta classification only.",
+      "minimal_future_change": "Use explicit consistent issuance/pre/renew/post integer timestamps to derive each fake TTL and expiry; preserve original frozen test evidence."
+    },
+    {
+      "id": "T02",
+      "source": "62602cd0b487afc6e06da71e29c04739dc3bb42b",
+      "lines": [
+        85,
+        99
+      ],
+      "classification": "uncovered targeted negative",
+      "detail": "Wrong lookup accessor and wrong renewed token are covered; correct renewed token with wrong renewed accessor is not an independent fake case, although candidate line833 rejects it.",
+      "minimal_future_change": "One renewal response override changing only accessor; require refusal and no next request."
+    },
+    {
+      "id": "T03",
+      "source": "62602cd0b487afc6e06da71e29c04739dc3bb42b",
+      "lines": [
+        34,
+        47,
+        73,
+        81
+      ],
+      "classification": "uncovered arithmetic boundary",
+      "detail": "No actual same-role maximum-saturation fake derives a shortened renewal lease with unchanged absolute expiry. Also no original HTTP failed-max/expiry status is simulated by this FakeClient.",
+      "minimal_future_change": "One consistent capped-live case returning 200 with positive reduced lease TTL and unchanged expiry; preserve no-extension classification. Product auth tests already contain separate max/error cases, and have not been rerun here."
+    }
+  ],
+  "static_examples": [
+    {
+      "name": "same_integer_second",
+      "issued": 1000,
+      "pre_now": 1000,
+      "pre_expiry": 1180,
+      "pre_ttl": 180,
+      "renew_now": 1000,
+      "post_expiry": 1180,
+      "renew_lease_ttl": 180,
+      "post_now": 1000,
+      "post_ttl": 180,
+      "delta": 0
+    },
+    {
+      "name": "later_integer_second",
+      "issued": 1000,
+      "pre_now": 1010,
+      "pre_expiry": 1180,
+      "pre_ttl": 170,
+      "renew_now": 1015,
+      "post_expiry": 1195,
+      "renew_lease_ttl": 180,
+      "post_now": 1016,
+      "post_ttl": 179,
+      "delta": 15
+    },
+    {
+      "name": "already_at_maximum_absolute_expiry_after_prior_renewal",
+      "issued": 1000,
+      "pre_now": 1500,
+      "pre_expiry": 1600,
+      "pre_ttl": 100,
+      "renew_now": 1501,
+      "post_expiry": 1600,
+      "renew_lease_ttl": 99,
+      "post_now": 1502,
+      "post_ttl": 98,
+      "delta": 0
+    }
+  ],
+  "example_scope": "Manual arithmetic illustrations from the reviewed function, not executed product/fixture tests.",
+  "not_extended_to": [
+    "arbitrary production role policy or TTL",
+    "periodic AppRole tokens",
+    "precise Token API or SDK-issued service token leases",
+    "actual selected SDK harness owner",
+    "provider refresh, production credentials, or runtime permission"
+  ],
+  "constraints": {
+    "source_only": true,
+    "runtime_calls": 0,
+    "host_calls": 0,
+    "sdk_executions": 0,
+    "fixture_executions": 0,
+    "new_component_executions": 0,
+    "product_edits": 0,
+    "guard_edits": 0,
+    "original_budgets_unchanged": true,
+    "original_empty_body_unchanged": true,
+    "no_sleep_or_retry": true
+  },
+  "anchors": [
+    {
+      "file": "auth.rs",
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+      "sections": [
+        [
+          1910,
+          1921
+        ],
+        [
+          2062,
+          2084
+        ],
+        [
+          3453,
+          3474
+        ],
+        [
+          6886,
+          6967
+        ],
+        [
+          7059,
+          7064
+        ],
+        [
+          7121,
+          7194
+        ],
+        [
+          8283,
+          8298
+        ],
+        [
+          9006,
+          9054
+        ],
+        [
+          9185,
+          9256
+        ]
+      ],
+      "meaning": "Typed token operations, active authority, AppRole branch before Token API precision, coarse lookup, mount limits and revocation."
+    },
+    {
+      "file": "service_native_auth.rs",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "sections": [
+        [
+          2539,
+          2569
+        ]
+      ],
+      "meaning": "Authorized HTTP renewal/lookup credential echo."
+    },
+    {
+      "file": "auth_approle_renewal.rs",
+      "blob": "6ebf2075dd10652c782e24cba894d066b5aada27",
+      "sections": [
+        [
+          135,
+          219
+        ]
+      ],
+      "meaning": "Actual role/native lifetime and unchanged accessor; empty increment default."
+    },
+    {
+      "file": "auth_native_token.rs",
+      "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8",
+      "sections": [
+        [
+          23,
+          62
+        ]
+      ],
+      "meaning": "Renewal TTL and original-issue maximum arithmetic."
+    },
+    {
+      "file": "auth_token_precision.rs",
+      "blob": "bcd36fe645269dacce42fe8f162f838f40b74bb6",
+      "sections": [
+        [
+          67,
+          88
+        ],
+        [
+          127,
+          131
+        ],
+        [
+          301,
+          326
+        ]
+      ],
+      "meaning": "Integer seconds versus separate precise lease rounding; coarse active predicate."
+    },
+    {
+      "file": "auth_approle_renewal_tests.rs",
+      "blob": "ab5ddf0e8fef1e521666f7f76789bfac758719e9",
+      "sections": [
+        [
+          108,
+          183
+        ]
+      ],
+      "meaning": "Existing product test source for missing increment, live role changes, max-limit errors and expiry rejection; not rerun."
+    },
+    {
+      "file": "renewal-candidate.py",
+      "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+      "sections": [
+        [
+          423,
+          505
+        ],
+        [
+          738,
+          763
+        ],
+        [
+          797,
+          852
+        ],
+        [
+          1044,
+          1056
+        ],
+        [
+          1087,
+          1099
+        ]
+      ],
+      "meaning": "Original bounded HTTP unknown behavior, fresh role, same-token lookup chain and extension-only qualification."
+    },
+    {
+      "file": "selected-checks.py",
+      "blob": "62602cd0b487afc6e06da71e29c04739dc3bb42b",
+      "sections": [
+        [
+          25,
+          47
+        ],
+        [
+          73,
+          104
+        ]
+      ],
+      "meaning": "Fake inputs classify changes without modelling actual engine time; two missing negative boundaries."
+    }
+  ]
+}

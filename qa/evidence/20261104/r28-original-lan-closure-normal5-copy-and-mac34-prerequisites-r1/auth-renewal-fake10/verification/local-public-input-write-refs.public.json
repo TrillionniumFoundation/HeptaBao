@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.local-public-input-creation-references.v1",
+  "files": [
+    {
+      "name": "outer.proposed.py",
+      "path": "/tmp/heptabao_renewal_fake_r2_grf3_e7n/outer.proposed.py",
+      "bytes": 71496,
+      "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+      "request": {
+        "blob": "11c24b354475f2e0a14d15fbc457f301bf3b1bb4",
+        "bytes": 95952,
+        "sha256": "6cbf1c4de7abb7cb42ec2acd23ec8b67267b43f721e6e1943df1a80494e64128"
+      },
+      "executor": {
+        "blob": "c06867a5d3104e767cb101d297e595a9b67181bd",
+        "bytes": 325,
+        "sha256": "6771288def6714079ab964a4edb147142366c98bf46b12228a8682b51dabccd8"
+      }
+    },
+    {
+      "name": "outer.before.py",
+      "path": "/tmp/heptabao_renewal_fake_r2_grf3_e7n/outer.before.py",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "request": {
+        "blob": "d4e3a393e975d32d817efba3f1d2c38321bfd982",
+        "bytes": 91754,
+        "sha256": "452998e1b4fdfc2b1ba14ee263b3f8ee36b5b1911af3b740b817fe358e8fc450"
+      },
+      "executor": {
+        "blob": "79ed69c88d3e26e3f2fcd387b130368e9a44ffd5",
+        "bytes": 323,
+        "sha256": "d0060f96335f6047a63c31c790404670a4a0f4fafb8714e44023721e26f68aff"
+      }
+    },
+    {
+      "name": "selected-checks.original.py",
+      "path": "/tmp/heptabao_renewal_fake_r2_grf3_e7n/selected-checks.original.py",
+      "bytes": 7895,
+      "sha256": "bd3e8ad155b9d219b992c091f124a61a1fc82470008629584ca423055a630f28",
+      "request": {
+        "blob": "9f77ec867964ecac576dee4bafb829759fad9a55",
+        "bytes": 11161,
+        "sha256": "e8df0a2f12251f7b822029727b7489710c95456b80b4d118c37431ba739ef0f0"
+      },
+      "executor": {
+        "blob": "3794ce5b1812d893541c80c689ac7500d6b9da1e",
+        "bytes": 334,
+        "sha256": "462759d70dada77825f29fd67df91771a72007d39e73785ee27096af725a2bb6"
+      }
+    },
+    {
+      "name": "selected-checks.r2.py",
+      "path": "/tmp/heptabao_renewal_fake_r2_grf3_e7n/selected-checks.r2.py",
+      "bytes": 10039,
+      "sha256": "be4f7012b28e5bbaf64e18da0d732d496ecbe37e57a4614a5bdd2ca50d3bf52b",
+      "request": {
+        "blob": "3c60de4731aaf9aee774640ad0fe63eec8cffe51",
+        "bytes": 14016,
+        "sha256": "52bfc0c6f5b43d311e75c062580cf3c256de4dfc0b73c5460a042f355d925bdc"
+      },
+      "executor": {
+        "blob": "74e880c7a53e525c342ccef43686a266e0d4b2ef",
+        "bytes": 329,
+        "sha256": "e77b2762acf87cc64c131630d663c66b16e15deddcbef54989b5aebac212d05d"
+      }
+    }
+  ],
+  "createOnly": true,
+  "allAfterHashesValidatedByMechanicalVerifier": true,
+  "noRemoteHost": true
+}

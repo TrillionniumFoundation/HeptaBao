@@ -1,0 +1,164 @@
+{
+  "all_new_current_runtime_states": "not_submitted",
+  "cases": [
+    {
+      "case": "official_271_pins_and_live_identity",
+      "current_run_state": "not_submitted",
+      "ordinal": 1
+    },
+    {
+      "case": "two_distinct_owned_processes",
+      "current_run_state": "not_submitted",
+      "ordinal": 2
+    },
+    {
+      "case": "source_api_oracle_captured",
+      "current_run_state": "not_submitted",
+      "ordinal": 3
+    },
+    {
+      "case": "source_retained_deleted_destroyed_seeded",
+      "current_run_state": "not_submitted",
+      "ordinal": 4
+    },
+    {
+      "case": "source_metadata_cas_seeded",
+      "current_run_state": "not_submitted",
+      "ordinal": 5
+    },
+    {
+      "case": "source_cold_restart_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 6
+    },
+    {
+      "case": "target_pristine_before_import",
+      "current_run_state": "not_submitted",
+      "ordinal": 7
+    },
+    {
+      "case": "source_export_once",
+      "current_run_state": "not_submitted",
+      "ordinal": 8
+    },
+    {
+      "case": "source_raw_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 9
+    },
+    {
+      "case": "exported_soft_deleted_payload_preserved",
+      "current_run_state": "not_submitted",
+      "ordinal": 10
+    },
+    {
+      "case": "source_unchanged_after_export",
+      "current_run_state": "not_submitted",
+      "ordinal": 11
+    },
+    {
+      "case": "target_import_once",
+      "current_run_state": "not_submitted",
+      "ordinal": 12
+    },
+    {
+      "case": "target_active_native_v6",
+      "current_run_state": "not_submitted",
+      "ordinal": 13
+    },
+    {
+      "case": "target_full_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 14
+    },
+    {
+      "case": "target_storage_full_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 15
+    },
+    {
+      "case": "target_cold_restart_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 16
+    },
+    {
+      "case": "target_storage_cold_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 17
+    },
+    {
+      "case": "snapshot_download",
+      "current_run_state": "not_submitted",
+      "ordinal": 18
+    },
+    {
+      "case": "post_snapshot_mutation_once",
+      "current_run_state": "not_submitted",
+      "ordinal": 19
+    },
+    {
+      "case": "snapshot_restore_once",
+      "current_run_state": "not_submitted",
+      "ordinal": 20
+    },
+    {
+      "case": "restored_cold_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 21
+    },
+    {
+      "case": "restored_storage_history_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 22
+    },
+    {
+      "case": "soft_deleted_payload_undelete_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 23
+    },
+    {
+      "case": "destroyed_payload_remains_absent",
+      "current_run_state": "not_submitted",
+      "ordinal": 24
+    },
+    {
+      "case": "data_cas_denied_without_effect",
+      "current_run_state": "not_submitted",
+      "ordinal": 25
+    },
+    {
+      "case": "metadata_cas_denied_without_effect",
+      "current_run_state": "not_submitted",
+      "ordinal": 26
+    },
+    {
+      "case": "metadata_cas_success_counter_exact",
+      "current_run_state": "not_submitted",
+      "ordinal": 27
+    },
+    {
+      "case": "source_unchanged_after_target_mutations",
+      "current_run_state": "not_submitted",
+      "ordinal": 28
+    },
+    {
+      "case": "source_and_binary_unchanged",
+      "current_run_state": "not_submitted",
+      "ordinal": 29
+    },
+    {
+      "case": "owned_processes_stopped",
+      "current_run_state": "not_submitted",
+      "ordinal": 30
+    },
+    {
+      "case": "report_excludes_runtime_credentials",
+      "current_run_state": "not_submitted",
+      "ordinal": 31
+    }
+  ],
+  "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "full_271_qualified": false,
+  "ha_qualified": false,
+  "schema": "heptabao.current-mac-full34-original31-case-map.v1"
+}

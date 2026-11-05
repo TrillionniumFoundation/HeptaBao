@@ -1,0 +1,122 @@
+[
+  {
+    "after": "\"\"\"Current Mac single-node full34: readonly preparation, then one fresh run.\"\"\"",
+    "before": "\"\"\"Bind the unchanged 31-check full34 runner to the exact 4e808 normal61 build.\"\"\"",
+    "occurrences": 1
+  },
+  {
+    "after": "import hashlib,json,os,stat,subprocess,time,sys",
+    "before": "import hashlib,json,os,stat,subprocess,time",
+    "occurrences": 1
+  },
+  {
+    "after": "NORMAL61_SHA='02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113'",
+    "before": "NORMAL61_SHA=None",
+    "occurrences": 1
+  },
+  {
+    "after": "NORMAL_NATIVE_SHA='25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49'",
+    "before": "NORMAL_NATIVE_SHA=None",
+    "occurrences": 1
+  },
+  {
+    "after": "NORMAL_RELEASE_SHA='2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571'",
+    "before": "NORMAL_RELEASE_SHA=None",
+    "occurrences": 1
+  },
+  {
+    "after": "# Filled only from root-reviewed actual fixed-path metadata; none are observations yet.\nINPUT_METADATA={'oracle_binary': None, 'oracle_archive': None, 'server': None, 'python': None, 'git': None, 'openssl': None}",
+    "before": "TRANSFER_SHA=None",
+    "occurrences": 1
+  },
+  {
+    "after": "ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1');REPO=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source');OUT=ROOT/'actual-r1'\nPRODUCT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1')\nPYTHON='/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'\nINPUT_PATHS={'oracle_binary': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao', 'oracle_archive': '/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz', 'server': '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server', 'python': '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14', 'git': '/usr/bin/git', 'openssl': '/usr/bin/openssl'}\nEXPECTED_SHA={'oracle_binary': '50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c', 'oracle_archive': '15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91', 'server': 'c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63', 'python': 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13', 'git': None, 'openssl': 'f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7'}\nEXPECTED_BYTES={'oracle_binary': None, 'oracle_archive': None, 'server': 92398928, 'python': 34640, 'git': None, 'openssl': 1130832}\nNEW_PREPARE_SECONDS=60\nORIGINAL_RUNTIME_OUTER_SECONDS=1800\n_PREPARE_UNTIL=None",
+    "before": "ROOT=Path('/home/qian/heptabao-same-root-publication-normal-20261105-r1');REPO=ROOT/'source';OUT=ROOT/'evidence/full34-r1'",
+    "occurrences": 1
+  },
+  {
+    "after": "PIN='c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63';DRIVER=",
+    "before": "PIN=None;DRIVER=",
+    "occurrences": 1
+  },
+  {
+    "after": "def git(*a):\n return subprocess.check_output(['/usr/bin/git','-c','core.hooksPath=/dev/null','-C',str(REPO),*a],text=True,timeout=min(30,prepare_remaining())).strip()",
+    "before": "def git(*a):return subprocess.check_output(['/usr/bin/git','-C',str(REPO),*a],text=True).strip()",
+    "occurrences": 1
+  },
+  {
+    "after": "'dirty':bool(git('status','--porcelain','--untracked-files=all')),'binary_sha256':sha(PRODUCT/'artifacts/heptabao-server')",
+    "before": "'dirty':bool(git('status','--porcelain','--untracked-files=no')),'binary_sha256':sha(ROOT/'artifacts/heptabao-server')",
+    "occurrences": 1
+  },
+  {
+    "after": "'normal61_and_local_prerequisite_bindings_unresolved'",
+    "before": "'normal61_and_transport_bindings_unresolved'",
+    "occurrences": 1
+  },
+  {
+    "after": "(NORMAL61_SHA,NORMAL_NATIVE_SHA,NORMAL_RELEASE_SHA)",
+    "before": "(NORMAL61_SHA,NORMAL_NATIVE_SHA,NORMAL_RELEASE_SHA,TRANSFER_SHA)",
+    "occurrences": 1
+  },
+  {
+    "after": "actual=PRODUCT/'result.public.json'",
+    "before": "actual=ROOT/'artifacts/normal61-result.public.json'",
+    "occurrences": 1
+  },
+  {
+    "after": "heptabao.mac-normal-same-root-publication-exact-tests.v1",
+    "before": "heptabao.linux-normal-same-root-publication-exact-tests.v1",
+    "occurrences": 1
+  },
+  {
+    "after": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+    "before": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+    "occurrences": 1
+  },
+  {
+    "after": "",
+    "before": " need(sha(ROOT/'artifacts/transfer.result.public.json')==TRANSFER_SHA,'new_exact_transfer_receipt_pin')\n",
+    "occurrences": 1
+  },
+  {
+    "after": "def main():\n global _PREPARE_UNTIL\n started=time.monotonic();_PREPARE_UNTIL=started+NEW_PREPARE_SECONDS\n need(sys.argv[1:]==['--prepare-only'] or (len(sys.argv)==3 and sys.argv[1]=='--run'),'exact_prepare_or_run_argv')\n prepared=readonly_prepare();prepared_raw=enc(prepared);prepared_sha=hashlib.sha256(prepared_raw).hexdigest()\n prepare_remaining()\n if sys.argv[1]=='--prepare-only':\n  print(json.dumps({'schema':'heptabao.current-mac-full34-readonly-prepare-envelope.v1','prepared':prepared,'prepared_sha256':prepared_sha,'elapsed_seconds':time.monotonic()-started},sort_keys=True),flush=True)\n  prepare_remaining();return 0\n need(sys.argv[2]==prepared_sha,'actual_prepare_binding_changed')\n _PREPARE_UNTIL=None\n",
+    "before": "def main():\n normal61_admission()\n",
+    "occurrences": 1
+  },
+  {
+    "after": "'heptabao.4e808-mac-original-full34-assessment.v1'",
+    "before": "'heptabao.4e808-x230-original-full34-assessment.v1'",
+    "occurrences": 1
+  },
+  {
+    "after": "normal=PRODUCT/'native-build.public.json';build=PRODUCT/'normal-release-result.public.json'",
+    "before": "normal=ROOT/'artifacts/native-build.public.json';build=ROOT/'artifacts/result.public.json'",
+    "occurrences": 1
+  },
+  {
+    "after": "oracle=Path(INPUT_PATHS['oracle_binary']);archive=Path(INPUT_PATHS['oracle_archive'])",
+    "before": "oracle=Path('/home/qian/heptabao-official-271-fresh-20261029-r1/bao');archive=oracle.with_name('official-openbao-2.7.1-linux-amd64.tar.gz')",
+    "occurrences": 1
+  },
+  {
+    "after": "sha(oracle)==EXPECTED_SHA['oracle_binary'] and sha(archive)==EXPECTED_SHA['oracle_archive']",
+    "before": "sha(oracle)=='535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea' and sha(archive)=='0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243'",
+    "occurrences": 1
+  },
+  {
+    "after": "argv=[PYTHON,'-I','-S','-B',str(runner),'--binary',str(PRODUCT/'artifacts/heptabao-server')",
+    "before": "argv=['/usr/bin/python3','-I','-S','-B',str(runner),'--binary',str(ROOT/'artifacts/heptabao-server')",
+    "occurrences": 1
+  },
+  {
+    "after": "'heptabao.4e808-mac-full34-intent.v1'",
+    "before": "'heptabao.4e808-x230-full34-intent.v1'",
+    "occurrences": 1
+  },
+  {
+    "after": "'network_scope':'Mac loopback only','actual_prepared_sha256':prepared_sha",
+    "before": "'network_scope':'X230 loopback only'",
+    "occurrences": 1
+  }
+]

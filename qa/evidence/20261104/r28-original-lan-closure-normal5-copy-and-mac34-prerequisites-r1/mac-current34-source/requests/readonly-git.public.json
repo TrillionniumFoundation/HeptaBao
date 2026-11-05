@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-git-20261105-r1",
+  "operation": {
+    "arguments": {
+      "host": "mac",
+      "path": "/usr/bin/git"
+    },
+    "tool": "file_info"
+  }
+}

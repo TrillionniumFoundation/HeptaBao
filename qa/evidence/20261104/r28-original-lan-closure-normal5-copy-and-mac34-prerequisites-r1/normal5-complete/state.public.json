@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.4e808.normal5.original-relay-complete-evidence.v1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "job": {
+    "host": "desktop",
+    "id": "1a1ac4bdf19-fc05-5366",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_confirmed": true
+  },
+  "result": {
+    "blob": "cf0f96b77c2c3ba85f8dc0edbbd69fa54b0f1de8",
+    "bytes": 18565,
+    "sha256": "de4d20a2eb6551a3f0237f7f6093623f14d06fc08a8af9f75491f00a31bbcbb4"
+  },
+  "fixed_files": 5,
+  "total_file_bytes": 110287359,
+  "destination_independent_infos": 5,
+  "original_command_records": 3,
+  "original_saved_stream_files": 5,
+  "other_original_files": [
+    "intent.public.json",
+    "ssh-preflight.public.json"
+  ],
+  "original_file_bytes": 18391,
+  "original_sender_stdout": "Binary artifact stream piped to receiver stdin, not separately saved; no fabricated stdout file.",
+  "source_full9_unchanged": true,
+  "receiver_same_fd_whole_verified": true,
+  "destination_independent_versions_equal_receiver": true,
+  "all_three_local_children_zero_reaped_empty": true,
+  "remote_cleanup_unknown": false,
+  "all_completed_read_operations_inactive": true,
+  "current_runtime_calls_inflight": 0,
+  "raw_core_checks": 51,
+  "independent_destination_checks": 40,
+  "raw_command_checks": 32,
+  "original_result_body_status_timeout_preserved": true,
+  "business_replayed": false,
+  "original_native_read_replayed": false,
+  "aggregate_fd_ledger_present": false,
+  "production_changed": false,
+  "consumer_GO": false,
+  "LAN_prepare_live_GO": false,
+  "LAN_readback_paused_until_root_window": true,
+  "canonical_import_complete": false
+}

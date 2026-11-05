@@ -1,0 +1,122 @@
+{
+  "scope": "request_metadata_exact_only_stdin_pending",
+  "checks": [
+    {
+      "name": "body_future_closed",
+      "passed": true
+    },
+    {
+      "name": "file_info_future_closed",
+      "passed": true
+    },
+    {
+      "name": "fixed_path",
+      "passed": true
+    },
+    {
+      "name": "fixed_version",
+      "passed": true
+    },
+    {
+      "name": "whole8101",
+      "passed": true
+    },
+    {
+      "name": "whole_sha_matches_independent_info",
+      "passed": true
+    },
+    {
+      "name": "dict",
+      "passed": true
+    },
+    {
+      "name": "closed_reference_metadata_keys",
+      "passed": true
+    },
+    {
+      "name": "exact_target_digest",
+      "passed": true
+    },
+    {
+      "name": "remote_fingerprint_uses_full_digest",
+      "passed": true
+    },
+    {
+      "name": "exact_job_id",
+      "passed": true
+    },
+    {
+      "name": "exact_job_dir",
+      "passed": true
+    },
+    {
+      "name": "exact_stdin_path",
+      "passed": true
+    },
+    {
+      "name": "exact_executable",
+      "passed": true
+    },
+    {
+      "name": "exact_argc_and_all_arg_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_cwd",
+      "passed": true
+    },
+    {
+      "name": "exact_empty_env",
+      "passed": true
+    },
+    {
+      "name": "exact_original_timeout60",
+      "passed": true
+    },
+    {
+      "name": "documented_nice_default0",
+      "passed": true
+    },
+    {
+      "name": "original_cpu_quota_none",
+      "passed": true
+    },
+    {
+      "name": "original_memory_none",
+      "passed": true
+    },
+    {
+      "name": "no_inline_stdin_or_host_or_key",
+      "passed": true
+    },
+    {
+      "name": "linux_operator",
+      "passed": true
+    },
+    {
+      "name": "launch_nonce_shape",
+      "passed": true
+    },
+    {
+      "name": "terminal_protocol1",
+      "passed": true
+    },
+    {
+      "name": "derived_policy_flags_typed",
+      "passed": true
+    },
+    {
+      "name": "derived_unit_typed",
+      "passed": true
+    },
+    {
+      "name": "default_cwd_public_absolute",
+      "passed": true
+    },
+    {
+      "name": "exact_reference_whole",
+      "passed": true
+    }
+  ],
+  "job_identity_bound": false
+}

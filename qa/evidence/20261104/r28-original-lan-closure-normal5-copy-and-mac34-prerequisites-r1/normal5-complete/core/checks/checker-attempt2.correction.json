@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.ha.current-normal5.offline-checker-attempt2.correction.v1",
+  "failure_preserved": true,
+  "cause": "JSONObject insertion order differed between canonical sorted public result and frozen FILES literal; keys and values were equal. Comparison now recursively sorts object keys while preserving arrays and lossless scalar values.",
+  "runtime_calls": 0
+}

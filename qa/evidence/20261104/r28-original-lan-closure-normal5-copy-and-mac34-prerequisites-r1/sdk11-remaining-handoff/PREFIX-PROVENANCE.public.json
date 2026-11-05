@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.public-selector-prefix-static-provenance.v1",
+  "whole_expected": {
+    "bytes": 673468,
+    "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+  },
+  "actual_prefix": {
+    "bytes": 589824,
+    "sha256": "fd3b2b87350c228e8a8d74e7ffb4e4a8e739304555dce3c6e9bde09cfda0b52b",
+    "utf8_trailing_bytes_trimmed": 0,
+    "line_count": 13736,
+    "last_line_incomplete": true
+  },
+  "missing_source_bytes": 83644,
+  "original_chunks": [
+    {
+      "sequence": 2,
+      "offset": 0,
+      "next_offset": 65536,
+      "bytes": 65536,
+      "chunk_sha256": "0d3dba924335fe23d8a6b518dff9202c1208bc78bfe084e2181d531d49ea811c",
+      "native": "0358f546c3fc0baf5401e4df8bad36ee7d2bbf35"
+    },
+    {
+      "sequence": 3,
+      "offset": 65536,
+      "next_offset": 131072,
+      "bytes": 65536,
+      "chunk_sha256": "d3f211c9477cd58343ca6b7fbeb57321157f4734565bd8191a020c86718169dd",
+      "native": "7e330a915a3a69739a502d9fb9efac1afe938dc4"
+    },
+    {
+      "sequence": 4,
+      "offset": 131072,
+      "next_offset": 196608,
+      "bytes": 65536,
+      "chunk_sha256": "be086cee58c4c0a2fa7673cface95b8241b902415ce2e505ec89a09ca2dcbee3",
+      "native": "7b70cc0ab8a9dad3cfe2d5ef392aee3a157fbb61"
+    },
+    {
+      "sequence": 5,
+      "offset": 196608,
+      "next_offset": 262144,
+      "bytes": 65536,
+      "chunk_sha256": "c4091c4c3f8dadf5668619f567feaec3feb359351aa88f8006085dc81a9f6d63",
+      "native": "6fe3d4e5dca22566fae84a8c778433e918df4cd1"
+    },
+    {
+      "sequence": 6,
+      "offset": 262144,
+      "next_offset": 327680,
+      "bytes": 65536,
+      "chunk_sha256": "fc5cfb53599bf2c8564948b7dde48c8b8c2cf0088315c9f1dc052b52d9a57d33",
+      "native": "a1e1fb11fd2011e1e87a0ed6a904b50ccb1c0014"
+    },
+    {
+      "sequence": 7,
+      "offset": 327680,
+      "next_offset": 393216,
+      "bytes": 65536,
+      "chunk_sha256": "a147467f4e42d95e88c9e94eff588e136241723f13730817d81ac35fbe944c1c",
+      "native": "923d595ad1e360c25174ea32a968d433d8f23b32"
+    },
+    {
+      "sequence": 8,
+      "offset": 393216,
+      "next_offset": 458752,
+      "bytes": 65536,
+      "chunk_sha256": "ca286a4591124275b85282b8e4dedcb7aec84d508a1269b8f7c9e775de52aa9c",
+      "native": "ad57b5f35bfed6e55b985acabb7fda394b301277"
+    },
+    {
+      "sequence": 9,
+      "offset": 458752,
+      "next_offset": 524288,
+      "bytes": 65536,
+      "chunk_sha256": "4ad2b4c59ea4caab99114bc26ef5a791f2d8f3074695be8dd4759fd20dbada14",
+      "native": "06cd22f7c21190ec4b847d27b3cad3e5c9d58c1b"
+    },
+    {
+      "sequence": 10,
+      "offset": 524288,
+      "next_offset": 589824,
+      "bytes": 65536,
+      "chunk_sha256": "405192c7925c5e625c3107caff39caaebcbc9ffe5fe275f334aa9cc861ee53c0",
+      "native": "9496214d3a1e85221adfbeb7d71c0fd14a2fa436"
+    }
+  ],
+  "static_occurrences": {
+    "selectAgentHarness": 0,
+    "getRegisteredAgentHarness": [
+      43
+    ],
+    "listRegisteredAgentHarnesses": [
+      43
+    ],
+    "resolveAgentHarnessPolicy": [
+      35
+    ],
+    "compareHarnessSupport": [
+      106
+    ],
+    "buildAgentHarnessSupportContext": [
+      106
+    ],
+    "export_statements": 0
+  },
+  "sdk_imported_or_executed": false,
+  "actual_selected_owner": null
+}

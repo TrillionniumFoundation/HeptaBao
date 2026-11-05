@@ -1,0 +1,171 @@
+{
+  "schema": "heptabao.current-mac-full34-source-and-six-read-request-root-review.r1",
+  "status": "SOURCE_REVIEWED_EXACT_SIX_METADATA_READS_APPROVED_PENDING_READ_LINE_HANDOFF",
+  "packet": "bdb1dd296ac147ddcd355655814df099e59c571d",
+  "wrapper": "63bf77717ee6e0ad6f5a7871f39859c1f8b981d8",
+  "checks_passed": 34,
+  "checks": [
+    "strict_three_hunk_adapter",
+    "observed_python_literal_correction",
+    "unchanged_generic_need",
+    "unchanged_generic_sha",
+    "unchanged_generic_save",
+    "unchanged_generic_enc",
+    "six_unbound_slots",
+    "file_info_only_oracle_binary",
+    "unique_original_key_oracle_binary",
+    "file_info_only_oracle_archive",
+    "unique_original_key_oracle_archive",
+    "file_info_only_server",
+    "unique_original_key_server",
+    "file_info_only_python",
+    "unique_original_key_python",
+    "file_info_only_git",
+    "unique_original_key_git",
+    "file_info_only_openssl",
+    "unique_original_key_openssl",
+    "current_canonical_driver",
+    "current_canonical_native_large",
+    "current_canonical_official_launcher",
+    "current_canonical_owned_process",
+    "current_canonical_online_evidence",
+    "current_canonical_smoke",
+    "actual_receipt_pin_normal61",
+    "actual_receipt_pin_native",
+    "actual_receipt_pin_release",
+    "retained_server_pin",
+    "observed_regular_python_pin",
+    "explicit_false_scope",
+    "single_original_run_expression",
+    "business_contract_retained",
+    "separate_prepare_budget"
+  ],
+  "requests": [
+    {
+      "name": "oracle_binary",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao",
+      "key": "heptabao-4e808-mac-full34-prereq-info-oracle-binary-20261105-r1",
+      "blob": "de9a867d9a0b81cc3bab43ebe6d7f013fa1985fd",
+      "bytes": 282,
+      "sha256": "a3a1b783d0e06a53dd0778d0d7db33d83aa72d5b7da2e8076b4099aab1abd97e",
+      "expected_sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+      "expected_bytes": null
+    },
+    {
+      "name": "oracle_archive",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz",
+      "key": "heptabao-4e808-mac-full34-prereq-info-oracle-archive-20261105-r1",
+      "blob": "e9b245dc293098da31c3d6ef61ba67966933e2de",
+      "bytes": 302,
+      "sha256": "b9ef8715de1483b0678e5990030cb4c6e11c3340ae80f9f3aaecf0748e8692e0",
+      "expected_sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+      "expected_bytes": null
+    },
+    {
+      "name": "server",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "key": "heptabao-4e808-mac-full34-prereq-info-server-20261105-r1",
+      "blob": "374f558048d50e69f77d67ce8ce8c141f5d71804",
+      "bytes": 339,
+      "sha256": "5a4ba77dfdc4add97abcc9d22759b2e74eee01b6371e692fa1ebc0a0263d7a95",
+      "expected_sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "expected_bytes": 92398928
+    },
+    {
+      "name": "python",
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "key": "heptabao-4e808-mac-full34-prereq-info-python-20261105-r1",
+      "blob": "7357e682b1f079f6fad8fc235fe4cf387c8238e6",
+      "bytes": 292,
+      "sha256": "8e1c8d6f1d889fda7486732bc70aa24bf6241e489ec8c0e6bbd8b94c6cb5b333",
+      "expected_sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "expected_bytes": 34640
+    },
+    {
+      "name": "git",
+      "path": "/usr/bin/git",
+      "key": "heptabao-4e808-mac-full34-prereq-info-git-20261105-r1",
+      "blob": "1a1f822dfc817d273e9e3689fd02b75812e5824a",
+      "bytes": 203,
+      "sha256": "daa7561e1b9eaef9ab243fdf0a6df61c9fbfaadde5541d4abf303f96bbd6288b",
+      "expected_sha256": null,
+      "expected_bytes": null
+    },
+    {
+      "name": "openssl",
+      "path": "/usr/bin/openssl",
+      "key": "heptabao-4e808-mac-full34-prereq-info-openssl-20261105-r1",
+      "blob": "f2bce81ba7d864127553e934788c74d066dd9ae8",
+      "bytes": 211,
+      "sha256": "7a5b6a834d605fe40cfa3621a91a367d600add4baef53e4facc2eb1ffd3d438d",
+      "expected_sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+      "expected_bytes": 1130832
+    }
+  ],
+  "canonical_membership": [
+    {
+      "name": "driver",
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "bytes": 49393,
+      "canonical_paths": [
+        "qa/openbao-acceptance/kv2_271_lossless_native_live.py"
+      ]
+    },
+    {
+      "name": "native_large",
+      "blob": "6778b602c3a02d56874249fcf873f241846a346f",
+      "sha256": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d",
+      "bytes": 16505,
+      "canonical_paths": [
+        "tools/migration/openbao271_kv2_native_large_migrate.py"
+      ]
+    },
+    {
+      "name": "official_launcher",
+      "blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405",
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+      "bytes": 20008,
+      "canonical_paths": [
+        "qa/openbao-acceptance/official_openbao_launcher.py"
+      ]
+    },
+    {
+      "name": "owned_process",
+      "blob": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "bytes": 28442,
+      "canonical_paths": [
+        "qa/openbao-acceptance/owned_process.py"
+      ]
+    },
+    {
+      "name": "online_evidence",
+      "blob": "6b4615cf5ab093e751f82f76f21e86fb1e1de3b3",
+      "sha256": "3e15bc20dc4d1a75b4bd860252d887981020f1f9781be33d43a1c4ee26900ea9",
+      "bytes": 4395,
+      "canonical_paths": [
+        "qa/openbao-acceptance/online_evidence.py"
+      ]
+    },
+    {
+      "name": "smoke",
+      "blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8",
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "bytes": 16470,
+      "canonical_paths": [
+        "qa/single-node/smoke.py"
+      ]
+    }
+  ],
+  "author_static_checks": 271,
+  "author_selected_receipt_components": 11,
+  "root_reran_author_components": false,
+  "root_whole_source_and_source_diffs_read": true,
+  "all_slots_unbound": true,
+  "inert_publish_go": false,
+  "prepare_process_go": false,
+  "runtime_process_go": false,
+  "standalone_mac_cleanup_scope": "Canonical pre-existing Popen compatibility branch retained, including final wait() after KILL. Positive qualification still requires actual original31/full durable terminal and stopped owned processes; no Linux affine Owner or bounded failure-cleanup claim.",
+  "read_window": "Only after root hands the second read line from Auth after its current in-flight calls have naturally completed; HA remains other line. Six original requests sequential, one native future, full original SDK/hash/version/closed status, no symlink following or replacement paths."
+}

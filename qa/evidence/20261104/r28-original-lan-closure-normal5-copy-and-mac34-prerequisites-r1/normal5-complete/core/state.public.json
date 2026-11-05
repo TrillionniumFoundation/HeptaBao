@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.4e808.normal5.relay.actual-core-recovery.v1",
+  "status": "original_relay_known_complete_core_recovered",
+  "original_job": {
+    "host": "desktop",
+    "job_id": "1a1ac4bdf19-fc05-5366",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true
+  },
+  "original_start_replayed": false,
+  "original_result_read_replayed": false,
+  "original_operation_id": "ba463b00bbd59bf90f034f0c81c9c2f58cd858cec2683e6b240047504571f544",
+  "first_status_timeout_preserved": true,
+  "current_operation_completed_inactive": true,
+  "payload_bytes": 25216,
+  "payload_pages": 4,
+  "core": {
+    "bytes": 18565,
+    "sha256": "de4d20a2eb6551a3f0237f7f6093623f14d06fc08a8af9f75491f00a31bbcbb4",
+    "version": "2050:7361511:18565:1793892021346973242:1793892021346973242"
+  },
+  "checks": 51,
+  "local_owned_children": 3,
+  "all_owned_reaped_and_empty": true,
+  "receiver_five_same_fd_whole_readbacks": true,
+  "independent_destination_infos_completed": 0,
+  "independent_destination_infos_submitted": 0,
+  "original_fixed_command_raw_files_archive_pending": true,
+  "aggregate_fd_ledger_present": false,
+  "runtime_qualification": false,
+  "LAN_prepare_live_GO": false,
+  "source_import_qualification": false,
+  "first_partial_tree": "d9fc33ecb00b223ae7f265fd4bf75cdf31fafdd6"
+}

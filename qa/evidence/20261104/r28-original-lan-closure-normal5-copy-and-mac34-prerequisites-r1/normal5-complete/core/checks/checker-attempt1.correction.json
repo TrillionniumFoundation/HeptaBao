@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.ha.current-normal5.offline-checker-attempt1.correction.v1",
+  "original_attempt_preserved": true,
+  "actual_failed_comparison": "output_complete === 'full'",
+  "actual_observed_type": "boolean",
+  "actual_observed_value": true,
+  "earlier_failure_note_incorrectly_named_output_durable": true,
+  "other_predicate_fix_before_attempt2": "cleanup rows use direct_child_reaped and exit_code; no claim of a separate aggregate FD ledger",
+  "runtime_calls": 0
+}

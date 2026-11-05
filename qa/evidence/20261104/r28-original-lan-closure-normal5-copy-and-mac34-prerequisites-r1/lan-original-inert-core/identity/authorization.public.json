@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.lan-original-request-digest-search-candidate.r1",
+  "status": "ONE_MATCHED_PATH_PENDING_ORIGINAL_REQUEST_BINDING",
+  "candidate": {
+    "path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/request.json",
+    "relative_path": "1a1ac1641eb-fc05-521f/request.json",
+    "job_id": "1a1ac1641eb-fc05-521f",
+    "stdin_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac1641eb-fc05-521f/stdin.bin",
+    "search_id": "042ce2afd8edd720b9d6fb3d274ca58b86ec2de51dd2fc687e66fcf30128d52c",
+    "expected_stdin_bytes": 477056,
+    "expected_stdin_sha256": "2fa460dc1a032ca1f1e453dd4845e80a8e937dcc47e6bc5477b2301fa267f610",
+    "expected_request_digest": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0"
+  },
+  "original_request_blob": "70f27390d318755075562482091b3bf27946b37d",
+  "original_digest_proof": "2c75dc334d4b2fb8ffbc540748f771149ff8017e",
+  "search_intent": {
+    "name": "r27-lan-original-digest-search-intent-exact-anchor.public.json",
+    "blob": "d47cf3868a51fa0c3afcefcb7d2394d54ea9636c",
+    "bytes": 2371,
+    "sha256": "41ec0e58e3a565b57b5c435bac5223d9209338ce73ea762e51adcf49dacf77f1"
+  },
+  "search_start": {
+    "name": "r27-lan-original-digest-search-start.sdk.json",
+    "blob": "cf06d32ff6fcaa5c6cecd0d3573e3523061e04be",
+    "bytes": 1293,
+    "sha256": "e3d1d208acac5bea4d7d7c2620073823728d30dff1a3e1cccfa7336b6d712b0d"
+  },
+  "search_snapshot": {
+    "state": "completed",
+    "snapshot_ready": true,
+    "progressive": false,
+    "committed_results": 1,
+    "next_cursor": null,
+    "statistics": {
+      "bytes": 341337,
+      "coverage_complete": true,
+      "coverage_reasons": [],
+      "coverage_scope": "selected_authorized_regular_single_link_files",
+      "entries": 9800,
+      "extracted_documents": 0,
+      "files": 103,
+      "results": 1,
+      "skipped_binary_or_non_utf8": 0,
+      "skipped_document_invalid": 0,
+      "skipped_document_limited": 0,
+      "skipped_document_unavailable": 0,
+      "skipped_hardlinks": 0,
+      "skipped_large": 0,
+      "skipped_protected": 0,
+      "skipped_special": 0,
+      "skipped_symlinks": 0,
+      "traversal_complete": true,
+      "unreadable": 0
+    }
+  },
+  "preview": {
+    "bytes": 512,
+    "truncated": true,
+    "digest_visible": false
+  },
+  "data_scope": "Native search read 103 pattern-eligible public-request metadata files (341337 bytes) for content matching and returned one truncated preview; no nonmatching request body was returned. Original matched preview remains private pending exact binding.",
+  "limits": "Search coverage applies only to the selected authorized regular single-link files; no full-inventory absence assertion. A matching path alone is not the original process identity or terminal proof.",
+  "next": "Read only the actual matched request.json with full byte/hash/version integrity and original stdin.bin metadata, compare exact original typed request and preserved digest, then bind original job status/streams.",
+  "process_start_replayed": false,
+  "new_process_key": false,
+  "original_lan_delivery_still_unknown": true,
+  "normal5_relay_hold": true
+}

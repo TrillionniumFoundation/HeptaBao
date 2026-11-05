@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.4e808.normal5.metadata-actual.v1",
+  "core_tree": "24cb411cf4c6154df92b9f4913e15fecad3ff593",
+  "authority_exit_code": 0,
+  "core_verified": true,
+  "destination_infos": 5,
+  "checks": 40,
+  "all_original_observations_completed_stored_inactive": true,
+  "original_result_status_timeout_preserved": true,
+  "original_command_file_archive_pending": true,
+  "transport_replayed": false,
+  "consumer_go": false,
+  "LAN_go": false
+}

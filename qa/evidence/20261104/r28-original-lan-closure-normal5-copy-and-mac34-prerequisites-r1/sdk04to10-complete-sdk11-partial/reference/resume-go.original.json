@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.bounded-original-read-two-line-window.r1",
+  "reason": "Serial same-ID status reconciliation still encountered MCP transport timeouts. The independently reviewed public SDK source reads do not depend semantically on the LAN original-job identity recovery.",
+  "supersedes_transport_scheduling_only": true,
+  "scope": [
+    "HA line: already authorized original LAN matched request metadata/identity/authority reconciliation, retaining original request and exact paths.",
+    "Auth line: original fixed SDK requests04–13 from tree9cc81357deaf49fb277df727a6999c276c4286e8; unchanged typed arguments, original private keys, path/versions/offsets and limits."
+  ],
+  "maximum_concurrent_read_lines": 2,
+  "maximum_owned_native_read_futures_per_line": 1,
+  "root_additional_runtime_calls_during_window": 0,
+  "product_process_start_allowed": false,
+  "business_replay_allowed": false,
+  "new_key_after_unknown_allowed": false,
+  "read_only_same_identity_reconciliation": "On transport error, preserve original SDK. At most one deliberate same operation ID+offset status/result reconciliation, or identical typed original operation_start/key to recover its admission if ACK is lost; no changed argument/new key. Stop that line after a second unresolved observation.",
+  "required": "Native result must be complete, hash/size/version checked and operation completed/inactive before the next native read on that line. Preserve every prior error. No SDK code import/execution, guard relaxation, product fixture, provider/credential/legacy modification.",
+  "unchanged_business_budgets": true,
+  "qualification_does_not_follow_from_tool_recovery": true,
+  "previous_one_line_window_retained_as_historical": true
+}

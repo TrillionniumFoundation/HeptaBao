@@ -1,0 +1,453 @@
+{
+  "schema": "heptabao.mac-x230-lan-r28-evidence-manifest.v1",
+  "as_of_utc": "2026-11-05T15:59:15Z",
+  "previous_commit": "eee0e46af0891db43c1e3c6317f09f777abadf23",
+  "prefix": "qa/evidence/20261104/r28-original-lan-closure-normal5-copy-and-mac34-prerequisites-r1",
+  "packets": [
+    {
+      "tree": "c99fe571b39012301c8c2273b02414b9be5ff0d7",
+      "key": "r28_lan_original_request_identity",
+      "name": "lan-original-request-identity",
+      "files": 33,
+      "bytes": 78375,
+      "merkle_trees": 15,
+      "path": "lan-original-request-identity"
+    },
+    {
+      "tree": "a5795dd12ccfcc81c141dede62bc79d873cb3473",
+      "key": "r28_lan_original_authority",
+      "name": "lan-original-authority",
+      "files": 9,
+      "bytes": 6189,
+      "merkle_trees": 5,
+      "path": "lan-original-authority"
+    },
+    {
+      "tree": "e531af591121f5ea15ed92a81ea1a582f4ebd6c5",
+      "key": "r28_lan_original_inert_core",
+      "name": "lan-original-inert-core",
+      "files": 57,
+      "bytes": 170784,
+      "merkle_trees": 28,
+      "path": "lan-original-inert-core"
+    },
+    {
+      "tree": "e99062f02573e0300c1a8c64495411e86eb15667",
+      "key": "r28_lan_original_receipt",
+      "name": "lan-original-receipt",
+      "files": 20,
+      "bytes": 52423,
+      "merkle_trees": 10,
+      "path": "lan-original-receipt"
+    },
+    {
+      "tree": "bdb1dd296ac147ddcd355655814df099e59c571d",
+      "key": "r28_mac_current34_source",
+      "name": "mac-current34-source",
+      "files": 54,
+      "bytes": 736923,
+      "merkle_trees": 14,
+      "path": "mac-current34-source"
+    },
+    {
+      "tree": "3e6899728e264ea609c5dcfa9d3940b6ae08d0ce",
+      "key": "r28_normal5_relay_execution_intent",
+      "name": "normal5-relay-execution-intent",
+      "files": 3,
+      "bytes": 4919,
+      "merkle_trees": 1,
+      "path": "normal5-relay-execution-intent"
+    },
+    {
+      "tree": "7ebc71e001655f222bcf74d48e966e98b1f48c4a",
+      "key": "r28_normal5_relay_original_ack",
+      "name": "normal5-relay-original-ack",
+      "files": 2,
+      "bytes": 1778,
+      "merkle_trees": 1,
+      "path": "normal5-relay-original-ack"
+    },
+    {
+      "tree": "106b31306f15d34e977f466c4fef042d38dd002f",
+      "key": "r28_normal5_relay_original_authority",
+      "name": "normal5-relay-original-authority",
+      "files": 8,
+      "bytes": 5817,
+      "merkle_trees": 5,
+      "path": "normal5-relay-original-authority"
+    },
+    {
+      "tree": "6fc7c9b76208bfdba84106373644eef97fb7cb3f",
+      "key": "r28_sdk04to10_complete_11_partial",
+      "name": "sdk04to10-complete-sdk11-partial",
+      "files": 226,
+      "bytes": 3124632,
+      "merkle_trees": 82,
+      "path": "sdk04to10-complete-sdk11-partial"
+    },
+    {
+      "tree": "d9fc33ecb00b223ae7f265fd4bf75cdf31fafdd6",
+      "key": "r28_normal5_relay_partial",
+      "name": "normal5-relay-partial",
+      "files": 39,
+      "bytes": 44373,
+      "merkle_trees": 19,
+      "path": "normal5-relay-partial"
+    },
+    {
+      "tree": "ecf2bc28449d7a0b7306171fe1e5f361a86c310b",
+      "key": "r28_sdk11_remaining_handoff",
+      "name": "sdk11-remaining-handoff",
+      "files": 4,
+      "bytes": 11094,
+      "merkle_trees": 1,
+      "path": "sdk11-remaining-handoff"
+    },
+    {
+      "tree": "2d3023fa1d4efd5b34148901fefe9c7bdb2600d3",
+      "key": "r28_auth_renewal_semantics",
+      "name": "auth-renewal-semantics",
+      "files": 14,
+      "bytes": 1891406,
+      "merkle_trees": 4,
+      "path": "auth-renewal-semantics"
+    },
+    {
+      "tree": "e049198ac8e32db82bedbd1ebc1a1f88eec3c71d",
+      "key": "r28_normal5_complete",
+      "name": "normal5-complete",
+      "files": 145,
+      "bytes": 430417,
+      "merkle_trees": 68,
+      "path": "normal5-complete"
+    },
+    {
+      "tree": "7335151a16006015891c4fe62655d7907f8fedc1",
+      "key": "r28_mac_current34_metadata",
+      "name": "mac-current34-metadata",
+      "files": 96,
+      "bytes": 251705,
+      "merkle_trees": 12,
+      "path": "mac-current34-metadata"
+    },
+    {
+      "tree": "92f35f9c630268bc84478209b9c44931fd7cea66",
+      "key": "r28_auth_renewal_fake10",
+      "name": "auth-renewal-fake10",
+      "files": 24,
+      "bytes": 764981,
+      "merkle_trees": 8,
+      "path": "auth-renewal-fake10"
+    }
+  ],
+  "packet_files": 734,
+  "packet_bytes": 7575816,
+  "packet_merkle_trees": 273,
+  "root_files_including_state_and_manifest": 35,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r27-checkpoint-create-tree.sdk.json",
+      "blob": "57f835ed251168bf669f7e229c060ac9c5454120",
+      "bytes": 143,
+      "sha256": "6cda457b89d754cbe6c4c2cd2665b4e770c14aa064856912be5b4606f3d20edd",
+      "path": "r27-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-root-tree-read.sdk.json",
+      "blob": "5c1ec7bf74b17d5a4d2ad6abe116a6f4df35dac2",
+      "bytes": 13822,
+      "sha256": "d3c06dd4969b20f52bfa011d5bbeaafe8bc3492818e0e0f170d682a04a6ebe0b",
+      "path": "r27-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-create-commit.sdk.json",
+      "blob": "9afd82725f43f4718fb120088853ad21ec51be5d",
+      "bytes": 143,
+      "sha256": "d6162da0275e0207808b79721bdfde8761be318b713b956699222ed0af22572d",
+      "path": "r27-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-commit-read.sdk.json",
+      "blob": "c6954ad246df38972e7afd16903281f644e96883",
+      "bytes": 3418,
+      "sha256": "c9764d8a76be39470b09e8c56ad992d2399269d7d761305cd21ef69c491108d4",
+      "path": "r27-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-update-ref.sdk.json",
+      "blob": "25c0785cffec588b7b3b24bf3b643fd5c1f37705",
+      "bytes": 109,
+      "sha256": "40222101ee97b4f8d77eb5c78634ffda639fe20753cc498a6e8652a6cf156550",
+      "path": "r27-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-checkpoint-branch-read.sdk.json",
+      "blob": "8891f339a5e95f9ed4f1e9dd3a71388acb67105b",
+      "bytes": 9337,
+      "sha256": "e9390b41ef5e343457db548073df22601a2a80ed6e5e3d174231226661b3d6fb",
+      "path": "r27-publication/branch-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-pre-publication-tree-proof.public.json",
+      "blob": "20306ab655244a06929d23e5edfdde99161d685e",
+      "bytes": 664,
+      "sha256": "faa7d704693f868a76c6d997167cd1b1552a24a9e514e434fef3216fb1c0eee9",
+      "path": "r27-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r27-post-publication-proof.public.json",
+      "blob": "77f5c8233d164c71230e4f885855d0322dd6dcb0",
+      "bytes": 2419,
+      "sha256": "585989319023e81a8ff59e593f6d5c2a94a3208b4df697d7c32304ba61621535",
+      "path": "r27-publication/post-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-identity-authority-root-verifier.js",
+      "blob": "df8e7f25e7aafca18b47d110381d8a5f804d7737",
+      "bytes": 7619,
+      "sha256": "61268d28d3cf807549d961626948ca7367307b346802e9f760d7ba19b0bc03e4",
+      "path": "root/r28-lan-original-identity-authority-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-identity-authority-root-review.public.json",
+      "blob": "297b09a7c779c30cac2fe8abadda78ae538db7c7",
+      "bytes": 5618,
+      "sha256": "95f93751938938aaaf89bf262a189f3193f7b534e41d9ed188beb27a37bca5eb",
+      "path": "root/r28-lan-original-identity-authority-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-inert-core-root-verifier.js",
+      "blob": "2f758733726aa8c9ed9834f55bafd55a01a6f871",
+      "bytes": 4385,
+      "sha256": "9719a52ed074fe0dd77525de8b593a3ca2540a2d6aba65f602dba9052a46cfee",
+      "path": "root/r28-lan-original-inert-core-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-inert-core-root-review.public.json",
+      "blob": "4635e272531eaeaa0763afa9185201d2fb4d29cb",
+      "bytes": 3873,
+      "sha256": "058e831bb891123b1fd27eb58847c775bc52f5bb8d9f4e67fb1913e682b44049",
+      "path": "root/r28-lan-original-inert-core-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-relay-original-go-hold-release.public.json",
+      "blob": "91fd8f3b6289c176e9ec1f0a5156e3bc61ca5dd9",
+      "bytes": 2836,
+      "sha256": "d6e9fb58e4dc39f5f7ab644cf0b6e99223e7aecebeaa7e0ce0aff3644616a7a7",
+      "path": "root/r28-normal5-relay-original-go-hold-release.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-original-digest-search-result.sdk.json",
+      "blob": "73e5b65bc89b4f0c60af557a7f67801cdee35003",
+      "bytes": 2244,
+      "sha256": "fdc055d3f26f08e65dba64d509bb89726369ea4d63fa12ce217ecae5b249a38b",
+      "path": "root/r28-original-digest-search-result.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-original-digest-search-result.native.json",
+      "blob": "7dfdde595b18ebdee2e590f5b6bc3a2727765e9f",
+      "bytes": 1964,
+      "sha256": "103933602c200283cb90dd79bf4689781db963cc0b0aff848b7a3891dc6cf648",
+      "path": "root/r28-original-digest-search-result.native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-search-original-result-publication-scope.public.json",
+      "blob": "51c6d1264721b69c23167e6bd0175f99c0c70b31",
+      "bytes": 1013,
+      "sha256": "b96dae5ad2d3536a275d4e94dc12fe972f467cb77e63d24eafbfcbc1fc69cc48",
+      "path": "root/r28-search-original-result-publication-scope.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-receipt-root-verifier.js",
+      "blob": "a25c3ddf24ea7dbbe84dd7e9258bafbd27f9d5e3",
+      "bytes": 3525,
+      "sha256": "b98af4c36014f9afd4581c907db1fc296408e17673b09e8f8628d8e79af0c40a",
+      "path": "root/r28-lan-original-receipt-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-lan-original-receipt-root-review.public.json",
+      "blob": "267aef8d4d5cc9215306d08fdc08ea0a6cc6fc29",
+      "bytes": 2271,
+      "sha256": "4217e1215943600e7a14b0917ba2c5ac33d5ddc77ac1b32bccfb387023a51895",
+      "path": "root/r28-lan-original-receipt-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-mac-current34-source-six-read-root-review.public.json",
+      "blob": "69c6625843b887e51029846d8ac44249d19b0fa8",
+      "bytes": 7074,
+      "sha256": "27a138148baf4a0bb530b715317a031f424061a6cf9c032ec2ccf53e1af0c5d2",
+      "path": "root/r28-mac-current34-source-six-read-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-original-ack-authority-root-review.public.json",
+      "blob": "18aad60153062fd87dcdc4a261677bd8a80bf061",
+      "bytes": 1609,
+      "sha256": "72144c208cbf847161d0521d72b33b639e916a3879c80269a7a50e4a88fcd574",
+      "path": "root/r28-normal5-original-ack-authority-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-read-line-handoff-and-original-recovery.public.json",
+      "blob": "6e6e472415916dfde5a08063dcbaaecba1c4fdb0",
+      "bytes": 2544,
+      "sha256": "d4121630aa28622757bd881d7e9230d3dbbe6f88c779c300db8c6701b65de010",
+      "path": "root/r28-read-line-handoff-and-original-recovery.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-sdk04to10-sdk11-partial-root-verifier.js",
+      "blob": "e075cbbe31a4d7e17ff1a50b63d3484173f362a8",
+      "bytes": 5379,
+      "sha256": "fe9afb15a6901bb9990bceb30dfc344b180116e119566e908cd188ab5fa50250",
+      "path": "root/r28-sdk04to10-sdk11-partial-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-sdk04to10-sdk11-partial-root-review.public.json",
+      "blob": "05bc0d3511efcb4936feabecdbb4ebb970c36927",
+      "bytes": 19677,
+      "sha256": "6e01f22fc506009f1ae098cbe6eab8de2c39646557747c4c134bcea65106147d",
+      "path": "root/r28-sdk04to10-sdk11-partial-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-core-destinations-root-verifier.js",
+      "blob": "f9800058122e92a7236fb2273e332568c1b552f5",
+      "bytes": 12295,
+      "sha256": "a674f6b74c6c89c889131ad5f62a99efe12b71184bb00c5be09b9b72fcf1b8d2",
+      "path": "root/r28-normal5-core-destinations-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-core-destinations-root-review.public.json",
+      "blob": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+      "bytes": 13656,
+      "sha256": "601defe23186ef7c6834017f481a49b01aff4890a643d6d844c0552e5d726724",
+      "path": "root/r28-normal5-core-destinations-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-auth-renewal-semantics-root-review.public.json",
+      "blob": "8205226b96b8d4d287426b5c53bc2ed6a9762be5",
+      "bytes": 5185,
+      "sha256": "729ed9bb688445a366191b2aa0099f911211e2932ea88c11f16c2e945ad69835",
+      "path": "root/r28-auth-renewal-semantics-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-read-line-b-sdk-original-page-recovery-go.public.json",
+      "blob": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+      "bytes": 2198,
+      "sha256": "7d483c07b17d41b9043ebccfcf0cc4059a3a284794404de641a9ff034fb39241",
+      "path": "root/r28-read-line-b-sdk-original-page-recovery-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-original-command-files-root-verifier.js",
+      "blob": "ac5d52250da9191cafc1b50cefd073073917a89f",
+      "bytes": 6421,
+      "sha256": "3c5776c8825f11eaddd35d997602e77210ca3be0f858bbd5ad66d93532e9bbc5",
+      "path": "root/r28-normal5-original-command-files-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-normal5-original-command-files-root-review.public.json",
+      "blob": "77164d9ff9108e2aa218f5964eb6b19181182e10",
+      "bytes": 6838,
+      "sha256": "55d51a51d0dff2ba1f1c64a6d7d628eed208c870cd6c1a79cf800cd3b096856a",
+      "path": "root/r28-normal5-original-command-files-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-pre-branch-read.sdk.json",
+      "blob": "797e6a1cc4a9230d11b772a5cb14fbfb1c2e293c",
+      "bytes": 9454,
+      "sha256": "9afb46876156d93fe7fbbccf2cf382a248a21a54bad67080686f90c369f90632",
+      "path": "publication/pre-branch-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-mac-six-prerequisite-root-verifier.js",
+      "blob": "eedac4e43465e99e4798573f8f17977abf33859c",
+      "bytes": 6094,
+      "sha256": "4a9309cfdf7927da7ed689b2aff571202b5a384161aa1467c5ace75727519df8",
+      "path": "root/r28-mac-six-prerequisite-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-mac-six-prerequisite-root-review.public.json",
+      "blob": "b137fc849b441e3e70e44a0c29cbf6d8bb3676ca",
+      "bytes": 11797,
+      "sha256": "f62334d4b31e6067ad6d29337b0155847f4ede8ff6a9460b0c97a1b182939448",
+      "path": "root/r28-mac-six-prerequisite-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-auth-renewal-fake10-root-review.public.json",
+      "blob": "4253c59eadd68594ec84dbbc63927da7404b5ef7",
+      "bytes": 1400,
+      "sha256": "1c3ed66630dd62f0cbc494496da771c7dc6d8cc4abef0649b0e7a0381c18deac",
+      "path": "root/r28-auth-renewal-fake10-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-state.public.json",
+      "blob": "a7a2245dd308c779bdfa12371d4758e333b69795",
+      "bytes": 54912,
+      "sha256": "72c0415f9ff5ad325cb8554071bcaab586995054139be441e1eec0e7fa42a2ee",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "name": "r28-checkpoint.md",
+      "blob": "0a0e0ec6e91b128f635f06c6cbec42b86823b597",
+      "bytes": 274191,
+      "sha256": "ffc82506b23de794802a7c441abd44e9617b21c11950fc65046773c621e07d40",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "1a01206840998ebd83e3b2f5e427b2e9dd8fd03b"
+    },
+    {
+      "name": "r28-checkpoint-index.public.json",
+      "blob": "6f338d0f5ed2e1d1de89363d95c4b931bcc80bc8",
+      "bytes": 568531,
+      "sha256": "33ff005b1324684efac9bea9a104870795413aaa18975e691f17520954090487",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "fdf9569cb836d8af7e2227fcc7888524e1203708"
+    }
+  ],
+  "integrity": {
+    "whole_blob_bytes_sha256_git_object_verified": true,
+    "all_packet_merkle_subtrees_verified": true,
+    "all_prior_non_document_leaves_preserved": true,
+    "whole_previous_document_preserved": true,
+    "original_index_raw_bytes_preserved_except_first_asof_and_new_append": true,
+    "original_int64_tokens_not_reserialized": true,
+    "no_business_or_unknown_replay": true,
+    "no_production_cutover_or_legacy_deletion": true,
+    "complete_packet_integrity_does_not_grant_runtime_qualification": true,
+    "freeze_includes_only_listed_immutable_packets": true
+  }
+}

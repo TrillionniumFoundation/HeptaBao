@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.current-normal5-relay-actual-partial.r1",
+  "status": "ORIGINAL_JOB_EXIT0_FULL_TERMINAL_DETAIL_READ_STATUS_TIMEOUT",
+  "job_id": "1a1ac4bdf19-fc05-5366",
+  "request_blob": "337709a2869237259b8576b63623e7b74f138fb8",
+  "request_sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff",
+  "original_idempotency_key": "heptabao-4e808-normal5-artifact-relay-r1-075193b0",
+  "process_start_calls": 1,
+  "request_digest": "43bb7a190fbb90bea6ad76047138e5c30525bf5bda9b6d3c06dc5b791916ecc9",
+  "request_fingerprint": "4880628869242785982",
+  "original_request_unchanged": true,
+  "authority": {
+    "exit_code": 0,
+    "state": "succeeded",
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "stdout_bytes": 365,
+    "stderr_bytes": 0
+  },
+  "terminal": {
+    "all_owned_stopped": true,
+    "compiler_started": false,
+    "elapsed_after_publication_seconds": 3.6389090640004724,
+    "git_operations": 0,
+    "publication_within_original_deadline": true,
+    "receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/result.public.json",
+    "server_started": false,
+    "status": "transferred"
+  },
+  "result_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/result.public.json",
+    "sha256": "de4d20a2eb6551a3f0237f7f6093623f14d06fc08a8af9f75491f00a31bbcbb4",
+    "size": 18565,
+    "version": "2050:7361511:18565:1793892021346973242:1793892021346973242"
+  },
+  "detail_body_observation": {
+    "operation_id": "ba463b00bbd59bf90f034f0c81c9c2f58cd858cec2683e6b240047504571f544",
+    "ack_known": true,
+    "first_status_isError": true,
+    "first_status_error": "MCP -32603 request timed out",
+    "future_inactive_proven": false,
+    "immutable_result_pages_observed": 0,
+    "native_body_observed": false
+  },
+  "owned_cleanup_summary_claimed_true": true,
+  "owned_cleanup_detail_observed": false,
+  "commands_original_archived": 0,
+  "destination_info_complete": 0,
+  "new_observation_admissions_paused": true,
+  "current_tool_calls_inflight": 0,
+  "no_product_execution": true,
+  "consumer_binding_authorized": false,
+  "normal5_actual_fully_qualified": false,
+  "LAN_source_readbacks_paused": true,
+  "followup_rule": "Only the same original body operation may be reconciled after root schedules it. No new binary_read, process_start, key, destination recreation, or product action."
+}

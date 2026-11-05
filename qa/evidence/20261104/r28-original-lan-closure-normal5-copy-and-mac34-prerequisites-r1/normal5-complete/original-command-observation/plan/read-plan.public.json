@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.4e808.normal5.original-command-archive-read.v1",
+  "request": {
+    "idempotency_key": "ha-4e808-normal5-relay-original10-public-files-r1-20261105",
+    "operation": {
+      "tool": "read_multiple_files",
+      "arguments": {
+        "host": "desktop",
+        "paths": [
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/intent.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/ssh-preflight.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/rog-ts-effective-config.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/send-rog.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/receive-desktop.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/rog-ts-effective-config.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/rog-ts-effective-config.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/send-rog.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/receive-desktop.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/control/receive-desktop.stdout"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 131072
+      }
+    }
+  },
+  "source_blob": "29e860e99ae64e317a8e224b8fdfe42dddea88a7",
+  "source_log_file_function": "CONTROL / (label + '.' + suffix)",
+  "source_command_record": "CONTROL / (label + '.public.json')",
+  "labels": [
+    "rog-ts-effective-config",
+    "send-rog",
+    "receive-desktop"
+  ],
+  "sender_stdout": "Original binary stream piped directly to receiver stdin; no separate stdout file was created or requested.",
+  "fixed_files": [
+    "intent.public.json",
+    "ssh-preflight.public.json",
+    "rog-ts-effective-config.public.json",
+    "send-rog.public.json",
+    "receive-desktop.public.json",
+    "rog-ts-effective-config.stdout",
+    "rog-ts-effective-config.stderr",
+    "send-rog.stderr",
+    "receive-desktop.stderr",
+    "receive-desktop.stdout"
+  ],
+  "only_existing_public_files": true,
+  "no_listing": true,
+  "no_child": true,
+  "no_product": true
+}

@@ -1,0 +1,99 @@
+--- before/selected-checks.py
++++ after/selected-checks.py
+@@ -32,15 +32,23 @@
+         self.reads.append((str(path),cap))
+         return json.dumps({'tokens':[TOKEN]}).encode()
+ class FakeClient:
+-    def __init__(self,delta=5):self.rows=[];self.delta=delta;self.override={}
++    def __init__(self,delta=5,*,saturated=False):
++        self.rows=[];self.delta=delta;self.override={}
++        self.pre_now,self.renew_now,self.post_now=(
++            (1500,1501,1502) if saturated else (1000,1000+max(delta,0),1000+max(delta,0)))
++        self.pre_expiry,self.post_expiry=(1600,1600) if saturated else (1180,1180+delta)
++        assert 1000<=self.pre_now<=self.renew_now<=self.post_now
+     def call(self,label,method,route,body=None,*,token=None,expected=200,validate=None):
+         self.rows.append({'label':label,'method':method,'route':route,'body':body,'expected':expected})
+         assert token==TOKEN
+-        if label.startswith('lookup-self-before-'):value=lookup()
+-        elif label.startswith('lookup-self-after-'):value=lookup(ttl=175,expiry=1180+self.delta)
++        if label.startswith('lookup-self-before-'):
++            value=lookup(ttl=self.pre_expiry-self.pre_now,expiry=self.pre_expiry)
++        elif label.startswith('lookup-self-after-'):
++            value=lookup(ttl=self.post_expiry-self.post_now,expiry=self.post_expiry)
+         elif label.startswith('renew-self-'):
+             assert method=='POST' and body=={}
+-            value={'auth':{'client_token':TOKEN,'accessor':ACCESSOR,'renewable':True,'lease_duration':180}}
++            value={'auth':{'client_token':TOKEN,'accessor':ACCESSOR,'renewable':True,
++                          'lease_duration':self.post_expiry-self.renew_now}}
+         else:value={}
+         if route in self.override:value=copy.deepcopy(self.override[route])
+         if validate is not None:validate(value)
+@@ -49,8 +57,8 @@
+ def record(name,value):
+     assert value,name
+     checks.append({'case':name,'passed':True})
+-def run_chain(delta):
+-    client=FakeClient(delta);guard=FakeGuard();secrets=set()
++def run_chain(delta,*,saturated=False):
++    client=FakeClient(delta,saturated=saturated);guard=FakeGuard();secrets=set()
+     private=g['token_lifecycle_before'](client,guard,'initial',secrets)
+     client.rows.append({'label':'existing-canonical-and-inbox-operation'})
+     public=g['token_lifecycle'](client,'initial',private)
+@@ -74,7 +82,19 @@
+ record('same_second_legal_renew_is_not_extension',
+     same['renewed'] is True and same['revoked'] is True
+     and same['expiryExtensionObserved'] is False and same['expiryObservation']=='unchanged'
+-    and same['expiryDeltaSeconds']==0 and len(same_guard.reads)==1)
++    and same['expiryDeltaSeconds']==0 and len(same_guard.reads)==1
++    and same['lookupBefore']['ttlSeconds']==same['lookupAfter']['ttlSeconds']==180
++    and same['lookupBefore']['expiresAtUnix']==same['lookupAfter']['expiresAtUnix']==1180
++    and same['renewalLeaseTtlSeconds']==180)
++saturated_client,_,_,saturated=run_chain(0,saturated=True)
++record('maximum_saturation_200_has_no_extension',
++    saturated['renewed'] is True and saturated['revoked'] is True
++    and saturated['expiryExtensionObserved'] is False and saturated['expiryObservation']=='unchanged'
++    and saturated['expiryDeltaSeconds']==0
++    and saturated['lookupBefore']=={'ttlSeconds':100,'expiresAtUnix':1600,'renewable':True}
++    and saturated['lookupAfter']=={'ttlSeconds':98,'expiresAtUnix':1600,'renewable':True}
++    and saturated['renewalLeaseTtlSeconds']==99
++    and [row['expected'] for row in saturated_client.rows if row['label']=='renew-self-initial']==[200])
+ _,_,_,decreased=run_chain(-1)
+ record('decreased_expiry_is_observed_not_qualified',
+     decreased['revoked'] is True and decreased['expiryExtensionObserved'] is False
+@@ -96,6 +116,17 @@
+         str(error)=='actual_renewal_same_credential_accessor_and_ttl'
+         and bad_client.rows[-1]['label']=='renew-self-initial')
+ else:raise AssertionError('renew credential accepted')
++accessor_client=FakeClient();accessor_guard=FakeGuard()
++accessor_private=g['token_lifecycle_before'](accessor_client,accessor_guard,'initial',set())
++accessor_client.override['auth/token/renew-self']={'auth':{'client_token':TOKEN,'accessor':'other',
++   'renewable':True,'lease_duration':180}}
++try:g['token_lifecycle'](accessor_client,'initial',accessor_private)
++except Refused as error:
++    record('wrong_renewed_accessor_refused_without_continuation',
++        str(error)=='actual_renewal_same_credential_accessor_and_ttl'
++        and accessor_client.rows[-1]['label']=='renew-self-initial'
++        and len(accessor_client.rows)==3)
++else:raise AssertionError('renew accessor accepted')
+ negative_values=[lookup(ttl=True),lookup(ttl=0),lookup(ttl=601),lookup(renewable=False)]
+ refused=0
+ for value in negative_values:
+@@ -114,15 +145,15 @@
+   if isinstance(x,ast.Assign) and len(x.targets)==1 and isinstance(x.targets[0],ast.Name)}
+ changed_assign=[name for name in old_assign if old_assign[name]!=new_assign.get(name)]
+ assert changed_assign==['BINDING_READY'] and new_assign['BINDING_READY']=='False'
+-report={'schema':'heptabao.renewal-lookup-increment-pure-selected-checks.r1',
++report={'schema':'heptabao.renewal-lookup-increment-pure-selected-checks.r2',
+  'status':'passed','selectedFunctionCount':3,'caseCount':len(checks),'checks':checks,
+  'topLevelFunctionsAndClassesUnchanged':unchanged,
+  'modifiedExistingDefinitions':modified,'onlyChangedTopLevelAssignment':'BINDING_READY=False',
+  'completeModuleCompiledOnly':True,'completeModuleImportedOrExecuted':False,
+  'actualHostAccess':False,'actualNetwork':False,'actualSqlite':False,'actualChild':False,
+  'actualCredential':False,'fakeTokenFileReadCountPerChain':1,
+- 'scope':'Eight selected pure/mock groups; not a service, expiry extension, SDK selector, or runtime qualification.',
+- 'increasedCase':public,'unchangedCase':same,'decreasedCase':decreased}
++ 'scope':'Ten selected pure/mock groups with consistent integer-clock inputs; not a service, expiry extension, SDK selector, or runtime qualification.',
++ 'increasedCase':public,'unchangedCase':same,'decreasedCase':decreased,'saturatedCase':saturated}
+ raw=json.dumps(report,indent=2,sort_keys=True)+'\n'
+ assert TOKEN not in raw and ACCESSOR not in raw
+ (BASE/'result.public.json').write_text(raw)

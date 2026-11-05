@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.lan-original-inert-receipt-readback.r1",
+  "core_tree": "e531af591121f5ea15ed92a81ea1a582f4ebd6c5",
+  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/inert-stage.result.public.json",
+  "bytes": 7519,
+  "sha256": "62e31bfb647267d245f063da95d1269c502abf88818d3c01e309ff517e563288",
+  "version": "2050:7360981:7519:1793888506753279333:1793888506807390690",
+  "lossless_json_exact_to_original_full_stdout": true,
+  "final_lf": true,
+  "info_and_body_operations_closed": true,
+  "source_independent_readbacks_remaining": 9,
+  "no_prepare_live_or_relay": true
+}

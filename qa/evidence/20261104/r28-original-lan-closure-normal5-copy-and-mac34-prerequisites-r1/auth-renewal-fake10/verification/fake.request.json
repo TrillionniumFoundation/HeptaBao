@@ -1,0 +1,6 @@
+{
+  "cmd": "python3 -I -S -B /tmp/heptabao_renewal_fake_r2_grf3_e7n/selected-checks.r2.py",
+  "workdir": "/tmp",
+  "yield_time_ms": 10000,
+  "max_output_tokens": 5000
+}

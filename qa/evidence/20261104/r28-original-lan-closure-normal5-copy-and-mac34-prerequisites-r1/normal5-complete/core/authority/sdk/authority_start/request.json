@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-normal5-relay-authority-r1-1a1ac4bdf19",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ac4bdf19-fc05-5366"
+    }
+  }
+}

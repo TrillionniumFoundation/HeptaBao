@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.lan-original-authority-bound.r1",
+  "identity_packet": "c99fe571b39012301c8c2273b02414b9be5ff0d7",
+  "checks": {
+    "job_id": true,
+    "launch_nonce": true,
+    "terminal_protocol": true,
+    "terminal": true,
+    "full": true,
+    "streams": true,
+    "observer_closed": true
+  },
+  "receipt_and_source_actual_readback_complete": false
+}

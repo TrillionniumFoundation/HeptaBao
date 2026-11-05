@@ -1,0 +1,11 @@
+# Fixed SDK continuation: complete prefix, unresolved selection
+
+The original public reads are complete through sequence 10. The selector byte range is exactly [0, 589824), from nine independently bound 65,536-byte chunks. Its prefix SHA-256 is fd3b2b87350c228e8a8d74e7ffb4e4a8e739304555dce3c6e9bde09cfda0b52b. All 589,824 bytes decode as UTF-8 without trimming. This is a prefix, not the 673,468-byte whole file; 83,644 bytes remain unverified. The final line is incomplete.
+
+Within this prefix, `registry-DtLZ3rba.js` exports `i` and `r` are imported as `listRegisteredAgentHarnesses` and `getRegisteredAgentHarness` at line 43. The policy resolver is imported at line 35; support comparison and context building are imported at line 106. These names have no further occurrences in the obtained prefix. There is no `selectAgentHarness` definition or occurrence and no export statement. Therefore the export alias `selector.o` and its implementation are still outside the verified material. No inference about the enabled, selected, or unused owner follows from the imports.
+
+The existing worker calls the whole loader's `loader.t`, then `selector.o`, and requires the returned harness to be the same object as `registry.r("codex")?.harness`. The existing enabled-plugin predicate diagnostic did not execute that chain. Its known namespace failure must not be converted into proof that the offending enabled plugin was unused.
+
+Sequence 11's original read is completed/inactive, but only the first 16,384 bytes of its 87,804-byte immutable result envelope have been recovered. The failed result pages at offsets 16,384 and 32,768 do not represent a new or running native read. They also do not supply a verified selector chunk. Sequence 12 and sequence 13 remain unsubmitted. The exact original continuation is recorded in REMAINING.public.json and requires the root's reopened window.
+
+After the original envelope is reconstructed and the final two requests complete, concatenate selector bytes before decoding; verify all three full expected SHA-256 values. Then read the actual export map, selection implementation, and full registry implementation. SDK execution, changed guard admission, and selected-owner qualification remain separate and unperformed.

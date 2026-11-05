@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.r28.read-line-handoff-and-original-result-recovery.r1",
+  "scope": "At most two Runtime read lines; root issues no Runtime calls.",
+  "line_A": {
+    "owner": "ha_validation",
+    "original_result_body_operation": "ba463b00bbd59bf90f034f0c81c9c2f58cd858cec2683e6b240047504571f544",
+    "permit": "One deliberate same-ID status reconciliation after first MCP timeout, then original immutable payload pages. If status remains unknown, one original result first page may be retrieved but no new native read until completed/inactive is proven. Stop after second unresolved observation. Continue original normal5 receipt and destination metadata closure once known."
+  },
+  "line_B": {
+    "from": "authbus_migration",
+    "to": "compatibility_audit",
+    "handoff_basis": "Auth reports zero in-flight calls; original SDK11 native read is already completed/inactive; its two failed immutable result-page RPCs have both returned. No SDK12/13 admission.",
+    "approved_six_request_review": "69c6625843b887e51029846d8ac44249d19b0fa8",
+    "original_request_blobs": [
+      "de9a867d9a0b81cc3bab43ebe6d7f013fa1985fd",
+      "e9b245dc293098da31c3d6ef61ba67966933e2de",
+      "374f558048d50e69f77d67ce8ce8c141f5d71804",
+      "7357e682b1f079f6fad8fc235fe4cf387c8238e6",
+      "1a1f822dfc817d273e9e3689fd02b75812e5824a",
+      "f2bce81ba7d864127553e934788c74d066dd9ae8"
+    ],
+    "permit": "Six fixed Mac file_info requests in original order, one native future, exact original keys/args. Original SDKs externally preserved before parsing. Every original payload/metadata and completed/inactive close before next native request. At most one deliberate same-ID or identical typed admission reconciliation after transport error; no new key, path substitution, symlink following or business process."
+  },
+  "paused_Auth": {
+    "complete_reads": 10,
+    "read11_original_operation": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "native_future_active": false,
+    "original_payload_total": 87804,
+    "original_payload_bytes_obtained": 16384,
+    "failed_page_offsets": [
+      16384,
+      32768
+    ],
+    "reads12_13_submitted": false,
+    "full_selector_qualified": false,
+    "selected_owner_qualified": false,
+    "future_resumption": "Only original operation ID and original offsets; preserve failed page observations and never rerun the native read."
+  },
+  "all_product_budgets_unchanged": true,
+  "Mac_inert_prepare_live_GO": false,
+  "no_production_cutover": true,
+  "no_legacy_deletion": true
+}

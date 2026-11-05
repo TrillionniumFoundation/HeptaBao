@@ -1,0 +1,1099 @@
+{
+  "candidate_blob": "e425cc860822cd43a7c851ca93e9e8aa8d510537",
+  "candidate_bytes": 16519,
+  "candidate_module_executed": false,
+  "candidate_sha256": "99504e0cb86801282b26fcc1cb2549dfaebd91574f3a92753ba9fa66d890aa74",
+  "check_count": 271,
+  "checks": [
+    {
+      "name": "source_ast_compiles_without_execution",
+      "passed": true
+    },
+    {
+      "name": "original_need_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "original_sha_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "original_save_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "original_enc_byte_equal",
+      "passed": true
+    },
+    {
+      "name": "no_x230_transfer_admission_in_candidate",
+      "passed": true
+    },
+    {
+      "name": "ready_false",
+      "passed": true
+    },
+    {
+      "name": "single_original_product_run_call",
+      "passed": true
+    },
+    {
+      "name": "original_product_run_expression_exact",
+      "passed": true
+    },
+    {
+      "name": "readonly_prepare_has_no_product_calls",
+      "passed": true
+    },
+    {
+      "name": "readonly_prepare_has_no_creation_calls",
+      "passed": true
+    },
+    {
+      "name": "prepare_output_precedes_runtime_mkdir",
+      "passed": true
+    },
+    {
+      "name": "actual_prepare_digest_guard_precedes_runtime_mkdir",
+      "passed": true
+    },
+    {
+      "name": "diff_hunk_header_2",
+      "passed": true
+    },
+    {
+      "name": "diff_forward_order_2",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_3",
+      "passed": true
+    },
+    {
+      "name": "diff_context_3",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_4",
+      "passed": true
+    },
+    {
+      "name": "diff_context_4",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_5",
+      "passed": true
+    },
+    {
+      "name": "diff_context_5",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_6",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_7",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_8",
+      "passed": true
+    },
+    {
+      "name": "diff_context_8",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_9",
+      "passed": true
+    },
+    {
+      "name": "diff_context_9",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_10",
+      "passed": true
+    },
+    {
+      "name": "diff_context_10",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_11",
+      "passed": true
+    },
+    {
+      "name": "diff_context_11",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_12",
+      "passed": true
+    },
+    {
+      "name": "diff_context_12",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_13",
+      "passed": true
+    },
+    {
+      "name": "diff_context_13",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_14",
+      "passed": true
+    },
+    {
+      "name": "diff_context_14",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_15",
+      "passed": true
+    },
+    {
+      "name": "diff_context_15",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_16",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_17",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_18",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_19",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_20",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_21",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_22",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_23",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_24",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_25",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_26",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_27",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_28",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_29",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_30",
+      "passed": true
+    },
+    {
+      "name": "diff_context_30",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_31",
+      "passed": true
+    },
+    {
+      "name": "diff_context_31",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_32",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_33",
+      "passed": true
+    },
+    {
+      "name": "diff_context_33",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_34",
+      "passed": true
+    },
+    {
+      "name": "diff_context_34",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_35",
+      "passed": true
+    },
+    {
+      "name": "diff_context_35",
+      "passed": true
+    },
+    {
+      "name": "diff_counts_0",
+      "passed": true
+    },
+    {
+      "name": "diff_hunk_header_36",
+      "passed": true
+    },
+    {
+      "name": "diff_forward_order_36",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_37",
+      "passed": true
+    },
+    {
+      "name": "diff_context_37",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_38",
+      "passed": true
+    },
+    {
+      "name": "diff_context_38",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_39",
+      "passed": true
+    },
+    {
+      "name": "diff_context_39",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_40",
+      "passed": true
+    },
+    {
+      "name": "diff_context_40",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_41",
+      "passed": true
+    },
+    {
+      "name": "diff_context_41",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_42",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_43",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_44",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_45",
+      "passed": true
+    },
+    {
+      "name": "diff_context_45",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_46",
+      "passed": true
+    },
+    {
+      "name": "diff_context_46",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_47",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_48",
+      "passed": true
+    },
+    {
+      "name": "diff_context_48",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_49",
+      "passed": true
+    },
+    {
+      "name": "diff_context_49",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_50",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_51",
+      "passed": true
+    },
+    {
+      "name": "diff_context_51",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_52",
+      "passed": true
+    },
+    {
+      "name": "diff_context_52",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_53",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_54",
+      "passed": true
+    },
+    {
+      "name": "diff_context_54",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_55",
+      "passed": true
+    },
+    {
+      "name": "diff_context_55",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_56",
+      "passed": true
+    },
+    {
+      "name": "diff_context_56",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_57",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_58",
+      "passed": true
+    },
+    {
+      "name": "diff_context_58",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_59",
+      "passed": true
+    },
+    {
+      "name": "diff_context_59",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_60",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_61",
+      "passed": true
+    },
+    {
+      "name": "diff_context_61",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_62",
+      "passed": true
+    },
+    {
+      "name": "diff_context_62",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_63",
+      "passed": true
+    },
+    {
+      "name": "diff_context_63",
+      "passed": true
+    },
+    {
+      "name": "diff_counts_1",
+      "passed": true
+    },
+    {
+      "name": "diff_hunk_header_64",
+      "passed": true
+    },
+    {
+      "name": "diff_forward_order_64",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_65",
+      "passed": true
+    },
+    {
+      "name": "diff_context_65",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_66",
+      "passed": true
+    },
+    {
+      "name": "diff_context_66",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_67",
+      "passed": true
+    },
+    {
+      "name": "diff_context_67",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_68",
+      "passed": true
+    },
+    {
+      "name": "diff_context_68",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_69",
+      "passed": true
+    },
+    {
+      "name": "diff_context_69",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_70",
+      "passed": true
+    },
+    {
+      "name": "diff_context_70",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_71",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_72",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_73",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_74",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_75",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_76",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_77",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_78",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_79",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_80",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_81",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_82",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_83",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_84",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_85",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_86",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_87",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_88",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_89",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_90",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_91",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_92",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_93",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_94",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_95",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_96",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_97",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_98",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_99",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_100",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_101",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_102",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_103",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_104",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_105",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_106",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_107",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_108",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_109",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_110",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_111",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_112",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_113",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_114",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_115",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_116",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_117",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_118",
+      "passed": true
+    },
+    {
+      "name": "diff_context_118",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_119",
+      "passed": true
+    },
+    {
+      "name": "diff_context_119",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_120",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_121",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_122",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_123",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_124",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_125",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_126",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_127",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_128",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_129",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_130",
+      "passed": true
+    },
+    {
+      "name": "diff_context_130",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_131",
+      "passed": true
+    },
+    {
+      "name": "diff_context_131",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_132",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_133",
+      "passed": true
+    },
+    {
+      "name": "diff_context_133",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_134",
+      "passed": true
+    },
+    {
+      "name": "diff_context_134",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_135",
+      "passed": true
+    },
+    {
+      "name": "diff_context_135",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_136",
+      "passed": true
+    },
+    {
+      "name": "diff_context_136",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_137",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_138",
+      "passed": true
+    },
+    {
+      "name": "diff_context_138",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_139",
+      "passed": true
+    },
+    {
+      "name": "diff_context_139",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_140",
+      "passed": true
+    },
+    {
+      "name": "diff_context_140",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_141",
+      "passed": true
+    },
+    {
+      "name": "diff_context_141",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_142",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_143",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_144",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_145",
+      "passed": true
+    },
+    {
+      "name": "diff_context_145",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_146",
+      "passed": true
+    },
+    {
+      "name": "diff_context_146",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_147",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_148",
+      "passed": true
+    },
+    {
+      "name": "diff_context_148",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_149",
+      "passed": true
+    },
+    {
+      "name": "diff_context_149",
+      "passed": true
+    },
+    {
+      "name": "diff_marker_150",
+      "passed": true
+    },
+    {
+      "name": "diff_context_150",
+      "passed": true
+    },
+    {
+      "name": "diff_counts_2",
+      "passed": true
+    },
+    {
+      "name": "whole_strict_diff_target",
+      "passed": true
+    },
+    {
+      "name": "member_qa",
+      "passed": true
+    },
+    {
+      "name": "member_openbao-acceptance",
+      "passed": true
+    },
+    {
+      "name": "member_single-node",
+      "passed": true
+    },
+    {
+      "name": "member_tools",
+      "passed": true
+    },
+    {
+      "name": "member_migration",
+      "passed": true
+    },
+    {
+      "name": "driver_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_kv2_271_lossless_native_live.py",
+      "passed": true
+    },
+    {
+      "name": "official_launcher_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_official_openbao_launcher.py",
+      "passed": true
+    },
+    {
+      "name": "owned_process_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_owned_process.py",
+      "passed": true
+    },
+    {
+      "name": "online_evidence_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_online_evidence.py",
+      "passed": true
+    },
+    {
+      "name": "smoke_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_smoke.py",
+      "passed": true
+    },
+    {
+      "name": "native_large_whole_bytes_hash",
+      "passed": true
+    },
+    {
+      "name": "member_openbao271_kv2_native_large_migrate.py",
+      "passed": true
+    },
+    {
+      "name": "original_http_15_and_migration_360",
+      "passed": true
+    },
+    {
+      "name": "original_31_unique_cases",
+      "passed": true
+    },
+    {
+      "name": "full34_17_times_2mib_original",
+      "passed": true
+    },
+    {
+      "name": "actual_native_profile",
+      "passed": true
+    },
+    {
+      "name": "official_version_explicit",
+      "passed": true
+    },
+    {
+      "name": "source_driver_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_mac61_receipt_admitted",
+      "passed": true
+    },
+    {
+      "name": "negative_old_linux_schema",
+      "passed": true
+    },
+    {
+      "name": "negative_old60",
+      "passed": true
+    },
+    {
+      "name": "negative_wrong_source",
+      "passed": true
+    },
+    {
+      "name": "negative_wrong_runner",
+      "passed": true
+    },
+    {
+      "name": "negative_aba_missing",
+      "passed": true
+    },
+    {
+      "name": "negative_aba_failed",
+      "passed": true
+    },
+    {
+      "name": "negative_aba_cap_changed",
+      "passed": true
+    },
+    {
+      "name": "negative_cleanup_survivor",
+      "passed": true
+    },
+    {
+      "name": "negative_source_changed",
+      "passed": true
+    },
+    {
+      "name": "unresolved_binding_early_refused",
+      "passed": true
+    },
+    {
+      "name": "six_metadata_requests",
+      "passed": true
+    },
+    {
+      "name": "all_metadata_unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "no_runtime_dispatch",
+      "passed": true
+    },
+    {
+      "name": "rog_unbound",
+      "passed": true
+    },
+    {
+      "name": "request_oracle_binary",
+      "passed": true
+    },
+    {
+      "name": "request_oracle_archive",
+      "passed": true
+    },
+    {
+      "name": "request_server",
+      "passed": true
+    },
+    {
+      "name": "request_python",
+      "passed": true
+    },
+    {
+      "name": "request_git",
+      "passed": true
+    },
+    {
+      "name": "request_openssl",
+      "passed": true
+    }
+  ],
+  "product_or_runtime_calls": 0,
+  "schema": "heptabao.current-mac-full34-source-checks.v1",
+  "selected_receipt_components": 11,
+  "source_only": true,
+  "status": "passed",
+  "strict_diff_hunks": 3
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.current-mac-full34-prereq-metadata-read-intent.v1",
+  "role": "git",
+  "original_request": {
+    "blob": "1a1f822dfc817d273e9e3689fd02b75812e5824a",
+    "bytes": 203,
+    "sha256": "daa7561e1b9eaef9ab243fdf0a6df61c9fbfaadde5541d4abf303f96bbd6288b"
+  },
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-mac-full34-prereq-info-git-20261105-r1",
+    "operation": {
+      "arguments": {
+        "host": "mac",
+        "path": "/usr/bin/git"
+      },
+      "tool": "file_info"
+    }
+  },
+  "root_review_blob": "69c6625843b887e51029846d8ac44249d19b0fa8",
+  "root_readline_handoff_blob": "6e6e472415916dfde5a08063dcbaaecba1c4fdb0",
+  "runtime_submission_in_this_intent_call": false,
+  "read_only_whole_hash_io": true,
+  "no_process_start": true,
+  "only_one_native_future": true
+}
