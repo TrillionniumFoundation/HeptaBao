@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.snapshot-wire-204.evidence-index.v1",
+  "source_commit": "0e3237fe287553c49e14109ddfbdf33b674e8a64",
+  "source_tree": "3b9e1fa2c40d211c5fb04bbb6d1d559ab7c89bae",
+  "freeze_sha256": "54cc1662cc21420047c740314950d8af5c95da4f0c7c07e89275af22990bd095",
+  "frozen_artifacts_are_pre_execution_snapshots": true,
+  "frozen_artifacts_unchanged": true,
+  "full_source_readback_verified_files": 10,
+  "root_and_peer_static_review_completed": true,
+  "local_python_guards_actual_result": {
+    "tests_run": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "dependencies_verified_before_and_after": 30,
+    "source_files_verified_before_and_after": 10,
+    "real_network_or_child_process_started": false
+  },
+  "rust_compiled_or_executed": false,
+  "real_http_tls_or_ha_executed": false,
+  "physical_host_qualified": false,
+  "wire_parity_qualified": false,
+  "full_replacement_qualified": false,
+  "files": [
+    {
+      "path": "candidate.patch",
+      "bytes": 34529,
+      "sha256": "3f67351c31606944c75daf9fa1940b00303113ae38450f72ac3bf8410427d2de",
+      "git_blob": "eae04456dd5f28bb22a93cb86b28a7f9a898fc01"
+    },
+    {
+      "path": "candidate-file-manifest.json",
+      "bytes": 3725,
+      "sha256": "452d4959eb1534fe808d85643596b8e6ff768c604f33ec85e2f6de5bbddd373e",
+      "git_blob": "e7552a406295a1b562ab61035183d6df87b71218"
+    },
+    {
+      "path": "candidate-freeze.public.json",
+      "bytes": 3693,
+      "sha256": "1f06294637b5d682cee8c872c59edc71e1f7aae72d12ea79e03084172e15be4d",
+      "git_blob": "193020317eada6c13c39825f82104ec822b407fd"
+    },
+    {
+      "path": "candidate-review.public.json",
+      "bytes": 9647,
+      "sha256": "8ef01a3edb4813024516e6a1ed70d1bd3223d3b6769c0760f9d3613528cc891e",
+      "git_blob": "0ade7b11c2b07013a6888d64a6616f14f902bf72"
+    },
+    {
+      "path": "read-source-manifest.json",
+      "bytes": 13026,
+      "sha256": "92d84d54ca845bcd9cd60ea675e3723e4f529b51cf89f2ffd48e3dd9b3c10b84",
+      "git_blob": "1ba7ebb25184e66f969bf8d3b0e7c3fcfadb3cc1"
+    },
+    {
+      "path": "root-review.public.json",
+      "bytes": 5118,
+      "sha256": "5718c5986d09cde3075e10ad90015b269d92f0304ffef8d43d698ecf014c8aeb",
+      "git_blob": "60b854ebed33cf7148c6c75141046e1db1980e07"
+    },
+    {
+      "path": "peer-review.public.json",
+      "bytes": 13420,
+      "sha256": "a813eaa298eac6e65b815ab306b7af85ffea69941d376f337a53a89b0ec0695e",
+      "git_blob": "16d7377e6fba108304fe23578ed90062f5844851"
+    },
+    {
+      "path": "source-publication.public.json",
+      "bytes": 3839,
+      "sha256": "dfc214c91fa72c158571615b10ed65e4cb8b7b6ec94553ce3bf12003c964b094",
+      "git_blob": "0847b170d2618558bf4c754e879b556be922cbc0"
+    },
+    {
+      "path": "source-readback.public.json",
+      "bytes": 2987,
+      "sha256": "d4852c65f985f5fdcc49ba57edc055442ab6f8f5351273885cf8ca7363fd2032",
+      "git_blob": "0ef7d39f220763877b0c48292dbbd06249809ab9"
+    },
+    {
+      "path": "python-guard-dependencies-pre-execution.public.json",
+      "bytes": 7566,
+      "sha256": "12706b9dc611e12a9097e391dc7a65acc2146be3c397a60aef3a6ca4fec6f892",
+      "git_blob": "f2500f713169646c9f77a3909e7140a47b2466e2"
+    },
+    {
+      "path": "python-guards-result.public.json",
+      "bytes": 10663,
+      "sha256": "b7353924b3f6f49387ac7ca8ac2bd2d939bd72f9143e40c5a2b4a3584d31820b",
+      "git_blob": "7bf3b7b65c208659da36d781db442a6dc525309f"
+    },
+    {
+      "path": "python-guards.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python-guards.stderr.log",
+      "bytes": 750,
+      "sha256": "ab72c9b5a8ef2b42f4a707a4330cc214fc9055f0c3488713f48aae2b7ef62628",
+      "git_blob": "9572e84063e965d13f5cd5457bb57ffdebf43a40"
+    },
+    {
+      "path": "run-selected-python-guards.py",
+      "bytes": 6034,
+      "sha256": "43784507bdfcedfccaa985aa74efc0248667ce50503a5d619e088d13d8e6f40d",
+      "git_blob": "57d5b4f5aaa6446ba4664f0992fc94fcd11313da"
+    },
+    {
+      "path": "scan-python-guard-dependencies.py",
+      "bytes": 3339,
+      "sha256": "22c738dcd420bffd2ee22ea0cc73297a5f8378cbb9f563c2b97d7017c30c6ed0",
+      "git_blob": "eb332ff7c56c68e3a93ee62426cd8c37fdef9175"
+    }
+  ]
+}

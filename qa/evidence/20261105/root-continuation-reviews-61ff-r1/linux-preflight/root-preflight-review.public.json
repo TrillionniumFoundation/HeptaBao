@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.root.rog-readonly-preflight-static-review.v1",
+  "request_sha256": "6f5d05d3535abd90909472dbcbaab457a177b50479d762d4bf145a08588cdfeb",
+  "input_sha256": "4a9cf4612c3c5928d7c4ed6e47d5a46d40fe96db78a71d26683421d9487e2056",
+  "driver_sha256": "217c4d2e840af1efe8d8191bc1b08d1bf00b823204570ef590d5e2c6ed797323",
+  "guard_fragment_sha256": "b00ff78b2a341a752d489c3a677f7a912f0f79b39c42601cfb030a29bea45b59",
+  "original_guard_fragment_is_exact_contiguous_substring": true,
+  "request_bootstrap_and_input_are_exact": true,
+  "reviewed_permissions": [
+    "Configured rog UID1000 only; read source, toolchain, directory metadata, advisory lock status, resources and same-UID process metadata.",
+    "No argv/env, credential content, service starts, Cargo builds, directory creation or file writes. Git optional writes, fsmonitor, hooks and prompts disabled.",
+    "Temporary nonblocking flock of two existing empty owned files, always unlocked/closed; no continuing reservation.",
+    "Git child handles retained and waited, no signals by script, same Runtime job group with declared90s supervisor.",
+    "Observation stops at60s; cleanup-only wait until75s, then sole original Runtime90s supervisor owns any outstanding group. Unknown terminal state will be reconciled rather than rerun."
+  ],
+  "reviewed_limitations": [
+    "Original guard is operator UID scope and compiler/test invocation-time observation, not whole-host exclusivity.",
+    "Ordinary product/watchdog processes are reported for separate review; compile guard success cannot declare HA outer completion.",
+    "Non-atomic source and process observations; compile/test require phase admission again.",
+    "Toolchain hashes are fresh observations, not silently inherited historical pins."
+  ],
+  "approved_scope": "One read-only preflight observation using this exact request; no build or timed test admitted by this review.",
+  "runtime_executed": false,
+  "candidate_compiled": false,
+  "full_replacement_qualified": false
+}

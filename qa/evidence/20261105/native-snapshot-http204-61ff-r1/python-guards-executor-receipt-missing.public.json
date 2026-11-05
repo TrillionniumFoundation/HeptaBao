@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.snapshot-wire-204.executor-receipt-missing.v1",
+  "source_commit": "0e3237fe287553c49e14109ddfbdf33b674e8a64",
+  "freeze_sha256": "54cc1662cc21420047c740314950d8af5c95da4f0c7c07e89275af22990bd095",
+  "original_exec_sdk_receipt_retained": false,
+  "original_exec_sdk_receipt_file": null,
+  "original_exec_sdk_receipt_sha256": null,
+  "reason": "The guard execution call passed the returned exec_command SDK object directly to text(). It did not retain that object in store or write it to a file. No original SDK terminal object is available for byte-for-byte archival.",
+  "conversation_tool_observation_only": {
+    "not_an_original_receipt": true,
+    "observed_chunk_id": "26cc11",
+    "observed_external_exit_code": 0,
+    "observed_external_wall_time_seconds": 0.302073225,
+    "provenance": "Visible tool result in this conversation only; these observations are not a recovered or reconstructed original SDK object."
+  },
+  "runner_result_is_separate_evidence": {
+    "path": "python-guards-result.public.json",
+    "sha256": "b7353924b3f6f49387ac7ca8ac2bd2d939bd72f9143e40c5a2b4a3584d31820b",
+    "runner_self_report_is_not_executor_terminal_receipt": true
+  },
+  "existing_source_and_evidence_unchanged": true,
+  "tests_rerun_to_fill_receipt_gap": false,
+  "original_receipt_reconstructed": false,
+  "new_runtime_or_remote_action_performed": false,
+  "qualification_increased": false
+}

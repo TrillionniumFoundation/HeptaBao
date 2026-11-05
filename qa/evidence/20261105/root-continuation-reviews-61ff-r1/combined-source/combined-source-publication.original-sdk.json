@@ -1,0 +1,73 @@
+{
+  "tree": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "667ae96b264c5e7f4b9290933612125d883b9e69"
+    },
+    "isError": false
+  },
+  "commit": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "f80d2d54800ba7e932d91572c084f930af3e5714"
+    },
+    "isError": false
+  },
+  "immutable_commit_readback": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"sha\":\"f80d2d54800ba7e932d91572c084f930af3e5714\",\"node_id\":\"C_kwDOUGncwNoAKGY4MGQyZDU0ODAwYmE3ZTkzMmQ5MTU3MmMwODRmOTMwYWYzZTU3MTQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/f80d2d54800ba7e932d91572c084f930af3e5714\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T01:02:44Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T01:02:44Z\"},\"tree\":{\"sha\":\"667ae96b264c5e7f4b9290933612125d883b9e69\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/667ae96b264c5e7f4b9290933612125d883b9e69\"},\"message\":\"Merge reviewed native snapshot restore framing and completed HTTP 204 semantics\\n\\nCombine the three-file public restore container compatibility fix with the ten-file completed-upload HTTP 204 and observer changes. Keep strict internal imports, full restore/audit/delivery gates, typed pending reconciliation, and measured before/after epoch checks.\\n\\nThe exact combined tree was independently reconstructed from the complete fixed base tree. This merge changes 13 files relative to 21a521 and is not compiled or runtime-qualified.\",\"parents\":[{\"sha\":\"4f0a732bd934321e5abfc3025a22345a1c42c5ae\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4f0a732bd934321e5abfc3025a22345a1c42c5ae\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/4f0a732bd934321e5abfc3025a22345a1c42c5ae\"},{\"sha\":\"0e3237fe287553c49e14109ddfbdf33b674e8a64\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0e3237fe287553c49e14109ddfbdf33b674e8a64\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0e3237fe287553c49e14109ddfbdf33b674e8a64\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+        "title": "f80d2d54800ba7e932d91572c084f930af3e5714",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714",
+        "display_title": "f80d2d54800ba7e932d91572c084f930af3e5714",
+        "structuredContent": {
+          "title": "f80d2d54800ba7e932d91572c084f930af3e5714",
+          "content": "{\"sha\":\"f80d2d54800ba7e932d91572c084f930af3e5714\",\"node_id\":\"C_kwDOUGncwNoAKGY4MGQyZDU0ODAwYmE3ZTkzMmQ5MTU3MmMwODRmOTMwYWYzZTU3MTQ\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/f80d2d54800ba7e932d91572c084f930af3e5714\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T01:02:44Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T01:02:44Z\"},\"tree\":{\"sha\":\"667ae96b264c5e7f4b9290933612125d883b9e69\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/667ae96b264c5e7f4b9290933612125d883b9e69\"},\"message\":\"Merge reviewed native snapshot restore framing and completed HTTP 204 semantics\\n\\nCombine the three-file public restore container compatibility fix with the ten-file completed-upload HTTP 204 and observer changes. Keep strict internal imports, full restore/audit/delivery gates, typed pending reconciliation, and measured before/after epoch checks.\\n\\nThe exact combined tree was independently reconstructed from the complete fixed base tree. This merge changes 13 files relative to 21a521 and is not compiled or runtime-qualified.\",\"parents\":[{\"sha\":\"4f0a732bd934321e5abfc3025a22345a1c42c5ae\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/4f0a732bd934321e5abfc3025a22345a1c42c5ae\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/4f0a732bd934321e5abfc3025a22345a1c42c5ae\"},{\"sha\":\"0e3237fe287553c49e14109ddfbdf33b674e8a64\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/0e3237fe287553c49e14109ddfbdf33b674e8a64\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/0e3237fe287553c49e14109ddfbdf33b674e8a64\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714"
+        }
+      },
+      "isError": false
+    }
+  },
+  "ref_readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"ref\":\"refs/heads/work/20261105-snapshot-combined-61ff-r1\",\"node_id\":\"REF_kwDOUGncwNoAMnJlZnMvaGVhZHMvd29yay8yMDI2MTEwNS1zbmFwc2hvdC1jb21iaW5lZC02MWZmLXIx\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/work/20261105-snapshot-combined-61ff-r1\",\"object\":{\"sha\":\"f80d2d54800ba7e932d91572c084f930af3e5714\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714\"}}",
+      "title": "20261105-snapshot-combined-61ff-r1",
+      "modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/work/20261105-snapshot-combined-61ff-r1",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/work/20261105-snapshot-combined-61ff-r1",
+      "display_title": "20261105-snapshot-combined-61ff-r1",
+      "structuredContent": {
+        "title": "20261105-snapshot-combined-61ff-r1",
+        "content": "{\"ref\":\"refs/heads/work/20261105-snapshot-combined-61ff-r1\",\"node_id\":\"REF_kwDOUGncwNoAMnJlZnMvaGVhZHMvd29yay8yMDI2MTEwNS1zbmFwc2hvdC1jb21iaW5lZC02MWZmLXIx\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/work/20261105-snapshot-combined-61ff-r1\",\"object\":{\"sha\":\"f80d2d54800ba7e932d91572c084f930af3e5714\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f80d2d54800ba7e932d91572c084f930af3e5714\"}}",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/work/20261105-snapshot-combined-61ff-r1"
+      }
+    },
+    "isError": false
+  }
+}

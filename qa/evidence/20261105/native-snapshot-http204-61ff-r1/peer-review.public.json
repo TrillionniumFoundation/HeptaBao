@@ -1,0 +1,247 @@
+{
+  "schema": "heptabao.peer-snapshot-wire-review.v1",
+  "reviewer": "/root/ha_tls_review",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "base_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "base_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "freeze_sha256": "54cc1662cc21420047c740314950d8af5c95da4f0c7c07e89275af22990bd095",
+  "reviewed_manifest": {
+    "path": "heptabao_resume/snapshot_wire/candidate-file-manifest.json",
+    "sha256": "452d4959eb1534fe808d85643596b8e6ff768c604f33ec85e2f6de5bbddd373e"
+  },
+  "reviewed_patch": {
+    "path": "heptabao_resume/snapshot_wire/candidate.patch",
+    "bytes": 34529,
+    "sha256": "3f67351c31606944c75daf9fa1940b00303113ae38450f72ac3bf8410427d2de"
+  },
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "bytes": 11930,
+      "sha256": "82678e7b4307f8aad853d16c5491c198863b057d70aa72e634ee7f962f0681b0",
+      "git_blob": "23b857ac3de38b87a08f01d2abfe1423ff725894",
+      "base_git_blob": "cc8105bb10dbac9827b5135db1182b7a94fb1bec"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 34800,
+      "sha256": "b50420191e33cc286169daac1bca884ff5f59bf77ca70c17915b01513bf95dcd",
+      "git_blob": "a9e9eec6c0ab556ccfba0ebdd5f7789c1068d7fc",
+      "base_git_blob": "ed4983b4d8b8527fed8f699284a9244eecbfe81d"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 29130,
+      "sha256": "05c27d93d924b328d800506e5c1838c5bc2e36dddcf4d75a1d4831167b3a3198",
+      "git_blob": "b0deb47b370d19bbb85bb300b70610d635b95be0",
+      "base_git_blob": "703a7183185a4fee775a95109e7b084c1aa315f6"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 520771,
+      "sha256": "c86dc9f11399d546d30ccbf39603cfcd1694065e0575c3fe36fde59adb6e32cd",
+      "git_blob": "f3e539af7d1b935264964ed9aaaf343e2b6125bc",
+      "base_git_blob": "965df43d4bd0b43f15160d8d7387aa49c2432250"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "bytes": 20816,
+      "sha256": "4ee7bd13ab42a82934b97eb6be65d9944849f21303f71a7d3a57a904b689ffa5",
+      "git_blob": "229f05cebe26228e10f259da0a58fe2da8c41b25",
+      "base_git_blob": "fbf227834e90f0bfa6b0e289e2ee971fa5500c8a"
+    },
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "bytes": 50304,
+      "sha256": "15cc68f3bd2442e4e4d3047f4fb30eecf826d8c4f54258732f97090005f542d4",
+      "git_blob": "e72d59cf2c269d3c5aa891c1757e182f03543174",
+      "base_git_blob": "def438a011a389920e824b3ab29f853a4db862ed"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_cli_live.py",
+      "bytes": 38855,
+      "sha256": "d11d83113be42bcc14ed34f7d7c4b09623e5abb20786568aa4bbf392a07c8c35",
+      "git_blob": "328078b1b8ab6fb85cfaeb0731d739a4b4413143",
+      "base_git_blob": "625f1a1be89e49fd5e6d996086dcd7663099874e"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+      "bytes": 27202,
+      "sha256": "53eba5a69fb7b870fa5ee051237994b5fe8073879f1ce3f9b77656b75dedbda4",
+      "git_blob": "c2a5b6e5892ed08f255cb6507ebe1e36ebd59853",
+      "base_git_blob": "f1912ba143123ce29b2e51c8ee846357b88e21d7"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_snapshot_redirect_live.py",
+      "bytes": 17027,
+      "sha256": "82c50662c141bf38bb97b3a1508130e32cb636be29671da0bc9ebbf60676183f",
+      "git_blob": "ec83e5bb194b7072c9e8ec5ca8428844c80b9fe1",
+      "base_git_blob": "b469815c0649ab8a0b5e2506242c834b7aa82eca"
+    },
+    {
+      "path": "qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py",
+      "bytes": 11629,
+      "sha256": "156f32843f6f0090eb067dd52b5d76c1dc7070cb553a49464bc42788bcbc76db",
+      "git_blob": "8625f999540cebae970f524e2bb88bc5836a610f",
+      "base_git_blob": "304297073ebf7e464fbfb0384ad93e5461457992"
+    }
+  ],
+  "identity_verification": {
+    "all_ten_actual_candidate_files_independently_checked_for_bytes_sha256_and_git_blob": true,
+    "mechanically_rebuilt_base_to_candidate_patch_was_byte_equal": true,
+    "verification_was_completed_before_this_receipt_write": true,
+    "receipt_write_rechecked_frozen_manifest_and_patch_identity": true,
+    "initial_two_test_file_formatting_manifest_mismatches_resolved_in_final_freeze": true
+  },
+  "conclusion": {
+    "static_review_complete": true,
+    "remaining_mandatory_static_changes_identified": false,
+    "runtime_pass": false,
+    "wire_parity_qualified": false,
+    "full_replacement_qualified": false
+  },
+  "findings_and_fixes": [
+    {
+      "id": "decoder_formal_tls",
+      "paths": [
+        "crates/heptabao-server/src/http_formal_api_fixture.rs",
+        "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs"
+      ],
+      "original_issue": "FormalApiListener assigned body_length=0 to a 204 without Content-Length and shut down after reading zero bytes; the HA empty-body assertion could hide illegal trailing application bytes.",
+      "verified_fix": "Worker sends TLS close_notify and flushes for the actual 204 Json reply. Client reads one additional byte and requires TLS EOF under the original deadline. The existing 307 drain/client-close/join path remains separate.",
+      "status": "fixed_in_frozen_source_runtime_unexecuted"
+    },
+    {
+      "id": "decoder_python_ha_cli",
+      "paths": [
+        "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+        "qa/openbao-acceptance/native_snapshot_cli_live.py"
+      ],
+      "original_issue": "HTTPResponse.read applies the stdlib 204 zero-length shortcut and can hide bytes after headers; checking its decoded payload is insufficient.",
+      "verified_fix": "Before ordinary HTTPResponse.read, require absent Content-Length and Transfer-Encoding and an existing response.fp, then read one byte from that same original buffered stream and require EOF. No new connection or upload retry is introduced.",
+      "status": "fixed_in_frozen_source_runtime_unexecuted"
+    },
+    {
+      "id": "decoder_kv2_leaf",
+      "paths": [
+        "qa/openbao-acceptance/kv2_271_lossless_native_live.py"
+      ],
+      "original_issue": "http_leaf used HTTPResponse.read and returned only decoded body bytes; Endpoint could neither see hidden 204 tail bytes nor validate original framing headers.",
+      "verified_fix": "The leaf owning the actual response checks CL/TE and reads original response.fp to EOF before returning an empty body. Endpoint retains its defensive empty-body check and original absolute subprocess budget.",
+      "status": "fixed_in_frozen_source_runtime_unexecuted"
+    },
+    {
+      "id": "actual_before_epoch_binding",
+      "paths": [
+        "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+        "qa/openbao-acceptance/native_snapshot_redirect_live.py",
+        "qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py"
+      ],
+      "original_issue": "Several restore phases retained only pre-upload generation and supplied a previous epoch from an older result or constant. A coincidental post-upload epoch could match that expectation without proving this upload advanced the actually observed source epoch.",
+      "verified_fix": "checked_before_capacity validates the existing actual pre-upload generation and epoch against the expected phase before any upload. publication then requires exact 204/empty body, post generation greater than actual before generation, and post epoch exactly actual before epoch plus one. All affected raw-upload call sites were reviewed. A phase-drift guard was authored but not run.",
+      "status": "fixed_in_frozen_source_runtime_unexecuted"
+    }
+  ],
+  "production_mapping": {
+    "entry": "http_snapshot::execute",
+    "predicates": [
+      "POST or PUT",
+      "exact public sys/storage/raft/snapshot or sys/storage/raft/snapshot-force route",
+      "no download file",
+      "ExternalEffectResult::SnapshotTransfer(Ok(Observation::Upload(_)))",
+      "final response status exactly 200"
+    ],
+    "classification_grants_authority": false,
+    "ordered_completion_before_204": [
+      "finish_external_request",
+      "complete_snapshot_transfer and actual restore finalizer",
+      "terminal clock persistence and mandatory audit",
+      "applicable HA post-audit delivery proof and original owner checks",
+      "finish_rate_limit_quota_headers",
+      "HTTP-only status=204 and erase_json(body)"
+    ],
+    "header_findings": [
+      "The common HTTP writer uses no_body for 204, emits no Content-Length or Transfer-Encoding, and emits no body bytes.",
+      "Quota and consistency metadata, including X-Vault-Index, remain on the final response.",
+      "Transport-owned control headers cannot be injected through ordinary response metadata.",
+      "Quota metadata application failure returns 503 and cannot be mapped to 204."
+    ],
+    "exclusions": [
+      {
+        "case": "PendingRestore inspect/cancel",
+        "reason": "Distinct PendingRestore observation; successful reconciliation retains 200 JSON."
+      },
+      {
+        "case": "internal snapshot-repair",
+        "reason": "Exact public route predicate is false; original response remains."
+      },
+      {
+        "case": "GET/HEAD downloads",
+        "reason": "Not a public POST/PUT Upload; file and HEAD behavior remain."
+      },
+      {
+        "case": "307 redirect",
+        "reason": "Trusted redirect metadata is handled before 204 conversion."
+      },
+      {
+        "case": "admission/import/actor/seal/deadline errors",
+        "reason": "No successful Upload classification or final status is not 200."
+      },
+      {
+        "case": "unknown publication or failed delivery",
+        "reason": "Existing non-200 failure and reconciliation metadata remain; conversion does not erase them."
+      }
+    ],
+    "internal_service_and_audit_status": "The internal Service success and its audit semantics remain 200; this is a public HTTP response mapping, not a claim of full audit-field parity.",
+    "additional_fixed_source_dependencies": [
+      {
+        "path": "crates/heptabao-server/src/service_rate_limit_quotas.rs",
+        "git_blob": "70f5221540a48e7cea40f107808d1ed9764c68cc"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_response_headers.rs",
+        "git_blob": "e371f596f16485167829dae2251a874f79d95323"
+      }
+    ]
+  },
+  "harness_integrity": {
+    "additional_restore_upload_retries_introduced": false,
+    "post_capacity_evaluation_occurs_after_corresponding_restore_http_returns": true,
+    "existing_listener_socket_and_absolute_leaf_budgets_not_extended": true,
+    "existing_cleanup_rollback_marker_hash_cold_and_raft_checks_retained": true,
+    "ha_test_operation_digest_observed_from_actual_committed_transition": true,
+    "ha_inspect_cancel_tests_keep_same_selection_and_no_pending_custody": true,
+    "capacity_observation_limit": "Adjacent authenticated capacity observations in an owned fixture are not a transactional operation receipt. uploaded_archive_generation labels the uploaded archive; observed_local_generation labels the later observation. Actual archive effect still requires full values, marker rollback, Raft and cold-reopen checks.",
+    "gated_timing_limit": "Additional read-only capacity observations consume the existing provider gate time. No 2.7-second gate was relaxed; its feasibility still requires execution."
+  },
+  "execution_limits": {
+    "review_kind": "static source review, local hash/diff calculation and read-only stdlib source inspection",
+    "formatter_executed_by_reviewer": false,
+    "rust_compiler_executed_by_reviewer": false,
+    "clippy_executed_by_reviewer": false,
+    "unit_tests_executed_by_reviewer": false,
+    "live_harnesses_executed_by_reviewer": false,
+    "remote_process_started_by_reviewer": false,
+    "candidate_source_changed_by_reviewer": false,
+    "wire_manifest_or_patch_changed_by_reviewer": false,
+    "new_stdlib_guard": "Authored test uses the real HTTPResponse parser with a BytesIO-backed fake socket. It was not run, creates no real TLS evidence, and cannot qualify production behavior.",
+    "eof_error_limit": "EOF read errors propagate for non-expire requests; the original expire case remains a non-success outcome. An EOF timeout runtime negative was not executed.",
+    "outer_candidate_qualification_transferred": false,
+    "run_authorization_granted_by_this_review": false
+  },
+  "unexecuted_existing_test_filters": [
+    "native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+    "native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+    "formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+    "native_http_redirect_tls_body_preserves_complete_headers",
+    "native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+    "native_ha_snapshot_repair_mandatory_response_audit_failure_fences_completed_physical_repair"
+  ],
+  "unexecuted_python_guard_path": "qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py",
+  "unexecuted_live_harness_paths": [
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+    "qa/openbao-acceptance/native_snapshot_cli_live.py",
+    "qa/openbao-acceptance/native_snapshot_ha_restore_live.py",
+    "qa/openbao-acceptance/native_snapshot_redirect_live.py"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.snapshot-wire-204.static-review.v1",
+  "status": "frozen_candidate_only_uncompiled_unexecuted_pending_peer_review",
+  "base_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "base_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "official_evidence": {
+    "read_commit": "f8378f188406d9dfe818bc274101f742d4d7caa7",
+    "read_path": "qa/evidence/20261104/root-continuation-reviews-61ff-r1/official-corruption/root-original-journal-review.public.json",
+    "read_git_blob": "35be777a4a411e1deead1aff36a555ec71d1a2c4",
+    "original_evidence_commit": "ebbd4c2e16d215dba6984ea6f65292ce0665f714",
+    "actual_job": "1a1a81dde69-fc05-2dbb",
+    "observations": "Two completed node1 official 2.7.1 uploads returned 204; before marker 200, after marker 404, baseline 200. Parent review independently rehashed 25 originals. This child read the fixed review, not a new oracle run.",
+    "not_qualified": "Original overall oracle was failed due node2 final role 503; healthy all-node HA and full replacement are not established."
+  },
+  "production_mapping": {
+    "classification": "Original POST/PUT on exact snapshot or snapshot-force path, no output file, server SnapshotTransfer(Ok(Observation::Upload(_))).",
+    "ordering": "Snapshot import classification is not a restore authority. The ordinary original finalizer, request audit, clock/delivery checks and quota-header completion run unchanged. Only their successful 200 response is converted after redirect handling.",
+    "wire": "Mutate existing response status to 204 and erase JSON body. Retain response_headers and consistency_index. Existing HTTP writer emits no body or body framing for 204.",
+    "internal_service": "Internal service response status 200 and metadata are unchanged; direct service tests retain 200.",
+    "exclusions": [
+      "Download/LosslessFile",
+      "PendingRestore inspect/cancel (including successful external reconciliation)",
+      "snapshot-repair",
+      "admission errors",
+      "malformed archive/framing",
+      "finalizer/auth/deadline/audit/clock/delivery errors",
+      "307 redirects"
+    ]
+  },
+  "success_branch_review": {
+    "v5": "service_backup_restore.rs commit_native_snapshot_restore -> commit_snapshot_restore_with_rollback returns 200 only after commit.",
+    "v6_local": "service_snapshot_v6.rs finish_v6_snapshot_upload -> commit_incoming_v6 installs the authenticated durable native root before 200.",
+    "v6_ha": "service_snapshot_v6_ha_restore.rs upload 200 requires actual publish, local install and NativeHaHistoricalReceipt; complete_native_ha_historical_delivery audits and checks the terminal proof. Failure/uncertain delivery is 503 with recovery_reference and retry_allowed=false. Successful operation-reference metadata remains internal and is omitted from the public 204 response. Pending reconciliation has its own typed PendingRestore observation and keeps 200 JSON.",
+    "source_blobs": {
+      "service.rs": "965df43d4bd0b43f15160d8d7387aa49c2432250",
+      "http_snapshot.rs": "ed4983b4d8b8527fed8f699284a9244eecbfe81d",
+      "http.rs": "3801150b71e68d75afb46136e31dce05841fe081",
+      "service_backup_restore.rs": "c349e3b69432f1fd2da94499ab948e3fc4282c54",
+      "service_snapshot_transfer.rs": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc",
+      "service_snapshot_v6.rs": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+      "service_snapshot_v6_ha_restore.rs": "ebb045e333f78144e5a9a035d74ce789f5c36a76"
+    }
+  },
+  "regressions_added_not_run": [
+    {
+      "test": "native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+      "coverage": "Real TLS production parser/execute/writer. POST/PUT x snapshot/snapshot-force; real version4 marker committed before each upload, restored exact history and marker version4 404 afterward, cold reopen each time, exact 204 and no body framing. Worker sends TLS close_notify and client reads EOF under the same original deadline so the empty-body check does not merely skip reading for status204."
+    },
+    {
+      "test": "formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "coverage": "Real formal HA TLS wire. Exact 204, actual complete output empty; committed epoch1, restored history and removed later version. Existing ACL errors/malformed500/standby307 retained. New real POST inspect200/not_pending and PUT cancel200/committed JSON with actual committed reference and unchanged root/epoch. FormalApiListener now emits TLS close_notify for actual Json204 and reads one byte to verify EOF with the original deadline. Redirect drain shutdown/join order remains unchanged."
+    },
+    {
+      "test": "test_publication_requires_exact_204_and_independently_observed_generation_and_epoch",
+      "coverage": "Guard-only Python assertions updated for exact 204, empty body, independent generation increase and exact epoch+1; other 2xx and forged/missing observations rejected."
+    },
+    {
+      "test": "test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress",
+      "coverage": "Actual before-capacity dictionary must match the phase epoch before the upload. Guard rejects drifted before=9/post=9 even if historical expectation8 predicts9; also rejects wrong phase even if actual9->10 advances."
+    },
+    {
+      "test": "test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once",
+      "coverage": "Real stdlib HTTPResponse parser on deterministic byte socket; empty204 accepted, unframed hidden tail and CL/TE204 rejected. One connection and two sendall calls (headers then archive), no replay. Not a live network test and not executed."
+    }
+  ],
+  "caller_changes": {
+    "kv2_271_lossless_native_live.py": "One upload remains one upload; exact204 and empty body. HTTP leaf checks no CL/TE and actual original-buffer EOF before stdlib read can suppress illegal bytes; parent validates decoded empty. Marker/cold history/storage witness checks retained. No historical31/31 transferred.",
+    "native_snapshot_cli_live.py": "Official Bao CLI invocation, exit/error status semantics unchanged; raw chunked restore expects exact204. Raw helper checks no CL/TE and actual original HTTPResponse.fp EOF before stdlib read. Errors retain bounded existing reads.",
+    "native_snapshot_ha_restore_live.py": "204 is checked through the original HTTPResponse.fp buffer before read/close, with no CL/TE and actual EOF. Each of five public HA upload call sites retains its actual before-capacity dictionary and rejects phase-epoch drift BEFORE uploading. Independent after capacity must show generation increase and exact measured before_epoch+1. Marker/full-value/restart/frontier checks remain. New observed fields distinguish actual reads from 204; uploaded_archive_generation is input metadata. Original socket timeouts and existing read budgets remain; uploads are never retried.",
+    "native_snapshot_redirect_live.py": "Uses same measured-before capacity precondition and measured-after epoch helper, with exact204; distinct deliberate second restore is not retry. Before epoch must actually be1, after actually2.",
+    "openbao271_kv2_native_large_migrate.py": "Read and unchanged: calls native-large route, not public snapshot restore; its 200/204 native-large contract is unrelated.",
+    "python_client_and_rust_cli_contracts": "Read and unchanged: no public native snapshot restore success-body dependency found."
+  },
+  "coverage_boundary": {
+    "fixed_tree_entries": 4279,
+    "fixed_tree_truncated": false,
+    "fixed_source_files_read_and_git_blob_verified": 51,
+    "scope": "All native_snapshot* live harnesses and corresponding selected tests, specified KV2 native harness and migration files, relevant snapshot HTTP/HA modules, Python client/transport and Rust CLI contracts. Fixed full tree paths inventoried; not all 4279 file bodies were fetched.",
+    "excluded_search": "Default-branch GitHub code search returned old 7b4a59b source and is not used as proof of fixed-21a full-tree text coverage."
+  },
+  "static_checks": {
+    "base_git_blobs_recomputed": 51,
+    "python_ast_parse_files": 5,
+    "git_diff_whitespace_checks": 10,
+    "git_apply_check": true,
+    "rustfmt_run": false,
+    "rust_compiled": false,
+    "rust_tests_run": false,
+    "python_tests_run": false,
+    "native_http_runtime_run": false,
+    "remote_process_started": false,
+    "mac_actual_source_modified": false,
+    "wire_parity_qualified": false,
+    "full_openbao_replacement_qualified": false
+  },
+  "preserved_scope": [
+    "No changes to sibling snapshot_archive.rs, service_snapshot_transfer.rs, service_snapshot_transfer_tests.rs",
+    "No deadline extension, credential substitution, body replay or process ownership guard bypass",
+    "No edits to blocked immutable KV transport or AuthBus lanes",
+    "No changes to legacy evidence/results"
+  ],
+  "followup_required": "Peer static review of this exact frozen hash before Git candidate publication; then actual fresh Mac and Linux build/HTTP regressions on the merged source. HA physical-host and full replacement gates remain open.",
+  "freeze_sha256": "54cc1662cc21420047c740314950d8af5c95da4f0c7c07e89275af22990bd095",
+  "review_findings_resolved": [
+    "FormalApiListener had a status-based body_length=0 blind spot; added actual204 TLS EOF observation.",
+    "HTTPResponse.read skips204 bytes; all three raw restore readers inspect original response.fp first and observe EOF.",
+    "Historical/constant expected epochs alone were insufficient; each existing before-capacity read is retained and checked before upload, then full before/after transition validated."
+  ]
+}

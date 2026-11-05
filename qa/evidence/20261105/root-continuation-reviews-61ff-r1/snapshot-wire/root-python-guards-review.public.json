@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root.python-guards-evidence-review.v1",
+  "executed_source_commit": "0e3237fe287553c49e14109ddfbdf33b674e8a64",
+  "combined_source_commit": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "combined_source_tree": "667ae96b264c5e7f4b9290933612125d883b9e69",
+  "fixed_dependency_count": 30,
+  "all_dependency_blobs_identical_in_combined_tree": true,
+  "original_test_stdout_stderr_bytes_and_hashes_verified": true,
+  "actual_test_names": [
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_publication_requires_exact_204_and_independently_observed_generation_and_epoch",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress",
+    "test_native_snapshot_ha_restore_live.HaRestoreGuards.test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once"
+  ],
+  "tests_run": 3,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "test_stdout_bytes": 0,
+  "test_stderr_sha256": "ab72c9b5a8ef2b42f4a707a4330cc214fc9055f0c3488713f48aae2b7ef62628",
+  "scope": "Guard logic on full imported fixed modules and synthetic byte socket only. Combined Rust/product eligibility is not inferred.",
+  "root_reran_tests": false,
+  "rust_compiled": false,
+  "real_tls_tested": false,
+  "physical_ha_tested": false,
+  "full_replacement_qualified": false,
+  "external_executor_terminal_original_retained": false,
+  "external_executor_exit_0_observed_in_conversation_only": true,
+  "executor_receipt_gap_path": "qa/evidence/20261105/native-snapshot-http204-61ff-r1/python-guards-executor-receipt-missing.public.json"
+}

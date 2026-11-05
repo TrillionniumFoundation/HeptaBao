@@ -1,0 +1,8 @@
+test_publication_requires_exact_204_and_independently_observed_generation_and_epoch (test_native_snapshot_ha_restore_live.HaRestoreGuards.test_publication_requires_exact_204_and_independently_observed_generation_and_epoch) ... ok
+test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress (test_native_snapshot_ha_restore_live.HaRestoreGuards.test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress) ... ok
+test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once (test_native_snapshot_ha_restore_live.HaRestoreGuards.test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+OK

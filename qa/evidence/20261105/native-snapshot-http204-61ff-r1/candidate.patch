@@ -1,0 +1,631 @@
+--- a/crates/heptabao-server/src/http_formal_api_fixture.rs
++++ b/crates/heptabao-server/src/http_formal_api_fixture.rs
+@@ -180,9 +180,16 @@
+                     deadline,
+                 );
+                 let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
++                let no_content = matches!(
++                    &reply,
++                    snapshot::NativeReply::Json(response) if response.status == 204
++                );
+                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                 if redirect {
+                     snapshot::finish_redirect_connection(&mut stream);
++                } else if no_content {
++                    stream.conn.send_close_notify();
++                    stream.flush()?;
+                 }
+                 Ok(())
+             })?;
+@@ -267,7 +274,11 @@
+         );
+         client.read_exact(&mut output[header_length..])?;
+         remaining()?;
+-        // The complete Content-Length response is already owned. Close the
++        if status_code == 204 && client.read(&mut byte)? != 0 {
++            return Err("formal API 204 response has unexpected body bytes".into());
++        }
++        remaining()?;
++        // The complete Content-Length response or 204 TLS EOF is already owned. Close the
+         // actual socket before joining the 307 response-side drain; a cloned
+         // cleanup descriptor must not keep that drain open until the deadline.
+         client.conn.send_close_notify();
+--- a/crates/heptabao-server/src/http_snapshot.rs
++++ b/crates/heptabao-server/src/http_snapshot.rs
+@@ -307,6 +307,11 @@
+     deadline: Instant,
+ ) -> NativeReply {
+     let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
++    let public_snapshot_upload = matches!(request.method, "POST" | "PUT")
++        && matches!(
++            request.path,
++            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++        );
+     let execution = match lock_until(service, deadline) {
+         Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),
+         Err(_) => return NativeReply::Json(Response::error(503, "snapshot admission unavailable")),
+@@ -340,6 +345,9 @@
+             None,
+         ),
+     };
++    let uploaded_archive = public_snapshot_upload
++        && file.is_none()
++        && observation.is_native_snapshot_upload_observation();
+     // No network/body I/O occurs under the service writer. The final request
+     // audit must succeed before this file capability can reach the socket.
+     let mut response = match lock_until(service, deadline) {
+@@ -358,6 +366,15 @@
+                 "snapshot redirect lost its original route",
+             ))
+         };
++    }
++    if uploaded_archive && response.status == 200 {
++        // OpenBao's public restore wire contract is 204 with no body. Apply
++        // this only after the actual finalizer, mandatory audit and delivery
++        // checks succeed. The typed Upload observation excludes inspect/cancel
++        // reconciliation; the exact public routes exclude repair. Preserve the
++        // final response's quota/consistency headers and internal Service reply.
++        response.status = 204;
++        crate::service::erase_json(&mut response.body);
+     }
+     if response.status == 200
+         && let Some(file) = file
+--- a/crates/heptabao-server/src/http_snapshot_accept_tests.rs
++++ b/crates/heptabao-server/src/http_snapshot_accept_tests.rs
+@@ -113,6 +113,15 @@
+             return Err("missing or unsupported bounded response framing".into());
+         }
+     }
++    // The owned worker closes TLS after the complete reply. Read through that
++    // close under the original deadline, including for 204/HEAD: skipping the
++    // body merely because of the status must not hide unexpected wire bytes.
++    let mut trailing = [0; 1];
++    assert_eq!(
++        reader.read(&mut trailing)?,
++        0,
++        "unexpected response body bytes"
++    );
+     Ok(WireResponse {
+         status,
+         headers,
+@@ -249,6 +258,8 @@
+                 deadline,
+             );
+             write_http1_reply(&mut stream, reply, head, &namespace, deadline);
++            stream.conn.send_close_notify();
++            stream.flush()?;
+             if Instant::now() >= deadline {
+                 return Err(io::Error::new(
+                     io::ErrorKind::TimedOut,
+@@ -322,13 +333,24 @@
+         namespace: &str,
+         body: &[u8],
+     ) -> TestResult<WireResponse> {
++        self.snapshot_path(method, SNAPSHOT, token, namespace, body)
++    }
++
++    fn snapshot_path(
++        &self,
++        method: &str,
++        path: &str,
++        token: &str,
++        namespace: &str,
++        body: &[u8],
++    ) -> TestResult<WireResponse> {
+         let audit_before = self.audit_entries()?;
+         let reply = self.exchange(
+             method,
+-            SNAPSHOT,
++            path,
+             token,
+             namespace,
+-            if method == "POST" {
++            if matches!(method, "POST" | "PUT") {
+                 "application/octet-stream"
+             } else {
+                 "application/json"
+@@ -660,29 +682,41 @@
+     );
+     assert!(archive.body.starts_with(&[0x1f, 0x8b]));
+     assert!(!archive.body.is_empty());
+-    let changed = fixture.call(
+-        "POST",
+-        "secret/data/history",
+-        &root,
+-        json!({"options":{"cas":3},"data":{"after_snapshot":true}}),
+-    )?;
+-    assert_eq!(changed.status, 200);
+-    assert_eq!(changed.json()?["data"]["version"], 4);
+-    let current = fixture.call("GET", "secret/data/history", &root, Value::Null)?;
+-    assert_eq!(
+-        current.json()?["data"]["data"],
+-        json!({"after_snapshot":true})
+-    );
+-    let restored = fixture.snapshot("POST", &root, "", &archive.body)?;
+-    assert_eq!(
+-        restored.status,
+-        200,
+-        "typed restore response: {}",
+-        restored.json()?
+-    );
+-    exact_history(&fixture, &root)?;
+-    fixture.cold_reopen(&key)?;
+-    exact_history(&fixture, &root)?;
++    for (method, path) in [
++        ("POST", SNAPSHOT),
++        ("PUT", SNAPSHOT),
++        ("POST", "sys/storage/raft/snapshot-force"),
++        ("PUT", "sys/storage/raft/snapshot-force"),
++    ] {
++        let marker = format!("{method}:{path}");
++        let changed = fixture.call(
++            "POST",
++            "secret/data/history",
++            &root,
++            json!({"options":{"cas":3},"data":{"after_snapshot":marker}}),
++        )?;
++        assert_eq!(changed.status, 200);
++        assert_eq!(changed.json()?["data"]["version"], 4);
++        let current = fixture.call("GET", "secret/data/history", &root, Value::Null)?;
++        assert_eq!(
++            current.json()?["data"]["data"],
++            json!({"after_snapshot":marker})
++        );
++        let restored = fixture.snapshot_path(method, path, &root, "", &archive.body)?;
++        assert_eq!(restored.status, 204, "completed {method} {path} restore");
++        assert!(restored.body.is_empty());
++        assert!(!restored.headers.contains_key("content-length"));
++        assert!(!restored.headers.contains_key("transfer-encoding"));
++        exact_history(&fixture, &root)?;
++        let later = fixture.call("GET", "secret/data/history?version=4", &root, Value::Null)?;
++        assert_eq!(
++            later.status,
++            404,
++            "the uploaded archive removes the later marker"
++        );
++        fixture.cold_reopen(&key)?;
++        exact_history(&fixture, &root)?;
++    }
+     let head = fixture.snapshot("HEAD", &root, "", &[])?;
+     assert_eq!(head.status, 200);
+     assert_eq!(
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -1301,6 +1301,17 @@
+             heptabao_openbao_grpc::BridgeError,
+         >,
+     ),
++}
++
++impl ExternalEffectResult {
++    // This classifies only the stream importer's observation. It grants no
++    // restore or delivery authority; the original finalizer must still run.
++    pub(crate) fn is_native_snapshot_upload_observation(&self) -> bool {
++        matches!(
++            self,
++            Self::SnapshotTransfer(Ok(snapshot_transfer::Observation::Upload(_)))
++        )
++    }
+ }
+ 
+ pub(crate) struct PendingExternalRequest {
+--- a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+@@ -177,10 +177,15 @@
+         &archive.body,
+         None,
+     )?;
+-    assert_eq!(restored.status, 200);
+-    let body: Value = serde_json::from_slice(&restored.body)?;
+-    assert_eq!(body["data"]["replay_epoch"], 1);
+-    assert_eq!(selection(&pipeline, leader, migration_source)?.0, 1);
++    assert_eq!(restored.status, 204);
++    assert!(
++        restored.body.is_empty(),
++        "complete TLS output has no 204 body"
++    );
++    assert!(!restored.headers.contains_key("content-length"));
++    assert!(!restored.headers.contains_key("transfer-encoding"));
++    let installed = selection(&pipeline, leader, migration_source)?;
++    assert_eq!(installed.0, 1);
+     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
+     expect(
+         pipeline.call(
+@@ -193,6 +198,55 @@
+         404,
+         "actual-nonroot-restore-removes-later-version",
+     )?;
++    // These also use External SnapshotTransfer on the public POST/PUT route,
++    // but their typed PendingRestore observation must retain the 200 JSON
++    // reconciliation result. Read the actual committed ID, never replay upload.
++    let operation = installed
++        .1
++        .epoch_transitions()
++        .last()
++        .ok_or("actual committed restore transition")?
++        .operation_digest();
++    let reference = format!(
++        "native-v6-restore-{}",
++        operation
++            .iter()
++            .map(|byte| format!("{byte:02x}"))
++            .collect::<String>()
++    );
++    for (method, query, expected_state) in [
++        (
++            "POST",
++            "inspect_pending_restore=true".to_owned(),
++            "not_pending",
++        ),
++        (
++            "PUT",
++            format!("cancel_pending_restore={reference}"),
++            "committed",
++        ),
++    ] {
++        let reconciled = wire(
++            &pipeline,
++            leader,
++            method,
++            &format!("{SNAPSHOT}?{query}"),
++            pipeline.admin(),
++            b"",
++            None,
++        )?;
++        assert_eq!(reconciled.status, 200);
++        let body: Value = serde_json::from_slice(&reconciled.body)?;
++        assert_eq!(body["data"]["state"], expected_state);
++        assert_eq!(body["data"]["replay_epoch"], 1);
++        assert_eq!(body["restore_performed"], false);
++        assert_eq!(body["retry_allowed"], false);
++        if method == "PUT" {
++            assert_eq!(body["data"]["recovery_reference"], reference);
++        }
++        assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
++        assert!(observed_pending_reference(&pipeline, leader)?.is_none());
++    }
+     no_snapshot_custody(&pipeline, leader)?;
+     Ok(())
+ }
+--- a/qa/openbao-acceptance/kv2_271_lossless_native_live.py
++++ b/qa/openbao-acceptance/kv2_271_lossless_native_live.py
+@@ -231,7 +231,18 @@
+         response = connection.getresponse()
+         need(not 300 <= response.status < 400, "http_redirect_refused")
+         limit = ARCHIVE_BYTES if archive_out and response.status == 200 else JSON_BYTES
+-        body = response.read(limit + 1)
++        if archive_in and response.status == 204:
++            need(response.getheader("Content-Length") is None
++                 and response.getheader("Transfer-Encoding") is None,
++                 "snapshot_restore_204_body_framing")
++            need(response.fp is not None, "snapshot_restore_response_stream")
++            # HTTPResponse.read() assumes a 204 has no body. Read the original
++            # buffered TLS stream to EOF so illegal trailing bytes are seen.
++            body = response.fp.read(1)
++            need(body == b"", "snapshot_restore_204_body_must_be_empty")
++            response.close()
++        else:
++            body = response.read(limit + 1)
+         need(len(body) <= limit, "http_response_bound")
+         if archive_out and response.status == 200:
+             private_write(archive_out, body)
+@@ -294,6 +305,8 @@
+                 return status, result
+             raw = base64.b64decode(result["body"], validate=True)
+             need(len(raw) <= JSON_BYTES, "http_json_response_bound")
++            if archive_in and status == 204:
++                need(not raw, "snapshot_restore_204_body_must_be_empty")
+             decoded = decode(raw) if raw else {}
+             if response_evidence is not None:
+                 private_write(response_evidence, raw)
+@@ -739,8 +752,9 @@
+                    and same_json_tokens(applied["data"].get("data"), {"after_snapshot": True})
+                    and isinstance(applied_metadata.get("data"), dict)
+                    and applied_metadata["data"].get("current_version") == live_count + 3)
+-        self.check("snapshot_restore_once", self.target.call(
+-            "POST", "sys/storage/raft/snapshot", archive_in=snapshot)[0] == 200)
++        restore_status, restore_body = self.target.call(
++            "POST", "sys/storage/raft/snapshot", archive_in=snapshot)
++        self.check("snapshot_restore_once", restore_status == 204 and restore_body == {})
+         self.cold_candidate()
+         self.check("restored_cold_history_exact", same_json_tokens(observations(self.target, live_count), self.original))
+         self.verify_target_storage("restored_storage_history_exact", live_count, size)
+--- a/qa/openbao-acceptance/native_snapshot_cli_live.py
++++ b/qa/openbao-acceptance/native_snapshot_cli_live.py
+@@ -269,7 +269,15 @@
+ def response_status(tls):
+     response = http.client.HTTPResponse(tls); response.begin()
+     status = response.status
+-    if len(response.read(65537)) > 65536: raise ValueError('unexpected_large_error')
++    if status == 204:
++        if (response.getheader('Content-Length') is not None
++                or response.getheader('Transfer-Encoding') is not None or response.fp is None):
++            raise ValueError('restore_204_response_must_be_empty')
++        # Use the original buffered TLS stream, before HTTPResponse.read()
++        # discards it based on the status code's assumed zero-length body.
++        if response.fp.read(1) != b'': raise ValueError('restore_204_response_must_be_empty')
++    elif len(response.read(65537)) > 65536:
++        raise ValueError('unexpected_large_error')
+     response.close()
+     return status
+ 
+@@ -542,7 +550,7 @@
+         verify(original,'restored')
+         check('other_owner_restored',call('GET','secret/data/native-control')[1].get('data',{}).get('data') == {'value':'before'})
+         check('later_absent',call('GET',MOUNT+'/later')[0] == 404)
+-        check('chunked_restore',chunked_restore(instance,archive) == 200)
++        check('chunked_restore',chunked_restore(instance,archive) == 204)
+         verify(original,'chunked_restored')
+         old_unseal, unseal = unseal, rekey_share(call, unseal, check)
+         generation = capacity()['generation']; seal_hash = file_hash(instance.root/'data'/'seal.json')
+--- a/qa/openbao-acceptance/native_snapshot_ha_restore_live.py
++++ b/qa/openbao-acceptance/native_snapshot_ha_restore_live.py
+@@ -76,19 +76,42 @@
+     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+ 
+ 
+-def publication(response, previous, imported, *, previous_epoch=None):
++def checked_before_capacity(observation, expected_epoch):
++    # Called on the existing actual capacity read BEFORE any upload. A stale
++    # phase expectation cannot authorize another mutation or be patched up by
++    # a post-restore epoch that happens to match an old expected number.
++    if (not isinstance(observation, dict) or type(expected_epoch) is not int or expected_epoch < 0
++            or any(type(observation.get(k)) is not int or observation[k] < 0
++                   for k in ('generation', 'replay_epoch'))
++            or observation['replay_epoch'] != expected_epoch):
++        raise FixtureError('restore_before_capacity_epoch_mismatch')
++    return dict(observation)
++
++
++def publication(response, before, uploaded_generation, observation, *, expected_before_epoch):
++    # Public restore returns no metadata. Separate authenticated before/after
++    # capacity reads observe a committed generation and exact epoch transition;
++    # existing full-value and later-marker checks prove the archive's effect.
++    # Neither the 204 nor its empty body is itself proof of a restored state.
+     status, body = response
+-    data = body.get('data', {})
+-    if status != 200 or body.get('auth') or body.get('wrap_info') or not isinstance(data, dict):
++    if type(status) is not int or status != 204 or body != {} or not isinstance(observation, dict):
+         return None
+-    fields = ('imported_generation', 'previous_local_generation', 'published_local_generation', 'replay_epoch')
+-    if (any(type(data.get(k)) is not int or data[k] < 0 for k in fields)
+-            or data.get('cluster_coordinated') is not True
+-            or data['imported_generation'] != imported or data['previous_local_generation'] != previous
+-            or data['published_local_generation'] <= previous or data['replay_epoch'] < 1
+-            or (previous_epoch is not None and data['replay_epoch'] != previous_epoch + 1)):
++    try:
++        before = checked_before_capacity(before, expected_before_epoch)
++    except FixtureError:
+         return None
+-    return {k: data[k] for k in fields}
++    if (type(uploaded_generation) is not int or uploaded_generation < 0
++            or any(type(observation.get(k)) is not int or observation[k] < 0
++                   for k in ('generation', 'replay_epoch'))
++            or observation['generation'] <= before['generation']
++            or observation['replay_epoch'] != before['replay_epoch'] + 1):
++        return None
++    return {'uploaded_archive_generation': uploaded_generation,
++            'previous_local_generation': before['generation'],
++            'previous_replay_epoch': before['replay_epoch'],
++            'observed_local_generation': observation['generation'],
++            'replay_epoch': observation['replay_epoch'],
++            'observation_source': 'sys/internal/capacity', 'restore_http_status': status}
+ 
+ 
+ def registered_mount(response, name, expected_kind):
+@@ -131,6 +154,17 @@
+                 else:
+                     with archive.open('rb') as stream: tls.sendall(stream.read())
+                 response = http.client.HTTPResponse(tls); response.begin()
++                if response.status == 204:
++                    if (response.getheader('Content-Length') is not None
++                            or response.getheader('Transfer-Encoding') is not None or response.fp is None):
++                        raise FixtureError('restore_204_response_must_be_empty')
++                    # The request already selects Connection: close. Observe
++                    # actual EOF through the original buffer, not the stdlib's
++                    # status-based zero-length shortcut; no new socket/retry.
++                    if response.fp.read(1) != b'':
++                        raise FixtureError('restore_204_response_must_be_empty')
++                    response.close()
++                    return 204, {}
+                 payload = response.read(65537)
+                 if len(payload) > 65536: raise FixtureError('restore_response_unbounded')
+                 return response.status, json.loads(payload)
+@@ -226,11 +260,12 @@
+         imported = meta['generation']
+         check('changed',call('PUT',MOUNT+'/k00',{'value':'changed'})[0] == 204)
+         check('later_written',call('PUT',MOUNT+'/later',{'value':'must-disappear'})[0] == 204)
+-        before = capacity_data(leader,token)['generation']
++        before_capacity = checked_before_capacity(capacity_data(leader,token),0)
+         raft_before = applied_index(leader,token)
+-        first = publication(restore_http(leader,token,archive),before,imported)
++        first = publication(restore_http(leader,token,archive),before_capacity,imported,
++                            capacity_data(leader,token),expected_before_epoch=0)
+         check('initial_restore', first is not None); observations['initial_publication'] = first
+-        check('new_publication',capacity_data(leader,token)['generation'] == first['published_local_generation'])
++        check('new_publication',capacity_data(leader,token)['generation'] == first['observed_local_generation'])
+         raft_after = applied_index(leader,token)
+         check('raft_frontier_advanced',raft_after > raft_before)
+         observations['raft_applied_before_after'] = [raft_before,raft_after]
+@@ -243,8 +278,9 @@
+         check('cli_new_generation',capacity_data(leader,token)['generation'] > before)
+         verify('all_cli_restored')
+         # Another observed restore establishes the exact current epoch after CLI publication.
+-        before = capacity_data(leader,token)['generation']
+-        observed = publication(restore_http(leader,token,archive),before,imported,previous_epoch=first['replay_epoch']+1)
++        before_capacity = checked_before_capacity(capacity_data(leader,token),first['replay_epoch']+1)
++        observed = publication(restore_http(leader,token,archive),before_capacity,imported,
++                               capacity_data(leader,token),expected_before_epoch=first['replay_epoch']+1)
+         check('cli_epoch_advanced',observed is not None); observations['after_cli_publication'] = observed
+         status, body = call('POST','auth/token/create',{'policies':['root'],'ttl':'1s'})
+         check('expiring_actor_created',status == 200 and bool(body.get('auth',{}).get('client_token')))
+@@ -263,8 +299,9 @@
+                 radius_credentials(),wrap_ttl='60s',timeout=7)
+             try:
+                 check('provider_inflight',provider.received.wait(1) and not provider.failed)
+-                before = capacity_data(leader,token)['generation']
+-                latest = publication(restore_http(leader,token,archive),before,imported,previous_epoch=observed['replay_epoch'])
++                before_capacity = checked_before_capacity(capacity_data(leader,token),observed['replay_epoch'])
++                latest = publication(restore_http(leader,token,archive),before_capacity,imported,
++                                     capacity_data(leader,token),expected_before_epoch=observed['replay_epoch'])
+                 check('restore_while_provider_pending',latest is not None)
+                 check('epoch_advanced',latest['replay_epoch'] == observed['replay_epoch']+1)
+             finally:
+@@ -273,7 +310,7 @@
+                   and provider.gate_elapsed is not None and provider.gate_elapsed < 2.7 and provider.count() == count+1)
+             response = pending.result(timeout=7)
+         check('late_auth_denied',late_denied(response))
+-        check('late_auth_no_publication',capacity_data(leader,token)['generation'] == latest['published_local_generation'])
++        check('late_auth_no_publication',capacity_data(leader,token)['generation'] == latest['observed_local_generation'])
+         status, body = leader.call('POST','auth/restore-radius/login',radius_credentials())
+         check('fresh_auth_succeeds',status == 200 and bool(body.get('auth',{}).get('client_token')) and provider.count() == count+2)
+         samples.append(body['auth']['client_token'].encode()); observations['last_publication'] = latest
+@@ -300,12 +337,12 @@
+         check('admin_consistent_save_unchanged',capacity_data(leader,token)['generation'] == before)
+         check('empty_database_mount',call('POST','sys/mounts/empty-db',{'type':'database'})[0] == 204)
+         check('empty_database_registered',registered_mount(call('GET','sys/mounts'),'empty-db','database'))
+-        before = capacity_data(leader,token)['generation']
+-        empty_restore = publication(restore_http(leader,token,consistent),before,consistent_meta['generation'],
+-                                    previous_epoch=latest['replay_epoch'])
++        before_capacity = checked_before_capacity(capacity_data(leader,token),latest['replay_epoch'])
++        empty_restore = publication(restore_http(leader,token,consistent),before_capacity,consistent_meta['generation'],
++                                    capacity_data(leader,token),expected_before_epoch=latest['replay_epoch'])
+         check('empty_database_restore',empty_restore is not None)
+         observations['empty_database_publication'] = empty_restore
+-        check('empty_database_new_publication',capacity_data(leader,token)['generation'] == empty_restore['published_local_generation'])
++        check('empty_database_new_publication',capacity_data(leader,token)['generation'] == empty_restore['observed_local_generation'])
+         verify('all_empty_database_restored')
+         for node in cluster.nodes:
+             check('empty_database_absent_node_'+str(node.node_id),registered_mount(
+--- a/qa/openbao-acceptance/native_snapshot_redirect_live.py
++++ b/qa/openbao-acceptance/native_snapshot_redirect_live.py
+@@ -22,7 +22,7 @@
+ from ha_destructive import FixtureError
+ from native_snapshot_cli_live import cli, contains_any, private_parent
+ from native_snapshot_ha_live import SaveCluster, client_view, capacity_data, strict_archive
+-from native_snapshot_ha_restore_live import applied_index, canonical, publication, restart, restore_http
++from native_snapshot_ha_restore_live import applied_index, canonical, checked_before_capacity, publication, restart, restore_http
+ from official_openbao_launcher import pinned_artifact, verify_inputs
+ from online_evidence import admit_output, complete_checks, source_identity
+ from provider_renewal_upgrade import durable_manifest
+@@ -204,15 +204,17 @@
+             'epoch_response_observed':False,'one_restore_command':True}
+         verify('all_cli_restored')
+         # This is a new, deliberate mutation phase, not retry/reconciliation of
+-        # the successful CLI restore. Its response exposes the epoch counter.
++        # the successful CLI restore. A separate authenticated capacity read
++        # observes its epoch; the restore's 204 response has no body.
+         check('second_changed',leader.call('PUT',MOUNT+'/k01',{'value':'second-changed'},token=token)[0]==204)
+         check('second_later_written',leader.call('PUT',MOUNT+'/later',{'value':'second-later'},token=token)[0]==204)
+         leader=resolve_leader(cluster,former);check('raw_restore_resolved',True)
+-        before=capacity_data(leader,token)['generation']
+-        second=publication(restore_http(leader,token,archive),before,metadata['generation'],previous_epoch=1)
++        before_capacity=checked_before_capacity(capacity_data(leader,token),1)
++        second=publication(restore_http(leader,token,archive),before_capacity,metadata['generation'],
++                           capacity_data(leader,token),expected_before_epoch=1)
+         check('raw_second_restore',second is not None)
+         check('raw_epoch_two',second['replay_epoch']==2)
+-        check('raw_new_publication',capacity_data(leader,token)['generation']==second['published_local_generation'])
++        check('raw_new_publication',capacity_data(leader,token)['generation']==second['observed_local_generation'])
+         observations['independent_second_restore']=second
+         verify('all_second_restored')
+         restart(cluster);check('restarted',True);verify('all_reopened')
+--- a/qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py
++++ b/qa/openbao-acceptance/tests/test_native_snapshot_ha_restore_live.py
+@@ -1,4 +1,5 @@
+ import copy
++import io
+ from types import SimpleNamespace
+ import unittest
+ from unittest.mock import patch
+@@ -34,18 +35,78 @@
+             self.assertFalse(f.complete(bad))
+         self.assertTrue(f.complete(rows[:-1]+[{'case':'additional_real_observation','passed':True}]+rows[-1:]))
+ 
+-    def test_publication_requires_new_generation_exact_epoch_and_import_identity(self):
+-        value = {'data':{'cluster_coordinated':True,'imported_generation':5,
+-                        'previous_local_generation':20,'published_local_generation':22,'replay_epoch':9}}
+-        self.assertEqual(f.publication((200,value),20,5,previous_epoch=8)['replay_epoch'],9)
+-        for key,replacement in [('cluster_coordinated',1),('imported_generation',6),
+-                ('previous_local_generation',19),('published_local_generation',20),('replay_epoch',8),
+-                ('replay_epoch',10),('replay_epoch',True)]:
+-            changed=copy.deepcopy(value);changed['data'][key]=replacement
+-            self.assertIsNone(f.publication((200,changed),20,5,previous_epoch=8),key)
+-        for status in (409,500,503): self.assertIsNone(f.publication((status,value),20,5))
+-        secret=copy.deepcopy(value);secret['auth']={'client_token':'sensitive-sentinel'}
+-        self.assertIsNone(f.publication((200,secret),20,5))
++    def test_publication_requires_exact_204_and_independently_observed_generation_and_epoch(self):
++        before = {'generation':20,'replay_epoch':8}
++        observed = {'generation':22,'replay_epoch':9}
++        result = f.publication((204,{}),before,5,observed,expected_before_epoch=8)
++        self.assertEqual(result['previous_replay_epoch'],8)
++        self.assertEqual(result['replay_epoch'],9)
++        self.assertEqual(result['uploaded_archive_generation'],5)
++        self.assertEqual(result['observed_local_generation'],22)
++        self.assertEqual(result['observation_source'],'sys/internal/capacity')
++        self.assertNotIn('published_local_generation',result)
++        for key,replacement in [('generation',20),('generation',19),('generation',True),
++                                ('replay_epoch',8),('replay_epoch',10),('replay_epoch',True)]:
++            changed=dict(observed);changed[key]=replacement
++            self.assertIsNone(f.publication((204,{}),before,5,changed,expected_before_epoch=8),key)
++        for status in (200,201,202,204.0,307,409,500,503):
++            self.assertIsNone(f.publication((status,{}),before,5,observed,expected_before_epoch=8))
++        for body in ({'data':{}},{'auth':{'client_token':'sensitive-sentinel'}},
++                     {'recovery_reference':'pending'},None):
++            self.assertIsNone(f.publication((204,body),before,5,observed,expected_before_epoch=8))
++        for observed_bad in (None,{}, {'generation':22}, {'replay_epoch':9}):
++            self.assertIsNone(f.publication((204,{}),before,5,observed_bad,expected_before_epoch=8))
++        for before_bad in (None,{}, {'generation':20}, {'replay_epoch':8},
++                           {'generation':True,'replay_epoch':8}, {'generation':-1,'replay_epoch':8},
++                           {'generation':20,'replay_epoch':True}):
++            self.assertIsNone(f.publication((204,{}),before_bad,5,observed,expected_before_epoch=8))
++        for uploaded in (True,-1,None):
++            self.assertIsNone(f.publication((204,{}),before,uploaded,observed,expected_before_epoch=8))
++        for expected in (True,-1,None,7,9):
++            with self.assertRaises(f.FixtureError):f.checked_before_capacity(before,expected)
++            self.assertIsNone(f.publication((204,{}),before,5,observed,expected_before_epoch=expected))
++
++    def test_phase_epoch_drift_is_rejected_before_upload_and_cannot_mimic_progress(self):
++        drifted_before = {'generation':20,'replay_epoch':9}
++        # This post-read equals the old expected 8+1 but proves no transition
++        # from the actually observed source epoch9. Reject both observations.
++        coincidental_after = {'generation':22,'replay_epoch':9}
++        with self.assertRaises(f.FixtureError):f.checked_before_capacity(drifted_before,8)
++        self.assertIsNone(f.publication((204,{}),drifted_before,5,coincidental_after,
++                                       expected_before_epoch=8))
++        actual_after = {'generation':22,'replay_epoch':10}
++        self.assertIsNone(f.publication((204,{}),drifted_before,5,actual_after,
++                                       expected_before_epoch=8))
++        self.assertIsNone(f.publication((204,{}),drifted_before,5,coincidental_after,
++                                       expected_before_epoch=9))
++
++    def test_restore_204_uses_actual_response_buffer_and_rejects_hidden_tail_once(self):
++        archive_bytes = b'synthetic-native-snapshot'
++        archive = SimpleNamespace(stat=lambda:SimpleNamespace(st_size=len(archive_bytes)),
++                                  open=lambda mode:io.BytesIO(archive_bytes))
++        class Socket:
++            def __init__(self, reply):self.reply=reply;self.sent=[]
++            def __enter__(self):return self
++            def __exit__(self,*_):return False
++            def sendall(self, value):self.sent.append(value)
++            def makefile(self, mode):
++                self.assert_mode=mode
++                return io.BytesIO(self.reply)
++        for headers,tail,accepted in ((b'',b'',True),(b'',b'illegal-tail',False),
++                                      (b'Content-Length: 0\r\n',b'',False),
++                                      (b'Transfer-Encoding: chunked\r\n',b'0\r\n\r\n',False)):
++            stream=Socket(b'HTTP/1.1 204 No Content\r\nConnection: close\r\n'+headers+b'\r\n'+tail)
++            node=SimpleNamespace(http_port=8200,
++                context=SimpleNamespace(wrap_socket=lambda raw,server_hostname:raw))
++            with patch.object(f.socket,'create_connection',return_value=stream) as connected:
++                if accepted:self.assertEqual(f.restore_http(node,'synthetic-token',archive),(204,{}))
++                else:
++                    with self.assertRaises(f.FixtureError):f.restore_http(node,'synthetic-token',archive)
++            connected.assert_called_once_with(('127.0.0.1',8200),timeout=7)
++            self.assertEqual(len(stream.sent),2)
++            self.assertTrue(stream.sent[0].startswith(b'POST /v1/sys/storage/raft/snapshot HTTP/1.1\r\n'))
++            self.assertEqual(stream.sent[1],archive_bytes)
++            self.assertEqual(stream.assert_mode,'rb')
+ 
+     def test_provider_timeout_or_wrapper_cannot_count_as_epoch_fence(self):
+         good=(503,{'errors':['online authentication authority changed']})

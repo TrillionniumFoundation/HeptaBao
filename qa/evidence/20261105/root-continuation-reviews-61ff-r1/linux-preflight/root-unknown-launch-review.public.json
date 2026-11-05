@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.root.rog-preflight-unknown-launch-review.v1",
+  "request_commit": "748768eeec9803244364ff61431dd6ece30339ee",
+  "request_sha256": "6f5d05d3535abd90909472dbcbaab457a177b50479d762d4bf145a08588cdfeb",
+  "driver_sha256": "217c4d2e840af1efe8d8191bc1b08d1bf00b823204570ef590d5e2c6ed797323",
+  "host": "rog",
+  "job_id": "1a1a93e525e-fc05-3335",
+  "idempotency_key": "ha-linux-readonly-preflight-61ff-20261105-r1-217c4d2e840a-4a9cf4612c3c",
+  "created_unix_ms": 1793840796254,
+  "initial_launch_outcome": "unknown",
+  "initial_launch_error": "Remote launch outcome unavailable",
+  "automatic_retry": false,
+  "idempotent_reconciliation": {
+    "same_job_id": true,
+    "reused": true,
+    "retried_launch": false,
+    "outcome": "unknown",
+    "state": "status_unavailable",
+    "status_authoritative": false
+  },
+  "status_queries": [
+    {
+      "sequence": 1,
+      "result": "INVALID_ARGUMENT",
+      "remote_error_class": "FileNotFoundError",
+      "missing_job_directory": "1a1a93e525e-fc05-3335",
+      "original_receipt": "preflight-reconcile-status-1.original-sdk.json"
+    },
+    {
+      "sequence": 2,
+      "query_clock_utc": "2026-11-05 01:09:15 UTC",
+      "result": "INVALID_ARGUMENT",
+      "remote_error_class": "FileNotFoundError",
+      "missing_job_directory": "1a1a93e525e-fc05-3335",
+      "evidence_scope": "observed tool result in root conversation; original SDK not separately captured"
+    }
+  ],
+  "authoritative_terminal_confirmed": false,
+  "exit_code": null,
+  "readonly_preflight_checks_executed": null,
+  "readonly_preflight_checks_passed": null,
+  "source_toolchain_lock_resource_admission_obtained": false,
+  "missing_directory_or_elapsed_supervisor_is_not_terminal_proof": true,
+  "candidate_source_commit": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "candidate_build_request_submitted": false,
+  "candidate_tests_executed": 0,
+  "fresh_preflight_key_created_to_bypass_unknown": false,
+  "foreign_process_signalled": false,
+  "automatic_approval_rejection": false,
+  "next_required_action": "Reconcile this original durable launch to an authoritative outcome before any new execution using this path. Do not replay unknown work or manufacture completion.",
+  "full_replacement_qualified": false,
+  "receipt_files": [
+    {
+      "path": "root-preflight-review.public.json",
+      "bytes": 2014,
+      "sha256": "0752a3dd1cdf7e7e5188da4704b7c3fe7b41ae4c2807995542d47a4fa61f02c6"
+    },
+    {
+      "path": "preflight-start.original-sdk.json",
+      "bytes": 2928,
+      "sha256": "28d16cab99576ffb211a73e16720e53f07a04baced8c1d681429be3e5895a64b"
+    },
+    {
+      "path": "preflight-reconcile-status-1.original-sdk.json",
+      "bytes": 502,
+      "sha256": "ad14b40d05506feccb0ab18542c21af1bce834291b51f79b0718f7c5461529bb"
+    },
+    {
+      "path": "preflight-idempotent-reconcile.original-sdk.json",
+      "bytes": 2902,
+      "sha256": "2793c992ad4ff2746422c663f0e7d7909fd9fbf53ea697e8a8f3b1d78132c624"
+    }
+  ]
+}
