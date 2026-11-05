@@ -1,0 +1,176 @@
+{
+  "status": "failed_or_blocked",
+  "started_utc": "2026-10-19T04:06:00.606430+00:00",
+  "runner_pid": 17833,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-22cd",
+  "source_commit": "22cdbc19679cceffe082c6ced8b8e8bb7567058e",
+  "source_tree": "c4b3c4e6d81ba80c889433bd8baaf722faa838b1",
+  "manifest_sha256": "fb9adef70befd3ebdbc21cda09fa6d1143593c67be2f068d741b93012147d756",
+  "runner_sha256": "d7380e91363b9e28f6aea10ad6715942546404e6fd58f442952029f328e56bb4",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T04:06:00.718833+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 17836,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T04:06:00.731232+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T04:06:00.731653+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 17837,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T04:06:00.743786+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-19T04:06:00.744149+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 17838,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T04:11:39.753476+00:00",
+      "elapsed_seconds": 339.009,
+      "log_sha256": "5cc15fea5a0ec1be0cae588f56ed0cf6639419960841b19b8ff2d166d5c62df9"
+    },
+    {
+      "label": "historical-service-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_historical_restore_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T04:11:39.755164+00:00",
+      "status": "passed",
+      "log": "historical-service-list.log",
+      "pid": 18766,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T04:11:42.697588+00:00",
+      "elapsed_seconds": 2.942,
+      "log_sha256": "113706c5604497eb7e8f0bc958c792ade73994a5e162d7b63af207ebfe34ba21",
+      "expected_count": 6,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ]
+    },
+    {
+      "label": "historical-service",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_ha_historical_restore_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T04:11:42.701791+00:00",
+      "status": "failed",
+      "log": "historical-service.log",
+      "pid": 18779,
+      "exit_code": 101,
+      "finished_utc": "2026-10-19T04:12:55.041664+00:00",
+      "elapsed_seconds": 72.339,
+      "log_sha256": "a001f2a2ff45d92ff0b0efd130cd692df4cfd1fa40251a8733f01a1b2dc8d0d3",
+      "expected_count": 6,
+      "selected_test_names": [
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_audit_failure_retains_exact_operation_after_cold_reopen",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_inherits_live_clock_and_uses_original_actor_after_auth_replacement",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_lost_reference_cold_inspection_requires_separate_exact_cancel",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_pending_stage_failure_cold_reconcile_never_replays_committed_operation",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_tamper_revocation_and_expiry_never_begin_epoch",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::native_ha_historical_restore_two_epochs_cold_stale_replica_keeps_original_lineage"
+      ],
+      "terminal_test_summaries": []
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.14.3",
+  "selected_groups": [
+    "historical-service"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-19T04:06:00.717227+00:00",
+    "commit": "22cdbc19679cceffe082c6ced8b8e8bb7567058e",
+    "tree": "c4b3c4e6d81ba80c889433bd8baaf722faa838b1",
+    "verified_files": 2837
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-19T04:12:55.799292+00:00",
+    "commit": "22cdbc19679cceffe082c6ced8b8e8bb7567058e",
+    "tree": "c4b3c4e6d81ba80c889433bd8baaf722faa838b1",
+    "verified_files": 2837
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-19T04:12:55.799382+00:00"
+}

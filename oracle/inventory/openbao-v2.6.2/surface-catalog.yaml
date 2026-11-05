@@ -253,18 +253,7 @@ categories:
         inventory_status: IDENTIFIED
         fixture_status: PLANNED
         support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
-        notes: Roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy.
-      - id: HB-SURFACE-SECRET-PKIEXT
-        name: PKI extension engine
-        kind: SECRET_ENGINE
-        criticality: CRYPTO_CRITICAL
-        source_reference: public-source-surface://builtin/logical/pkiext
-        source_class: SANITIZED_SOURCE_SURFACE_FACT
-        owner_work_packages: [H18-WP06]
-        inventory_status: IDENTIFIED
-        fixture_status: PLANNED
-        support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
-        notes: Separate compatibility and protocol inventory required.
+        notes: Roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy. OpenBao 2.6.2 builtin/logical/pkiext is test-only and exposes no separate runtime product surface.
       - id: HB-SURFACE-SECRET-SSH
         name: SSH secret engine
         kind: SECRET_ENGINE
@@ -716,8 +705,8 @@ categories:
         support_profiles: [HB-P11-MIGRATE-OPENBAO-2_6, HB-P12-FULL-C5]
         notes: Source and target writers never overlap; unknown authority means no writer.
 coverage:
-  total_items: 60
-  identified: 60
+  total_items: 59
+  identified: 59
   captured: 0
   reviewed: 0
   qualified: 0

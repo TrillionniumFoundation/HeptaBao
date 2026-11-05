@@ -1,0 +1,710 @@
+{
+  "diagnosticsRedacted": true,
+  "explicitDenyAndLeaseRepairPassed": true,
+  "hardPerRequestDeadlineQualified": false,
+  "installedSdkUnchanged": true,
+  "ok": false,
+  "phases": [
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "new_database_absent",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-owned",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-unmanaged",
+          "passed": true
+        },
+        {
+          "case": "upsert_anthropic:authbus-deny-other",
+          "passed": true
+        },
+        {
+          "case": "seed_all_credentials_exact",
+          "passed": true
+        },
+        {
+          "case": "original_resolver_in_memory_empty_order_denies",
+          "passed": true
+        },
+        {
+          "case": "original_persistence_bug_reproduced",
+          "passed": true
+        },
+        {
+          "case": "original_real_sdk_grant_applied",
+          "passed": true
+        },
+        {
+          "case": "original_same_epoch_bug_reproduced",
+          "passed": true
+        },
+        {
+          "case": "original_unmanaged_credentials_unchanged",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "executedPluginSha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "observationComplete": true,
+      "originalEmptyOrderLost": true,
+      "originalSameEpochExpiryBug": true,
+      "phase": "original",
+      "productionMutation": false,
+      "realCredentials": false,
+      "sdkCandidate": false,
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "exact_three_candidate_modules_loaded",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "new_database_absent",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-owned",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-unmanaged",
+          "passed": true
+        },
+        {
+          "case": "upsert_anthropic:authbus-deny-other",
+          "passed": true
+        },
+        {
+          "case": "seed_all_credentials_exact",
+          "passed": true
+        },
+        {
+          "case": "legacy_empty_setter_still_clears_override",
+          "passed": true
+        },
+        {
+          "case": "explicit_deny_rejects_nonempty_or_nonarray_undefined",
+          "passed": true
+        },
+        {
+          "case": "explicit_deny_rejects_nonempty_or_nonarray_055539df4a0b804c58caf46c0cd2941af10d64c1395ddd8e50b5f55d945841e6",
+          "passed": true
+        },
+        {
+          "case": "explicit_deny_rejects_nonempty_or_nonarray_9f156373b7bf0cce7910e59b4df5dff1b3a562d186d110290425cc3118e79984",
+          "passed": true
+        },
+        {
+          "case": "explicit_deny_rejects_nonempty_or_nonarray_997d91e113a2b9920a4c12a7dfce88e9a5856573d0423616034d14572d85184b",
+          "passed": true
+        },
+        {
+          "case": "explicit_deny_rejects_nonempty_or_nonarray_12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+          "passed": true
+        },
+        {
+          "case": "locked_explicit_deny_succeeded",
+          "passed": true
+        },
+        {
+          "case": "sqlite_and_actual_resolver_deny",
+          "passed": true
+        },
+        {
+          "case": "deny_overrides_configured_and_preferred_fallback",
+          "passed": true
+        },
+        {
+          "case": "unmanaged_and_other_provider_untouched",
+          "passed": true
+        },
+        {
+          "case": "pruned_invalid_lists_not_promoted_to_deny",
+          "passed": true
+        },
+        {
+          "case": "valid_grant_uses_real_sdk",
+          "passed": true
+        },
+        {
+          "case": "original_grant_deadline_recorded",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "executedPluginSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "phase": "seed",
+      "productionMutation": false,
+      "realCredentials": false,
+      "sdkCandidate": true,
+      "sdkCandidateModules": [
+        {
+          "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+          "loaded": true,
+          "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+          "relative": "dist/store-DH33UrUj.js"
+        },
+        {
+          "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+          "loaded": true,
+          "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+          "relative": "dist/source-check-ZSz5NzGW.js"
+        },
+        {
+          "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+          "loaded": true,
+          "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+          "relative": "dist/profiles-DyU-YCq2.js"
+        }
+      ],
+      "sdkVersion": "2026.7.1-2",
+      "seedComplete": true
+    },
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "exact_three_candidate_modules_loaded",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "cold_deadline_and_grant_exact",
+          "passed": true
+        },
+        {
+          "case": "same_epoch_expired_really_denies",
+          "passed": true
+        },
+        {
+          "case": "new_unmanaged_profile_added_with_real_sdk",
+          "passed": true
+        },
+        {
+          "case": "unrelated_sdk_write_preserves_deny",
+          "passed": true
+        },
+        {
+          "case": "deny_from_stale_caller_preserves_new_unmanaged_profile",
+          "passed": true
+        },
+        {
+          "case": "clock_rollback_does_not_resurrect",
+          "passed": true
+        },
+        {
+          "case": "higher_epoch_restores_managed_grant",
+          "passed": true
+        },
+        {
+          "case": "same_epoch_deadline_extension_rejected",
+          "passed": true
+        },
+        {
+          "case": "lower_epoch_expired_message_cannot_revoke_current",
+          "passed": true
+        },
+        {
+          "case": "local_preflight_without_network_denies",
+          "passed": true
+        },
+        {
+          "case": "legacy_grant_without_deadline_denies",
+          "passed": true
+        },
+        {
+          "case": "legacy_same_epoch_cannot_upgrade_authority",
+          "passed": true
+        },
+        {
+          "case": "new_epoch_after_legacy_can_authorize",
+          "passed": true
+        },
+        {
+          "case": "missing_scope_cannot_hide_known_expiration",
+          "passed": true
+        },
+        {
+          "case": "all_unmanaged_credentials_and_other_order_unchanged",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "executedPluginSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "phase": "reopen",
+      "productionMutation": false,
+      "realCredentials": false,
+      "repairChecksPassed": true,
+      "sdkCandidate": true,
+      "sdkCandidateModules": [
+        {
+          "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+          "loaded": true,
+          "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+          "relative": "dist/store-DH33UrUj.js"
+        },
+        {
+          "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+          "loaded": true,
+          "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+          "relative": "dist/source-check-ZSz5NzGW.js"
+        },
+        {
+          "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+          "loaded": true,
+          "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+          "relative": "dist/profiles-DyU-YCq2.js"
+        }
+      ],
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "exact_three_candidate_modules_loaded",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "cold_tombstone_preserved",
+          "passed": true
+        },
+        {
+          "case": "cold_sqlite_still_explicitly_denies",
+          "passed": true
+        },
+        {
+          "case": "cold_clock_rollback_and_replay_denied",
+          "passed": true
+        },
+        {
+          "case": "cold_all_unmanaged_credentials_unchanged",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "coldRepairChecksPassed": true,
+      "executedPluginSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "phase": "final-reopen",
+      "productionMutation": false,
+      "realCredentials": false,
+      "sdkCandidate": true,
+      "sdkCandidateModules": [
+        {
+          "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+          "loaded": true,
+          "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+          "relative": "dist/store-DH33UrUj.js"
+        },
+        {
+          "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+          "loaded": true,
+          "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+          "relative": "dist/source-check-ZSz5NzGW.js"
+        },
+        {
+          "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+          "loaded": true,
+          "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+          "relative": "dist/profiles-DyU-YCq2.js"
+        }
+      ],
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "exact_three_candidate_modules_loaded",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "new_database_absent",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-owned",
+          "passed": true
+        },
+        {
+          "case": "upsert_google:authbus-deny-unmanaged",
+          "passed": true
+        },
+        {
+          "case": "upsert_anthropic:authbus-deny-other",
+          "passed": true
+        },
+        {
+          "case": "seed_all_credentials_exact",
+          "passed": true
+        },
+        {
+          "case": "failure_fixture_has_real_grant",
+          "passed": true
+        },
+        {
+          "case": "real_sqlite_revocation_failure_propagated",
+          "passed": true
+        },
+        {
+          "case": "failed_transaction_did_not_half_clear_last_good",
+          "passed": true
+        },
+        {
+          "case": "failed_revoke_not_acknowledged_or_accepted",
+          "passed": true
+        },
+        {
+          "case": "failed_revoke_does_not_delete_unmanaged",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "executedPluginSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+      "fixtureAbortTriggerPersisted": true,
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "phase": "write-failure",
+      "productionMutation": false,
+      "realCredentials": false,
+      "revocationFailureResolvedCount": 1,
+      "revocationFailureResolverDenied": false,
+      "revocationFailureSelectedOldGrant": true,
+      "sdkCandidate": true,
+      "sdkCandidateModules": [
+        {
+          "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+          "loaded": true,
+          "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+          "relative": "dist/store-DH33UrUj.js"
+        },
+        {
+          "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+          "loaded": true,
+          "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+          "relative": "dist/source-check-ZSz5NzGW.js"
+        },
+        {
+          "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+          "loaded": true,
+          "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+          "relative": "dist/profiles-DyU-YCq2.js"
+        }
+      ],
+      "sdkVersion": "2026.7.1-2"
+    },
+    {
+      "actualSdk": true,
+      "checks": [
+        {
+          "case": "default_main_agent_scoped",
+          "passed": true
+        },
+        {
+          "case": "database_scoped",
+          "passed": true
+        },
+        {
+          "case": "exact_three_candidate_modules_loaded",
+          "passed": true
+        },
+        {
+          "case": "executed_plugin_source_bound",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_resolveProviderIdForAuth",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_loadAuthProfileStoreWithoutExternalProfiles",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_saveAuthProfileStore",
+          "passed": true
+        },
+        {
+          "case": "actual_sdk_setAuthProfileOrder",
+          "passed": true
+        },
+        {
+          "case": "failed_revoke_cold_fence_remains_uncommitted",
+          "passed": true
+        },
+        {
+          "case": "fault_removed_actual_revocation_denies",
+          "passed": true
+        },
+        {
+          "case": "recovery_keeps_unmanaged_credentials",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_still_unchanged",
+          "passed": true
+        },
+        {
+          "case": "production_plugin_still_unchanged",
+          "passed": true
+        }
+      ],
+      "coldFailedRevocationResolverDenied": false,
+      "coldFailedRevocationSelectedOldGrant": true,
+      "executedPluginSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+      "faultRemovedAndRecovered": true,
+      "hardPerRequestDeadlineQualified": false,
+      "networkAllowed": false,
+      "phase": "write-failure-reopen",
+      "productionMutation": false,
+      "realCredentials": false,
+      "sdkCandidate": true,
+      "sdkCandidateModules": [
+        {
+          "candidateSha256": "a1886879796a7d94d42a505acf5f772b18142f97476d9e47c74fa39be3e0d1c7",
+          "loaded": true,
+          "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+          "relative": "dist/store-DH33UrUj.js"
+        },
+        {
+          "candidateSha256": "d2f78478d914e5f0169cd3c6b682e307b7740f112fe9ce3334ffe8126c5c500a",
+          "loaded": true,
+          "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+          "relative": "dist/source-check-ZSz5NzGW.js"
+        },
+        {
+          "candidateSha256": "7e3af49478dde3917c6afeea397a04b0edb206c50e7a2506d0c6c3edead0f866",
+          "loaded": true,
+          "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+          "relative": "dist/profiles-DyU-YCq2.js"
+        }
+      ],
+      "sdkVersion": "2026.7.1-2"
+    }
+  ],
+  "pluginCandidateSha256": "6b3258940a325cdbb15edf705f951b8ad0ee8723e666935872cbb359c1e3ce41",
+  "productionCoordinatorReplacement": false,
+  "productionMutation": false,
+  "productionPluginUnchanged": true,
+  "providerNetworkAllowed": false,
+  "qualificationChecks": [
+    {
+      "case": "explicit_deny_and_lease_repair",
+      "passed": true
+    },
+    {
+      "case": "revocation_write_failure_closes_actual_resolver",
+      "passed": false
+    }
+  ],
+  "realCredentials": false,
+  "remainingBlocker": "failed_revocation_does_not_close_gateway_admission",
+  "revocationFailureClosed": false,
+  "schema": "authbus-explicit-deny-actual-sdk-v1",
+  "sdkSourceBindings": [
+    {
+      "originalSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+      "relative": "dist/store-DH33UrUj.js"
+    },
+    {
+      "originalSha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+      "relative": "dist/source-check-ZSz5NzGW.js"
+    },
+    {
+      "originalSha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "relative": "dist/profiles-DyU-YCq2.js"
+    }
+  ],
+  "sourcePluginSha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b"
+}

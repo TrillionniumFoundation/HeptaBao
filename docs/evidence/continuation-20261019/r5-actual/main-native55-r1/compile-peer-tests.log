@@ -1,0 +1,3 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "--no-run"]}
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.30s
+  Executable unittests src/lib.rs (/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577)

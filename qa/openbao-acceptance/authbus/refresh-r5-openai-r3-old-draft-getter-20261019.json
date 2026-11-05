@@ -1,0 +1,11 @@
+{
+  "schema": "authbus-openai-unfrozen-draft-getter-reproduction",
+  "status": "expected_failure_reproduced",
+  "oldDraftRegistrySha256": "88e53cad88a206e65d6666c7e1c55ea62708041c70f27a5eda23d6498226139f",
+  "testSha256": "1f0a4bade6ed79713e31b92da7ba32065683bc2f57e36d35124393c8dcac8fa8",
+  "exitCode": 1,
+  "stderrSha256": "f189dc9abf24346f9f1899cdc9584637b69b399831da643fe041fd2d2a52e6bf",
+  "failure": "old draft validates first init.body value and sends the second getter value",
+  "actualSdkExecution": false,
+  "actualNativeHeptaBao": false
+}

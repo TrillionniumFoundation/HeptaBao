@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.exact-public-foreground-failure-extraction.v1",
+  "retrieval_packet_sha256": "0d2ce69ed4388e0820cb9468e330fa70782b1cd8b01c0887216cac74565625e0",
+  "files": [
+    {
+      "local_file": "foreground-ssh.stderr.log",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work/foreground-node-1-29db961c5a4120195e5fb4b0b0a9ea4e/ssh.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eof": true
+    },
+    {
+      "local_file": "foreground-ssh-identity.json",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work/foreground-node-1-29db961c5a4120195e5fb4b0b0a9ea4e/ssh-identity.json",
+      "bytes": 154,
+      "sha256": "4aa3da26f70f515caa697a422238f26d8a4376b8b018273afadbd53d8dd969c9",
+      "eof": true
+    },
+    {
+      "local_file": "foreground-failure.json",
+      "source_path": "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-b24c6de-20261019-r1-controller/work/foreground-node-1-29db961c5a4120195e5fb4b0b0a9ea4e/failure.json",
+      "bytes": 1211,
+      "sha256": "c1c49bf62738aeb4dcec9eecc22d79d2a8b09ab801017d90419878757a21c9ae",
+      "eof": true
+    }
+  ],
+  "launch_intent_encoded_argv_not_selected_for_git": true
+}

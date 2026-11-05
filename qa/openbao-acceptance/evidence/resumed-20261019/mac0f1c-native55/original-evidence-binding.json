@@ -1,0 +1,342 @@
+{
+  "schema": "heptabao.actual-0f1c-r3-diagnostic-binding.v1",
+  "source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "source_before": {
+    "verified_at_utc": "2026-10-19T04:44:56.982334+00:00",
+    "commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "verified_files": 2882
+  },
+  "source_after": {
+    "verified_at_utc": "2026-10-19T04:56:44.358478+00:00",
+    "commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "verified_files": 2882
+  },
+  "source_unchanged": true,
+  "runner_completed": true,
+  "original_artifacts": [
+    {
+      "path": "continuation-20261019/mac0f1c-actual-r1/native-kv2-import.log",
+      "bytes": 6768,
+      "sha256": "ed808bc666392c4605dc545e43dddc42f4af31a554e0fa3efc77faa51c89253b"
+    },
+    {
+      "path": "continuation-20261019/mac0f1c-actual-r1/native-kv2-storage-witness.log",
+      "bytes": 5180,
+      "sha256": "9186712dd7648341e167ab881c77aea5600c1c70acc69116cb11739a333240df"
+    },
+    {
+      "path": "continuation-20261019/mac0f1c-actual-r1/summary.json",
+      "bytes": 53971,
+      "sha256": "85eee45d084862ada27c1afb3e11b0fe58d0f7cb0cba5ca981faa6ad55afbd56"
+    }
+  ],
+  "executed_groups": [
+    {
+      "label": "native-kv2-import",
+      "status": "failed",
+      "expected_count": 8,
+      "terminal_test_summaries": [],
+      "elapsed_seconds": 11.05,
+      "started_utc": "2026-10-19T04:50:37.628813+00:00",
+      "finished_utc": "2026-10-19T04:50:48.679260+00:00",
+      "log": "native-kv2-import.log",
+      "log_sha256": "ed808bc666392c4605dc545e43dddc42f4af31a554e0fa3efc77faa51c89253b",
+      "raw_terminal_summary": {
+        "passed": 7,
+        "failed": 1,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 2751,
+        "elapsed_seconds": 10.87
+      }
+    },
+    {
+      "label": "native-kv2-large",
+      "status": "passed",
+      "expected_count": 15,
+      "terminal_test_summaries": [
+        [
+          "15",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 23.755,
+      "started_utc": "2026-10-19T04:50:48.836111+00:00",
+      "finished_utc": "2026-10-19T04:51:12.590691+00:00",
+      "log": "native-kv2-large.log",
+      "log_sha256": "4bb85dbe425225dd360124d006c7be0cf994098847c959ccb575cec1355f3116"
+    },
+    {
+      "label": "forward-original-unseal-veto",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 1.52,
+      "started_utc": "2026-10-19T04:51:12.751491+00:00",
+      "finished_utc": "2026-10-19T04:51:14.271465+00:00",
+      "log": "forward-original-unseal-veto.log",
+      "log_sha256": "ba5c3b6340dc512ebd369bcb4245712e50f6e255b14382fbfe4daadf31f9558d"
+    },
+    {
+      "label": "forward-no-second-floor",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 1.517,
+      "started_utc": "2026-10-19T04:51:14.495580+00:00",
+      "finished_utc": "2026-10-19T04:51:16.012897+00:00",
+      "log": "forward-no-second-floor.log",
+      "log_sha256": "1653e59c2c1800ea97d7f856ccee69572d8e4ef78019b0cc25bd9fb47c0371c3"
+    },
+    {
+      "label": "historical-service",
+      "status": "passed",
+      "expected_count": 6,
+      "terminal_test_summaries": [
+        [
+          "6",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 75.421,
+      "started_utc": "2026-10-19T04:51:16.231268+00:00",
+      "finished_utc": "2026-10-19T04:52:31.649152+00:00",
+      "log": "historical-service.log",
+      "log_sha256": "121dc1ab0b1d2c2455c09bbb106c3e03500be8ac05b2df104df4757d0bbcc29b"
+    },
+    {
+      "label": "snapshot-service",
+      "status": "passed",
+      "expected_count": 7,
+      "terminal_test_summaries": [
+        [
+          "7",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 28.239,
+      "started_utc": "2026-10-19T04:52:31.804839+00:00",
+      "finished_utc": "2026-10-19T04:53:00.042922+00:00",
+      "log": "snapshot-service.log",
+      "log_sha256": "30c5e8012636f07b7fac7af2372caf6616ed54d0c30b11276397fa8d662381b1"
+    },
+    {
+      "label": "archive-34mib",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 20.488,
+      "started_utc": "2026-10-19T04:53:00.199419+00:00",
+      "finished_utc": "2026-10-19T04:53:20.686906+00:00",
+      "log": "archive-34mib.log",
+      "log_sha256": "fbba9801c5b7db7cb0b4954aebac3a800e2076d5919806e18c2d72ee0c4eb079"
+    },
+    {
+      "label": "http-repair-admission",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:20.860242+00:00",
+      "finished_utc": "2026-10-19T04:53:21.011235+00:00",
+      "log": "http-repair-admission.log",
+      "log_sha256": "a029cee0fc44d81b330a7fb3c253bbbac4a760ff8b2867fc671b00c0570086cd"
+    },
+    {
+      "label": "http-pending-admission",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:21.193830+00:00",
+      "finished_utc": "2026-10-19T04:53:21.345105+00:00",
+      "log": "http-pending-admission.log",
+      "log_sha256": "cf05eb56d7763078dcd6c7d8464eeee8a023b70cd104a68eb2431c3c730c7c9c"
+    },
+    {
+      "label": "private-transport-diagnostic",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.09,
+      "started_utc": "2026-10-19T04:53:21.452354+00:00",
+      "finished_utc": "2026-10-19T04:53:21.543054+00:00",
+      "log": "private-transport-diagnostic.log",
+      "log_sha256": "083551313aea9eb9349618135995cf67af960d5f5648fbf18be063979230d59f"
+    },
+    {
+      "label": "private-frame-diagnostic",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.09,
+      "started_utc": "2026-10-19T04:53:21.635631+00:00",
+      "finished_utc": "2026-10-19T04:53:21.726394+00:00",
+      "log": "private-frame-diagnostic.log",
+      "log_sha256": "26ad9e0d13e39472f2a649e6936f73769d4a112fd7cff0eec229ec7873ff27cb"
+    },
+    {
+      "label": "kv2-api-271-numbers",
+      "status": "passed",
+      "expected_count": 3,
+      "terminal_test_summaries": [
+        [
+          "3",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:21.894582+00:00",
+      "finished_utc": "2026-10-19T04:53:22.045395+00:00",
+      "log": "kv2-api-271-numbers.log",
+      "log_sha256": "4fc4df930a7d8ee0e46814b16be6bc1f5b30b93a267865f816fc83ffaf19130b"
+    },
+    {
+      "label": "native-kv2-storage-witness",
+      "status": "failed",
+      "expected_count": 5,
+      "terminal_test_summaries": [],
+      "elapsed_seconds": 13.43,
+      "started_utc": "2026-10-19T04:53:22.228166+00:00",
+      "finished_utc": "2026-10-19T04:53:35.657740+00:00",
+      "log": "native-kv2-storage-witness.log",
+      "log_sha256": "9186712dd7648341e167ab881c77aea5600c1c70acc69116cb11739a333240df",
+      "raw_terminal_summary": {
+        "passed": 4,
+        "failed": 1,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 2754,
+        "elapsed_seconds": 13.29
+      }
+    },
+    {
+      "label": "lossless-json-private-tags",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:35.832583+00:00",
+      "finished_utc": "2026-10-19T04:53:35.983510+00:00",
+      "log": "lossless-json-private-tags.log",
+      "log_sha256": "d0818f0565e872af7af8a166e24518a7206c9eaa46d7e546c798591047aab028"
+    },
+    {
+      "label": "lossless-kv1-conversion",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:36.163984+00:00",
+      "finished_utc": "2026-10-19T04:53:36.314758+00:00",
+      "log": "lossless-kv1-conversion.log",
+      "log_sha256": "50872d1e9db1d4b25fee735d46e02089a9e9cf148c1ab2ea7deda4be8a5ecd4f"
+    },
+    {
+      "label": "lossless-token-equivalence",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.151,
+      "started_utc": "2026-10-19T04:53:36.495584+00:00",
+      "finished_utc": "2026-10-19T04:53:36.646993+00:00",
+      "log": "lossless-token-equivalence.log",
+      "log_sha256": "2bffcdfc21f4f251b92a2376447425e470720414babd3c41fdbb5a39a74e77e6"
+    },
+    {
+      "label": "native-raw-private-tags",
+      "status": "passed",
+      "expected_count": 1,
+      "terminal_test_summaries": [
+        [
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "elapsed_seconds": 0.15,
+      "started_utc": "2026-10-19T04:53:36.830017+00:00",
+      "finished_utc": "2026-10-19T04:53:36.980844+00:00",
+      "log": "native-raw-private-tags.log",
+      "log_sha256": "9d5a45c0311c15395cce65c6bf6bc11d1db160a83cc6ff4e518f515d760362b7"
+    }
+  ],
+  "r3_execution_status": "not_executed",
+  "r3_changes": "codec API assertion and independent exact cold payload witness; restore failure response diagnostic only",
+  "expected_cases_unchanged": 55,
+  "new_test_cases": 0,
+  "actual_total": {
+    "passed": 53,
+    "failed": 2,
+    "executed": 55,
+    "expected": 55,
+    "not_full_replacement": true
+  }
+}

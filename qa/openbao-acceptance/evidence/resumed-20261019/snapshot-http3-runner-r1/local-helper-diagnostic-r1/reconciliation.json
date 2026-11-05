@@ -1,0 +1,9 @@
+{
+  "error": "owned compiler group cleanup is unresolved; later commands were not started",
+  "owned_direct_children": [
+    {
+      "pid": 6,
+      "owned_direct_child_waitpid_error": "[Errno 10] No child processes"
+    }
+  ]
+}

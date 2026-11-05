@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.authbus.native-r2-and-openai-r4.actual-evidence.v1",
+  "status": "passed_two_independently_scoped_actual_runs",
+  "rawReceiptsPreserved": true,
+  "rawFiles": [
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/authbus-r5-native-cold-r2-20261019-controller.json",
+      "bytes": 2882,
+      "sha256": "4c32b5e638ebe20594d9968143ef3ebd640f596bfacd6ebb7dfac1802195277a"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/authbus-r5-native-cold-r2-20261019-controller.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/authbus-r5-native-cold-r2-20261019-controller.stdout.log",
+      "bytes": 118,
+      "sha256": "c03bae86c5a1903b7bff3f92e1e395398e8bf6eb942e51af77ffa252ddb11316"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/public-receipt.json",
+      "bytes": 51856,
+      "sha256": "5aa42c6784de70206467a9212c53169690928131697b0a10768d996f3f021541"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/warm.json",
+      "bytes": 20098,
+      "sha256": "472967affa5bebbe86e9aeebf82fac66ac34a64dd5f06486c8dc5d3094abef78"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/cold-before-server.json",
+      "bytes": 20126,
+      "sha256": "bb8816048fde863164dadc97ec27ecd254f7c09fd80cacd1bba93e0c880d590c"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/cold-after-server.json",
+      "bytes": 20125,
+      "sha256": "4d1315d6fd80815bda7adb9e19c81fb5d7fc9073091ada57f8a7fa50b0513b8a"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/controller.json",
+      "bytes": 39822,
+      "sha256": "64bdb13ecee3c16f3e2326d56db4256836a90f0fd4f98e5bfa2ec4eeab133839"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/node.stdout.log",
+      "bytes": 86412,
+      "sha256": "ba99b2239e101839f69de87dc068f541d5aa18469b6e0c9275940e3fa768f45f"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/node.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/fixture/public-receipt.json",
+      "bytes": 112239,
+      "sha256": "0cb912e1158bab75576cfda71e0a9f9a576951d51741e9a8251c577a26b3b769"
+    }
+  ],
+  "nativeR2": {
+    "controllerChecks": 120,
+    "workers": [
+      {
+        "phase": "warm",
+        "pid": 1993462,
+        "checksPassed": 59
+      },
+      {
+        "phase": "cold-before-server",
+        "pid": 1994085,
+        "checksPassed": 57
+      },
+      {
+        "phase": "cold-after-server",
+        "pid": 1994676,
+        "checksPassed": 57
+      }
+    ],
+    "scenarioInventory": [
+      "manager-success",
+      "intent-ack-lost",
+      "provider-ack-lost",
+      "sqlite-abort"
+    ],
+    "elapsedSeconds": 60.47783935,
+    "originalProfileSeconds": 180,
+    "sourcePacketSha256": "36f4548dfed1c999451b252b2ddcee707c2cf368870c06e1b5956fb911c7f97c",
+    "binarySha256": "7e68ebb51d3440c30696a7f7456322e48d2a39e702709a27736b78f451ae591c",
+    "productSourceCommit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+    "productSourceTree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+    "nativeProcessCycles": [
+      {
+        "exitCode": -9,
+        "newPid": 1994483,
+        "oldPid": 1993326,
+        "stop": "SIGKILL"
+      }
+    ],
+    "runtimeScope": "actual_native_control_actual_sdk_and_two_distinct_cold_sdk_workers",
+    "providerScope": "synthetic_provider_over_owned_verified_https",
+    "originalFourCaseInventoryUnchanged": true,
+    "historicalResultInherited": false
+  },
+  "openaiR4": {
+    "scenarios": 32,
+    "checksPassed": 432,
+    "actualUndiciScenarios": 5,
+    "elapsedSeconds": 40.845323799,
+    "originalBudgetSeconds": 180,
+    "childPid": 2025395,
+    "parentPid": 2025373,
+    "sourcePacketSha256": "90a6f58ba2a7905a3c34ce3893667d7859bab8390429fa834332fc16adec2cd6",
+    "nodeVersion": "v22.23.3",
+    "sdkVersion": "2026.7.1-2",
+    "undiciRuntimeBinding": {
+      "packageVersion": "8.5.0",
+      "packageRelative": "node_modules/undici/package.json",
+      "packageSha256": "4eed584bdf6a1545381c24674dfe8938421f7c66313c8960fb40f28f3a55c306",
+      "entryRelative": "node_modules/undici/index.js",
+      "entrySha256": "93fc85c00a59b58f410c901e5477d56770de3816bfbe183e751624aeb4a5e6a5",
+      "libraryPinScope": "package-metadata-and-entrypoint",
+      "actualPackageFetchIdentity": true,
+      "testRuntimeOverride": false,
+      "dnsOverride": false,
+      "route": "actual-sdk-managed-env-proxy",
+      "actualExecutionQualifiedByScenarioOnly": true
+    },
+    "ownedUndiciProxy": {
+      "connections": 3,
+      "denials": 0,
+      "upstreamFailures": 0
+    },
+    "actualUndiciCaseInventory": [
+      {
+        "scenario": "openai-undici-manager-success",
+        "kind": "manager-success",
+        "transport": "undici",
+        "providerCount": 1,
+        "unknownObservedAtProvider": 1,
+        "mappedFetchCalls": 0,
+        "undiciConnects": 1,
+        "undiciProviderTlsRequests": 1
+      },
+      {
+        "scenario": "openai-undici-intent-ack-lost",
+        "kind": "intent-ack-lost",
+        "transport": "undici",
+        "providerCount": 0,
+        "unknownObservedAtProvider": 0,
+        "mappedFetchCalls": 0,
+        "undiciConnects": 0,
+        "undiciProviderTlsRequests": 0
+      },
+      {
+        "scenario": "openai-undici-provider-ack-lost",
+        "kind": "provider-ack-lost",
+        "transport": "undici",
+        "providerCount": 1,
+        "unknownObservedAtProvider": 1,
+        "mappedFetchCalls": 0,
+        "undiciConnects": 1,
+        "undiciProviderTlsRequests": 1
+      },
+      {
+        "scenario": "openai-undici-sqlite-abort",
+        "kind": "sqlite-abort",
+        "transport": "undici",
+        "providerCount": 1,
+        "unknownObservedAtProvider": 1,
+        "mappedFetchCalls": 0,
+        "undiciConnects": 1,
+        "undiciProviderTlsRequests": 1
+      },
+      {
+        "scenario": "openai-undici-guard-after-await",
+        "kind": "guard-after-await",
+        "transport": "undici",
+        "providerCount": 0,
+        "unknownObservedAtProvider": 0,
+        "mappedFetchCalls": 0,
+        "undiciConnects": 0,
+        "undiciProviderTlsRequests": 0
+      }
+    ],
+    "staticLoaderQualification": {
+      "builtinProviderFunctions": 3,
+      "openaiRefreshFunctionBindings": 3,
+      "openaiFacadeQualified": false,
+      "openaiTransportQualified": false,
+      "actualExecutionQualifiedByRunnerOnly": true
+    },
+    "staticLoaderResultInterpretation": "immutable_function_binding_result_not_end_of_run_execution_qualification",
+    "actualFacadeAndTransportQualifiedBy": "separate_runtime_flags_and_exact_scenario_assertions",
+    "nativeBackend": false,
+    "coldSdk": false,
+    "realExternalProvider": false
+  },
+  "combinedNativeOpenaiColdQualified": false,
+  "productionCutoverQualified": false,
+  "fullOpenBaoReplacementQualified": false,
+  "note": "120+59+57+57=293 assertions in this native run; these are not the separate 293 real-credential events."
+}

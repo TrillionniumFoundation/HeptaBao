@@ -4,11 +4,29 @@ Plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, revision 2.1.2. This document reports imp
 
 ## Implemented scope
 
-The current `heptabao-server` binary is a real TLS service with durable AES-256-GCM encrypted state, persistent token/userpass/AppRole and pinned-key JWT authentication, custom auth mounts, default-deny ACL and namespace/mount-separated KV v1/v2, Transit and TOTP engines. It starts sealed, supports bounded Shamir threshold initialization/unseal and verified rekey, rotates an HMAC-chained audit with a signed retention checkpoint, and withholds sensitive responses after uncertain persistence or audit failure. Root maintenance supports compaction and the local HeptaBao encrypted-backup format. Optional HA configuration composes a real voter per process with mTLS peers and ReadIndex. These implementations remain candidates under review.
+The current `heptabao-server` binary is a real TLS service with durable AES-256-GCM encrypted state, persistent token/userpass/AppRole and pinned-key JWT authentication, custom auth mounts, default-deny ACL and namespace/mount-separated KV v1/v2, Transit and TOTP engines. It starts sealed, supports bounded Shamir threshold initialization/unseal and verified rekey, rotates an HMAC-chained audit with an HMAC-authenticated retention checkpoint, and withholds sensitive responses after uncertain persistence or audit failure. Root maintenance supports compaction and the local HeptaBao encrypted-backup format. Optional HA configuration composes a real voter per process with mTLS peers and ReadIndex. These implementations remain candidates under review.
 
 The workspace currently has 46 packages, with five in the server's runtime path-dependency closure. Use `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` and `docs/modules/CURRENT_RUNTIME_MAP.md` for actual package/handler/test ownership; contracts elsewhere do not establish integrated features.
 
 The durability repair replaces ambiguous tuple serialization, rejects legacy ambiguous state, uses process-scoped writer locks, validates snapshot/journal/ledger frontiers and conservatively classifies real post-entry I/O failures as unknown. Finite token use is a separate durable admission transaction, so a later denied or oversized request cannot restore an already admitted use.
+
+## Source-bound baseline execution observed on 2026-09-15
+
+GitHub Actions run `34924284502` completed with head job `104238879906` and
+prospective-main job `104238880100` both successful. Its exact source is
+`0ddbb3a3abae30f14d9267fa56c6dd67d8de08f5`, tree
+`c07f35ef3791c1bf8270c5335067eeda79ff4265`; main base is
+`55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18`.
+
+The executed steps include locked native workspace tests, strict lint/rustdoc,
+real TLS, three-process HA, encrypted-link partitions, private operational clients,
+actual PostgreSQL SQL/session revocation, pinned official-binary differentials,
+the fixed corpus, bounded KV migration and five-process Raft administration.
+The original job logs, not copied PR prose, own test counts and binary digests.
+An official implementation comparison controlled by this repository is not an
+independently controlled product review. These results belong to that baseline
+only; later source changes must be tested again. No production or migration
+admission follows from these observations.
 
 ## Historical observed local evidence (September 2026 initial increment)
 
@@ -35,8 +53,8 @@ The comparison uses the official OpenBao 2.6.2 Linux amd64 release, verified aga
 
 | Area | Remaining work |
 |---|---|
-| OpenBao API/auth | Full error precedence/envelopes and ACL dialect; full identity/OIDC/JWKS/PEM configuration, Kubernetes, LDAP, certificates, cloud auth and broader MFA. The bounded pinned-key JWT profile is implemented, not full OpenBao JWT compatibility |
-| Engines | PKI, SSH, database/cloud credentials, full Transit options and dynamic lease revoke/renew workflows |
+| OpenBao API/auth | Full error precedence/envelopes and ACL dialect; full identity/browser-OIDC/claim-mapping/PEM configuration beyond the implemented remote JWKS/Discovery profile, Kubernetes, LDAP, certificates, cloud auth and broader MFA. The bounded pinned-key JWT profile is implemented, not full OpenBao JWT compatibility |
+| Engines | Complete the bounded internal PKI, SSH OTP and PostgreSQL implementations into full engine/provider semantics; full Transit options and broader dynamic lease revoke/renew remain open |
 | HA | Independent destructive qualification, membership/enrollment, rolling upgrades and complete admin compatibility for the implemented per-process Raft/mTLS/ReadIndex path; unsupported admin operations remain explicit failures |
 | Migration | Only explicit KV v2 history supported by the migration tool; deleted/destroyed/pruned histories, auth/identity/leases/Transit keys and full cutover remain blocked |
 | Operations | Qualify implemented compaction/backup/restore, audit rotation and bounded rate limiting; complete upgrade/remote archival/rollback anchoring, operator reconciliation, KMS/HSM and destructive platform evidence |

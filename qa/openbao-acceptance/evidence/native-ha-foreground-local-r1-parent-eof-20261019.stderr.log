@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-foreground-watchdog-r1/local-tests-r1/parent-eof/native_ha_foreground_watchdog.py", line 662, in <module>
+    raise SystemExit(serve(json.loads(raw)))
+                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-foreground-watchdog-r1/local-tests-r1/parent-eof/native_ha_foreground_watchdog.py", line 275, in serve
+    need(owned_file(python_path, limit=16 * MIB, collect=False, executable=True,
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-foreground-watchdog-r1/local-tests-r1/parent-eof/native_ha_foreground_watchdog.py", line 68, in owned_file
+    need(stat.S_ISREG(before.st_mode) and before.st_uid in ((os.geteuid(),) if private else (0, os.geteuid()))
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-foreground-watchdog-r1/local-tests-r1/parent-eof/native_ha_foreground_watchdog.py", line 43, in need
+    raise Refusal(code)
+Refusal: owned_file_required

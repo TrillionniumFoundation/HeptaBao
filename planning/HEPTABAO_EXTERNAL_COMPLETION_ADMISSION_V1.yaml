@@ -29,6 +29,9 @@ blockers:
 - id: HB-BLK-EXT-007
   template: qualifications/external/templates/HB-BLK-EXT-007.template.json
   state: OPEN_EXTERNAL_EXECUTION_REQUIRED
+- id: HB-BLK-EXT-008
+  template: qualifications/external/templates/HB-BLK-EXT-008.template.json
+  state: OPEN_EXTERNAL_EXECUTION_REQUIRED
 claims:
   qualification: false
   compatibility_claim: false

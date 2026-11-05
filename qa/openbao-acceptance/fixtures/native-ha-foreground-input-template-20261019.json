@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.lan98-foreground-input-template.v1",
+  "template_not_an_execution_receipt": true,
+  "extra_argv": [
+    "--darwin-watchdog-python",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "--darwin-watchdog-python-sha256",
+    "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43"
+  ],
+  "observed_python_realpath": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "observed_python_bytes": 52448,
+  "observed_python_version": "3.14.3",
+  "python_attestation_scope": "actual-interpreter-binary-not-recursive-stdlib",
+  "product_source_commit": null,
+  "product_source_tree": null,
+  "actual_fresh_mac_binary_receipt": null,
+  "actual_fresh_linux_binary_receipt": null,
+  "new_mac_fixture_root": null,
+  "new_rog_fixture_root": null,
+  "new_pocket4_fixture_root": null,
+  "new_controller_work_root": null,
+  "required_direct_checks": 98,
+  "precondition": "fill all product and owned-root inputs from actual same-source producer receipts before execution",
+  "runtime_files": [
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "git_blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "bytes": 74145,
+      "sha256": "a6e0bb58b0b053653965b10b502f1193ddbe02f8cab01e40c5693621bd7c0e11",
+      "git_blob": "b05277fe2fe00ca8ad6ee6acf963eed8b235fbf9",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_ha_foreground_watchdog.py",
+      "bytes": 36559,
+      "sha256": "325293a3b99005080cc4268dbcb7a6a5c1967f49aad4d230ef8ea1e15f4bfc1c",
+      "git_blob": "868d2139388cd3812cf686a851d5fb9939e12d32",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "bytes": 77577,
+      "sha256": "e0c26f9858713303f3f57fab08057f535c893090b21c8eb6648711a164803e6b",
+      "git_blob": "fee033bc32126f5e29e0cb601f7a3211eee0be82",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_three_host_loopback_live.py",
+      "bytes": 5876,
+      "sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+      "git_blob": "56259e65dc062744e296e0def7e5b75d612e1c4f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "git_blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "bytes": 1560,
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "git_blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/physical_ha_loopback_mesh.py",
+      "bytes": 10134,
+      "sha256": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493",
+      "git_blob": "f2b8c018bcf10759ccca667cb74bbe65dfd64ef1",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/physical_ha_peer_preflight.py",
+      "bytes": 8115,
+      "sha256": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227",
+      "git_blob": "ef499e7c216feb5621a9f085ab63193e8d8b0c44",
+      "mode": "100644"
+    }
+  ]
+}

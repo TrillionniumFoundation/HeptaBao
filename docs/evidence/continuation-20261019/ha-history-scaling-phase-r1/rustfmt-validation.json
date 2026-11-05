@@ -1,0 +1,58 @@
+{
+  "actual_lan_previous_result_unchanged": "48/98 passed; tenth 2 MiB history mutation returned 503; this formatting receipt supplies no performance result.",
+  "actual_receipt_path": "docs/evidence/continuation-20261019/ha-history-scaling-phase-r1/actual-mac-rustfmt.json",
+  "actual_receipt_scope": "Original exact Mac receipt covers all eight independently submitted sources; this overlay includes only its three HA phase source outputs.",
+  "actual_receipt_sha256": "d15ac95aa2e2d9d732cd20a1162e0f2fc510c07fd5ff2d96c84d23ec6c51e607",
+  "application": "Single final overlay directly against R6; do not apply the original three unformatted source entries first. Original source/docs carrier remains unchanged and is bound by SHA256.",
+  "base_git_sha": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "base_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "check_exit_code": 0,
+  "files": [
+    {
+      "actual_host_input_bytes": 14770,
+      "actual_host_input_sha256": "958d973e0db3e707258840a62a68092e5f74a043a93088afd076bc8b5550fcfe",
+      "actual_host_output_bytes": 14953,
+      "actual_host_output_git_blob": "26382b74d907a377d237ee0b259f0d848f2eee99",
+      "actual_host_output_sha256": "9f489d3e4f45591111e506898116a3e8412a1d07071596b80ccd7b14af4145a4",
+      "base_git_blob": "2dfa91471d8a79c9856badbe7c6f7c44c461c0b1",
+      "original_overlay_git_blob": "7299a23ce1cbb1dac9aa7b1cbc5db8a1b99a0da7",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_writer.rs",
+      "receipt_before_after_match": true
+    },
+    {
+      "actual_host_input_bytes": 26879,
+      "actual_host_input_sha256": "67e2064b81046ca3314a63a45de78d8d4b347527ed79a2ba3e49acf3cec96a42",
+      "actual_host_output_bytes": 27171,
+      "actual_host_output_git_blob": "72e3d792a40b66f38603c02cfe3d74fb64d6c6cb",
+      "actual_host_output_sha256": "b8367b131d16e436b4dd8d61f4cafd1cce442d9127fd736684e0150ed9a65edb",
+      "base_git_blob": "77820c87455030f9dc554a58e09870f0e6f5a0c6",
+      "original_overlay_git_blob": "5930c7e6335d4baf5317a2c91f20f572c839bbff",
+      "path": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+      "receipt_before_after_match": true
+    },
+    {
+      "actual_host_input_bytes": 53999,
+      "actual_host_input_sha256": "f070942826d005dbb088db711abca18c1ec529104e122b4ed48906ead901c3b9",
+      "actual_host_output_bytes": 54848,
+      "actual_host_output_git_blob": "7617d631caa3ae0a750c7ea4d3efbe029b2244af",
+      "actual_host_output_sha256": "a2ce74d1b32eca70fa6fb161473294dec491c6a36d6e986ead754ce9c3f1f9d8",
+      "base_git_blob": "745de97f5415bacde24703b770ab7bede95db1af",
+      "original_overlay_git_blob": "32e9d73f17b2775b2e0fd566e96b8f4d36443061",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "receipt_before_after_match": true
+    }
+  ],
+  "format_exit_code": 0,
+  "host": "MacBook-Pro.local",
+  "lan_required_checks": 98,
+  "native_ha_qualification_claimed": false,
+  "operation_deadline_seconds": 15,
+  "original_diagnostics_scope_preserved": true,
+  "original_overlay_sha256": "dbbbb23b44854dd6be706660c3aea2b6cfc7ef55a567fd27b880efc527ae4bda",
+  "read_index_freshness_seconds": 8,
+  "rust_compilation_claimed": false,
+  "rust_release": "1.98.0",
+  "rust_tests_executed": 0,
+  "schema": "heptabao.ha-history-phase-rustfmt-validation.v1",
+  "validation": "Each input/output byte count, SHA256 and Git blob checked. Entire returned diff reviewed: rustfmt layout, optional punctuation and closure-block formatting only, including existing unformatted lines in ha_install. A non-whitespace-byte equality probe rejected closure-block formatting, so no byte-token equality claim is made."
+}

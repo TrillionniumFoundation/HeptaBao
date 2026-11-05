@@ -1,0 +1,90 @@
+test_all_sdk_input_classes_bound_and_metadata_change_rejected (__main__.CustodyTests.test_all_sdk_input_classes_bound_and_metadata_change_rejected) ... ok
+test_changed_packet_fails_before_materialization (__main__.CustodyTests.test_changed_packet_fails_before_materialization) ... ok
+test_exact_packet_and_staged_closed_tree (__main__.CustodyTests.test_exact_packet_and_staged_closed_tree) ... ERROR
+test_exited_leader_does_not_hide_live_descendant (__main__.CustodyTests.test_exited_leader_does_not_hide_live_descendant) ... ERROR
+test_extra_source_file_is_not_ignored (__main__.CustodyTests.test_extra_source_file_is_not_ignored) ... FAIL
+test_normal_original_handle_is_waited_exactly_once (__main__.CustodyTests.test_normal_original_handle_is_waited_exactly_once) ... ERROR
+test_symlink_and_empty_nonlog_input_are_refused (__main__.CustodyTests.test_symlink_and_empty_nonlog_input_are_refused) ... ok
+test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline (__main__.CustodyTests.test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline) ... FAIL
+
+======================================================================
+ERROR: test_exact_packet_and_staged_closed_tree (__main__.CustodyTests.test_exact_packet_and_staged_closed_tree)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 49, in test_exact_packet_and_staged_closed_tree
+    self.assertTrue(MODULE.verify_source(source, payloads)["exactClosedTree"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 212, in verify_source
+    need(info.st_uid == os.geteuid() and stat.S_IMODE(info.st_mode) == 0o700,
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 54, in need
+    raise Refusal(label)
+openai_once_under_test.Refusal: private_source_parent_required
+
+======================================================================
+ERROR: test_exited_leader_does_not_hide_live_descendant (__main__.CustodyTests.test_exited_leader_does_not_hide_live_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 120, in test_exited_leader_does_not_hide_live_descendant
+    value, journal, _ = self.run_owned(program)
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 96, in run_owned
+    value = MODULE.run_owned_once(args, cwd=self.root, environment={"PATH": "/usr/bin:/bin"},
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 388, in run_owned_once
+    owner = retain_owned_session(process)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 279, in retain_owned_session
+    need(process.returncode is None and owner is not None and owner["ppid"] == os.getpid()
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 54, in need
+    raise Refusal(label)
+openai_once_under_test.Refusal: new_owned_unreaped_session_required
+
+======================================================================
+ERROR: test_normal_original_handle_is_waited_exactly_once (__main__.CustodyTests.test_normal_original_handle_is_waited_exactly_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 102, in test_normal_original_handle_is_waited_exactly_once
+    value, journal, deadline = self.run_owned("print('synthetic unit completion')")
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 96, in run_owned
+    value = MODULE.run_owned_once(args, cwd=self.root, environment={"PATH": "/usr/bin:/bin"},
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 388, in run_owned_once
+    owner = retain_owned_session(process)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 279, in retain_owned_session
+    need(process.returncode is None and owner is not None and owner["ppid"] == os.getpid()
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/authbus_openai_sdk_once.py", line 54, in need
+    raise Refusal(label)
+openai_once_under_test.Refusal: new_owned_unreaped_session_required
+
+======================================================================
+FAIL: test_extra_source_file_is_not_ignored (__main__.CustodyTests.test_extra_source_file_is_not_ignored)
+----------------------------------------------------------------------
+openai_once_under_test.Refusal: private_source_parent_required
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 62, in test_extra_source_file_is_not_ignored
+    with self.assertRaisesRegex(MODULE.Refusal, "closed_staged_source_tree_required"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "closed_staged_source_tree_required" does not match "private_source_parent_required"
+
+======================================================================
+FAIL: test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline (__main__.CustodyTests.test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline)
+----------------------------------------------------------------------
+openai_once_under_test.Refusal: new_owned_unreaped_session_required
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/authbus-r5-openai-r3-controller-r1-20261019/work/qa/openbao-acceptance/tests/authbus_openai_sdk_once_test.py", line 141, in test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline
+    with self.assertRaisesRegex(MODULE.Refusal, "original_180_second_deadline_expired"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "original_180_second_deadline_expired" does not match "new_owned_unreaped_session_required"
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.072s
+
+FAILED (failures=2, errors=3)

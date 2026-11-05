@@ -1,0 +1,51 @@
+{"argv": ["cargo", "+1.98.0", "build", "--locked", "-p", "heptabao-server", "--bin", "heptabao-server", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic"]}
+   Compiling heptabao-server v0.1.0 (/Users/runner/work/HeptaBao/HeptaBao/crates/heptabao-server)
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `repair_native_v6_current_closure_from_archive` is never used
+   --> crates/heptabao-server/src/ha_native_v6_archive_repair.rs:266:19
+    |
+207 | impl HaProcess {
+    | -------------- method in this implementation
+...
+266 |     pub(crate) fn repair_native_v6_current_closure_from_archive<R: Read + Seek>(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+  --> crates/heptabao-server/src/ha_native_v6_publication.rs:73:19
+   |
+72 | impl NativeHaPublicationError {
+   | ----------------------------- method in this implementation
+73 |     pub(crate) fn root_attempted(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^
+
+warning: method `root` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:295:19
+    |
+282 | impl NativeV6HaProposal {
+    | ----------------------- method in this implementation
+...
+295 |     pub(crate) fn root(&self) -> &RecordStateRootV6 {
+    |                   ^^^^
+
+warning: method `cipher_closure` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:342:19
+    |
+335 | impl ReceivedNativeV6HaObjects {
+    | ------------------------------ method in this implementation
+...
+342 |     pub(super) fn cipher_closure(&self) -> &NativeV6CipherClosure {
+    |                   ^^^^^^^^^^^^^^
+
+warning: `heptabao-server` (lib) generated 5 warnings (run `cargo fix --lib -p heptabao-server` to apply 1 suggestion)
+    Finished `dev` profile [optimized + debuginfo] target(s) in 8m 28s

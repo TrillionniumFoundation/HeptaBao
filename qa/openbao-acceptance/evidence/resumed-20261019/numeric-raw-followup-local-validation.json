@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.numeric-raw-followup-local-validation.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_kv2_271_numeric_raw_followup.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/915e5e680008/kv2-numeric-raw-followup-20261019",
+  "started_utc": "2026-10-19T03:59:53.184941+00:00",
+  "finished_utc": "2026-10-19T03:59:53.256917+00:00",
+  "elapsed_seconds": 0.071966,
+  "returncode": 0,
+  "script_sha256": "d8de2d02d902c525b715e8e9491d39df1114b280f738e33b78b9b2840e23a524",
+  "test_sha256": "4e266aaf6e79488c2eb3a3e01f75c02a7546f994f092dc111d3b7eefeb1e99fe",
+  "log_sha256": "f5ab9e405e38bbbca96e3446fc867e682255ec9f77e869f29d0d81b2e75b4767",
+  "actual_prior_summary_sha256": "1281990796a3be2fc0064f0ffcb7fd2696b6bb7bf800e886e2534120e087481d",
+  "actual_prior_binding_accepted": true,
+  "actual_prior_cases": 7,
+  "ast_parse": true,
+  "actual_openbao_run": false,
+  "migration_qualified": false,
+  "scope": "Six local root discovery, read-only gate, original receipt binding, and exact JSON observer regressions; no live server or host execution."
+}

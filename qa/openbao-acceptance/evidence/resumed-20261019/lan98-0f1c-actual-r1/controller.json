@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.actual-lan98-once-controller.v1",
+  "started_utc": "2026-10-19T05:48:49.498084+00:00",
+  "controller_pid": 1758525,
+  "status": "completed",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-driver-overlay-20261019-r1/qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+    "--binary-source",
+    "local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server",
+    "--expected-binary-sha256",
+    "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2",
+    "--node-binary",
+    "macbook-pro,macbook-pro:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-full55-0f1c-mac-r1/heptabao-server,228bafc8cacc99c5a161f3a3b9892ead6839a65fd524765e1db384130c30abb7,0f1c996136aae94e99c2b709a5797ffea479f6cd,8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--node-binary",
+    "rog,local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server,a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2,0f1c996136aae94e99c2b709a5797ffea479f6cd,8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--node-binary",
+    "pocket4,local:/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server,a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2,0f1c996136aae94e99c2b709a5797ffea479f6cd,8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--native-build-receipt",
+    "macbook-pro,macbook-pro:/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-preflight-0f1c-20261019-r1/native-build-receipt.json,73157bc10fbfb911d009104ed572c81df422b32b1063812d9ce588da7865e8df",
+    "--native-build-receipt",
+    "rog,local:/home/qian-qi/heptabao-next-gates-20261017/native-lan98-projector-stream-20261019-r1/native-build-receipt.json,a2cefb8d58632b9160d67d25c035aed0078c03ed6c328db7ad7a17e5a7062f23",
+    "--native-build-receipt",
+    "pocket4,local:/home/qian-qi/heptabao-next-gates-20261017/native-lan98-projector-stream-20261019-r1/native-build-receipt.json,a2cefb8d58632b9160d67d25c035aed0078c03ed6c328db7ad7a17e5a7062f23",
+    "--source-commit",
+    "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+    "--source-tree",
+    "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+    "--node",
+    "macbook-pro,192.168.0.7,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-lan98-0f1c-20261019-r1",
+    "--node",
+    "rog,192.168.0.10,/home/qian-qi/heptabao-native-lan98-0f1c-20261019-r1",
+    "--node",
+    "pocket4,192.168.0.9,/home/alex/heptabao-native-lan98-0f1c-20261019-r1",
+    "--api-port",
+    "46230",
+    "--raft-port",
+    "46231",
+    "--work-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-lan98-0f1c-20261019-r1-controller/work",
+    "--allow-private-lan"
+  ],
+  "product_source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "product_source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "driver_base_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "driver_base_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "driver_frozen_overlay_sha256": "09ab9fa268670d0d25acdc8cd2ab73ba4a384328de4e0741e566bf7525dd0576",
+  "driver_materialization_sha256": "09d858a811f5e024d012142a000804c304c93f9c975c700aeb9cc97501bf583a",
+  "driver_git_clean_claimed": false,
+  "driver_source_files": [
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "blob": "983012c2db85e50bdfa53d40e8a417d427e11360",
+      "sha256": "8c6861238b372d43db2ebc26bead1f4d8f23aa57c903e4bd0924dcf09b8cfb90",
+      "bytes": 8114
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "blob": "6ba2ba127dfdad93942beb44d3b5805c1f263b4c",
+      "sha256": "b9253d5fcfcd7bf527c3efa9f4c9de116e3d81e75a676596d8cf112e0e31a4fc",
+      "bytes": 74012
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "blob": "fee033bc32126f5e29e0cb601f7a3211eee0be82",
+      "sha256": "e0c26f9858713303f3f57fab08057f535c893090b21c8eb6648711a164803e6b",
+      "bytes": 77577
+    },
+    {
+      "path": "qa/openbao-acceptance/ha_three_host_loopback_live.py",
+      "blob": "56259e65dc062744e296e0def7e5b75d612e1c4f",
+      "sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+      "bytes": 5876
+    },
+    {
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "bytes": 9920
+    },
+    {
+      "path": "qa/openbao-acceptance/fixture_mounts.py",
+      "blob": "30bd4c14cbeb80b28cd877597b5e1e632f37a3bd",
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+      "bytes": 1560
+    },
+    {
+      "path": "tools/physical_ha_loopback_mesh.py",
+      "blob": "f2b8c018bcf10759ccca667cb74bbe65dfd64ef1",
+      "sha256": "dfff07d56e0e6cd646b3ae003e9123d6506e651dd55bed19b972fafed9a26493",
+      "bytes": 10134
+    },
+    {
+      "path": "tools/physical_ha_peer_preflight.py",
+      "blob": "ef499e7c216feb5621a9f085ab63193e8d8b0c44",
+      "sha256": "701f432144677e30400937e9407832fa63c3ef05e425bb50216c1cd48a206227",
+      "bytes": 8115
+    },
+    {
+      "path": "qa/openbao-acceptance/native_build_receipt_from_host_run.py",
+      "blob": "1c47068f91d4d1aec06f6c6c178d5f1726a69872",
+      "sha256": "c65459bc7e4998066c2688243ba70242c820a1b431c8f8ac77f2891e21bc54a4",
+      "bytes": 9962
+    }
+  ],
+  "native_build_projector_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "product_builds_have_existing_scoped_test_failures": true,
+  "production_cutover": false,
+  "driver_pid": 1758531,
+  "driver_pgid": 1758531,
+  "driver_exit_code": 1,
+  "finished_utc": "2026-10-19T05:50:30.075695+00:00",
+  "driver_source_unchanged": true,
+  "stdout.log": {
+    "bytes": 69,
+    "sha256": "e5b9ca38e1cb960bf2fb166111d99f0a7d0120b674d61c0a58eee4df78820f32"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

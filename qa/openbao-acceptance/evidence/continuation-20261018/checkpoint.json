@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.continuation-checkpoint.v2",
+  "recorded_utc": "2026-10-19T02:26:04Z",
+  "user_goal": "Prove complete replacement of OpenBao 2.7.1 on the Mac external disk and required LAN hosts before traffic cutover and removal.",
+  "full_openbao_271_replacement_proven": false,
+  "production_cutover_performed": false,
+  "old_openbao_removed": false,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "tested_native_source_commit": "f43a015b69e3b9cc1fad88ea4e4efdda7250417c",
+  "tested_native_source_tree": "367adee67df1f4fda8875012e5b50564aab4d213",
+  "runtime_reachable": true,
+  "unknown_previous_mac_r2_launch_reconciled_as_not_started": true,
+  "mac_native_import": {
+    "compiled": true,
+    "compiled_seconds": 345.214,
+    "tests_passed": 7,
+    "tests_failed": 1,
+    "required_tests": 8,
+    "service_tests_passed": 5,
+    "source_unchanged": true,
+    "binary_sha256": "6c056d15e54b9790de4d6c0c329dd12a85a34165c88248f464b508869a3cebaf",
+    "binary_bytes": 71133472,
+    "failing_test": "native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+    "finding": "The test selected an arbitrary typed Block, which can be cached metadata; the revised case records the actual point-reader payload references and tests missing metadata-root cold open separately.",
+    "revised_case_executed": false,
+    "actual_openbao_process_migration": false,
+    "full_34mib_migration": false
+  },
+  "ci_5ea": {
+    "run_id": 39146883387,
+    "source_commit": "5ea86e1e0499a4b21e3216a350c12e81f848f86e",
+    "macos": {
+      "job_id": 117732420727,
+      "historical_passed": 3,
+      "historical_required": 6,
+      "snapshot_passed": 7,
+      "snapshot_required": 7
+    },
+    "linux": {
+      "job_id": 117732420481,
+      "historical_passed": 1,
+      "historical_required": 6,
+      "snapshot_passed": 7,
+      "snapshot_required": 7
+    },
+    "full_recovery_pass": false
+  },
+  "lan_complete_http": {
+    "source_commit": "71063eec959a2bd6143f646dff7d3cbb5ce48412",
+    "main_to_mac": true,
+    "mac_lan_self": true,
+    "certificate_pin_verified": true,
+    "http_status": 501,
+    "complete_response_body_bytes": 329,
+    "owned_process_stopped": true,
+    "firewall_changed": false,
+    "leader_kill_performed": false
+  },
+  "authbus": {
+    "actual_sdk_version": "2026.7.1-2",
+    "actual_sdk_sqlite_checks_passed": 21,
+    "required_sdk_sqlite_checks": 21,
+    "actual_sdk_refresh_caller": false,
+    "actual_provider_refresh": false,
+    "native_r5_backend": false,
+    "production_mutation": false,
+    "j3160_used_for_this_run": false
+  },
+  "remaining_gates": [
+    "Dedicated bounded native 34 MiB import and actual OpenBao 2.7.1 export/import/restart/restore",
+    "Fix historical recovery failures and prove exact candidate on Mac, X230 and Linux",
+    "Complete same-source physical LAN kill/reelection/ReadIndex/persistence/restart",
+    "Close actual SDK OAuth caller and native AuthBus credential/renew/revoke loop",
+    "Each host real credential I/O, restart and rollback before cutover",
+    "Verify every client and backup migrated before old OpenBao removal"
+  ],
+  "preservation": [
+    "Original failed receipts are retained",
+    "No production Raft data, credential custody or backups deleted",
+    "Pocket4 heptatrader not modified"
+  ],
+  "mac_native_import_followup": {
+    "source_commit": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+    "source_tree": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+    "verified_files": 2795,
+    "tests_passed": 8,
+    "tests_failed": 0,
+    "test_elapsed_seconds": 10.18,
+    "runner_completed": true,
+    "source_unchanged": true,
+    "summary_sha256": "a382273bb2ed4fe355d8d96a9199dfd94fec465362bcb17de91687ee4afd81ab",
+    "test_log_sha256": "dd88d1744d94edfa8217fbbe2425cf23c263d80a828a484f57e9ba05dc391445",
+    "actual_openbao_271_migration": false,
+    "full34_qualified": false
+  },
+  "ci_f43_linux": {
+    "run_id": 39186921646,
+    "job_id": 117851181413,
+    "native_import_passed": 7,
+    "native_import_failed": 1,
+    "historical_restore_passed": 0,
+    "historical_restore_failed": 6,
+    "snapshot_passed": 7,
+    "snapshot_failed": 0,
+    "status": "failed",
+    "raw_log": "qa/openbao-acceptance/evidence/resumed-20261019/ci-f43-linux-job-117851181413.log",
+    "remaining_failures": [
+      "old codec fixture replaced in 741",
+      "actual Service cold-unseal HTTP 503",
+      "source-identity and expiry fixture issues",
+      "historical forwarded delivery unseal_nonce veto"
+    ]
+  },
+  "kv2_migration_controller": {
+    "source_sha256": "335120b48a26707f378e1d6d51480e9d08f7c490b5d5595d97746a50f1939c8d",
+    "regressions_passed": 7,
+    "actual_two_server_run": false,
+    "full34_qualified": false
+  }
+}

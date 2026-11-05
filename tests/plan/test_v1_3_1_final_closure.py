@@ -357,10 +357,14 @@ class V131FinalClosureTests(unittest.TestCase):
         workflow_path = ROOT / ".github/workflows/plan-v1.3.1-head-and-merge-closure.yml"
         workflow = workflow_path.read_text(encoding="utf-8")
         mutations = (
-            # Removing either covered event leaves the source-lane contract
-            # untriggerable or dispatch-only.
+            # Current historical CI is retired: removing its manual trigger
+            # or restoring PR automation both fail the current-domain gate.
             workflow.replace("  workflow_dispatch:\n", "", 1),
-            workflow.replace("  pull_request:\n", "  push:\n", 1),
+            workflow.replace(
+                "  workflow_dispatch:\n",
+                "  workflow_dispatch:\n  pull_request:\n",
+                1,
+            ),
             # An extra event creates an unsupported evidence lane.
             workflow.replace(
                 "  workflow_dispatch:\n",

@@ -1,0 +1,6 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes", "--", "--list", "--color=never"]}
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.21s
+     Running unittests src/lib.rs (/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577)
+tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes: test
+
+1 test, 0 benchmarks

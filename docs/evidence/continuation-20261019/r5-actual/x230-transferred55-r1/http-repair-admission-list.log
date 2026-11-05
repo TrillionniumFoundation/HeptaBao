@@ -1,0 +1,4 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/server", "current_root_repair_retains_binary_header_admission_and_bounded_json_lane", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-server"}
+http::snapshot::tests::current_root_repair_retains_binary_header_admission_and_bounded_json_lane: test
+
+1 test, 0 benchmarks

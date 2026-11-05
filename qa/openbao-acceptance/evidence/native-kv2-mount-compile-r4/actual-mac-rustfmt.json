@@ -1,0 +1,86 @@
+{
+  "after": [
+    {
+      "git_blob": "152db93c48e19101e0945100c533429401044814",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r8-mount-compile-fmt-20261019-r1/crates/heptabao-server/src/state_record_root_v6.rs",
+      "relative_path": "crates/heptabao-server/src/state_record_root_v6.rs",
+      "sha256": "8113c4252b8d67940a5ebc7825e59a2b120a939b7aa37a0d41d9562c5b730079",
+      "size": 12710
+    },
+    {
+      "git_blob": "b7e0c35e56f8862b89f6851ada42c964efb8d23b",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r8-mount-compile-fmt-20261019-r1/crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "relative_path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "sha256": "0189bb5155d2f5c6687779880a9fa6c10291fc9c9b864a9815262177bb91bf7a",
+      "size": 24802
+    }
+  ],
+  "before": [
+    {
+      "expected_base_git_blob": "e3191283c5076800fe477f7cb4e212f136e1e329",
+      "path": "crates/heptabao-server/src/state_record_root_v6.rs",
+      "sha256": "8113c4252b8d67940a5ebc7825e59a2b120a939b7aa37a0d41d9562c5b730079",
+      "size": 12710
+    },
+    {
+      "expected_base_git_blob": "1a1d4a3dee20b794d5488c20e773fe95426f9f2d",
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "sha256": "0189bb5155d2f5c6687779880a9fa6c10291fc9c9b864a9815262177bb91bf7a",
+      "size": 24802
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "label": "version",
+      "stderr": "",
+      "stdout": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)\n"
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "crates/heptabao-server/src/state_record_root_v6.rs",
+        "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+      ],
+      "exit_code": 0,
+      "label": "format",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "crates/heptabao-server/src/state_record_root_v6.rs",
+        "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+      ],
+      "exit_code": 0,
+      "label": "check",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "finished_utc": "2026-10-19T10:34:39.036281+00:00",
+  "hostname": "MacBook-Pro.local",
+  "input_sha256": "f919c5b8c0df903d69150591ac3ada6605d3f59f67e7afe5ed0880b0482ed09e",
+  "ok": true,
+  "only_relative_paths": [
+    "crates/heptabao-server/src/state_record_root_v6.rs",
+    "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+  ],
+  "schema": "heptabao.exact-two-source-mac-rustfmt.v1",
+  "source_commit": "720340eb6b6ba1d5bb5e1cb9f952ab87f4d73ae6",
+  "source_overlay_sha256": "eb398264df6c2d5eeed74ee3234b2ee45f83e8f93527390e71bc81e793c9f534"
+}

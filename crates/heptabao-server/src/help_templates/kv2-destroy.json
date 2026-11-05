@@ -1,0 +1,70 @@
+{
+  "help": "Request:        destroy/ocsp/plainkey\nMatching Route: ^destroy/(?P<path>.*)$\n\nPermanently removes one or more versions in the KV store\n\n## PARAMETERS\n\n    path (string)\n\n        Location of the secret.\n\n    versions (slice)\n\n        The versions to destroy. Their data will be permanently deleted.\n\n## DESCRIPTION\n\nPermanently removes the specified version data for the provided key and version\nnumbers from the key-value store.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "WriteDestroyPathRequest": {
+          "properties": {
+            "versions": {
+              "description": "The versions to destroy. Their data will be permanently deleted.",
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/destroy/{path}": {
+        "description": "Permanently removes one or more versions in the KV store",
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "post": {
+          "operationId": "write-destroy-path",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteDestroyPathRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}

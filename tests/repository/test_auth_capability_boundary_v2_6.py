@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -11,10 +12,18 @@ SERVER = ROOT / "crates" / "heptabao-server" / "src"
 LIB_RS = SERVER / "lib.rs"
 AUTH_RS = SERVER / "auth.rs"
 SERVICE_RS = SERVER / "service.rs"
+WORKFLOWS_RS = SERVER / "service_workflows.rs"
 BOUNDARY_DOC = ROOT / "docs" / "security" / "HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md"
 
 
 class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
+    def test_native_storage_capability_boundary_is_in_the_default_product(self) -> None:
+        manifest = tomllib.loads((SERVER.parent / "Cargo.toml").read_text(encoding="utf-8"))
+        features = manifest["features"]
+        self.assertIn("native-v6-storage", features["default"])
+        self.assertIn("native-v6-ha", features["default"])
+        self.assertNotIn("fixture-native-v6-service", features["default"])
+
     def test_raw_auth_module_is_not_public(self) -> None:
         text = LIB_RS.read_text(encoding="utf-8")
         self.assertEqual(1, len(re.findall(r"(?m)^mod auth;$", text)))
@@ -57,13 +66,98 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         text = SERVICE_RS.read_text(encoding="utf-8")
         compact = re.sub(r"\s+", "", text)
         self.assertRegex(text, r"principal:\s*Option<Principal>")
-        self.assertRegex(text, r"Self::dispatch\(\s*&mut admitted,\s*principal,")
+        self.assertRegex(text, r"Self::dispatch\(\s*&mut transaction,\s*principal,")
         self.assertNotRegex(
             text,
-            r"Self::dispatch\(\s*&mut admitted,\s*principal\.as_ref\(\)",
+            r"Self::dispatch\(\s*&mut transaction,\s*principal\.as_ref\(\)",
         )
-        self.assertEqual(3, compact.count(".authorize_request("))
+        self.assertIn("letmuttransaction=admitted;", compact)
+        # Explicit zero retains ACL/header presence but must not create a
+        # response-envelope rollback/capture transaction.
+        self.assertIn("letwrapping_rollback=wrap_ttl_seconds.filter(|ttl|*ttl>0).map(|_|admitted.clone());", compact)
+        self.assertIn("principal.bind_request_wrapping_ttl(wrap_ttl_seconds);", compact)
+        dispatch_start = compact.index("letwrapping_rollback=wrap_ttl_seconds.filter(|ttl|*ttl>0).map(|_|admitted.clone());")
+        dispatch_end = compact.index("if admitted.engines.record_root().is_some()".replace(" ", ""), dispatch_start)
+        dispatch_block = compact[dispatch_start:dispatch_end]
+        self.assertEqual(1, dispatch_block.count("admitted.clone()"))
+        self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
+        workflows = WORKFLOWS_RS.read_text(encoding="utf-8")
+        self.assertRegex(
+            text,
+            r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
+        )
+        self.assertEqual(
+            5,
+            len(
+                re.findall(
+                    r"Self::dispatch_authorized_subrequest\(",
+                    text + "\n" + workflows,
+                )
+            ),
+        )
+        # The KV feature/non-feature alternatives each borrow the same affine
+        # capsule. Only one alternative is compiled. The token branch, ordinary
+        # dispatch and workflow retain their one call each.
+        ordinary_start = text.index("} else if let Some(authority) = ordinary_kv_authority.as_mut() {")
+        token_start = text.index("} else if let Some(authority) = token_api_authority.as_ref() {", ordinary_start)
+        ordinary_end = text.index("} else {\n            Self::dispatch(", token_start)
+        kv_branch = text[ordinary_start:token_start]
+        token_branch = text[token_start:ordinary_end]
+        self.assertEqual(1, kv_branch.count('#[cfg(feature = "native-v6-storage")]'))
+        self.assertEqual(1, kv_branch.count('#[cfg(not(feature = "native-v6-storage"))]'))
+        self.assertNotIn("fixture-native-v6-service", kv_branch)
+        kv_compact = re.sub(r"\s+", "", kv_branch)
+        self.assertIn(
+            'ifself.native_root.is_some()&&transaction.engines.has_paged_native_request(namespace,path)'
+            '{',
+            kv_compact,
+        )
+        # Wrapped and ordinary paged dispatch borrow the same affine authority.
+        # Rejected native admission returns before a wrapper can capture it.
+        self.assertEqual(1, kv_compact.count(
+            'self.dispatch_native_paged_request(&muttransaction,authority,&request)'))
+        self.assertEqual(1, kv_compact.count(
+            'self.dispatch_native_paged_outcome(&muttransaction,authority,&request)'))
+        self.assertIn('NativePagedOutcome::AdmissionRejected(response)=>{returnresponse;}', kv_compact)
+        for branch, expected_calls in ((kv_branch, 2), (token_branch, 1)):
+            self.assertEqual(expected_calls, branch.count("Self::dispatch_authorized_subrequest("))
+            self.assertEqual(expected_calls, branch.count("Some(authority.principal())"))
+            self.assertEqual(expected_calls, branch.count("request.token_clock"))
+            self.assertNotIn("principal.clone()", branch)
+            self.assertNotIn("authority.clone()", branch)
+            self.assertNotIn(".authenticate", branch)
+        self.assertEqual(
+            1,
+            len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),
+        )
+        self.assertGreaterEqual(compact.count(".authorize_request("), 3)
         self.assertIn(",now)", compact)
+
+    def test_wrapping_request_envelope_does_not_carry_authority(self) -> None:
+        text = SERVICE_RS.read_text(encoding="utf-8")
+        match = re.search(r"pub struct ServiceRequest<'a> \{(.*?)\n\}", text, re.S)
+        self.assertIsNotNone(match)
+        fields = set(re.findall(r"pub (\w+):", match.group(1)))
+        self.assertEqual(
+            fields,
+            {
+                "method",
+                "path",
+                "namespace",
+                "token",
+                "body",
+                "wrap_ttl_seconds",
+                "origin_peer",
+            },
+        )
+        # A verified TLS chain is transport evidence for certificate auth; it
+        # is never an authenticated Principal or an authorization decision. It
+        # is crate-private so external callers cannot inject an unverified
+        # chain through the public ServiceRequest literal.
+        self.assertIn("pub(crate) client_certificates", match.group(1))
+        self.assertNotIn("Principal", match.group(1))
+        self.assertNotIn("AuthState", match.group(1))
+        self.assertNotRegex(text, r"#\[derive\([^]]*(?:Clone|Debug)[^]]*\)\]\s*pub struct ServiceRequest")
 
     def test_request_capability_has_one_documented_owner(self) -> None:
         self.assertTrue(BOUNDARY_DOC.is_file())
