@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.external-fixture-ownership-readonly-observation.v1",
+  "r5_job_id": "1a1a90d2733-fc05-30d1",
+  "r5_guard_preserved": true,
+  "r5_ended": true,
+  "source_patch_applied": false,
+  "blocker_pid": 12062,
+  "owner_pid": 12059,
+  "run_id": "e70cd7fda3c928604cd82e8c1a157502",
+  "external_source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "external_source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "external_binary_sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+  "mac_phase_receipts": [
+    {
+      "launch_id": "fd9d1c35650ca868bcdd8f9403fb5736",
+      "native_pid": 12062,
+      "owner_pid": 12059,
+      "terminal_sha256": "20012d367931d7c4fb6bcc11fe00d24ca091f421fcde08b101e950f4aad7e450",
+      "stopped_by_original_owner": true,
+      "owned_live_group_empty": true,
+      "outer_controller_deadline_qualified": false
+    },
+    {
+      "launch_id": "4271539909f9d4924e8d5a7e2ecd9b1a",
+      "native_pid": 12531,
+      "owner_pid": 12518,
+      "terminal_sha256": "5c46d7acaca73d4b47043d3ee1b16f2885eb9aabf4af5eef493d2f0ebf2bfed7",
+      "stopped_by_original_owner": true,
+      "owned_live_group_empty": true,
+      "outer_controller_deadline_qualified": false
+    }
+  ],
+  "interpretation": "Separate foreground SSH-owned synthetic HA fixture; native stop receipts explicitly limit themselves to cleanup-observed-only. The successive starts preclude inferring outer completion from a momentary missing PID.",
+  "outer_controller_job_identified": false,
+  "outer_controller_terminal_confirmed": false,
+  "mac_validation_window_released": false,
+  "host_environment_or_secrets_read": false,
+  "foreign_process_signalled": false,
+  "foreign_fixture_modified": false,
+  "r5_retried": false,
+  "read_only_search_limits": [
+    "Mac registry snapshot refused membership/metadata changes",
+    "Desktop registry had 4848 identities; continuation invalidated on sixth page",
+    "Two bounded filename searches ended at explicit entry limits; no absence claim",
+    "Root-only direct SSH directory view refused capacity, no child submitted"
+  ],
+  "next_action": "Await an observed outer-control path or valid metadata receipt; preserve refusal and do not take a PID gap as execution admission."
+}
