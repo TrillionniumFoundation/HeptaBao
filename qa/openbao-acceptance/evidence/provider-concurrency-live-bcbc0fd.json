@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.provider-concurrency-live.v1",
+  "candidate_binary_sha256": "3ad419f50bcd8a47284100e00ab53c01d9bc5c9893eca953e3bfc31233a8b7d8",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "jwt_mount",
+      "passed": true
+    },
+    {
+      "case": "jwks_config",
+      "passed": true
+    },
+    {
+      "case": "jwt_role",
+      "passed": true
+    },
+    {
+      "case": "provider_request_entered",
+      "passed": true
+    },
+    {
+      "case": "provider_request_is_held",
+      "passed": true
+    },
+    {
+      "case": "durable_kv_write_completed_while_provider_blocked",
+      "passed": true
+    },
+    {
+      "case": "kv_read_observed_committed_value_while_provider_blocked",
+      "passed": true
+    },
+    {
+      "case": "provider_request_completed_after_release",
+      "passed": true
+    },
+    {
+      "case": "remote_login_completed_after_release",
+      "passed": true
+    },
+    {
+      "case": "restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "concurrent_kv_commit_survives_restart",
+      "passed": true
+    }
+  ],
+  "production_authority": false,
+  "independent_qualification": false,
+  "kv_write_ms": 4.72,
+  "kv_read_ms": 2.442,
+  "status": "passed",
+  "check_count": 13,
+  "binary_unchanged": true
+}

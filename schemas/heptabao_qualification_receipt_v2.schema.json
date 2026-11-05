@@ -45,7 +45,7 @@
       "additionalProperties": false,
       "required": ["repository", "commit_sha", "tree_sha", "clean_tree", "ref"],
       "properties": {
-        "repository": {"const": "ProfHepta/HeptaBao"},
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
         "commit_sha": {"$ref": "#/$defs/sha40"},
         "tree_sha": {"$ref": "#/$defs/sha40"},
         "clean_tree": {"type": "boolean"},

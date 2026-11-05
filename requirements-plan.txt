@@ -1,2 +1,4 @@
 PyYAML==6.0.2
 jsonschema==4.23.0
+# Real RSA/P-256/Ed25519 acceptance fixtures; do not rely on runner-global packages.
+cryptography==46.0.4

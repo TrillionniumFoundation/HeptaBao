@@ -253,7 +253,7 @@ def build_parser() -> argparse.ArgumentParser:
     collect_parser.add_argument("--target", default="x86_64-unknown-linux-gnu")
     collect_parser.add_argument("--manifest", type=Path, required=True)
     collect_parser.add_argument("--cargo-lock", type=Path, required=True)
-    collect_parser.add_argument("--repository", default="ProfHepta/HeptaBao")
+    collect_parser.add_argument("--repository", default="TrillionniumFoundation/HeptaBao")
     collect_parser.add_argument("--source-commit", required=True)
     collect_parser.add_argument("--source-tree", required=True)
     collect_parser.add_argument("--branch", required=True)

@@ -4,6 +4,11 @@ import importlib.util
 import shutil
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 import yaml
@@ -45,6 +50,7 @@ def mutate_text(root: Path, relative: str, old: str, new: str) -> None:
 
 
 class WorkflowAdmissionHardeningTests(unittest.TestCase):
+    @historical_only
     def test_checked_in_admission_contract_passes(self) -> None:
         MODULE.validate(ROOT)
 

@@ -1,0 +1,65 @@
+{
+  "source_tree": "74f48aff203336f3f56e0a943f97904220343190",
+  "binary_sha256": "d66f1aa4356fe8e16d013536e89760206bd83a72386329bc00cc2e8fc7ca0ce5",
+  "host": "mac",
+  "transport": "real_https_loopback",
+  "checks": [
+    {
+      "case": "get_body_version_1",
+      "http_status": 200,
+      "returned_version": 2,
+      "expected_version": 1,
+      "payload_matches_requested_version": false,
+      "response_top_level_keys": [
+        "auth",
+        "data",
+        "lease_duration",
+        "lease_id",
+        "renewable",
+        "request_id",
+        "warnings",
+        "wrap_info"
+      ],
+      "error_class": null
+    },
+    {
+      "case": "query_version_1",
+      "http_status": 200,
+      "returned_version": 1,
+      "expected_version": 1,
+      "payload_matches_requested_version": true,
+      "response_top_level_keys": [
+        "auth",
+        "data",
+        "lease_duration",
+        "lease_id",
+        "renewable",
+        "request_id",
+        "warnings",
+        "wrap_info"
+      ],
+      "error_class": null
+    },
+    {
+      "case": "query_version_2",
+      "http_status": 200,
+      "returned_version": 2,
+      "expected_version": 2,
+      "payload_matches_requested_version": true,
+      "response_top_level_keys": [
+        "auth",
+        "data",
+        "lease_duration",
+        "lease_id",
+        "renewable",
+        "request_id",
+        "warnings",
+        "wrap_info"
+      ],
+      "error_class": null
+    }
+  ],
+  "failure": null,
+  "owned_child_stopped": true,
+  "production_cutover": false
+}

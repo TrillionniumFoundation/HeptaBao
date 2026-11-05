@@ -3,7 +3,7 @@
 
 //! Fail-closed descriptor-anchored durable generation store.
 //!
-//! The Linux development profile holds one exclusive directory writer fence
+//! The Unix development profile holds one exclusive directory writer fence
 //! for the store lifetime and resolves all durable objects through the opened
 //! directory descriptor. It exercises explicit create/reopen/adopt lifecycle,
 //! immutable generation bundles, compare-and-swap commits and
@@ -12,16 +12,17 @@
 
 use std::error::Error;
 use std::fmt;
-use std::fs::{self, File, OpenOptions};
+#[cfg(test)]
+use std::fs;
 use std::io::{self, Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(test)]
+use std::path::PathBuf;
 use zeroize::Zeroize;
 
-#[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
 use heptabao_storage_api::{
     CommitIntent, CommitReceipt, CommitRecovery, DurableGenerationStore, Generation,
     GenerationSnapshot, IntegrityProvider, OpaqueState, StateDigest, StorageContractError,
@@ -66,7 +67,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         integrity: P,
     ) -> Result<Self, FileStoreError<P::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        if !directory_is_empty(root.access_path())? {
+        if !directory_is_empty(&root)? {
             return Err(FileStoreError::DirectoryNotEmpty);
         }
         Ok(Self {
@@ -107,12 +108,9 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         integrity: P,
     ) -> Result<Self, FileStoreError<P::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        reject_unresolved_temporary_artifacts(root.access_path())?;
-        let marker_path = root.access_path().join(MARKER_NAME);
-        match fs::symlink_metadata(&marker_path) {
-            Ok(_) => return Err(FileStoreError::AlreadyInitialized),
-            Err(error) if error.kind() == io::ErrorKind::NotFound => {}
-            Err(error) => return Err(FileStoreError::Io(error)),
+        reject_unresolved_temporary_artifacts(&root)?;
+        if root.entry_exists(MARKER_NAME).map_err(FileStoreError::Io)? {
+            return Err(FileStoreError::AlreadyInitialized);
         }
 
         let mut store = Self {
@@ -146,26 +144,20 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
     fn read_optional_current_record(
         &self,
     ) -> Result<Option<CurrentRecord>, FileStoreError<P::Error>> {
-        match fs::symlink_metadata(self.current_path()) {
-            Ok(_) => {
-                let bytes = read_regular_file(&self.current_path(), MAX_CONTROL_FILE_BYTES)?;
-                decode_current(&bytes)
-                    .map(Some)
-                    .map_err(|_| FileStoreError::CorruptState)
-            }
-            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(None),
-            Err(error) => Err(FileStoreError::Io(error)),
+        match read_regular_file(&self.root, CURRENT_NAME, MAX_CONTROL_FILE_BYTES) {
+            Ok(bytes) => decode_current(&bytes)
+                .map(Some)
+                .map_err(|_| FileStoreError::CorruptState),
+            Err(FileStoreError::Io(error)) if error.kind() == io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error),
         }
     }
 
-    fn regular_file_exists(&self, path: &Path) -> Result<bool, FileStoreError<P::Error>> {
-        match fs::symlink_metadata(path) {
-            Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
-                Err(FileStoreError::UnsafeFileType)
-            }
+    fn regular_file_exists(&self, name: &str) -> Result<bool, FileStoreError<P::Error>> {
+        match self.root.open_file(name, FileAccess::Read) {
             Ok(_) => Ok(true),
             Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),
-            Err(error) => Err(FileStoreError::Io(error)),
+            Err(error) => Err(map_guarded_open_error(error)),
         }
     }
 
@@ -187,7 +179,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         self.root.verify().map_err(map_directory_guard_error)?;
         match self.current {
             None => {
-                if !directory_is_empty(self.root.access_path())? {
+                if !directory_is_empty(&self.root)? {
                     return Err(FileStoreError::UnexpectedInitializedState);
                 }
                 Ok(())
@@ -210,20 +202,8 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         }
     }
 
-    fn marker_path(&self) -> PathBuf {
-        self.root.access_path().join(MARKER_NAME)
-    }
-
-    fn current_path(&self) -> PathBuf {
-        self.root.access_path().join(CURRENT_NAME)
-    }
-
-    fn bundle_path(&self, generation: Generation) -> PathBuf {
-        self.root.access_path().join(bundle_file_name(generation))
-    }
-
     fn validate_marker(&self) -> Result<(), FileStoreError<P::Error>> {
-        let bytes = read_regular_file(&self.marker_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.root, MARKER_NAME, MAX_CONTROL_FILE_BYTES)
             .map_err(map_marker_read_error)?;
         let decoded = decode_marker(&bytes).map_err(|_| FileStoreError::MarkerMismatch)?;
         if decoded.domain != self.domain.as_str()
@@ -246,7 +226,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
     }
 
     fn read_current_record(&self) -> Result<CurrentRecord, FileStoreError<P::Error>> {
-        let bytes = read_regular_file(&self.current_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.root, CURRENT_NAME, MAX_CONTROL_FILE_BYTES)
             .map_err(map_current_read_error)?;
         decode_current(&bytes).map_err(|_| FileStoreError::CorruptState)
     }
@@ -258,7 +238,8 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         let maximum = heptabao_storage_api::MAX_OPAQUE_STATE_BYTES
             .checked_add(BUNDLE_OVERHEAD_BOUND)
             .ok_or(FileStoreError::CorruptState)?;
-        let bytes = read_regular_file(&self.bundle_path(generation), maximum)?;
+        let bundle_name = bundle_file_name(generation);
+        let bytes = read_regular_file(&self.root, &bundle_name, maximum)?;
         let mut bundle = decode_bundle(&bytes).map_err(|_| FileStoreError::CorruptState)?;
         if bundle.generation != generation
             || bundle.domain != self.domain.as_str()
@@ -345,8 +326,8 @@ where
 
     fn recover_commit(&mut self, intent: CommitIntent) -> Result<CommitRecovery, Self::Error> {
         self.root.verify().map_err(map_directory_guard_error)?;
-        reject_unresolved_temporary_artifacts(self.root.access_path())?;
-        let marker_exists = self.regular_file_exists(&self.marker_path())?;
+        reject_unresolved_temporary_artifacts(&self.root)?;
+        let marker_exists = self.regular_file_exists(MARKER_NAME)?;
         let disk_current = self.read_optional_current_record()?;
         if intent.previous().is_some() {
             if !marker_exists {
@@ -382,7 +363,7 @@ where
                 Ok(CommitRecovery::Committed(intent.receipt()))
             }
             Some(record) if Some(record.generation) == intent.previous() => {
-                if !self.regular_file_exists(&self.bundle_path(intent.committed()))? {
+                if !self.regular_file_exists(&bundle_file_name(intent.committed()))? {
                     self.current = Some(record.generation);
                     return Ok(CommitRecovery::NotCommitted);
                 }
@@ -404,7 +385,7 @@ where
                 Ok(CommitRecovery::Committed(intent.receipt()))
             }
             None if intent.previous().is_none() => {
-                if !self.regular_file_exists(&self.bundle_path(intent.committed()))? {
+                if !self.regular_file_exists(&bundle_file_name(intent.committed()))? {
                     self.current = None;
                     return Ok(CommitRecovery::NotCommitted);
                 }
@@ -667,11 +648,11 @@ where
     }
 }
 
-fn directory_is_empty<E>(root: &Path) -> Result<bool, FileStoreError<E>>
+fn directory_is_empty<E>(root: &ExclusiveDirectory) -> Result<bool, FileStoreError<E>>
 where
     E: Error + Send + Sync + 'static,
 {
-    let mut entries = fs::read_dir(root).map_err(FileStoreError::Io)?;
+    let mut entries = root.entries().map_err(FileStoreError::Io)?;
     match entries.next() {
         None => Ok(true),
         Some(Ok(_)) => Ok(false),
@@ -679,13 +660,14 @@ where
     }
 }
 
-fn reject_unresolved_temporary_artifacts<E>(root: &Path) -> Result<(), FileStoreError<E>>
+fn reject_unresolved_temporary_artifacts<E>(
+    root: &ExclusiveDirectory,
+) -> Result<(), FileStoreError<E>>
 where
     E: Error + Send + Sync + 'static,
 {
-    for entry in fs::read_dir(root).map_err(FileStoreError::Io)? {
-        let entry = entry.map_err(FileStoreError::Io)?;
-        let name = entry.file_name();
+    for entry in root.entries().map_err(FileStoreError::Io)? {
+        let name = entry.map_err(FileStoreError::Io)?;
         if name.to_string_lossy().contains(".tmp-") {
             return Err(FileStoreError::CorruptState);
         }
@@ -717,19 +699,31 @@ where
     }
 }
 
-fn read_regular_file<E>(path: &Path, maximum: usize) -> Result<Vec<u8>, FileStoreError<E>>
+fn map_guarded_open_error<E>(error: io::Error) -> FileStoreError<E>
 where
     E: Error + Send + Sync + 'static,
 {
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(target_os = "linux")]
-    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-    let file = options.open(path).map_err(FileStoreError::Io)?;
-    let metadata = file.metadata().map_err(FileStoreError::Io)?;
-    if !metadata.is_file() {
-        return Err(FileStoreError::UnsafeFileType);
+    if error.kind() == io::ErrorKind::Other
+        || matches!(error.raw_os_error(), Some(code) if code == libc::ELOOP || code == libc::EISDIR)
+    {
+        FileStoreError::UnsafeFileType
+    } else {
+        FileStoreError::Io(error)
     }
+}
+
+fn read_regular_file<E>(
+    root: &ExclusiveDirectory,
+    leaf_name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FileStoreError<E>>
+where
+    E: Error + Send + Sync + 'static,
+{
+    let file = root
+        .open_file(leaf_name, FileAccess::Read)
+        .map_err(map_guarded_open_error)?;
+    let metadata = file.metadata().map_err(FileStoreError::Io)?;
     let maximum_u64 = u64::try_from(maximum).map_err(|_| FileStoreError::CorruptState)?;
     if metadata.len() > maximum_u64 {
         return Err(FileStoreError::CorruptState);
@@ -749,24 +743,13 @@ where
     Ok(bytes)
 }
 
-fn secure_create_new(path: &Path) -> io::Result<File> {
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    options.mode(0o600);
-    #[cfg(target_os = "linux")]
-    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-    options.open(path)
-}
-
 fn write_new_file_and_sync_parent(
     root: &ExclusiveDirectory,
     leaf_name: &str,
     bytes: &[u8],
 ) -> io::Result<()> {
     root.verify().map_err(io::Error::other)?;
-    let path = root.leaf_path(leaf_name).map_err(io::Error::other)?;
-    let mut file = secure_create_new(&path)?;
+    let mut file = root.open_file(leaf_name, FileAccess::CreateNew)?;
     file.write_all(bytes)?;
     file.flush()?;
     file.sync_all()?;
@@ -786,40 +769,21 @@ fn atomic_replace(
     }
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let temporary_name = format!(".{target_name}.tmp-{}-{sequence:016x}", std::process::id());
-    let temporary_path = match root.leaf_path(&temporary_name) {
-        Ok(path) => path,
-        Err(error) => {
-            return Err(AtomicReplaceError {
-                source: io::Error::other(error),
-                published: false,
-            });
-        }
-    };
-    let target_path = match root.leaf_path(target_name) {
-        Ok(path) => path,
-        Err(error) => {
-            return Err(AtomicReplaceError {
-                source: io::Error::other(error),
-                published: false,
-            });
-        }
-    };
-
     let write_result = (|| -> io::Result<()> {
-        let mut file = secure_create_new(&temporary_path)?;
+        let mut file = root.open_file(&temporary_name, FileAccess::CreateNew)?;
         file.write_all(bytes)?;
         file.flush()?;
         file.sync_all()
     })();
     if let Err(source) = write_result {
-        let _ = fs::remove_file(&temporary_path);
+        let _ = root.remove_file(&temporary_name);
         return Err(AtomicReplaceError {
             source,
             published: false,
         });
     }
-    if let Err(source) = fs::rename(&temporary_path, &target_path) {
-        let _ = fs::remove_file(&temporary_path);
+    if let Err(source) = root.rename(&temporary_name, target_name) {
+        let _ = root.remove_file(&temporary_name);
         return Err(AtomicReplaceError {
             source,
             published: false,
@@ -1091,7 +1055,7 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .map_err(io::Error::other)?
                 .as_nanos();
-            let path = std::env::temp_dir().join(format!(
+            let path = std::env::temp_dir().canonicalize()?.join(format!(
                 "heptabao-single-node-store-{}-{sequence:016x}-{nanos:x}",
                 std::process::id()
             ));

@@ -1,0 +1,20 @@
+(node:196912) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"cleanup":{"ownedProxyClosed":false,"processCaRestored":true}}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: owned_proxy_sockets_and_process_ca_closed_restored
+    at check (file:///workspace/scratch/915e5e680008/authbus-r5-openai-r4-20261019/work/qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_undici_fixture_test.mjs:28:45)
+    at file:///workspace/scratch/915e5e680008/authbus-r5-openai-r4-20261019/work/qa/openbao-acceptance/authbus/authbus_refresh_sdk_openai_undici_fixture_test.mjs:65:1
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

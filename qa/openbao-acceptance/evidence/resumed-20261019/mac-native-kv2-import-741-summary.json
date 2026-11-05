@@ -1,0 +1,177 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-19T02:18:31.425542+00:00",
+  "runner_pid": 7290,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-741",
+  "source_commit": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+  "source_tree": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+  "manifest_sha256": "eb2feb429fc591cd7fa4d9670bc2e63842063b986946a59a56db372b96ab2022",
+  "runner_sha256": "5223f2e8fc5c58f242fd72ae28be8261d641450b8614aefe89d12f015c77b9cb",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T02:18:31.561178+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 7293,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T02:18:31.573734+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T02:18:31.574195+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 7294,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T02:18:31.586213+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-19T02:18:31.586682+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 7296,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T02:24:04.004579+00:00",
+      "elapsed_seconds": 332.423,
+      "log_sha256": "0a1d62c15b4c36b9df59f6aa74ba773c5fd610bac185b650872b2fd0b2a2e994"
+    },
+    {
+      "label": "native-kv2-import-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_graph_import_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T02:24:04.005753+00:00",
+      "status": "passed",
+      "log": "native-kv2-import-list.log",
+      "pid": 7803,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T02:24:07.039451+00:00",
+      "elapsed_seconds": 3.033,
+      "log_sha256": "fec2966bc6a1422717e464a173a3521cde4056b56226115eea5e1de1be805d81",
+      "expected_count": 8,
+      "selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ]
+    },
+    {
+      "label": "native-kv2-import",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "native_kv2_graph_import_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T02:24:07.043459+00:00",
+      "status": "passed",
+      "log": "native-kv2-import.log",
+      "pid": 7815,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T02:24:17.435449+00:00",
+      "elapsed_seconds": 10.391,
+      "log_sha256": "dd88d1744d94edfa8217fbbe2425cf23c263d80a828a484f57e9ba05dc391445",
+      "expected_count": 8,
+      "selected_test_names": [
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_binds_scope_root_and_complete_payload_closure",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_keeps_exact_history_and_no_payload_owner",
+        "engines::kv::native_records::import::tests::native_kv2_graph_import_codec_rejects_replay_nonpristine_and_incomplete_history",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_matches_legacy_history_and_cold_cas",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once",
+        "service::native_kv2_import::tests::native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history"
+      ],
+      "terminal_test_summaries": [
+        [
+          "8",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.9.6",
+  "selected_groups": [
+    "native-kv2-import"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "source_before": {
+    "verified_at_utc": "2026-10-19T02:18:31.559507+00:00",
+    "commit": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+    "tree": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+    "verified_files": 2795
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-19T02:24:18.202025+00:00",
+    "commit": "741082dbc8dcdcb3d6dee3e584f0842f311ae86b",
+    "tree": "f1a18a441c5dadaaea566ced41ee59918d05ae4f",
+    "verified_files": 2795
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-19T02:24:18.202149+00:00"
+}

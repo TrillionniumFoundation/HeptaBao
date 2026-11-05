@@ -1,0 +1,12 @@
+{"argv": ["python3", "-B", "/workspace/scratch/915e5e680008/continuation-20261019/native-linux-artifact-r1/work/qa/openbao-acceptance/tests/test_native_linux_artifact_run.py", "-v"]}
+test_actual_local_system_elf_loader_observation_is_not_product_execution (__main__.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution) ... ok
+test_compile_artifact_requires_one_exact_absolute_target_path (__main__.ArtifactCustodyRegression.test_compile_artifact_requires_one_exact_absolute_target_path) ... ok
+test_duplicate_missing_or_wrong_selector_name_counts_refuse (__main__.ArtifactCustodyRegression.test_duplicate_missing_or_wrong_selector_name_counts_refuse) ... ok
+test_original_log_identity_and_selector_list_cannot_be_substituted (__main__.ArtifactCustodyRegression.test_original_log_identity_and_selector_list_cannot_be_substituted) ... ok
+test_partial_failure_retains_counts_and_incomplete_or_duplicate_results_refuse (__main__.ArtifactCustodyRegression.test_partial_failure_retains_counts_and_incomplete_or_duplicate_results_refuse) ... ok
+test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite (__main__.ArtifactCustodyRegression.test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.041s
+
+OK

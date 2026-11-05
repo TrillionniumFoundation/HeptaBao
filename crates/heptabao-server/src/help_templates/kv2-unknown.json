@@ -1,0 +1,22 @@
+{
+  "help": "Request:        unknown\nMatching Route: ^.*$\n\n<no synopsis>\n\n\n## DESCRIPTION\n\nThis backend provides a versioned key-value store. The kv backend reads and\nwrites arbitrary secrets to the storage backend. The secrets are\nencrypted/decrypted by Vault: they are never stored unencrypted in the backend\nand the backend never has an opportunity to see the unencrypted value. Each key\ncan have a configured number of versions, and versions can be retrieved based on\ntheir version numbers.\n\n\n## PATHS\n\nThe following paths are supported by this backend. To view help for\nany of the paths below, use the help command with any route matching\nthe path pattern. Note that depending on the policy of your auth token,\nyou may or may not be able to access certain paths.\n\n    ^config$\n        Configures settings for the KV store\n\n    ^data/.*$\n        Write, Read, and Delete data in the KV store.\n\n    ^delete/.*$\n        Marks one or more versions as deleted in the KV store.\n\n    ^destroy/.*$\n        Permanently removes one or more versions in the KV store\n\n    ^metadata/.*$\n        Configures settings for the KV store\n\n    ^undelete/.*$\n        Undeletes one or more versions from the KV store.\n\n    ^subkeys/.*$\n        Read the subkeys within the data from the KV store without their associated values",
+  "openapi": {
+    "components": {
+      "schemas": {}
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/^.*$": {}
+    }
+  },
+  "see_also": null
+}

@@ -1,0 +1,4 @@
+{"argv": ["/home/qian/heptabao-continuation-20261019/native-artifact55-b24c6de-main-capsule-20261019-r1/peer", "private_forward_stage_observation_preserves_existing_transport_errors", "--list", "--color=never"], "cwd": "/home/qian/heptabao-continuation-20261019/source-b24c6de/crates/heptabao-ha-service"}
+tests::private_forward_stage_observation_preserves_existing_transport_errors: test
+
+1 test, 0 benchmarks

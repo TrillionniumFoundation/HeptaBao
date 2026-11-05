@@ -1,0 +1,178 @@
+{
+  "status": "passed_scoped_host_recovery",
+  "started_utc": "2026-10-19T14:01:48.501573+00:00",
+  "runner_pid": 92905,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/r10-mount-v5-source-20261019-r2/source",
+  "source_commit": "f4603486e77771beeec982610bf1a6f8e4e810b8",
+  "source_tree": "afce15ab6476fb0c0ad2500d39da98c2e9ea7406",
+  "manifest_sha256": "8dcc45cd100952d60a505493672a6d4f8fabe8f6316ce461c20d4d1031c6b1f5",
+  "runner_sha256": "587eb864f424b236fbc98e41fbc26c5e6c8713ded2e3dee0f2230df7447f66dd",
+  "commands": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T14:01:48.638927+00:00",
+      "status": "passed",
+      "log": "cargo-version.log",
+      "pid": 92934,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T14:01:48.651330+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "b46123e68e06c5300f3d24dee9dcbe80231221b9420a189e490a5b7db5890fe1"
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "started_utc": "2026-10-19T14:01:48.651763+00:00",
+      "status": "passed",
+      "log": "rustc-version.log",
+      "pid": 92935,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T14:01:48.663902+00:00",
+      "elapsed_seconds": 0.012,
+      "log_sha256": "4069f8c4f0031d451c8561ef2c9fa26474c7fb8d28fb42137548751a346d1d9e"
+    },
+    {
+      "label": "compile-server-tests",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "--no-run"
+      ],
+      "started_utc": "2026-10-19T14:01:48.664282+00:00",
+      "status": "passed",
+      "log": "compile-server-tests.log",
+      "pid": 92937,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T14:07:34.087702+00:00",
+      "elapsed_seconds": 345.363,
+      "log_sha256": "eba96b6a8258a7b1d2f31dec1e206698301e44685f1b683988203b7388e2a43c"
+    },
+    {
+      "label": "native-kv2-mount-list",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--",
+        "--list",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T14:07:34.088928+00:00",
+      "status": "passed",
+      "log": "native-kv2-mount-list.log",
+      "pid": 93541,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T14:07:38.135831+00:00",
+      "elapsed_seconds": 4.046,
+      "log_sha256": "1b4a3eb2c8cbdf64a579967a0c31e2690794821e0cda94d0cb00340bbc6a9c98",
+      "expected_count": 3,
+      "selected_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+        "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+        "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+      ]
+    },
+    {
+      "label": "native-kv2-mount",
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha,private-ha-forward-diagnostic",
+        "service::native_auth::mount_tests::native_kv2_mount_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "started_utc": "2026-10-19T14:07:38.138277+00:00",
+      "status": "passed",
+      "log": "native-kv2-mount.log",
+      "pid": 93552,
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T14:07:45.300621+00:00",
+      "elapsed_seconds": 7.162,
+      "log_sha256": "16fbbf4abd4dc1ea2c35580b5c5c991985257598bd3ae54048ff2f4e45c274bc",
+      "expected_count": 3,
+      "selected_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+        "service::native_auth::mount_tests::native_kv2_mount_create_tune_cold_snapshot_delete_and_recreate_keep_precise_history",
+        "service::native_auth::mount_tests::native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_committed_mount"
+      ],
+      "terminal_test_summaries": [
+        [
+          "3",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  ],
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "hostname": "MacBook-Pro.local",
+  "python": "3.14.3",
+  "selected_groups": [
+    "native-kv2-mount"
+  ],
+  "scope": "Exact-candidate native recovery and import fixtures on this physical host",
+  "physical_lan_fault_validation_performed": false,
+  "actual_openbao_271_process_migration_performed": false,
+  "real_credential_validation_performed": false,
+  "production_cutover_performed": false,
+  "full_openbao_271_replacement_proven": false,
+  "compiler_resource_profile": {
+    "low_memory_requested": false,
+    "explicit_build_jobs_requested": 2,
+    "logical_cpus_observed": 10,
+    "cargo_build_jobs": "2",
+    "cmake_build_parallel_level": "2",
+    "dev_debug": null,
+    "test_debug": null,
+    "incremental": null,
+    "test_selectors_and_original_deadlines_unchanged": true
+  },
+  "source_before": {
+    "verified_at_utc": "2026-10-19T14:01:48.637319+00:00",
+    "commit": "f4603486e77771beeec982610bf1a6f8e4e810b8",
+    "tree": "afce15ab6476fb0c0ad2500d39da98c2e9ea7406",
+    "verified_files": 3536
+  },
+  "runner_completed": true,
+  "source_after": {
+    "verified_at_utc": "2026-10-19T14:07:46.271536+00:00",
+    "commit": "f4603486e77771beeec982610bf1a6f8e4e810b8",
+    "tree": "afce15ab6476fb0c0ad2500d39da98c2e9ea7406",
+    "verified_files": 3536
+  },
+  "source_unchanged": true,
+  "finished_utc": "2026-10-19T14:07:46.271654+00:00"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "authbus.native-openai.outer-local-r5-packet-test-observation.v1",
+  "toolChunkId": "a1ef61",
+  "exitCode": 0,
+  "runnerReportedSeconds": 0.117,
+  "testsPassed": 9,
+  "sourcePacketSha256": "8d28e749fa6eae979092387cdb65c8b5c31d5a1f9d794f889c614914556243b6",
+  "sourceManifestSha256": "fec7c304c098f36da547a664173900415d1330f5cbe37a1cdcc0c098ac1b7139",
+  "productBinarySha256": "71b90de8a6ddb1723454a2623b970e915d64565b570cd8dd8342f5f0ffa6dc53",
+  "testFunctions": [
+    "test_duplicate_member_refused_even_with_transport_pin",
+    "test_exact_twenty_three_members_and_independent_inventory",
+    "test_extra_member_refused_even_with_transport_pin",
+    "test_missing_reordered_and_false_assertions_cannot_pass",
+    "test_one_byte_packet_mutation_refused",
+    "test_prior_native_or_sdk_schemas_cannot_qualify_combined_profile",
+    "test_sdk_input_pin_change_refused_under_new_outer_transport_pin",
+    "test_unbound_input_packet_refused",
+    "test_wrong_product_pin_refused_before_any_artifact_read"
+  ],
+  "actualNativeExecution": false,
+  "actualSdkExecution": false,
+  "onlyPostTestSourceChange": "OVERLAY_SHA_constant_from_pending_to_exact_frozen_inner_digest",
+  "otherAstNodesUnchangedAfterTests": true
+}

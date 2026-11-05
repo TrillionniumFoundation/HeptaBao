@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.authbus-native-cold-once-controller.v1",
+  "started_utc": "2026-10-19T07:46:52.173469+00:00",
+  "controller_pid": 1993152,
+  "status": "passed_native_r1_baseline_on_new_pins",
+  "submission_count": 1,
+  "automatic_retry": false,
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r2-source-20261019/qa/openbao-acceptance/native_v6_authbus_refresh_live.py",
+    "--binary",
+    "/home/qian-qi/heptabao-next-gates-20261017/native-full55-9770-main-r1/heptabao-server",
+    "--binary-sha256",
+    "7e68ebb51d3440c30696a7f7456322e48d2a39e702709a27736b78f451ae591c",
+    "--node",
+    "/usr/bin/node",
+    "--openclaw-root",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-admission-sdk-20261018-01/openclaw",
+    "--source-manifest",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r2-source-20261019/source-manifest.json",
+    "--work-dir",
+    "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r2-actual-20261019-01"
+  ],
+  "source_packet_sha256": "36f4548dfed1c999451b252b2ddcee707c2cf368870c06e1b5956fb911c7f97c",
+  "source_manifest_sha256": "c13159524080c0c0a9588fffae8fdc01fdd1a2dc1068972fd2ce4232c2a6f58d",
+  "source_files": 21,
+  "original_native_overlay_sha256": "8072cf7b3e59d35baffbe67f1abad8277b4dee9539b534301a2994e42d0bc77b",
+  "shared_adapter_overlay_sha256": "bc348a4e5c509b3c9512f4be4467e70ef9e508f87aed7ef99aac67f19a075aa0",
+  "rerun_config_sha256": "526c4b8b0ba26262fcdfa86d8a9df05dd87693a46fa6b47bf64474d3915466b5",
+  "original_profile_seconds": 180,
+  "expected_controller_checks": 120,
+  "historical_native_result_inherited": false,
+  "product_source_commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+  "product_source_tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+  "product_build_scoped_tests": "55/55; exact R4 build receipt independently pinned",
+  "production_mutation": false,
+  "driver_pid": 1993170,
+  "driver_pgid": 1993170,
+  "driver_exit_code": 0,
+  "finished_utc": "2026-10-19T07:47:52.830280+00:00",
+  "source_unchanged": true,
+  "sdk_package_unchanged": true,
+  "stdout": {
+    "bytes": 118,
+    "sha256": "c03bae86c5a1903b7bff3f92e1e395398e8bf6eb942e51af77ffa252ddb11316"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "public_receipt": {
+    "bytes": 51856,
+    "sha256": "5aa42c6784de70206467a9212c53169690928131697b0a10768d996f3f021541",
+    "path": "/home/qian-qi/heptabao-next-gates-20261017/authbus-r5-native-cold-r2-actual-20261019-01/public-receipt.json"
+  },
+  "native_four_case_120_qualified": true,
+  "original_native_denominator": 120,
+  "worker_denominators": {
+    "warm": 59,
+    "cold-before-server": 57,
+    "cold-after-server": 57
+  },
+  "actual_native_sigkill_cold": true,
+  "real_external_provider": false
+}

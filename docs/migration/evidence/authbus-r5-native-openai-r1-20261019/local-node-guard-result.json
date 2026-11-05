@@ -1,0 +1,7 @@
+{
+  "chunk_id": "172e0b",
+  "wall_time_seconds": 0.001375893,
+  "exit_code": 0,
+  "original_token_count": 262,
+  "output": "{\"schema\":\"authbus.native-openai.local-guard-test.v1\",\"ok\":true,\"actualSdk\":false,\"actualNativeHeptaBao\":false,\"realExternalProvider\":false,\"liveNetworkConnections\":0,\"checksPassed\":11,\"checks\":[{\"case\":\"three_distinct_owned_listener_bindings_required\",\"passed\":true},{\"case\":\"mapped_or_global_fetch_has_no_provider_lane\",\"passed\":true},{\"case\":\"unowned_loopback_or_foreign_network_is_denied_before_connect\",\"passed\":true},{\"case\":\"external_dns_resolution_is_denied\",\"passed\":true},{\"case\":\"external_process_creation_is_denied\",\"passed\":true},{\"case\":\"outside_fixture_write_is_denied\",\"passed\":true},{\"case\":\"parent_fixture_private_read_is_denied\",\"passed\":true},{\"case\":\"owned_store_read_and_write_remain_usable\",\"passed\":true},{\"case\":\"all_original_process_functions_are_restored\",\"passed\":true},{\"case\":\"expired_original_deadline_refuses_before_guard_install\",\"passed\":true},{\"case\":\"elapsed_original_deadline_denies_before_any_fetch_attempt\",\"passed\":true}],\"intentionalDeniedInputCounts\":{\"network\":4,\"process\":1,\"write\":1,\"privateRead\":1}}\n"
+}

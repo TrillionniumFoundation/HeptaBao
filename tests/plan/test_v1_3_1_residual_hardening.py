@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 import yaml
@@ -13,6 +18,7 @@ def text(path: str) -> str:
 
 
 class V131ResidualHardeningTests(unittest.TestCase):
+    @historical_only
     def test_response_writer_uses_one_absolute_deadline(self) -> None:
         source = text("crates/heptabao-p0-server/src/main.rs")
         for marker in (

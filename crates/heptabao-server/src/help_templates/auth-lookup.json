@@ -1,0 +1,205 @@
+{
+  "help": "Request:        lookup-self\nMatching Route: ^lookup-self$\n\nThis endpoint will lookup a token and its properties.\n\n## PARAMETERS\n\n    token (string)\n\n        Token to look up (unused, does not need to be set)\n\n## DESCRIPTION\n\nThis endpoint will lookup a token and its properties.",
+  "openapi": {
+    "components": {
+      "schemas": {
+        "TokenLookUpSelfUpdateRequest": {
+          "properties": {
+            "token": {
+              "description": "Token to look up (unused, does not need to be set)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "TokenLookupResponse": {
+          "properties": {
+            "accessor": {
+              "description": "Token accessor",
+              "type": "string"
+            },
+            "bound_cidrs": {
+              "description": "List of CIDR blocks bound to the token",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "creation_time": {
+              "description": "Token creation time (Unix timestamp)",
+              "format": "int64",
+              "type": "integer"
+            },
+            "creation_ttl": {
+              "description": "Token creation TTL in seconds",
+              "format": "int64",
+              "type": "integer"
+            },
+            "display_name": {
+              "description": "Display name of the token",
+              "type": "string"
+            },
+            "entity_id": {
+              "description": "Entity ID associated with the token",
+              "type": "string"
+            },
+            "expire_time": {
+              "description": "Token expiration time",
+              "format": "date-time",
+              "type": "string"
+            },
+            "explicit_max_ttl": {
+              "description": "Token explicit maximum TTL in seconds",
+              "format": "int64",
+              "type": "integer"
+            },
+            "external_namespace_policies": {
+              "description": "Derived identity policies for external namespaces (present only when applicable)",
+              "format": "map",
+              "type": "object"
+            },
+            "id": {
+              "description": "Token ID (may be empty for self-lookup operations)",
+              "type": "string"
+            },
+            "identity_policies": {
+              "description": "Identity policies associated with the token (present only when token has an entity and derived policies)",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "issue_time": {
+              "description": "Token issue time",
+              "format": "date-time",
+              "type": "string"
+            },
+            "last_renewal": {
+              "description": "Last renewal time",
+              "format": "date-time",
+              "type": "string"
+            },
+            "last_renewal_time": {
+              "description": "Last renewal time (Unix timestamp)",
+              "format": "int64",
+              "type": "integer"
+            },
+            "meta": {
+              "description": "Token metadata",
+              "format": "map",
+              "type": "object"
+            },
+            "namespace_path": {
+              "description": "Namespace path",
+              "type": "string"
+            },
+            "num_uses": {
+              "description": "Number of uses remaining",
+              "type": "integer"
+            },
+            "orphan": {
+              "description": "Whether the token is an orphan",
+              "type": "boolean"
+            },
+            "path": {
+              "description": "Path where the token was created",
+              "type": "string"
+            },
+            "period": {
+              "description": "Token period in seconds",
+              "format": "int64",
+              "type": "integer"
+            },
+            "policies": {
+              "description": "List of policies associated with the token",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "renewable": {
+              "description": "Whether the token is renewable",
+              "type": "boolean"
+            },
+            "role": {
+              "description": "Role name used to create the token",
+              "type": "string"
+            },
+            "ttl": {
+              "description": "Token TTL in seconds",
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": {
+              "description": "Token type",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/lookup-self": {
+        "description": "This endpoint will lookup a token and its properties.",
+        "get": {
+          "operationId": "token-look-up-self-get",
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TokenLookupResponse"
+                  }
+                }
+              },
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "auth"
+          ]
+        },
+        "post": {
+          "operationId": "token-look-up-self-update",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenLookUpSelfUpdateRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TokenLookupResponse"
+                  }
+                }
+              },
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "auth"
+          ]
+        }
+      }
+    }
+  },
+  "see_also": null
+}

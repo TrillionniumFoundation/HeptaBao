@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.authbus.r5.sdk-owner-discovery-source-regression.v1",
+  "scope": "actual retrieved package resolver and original catalog/alias function bodies executed over synthetic package files; synthetic manifest-read/string-normalization dependencies; not installed SDK, provider or native backend execution",
+  "node_version": "v24.19.0",
+  "result": {
+    "schema": "authbus-sdk-owner-discovery-r5-unit",
+    "actualSdkModuleSource": true,
+    "actualSdkInstalledExecution": false,
+    "actualNativeHeptaBao": false,
+    "actualProvider": false,
+    "candidateSha256": "10064164f06df7685cd90694d459a9233c2b40c307ac692d176044157be5e77e",
+    "sdkResolverSha256": "b38ffc9ed9d1de4b79213bf9aab474985ae62127ba5f148b14433d8cbb51b7b9",
+    "catalogSha256": "046b4e9b63337848e1801407305d711695aa6b1858b8c59ee6afcb4e39f8a5b8",
+    "aliasSha256": "a08f997f961d42aedf70699cfcb52b2785861412131cd718234aa31eca1dcb32",
+    "checksPassed": 19,
+    "checks": [
+      "actual_sdk_external_qa_argv_reproduces_metadata_probe",
+      "declared_package_bin_selected_without_execution",
+      "actual_sdk_owned_argv_resolves_exact_package",
+      "actual_sdk_owned_module_and_argv_resolve_exact_package",
+      "actual_sdk_owned_discovery_has_zero_outside_reads",
+      "actual_channel_cwd_probe_reproduced_despite_owned_module",
+      "actual_channel_owned_cwd_has_zero_outside_reads",
+      "actual_alias_external_argv_probe_reproduced_despite_owned_cwd",
+      "actual_alias_owned_argv_has_zero_outside_reads",
+      "discovery_identity_stable_on_recheck",
+      "entrypoint_change_changes_discovery_identity",
+      "discovery_rejects_wrong-package",
+      "discovery_rejects_wrong-version",
+      "discovery_rejects_missing-bin",
+      "discovery_rejects_absolute-bin",
+      "discovery_rejects_parent-bin",
+      "discovery_rejects_symlink_before_content_read",
+      "discovery_rejects_oversize_package_before_parse",
+      "all_rejections_preserve_zero_outside_reads"
+    ]
+  },
+  "test_source_sha256": "dd0222b3e1f97ff2405ce3b762959a174df7d2da6f66418f642e4a63e05ca612",
+  "runner_syntax_passed": true,
+  "original_owner_r4_failure_receipt_sha256": "26df147c07788658fc94adffa10f07f0947930222f1815311b628197b1176418"
+}

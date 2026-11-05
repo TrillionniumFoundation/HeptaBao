@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.openbao271-numeric-boundary-clone-controller.v1",
+  "clone_from_stopped_failed_fixture": true,
+  "original_source_history_baseline_not_reached": true,
+  "migration_invoked": false,
+  "configuration_rebound": true,
+  "script_sha256": "cf1f7a475801b9d39072e8ba9878c912bf86f77d276395a43b8dc0c86e143305",
+  "started_unix": 1792381610.997995,
+  "source_writes_retried": false,
+  "synthetic_only": true,
+  "clone_pid": 15599,
+  "diagnostic_return_code": 1,
+  "diagnostic_stdout": "{\"diagnostic_complete\": false, \"summary\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-numeric-boundaries-official-mac-20261019-r1/observations/summary.json\", \"writes_retried\": false}\n",
+  "diagnostic_stderr": "",
+  "clone_stopped": true,
+  "original_fixture_unchanged": true,
+  "original_file_count": 19,
+  "finished_unix": 1792381615.78417,
+  "summary_sha256": "1281990796a3be2fc0064f0ffcb7fd2696b6bb7bf800e886e2534120e087481d"
+}

@@ -1,0 +1,16 @@
+test_changed_parent_group_or_start_cannot_authorize_cleanup (__main__.DarwinIdentityChecks.test_changed_parent_group_or_start_cannot_authorize_cleanup) ... ok
+test_esrch_with_a_missing_or_still_live_leader_never_means_empty_group (__main__.DarwinIdentityChecks.test_esrch_with_a_missing_or_still_live_leader_never_means_empty_group) ... ok
+test_fresh_process_uid_must_equal_controller_even_when_waitid_uid_is_zero (__main__.DarwinIdentityChecks.test_fresh_process_uid_must_equal_controller_even_when_waitid_uid_is_zero) ... ok
+test_identity_cannot_change_between_the_two_exit_events (__main__.DarwinIdentityChecks.test_identity_cannot_change_between_the_two_exit_events) ... ok
+test_live_capture_binds_the_later_zombie_start_identity (__main__.DarwinIdentityChecks.test_live_capture_binds_the_later_zombie_start_identity) ... ok
+test_live_leader_still_requires_the_original_sid (__main__.DarwinIdentityChecks.test_live_leader_still_requires_the_original_sid) ... ok
+test_live_to_zombie_syscall_race_requires_a_fresh_matching_exit_proof (__main__.DarwinIdentityChecks.test_live_to_zombie_syscall_race_requires_a_fresh_matching_exit_proof) ... ok
+test_reaped_popen_is_rejected_before_any_group_observation (__main__.DarwinIdentityChecks.test_reaped_popen_is_rejected_before_any_group_observation) ... ok
+test_second_waitid_must_be_the_same_unreaped_event (__main__.DarwinIdentityChecks.test_second_waitid_must_be_the_same_unreaped_event) ... ok
+test_zombie_custody_keeps_the_live_same_group_child_visible (__main__.DarwinIdentityChecks.test_zombie_custody_keeps_the_live_same_group_child_visible) ... ok
+test_zombie_without_an_original_child_event_fails_closed (__main__.DarwinIdentityChecks.test_zombie_without_an_original_child_event_fails_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.004s
+
+OK

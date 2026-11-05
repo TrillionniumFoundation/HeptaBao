@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.namespace-seal-bounded.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "create_namespace",
+      "passed": true
+    },
+    {
+      "case": "create_child_before_parent_seal",
+      "passed": true
+    },
+    {
+      "case": "seal_namespace",
+      "passed": true
+    },
+    {
+      "case": "sealed_state_readback",
+      "passed": true
+    },
+    {
+      "case": "seal_status",
+      "passed": true
+    },
+    {
+      "case": "sealed_child_fails_closed",
+      "passed": true
+    },
+    {
+      "case": "sealed_descendant_inherits_parent_fence",
+      "passed": true
+    },
+    {
+      "case": "unauthorized_seal_control_denied",
+      "passed": true
+    },
+    {
+      "case": "parent_unseal",
+      "passed": true
+    },
+    {
+      "case": "unsealed_child_reachable",
+      "passed": true
+    },
+    {
+      "case": "reseal",
+      "passed": true
+    },
+    {
+      "case": "restart_starts_globally_sealed",
+      "passed": true
+    },
+    {
+      "case": "global_unseal_preserves_namespace_seal",
+      "passed": true
+    },
+    {
+      "case": "namespace_seal_survives_restart",
+      "passed": true
+    },
+    {
+      "case": "post_restart_fence",
+      "passed": true
+    },
+    {
+      "case": "post_restart_parent_unseal",
+      "passed": true
+    }
+  ],
+  "bounded_profile": "durable namespace seal flag; ancestor request fence; parent-controlled unseal; global barrier custody",
+  "global_barrier_bound": true,
+  "independent_namespace_key_hierarchy": false,
+  "full_openbao_namespace_seal_compatibility": false,
+  "independent_qualification": false,
+  "candidate_binary_sha256": "0a7bb7313f82188378fe4ba94451cf6f51af68d89505972911709f03e3bcd22c",
+  "candidate_binary_source_head": "0e58bc58e29f7a195e8e0ddf20ffd0fcace8fe38",
+  "execution_platform": "Linux aarch64 guest (Ubuntu Noble)"
+}
