@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.df026-phaseb-product-source-membership.v1",
+  "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "members": [
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "mode": "100644",
+      "bytes": 14691,
+      "git_blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "mode": "100644",
+      "bytes": 31475,
+      "git_blob": "b09e57362d53ce207b255d713d7aa7c126215691"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "mode": "100644",
+      "bytes": 61623,
+      "git_blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "mode": "100644",
+      "bytes": 14013,
+      "git_blob": "6828ae88590184830da949001b13abd82a4f9b10"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "mode": "100644",
+      "bytes": 518245,
+      "git_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "mode": "100644",
+      "bytes": 50683,
+      "git_blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "mode": "100644",
+      "bytes": 43899,
+      "git_blob": "0a94044292493853c7770cb36aa69544c1488aca"
+    }
+  ],
+  "note": "Exact immutable tree members; runtime Binding.verify hashes the actual seven source files. Canonical full tree/fsck qualification belongs to the separate standalone importer."
+}

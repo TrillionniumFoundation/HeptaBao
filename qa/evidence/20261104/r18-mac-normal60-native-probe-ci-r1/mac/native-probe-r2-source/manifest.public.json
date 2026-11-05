@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.mac-native-proc-ancestor-read-source-packet.r2",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "priorSourceTree": "5bf399d0b9686b12c6b39ecc95801156395b0e48",
+  "priorActualTree": "83c0d88327a8ad5bfee5ae8a8c55dea4fea6f1eb",
+  "actualHostActions": 0,
+  "originalNative27ComponentsNotRerun": true,
+  "additionalRuleBytes": 73,
+  "onlyAddedPermission": "exact ROOT.parent literal read",
+  "source": {
+    "bytes": 76658,
+    "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "git_blob": "e3bc464388fbeb53f830713bdfc9054617432314"
+  },
+  "request": {
+    "bytes": 78264,
+    "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+    "git_blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12"
+  },
+  "files": [
+    {
+      "path": "source/native_proc_sandbox_probe_r2.py",
+      "mode": "100644",
+      "bytes": 76658,
+      "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+      "git_blob": "e3bc464388fbeb53f830713bdfc9054617432314"
+    },
+    {
+      "path": "diffs/r1-to-r2.review.diff",
+      "mode": "100644",
+      "bytes": 6742,
+      "sha256": "575f39ee1d13329b96e164907ba31512aaa89501bea7517c9adf33a680e10c6a",
+      "git_blob": "5583f8e2d0e20f2a0ba3bbc39dfe6c833e1f0f67"
+    },
+    {
+      "path": "references/native_proc_sandbox_probe_r1.py",
+      "mode": "100644",
+      "bytes": 75075,
+      "sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+      "git_blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c"
+    },
+    {
+      "path": "source/mac_darwin_owned_projection_r1.py",
+      "mode": "100644",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "git_blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+    },
+    {
+      "path": "source/mac_native_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "git_blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+    },
+    {
+      "path": "source/mac_native_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+      "git_blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+    },
+    {
+      "path": "references/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    {
+      "path": "references/mac_current_capture_entry_r1.py",
+      "mode": "100644",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    },
+    {
+      "path": "references/native-r1-actual-stdout.original.json",
+      "mode": "100644",
+      "bytes": 19388,
+      "sha256": "e47be79ba25da9f05f76ddc7b7049305d3047d2a1709ff6474043fc530fdaf0e",
+      "git_blob": "96812c60658f6d210c71ec363fbd1527c9451144"
+    },
+    {
+      "path": "references/native-r1-actual-authority.original.json",
+      "mode": "100644",
+      "bytes": 730,
+      "sha256": "f0325b6245942019e9d98d88503fb08108ca77fb5486aef1355f39ffd4ba7b67",
+      "git_blob": "5ed91337c5c9a1b5cf58ac80be1b2cdc0032df09"
+    },
+    {
+      "path": "policies/r2-original.sb",
+      "mode": "100644",
+      "bytes": 7728,
+      "sha256": "d31751dc8da537121b3f1ccce832a666cc6499bdef4d956ab3208dec86daf35e",
+      "git_blob": "59c72c6eba829a2aa38b30a636e2cec5b2abe08b"
+    },
+    {
+      "path": "policies/r2-patched.sb",
+      "mode": "100644",
+      "bytes": 7842,
+      "sha256": "58a8f52a66b0e6136b786857cb72e3f775837907bf382850320673342750c6bd",
+      "git_blob": "ae3586e5dd3c8b3db0d39a0cc31eb1d5c68efcf6"
+    },
+    {
+      "path": "policies/r1-patched.reference.sb",
+      "mode": "100644",
+      "bytes": 7769,
+      "sha256": "ccfcb2787eae7b4333c0df1718ba75e6da2cd536b78cf25f5a351445552c7692",
+      "git_blob": "f3952b09d32137befc814352faee140a9c2a3106"
+    },
+    {
+      "path": "verification/initial-verifier.py",
+      "mode": "100644",
+      "bytes": 5747,
+      "sha256": "a5b9c4b21efe3f2bda58304f923e7d2e9dccda15dfaf31fca98e4578dfb3ffbf",
+      "git_blob": "fc4fdd88b2ed1b11683d0300a09bc23abf168412"
+    },
+    {
+      "path": "verification/initial-verifier.exec-observed.public.json",
+      "mode": "100644",
+      "bytes": 1506,
+      "sha256": "f5adc3969f779a11b2d24f014d73b48945f5f83759d79ace6bb4e4865c6e89c1",
+      "git_blob": "7d07999efa90afc4b3651267ec0bd03b4c63c587"
+    },
+    {
+      "path": "verification/initial-verifier.stdout.raw",
+      "mode": "100644",
+      "bytes": 1343,
+      "sha256": "14a12978aa7358f16c2df874b75d7aab7eda05ffec6d0009d51b1149d6e3a7e9",
+      "git_blob": "63d9e0af1fa1a233202f834879f3df4d711be145"
+    },
+    {
+      "path": "verification/corrected-verifier.py",
+      "mode": "100644",
+      "bytes": 5900,
+      "sha256": "a860f34477031654a48c0452db853b7c490b8ab4df5dbb6a5161660cb39af4ce",
+      "git_blob": "2a146a41df88e4c058c6501b360a599dcdbfbbe2"
+    },
+    {
+      "path": "verification/corrected-verifier.exec-observed.public.json",
+      "mode": "100644",
+      "bytes": 1786,
+      "sha256": "64b3a369d1b78ea76761438bad86e0026c5536fd521c555b7e5be65e2cdc3108",
+      "git_blob": "2c30215b74bedee8fdb6517fd5be18aeeb1a32a1"
+    },
+    {
+      "path": "verification/corrected-verifier.stdout.public.json",
+      "mode": "100644",
+      "bytes": 1542,
+      "sha256": "b9e7f348ede1c91f3af2d62bd384091f4824747976b03d30ff32fe038bbececc",
+      "git_blob": "e23f49ff9788adb1219eb0bd3f8f2947fc638052"
+    },
+    {
+      "path": "dispatch/loader.py",
+      "mode": "100644",
+      "bytes": 310,
+      "sha256": "7f68e044570e5bae7085f0efd4b86e65237b3b682cbe73e2983423eca293d676",
+      "git_blob": "923e8b2cf1b41ddb4a1b32202299eaa0638cee5a"
+    },
+    {
+      "path": "dispatch/request.public.json",
+      "mode": "100644",
+      "bytes": 78264,
+      "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+      "git_blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12"
+    },
+    {
+      "path": "verification/strict-whole-delta.public.json",
+      "mode": "100644",
+      "bytes": 39,
+      "sha256": "0d4ed92a36857d0731fbc8ade8e047c560d454dbdcdb0321b9d1dad9156a0837",
+      "git_blob": "a8049c55b8d6e26a7a73ca094ce3c22cc3e4f141"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "mode": "100644",
+      "bytes": 3196,
+      "sha256": "e38edcac4ef7db8bb8cda7a53b59a260a0a2a4f358fae317a217d161cd8389ea",
+      "git_blob": "04e9a430fc8770fe1e3687ca2d35b1d801efece9"
+    },
+    {
+      "path": "REVIEW.md",
+      "mode": "100644",
+      "bytes": 4594,
+      "sha256": "7408a5e538475063192e561fe4752e2b88c106060c1b4747a25ed87817c8063b",
+      "git_blob": "1258c707aeafb47ad993517d1faafadb1fbb4786"
+    },
+    {
+      "path": "reviews/ha-r2-source-review.original.json",
+      "mode": "100644",
+      "bytes": 2362,
+      "sha256": "a77490e51c139839ec21f3859174f150922deccd915eb9c4028c11e4c06915ba",
+      "git_blob": "80e04804cb40152746c6e8fcce758d59ee13a058"
+    },
+    {
+      "path": "reviews/root-r1-actual-review.original.json",
+      "mode": "100644",
+      "bytes": 1706,
+      "sha256": "2f198d9e913f74e438d048c353e24a900b0b7455025f16ea05ed372b834d4a2a",
+      "git_blob": "b34bb0d9610fad79abfe3f617d6db29663438d8d"
+    }
+  ]
+}

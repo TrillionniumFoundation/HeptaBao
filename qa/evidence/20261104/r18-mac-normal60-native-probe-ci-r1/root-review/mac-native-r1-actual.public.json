@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.mac-native-proc-root-actual-review.v1",
+  "verdict": "FAIL_KNOWN_KERNEL_REFUSAL_SEQUENCE_INCOMPLETE",
+  "job": "1a1a9ffb40d-fc05-3af8",
+  "actual_tree": "83c0d88327a8ad5bfee5ae8a8c55dea4fea6f1eb",
+  "root_verified": {
+    "whole_files": 17,
+    "whole_bytes": 250679,
+    "merkle_trees": 2,
+    "sdk_native_pairs_exact": 4,
+    "stdout_bytes": 19388,
+    "stdout_sha256": "e47be79ba25da9f05f76ddc7b7049305d3047d2a1709ff6474043fc530fdaf0e",
+    "child_raw_token_and_lf_exact": true,
+    "child_bytes": 8854,
+    "child_sha256": "d4d5331b965c8289104826331efa7196ee5a89a46e969bcb5f55570e3e3a268c",
+    "exit_code": 1,
+    "full_durable": true,
+    "timed_out": false,
+    "unknown": false,
+    "owned_children_closed": 3,
+    "all_fds_t5_closed": true,
+    "original_shared45_met": true
+  },
+  "observed_subset": {
+    "native_calls": 30,
+    "self_before_after": true,
+    "actual_os_build": "25G83",
+    "actual_darwin": "25.6.0",
+    "native_diskutil_exit0": true,
+    "retained_WNOWAIT_group_closure": true,
+    "signals_sent": 0
+  },
+  "failure": {
+    "stage": "owned_write_sidecar_loopback_refusals",
+    "errno": 1,
+    "exact_instruction_unrecorded": true,
+    "four_kernel_refusals_complete": false,
+    "partial_kernel_check_count_unknown": true,
+    "after_source_tool_module_fences_reached": false
+  },
+  "root_static_followup": "HeldT5.parent opens ROOT.parent as a directory. That exact ancestor directory lacks a file-read literal in this frozen profile. This is a concrete source defect and candidate explanation; the original dynamic failing instruction was not recorded.",
+  "current_capture_or_helper_qualified": false,
+  "prior_PID11754_unknown_unchanged": true
+}

@@ -1,0 +1,142 @@
+{
+  "candidate_modules_executed": 0,
+  "host_calls": 0,
+  "rows": [
+    {
+      "after": {
+        "bytes": 15324,
+        "git_blob": "47c96d89591c71e43566da3e529fa49702a8f66b",
+        "sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa"
+      },
+      "before": {
+        "bytes": 15352,
+        "git_blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000",
+        "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a"
+      },
+      "byte_identical_definitions": [
+        "on_signal",
+        "digest",
+        "identity",
+        "remaining",
+        "stable",
+        "fsync_dir",
+        "create",
+        "public",
+        "process_snapshot",
+        "group_members",
+        "stop_active",
+        "stop_owned",
+        "persist_command",
+        "owned_argv",
+        "owned",
+        "git",
+        "freeze",
+        "source_snapshot",
+        "bundle_header",
+        "prove_canonical"
+      ],
+      "candidate_executed": false,
+      "changed_definitions": [],
+      "definition_count": 20,
+      "diff": {
+        "bytes": 1953,
+        "git_blob": "20cb85717a60a65ac58de9d553bc08c5d813bbea",
+        "sha256": "c3e564f68821706c91bef3b39f01703d9dbbe71aca611236dcc68914162b1bf8"
+      },
+      "exact_literal_inverse_whole_equal": true,
+      "label": "exporter",
+      "literal_replacements": 10,
+      "parse_and_compile_only": true
+    },
+    {
+      "after": {
+        "bytes": 4813,
+        "git_blob": "656db30aa62f86b84f0a8dd905486d24eeb574de",
+        "sha256": "ab33ef2ad5c80caff5753901a4ec8799aa80be632cafbd55a6f0678c9e9d3d56"
+      },
+      "before": {
+        "bytes": 4816,
+        "git_blob": "462b8a3e21a6a9c7395823939eece9ab85fc3b00",
+        "sha256": "e9c2fb72e868b53ea90cd5ec87f6a619bce5ac3be560a960e261036658920cd1"
+      },
+      "byte_identical_definitions": [
+        "sha",
+        "ident",
+        "sync_dir",
+        "exact",
+        "publish"
+      ],
+      "candidate_executed": false,
+      "changed_definitions": [],
+      "definition_count": 5,
+      "diff": {
+        "bytes": 2055,
+        "git_blob": "4d1052ee43b9125bb008a5ebc7d5b7ace9e70112",
+        "sha256": "d4342069025a80688355251f69c8fe2d2ec5b4cb010b3acd47bd95dcd12de463"
+      },
+      "exact_literal_inverse_whole_equal": true,
+      "label": "inert",
+      "literal_replacements": 7,
+      "parse_and_compile_only": true
+    },
+    {
+      "after": {
+        "bytes": 26563,
+        "git_blob": "f60dbb093d69641bc8cd4a367320ec6fc5bdc0fd",
+        "sha256": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed"
+      },
+      "before": {
+        "bytes": 23664,
+        "git_blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a",
+        "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25"
+      },
+      "byte_identical_definitions": [
+        "need",
+        "remaining",
+        "sha",
+        "identity",
+        "exact_path",
+        "no_symlink_ancestors",
+        "duplicate_free",
+        "parse",
+        "read_file",
+        "pin_file",
+        "load_verified_module",
+        "Binding.check_host",
+        "Binding.quick_fence",
+        "Binding.fresh_path",
+        "Binding.check_ports"
+      ],
+      "candidate_executed": false,
+      "changed_definitions": [
+        "Binding.__init__",
+        "Binding.verify"
+      ],
+      "definition_count": 17,
+      "diff": {
+        "bytes": 6149,
+        "git_blob": "571faf236cd54e42d43a436edbf2b27fdc10c0c6",
+        "sha256": "ab72dd07b2ea7865140662c21f523d6066be7895e1682efcddae3dcf32f1d884"
+      },
+      "label": "binding",
+      "parse_and_compile_only": true,
+      "preserved_literal_contracts": [
+        "INGRESS_OBSERVER_TESTS",
+        "BUDGETS",
+        "API_PORTS",
+        "QA_NAMES",
+        "REFERENCE_PINS",
+        "FEATURES",
+        "PROFILE",
+        "GROUPS_SHA",
+        "OFFICIAL_SHA",
+        "OFFICIAL_BYTES",
+        "OFFICIAL_SOURCE_COMMIT",
+        "SCHEMA"
+      ]
+    }
+  ],
+  "schema": "heptabao.df026-desktop-source-delta-offline.v1",
+  "source_only": true,
+  "status": "passed"
+}

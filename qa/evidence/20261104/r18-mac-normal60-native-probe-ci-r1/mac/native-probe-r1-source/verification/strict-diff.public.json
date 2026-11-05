@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.native-proc-three-strict-diffs.r1",
+  "results": [
+    {
+      "name": "custody",
+      "hunks": 3,
+      "wholeExact": true
+    },
+    {
+      "name": "commands",
+      "hunks": 1,
+      "wholeExact": true
+    },
+    {
+      "name": "probe",
+      "hunks": 13,
+      "wholeExact": true
+    }
+  ],
+  "sourceExecuted": false,
+  "hostActions": 0
+}

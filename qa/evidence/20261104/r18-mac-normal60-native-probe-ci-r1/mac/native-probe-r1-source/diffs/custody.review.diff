@@ -1,0 +1,177 @@
+diff --git a/mac_native_owned_unreaped_r1.py b/mac_native_owned_unreaped_r1.py
+--- a/mac_native_owned_unreaped_r1.py
++++ b/mac_native_owned_unreaped_r1.py
+@@ -1,14 +1,15 @@
+ #!/usr/bin/env python3
+-"""Retained direct-child custody for Mac phase workers.
++"""New public-probe custody adapter using scoped Darwin numeric projection.
+ 
+-Derived from canonical native_ha_foreground_watchdog.py 74925449. No child is
+-started here. WNOWAIT observes exit; it never makes the numeric PGID reusable
+-before signaling. Cleanup keeps the previous wrapper's TERM1 / wait5 /
+-group3 limits and PS4 maximum. No stage grants business more than phase120.
++The original QA helper remains unchanged. WNOWAIT/direct-Popen retention,
++TERM1/wait5/group3 and signal-before-double-observation control flow are
++preserved. The schema explicitly replaces ps lstart with second/microsecond
++birth fields; this source alone is not actual Darwin runtime qualification.
+ """
+-import os, signal, subprocess, time
++import os, signal, time
++from mac_darwin_owned_projection_r1 import NativeProjection, NativeProjectionRefused, PROJECTION_SCHEMA
+ 
+-MIB=1024*1024
++_projection=None
+ class Refusal(RuntimeError): pass
+ def need(value,code):
+     if not value:raise Refusal(code)
+@@ -30,98 +31,91 @@
+          and event.si_code in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED),
+          "child_exit_identity_changed")
+     # Darwin reports si_uid=0 even for an observed uid501 child. Actual UID is
+-    # bound independently by ps; si_uid never grants ownership here.
++    # bound independently by the native projection; si_uid never grants ownership here.
+     return {"pid": event.si_pid, "signo": event.si_signo, "code": event.si_code, "status": event.si_status}
+ 
+ def stable(row):
+-    return {key: row[key] for key in ("pid", "ppid", "pgid", "uid", "start")}
++    return {key: row[key] for key in ("pid", "ppid", "pgid", "uid", "birthSeconds", "birthMicroseconds")}
+ 
+-def ps_rows(pid=None, *, seconds=4.0, until=None):
+-    if until is not None:
+-        remaining = until - time.monotonic()
+-        need(remaining > 0, "original_stop_deadline_expired")
+-        seconds = min(seconds, remaining)
+-    argv = ["/bin/ps"]
+-    argv += ["-p", str(pid)] if pid is not None else ["-ax"]
+-    argv += ["-o", "pid=,ppid=,pgid=,uid=,stat=,lstart="]
++def bind_projection(api):
++    global _projection
++    need(_projection is None and type(api) is NativeProjection and api.self_qualified,
++         "native_projection_once_actual_self_qualification")
++    _projection=api
++
++def native_rows(pid=None, *, pgid=None, seconds=4.0, until=None):
++    need(_projection is not None and _projection.self_qualified,
++         "native_projection_not_qualified")
++    need(until is not None and type(seconds) in (int,float) and 0<seconds<=4.0,
++         "native_projection_original_bound")
++    remaining=until-time.monotonic()
++    need(remaining>0,"original_stop_deadline_expired")
++    end=min(until,time.monotonic()+seconds)
++    need((pid is None)!=(pgid is None),"scoped_pid_or_pgid_required")
+     try:
+-        result = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+-                                stderr=subprocess.PIPE, env=dict(os.environ, LC_ALL="C"),
+-                                timeout=seconds)
+-    except subprocess.TimeoutExpired as error:
+-        code = ("original_stop_deadline_expired" if until is not None and time.monotonic() >= until
+-                else "process_projection_deadline_expired")
++        rows=([_projection.pid_row(pid,until=end)] if pid is not None
++              else _projection.group_rows(pgid,until=end))
++    except NativeProjectionRefused as error:
++        code=error.code
++        if code=="original_projection_deadline_expired":
++            code=("original_stop_deadline_expired" if time.monotonic()>=until
++                  else "process_projection_deadline_expired")
+         raise Refusal(code) from error
+-    if until is not None:
+-        need(time.monotonic() < until, "original_stop_deadline_expired")
+-    need(len(result.stdout) <= 2 * MIB and len(result.stderr) <= 65536,
+-         "process_projection_bound")
+-    if pid is not None and result.returncode == 1 and not result.stdout.strip():
+-        return []
+-    need(result.returncode == 0, "process_projection_unavailable")
+-    rows = []
+-    for line in result.stdout.decode("ascii").splitlines():
+-        fields = line.split(None, 5)
+-        need(len(fields) == 6, "process_projection_malformed")
+-        rows.append({"pid": int(fields[0]), "ppid": int(fields[1]),
+-                     "pgid": int(fields[2]), "uid": int(fields[3]),
+-                     "state": fields[4], "start": fields[5]})
+-    if pid is not None:
+-        need(len(rows) == 1 and rows[0]["pid"] == pid, "process_projection_ambiguous")
++    need(time.monotonic()<end,"original_stop_deadline_expired")
+     return rows
+ 
+ def capture_child(child, *, until):
+     require_waitid()
+-    rows = ps_rows(child.pid, until=until)
++    rows = native_rows(child.pid, until=until)
+     need(len(rows) == 1, "owned_child_identity_missing")
+     row = rows[0]
+     need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
+          and row["uid"] == os.geteuid(), "owned_child_scope_mismatch")
+-    # Darwin keeps an unreaped zombie in ps but getpgid/getsid return ESRCH.
++    # Darwin keeps an unreaped zombie in the native arg=1 projection but getpgid/getsid return ESRCH.
+     # Use the real live APIs only for a still-live child; otherwise independently
+-    # repeat WNOWAIT and retain ps plus Popen direct-parent custody.
++    # repeat WNOWAIT and retain native birth plus Popen direct-parent custody.
+     event, live_sid = exit_observation(child), None
+-    if event is None and not row["state"].startswith("Z"):
++    if event is None and not row["isZombie"]:
+         try:
+             need(os.getpgid(child.pid) == child.pid and os.getsid(child.pid) == child.pid,
+                  "owned_live_session_mismatch")
+             live_sid = child.pid
+         except ProcessLookupError:
+-            # A fast exit between the first ps/waitid and a live API call is
++            # A fast exit between the first native projection/waitid and a live API call is
+             # not loss of Popen custody, nor proof that the group is empty.
+             event = exit_observation(child)
+             need(event is not None, "owned_live_api_failed_without_retained_exit")
+-    if event is not None or row["state"].startswith("Z"):
++    if event is not None or row["isZombie"]:
+         event = exit_observation(child)
+-        fresh = ps_rows(child.pid, until=until)
++        fresh = native_rows(child.pid, until=until)
+         need(event is not None and len(fresh) == 1 and stable(fresh[0]) == stable(row)
+-             and fresh[0]["state"].startswith("Z") and exit_observation(child) == event,
++             and fresh[0]["isZombie"] and exit_observation(child) == event,
+              "owned_exit_not_retained")
+         row = fresh[0]
+-    return {"ps": stable(row), "sid_observed_while_live": live_sid,
+-            "captured_exit": event}
++    return {"projection": stable(row), "projectionSchema": PROJECTION_SCHEMA,
++            "sid_observed_while_live": live_sid,"captured_exit": event}
+ 
+ def verify_unreaped(child, owner, *, until=None):
+     event = exit_observation(child)
+-    rows = ps_rows(child.pid, until=until)
+-    need(len(rows) == 1 and stable(rows[0]) == owner["ps"]
++    rows = native_rows(child.pid, until=until)
++    need(len(rows) == 1 and stable(rows[0]) == owner["projection"]
+          and rows[0]["ppid"] == os.getpid(), "owned_child_identity_changed_no_signal")
+-    if event is None and not rows[0]["state"].startswith("Z"):
+-        # Exact ps PGID/start plus direct Popen/WNOWAIT custody keeps the
++    if event is None and not rows[0]["isZombie"]:
++        # Exact native PGID/birth plus direct Popen/WNOWAIT custody keeps the
+         # originally observed session leader reserved. Do not race a normal
+         # exit by consulting Darwin's zombie-unsupported getpgid/getsid here.
+-        need(owner["ps"]["pgid"] == child.pid, "owned_live_session_changed_no_signal")
++        need(owner["projection"]["pgid"] == child.pid, "owned_live_session_changed_no_signal")
+     else:
+         event = exit_observation(child)
+-        need(event is not None and rows[0]["state"].startswith("Z") and exit_observation(child) == event,
++        need(event is not None and rows[0]["isZombie"] and exit_observation(child) == event,
+              "owned_zombie_identity_changed_no_signal")
+     return event
+ 
+ def live_group(child, owner, *, until):
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     verify_unreaped(child, owner, until=until)
+-    rows = ps_rows(until=until)
+-    selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
++    rows = native_rows(pgid=child.pid, until=until)
++    selected = [row for row in rows if row["pgid"] == child.pid and not row["isZombie"]]
+     need(all(row["uid"] == os.geteuid() for row in selected), "owned_group_uid_changed_no_signal")
+     need(time.monotonic() < until, "original_stop_deadline_expired")
+     return [stable(row) for row in selected]
+@@ -190,7 +184,7 @@
+         # After the first reap, only observe. No signal or ownership claim is
+         # derived from this now-reusable numeric PGID.
+         while True:
+-            rows=[row for row in ps_rows(until=group_until) if row['pgid']==child.pid]
++            rows=[row for row in native_rows(pgid=child.pid,until=group_until) if row['pgid']==child.pid]
+             receipt['remainingGroupRows']=rows
+             if not rows:break
+             need(time.monotonic()<group_until,'original_stop_deadline_expired')

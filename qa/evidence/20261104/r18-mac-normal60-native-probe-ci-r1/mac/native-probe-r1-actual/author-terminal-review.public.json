@@ -1,0 +1,245 @@
+{
+  "schema": "heptabao.mac-native-proc-probe-author-terminal-review.r1",
+  "verdict": "FAIL_KNOWN_NO_COMPLETE_KERNEL_FENCE",
+  "jobId": "1a1a9ffb40d-fc05-3af8",
+  "idempotencyKey": "heptabao-mac-native-proc-custody-a24d8182-20261105-r1",
+  "submissions": 1,
+  "exactIntentBlob": "7d1ae6a81a2024881bdfe0e59186883e970f0548",
+  "sourcePacketTree": "5bf399d0b9686b12c6b39ecc95801156395b0e48",
+  "authority": {
+    "exitCode": 1,
+    "state": "failed",
+    "full": true,
+    "durable": true,
+    "terminalPublished": true,
+    "timedOut": false,
+    "automaticRetry": false,
+    "cancelled": false,
+    "stdoutBytes": 19388,
+    "stderrBytes": 0,
+    "originalStdoutSha256": "e47be79ba25da9f05f76ddc7b7049305d3047d2a1709ff6474043fc530fdaf0e"
+  },
+  "originalStreamPages": [
+    {
+      "page": 0,
+      "offset": 0,
+      "nextOffset": 16384,
+      "size": 19388,
+      "eof": false,
+      "textEqualsHex": true,
+      "bytes": 16384
+    },
+    {
+      "page": 1,
+      "offset": 16384,
+      "nextOffset": 19388,
+      "size": 19388,
+      "eof": true,
+      "textEqualsHex": true,
+      "bytes": 3004
+    }
+  ],
+  "originalChildRecovered": {
+    "method": "Unique report object raw JSON token plus one LF, preserving every original numeric and string token; no JSON number reserialization.",
+    "tokenStart": 233,
+    "tokenEnd": 9086,
+    "matchedOriginalBytes": 8854,
+    "matchedOriginalSha256": "d4d5331b965c8289104826331efa7196ee5a89a46e969bcb5f55570e3e3a268c"
+  },
+  "elapsedSeconds": 0.4394194590859115,
+  "sharedDeadlineMetAfterClosure": true,
+  "parentFailure": {
+    "stage": "read_native_public_report",
+    "type": "Refused",
+    "code": "child_known_expected_terminal",
+    "errno": null
+  },
+  "actualChildFailure": {
+    "stage": "owned_write_sidecar_loopback_refusals",
+    "type": "PermissionError",
+    "code": null,
+    "errno": 1,
+    "exactFailingInstructionNotRecorded": true,
+    "allFourKernelRefusalsNotProved": true,
+    "partialNumberOfKernelChecksNotInferred": true
+  },
+  "positiveActualNativeSubset": {
+    "completeProbeQualification": false,
+    "abi": {
+      "alignment": 8,
+      "endianness": "little",
+      "offsets": {
+        "e_tdev": 108,
+        "e_tpgid": 112,
+        "pbi_comm": 48,
+        "pbi_flags": 0,
+        "pbi_gid": 24,
+        "pbi_name": 64,
+        "pbi_nfiles": 96,
+        "pbi_nice": 116,
+        "pbi_pgid": 100,
+        "pbi_pid": 12,
+        "pbi_pjobc": 104,
+        "pbi_ppid": 16,
+        "pbi_rgid": 32,
+        "pbi_ruid": 28,
+        "pbi_start_tvsec": 120,
+        "pbi_start_tvusec": 128,
+        "pbi_status": 4,
+        "pbi_svgid": 40,
+        "pbi_svuid": 36,
+        "pbi_uid": 20,
+        "pbi_xstatus": 8,
+        "rfu_1": 44
+      },
+      "sizes": {
+        "Dl_info": 32,
+        "int": 4,
+        "int32": 4,
+        "pointer": 8,
+        "proc_bsdinfo": 136,
+        "size_t": 8,
+        "uint32": 4,
+        "uint64": 8
+      }
+    },
+    "actualKernel": {
+      "machine": "arm64",
+      "release": "25.6.0",
+      "sysname": "Darwin",
+      "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142"
+    },
+    "actualOsBuild": "25G83",
+    "fixedInstallNames": [
+      "/usr/lib/system/libsystem_kernel.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "loadedSymbolImages": {
+      "dladdr": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libdyld.dylib",
+        "observedSymbolName": "dladdr",
+        "requestedSymbol": "dladdr"
+      },
+      "proc_listpids": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+        "observedSymbolName": "proc_listpids",
+        "requestedSymbol": "proc_listpids"
+      },
+      "proc_pidinfo": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+        "observedSymbolName": "proc_pidinfo",
+        "requestedSymbol": "proc_pidinfo"
+      },
+      "sysctlbyname": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_c.dylib",
+        "observedSymbolName": "sysctlbyname",
+        "requestedSymbol": "sysctlbyname"
+      }
+    },
+    "referenceIsInstalledWholePin": false,
+    "wholeLibraryHashClaimed": false,
+    "sharedCacheMaterializationAttempted": false,
+    "nativeCalls": 30,
+    "pidQueries": 13,
+    "groupQueries": 12,
+    "nullSizingCallUsed": false,
+    "allHostModeUsed": false,
+    "selfBeforeAndAfterIndependentCrosscheck": true,
+    "selfBirthBeforeAndAfterExact": true,
+    "nestedDiskutilPid": 48377,
+    "nestedDiskutilExitCode": 0,
+    "nestedDiskutilCompleteBeforeDeadline": true,
+    "actualRetainedNaturalExitReapedAfterEmptyGroup": true,
+    "signalsSent": [],
+    "newlyQualifiedActualTermKillPath": false
+  },
+  "cleanup": {
+    "outcomeUnknown": false,
+    "childOutcomeUnknown": false,
+    "allParentFdsClosed": true,
+    "allChildFdsClosed": true,
+    "outerCommands": 2,
+    "nativeCommands": 1,
+    "commands": [
+      {
+        "scope": "outer",
+        "label": "probe-parent-t5-volume",
+        "pid": 48366,
+        "exitCode": 0,
+        "streamsClosed": true,
+        "unknown": false,
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "remaining": [],
+        "signals": [],
+        "postReapSignalSent": false
+      },
+      {
+        "scope": "outer",
+        "label": "sandbox-native",
+        "pid": 48375,
+        "exitCode": 1,
+        "streamsClosed": true,
+        "unknown": false,
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "remaining": [],
+        "signals": [],
+        "postReapSignalSent": false
+      },
+      {
+        "scope": "sandbox-native",
+        "label": "native-sandbox-t5-volume",
+        "pid": 48377,
+        "exitCode": 0,
+        "streamsClosed": true,
+        "unknown": false,
+        "directChildReaped": true,
+        "groupEmptyBeforeReap": true,
+        "groupEmptyAfterReap": true,
+        "remaining": [],
+        "signals": [],
+        "postReapSignalSent": false
+      }
+    ],
+    "allThreeGroupsCompleteAndEmpty": true,
+    "bothHeldT5AnchorsClosed": true,
+    "volumeUuidVerified": true
+  },
+  "sourceAndPolicy": {
+    "controllerSha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+    "profileSha256": {
+      "original": "d9fe6042d1075fe80c87aed7106f451edeb34cb6971e4c0018088c48f3186d1b",
+      "patched": "ccfcb2787eae7b4333c0df1718ba75e6da2cd536b78cf25f5a351445552c7692"
+    },
+    "exactOriginalSourceBeforePresent": true,
+    "exactUtilitiesBeforePresent": true,
+    "newModulesBeforeEqualParentAndChild": true,
+    "afterSourceUtilityModuleFences": "NOT_REACHED_DUE_TO_KNOWN_REFUSAL",
+    "afterCurrentPrivateInputFence": "NOT_APPLICABLE_NO_CURRENT_INPUT_READ",
+    "permissionDeltaBeyondAlreadyReviewedDevNull": false,
+    "systemUtilitiesCopiedOrChanged": false
+  },
+  "scope": {
+    "productionRead": false,
+    "productionWrite": false,
+    "sqliteImported": false,
+    "consumerStarted": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "currentMainlineHelperChanged": false,
+    "currentConsumerQualification": false
+  },
+  "historicalUnknownPid11754Unchanged": true,
+  "nextStep": "Freeze originals; inspect only exact kernel_refusals/HeldT5 source. No additional host request, policy change or business replay is authorized by this review."
+}

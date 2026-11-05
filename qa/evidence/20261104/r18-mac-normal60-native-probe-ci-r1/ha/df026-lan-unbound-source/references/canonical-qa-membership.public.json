@@ -1,0 +1,59 @@
+{
+  "canonical_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "canonical_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "source_stage_index_proof": "fc9ffb8ded407a4b737cbdf89053ea24e35f75d5",
+  "qa_members": [
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0",
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "bytes": 77805,
+      "sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+      "blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "423cfe07588310fccf3846f4b291ad484639c58b",
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "bytes": 75357,
+      "sha256": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+      "blob": "423cfe07588310fccf3846f4b291ad484639c58b"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "639df2f7f742b4570a3bacc63c3cccd1707aa96f",
+      "path": "qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "bytes": 35247,
+      "sha256": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5",
+      "blob": "639df2f7f742b4570a3bacc63c3cccd1707aa96f"
+    },
+    {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928"
+    }
+  ],
+  "old_b2_core_tree": "93f718b1619991a0bdd50f581d867cc7e54f036a",
+  "old_b2_summary": {
+    "bytes": 71123,
+    "sha256": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+    "blob": "dc954e4441278b3bc050db6f77fd7ac7d996c3ee"
+  },
+  "old_b2_scope": "91 original checks passed; 7 missing; postcold 0 of 12; node2 known HTTP503; failure retained"
+}

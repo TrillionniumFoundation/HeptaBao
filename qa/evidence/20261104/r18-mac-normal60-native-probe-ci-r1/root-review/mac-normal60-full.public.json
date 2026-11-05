@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.mac-df026-normal60-root-full-originals-review.v1",
+  "status": "PASS_SCOPED_NORMAL60_ALL_ORIGINALS_CLOSED",
+  "job": "1a1a9eb00ff-fc05-39a5",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "actual_tree": "80c21ef4cf857c1f927da5daf6665662bbd05104",
+  "whole_files": 180,
+  "whole_bytes": 2541745,
+  "merkle": {
+    "root_sha": "80c21ef4cf857c1f927da5daf6665662bbd05104",
+    "trees_verified": 5
+  },
+  "core_review": "15cfd143a980f2fc6a70e8ad0be1907e60354211",
+  "source_full_original_review": "11f5592c33729b6b96a5cab6397a3f651db7b8a3",
+  "native_text_file_readbacks": 136,
+  "commands_and_all_streams_verified": 46,
+  "cleanup": 46,
+  "actual_cases": {
+    "original44": 44,
+    "separate7": 7,
+    "separate9": 9,
+    "total": 60,
+    "unique": 60,
+    "failed": 0,
+    "ignored": 0,
+    "measured": 0
+  },
+  "all_listing_and_actual_names_exact": true,
+  "cargo": {
+    "normal-release-build": {
+      "bytes": 439820,
+      "sha256": "835d50001d5b8c5401afb3c1dd30543325701c8e15d624cf130490f94623149e",
+      "chunks": 7,
+      "version": "16777244:72559592:439820:1793852380337540333:1793852380337540333",
+      "events": 438,
+      "build_finished_success": true,
+      "executable_artifact_count": 2,
+      "exact_core_features_profile_and_executable": true
+    },
+    "build": {
+      "bytes": 437578,
+      "sha256": "5684bc98593a7f88a8e9d3bd61bb1c44620cb0abe6831984d6f778cfda4440bd",
+      "chunks": 7,
+      "version": "16777244:72560014:437578:1793852841947846947:1793852841947846947",
+      "events": 436,
+      "build_finished_success": true,
+      "executable_artifact_count": 1,
+      "exact_core_features_profile_and_executable": true
+    }
+  },
+  "retained_artifacts": {
+    "heptabao-seed": {
+      "bytes": 86751008,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced"
+    },
+    "heptabao-server": {
+      "bytes": 92408592,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+    }
+  },
+  "original_outer_seconds": 8280,
+  "original_phase_caps_preserved": true,
+  "source_and_artifacts_unchanged": true,
+  "prior_core_archival_pending_historical_only": true,
+  "actual_LAN_or_current_consumer_qualified": false,
+  "production_changed": false
+}

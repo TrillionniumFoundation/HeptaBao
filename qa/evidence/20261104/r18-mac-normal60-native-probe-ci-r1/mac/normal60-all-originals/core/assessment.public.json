@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.df026-mac-normal60-core-readback.r1",
+  "job_id": "1a1a9eb00ff-fc05-39a5",
+  "status": "PASS_CORE_EVIDENCE",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "original44": {
+    "status": "passed",
+    "count": 44,
+    "group_counts": [
+      {
+        "label": "ssh25",
+        "count": 25,
+        "exit_code": 0
+      },
+      {
+        "label": "mount1",
+        "count": 1,
+        "exit_code": 0
+      },
+      {
+        "label": "redirect5",
+        "count": 5,
+        "exit_code": 0
+      },
+      {
+        "label": "actor2",
+        "count": 2,
+        "exit_code": 0
+      },
+      {
+        "label": "ordinary5",
+        "count": 5,
+        "exit_code": 0
+      },
+      {
+        "label": "no_forward6",
+        "count": 6,
+        "exit_code": 0
+      }
+    ]
+  },
+  "existing7": {
+    "status": "passed",
+    "count": 7,
+    "elapsed_seconds": 5.931179083883762
+  },
+  "new9": {
+    "status": "passed",
+    "count": 9,
+    "elapsed_seconds": 9.769754624925554
+  },
+  "owned_cleanup": {
+    "count": 46,
+    "all_reaped": true,
+    "all_exit_zero": true,
+    "all_remaining_empty": true
+  },
+  "source_and_artifacts_unchanged": true,
+  "publication_within_original_outer": true,
+  "original_outer_seconds": 8280,
+  "normal_release_elapsed_seconds": 260.50071412464604,
+  "normal_libtest_elapsed_seconds": 460.5823750831187,
+  "raw_result_version": "16777244:72560299:49069:1793852965715564348:1793852965715564348",
+  "terminal_stdout": {
+    "bytes": 2290,
+    "sha256": "3bb9802cfda8e2ac6e169e82d2a169834968f5ebd5fff21d90c44f7811375833",
+    "git_blob": "f69ac8c8e5391e74074cb66300da502c7886a093"
+  },
+  "raw_result": {
+    "bytes": 49069,
+    "sha256": "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4",
+    "git_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a"
+  },
+  "scope_limits": [
+    "Core and authoritative terminal are complete; individual listing/test stdout-stderr and Cargo JSON archival are pending. This receipt does not claim their independent footer verification.",
+    "No LAN, current consumer or deployment qualification is claimed."
+  ],
+  "production_changed": false
+}

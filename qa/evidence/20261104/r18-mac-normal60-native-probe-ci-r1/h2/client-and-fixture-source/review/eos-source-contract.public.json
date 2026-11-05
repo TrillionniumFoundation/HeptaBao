@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.h2-client-eos-source-contract.v1",
+  "version": "h2 0.4.19",
+  "upstream_commit": "d57d1b852fec9dda6d42d3454502006d52104da8",
+  "canonical_product": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "cargo_lock": {
+    "blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff",
+    "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+    "registry_checksum": "ef8e5e5a340588f4452631496976cf8636d4a7ecf600239fdc27615d2530bc16"
+  },
+  "claims": [
+    {
+      "claim": "RST_STREAM, including NO_ERROR, received before actual EOS transitions to Error(remote_reset).",
+      "source": "reference/h2/state.rs",
+      "range": [
+        260,
+        295
+      ]
+    },
+    {
+      "claim": "Only received END_STREAM states (including a later error after such EOS) satisfy is_recv_end_stream.",
+      "source": "reference/h2/state.rs",
+      "range": [
+        424,
+        430
+      ]
+    },
+    {
+      "claim": "ensure_recv_open returns Err for Error, including the early NO_ERROR reset; it returns false for received EOS states.",
+      "source": "reference/h2/state.rs",
+      "range": [
+        447,
+        460
+      ]
+    },
+    {
+      "claim": "poll_data can return None for queued trailers without consulting terminal stream state.",
+      "source": "reference/h2/recv.rs",
+      "range": [
+        1239,
+        1265
+      ]
+    },
+    {
+      "claim": "Trailers and schedule_recv subsequently consult ensure_recv_open; is_end_stream also requires no queued receive events.",
+      "source": "reference/h2/recv.rs",
+      "ranges": [
+        [
+          645,
+          652
+        ],
+        [
+          1267,
+          1297
+        ]
+      ]
+    },
+    {
+      "claim": "The client therefore requires all data results Ok, trailers completed/empty, is_end_stream true and exact Content-Length; None alone never qualifies.",
+      "source": "candidate/native_h2_client.rs",
+      "function": "receive_body"
+    }
+  ],
+  "actual_components_required": [
+    "component_tests::native_h2_client_accepts_complete_data_eos",
+    "component_tests::native_h2_client_accepts_complete_empty_trailers_eos",
+    "component_tests::native_h2_client_rejects_rst_no_error_after_exact_body_before_eos",
+    "component_tests::native_h2_client_rejects_eof_after_exact_body_before_eos",
+    "component_tests::native_h2_client_rejects_short_eos_and_duplicate_content_length",
+    "component_tests::native_h2_client_refuses_expired_or_extended_original_deadline"
+  ],
+  "not_claimed": [
+    "No Rust compilation or component execution has occurred for this new client.",
+    "Upstream tag source is not asserted to be a whole-byte capture of an installed registry directory.",
+    "Cargo lock and future exact compiled dependency provenance plus the actual negative components must qualify the client before any product request.",
+    "This client gate does not run or qualify official CLI restore, production deployment or full replacement."
+  ]
+}

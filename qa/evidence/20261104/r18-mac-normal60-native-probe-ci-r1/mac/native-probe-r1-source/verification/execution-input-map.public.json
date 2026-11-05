@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.native-proc-local-verification-input-map.r1",
+  "localDirectory": "/tmp/mac-native-custody-probe-r1.OCWqri",
+  "sourceFiles": {
+    "mac_darwin_owned_projection_r1.py": "source/mac_darwin_owned_projection_r1.py",
+    "mac_native_owned_unreaped_r1.py": "source/mac_native_owned_unreaped_r1.py",
+    "mac_native_owned_commands_r1.py": "source/mac_native_owned_commands_r1.py",
+    "native_proc_sandbox_probe_r1.py": "source/native_proc_sandbox_probe_r1.py",
+    "original_devnull_probe.py": "references/devnull_probe_r1.py",
+    "original_commands.py": "references/qa/mac_owned_commands_r1.py",
+    "original_custody.py": "references/qa/mac_owned_unreaped_r1.py",
+    "components.py": "verification/components.py",
+    "verify_source.py": "verification/verify_source.py"
+  },
+  "observations": [
+    "The scripts use Path(__file__).parent; files were co-located in the recorded local scratch directory for the one component and one source-verifier execution.",
+    "The packet groups the same bytes by role; to reproduce a verification, stage the listed public inputs under the indicated basenames without importing or executing a candidate main.",
+    "The source verifier wrote only the two local generated .sb artifacts. It did not apply a sandbox or launch a child.",
+    "The selected routines' real_descriptors=0 output excludes the harness's ordinary reads of these public source files."
+  ],
+  "candidateModuleExecution": false,
+  "physicalHostActions": 0
+}

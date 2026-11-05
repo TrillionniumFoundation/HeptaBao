@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--no-run",
+    "--message-format=json-render-diagnostics"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 460.5823750831187,
+  "exit_code": 0,
+  "label": "build",
+  "outer_cap_seconds": 1800,
+  "owned_pgid": 37163,
+  "remaining": [],
+  "stderr_sha256": "ed3e49e29eb04c65b390cfe81507fa09f253048c942669c535cf6f08e5cd0b79",
+  "stdout_sha256": "5684bc98593a7f88a8e9d3bd61bb1c44620cb0abe6831984d6f778cfda4440bd",
+  "timed_out": false
+}

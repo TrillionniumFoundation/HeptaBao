@@ -1,0 +1,7 @@
+{
+  "method": "Unique report object raw JSON token plus one LF, preserving every original numeric and string token; no JSON number reserialization.",
+  "tokenStart": 233,
+  "tokenEnd": 9086,
+  "matchedOriginalBytes": 8854,
+  "matchedOriginalSha256": "d4d5331b965c8289104826331efa7196ee5a89a46e969bcb5f55570e3e3a268c"
+}

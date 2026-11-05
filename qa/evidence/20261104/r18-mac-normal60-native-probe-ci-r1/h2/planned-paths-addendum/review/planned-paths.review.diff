@@ -1,0 +1,20 @@
+--- a/templates/build-binding.UNRESOLVED.private.json
++++ b/templates/build-binding.UNRESOLVED.private.json
+@@ -6,7 +6,7 @@
+   "source": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+   "root": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+   "control": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1",
+-  "target": null,
++  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+   "target_identity": null,
+   "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+   "host": {
+@@ -88,7 +88,7 @@
+     }
+   },
+   "normal_product_result": {
+-    "path": null,
++    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+     "sha256": null,
+     "bytes": null,
+     "uid": 1000,

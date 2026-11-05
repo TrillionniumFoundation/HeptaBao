@@ -1,0 +1,115 @@
+diff --git a/native_proc_sandbox_probe_r2.py b/native_proc_sandbox_probe_r2.py
+--- a/native_proc_sandbox_probe_r2.py
++++ b/native_proc_sandbox_probe_r2.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Fresh public Darwin-native custody probe under the existing patched policy.
++"""Fresh public Darwin-native custody probe with one explicit ancestor read rule.
+ 
+ No current DB, credential, SQLite, SDK or consumer is opened. The outer owner
+ keeps the original ps-based custody. A new isolated native projection first
+@@ -16,7 +16,7 @@
+ SOURCE_ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
+ ROOT=SOURCE_ROOT
+ PROBE_STAGE='before'
+-PROBE_ROOT=ROOT/'native-proc-sandbox-probe-r1'
++PROBE_ROOT=ROOT/'native-proc-sandbox-probe-r2'
+ QA=SOURCE_ROOT/'qa'
+ BASE=PROBE_ROOT
+ WORKER=BASE/'probe.py'
+@@ -26,6 +26,7 @@
+              'refresh-backoff.json','lease-epochs.json','status.json')
+ PROBE_CONTENT=b'owned capture kernel-write fence r1\n'
+ READ_NULL_RULE=b'(allow file-read* (literal "/dev/null"))\n'
++ANCESTOR_READ_RULE=b'(allow file-read* (literal "/Volumes/T5/hepta-vnext-recovery-20261013"))\n'
+ ORIGINAL_CAPTURE_SECONDS=45
+ PUBLIC_HASH_BOUND=8*1024*1024
+ START=time.monotonic()
+@@ -131,7 +132,25 @@
+     report['errorCode']=str(error) if isinstance(error,Refused) else None
+     value=getattr(error,'errno',None) if isinstance(error,OSError) else None
+     report['errorErrno']=value if type(value) is int and 0<value<=4095 else None
+-    # No exception message, filename, private content, or child stderr is copied.
++    # Only fixed pinned public source labels and line numbers are exposed.
++    known={str(WORKER):'probe','<mac-native-proc-sandbox-probe-r2>':'probe',
++        str(QA/'mac_t5_volume_guard_r1.py'):'held_t5',
++        str(QA/'mac_owned_commands_r1.py'):'outer_commands',
++        str(QA/'mac_owned_unreaped_r1.py'):'outer_custody',
++        str(BASE/'mac_darwin_owned_projection_r1.py'):'native_projection',
++        str(BASE/'mac_native_owned_unreaped_r1.py'):'native_custody',
++        str(BASE/'mac_native_owned_commands_r1.py'):'native_commands'}
++    frames=[];tb=error.__traceback__;omitted=0;seen=0
++    while tb is not None and seen<16:
++        label=known.get(tb.tb_frame.f_code.co_filename)
++        if label is not None:
++            frames.append({'source':label,'line':int(tb.tb_lineno)})
++        else:omitted+=1
++        seen+=1;tb=tb.tb_next
++    report['publicErrorFrames']=frames
++    report['unlistedFramesWithinBound']=omitted
++    report['additionalFramesTruncated']=tb is not None
++    # No message, dynamic filename, locals, private content or child stderr is copied.
+ def absence_twice(guard,path):
+     observations=[]
+     with guard.parent(path) as (parent,name):
+@@ -182,11 +201,13 @@
+     original_prefix=str(ROOT/'captures/before').encode()
+     need(original.count(original_prefix)==3,'three_fixed_capture_path_bindings')
+     original=original.replace(original_prefix,str(PROBE_ROOT).encode())
+-    need(READ_NULL_RULE not in original,'original_missing_exact_devnull_read_rule')
++    need(READ_NULL_RULE not in original and ANCESTOR_READ_RULE not in original,
++         'original_missing_exact_two_read_literals')
+     marker=b'(allow file-read* (literal "/dev/urandom"))\n'
+     need(original.count(marker)==1,'unique_original_profile_marker')
+-    patched=original.replace(marker,READ_NULL_RULE+marker,1)
+-    need(patched.replace(READ_NULL_RULE,b'',1)==original,'only_devnull_read_rule_added')
++    patched=original.replace(marker,READ_NULL_RULE+ANCESTOR_READ_RULE+marker,1)
++    need(patched.replace(READ_NULL_RULE,b'',1).replace(ANCESTOR_READ_RULE,b'',1)==original,
++         'only_devnull_and_fixed_ancestor_read_rules_added')
+     return {'original':original,'patched':patched}
+ 
+ def kernel_refusals(guard,stage):
+@@ -268,15 +289,19 @@
+ def typed_child(raw,variant,source_sha):
+     try:value=json.loads(raw)
+     except (ValueError,UnicodeError) as error:raise Refused('child_json_unavailable') from error
+-    need(isinstance(value,dict) and value.get('schema')=='heptabao.mac-native-proc-sandbox-child.r1'
++    need(isinstance(value,dict) and value.get('schema')=='heptabao.mac-native-proc-sandbox-child.r2'
+          and value.get('variant')==variant=='native' and value.get('sourceSha256')==source_sha
+          and type(value.get('ok')) is bool and type(value.get('outcomeUnknown')) is bool,
+          'child_report_protocol_unavailable')
+     for key in ('productionReadAttempted','productionWriteAttempted','sqliteImported',
+                 'consumerStarted','providerRequested','j3160Contacted',
+-                'systemUtilitiesCopiedOrChanged','policyPermissionsAddedBeyondDevnull',
++                'systemUtilitiesCopiedOrChanged',
+                 'nativeProjectionUsedForOuterCustody','nativeProjectionReferenceIsInstalledWholePin'):
+         need(value.get(key) is False,'child_scope_field')
++    need(value.get('policyPermissionsAddedBeyondDevnull') is True
++         and value.get('additionalReadOnlyDirectoryLiteral')==str(ROOT.parent)
++         and value.get('additionalReadRuleSha256')==sha(ANCESTOR_READ_RULE),
++         'child_exact_explicit_ancestor_permission')
+     count=value.get('boundedPublicPinReadBytesThisProcess')
+     need(type(count) is int and 0<=count<=PUBLIC_HASH_BOUND
+          and type(value.get('allOwnedDescriptorsClosed')) is bool
+@@ -353,8 +378,8 @@
+     os.umask(0o077)
+     for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,interrupted)
+     is_child=args.child is not None
+-    report={'schema':'heptabao.mac-native-proc-sandbox-child.r1' if is_child else
+-            'heptabao.mac-native-proc-sandbox-probe.r1',
++    report={'schema':'heptabao.mac-native-proc-sandbox-child.r2' if is_child else
++            'heptabao.mac-native-proc-sandbox-probe.r2',
+         'variant':args.child,'ok':False,'outcomeUnknown':False,
+         'productionReadAttempted':False,'productionWriteAttempted':False,
+         'sqliteImported':False,'consumerStarted':False,'providerRequested':False,
+@@ -363,7 +388,9 @@
+         'cases':[],'newFiles':[],'newDirectories':[],
+         'publicDiagnosticsContainExceptionMessage':False,
+         'publicDiagnosticsContainFilename':False,'childStderrPublished':False,
+-        'systemUtilitiesCopiedOrChanged':False,'policyPermissionsAddedBeyondDevnull':False,
++        'systemUtilitiesCopiedOrChanged':False,'policyPermissionsAddedBeyondDevnull':True,
++        'additionalReadOnlyDirectoryLiteral':str(ROOT.parent),
++        'additionalReadRuleSha256':sha(ANCESTOR_READ_RULE),
+         'nativeProjectionUsedForOuterCustody':False,
+         'nativeProjectionReferenceIsInstalledWholePin':False}
+     guard=None;commands=None;native_api=None;complete=False

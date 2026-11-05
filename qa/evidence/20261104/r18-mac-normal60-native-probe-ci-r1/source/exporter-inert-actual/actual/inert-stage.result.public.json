@@ -1,0 +1,34 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 15324,
+      "identity": [
+        66306,
+        27968139,
+        1000,
+        1000,
+        33152,
+        1,
+        15324,
+        1793854495917219384,
+        1793854495917963296
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-cold-h2-source-export-controls-20261105-r1/source_export_cold_h2_df026_r1.py",
+      "publication": "created",
+      "sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.cold-h2-df026-source-export-inert-carrier.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793854495912926389,
+  "status": "prepared",
+  "stdin_bytes": 20559,
+  "stdin_sha256": "1a91db75e14910bf9df36889bfd21359ab7d8b329b0759a62e24cffdff0618d9",
+  "terminal_ns": 1793854495918695947
+}

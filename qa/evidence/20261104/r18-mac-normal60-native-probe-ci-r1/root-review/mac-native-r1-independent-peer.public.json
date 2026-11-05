@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.mac-native-projection-independent-source-review.r1",
+  "source_package_tree": "5bf399d0b9686b12c6b39ecc95801156395b0e48",
+  "verdict": "PASS_SOURCE_ONLY_NO_NEW_BLOCKER",
+  "reviewer": "/root/ha_validation",
+  "sources": {
+    "projection": {
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "git_blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+    },
+    "custody": {
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "git_blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+    },
+    "commands": {
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+      "git_blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+    },
+    "probe": {
+      "bytes": 75075,
+      "sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+      "git_blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c"
+    }
+  },
+  "mechanical": {
+    "custody_hunks": 3,
+    "custody_strict_exact": true,
+    "commands_exact_import_only": true,
+    "embedded_modules": [
+      {
+        "name": "mac_darwin_owned_projection_r1.py",
+        "bytes": 12858,
+        "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+        "git_blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+      },
+      {
+        "name": "mac_native_owned_unreaped_r1.py",
+        "bytes": 10761,
+        "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+        "git_blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+      },
+      {
+        "name": "mac_native_owned_commands_r1.py",
+        "bytes": 5972,
+        "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+        "git_blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+      }
+    ]
+  },
+  "findings": [
+    "Exact reference proc_bsdinfo layout, integer widths, full 136-byte result, flavor 3 and nonzero arg 1 for retained zombie lookup agree with the copied official XNU sources. ESRCH or a short/error result refuses ownership rather than proving absence.",
+    "Scoped PROC_PGRP_ONLY uses a fixed 65-entry buffer for at most 64 members. Saturated, misaligned, duplicate, malformed or errored results refuse; no sizing query, resize retry or all-host PID enumeration is introduced.",
+    "Each group projection checks its PID set before and after complete per-PID birth/UID/PGID reads. This is a bounded sequential observation, not an atomic process snapshot.",
+    "Retained direct Popen plus waitid WNOWAIT remains the custody mechanism. Both signal branches revalidate unreaped identity before numeric PGID signaling; after the first reap only observation is allowed. Failure, unresolved membership or late observation cannot claim all stopped.",
+    "Commands changes only the custody import. Original argv ownership, stream closure and once-only cleanup remain byte-identical. Three embedded modules exactly match the separately reviewed whole source blobs.",
+    "Fixed install names, explicit ctypes signatures and layout gates precede self PID/PPID/UID/PGID/birth qualification. No native library loads at module import. Actual symbol image and OS observations are required by the probe."
+  ],
+  "reference_sources": {
+    "xnu_commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+    "dyld_commit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+    "proc_info_h": "718a69fcf5340f547893ed8dc85908f253c1ce81",
+    "proc_info_c": "c061a09289afe73572456395af70de2cd92b69fc",
+    "libproc_c": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e",
+    "libproc_h": "602e4fe897d1fc5a7ceacc372c78f184ea242bfe"
+  },
+  "bounds": {
+    "parent_probe_seconds": 45,
+    "projection_seconds": 4,
+    "max_group_members": 64,
+    "max_native_calls": 4096,
+    "original_cleanup_seconds": {
+      "term": 1,
+      "wait": 5,
+      "group": 3
+    }
+  },
+  "limits": [
+    "No host operation, native API call, product execution or repetition of the author 27 selected fake components was performed in this independent review.",
+    "Copied official reference source is not a whole-file pin of the installed kernel or dylib. Runtime ABI behavior and sandbox permissions remain unqualified until the exact owned probe completes.",
+    "A synchronous native call has no separately killable worker. Source rejects a late return; it does not promise syscall preemption at four seconds.",
+    "Successful qualification requires authoritative exit zero, complete typed stdout, final deadline check and all owned process/FD/stream closure. Loading the library alone proves none of these.",
+    "Historical nested PID 11754 custody/exit remains unknown. This new source and any current numeric absence do not rewrite that prior outcome."
+  ],
+  "host_execution_performed": false,
+  "product_qualification_granted": false
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.df026-mac-normal-cargo-json.r1",
+  "cargo": {
+    "normal-release-build": {
+      "events": 438,
+      "build_finished_success": true,
+      "stdout_sha256": "835d50001d5b8c5401afb3c1dd30543325701c8e15d624cf130490f94623149e",
+      "executable_artifacts": [
+        {
+          "target": "heptabao-seed",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          }
+        },
+        {
+          "target": "heptabao-server",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          }
+        }
+      ]
+    },
+    "build": {
+      "events": 436,
+      "build_finished_success": true,
+      "stdout_sha256": "5684bc98593a7f88a8e9d3bd61bb1c44620cb0abe6831984d6f778cfda4440bd",
+      "executable_artifacts": [
+        {
+          "target": "heptabao_server",
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": true
+          }
+        }
+      ]
+    }
+  }
+}

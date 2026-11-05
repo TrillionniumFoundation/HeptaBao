@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.native-h2-qa.client-prefix-proof.v1",
+  "root_read_source": {
+    "blob": "9f52f0ee35a0b4e5897e61a181103bbadc5682c6",
+    "bytes": 19309,
+    "sha256": "274ffd057b97fed95eb70ac273f4b4f596336c3cd9336cab0754e314dd844a8e"
+  },
+  "current_source": {
+    "path": "candidate/native_h2_client.rs",
+    "bytes": 19382,
+    "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+    "blob": "a959baa67acc8400cf1784a0fa747250420303c7"
+  },
+  "production_prefix_byte_identical": true,
+  "only_appended_bytes": "\n#[cfg(test)]\n#[path = \"native_h2_client_tests.rs\"]\nmod component_tests;\n",
+  "rust_compile_or_runtime": false
+}

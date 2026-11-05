@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.root-rog-df026-release-partial-review.r1",
+  "status": "RELEASE_CHILD_PASSED_NORMAL60_PENDING",
+  "job": "1a1a9f65382-fc05-3a6c",
+  "actual_tree": "4b0864838400448b290939448c2032222542166e",
+  "files": 8,
+  "bytes": 19503,
+  "all_merkle_trees": 2,
+  "release_child_exit_code": 0,
+  "release_elapsed_seconds": 1333.7623211960017,
+  "original_release_cap": 1800,
+  "reaped": true,
+  "group_empty": true,
+  "full_native_three_file_readbacks_exact": true,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "server": {
+    "bytes": 110339520,
+    "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2"
+  },
+  "seed": {
+    "bytes": 102260520,
+    "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-seed",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f"
+  },
+  "normal60_qualified": false,
+  "libtest_and44_plus7_plus9": "PENDING_SAME_UNIQUE_JOB",
+  "normal_cargo_full_stdout_archival": "PENDING",
+  "parent_authoritative_terminal": "NOT_YET_COMPLETE"
+}

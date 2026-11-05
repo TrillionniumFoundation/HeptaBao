@@ -1,0 +1,7 @@
+# df026 source exporter inert publication: actual terminal
+
+This packet retains the single exact start request and original ACK, authoritative job state, complete stdout/stderr, both fixed file contents and whole file_info metadata. Five closed read operations produced five immutable native SDK payloads, reconstructed from all their original pages without replaying any command. The operation admission/status records and every page are retained separately.
+
+The sole job is 1a1aa0f5515-fc05-3c46. It returned succeeded/exit 0, complete and durable 795-byte stdout, empty stderr. The actual 15,324-byte exporter equals the frozen source. Its new controls-file mode is 0600, owner/group 1000, link count 1, and version matches the exact nine-number publication identity. The 953-byte core equals the JSON stdout value, including all integer nanoseconds. The captured elapsed interval is exactly 5,769,558 ns. The offline check uses Python arbitrary-precision integers; no numeric identity is recovered from rounded JavaScript objects.
+
+Scope is one public source publication and compile-only check. No exporter body, Git child, Cargo compiler, artifact transport or product server was executed by this inert job. The later exporter is a separate root-authorized job and is not qualified by this packet. The offline checker reads only its captured public input JSON in scratch and makes no host call.

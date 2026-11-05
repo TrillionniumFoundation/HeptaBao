@@ -1,0 +1,46 @@
+--- reference/exporter.py
++++ candidate/exporter.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""New fixed 3cb standalone source export; no source import or application runs.
++"""New fixed df026 standalone source export; no source import or application runs.
+ 
+ The source is the independently qualified ROG normal-build canonical clone.
+ The bundle contains exactly HEAD and its complete ancestry, with zero prerequisites.
+@@ -9,19 +9,19 @@
+ 
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi')
+-SOURCE=BASE/'heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source'
+-ROOT=BASE/'heptabao-phaseb-ingress-observer-source-export-20261104-r1'
++SOURCE=BASE/'heptabao-cold-h2-normal-20261105-r1/source'
++ROOT=BASE/'heptabao-cold-h2-source-export-20261105-r1'
+ CONTROL=ROOT
+-BUNDLE=ROOT/'canonical-3cb-full.bundle'
+-CANONICAL='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
+-PARENT='bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
++BUNDLE=ROOT/'canonical-df026-full.bundle'
++CANONICAL='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++PARENT='6304a898192bfdf7eabec3c4ea40f7166e59a137'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3755
++CANONICAL_COUNT=3757
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-ACTION='export-standalone-phaseb-3cb'
++ACTION='export-standalone-cold-h2-df026'
+ START=time.monotonic()
+ UNTIL=START+300
+ children,commands=[],[]
+@@ -29,7 +29,7 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.phaseb.rog-3cb-standalone-source-export.v1','action':ACTION,
++result={'schema':'heptabao.cold-h2.rog-df026-standalone-source-export.v1','action':ACTION,
+  'started_unix_ns':time.time_ns(),'canonical_commit':CANONICAL,'canonical_tree':TREE,
+  'expected_full_commit_count':CANONICAL_COUNT,'expected_prerequisites':[],
+  'source_imported':False,'network_git_protocols_enabled':False,

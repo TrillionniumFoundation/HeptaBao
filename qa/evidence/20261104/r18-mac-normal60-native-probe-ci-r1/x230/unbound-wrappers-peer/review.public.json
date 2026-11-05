@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.df026-x230-wrappers-independent-source-review.v1",
+  "status": "PASS_SOURCE_ONLY_UNBOUND",
+  "reviewer": "ha_validation",
+  "inputs": {
+    "full_old": {
+      "bytes": 5313,
+      "sha256": "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc",
+      "blob": "837fb661a1c3a51a8fe253c2cb9907aec8a00566"
+    },
+    "full_new": {
+      "bytes": 9068,
+      "sha256": "caa24f0c921b933c04ce18fbf021910d273c8a76e9b1dc1fdac09a730fb6b0d8",
+      "blob": "cdd5cbfc7294aedcc234b9cc130f387da7cabc1a"
+    },
+    "full_diff": {
+      "bytes": 8872,
+      "sha256": "49252cd296cd50d9857a80895434584e98db5201253834a3e9533d0d421442db",
+      "blob": "2c958a1629c6b3e327784f753c6974b170d002a7"
+    },
+    "comparison_old": {
+      "bytes": 6944,
+      "sha256": "c2f96586d735d21b9cf17040242e96371d27239b80fdf1756ba1b175b9e900eb",
+      "blob": "1c4e046d2e430c7c715b57b2a0c8a8e8c9bb55e3"
+    },
+    "comparison_new": {
+      "bytes": 10642,
+      "sha256": "66bd0c444f408068a14e37085725167e90b1cd2118516c5ed57f5203382ed6ed",
+      "blob": "725d252eef945f989e28f623adbcc46048d55bc0"
+    },
+    "comparison_diff": {
+      "bytes": 8760,
+      "sha256": "54e3dbe4fab8281c586f9367711519c1e3b14266dfb132539064473a19f1afa6",
+      "blob": "8c14b4d558fab80f9f4ae28988da80e9813167fe"
+    },
+    "linux_runner": {
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+    }
+  },
+  "strict_diff": {
+    "full34_hunks": 2,
+    "comparison69_hunks": 3,
+    "applied_whole_bytes_equal": true
+  },
+  "findings": [],
+  "scope": [
+    "Read both complete candidate wrappers and both complete diffs; compare all newly consumed schema fields with exact frozen Linux normal runner 23fb2b80070879f6a00fe3dfbb9ed7d1ee069555.",
+    "normal60_admission is the first main statement before output creation; current BINDING_READY=False and all five provenance/product pins are None.",
+    "Combined schema, df026 commit/tree, runner SHA, original44 status/count, selected60, features, 7/9 counts and ordered exact names, clamping flags, source/binary/artifact unchanged flags, and final cleanup fields match the runner's actual producer code.",
+    "Original full34 31-check count, HTTP15/migration360 declarations, driver/source/oracle hashes, subprocess argv and post-run qualification remain intact.",
+    "Original comparison two sides69/69, 13 module defaults, exact driver SHA, case equality, cleanup, source/binary binding and scoped-not-full compatibility claims remain intact."
+  ],
+  "actual_local_verification": {
+    "executor_exit_code": 0,
+    "compiled_without_import_or_execution": 5,
+    "original_nonmain_definitions_ast_equal": {
+      "full34": 6,
+      "comparison69": 5
+    },
+    "two_new_admission_definitions_ast_equal": true,
+    "seven_and_nine_names_order_equal_runner": true,
+    "remote_host_calls": 0,
+    "product_processes": 0
+  },
+  "limits": [
+    "These are unbound source templates, not permission to stage or run.",
+    "Actual Linux full normal60 success, authoritative terminal/publication and all owned cleanup must be independently accepted before final SHA bindings; an early passed receipt cannot replace its authority.",
+    "Whole normal and transfer receipt SHA bindings depend on later review of the actual receipt bytes. The wrappers intentionally hash the transfer receipt rather than independently re-prove its transport internals.",
+    "No audit or change to unchanged runner lifecycle/outer supervision beyond the requested source delta; no new deadline, retries, test denominator, oracle or cleanup rule was introduced."
+  ]
+}

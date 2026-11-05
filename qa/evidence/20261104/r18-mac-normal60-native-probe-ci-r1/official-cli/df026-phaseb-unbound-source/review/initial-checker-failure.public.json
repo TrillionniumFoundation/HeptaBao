@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "scope": "offline AST harness only; no candidate module executed",
+  "error": "KeyError: PRODUCT_PINS",
+  "reason": "ast.literal_eval cannot resolve the preexisting OBSERVER_PATH key in PRODUCT_PINS",
+  "exit_code": 1
+}

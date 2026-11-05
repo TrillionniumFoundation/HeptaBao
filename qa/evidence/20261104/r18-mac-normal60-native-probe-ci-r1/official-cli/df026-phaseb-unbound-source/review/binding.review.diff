@@ -1,0 +1,92 @@
+--- reference/binding.py
++++ candidate/binding.py
+@@ -15,8 +15,8 @@
+ import time
+ 
+ SCHEMA = "heptabao.official271-native-cli-phaseb-r3.binding.v1"
+-COMMIT = "3cb873919170cc77101b27f6a3ab9e98f41f8d93"
+-TREE = "7f4d48a647a81ca96e8a24a0a057c2c829459060"
++COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
++TREE = "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+ OBSERVER_PATH = "crates/heptabao-server/src/ha_native_v6_runtime.rs"
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+@@ -26,6 +26,17 @@
+     "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+     "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+     "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
++)
++COLD_H2_TESTS = (
++    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
++    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
++    "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+ )
+ BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
+ OFFICIAL_SHA = "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+@@ -46,6 +57,12 @@
+         46586, "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"),
+ }
+ PRODUCT_PINS = {
++    "crates/heptabao-server/src/http_h2.rs": (
++        "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
++        "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"),
++    "crates/heptabao-server/src/service_native_v6_ha_read.rs": (
++        "b09e57362d53ce207b255d713d7aa7c126215691",
++        "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951"),
+     OBSERVER_PATH: ("3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+                     "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"),
+     "crates/heptabao-server/src/snapshot_archive.rs": (
+@@ -213,7 +230,7 @@
+              and re.fullmatch(r"official271-native-cli-phaseb-r3-live-r[0-9]+", self.work.name) is not None,
+              "owned_work_namespace")
+         need(self.source.parent == BASE
+-             and re.fullmatch(r"normal-phaseb-ingress-observer-source-r[0-9]+", self.source.name) is not None,
++             and re.fullmatch(r"normal-cold-h2-validation-source-r[0-9]+", self.source.name) is not None,
+              "canonical_source_namespace")
+         need(self.prepare.parent == self.control
+              and re.fullmatch(r"prepare-r[0-9]+", self.prepare.name) is not None, "prepare_namespace")
+@@ -316,7 +333,7 @@
+             "--message-format=json-render-diagnostics"
+         ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
+         need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
+-        need(combined.get("schema") == "heptabao.linux-normal-release-and-exact-libtest-phaseb-observer.v1"
++        need(combined.get("schema") == "heptabao.linux-normal-cold-h2-exact-tests.v1"
+              and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
+              and combined.get("status") == "passed"
+              and combined.get("normal_default_features") is True
+@@ -358,6 +375,29 @@
+                  and test.get("timed_out") is False
+                  and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                  "ingress_observer_regression_terminal")
++        increment = combined.get("cold_h2_regression")
++        need(type(increment) is dict
++             and increment.get("schema") == "heptabao.normal-cold-h2-regression.v1"
++             and increment.get("status") == "passed" and increment.get("test_count") == 9
++             and increment.get("original_44_denominator_unchanged") is True
++             and increment.get("existing_ingress_7_denominator_unchanged") is True
++             and increment.get("new_total_group_cap_seconds") == 600
++             and increment.get("clamped_to_original_outer_deadline") is True
++             and increment.get("actual_test_names") == list(COLD_H2_TESTS)
++             and type(increment.get("tests")) is list and len(increment["tests"]) == 9
++             and combined.get("original_44_and_ingress_7_status") == "passed"
++             and combined.get("selected_test_total") == 60
++             and combined.get("additional_test_counts") == {"ingress_observer": 7, "cold_h2": 9},
++             "exact_new_cold_h2_nine_regression")
++        for name, observed in zip(COLD_H2_TESTS, increment["tests"]):
++            test = observed["tests"]
++            need(observed.get("name") == name and test.get("exit_code") == 0
++                 and test.get("timed_out") is False
++                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
++                 "new_cold_h2_regression_terminal")
++        need(combined.get("controller_sha256")
++             == "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
++             "exact_actual_df026_normal_runner")
+         cleanup = combined.get("cleanup")
+         need(type(cleanup) is list and bool(cleanup)
+              and all(item.get("direct_child_reaped") is True and item.get("remaining") == []

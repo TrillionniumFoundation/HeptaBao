@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.mac-native-proc-r2-independent-narrow-review.r1",
+  "verdict": "PASS_SOURCE_ONLY_NO_NEW_BLOCKER",
+  "base": {
+    "bytes": 75075,
+    "sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+    "blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c"
+  },
+  "candidate": {
+    "bytes": 76658,
+    "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "blob": "e3bc464388fbeb53f830713bdfc9054617432314"
+  },
+  "diff": {
+    "bytes": 6742,
+    "sha256": "575f39ee1d13329b96e164907ba31512aaa89501bea7517c9adf33a680e10c6a",
+    "blob": "5583f8e2d0e20f2a0ba3bbc39dfe6c833e1f0f67"
+  },
+  "strict_hunks": 8,
+  "kernel_refusals_function_byte_identical": true,
+  "three_embedded_native_modules_byte_identical": true,
+  "findings": [
+    "Only the fixed ROOT.parent directory literal adds a read permission. No subpath grant, credential/DB file read, write, network or process policy permission is added. Removing the two declared read rules reconstructs the rebound original profile exactly.",
+    "Fresh native-proc-sandbox-probe-r2 work path and r2 report schema distinguish this attempt. The child protocol now explicitly requires the added directory literal and exact rule digest; it no longer falsely describes the policy as unchanged beyond /dev/null.",
+    "Error projection visits at most 16 traceback frames and emits only eight predeclared public source labels plus integer line numbers. Unknown filenames, message, locals, source text and child stderr are withheld; omitted/truncated metadata is explicit.",
+    "The original four kernel denial checks, native projection/custody/Commands modules and 45-second overall clock remain unchanged. This source review does not grant runtime or current consumer qualification."
+  ],
+  "additional_rule": {
+    "bytes": 73,
+    "sha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef",
+    "directory": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "recursive": false
+  },
+  "limits": [
+    "No host request or native API was executed for this review.",
+    "Actual sandbox outcome and every owned child/FD/stream closure still require the single exact request and authoritative terminal.",
+    "R1 known failure and historical PID11754 unknown remain unchanged."
+  ],
+  "host_operations": 0,
+  "product_qualification": false
+}

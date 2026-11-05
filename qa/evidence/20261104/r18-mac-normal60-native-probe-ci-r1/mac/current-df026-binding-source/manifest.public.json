@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.mac-native-current-df026-binding-addendum.r1",
+  "status": "SOURCE_TEMPLATE_ONLY_NO_HOST_ACTION",
+  "priorMappingTree": "db46ac1b29099e23d2a662cdb8e50cc0efdd2669",
+  "files": [
+    {
+      "path": "BINDING_TEMPLATE.r2.public.json",
+      "mode": "100644",
+      "bytes": 6568,
+      "sha256": "3ecc9e01288d4bef62751a50920c5240b66d289bc2498b5d2cc02395cf8d38bd",
+      "git_blob": "4bdc17ab72a3fb6e905ec335a160c2520ed3aace"
+    },
+    {
+      "path": "references/df026-normal-release.original.json",
+      "mode": "100644",
+      "bytes": 3331,
+      "sha256": "81404ba46733327b684ef6f6c7ef2c07955388f17e5f09aef45f41d9faebfd98",
+      "git_blob": "c0363a3e83861e3d09d877f710f1631563d0d446"
+    },
+    {
+      "path": "references/df026-native-build.original.json",
+      "mode": "100644",
+      "bytes": 800,
+      "sha256": "0a373d21cf6c5711c119de07878ce121cb5ac2c28111e4873c1246ecf045fa4e",
+      "git_blob": "ba9c52bd8f17f5ff7dbbf459acbcae04a13fe5f2"
+    },
+    {
+      "path": "references/df026-normal60-root-review.original.json",
+      "mode": "100644",
+      "bytes": 3555,
+      "sha256": "a0675c0cbfc516c568dffa3cbfa036cfb9689734bdb64b42ca05a95443bd16c9",
+      "git_blob": "1d9d9d72e687c68a7424af786d9ed0d960e3c697"
+    },
+    {
+      "path": "ADDENDUM.md",
+      "mode": "100644",
+      "bytes": 1935,
+      "sha256": "2c2040c8416309a86d311ae46de08eee75fca81c0f5453aca1f6495a008625c9",
+      "git_blob": "20d9544847517486fabf1e03a94a37b458153ab6"
+    }
+  ]
+}

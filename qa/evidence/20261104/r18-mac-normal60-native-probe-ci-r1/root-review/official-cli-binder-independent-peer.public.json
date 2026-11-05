@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.peer-source-review.df026-phaseb-binding.v1",
+  "reviewer": "authbus_migration",
+  "status": "PASS_SOURCE_ONLY_NO_NEW_BLOCKER_IN_SIX_HUNK_DELTA",
+  "scope": {
+    "before": {
+      "bytes": 23664,
+      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+      "git_blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a"
+    },
+    "after": {
+      "bytes": 26563,
+      "sha256": "7cd97f9526858487f70785a84759e797535333ae4131cb9cdb6c8cee9a6a37ed",
+      "git_blob": "f60dbb093d69641bc8cd4a367320ec6fc5bdc0fd"
+    },
+    "diff": {
+      "bytes": 6149,
+      "sha256": "ab72dd07b2ea7865140662c21f523d6066be7895e1682efcddae3dcf32f1d884",
+      "git_blob": "571faf236cd54e42d43a436edbf2b27fdc10c0c6"
+    },
+    "wholeAfterRead": true,
+    "strictApply": {
+      "hunks": 6,
+      "wholeExact": true
+    },
+    "hostCalls": 0,
+    "candidateExecution": false,
+    "pythonExecution": false,
+    "rustExecution": false
+  },
+  "findings": [
+    {
+      "id": "exact_candidate_and_namespace",
+      "conclusion": "The two candidate identities and fixed source-directory namespace are the only replaced source bindings. Commit df026fe323dd7cf0f0ec57d7d2d9c5a79897053c and tree424463ccd2310ddc1e7b2bbcd7b7af29ae58c825 remain exact; source HEAD/tree/clean verification is retained."
+    },
+    {
+      "id": "source_pins",
+      "conclusion": "The new H2 and native HA read blob/SHA pairs are added to the existing whole-file SHA256 and Git-blob checks; the prior archive/audit/runtime pins are unchanged. This peer review does not independently attest the eventual installed files."
+    },
+    {
+      "id": "normal_44_7_9",
+      "conclusion": "The original 44 shape, group labels/names and seven ingress names remain. The new nine-name tuple has three cold/read and six H2 tests; list equality and nine individual exit0/no-timeout/reaped/empty checks are mandatory. The total is explicitly60 and additional counts are exactly7+9. Cleanup and native/release/server provenance gates remain."
+    },
+    {
+      "id": "new_regression_deadline",
+      "conclusion": "The nine-test receipt must declare the original44 and existing7 denominators unchanged, shared600 cap and clamping to the original outer deadline. No deadline or retry is added by the binder delta. This receipt validation is not proof of an actual run until its whole original receipt is supplied and independently accepted."
+    },
+    {
+      "id": "exact_runner_gate",
+      "conclusion": "The new combined receipt schema and controller SHA1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40 are exact required constants. Any differently built runner is rejected; no dynamic fallback or wildcard was introduced."
+    },
+    {
+      "id": "partial_binding",
+      "conclusion": "Binding.__init__ still requires ready_for_readonly_prepare is True and all exact members. pin_file still requires positive integer bytes and nonzero64hex SHA. Unresolved null artifact pins and ready=false cannot qualify prepare. No artifact exists merely because this source binds its eventual schema."
+    },
+    {
+      "id": "unchanged_behavior",
+      "conclusion": "Strict application of exactly6hunks reconstructs all26563 output bytes. Original budgets, official binary, QA reference pins, command scope, old fences, private input custody, source-read and final deadline logic remain outside the changed hunks."
+    }
+  ],
+  "limits": [
+    "This is only the binder source/delta review. No current source, target artifact, build result or runtime was read from a host.",
+    "Malformed receipt structures may raise before a friendly BindingError, but the reviewed path fails closed; this review does not introduce permissive parsing.",
+    "The main controller, reference helpers, transfer/current deployment and actual PhaseB outcome are not requalified by this peer review."
+  ]
+}

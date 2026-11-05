@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.fixed-inert-publication-intent.v1",
+  "created_at_utc": "2026-11-05T04:24:26.076Z",
+  "root_admission_blob": "d2c0387506cd66ce0612dfe7a22f3fb16cc0de18",
+  "request_blob": "2ee0cc92c48d7ef857496d86e6ab5ca24176c4db",
+  "request_sha256": "a529a1d1995b75f875fa5783eb1ea69bd6ab9f808e530e6f3795311707ac93af",
+  "key": "heptabao-cold-h2-fresh-target-controls-20261105-r3-11971f77-98b7838c",
+  "scope": "FIVE_PUBLIC_CONTROLS_ONLY",
+  "source_module_executed": false,
+  "target_created": false,
+  "cargo_started": false,
+  "submitted": false
+}

@@ -1,0 +1,90 @@
+--- a/inert_carrier_r2.py
++++ b/inert_carrier_df026_r1.py
+@@ -5,46 +5,47 @@
+ 
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-BASE = PARENT / 'normal-r10-pocket3-mac1-postrecovery-cold-control-r2'
++BASE = PARENT / 'normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1'
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+-    "launch_normal_r10_pocket_postrecovery_cold_r2.py": [
+-        24051,
+-        "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
++    "read_stopped_postrecovery_frontier_cold_h2_r1.py": [
++        16282,
++        "ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b"
+     ],
+-    "native_v6_pocket_source_postrecovery_cold_r10_r2.py": [
+-        72673,
+-        "2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571"
++    "read_stopped_recovered_cipher_cold_h2_r1.py": [
++        13211,
++        "961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2"
+     ],
+-    "read_stopped_postrecovery_frontier_r2.py": [
+-        16274,
+-        "5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77"
++    "native_v6_pocket_source_postrecovery_cold_df026_r1.py": [
++        72697,
++        "83046e6f486c0b62d979623f6a2feed540acd3b2bd8955dbfc084312134359c4"
+     ],
+-    "read_stopped_recovered_cipher_r2.py": [
+-        13207,
+-        "a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64"
+-    ],
+-    "probe_normal_build_r10_r1.py": [
+-        6445,
+-        "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
++    "launch_normal_cold_h2_pocket_postrecovery_cold_r1.py": [
++        24509,
++        "0049b15fe936e7cbe2263c1e4d6b96df3c4b19be7dd15f1824d4284f4f22ad1b"
+     ],
+     "deadline_qa/ha_multihost_live.py": [
+         79776,
+         "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460"
+     ],
+-    "deadline_qa/native_v6_ha_multihost_live.py": [
+-        87254,
+-        "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
++    "deadline_qa/native_ha_foreground_watchdog.py": [
++        41618,
++        "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
+     ],
+     "deadline_qa/native_v6_ha_direct_lan_live.py": [
+         14046,
+         "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea"
+     ],
+-    "deadline_qa/native_ha_foreground_watchdog.py": [
+-        41618,
+-        "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
++    "deadline_qa/native_v6_ha_multihost_live.py": [
++        87254,
++        "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
++    ],
++    "probe_normal_build_r10_r1.py": [
++        6445,
++        "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+     ]
+ }
++
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):
+@@ -111,14 +112,14 @@
+ assert not os.path.lexists(BASE)
+ assert hashlib.sha256(Path('/etc/machine-id').read_bytes()).hexdigest() == 'd90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3'
+ created = False
+-result = {'schema': 'heptabao.r10-validation-control-inert-carrier.v1', 'status': 'failed',
++result = {'schema': 'heptabao.cold-h2-validation-control-inert-carrier.v1', 'status': 'failed',
+           'started_ns': time.time_ns(), 'files': [], 'source_executed': False,
+           'git_started': False, 'compiler_started': False, 'service_started': False}
+ try:
+     incoming = sys.stdin.buffer.read(1048577)
+     assert 0 < len(incoming) <= 1048576
+     payload = json.loads(incoming)
+-    assert set(payload) == {'schema', 'files'} and payload['schema'] == 'heptabao.r10-validation-control-inert-inputs.v1'
++    assert set(payload) == {'schema', 'files'} and payload['schema'] == 'heptabao.cold-h2-validation-control-inert-inputs.v1'
+     assert set(payload['files']) == set(PINS)
+     decoded = {}
+     for name, (length, digest) in PINS.items():

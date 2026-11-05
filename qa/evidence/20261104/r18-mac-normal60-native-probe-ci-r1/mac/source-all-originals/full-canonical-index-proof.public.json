@@ -1,0 +1,14 @@
+{
+  "tree_rows": 3913,
+  "index_rows": 3913,
+  "canonical_github_rows": 3913,
+  "all_path_mode_blob_exact": true,
+  "all_unique": true,
+  "total_canonical_blob_bytes": 62212769,
+  "actual_ls_tree_bytes": 450325,
+  "actual_ls_files_bytes": 438586,
+  "mac_actual_indexes_whole_byte_equal_to_independently_verified_rog_indexes": true,
+  "mac_source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "mac_tree_sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+  "mac_index_sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26"
+}

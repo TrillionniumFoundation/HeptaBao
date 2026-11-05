@@ -1,0 +1,225 @@
+--- before/launch_normal_cold_h2.py
++++ after/launch_normal_cold_h2.py
+@@ -75,7 +75,7 @@
+     OLD_LIBTEST_SHA = '9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a'
+     OLD_LIBTEST_BYTES = 188077176
+     OLD_STATUS = 'passed'
+-    TARGET = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target')
++    TARGET = ROOT / 'target-normal-r3'
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+@@ -84,8 +84,9 @@
+ 
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+-ADMISSION = ROOT / 'build-control-r1'
+-OUTPUT = ROOT / 'normal-release-tests-r1'
++REVISION_CONTROL = ROOT / 'control-r3'
++ADMISSION = ROOT / 'build-control-r3'
++OUTPUT = ROOT / 'normal-release-tests-r3'
+ OLD_TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+ R9_SOURCE = R9 / 'source'
+ R9_COMMIT = '1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+@@ -118,6 +119,14 @@
+     '021-git-fetch.stdout': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+ }
+ 
++
++
++EARLY_NORMAL_FILES = {
++    'prior-normal-early-failure.authority.original.json': (726, '9188213431c349616ecd8dd329f930d909fb3b973ff27848ae3afb7957e2bfae'),
++    'prior-normal-early-failure.stderr': (693, 'bb032403580f205d6e15f90da809c666b4accec08a0acf00f0a83611ecbbe01e'),
++    'prior-normal-target-metadata.stdout.json': (13741, 'e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a'),
++    'prior-normal-target-metadata.authority.original.json': (733, '70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752'),
++}
+ 
+ def identity(info):
+     return (info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode,
+@@ -386,6 +395,122 @@
+             'prior_failed_build_replayed': False}
+ 
+ 
++
++def preserve_current_early_failure():
++    facts, values = {}, {}
++    for name, (size, sha256) in EARLY_NORMAL_FILES.items():
++        assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired during early-failure fences'
++        raw, fact = read_bound(REVISION_CONTROL / name, sha256, size)
++        assert len(raw) == size
++        facts[name] = fact
++        if name.endswith('.json'):
++            values[name] = json.loads(raw)
++    failed = values['prior-normal-early-failure.authority.original.json']
++    diagnostic = values['prior-normal-target-metadata.authority.original.json']
++    assert failed['job_id'] == '1a1a9d78f65-fc05-3884' and failed['state'] == 'failed' and failed['exit_code'] == 1
++    assert diagnostic['job_id'] == '1a1a9e48b01-fc05-392b' and diagnostic['state'] == 'succeeded' and diagnostic['exit_code'] == 0
++    for authority in (failed, diagnostic):
++        assert authority['output_complete'] and authority['output_durable'] and authority['terminal_publication_confirmed']
++        assert not authority['timed_out'] and not authority['cancelled'] and not authority['automatic_retry']
++        assert all(value is False for value in authority['log_truncated'].values())
++        assert all(value is None for value in authority['log_errors'].values())
++    metadata = values['prior-normal-target-metadata.stdout.json']
++    assert metadata['complete'] and metadata['publication_within_original_deadline']
++    assert metadata['children_started'] == 0 and metadata['files_written'] == 0
++    assert metadata['all_opened_descriptors_closed']
++    _, facts['original_rejected_launcher'] = read_bound(
++        CONTROL / 'launch_normal_cold_h2.py',
++        '7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98', 31963)
++    assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired after early-failure fences'
++    return {'files': facts, 'original_job_replayed': False,
++            'historical_missing_target_recreated': False,
++            'target_removal_cause_known': False}
++
++
++def create_fresh_target(proof):
++    proof.update(status='preparing', target=str(TARGET), created=[], descriptors=[],
++                 all_opened_descriptors_closed=False, fresh_cache=True,
++                 inherits_prior_cache_performance=False)
++    descriptors = []
++
++    def budget():
++        assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired during fresh-target preparation'
++
++    def register(name, fd):
++        entry = {'name': name, 'fd': fd, 'close_attempted': False, 'closed': False}
++        descriptors.append((fd, entry))
++        proof['descriptors'].append(entry)
++        return fd
++
++    try:
++        budget()
++        root_fd = register('root', os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW))
++        root_before = os.fstat(root_fd)
++        assert identity(root_before) == identity(ROOT.lstat())
++        assert stat.S_ISDIR(root_before.st_mode) and root_before.st_uid == expected_uid
++        assert stat.S_IMODE(root_before.st_mode) == 0o700
++        assert TARGET.parent == ROOT and TARGET.name == 'target-normal-r3'
++        budget()
++        os.mkdir(TARGET.name, 0o700, dir_fd=root_fd)
++        proof['created'].append(str(TARGET))
++        target_fd = register('target', os.open(TARGET.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd))
++        target_before = os.fstat(target_fd)
++        assert identity(target_before) == identity(os.stat(TARGET.name, dir_fd=root_fd, follow_symlinks=False))
++        assert stat.S_ISDIR(target_before.st_mode) and target_before.st_uid == expected_uid
++        assert stat.S_IMODE(target_before.st_mode) == 0o700
++        budget()
++        os.mkdir('release', 0o700, dir_fd=target_fd)
++        proof['created'].append(str(TARGET / 'release'))
++        release_fd = register('release', os.open('release', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=target_fd))
++        release_before = os.fstat(release_fd)
++        assert identity(release_before) == identity(os.stat('release', dir_fd=target_fd, follow_symlinks=False))
++        assert stat.S_ISDIR(release_before.st_mode) and release_before.st_uid == expected_uid
++        assert stat.S_IMODE(release_before.st_mode) == 0o700
++        budget()
++        lock_fd = register('lock', os.open('.cargo-lock', os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600, dir_fd=release_fd))
++        proof['created'].append(str(TARGET / 'release/.cargo-lock'))
++        lock_before = os.fstat(lock_fd)
++        assert stat.S_ISREG(lock_before.st_mode) and lock_before.st_uid == expected_uid
++        assert stat.S_IMODE(lock_before.st_mode) == 0o600 and lock_before.st_nlink == 1 and lock_before.st_size == 0
++        for fd in (lock_fd, release_fd, target_fd, root_fd):
++            budget()
++            os.fsync(fd)
++            budget()
++        assert identity(lock_before) == identity(os.fstat(lock_fd)) == identity(os.stat('.cargo-lock', dir_fd=release_fd, follow_symlinks=False))
++        for fd, before, parent_fd, name in (
++                (release_fd, release_before, target_fd, 'release'),
++                (target_fd, target_before, root_fd, TARGET.name)):
++            held = os.fstat(fd)
++            assert identity(held)[:5] == identity(before)[:5]
++            assert identity(held) == identity(os.stat(name, dir_fd=parent_fd, follow_symlinks=False))
++        root_after = os.fstat(root_fd)
++        assert identity(root_after)[:5] == identity(root_before)[:5]
++        assert identity(root_after) == identity(ROOT.lstat())
++        assert TARGET.resolve(strict=True) == TARGET
++        proof.update(root_identity_after=list(identity(root_after)),
++                     target_identity_after=list(identity(os.fstat(target_fd))),
++                     release_identity_after=list(identity(os.fstat(release_fd))),
++                     lock_identity=list(identity(lock_before)))
++        budget()
++    finally:
++        close_errors = []
++        for fd, entry in reversed(descriptors):
++            entry['close_attempted'] = True
++            try:
++                os.close(fd)
++                entry['closed'] = True
++            except BaseException as error:
++                entry['close_error_type'] = type(error).__name__
++                close_errors.append(type(error).__name__)
++        proof['all_opened_descriptors_closed'] = all(entry['closed'] for _, entry in descriptors)
++        if close_errors:
++            proof['status'] = 'descriptor_close_failed'
++            raise RuntimeError('fresh_target_descriptor_close_failed')
++    budget()
++    assert proof['all_opened_descriptors_closed']
++    proof.update(status='prepared', completed_before_original_outer_deadline=True)
++
++
+ def holders():
+     if args.host == 'mac':
+         observed = subprocess.run(['/usr/sbin/lsof', '-t', str(TARGET / 'release/.cargo-lock')],
+@@ -415,7 +540,9 @@
+ 
+ assert (os.uname().sysname, os.uname().machine) == expected_system
+ assert os.getuid() == expected_uid == ROOT.stat().st_uid
+-assert ROOT.resolve(strict=True) == ROOT and TARGET.resolve(strict=True) == TARGET
++assert ROOT.resolve(strict=True) == ROOT
++assert Path(__file__).resolve(strict=True) == REVISION_CONTROL / 'launch_normal_cold_h2.py'
++assert not TARGET.exists() and not TARGET.is_symlink()
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+@@ -440,6 +567,8 @@
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
++          'fresh_cache': True, 'inherits_prior_cache_performance': False,
++          'fresh_target_preparation': {},
+           'started_ns': time.time_ns()}
+ public(ADMISSION / 'launch-intent.public.json', result)
+ lock_fd = None
+@@ -448,19 +577,6 @@
+     assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+     assert old_before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}
+     result.update(source_before=before, old_source_before=old_before)
+-    result['compiler_holders_before_lock'] = holders()
+-    assert not result['compiler_holders_before_lock']
+-    lock_fd = os.open(TARGET / 'release/.cargo-lock', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+-    info = os.fstat(lock_fd)
+-    assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1
+-    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+-    result['compiler_holders_under_lock'] = holders()
+-    if args.host == 'mac':
+-        # lsof also observes this controller's own temporary lock descriptor.
+-        assert all(pid == os.getpid() for pid in result['compiler_holders_under_lock'])
+-    else:
+-        assert not result['compiler_holders_under_lock']
+-    result['target_lock'] = {'identity': list(identity(info)), 'nonblocking_exclusive_probe': True}
+     build_raw, result['old_build_receipt'] = read_bound(OLD_BUILD, OLD_BUILD_SHA, 30000)
+     native_raw, result['old_native_receipt'] = read_bound(OLD_NATIVE, OLD_NATIVE_SHA, 5000)
+     test_raw, result['old_exact_test_receipt'] = read_bound(OLD_TEST, OLD_TEST_SHA, 40000)
+@@ -487,6 +603,23 @@
+     result['retained_successful_observer'] = preserve_successful_observer()
+     result['retained_failed_observer'] = preserve_failed_observer()
+     assert result['retained_failed_observer'] == stage['failed_observer_after']
++    assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
++    result['retained_current_early_failure'] = preserve_current_early_failure()
++    create_fresh_target(result['fresh_target_preparation'])
++    result['compiler_holders_before_lock'] = holders()
++    assert not result['compiler_holders_before_lock']
++    lock_fd = os.open(TARGET / 'release/.cargo-lock', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
++    info = os.fstat(lock_fd)
++    assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1
++    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
++    result['compiler_holders_under_lock'] = holders()
++    if args.host == 'mac':
++        # lsof also observes this controller's own temporary lock descriptor.
++        assert all(pid == os.getpid() for pid in result['compiler_holders_under_lock'])
++    else:
++        assert not result['compiler_holders_under_lock']
++    result['target_lock'] = {'identity': list(identity(info)), 'nonblocking_exclusive_probe': True}
++    assert preserve_current_early_failure() == result['retained_current_early_failure']
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     argv = [PYTHON, '-I', '-S', '-B', str(runner), '--source', str(SOURCE),
+             '--output', str(OUTPUT), '--commit', args.commit, '--tree', args.tree,

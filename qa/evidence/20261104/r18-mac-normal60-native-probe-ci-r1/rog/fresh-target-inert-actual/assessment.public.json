@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.cold-h2-fresh-control-actual-assessment.v1",
+  "status": "INERT_PREPARED",
+  "job": "1a1a9f39581-fc05-3a42",
+  "authority_exit": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "elapsed_seconds": 0.019069785019382834,
+  "source_payload_sha256": "64d7e01aa6dac0a999a1cd19e47d22f0573f60bac3d0a865e65acd194697eeb7",
+  "actual_20_descriptor_close_attempts_all_closed": true,
+  "original_four_files_before_after_exact": true,
+  "independent_full_readback_five_files": true,
+  "independent_file_info_five_files": true,
+  "all_versions_equal_lossless_original_nine_field_identity": true,
+  "source_module_executed": false,
+  "target_created": false,
+  "git_started": false,
+  "compiler_started": false,
+  "service_started": false,
+  "production_changed": false,
+  "build_request": {
+    "bytes": 787,
+    "sha256": "b4289fc76f48a8c170f43c934476d24c642064180e3d048b0226e2d4d6a8e1cb",
+    "blob": "7076b41c22245a27250434da088e586b2e2cea8b"
+  },
+  "build_not_submitted": true
+}

@@ -1,0 +1,31 @@
+## Why this change is needed
+
+The PR #152 head job completed the full locked Rust workspace successfully, then strict Clippy rejected two remaining test expressions in `immutable_source_parallel_tests.rs`. The unified cold-start/HTTP2 candidate in #153 inherits that exact test file, so these diagnostics also block its complete qualification.
+
+This successor retains candidate `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c` and changes one test file:
+
+- Replace the unconstrained `Err(_)` match with `Result::is_err()`, preserving the exact call and failure assertion.
+- Place the abandoned reader in `ManuallyDrop`, preserving the test's requirement that the owner's failure latch survive without a view destructor. Both original owner assertions remain byte-for-byte unchanged.
+
+There are no lint suppressions. All 3,912 other file leaves, including the runtime sources, Cargo manifests, lockfile and qualification workflow, retain their exact Git identities.
+
+## Immutable source
+
+- Parent: `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`
+- Candidate: `c133d7e7b8a1df5f0be8f4337893f234c6ccede2`
+- Tree: `23999765c64b7f5d6afa8c58e97a99aa4233e2d7`
+- Changed test blob: `4ee095d85ff9f4dd4c540c0b1447eafe050a8a83`
+- Independent source review: `103923260e0da640ddf79edf0c43b2deca1effc5`
+- Complete preceding CI log: `8098483da10322c572c3ec440b03cc923fcfd394`
+
+## Validation state
+
+The two-hunk change was reproduced exactly against the original whole file and independently reviewed against the actual borrowed-reader implementation. The unchanged assertions still verify the original owner's immediate failure latch. Rust compilation, formatting, strict Clippy and the entire workflow remain required for this exact successor.
+
+Separately, the parent df026 candidate has completed the Mac normal release and its core 44 + 7 + 9 test result; complete original test-log verification is continuing. Its ROG fresh-cache normal build remains running. Those host results retain their original candidate and artifact identities; this draft does not relabel them as successor execution.
+
+The existing #152 and #153 branches and running CI jobs remain intact. This draft supplies an independent exact-head/prospective-merge workflow run.
+
+Full OpenBao 2.7.1 replacement remains unqualified. Actual LAN recovery, native HTTP2/official CLI snapshot interoperability, current AuthBus credential validation, per-host cutover/rollback and final old-service cleanup remain under the evidence-driven migration plan.
+
+[Current published evidence checkpoint R17](https://github.com/TrillionniumFoundation/HeptaBao/tree/3a8f7c5d9decae814294e11a68e0b4cadf8082a5/qa/evidence/20261104/r17-dual-source-public-probes-r1)

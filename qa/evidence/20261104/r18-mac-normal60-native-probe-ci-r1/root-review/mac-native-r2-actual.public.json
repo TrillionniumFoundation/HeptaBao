@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.root-native-proc-r2-actual-review.r1",
+  "asof": "2026-11-05 04:58:42 UTC",
+  "status": "PASS_SCOPED_PUBLIC_PROBE_ALL_ORIGINALS_CLOSED",
+  "job": "1a1aa0eabee-fc05-3c36",
+  "source_sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+  "actual_tree": "63b1ade0613e552c6c63de6492e0352fa7691cd9",
+  "files": 17,
+  "bytes": 303310,
+  "merkle_trees": 2,
+  "native_sdk_pairs_exact": 5,
+  "pages": [
+    {
+      "offset": 0,
+      "next_offset": 16384,
+      "eof": false,
+      "hex_and_text_exact": true
+    },
+    {
+      "offset": 16384,
+      "next_offset": 24032,
+      "eof": true,
+      "hex_and_text_exact": true
+    },
+    {
+      "offset": 24032,
+      "next_offset": 24032,
+      "eof": true,
+      "hex_and_text_exact": true
+    }
+  ],
+  "whole_stdout": {
+    "bytes": 24032,
+    "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+    "blob": "08056cb82289a44037c771b0ea03982ea11064be"
+  },
+  "exact_child_stdout": {
+    "bytes": 11066,
+    "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+    "blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+  },
+  "authoritative_terminal": {
+    "exit_code": 0,
+    "state": "succeeded",
+    "complete": true,
+    "durable": true,
+    "not_timed_out": true,
+    "not_retried": true
+  },
+  "elapsed_seconds": 0.4276377917267382,
+  "shared_seconds": 45,
+  "outer_seconds": 60,
+  "kernel_four_refusals": [
+    {
+      "case": "main_write_open",
+      "denied": true,
+      "errno": 1,
+      "name": "writable-owned-main"
+    },
+    {
+      "case": "sidecar_create",
+      "denied": true,
+      "errno": 1,
+      "name": "writable-owned-main-wal"
+    },
+    {
+      "case": "sidecar_create",
+      "denied": true,
+      "errno": 1,
+      "name": "writable-owned-main-shm"
+    },
+    {
+      "case": "loopback_connect",
+      "denied": true,
+      "endpoint": "127.0.0.1:9",
+      "errno": 1
+    }
+  ],
+  "native_abi_self_and_nested_diskutil_passed": true,
+  "owned_groups": 3,
+  "all_natural_exit_zero_reaped_empty_streams_closed": true,
+  "all_fds_and_t5_closed": true,
+  "old_four_sources_three_native_modules_and_three_utilities_before_after_exact": true,
+  "current_credential_database_sqlite_consumer_provider_j3160_actions": false,
+  "boundary": "Public prerequisite qualification only. Current real credential capture and installed five-agent AuthBus service remain unqualified. R1 known failure and original PID11754 custody unknown are unchanged."
+}

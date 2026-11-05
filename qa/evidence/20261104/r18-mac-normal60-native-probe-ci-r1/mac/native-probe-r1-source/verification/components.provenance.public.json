@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.native-proc-components-provenance.r1",
+  "source": {
+    "bytes": 11162,
+    "sha256": "6d0a0320b77835a163b542b94885f4f240e15b978db6b0f87fd32a715580d604",
+    "git_blob": "f48966368a07150a0e6d9c2caf43d8dc9b73f5a4"
+  },
+  "capture": "Exact displayed tool-return object captured from the preceding exec response; not transport wire bytes. The tool was executed once.",
+  "outputVerbatim": true,
+  "executions": 1,
+  "nativeLibraryOrHostCalls": 0,
+  "note": "The displayed structured exec result was captured after the call; this is not a claim to transport wire bytes. The stdout string is retained verbatim."
+}

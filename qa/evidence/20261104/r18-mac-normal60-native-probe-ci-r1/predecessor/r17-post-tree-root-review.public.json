@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root.r17-post-tree-review.v1",
+  "tree": "4bc6dee55ca67aeb8e101a0e69bd0b2cc598281c",
+  "all_merkle_directories_verified": 1339,
+  "total_blob_leaves": 10077,
+  "previous_commit": "1d2d96ce8e44ec9b448c07651220dfecd111f3e5",
+  "previous_total_blob_leaves": 9523,
+  "previous_non_document_leaves_byte_identity_unchanged": 9521,
+  "document_edits": 2,
+  "added_leaf_entries": 554,
+  "complete_subpackets": 25,
+  "subpacket_entries": 522,
+  "subpacket_bytes": 7365004,
+  "root_file_entries": 32,
+  "old_index_top_level_keys_preserved_except_asof": 79,
+  "new_index_top_level_keys": 80,
+  "old_document_historical_body_exact": true,
+  "original_json_unsafe_integer_tokens_preserved": true,
+  "source_candidate_unchanged": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "full_replacement": false
+}

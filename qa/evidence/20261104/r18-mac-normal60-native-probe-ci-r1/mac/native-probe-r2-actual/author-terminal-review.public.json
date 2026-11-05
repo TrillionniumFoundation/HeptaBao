@@ -1,0 +1,699 @@
+{
+  "schema": "heptabao.mac-native-proc-r2-author-terminal-review.v1",
+  "status": "PASS_PUBLIC_NATIVE_PROJECTION_RETAINED_CUSTODY_AND_FOUR_KERNEL_REFUSALS",
+  "jobId": "1a1aa0eabee-fc05-3c36",
+  "sourceTree": "c18b0dbdd6dc90742d0152644914c50736b3a5c8",
+  "source": {
+    "bytes": 76658,
+    "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "git_blob": "e3bc464388fbeb53f830713bdfc9054617432314"
+  },
+  "request": {
+    "bytes": 78264,
+    "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+    "git_blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12"
+  },
+  "rootAdmission": {
+    "bytes": 2165,
+    "sha256": "890dfb7a9fccbf550262ea60db2a4966ae0fd2b89c96796c6679437ead7b28e8",
+    "git_blob": "e1725cbd3cb31019cb698c199d3ae705f466a153"
+  },
+  "singleSubmissionInvocations": 1,
+  "authoritative": {
+    "exitCode": 0,
+    "complete": true,
+    "durable": true,
+    "terminalPublicationConfirmed": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false,
+    "stdout": {
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "git_blob": "08056cb82289a44037c771b0ea03982ea11064be",
+      "pageOffsets": [
+        0,
+        16384,
+        24032
+      ],
+      "eof": true,
+      "textHexExact": true
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "pageOffsets": [
+        0,
+        0,
+        0
+      ],
+      "eof": true,
+      "textHexExact": true
+    }
+  },
+  "childOriginal": {
+    "bytes": 11066,
+    "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+    "git_blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+  },
+  "terminal": {
+    "parentElapsedSeconds": 0.4276377917267382,
+    "childElapsedSeconds": 0.12351237470284104,
+    "sharedSeconds": 45,
+    "parentDeadlineAfterClosure": true,
+    "childDeadlineAfterClosure": true,
+    "unknown": false
+  },
+  "native": {
+    "identity": {
+      "abi": {
+        "alignment": 8,
+        "endianness": "little",
+        "offsets": {
+          "e_tdev": 108,
+          "e_tpgid": 112,
+          "pbi_comm": 48,
+          "pbi_flags": 0,
+          "pbi_gid": 24,
+          "pbi_name": 64,
+          "pbi_nfiles": 96,
+          "pbi_nice": 116,
+          "pbi_pgid": 100,
+          "pbi_pid": 12,
+          "pbi_pjobc": 104,
+          "pbi_ppid": 16,
+          "pbi_rgid": 32,
+          "pbi_ruid": 28,
+          "pbi_start_tvsec": 120,
+          "pbi_start_tvusec": 128,
+          "pbi_status": 4,
+          "pbi_svgid": 40,
+          "pbi_svuid": 36,
+          "pbi_uid": 20,
+          "pbi_xstatus": 8,
+          "rfu_1": 44
+        },
+        "sizes": {
+          "Dl_info": 32,
+          "int": 4,
+          "int32": 4,
+          "pointer": 8,
+          "proc_bsdinfo": 136,
+          "size_t": 8,
+          "uint32": 4,
+          "uint64": 8
+        }
+      },
+      "actualKernel": {
+        "machine": "arm64",
+        "release": "25.6.0",
+        "sysname": "Darwin",
+        "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142"
+      },
+      "actualOsBuild": "25G83",
+      "dylibHandlesRetainedUntilProcessExit": true,
+      "libraryWholeFileHashClaimed": false,
+      "loadedSymbolImages": {
+        "dladdr": {
+          "addressesPublished": false,
+          "imageWholeBytesPinned": false,
+          "observedImagePath": "/usr/lib/system/libdyld.dylib",
+          "observedSymbolName": "dladdr",
+          "requestedSymbol": "dladdr"
+        },
+        "proc_listpids": {
+          "addressesPublished": false,
+          "imageWholeBytesPinned": false,
+          "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+          "observedSymbolName": "proc_listpids",
+          "requestedSymbol": "proc_listpids"
+        },
+        "proc_pidinfo": {
+          "addressesPublished": false,
+          "imageWholeBytesPinned": false,
+          "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+          "observedSymbolName": "proc_pidinfo",
+          "requestedSymbol": "proc_pidinfo"
+        },
+        "sysctlbyname": {
+          "addressesPublished": false,
+          "imageWholeBytesPinned": false,
+          "observedImagePath": "/usr/lib/system/libsystem_c.dylib",
+          "observedSymbolName": "sysctlbyname",
+          "requestedSymbol": "sysctlbyname"
+        }
+      },
+      "referenceDyldCommit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+      "referenceIsInstalledWholePin": false,
+      "referenceXnuCommit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "requestedInstallNames": [
+        "/usr/lib/system/libsystem_kernel.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "sharedCacheMaterializationAttempted": false
+    },
+    "projection": {
+      "allHostEnumerationUsed": false,
+      "commandNamesOrPathsProjected": false,
+      "groupQueries": 12,
+      "identity": {
+        "abi": {
+          "alignment": 8,
+          "endianness": "little",
+          "offsets": {
+            "e_tdev": 108,
+            "e_tpgid": 112,
+            "pbi_comm": 48,
+            "pbi_flags": 0,
+            "pbi_gid": 24,
+            "pbi_name": 64,
+            "pbi_nfiles": 96,
+            "pbi_nice": 116,
+            "pbi_pgid": 100,
+            "pbi_pid": 12,
+            "pbi_pjobc": 104,
+            "pbi_ppid": 16,
+            "pbi_rgid": 32,
+            "pbi_ruid": 28,
+            "pbi_start_tvsec": 120,
+            "pbi_start_tvusec": 128,
+            "pbi_status": 4,
+            "pbi_svgid": 40,
+            "pbi_svuid": 36,
+            "pbi_uid": 20,
+            "pbi_xstatus": 8,
+            "rfu_1": 44
+          },
+          "sizes": {
+            "Dl_info": 32,
+            "int": 4,
+            "int32": 4,
+            "pointer": 8,
+            "proc_bsdinfo": 136,
+            "size_t": 8,
+            "uint32": 4,
+            "uint64": 8
+          }
+        },
+        "actualKernel": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "sysname": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142"
+        },
+        "actualOsBuild": "25G83",
+        "dylibHandlesRetainedUntilProcessExit": true,
+        "libraryWholeFileHashClaimed": false,
+        "loadedSymbolImages": {
+          "dladdr": {
+            "addressesPublished": false,
+            "imageWholeBytesPinned": false,
+            "observedImagePath": "/usr/lib/system/libdyld.dylib",
+            "observedSymbolName": "dladdr",
+            "requestedSymbol": "dladdr"
+          },
+          "proc_listpids": {
+            "addressesPublished": false,
+            "imageWholeBytesPinned": false,
+            "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+            "observedSymbolName": "proc_listpids",
+            "requestedSymbol": "proc_listpids"
+          },
+          "proc_pidinfo": {
+            "addressesPublished": false,
+            "imageWholeBytesPinned": false,
+            "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+            "observedSymbolName": "proc_pidinfo",
+            "requestedSymbol": "proc_pidinfo"
+          },
+          "sysctlbyname": {
+            "addressesPublished": false,
+            "imageWholeBytesPinned": false,
+            "observedImagePath": "/usr/lib/system/libsystem_c.dylib",
+            "observedSymbolName": "sysctlbyname",
+            "requestedSymbol": "sysctlbyname"
+          }
+        },
+        "referenceDyldCommit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+        "referenceIsInstalledWholePin": false,
+        "referenceXnuCommit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+        "requestedInstallNames": [
+          "/usr/lib/system/libsystem_kernel.dylib",
+          "/usr/lib/libSystem.B.dylib"
+        ],
+        "sharedCacheMaterializationAttempted": false
+      },
+      "lastCall": {
+        "call": 30,
+        "errno": null,
+        "kind": "owned_pid_tbsdinfo",
+        "result": 136,
+        "returned": true
+      },
+      "lateNativeReturnRejected": true,
+      "maxGroupMembers": 64,
+      "nativeCalls": 30,
+      "pidListNullBufferUsed": false,
+      "pidQueries": 13,
+      "querySeconds": 4,
+      "schema": "heptabao.darwin-proc-bsdinfo-numeric.r1",
+      "selfQualified": true,
+      "synchronousKernelCallHasNoSeparateKillableWorker": true
+    },
+    "independentSelfBefore": {
+      "first": {
+        "birthMicroseconds": "726510",
+        "birthSeconds": "1793854454",
+        "isZombie": false,
+        "pgid": 62477,
+        "pid": 62477,
+        "ppid": 62466,
+        "stateCode": 2,
+        "stateName": "SRUN",
+        "uid": 501
+      },
+      "groupRows": [
+        {
+          "birthMicroseconds": "726510",
+          "birthSeconds": "1793854454",
+          "isZombie": false,
+          "pgid": 62477,
+          "pid": 62477,
+          "ppid": 62466,
+          "stateCode": 2,
+          "stateName": "SRUN",
+          "uid": 501
+        }
+      ],
+      "last": {
+        "birthMicroseconds": "726510",
+        "birthSeconds": "1793854454",
+        "isZombie": false,
+        "pgid": 62477,
+        "pid": 62477,
+        "ppid": 62466,
+        "stateCode": 2,
+        "stateName": "SRUN",
+        "uid": 501
+      },
+      "pidUidPpidPgidMatchedIndependentOsApis": true,
+      "projectionSchema": "heptabao.darwin-proc-bsdinfo-numeric.r1"
+    },
+    "independentSelfAfter": {
+      "first": {
+        "birthMicroseconds": "726510",
+        "birthSeconds": "1793854454",
+        "isZombie": false,
+        "pgid": 62477,
+        "pid": 62477,
+        "ppid": 62466,
+        "stateCode": 2,
+        "stateName": "SRUN",
+        "uid": 501
+      },
+      "groupRows": [
+        {
+          "birthMicroseconds": "726510",
+          "birthSeconds": "1793854454",
+          "isZombie": false,
+          "pgid": 62477,
+          "pid": 62477,
+          "ppid": 62466,
+          "stateCode": 2,
+          "stateName": "SRUN",
+          "uid": 501
+        }
+      ],
+      "last": {
+        "birthMicroseconds": "726510",
+        "birthSeconds": "1793854454",
+        "isZombie": false,
+        "pgid": 62477,
+        "pid": 62477,
+        "ppid": 62466,
+        "stateCode": 2,
+        "stateName": "SRUN",
+        "uid": 501
+      },
+      "pidUidPpidPgidMatchedIndependentOsApis": true,
+      "projectionSchema": "heptabao.darwin-proc-bsdinfo-numeric.r1"
+    },
+    "nestedCommand": {
+      "argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "cleanup": {
+        "allGroupRowsEmptyAfterReap": true,
+        "cleanupCaps": {
+          "group": 3,
+          "psMax": 4,
+          "term": 1,
+          "wait": 5
+        },
+        "custody": {
+          "captured_exit": null,
+          "projection": {
+            "birthMicroseconds": "778758",
+            "birthSeconds": "1793854454",
+            "pgid": 62479,
+            "pid": 62479,
+            "ppid": 62477,
+            "uid": 501
+          },
+          "projectionSchema": "heptabao.darwin-proc-bsdinfo-numeric.r1",
+          "sid_observed_while_live": 62479
+        },
+        "directChildReaped": true,
+        "elapsedSeconds": 0.00029300013557076454,
+        "exitCode": 0,
+        "initialLiveGroup": [],
+        "ok": true,
+        "outcomeUnknown": false,
+        "ownedLiveGroupEmptyBeforeReap": true,
+        "pgid": 62479,
+        "pid": 62479,
+        "postReapSignalSent": false,
+        "remainingGroupRows": [],
+        "retainedExit": {
+          "code": 1,
+          "pid": 62479,
+          "signo": 20,
+          "status": 0
+        },
+        "signals": [],
+        "stopAttempted": true
+      },
+      "commandDeadlineMonotonic": 2740331.5685415,
+      "completeBeforeDeadline": true,
+      "elapsedSeconds": 0.09678245894610882,
+      "errorCode": null,
+      "errorType": null,
+      "exitCode": 0,
+      "label": "native-sandbox-t5-volume",
+      "outcomeUnknown": false,
+      "pid": 62479,
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutBytes": 2801,
+      "stdoutSha256": "69ced75e005a2dbdf600ed7a75875774990b2740c9a7164d7c0a6f7d99fa474d",
+      "streamsClosed": true
+    }
+  },
+  "kernel": {
+    "allFourDenied": true,
+    "checks": [
+      {
+        "case": "main_write_open",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main"
+      },
+      {
+        "case": "sidecar_create",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main-wal"
+      },
+      {
+        "case": "sidecar_create",
+        "denied": true,
+        "errno": 1,
+        "name": "writable-owned-main-shm"
+      },
+      {
+        "case": "loopback_connect",
+        "denied": true,
+        "endpoint": "127.0.0.1:9",
+        "errno": 1
+      }
+    ],
+    "externalAddressAttempted": false,
+    "onlyOwnedWriteProbes": true,
+    "profileWriteScope": "fresh_capture_output_only"
+  },
+  "ownedClosure": {
+    "parentCommands": [
+      {
+        "label": "probe-parent-t5-volume",
+        "pid": 62468,
+        "exitCode": 0,
+        "streamsClosed": true,
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "ps": {
+              "pgid": 62468,
+              "pid": 62468,
+              "ppid": 62466,
+              "start": "Thu Nov  5 12:54:14 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 62468
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.04551208298653364,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 62468,
+          "pid": 62468,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 62468,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        }
+      },
+      {
+        "label": "sandbox-native",
+        "pid": 62477,
+        "exitCode": 0,
+        "streamsClosed": true,
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "ps": {
+              "pgid": 62477,
+              "pid": 62477,
+              "ppid": 62466,
+              "start": "Thu Nov  5 12:54:14 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 62477
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.04806291684508324,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 62477,
+          "pid": 62477,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 62477,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        }
+      }
+    ],
+    "totalOwnedCommands": 3,
+    "allGroupsEmptyBeforeAndAfterReap": true,
+    "allDirectChildrenReaped": true,
+    "noPostReapSignal": true,
+    "noSignalsSent": true,
+    "allStreamsClosed": true,
+    "parentFdClosed": true,
+    "childFdClosed": true,
+    "parentHeldT5": {
+      "allDescriptorsClosed": true,
+      "anchors": [
+        {
+          "identity": [
+            "16777233",
+            "2",
+            "0",
+            "0",
+            "16877",
+            "22",
+            "704",
+            "1786589515000000000",
+            "1786589515000000000"
+          ],
+          "path": "/"
+        },
+        {
+          "identity": [
+            "16777233",
+            "18336",
+            "0",
+            "0",
+            "16877",
+            "5",
+            "160",
+            "1793100597756515591",
+            "1793100597756515591"
+          ],
+          "path": "/Volumes"
+        },
+        {
+          "identity": [
+            "16777244",
+            "2",
+            "0",
+            "0",
+            "16893",
+            "12",
+            "384",
+            "1793152973144260495",
+            "1793152973144260495"
+          ],
+          "path": "/Volumes/T5"
+        }
+      ],
+      "closeErrors": [],
+      "expectedVolumeDevice": "16777244",
+      "lastAnchorCheckPassed": true,
+      "schema": "heptabao.held-t5-volume-state.r1",
+      "volumeUUIDVerified": true
+    },
+    "childHeldT5": {
+      "allDescriptorsClosed": true,
+      "anchors": [
+        {
+          "identity": [
+            "16777233",
+            "2",
+            "0",
+            "0",
+            "16877",
+            "22",
+            "704",
+            "1786589515000000000",
+            "1786589515000000000"
+          ],
+          "path": "/"
+        },
+        {
+          "identity": [
+            "16777233",
+            "18336",
+            "0",
+            "0",
+            "16877",
+            "5",
+            "160",
+            "1793100597756515591",
+            "1793100597756515591"
+          ],
+          "path": "/Volumes"
+        },
+        {
+          "identity": [
+            "16777244",
+            "2",
+            "0",
+            "0",
+            "16893",
+            "12",
+            "384",
+            "1793152973144260495",
+            "1793152973144260495"
+          ],
+          "path": "/Volumes/T5"
+        }
+      ],
+      "closeErrors": [],
+      "expectedVolumeDevice": "16777244",
+      "lastAnchorCheckPassed": true,
+      "schema": "heptabao.held-t5-volume-state.r1",
+      "volumeUUIDVerified": true
+    }
+  },
+  "fences": {
+    "sourceBeforeAfterExact": true,
+    "sourceCount": 4,
+    "nativeModulesBeforeAfterExact": true,
+    "nativeModuleCount": 3,
+    "utilitiesBeforeAfterExact": true,
+    "utilityCount": 3,
+    "parentChildSourceMapsExact": true,
+    "parentChildNativeMapsExact": true,
+    "parentChildProfilesExact": true,
+    "parentChildT5AnchorsExact": true,
+    "originalRootAbsentBothChecks": [
+      true,
+      true
+    ],
+    "newFiles": 7,
+    "newDirectories": 3
+  },
+  "policy": {
+    "profileSha256": {
+      "original": "d31751dc8da537121b3f1ccce832a666cc6499bdef4d956ab3208dec86daf35e",
+      "patched": "58a8f52a66b0e6136b786857cb72e3f775837907bf382850320673342750c6bd"
+    },
+    "newLiteralDirectory": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "newLiteralRuleSha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef",
+    "newLiteralRuleBytes": 73,
+    "permissionBeyondPriorDevnullExplicit": true,
+    "noOtherPolicyDifference": true
+  },
+  "publicReadBound": {
+    "bytes": 4905928,
+    "cap": 8388608
+  },
+  "scope": {
+    "freshOwnedPublicProbeOnly": true,
+    "oldR1Replayed": false,
+    "oldUnknownPid11754Requalified": false,
+    "productionReads": false,
+    "productionWrites": false,
+    "sqliteImported": false,
+    "credentialsRead": false,
+    "consumerStarted": false,
+    "serviceStarted": false,
+    "providerCalled": false,
+    "j3160Contacted": false,
+    "systemToolCopiedOrChanged": false,
+    "currentCaptureQualifiedByThisAlone": false
+  },
+  "limits": [
+    "This is actual qualification of the fixed public probe and exact native modules under this policy. A new current-consumer candidate still requires complete source, original proof binding and root admission.",
+    "Official Apple source commits are reference ABI anchors, not installed whole-file library pins. Observed dylib symbol image names and actual Darwin build are retained without that claim.",
+    "Process/group observations are sequential. Synchronous kernel calls reject late returns; no syscall hard-preemption claim is made.",
+    "R1's known failure and old PID11754 custody unknown remain unchanged; this successful fresh probe does not identify a unique instruction in either prior failure."
+  ],
+  "verifierNote": "Initial in-memory toolsBefore/toolsAfter comparison referenced absent labels; no conclusion relies on it. Replaced with mandatory three-entry utilityBefore/utilityAfter comparison, exact whole equal, and all bounds/profile checks."
+}

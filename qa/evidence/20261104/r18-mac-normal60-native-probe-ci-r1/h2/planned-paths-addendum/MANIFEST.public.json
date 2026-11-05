@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.native-h2-qa.planned-paths-addendum-manifest.v1",
+  "scope": "source-only two planned path bindings; no new ready or runtime qualification",
+  "previous_source_tree": "1262d0c035246c05bbab3a630be8c658a86901a4",
+  "files": [
+    {
+      "path": "reference/build-binding.UNRESOLVED.private.json",
+      "bytes": 3416,
+      "sha256": "29dd232aea71c0fc24ebb6ee40a0a4057604c18102edad1510fd4577d0165e67",
+      "blob": "ac1f53cba96837622d1acd92576b4dc26d700aea"
+    },
+    {
+      "path": "templates/build-binding.UNRESOLVED.private.json",
+      "bytes": 3570,
+      "sha256": "3eb19b48bc4fbc6fb110cdfeffb44c0a10e731b2e81c95c736fed771e48f45ca",
+      "blob": "461016810aa0ef0ccdf77efa601ad6c04e258d7d"
+    },
+    {
+      "path": "review/planned-paths.review.diff",
+      "bytes": 814,
+      "sha256": "ff7af9d89709c18b1edd4c50b18304540c0ba5c3320bf94026fc291b20baa247",
+      "blob": "46832a7812cf240985f6dabf6e8744ba0b9af6a2"
+    },
+    {
+      "path": "review/planned-paths-addendum.public.json",
+      "bytes": 2191,
+      "sha256": "1196e0ba706daa648827705b27672a2142eafcd6ce6bc65da6e9f3c71d85037b",
+      "blob": "77092497a61c79529b59f54d49f1baef292bbcd6"
+    },
+    {
+      "path": "review/ha-client-components-independent-review.public.json",
+      "bytes": 3186,
+      "sha256": "2a1dd22681f0ce0c75cf0e51676c6a65c2a83bac40b9c29a6c096d9468ada8fe",
+      "blob": "efb7bd1ede7ef9375bf231059c343066412bf765"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.h2-v0419-eos-independent-source-review.r1",
+  "verdict": "NO_BLOCKER_IN_EXACT_RECEIVE_EOS_SCOPE",
+  "runtime_or_compile_qualification": false,
+  "reviewed_upstream": {
+    "repository": "hyperium/h2",
+    "tag": "v0.4.19",
+    "commit": "d57d1b852fec9dda6d42d3454502006d52104da8",
+    "tag_ref_independently_read": true,
+    "four_exact_contents_at_commit_independently_read": true,
+    "source_bytes_match_all_four_copied_blobs": true
+  },
+  "pins": [
+    {
+      "name": "state",
+      "git_blob": "d0009a5a032fb60f97bc11ba9e6ddd3c9bc3253a",
+      "bytes": 17911,
+      "sha256": "486b99b293d0f874b72724e1511cb0b11b44b3906ea20eb176fae1821772794d"
+    },
+    {
+      "name": "recv",
+      "git_blob": "c56b368fb195eb3f1c0f42751343677ef85fda21",
+      "bytes": 49459,
+      "sha256": "49888eca03594469393d8b3bf328036007aff0e87df704f61a4556e4272386f8"
+    },
+    {
+      "name": "share",
+      "git_blob": "101987342f385e24b65a10c3f8341ff05a3d008b",
+      "bytes": 22749,
+      "sha256": "e313c11a24b649d4c9da937fb37e5c2cc7c689c53f6afd2470fd40fd030237c5"
+    },
+    {
+      "name": "streams",
+      "git_blob": "1b73b33394b79b006b4fdbdae827d9e1a7593fc3",
+      "bytes": 61200,
+      "sha256": "d2f866b385ea8107ecb4a56e0089523abeabb6a5dc8e107c0a6c3eeb26955290"
+    },
+    {
+      "name": "client",
+      "git_blob": "9f52f0ee35a0b4e5897e61a181103bbadc5682c6",
+      "bytes": 19309,
+      "sha256": "274ffd057b97fed95eb70ac273f4b4f596336c3cd9336cab0754e314dd844a8e"
+    }
+  ],
+  "reviewed_scope": [
+    "state.rs recv_reset / is_recv_end_stream / ensure_recv_open / recv_close",
+    "recv.rs poll_data / poll_trailers / schedule_recv / is_end_stream / recv_reset / received DATA END_STREAM transition",
+    "share.rs RecvStream data / trailers / is_end_stream delegation",
+    "streams.rs OpaqueStreamRef polling and reset delegation",
+    "client.rs inspect_headers / receive_body and its exchange original-deadline wrapper"
+  ],
+  "findings": [
+    {
+      "id": "pre_eos_reset",
+      "references": [
+        "state.rs:260-295",
+        "state.rs:424-459",
+        "recv.rs:1284-1297"
+      ],
+      "conclusion": "For an active response receive half without a prior received EOS, recv_reset records Cause::Error(remote_reset). NO_ERROR does not receive a success exemption. ensure_recv_open yields Err, which propagates through schedule_recv when the receive queue is empty."
+    },
+    {
+      "id": "buffered_data_is_not_completion",
+      "references": [
+        "recv.rs:1239-1264"
+      ],
+      "conclusion": "Buffered DATA is returned before state scheduling. A reset may therefore be observed after some successful DATA items. The candidate checks every item and continues through None; returning any earlier body prefix is not classified as complete."
+    },
+    {
+      "id": "data_none_is_not_eos",
+      "references": [
+        "recv.rs:1246-1263",
+        "recv.rs:1267-1297",
+        "share.rs:411-444"
+      ],
+      "conclusion": "poll_data returns None when a trailer event is at the front without consuming that event. The candidate separately awaits trailers and rejects trailer errors. No data(None)-only EOS claim is made."
+    },
+    {
+      "id": "actual_eos_and_empty_queue",
+      "references": [
+        "recv.rs:645-650",
+        "state.rs:424-429",
+        "streams.rs:1501-1538"
+      ],
+      "conclusion": "RecvStream.is_end_stream reaches Recv::is_end_stream, requiring both the state to record a received EOS and an empty pending receive queue. It is stronger than an empty body buffer or data(None)."
+    },
+    {
+      "id": "post_eos_reset",
+      "references": [
+        "state.rs:260-295",
+        "state.rs:424-459"
+      ],
+      "conclusion": "The reset handler preserves previously received EOS as ErrorAfterEndStream, or leaves an already closed unqueued state unchanged. This preservation is not restricted to NO_ERROR. It permits completion of the already received message while retaining a reset for the send side."
+    },
+    {
+      "id": "candidate_conjunction",
+      "references": [
+        "client.rs:215-239",
+        "client.rs:242-267"
+      ],
+      "conclusion": "The candidate requires a single bounded syntactically strict Content-Length, every DATA item Ok, cumulative bytes within that length, data(None), trailers Ok and empty, actual is_end_stream=true, and final byte count exactly equal to Content-Length before setting response_complete."
+    },
+    {
+      "id": "deadline_and_connection_scope",
+      "references": [
+        "client.rs:270-378",
+        "client.rs:399-420"
+      ],
+      "conclusion": "The receive operation is under the same until passed to timeout_at. The connection driver is then aborted and awaited under that same deadline; runtime completion and output publication have later deadline checks. This review does not qualify the entire caller, filesystem output, controller, TLS implementation or runtime execution."
+    }
+  ],
+  "limitations": [
+    "This is a static review of the exact library and candidate source, not a Rust build, real HTTP/2 exchange, packet trace or product/official-CLI qualification.",
+    "The EOS conjunction establishes completed receive-message framing plus exact length. It must not be described as proof that no late reset occurred, that a late reset reason was NO_ERROR, or that both halves of the entire connection succeeded.",
+    "No h2 error is converted to success merely because its reason is NO_ERROR. Pre-EOS errors still prevent response_complete.",
+    "Only the listed candidate methods and surrounding deadline use were reviewed; Spec/input schema, private-output authority and full controller remain under their own review."
+  ],
+  "new_host_requests": 0,
+  "network_connections_to_fixture": 0,
+  "rust_compiles": 0,
+  "new_component_executions": 0,
+  "references": {
+    "tag": "https://api.github.com/repos/hyperium/h2/git/ref/tags/v0.4.19",
+    "state": "https://github.com/hyperium/h2/blob/d57d1b852fec9dda6d42d3454502006d52104da8/src/proto/streams/state.rs",
+    "recv": "https://github.com/hyperium/h2/blob/d57d1b852fec9dda6d42d3454502006d52104da8/src/proto/streams/recv.rs",
+    "share": "https://github.com/hyperium/h2/blob/d57d1b852fec9dda6d42d3454502006d52104da8/src/share.rs",
+    "streams": "https://github.com/hyperium/h2/blob/d57d1b852fec9dda6d42d3454502006d52104da8/src/proto/streams/streams.rs"
+  }
+}

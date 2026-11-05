@@ -1,0 +1,78 @@
+{
+  "core_blob": "f4389b968e4edd3f447ac45b50dbc91907c67f3a",
+  "core_bytes": 49069,
+  "core_sha256": "74c3417f17f9ab8246c99fc91fd629e78bfce3eafa190e4874d0673a855b6ce4",
+  "native_read_core_exact": true,
+  "native_streams_complete_exact": true,
+  "authoritative_exit0": true,
+  "original44": 44,
+  "separate7": 7,
+  "separate9": 9,
+  "cleanup46_complete": true,
+  "retained_normal_features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "artifact_libtest": {
+    "bytes": 153800944,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "5a714ff2bc79561fb812272e325fb90c1941916f0d28f9ffb9c618710667bf69"
+  },
+  "release_artifacts": {
+    "heptabao-seed": {
+      "bytes": 86751008,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "191885cbb24c0a75ba7c59ccca08ea1db42784bcba54f4f9b114a91c609edced"
+    },
+    "heptabao-server": {
+      "bytes": 92408592,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0"
+    }
+  },
+  "original_outer_seconds": 8280,
+  "terminal_publication_within_original_outer": true,
+  "actual_core_only": true,
+  "all_test_cargo_original_logs_still_pending": true
+}

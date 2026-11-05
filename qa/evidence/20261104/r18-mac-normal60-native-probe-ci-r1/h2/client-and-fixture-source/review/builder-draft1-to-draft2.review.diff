@@ -1,0 +1,84 @@
+--- candidate/build_native_h2_client_r1.py
++++ draft2/build_native_h2_client_r1.py
+@@ -34,6 +34,7 @@
+ PROFILE = {"opt_level": "3", "debuginfo": 0, "debug_assertions": True,
+            "overflow_checks": True, "test": False}
+ OPEN_FDS = set()
++FD_CLOSE_FAILED = False
+ 
+ class BindingError(RuntimeError):
+     pass
+@@ -44,7 +45,12 @@
+     return fd
+ 
+ def close_fd(fd):
+-    os.close(fd)
++    global FD_CLOSE_FAILED
++    try:
++        os.close(fd)
++    except BaseException:
++        FD_CLOSE_FAILED = True
++        raise
+     OPEN_FDS.remove(fd)
+ 
+ CAPS = {
+@@ -393,7 +399,7 @@
+               "normal_product_result_sha256": normal_observed["sha256"],
+               "normal_product_runner_sha256": NORMAL_RUNNER_SHA,
+               "caps": CAPS, "started_monotonic_ns": started, "deadline_monotonic_ns": until,
+-              "commands": [], "owned_cleanup": [], "all_owned_stopped": False,
++              "commands": [], "command_intents": [], "owned_cleanup": [], "all_owned_stopped": False,
+               "all_input_fds_closed": False, "completed_within_original_build_deadline": False,
+               "offline_only": True, "product_modified": False, "product_or_http_requests": 0,
+               "new_qa_components_not_added_to_product_44_7_9": True,
+@@ -432,6 +438,12 @@
+         def command(label, argv, cap, *, cwd=project):
+             start = time.monotonic_ns()
+             child_until = min(until, start + cap * 1_000_000_000)
++            remaining(child_until)
++            intent = {"label": label, "argv": argv, "cwd": str(cwd),
++                      "started_monotonic_ns": start, "deadline_monotonic_ns": child_until,
++                      "outer_cap_seconds": cap}
++            write_json(ROOT / (label + ".intent.public.json"), intent)
++            result["command_intents"].append(intent)
+             remaining(child_until)
+             out = open_fd(ROOT / (label + ".stdout"),
+                           os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW)
+@@ -608,21 +620,27 @@
+                                          for item in result["owned_cleanup"])
+         # A close failure remains represented by an open descriptor. Do not
+         # synthesize successful closure or repeat any child command.
+-        result["all_input_fds_closed"] = not OPEN_FDS
++        result["all_input_fds_closed"] = not OPEN_FDS and not FD_CLOSE_FAILED
++        result["incomplete_command_labels"] = sorted(
++            {item["label"] for item in result["command_intents"]}
++            - {item["label"] for item in result["commands"]})
++        result["command_outcome_unknown"] = bool(result["incomplete_command_labels"]) or not result["all_owned_stopped"]
+         finished = time.monotonic_ns()
+         result["completed_monotonic_ns"] = finished
+         result["completed_within_original_build_deadline"] = finished < until
+         if not (result["all_owned_stopped"] and result["all_input_fds_closed"]
++                and not result["command_outcome_unknown"]
+                 and result["completed_within_original_build_deadline"]):
+             result["status"] = "failed"
+         encoded = write_json(ROOT / "result.public.json", result)
+         print(json.dumps({"status": result["status"], "result": str(ROOT / "result.public.json"),
+                           "result_sha256": sha(encoded), "all_owned_stopped": result["all_owned_stopped"],
+-                          "all_input_fds_closed": not OPEN_FDS,
++                          "all_input_fds_closed": not OPEN_FDS and not FD_CLOSE_FAILED,
+                           "product_or_http_requests": 0,
+                           "completed_within_original_build_deadline": time.monotonic_ns() < until},
+                          sort_keys=True), flush=True)
+-    return 0 if result["status"] == "passed" and not OPEN_FDS and time.monotonic_ns() < until else 1
++    return 0 if (result["status"] == "passed" and not OPEN_FDS and not FD_CLOSE_FAILED
++                 and time.monotonic_ns() < until) else 1
+ 
+ 
+ if __name__ == "__main__":
+@@ -632,5 +650,5 @@
+         print(json.dumps({"status": "failed_before_or_after_owned_build",
+                           "failure_code": fixed_error(error),
+                           "runtime_qualification": False,
+-                          "all_input_fds_closed": not OPEN_FDS}, sort_keys=True), flush=True)
++                          "all_input_fds_closed": not OPEN_FDS and not FD_CLOSE_FAILED}, sort_keys=True), flush=True)
+         raise SystemExit(2) from None

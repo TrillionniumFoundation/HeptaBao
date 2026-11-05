@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.mac-native-proc-public-probe-contract.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "proposedRequest": {
+    "path": "dispatch/request.public.json",
+    "key": "heptabao-mac-native-proc-custody-a24d8182-20261105-r1",
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "cwd": "/Users/qianqi",
+    "outerSeconds": 60
+  },
+  "freshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/native-proc-sandbox-probe-r1",
+  "policy": {
+    "sameCaptureProfileFunction": true,
+    "samePriorPatchedPermissions": true,
+    "existingDevNullReadLiteralBytes": 41,
+    "newAdditionalPermissionBytes": 0,
+    "fixedPathRelocationsFromCaptureBefore": 3,
+    "networkPermissionAdded": false,
+    "systemUtilityCopiedOrChanged": false,
+    "noSandboxExecutionAdded": false
+  },
+  "bounds": {
+    "absoluteSharedSeconds": 45,
+    "nativeQuerySecondsMax": 4,
+    "scopedGroupProjectionSecondsMax": 4,
+    "nestedDiskutilSecondsMax": 30,
+    "publicPinReadBytesAggregate": 8388608,
+    "resultBytesMax": 262144,
+    "maximumProjectedGroupMembers": 64,
+    "pidBufferCapacityIntegers": 65,
+    "maximumNativeCalls": 4096,
+    "sourceStdinBytes": 75075,
+    "sourceStdinReadLimit": 75076,
+    "originalCleanupSeconds": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "projectionMax": 4
+    },
+    "lateSynchronousNativeReturnRejected": true,
+    "separateNativeSyscallWatchdog": false,
+    "cleanupNeverGrantsSuccessfulDeadlineExtension": true
+  },
+  "referenceABI": {
+    "xnuCommit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+    "dyldCommit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+    "procPgrpOnly": 2,
+    "procPidTbsdInfo": 3,
+    "procPidinfoArgumentForRetainedZombie": 1,
+    "structBytes": 136,
+    "fieldCount": 22,
+    "alignment": 8,
+    "referenceIsInstalledPin": false
+  },
+  "fixedLibraryInstallNames": [
+    "/usr/lib/system/libsystem_kernel.dylib",
+    "/usr/lib/libSystem.B.dylib"
+  ],
+  "runtimeLibraryObservation": {
+    "dladdrSymbols": [
+      "proc_listpids",
+      "proc_pidinfo",
+      "sysctlbyname",
+      "dladdr"
+    ],
+    "exactRequestedNames": true,
+    "imageNameMustHaveFixedSystemPrefix": "/usr/lib/",
+    "actualOsBuildQuery": "kern.osversion",
+    "actualUnameFields": [
+      "sysname",
+      "release",
+      "version",
+      "machine"
+    ],
+    "wholeImageHashClaim": false,
+    "sharedCacheMaterialization": false,
+    "dependencyClosureClaim": false
+  },
+  "nativeProjection": {
+    "schema": "heptabao.darwin-proc-bsdinfo-numeric.r1",
+    "fields": [
+      "pid",
+      "ppid",
+      "pgid",
+      "uid",
+      "stateCode",
+      "stateName",
+      "isZombie",
+      "birthSeconds",
+      "birthMicroseconds"
+    ],
+    "birthStrings": true,
+    "commAndNameNotPublished": true,
+    "allHostEnumeration": false,
+    "nullSizingCall": false,
+    "groupMembershipObservedTwice": true,
+    "shortStructOrBufferSaturationOrMembershipDrift": "refuse",
+    "zeroWithErrno": "refuse",
+    "retainedChildEsrch": "refuse",
+    "stateOrBirthNotValid": "refuse",
+    "pidOrGroupScope": "only actual self, known direct Popen child, and retained child PGID"
+  },
+  "actionSequence": [
+    "pin original QA and public tools",
+    "hold the original T5 anchors and complete parent diskutil under original outer custody",
+    "double-absence then create fresh owned public files only",
+    "launch exactly one sandbox child with the same patched policy",
+    "verify new modules before import and qualify ABI, actual library observations, and self numeric PID identity",
+    "bind native projection once, then run exactly one native-owned diskutil",
+    "retain WNOWAIT identity; observe group empty before first reap and no signals after reap",
+    "repeat self birth and group qualification",
+    "run the original four owned kernel refusal checks",
+    "verify source, module, utility, new-file and T5 fences; close all resources",
+    "accept only exact original stdout plus authoritative exit0 within the original deadline"
+  ],
+  "qualifiedSuccessRequires": {
+    "authoritativeExitCode": 0,
+    "completeOriginalStdout": true,
+    "stderrEmpty": true,
+    "childReportTyped": true,
+    "allOwnedCommandsStopped": true,
+    "noUnknown": true,
+    "allOwnedDescriptorsClosed": true,
+    "allFourKernelRefusals": true,
+    "oneNestedDiskutilExit0": true,
+    "nativeSelfIndependentCrosscheck": true,
+    "sameModuleAndSourceFences": true,
+    "finalT5AnchorsAndUuid": true,
+    "postClosureSharedDeadline": true
+  },
+  "scope": {
+    "productionDbOrCredentialOpened": false,
+    "currentCapture": false,
+    "sqlite": false,
+    "sdk": false,
+    "consumer": false,
+    "provider": false,
+    "j3160": false,
+    "productionServiceChanged": false,
+    "mainlineHelperReplacement": false,
+    "systemUtilitiesCopiedOrChanged": false,
+    "priorBusinessOrProbeReplayed": false
+  },
+  "history": {
+    "priorDiskutilPid11754Outcome": "UNKNOWN_PERMANENTLY_PRESERVED",
+    "psComparison": "KNOWN_FAILURE_IMMUTABLE",
+    "psComparisonActualTree": "a2994e7cc9cbba9fde04157070ffce07e822ce84",
+    "psComparisonRootReview": "fef9d0c53833c2262f6d1e1adb26355e3d9b7bb5",
+    "uniqueSetuidOrSignatureCauseClaimed": false
+  },
+  "verification": {
+    "actualSelectedComponentCount": 27,
+    "realNativeApiCalls": 0,
+    "nativeLibrariesLoaded": 0,
+    "completeModuleAstCompiled": 4,
+    "candidateMainsExecuted": 0,
+    "threeStrictDiffs": true,
+    "unchangedOriginalProbeDefinitions": 16,
+    "commandsOnlyImportChanged": true,
+    "selectedCandidateNativeOrFdOrChildOrNetworkOperations": 0,
+    "harnessPublicSourceFileReads": true
+  },
+  "limitations": [
+    "Apple exact source establishes the reference contract, not the installed kernel or whole dylib identity.",
+    "dladdr reports observed image/symbol names; this does not hash dyld shared-cache images or all dependencies.",
+    "The native calls are synchronous; before/after monotonic gates reject late returns but do not preempt a blocked syscall.",
+    "The kernel reference assigns pbi_pgid only when a session exists; a missing/zero group field is refused, including for a retained zombie, without inference or fallback.",
+    "Two scoped group snapshots and retained direct-child birth constrain ownership but are not an atomic whole-system snapshot.",
+    "Only natural diskutil completion is planned on the actual host; TERM/KILL logic has selected pure fake-component evidence, not new physical qualification.",
+    "If a nested child has been started but native capture/cleanup cannot be proved, the report remains unknown; no replacement path or repeated probe is authorized."
+  ]
+}

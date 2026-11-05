@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.native-h2-qa.planned-normal-paths-addendum.v1",
+  "status": "SOURCE_ONLY_UNRESOLVED",
+  "base_source_tree": "1262d0c035246c05bbab3a630be8c658a86901a4",
+  "base_template": {
+    "blob": "ac1f53cba96837622d1acd92576b4dc26d700aea",
+    "bytes": 3416,
+    "sha256": "29dd232aea71c0fc24ebb6ee40a0a4057604c18102edad1510fd4577d0165e67"
+  },
+  "next_template": {
+    "bytes": 3570,
+    "sha256": "3eb19b48bc4fbc6fb110cdfeffb44c0a10e731b2e81c95c736fed771e48f45ca",
+    "blob": "461016810aa0ef0ccdf77efa601ad6c04e258d7d"
+  },
+  "changes": [
+    {
+      "field": "target",
+      "before": null,
+      "after": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3"
+    },
+    {
+      "field": "normal_product_result.path",
+      "before": null,
+      "after": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json"
+    }
+  ],
+  "path_evidence": {
+    "normal_runner_blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555",
+    "combined_result_basename": "result.public.json",
+    "source": "parent and HA messages identify the new planned output/target; the exact frozen runner writes result.public.json",
+    "actual_target_or_artifact_observed_by_this_addendum": false
+  },
+  "checks": {
+    "strict_diff_hunks": 2,
+    "inverse_two_fields_recovers_original_exact": true,
+    "ready_false": true,
+    "target_identity_null": true,
+    "result_sha256_null": true,
+    "result_bytes_null": true,
+    "all_tool_and_host_identity_unknowns_unchanged": true,
+    "all_candidate_sources_and_caps_unchanged": true
+  },
+  "runtime_admission": false,
+  "qa_compile_started": false,
+  "host_calls": 0,
+  "notes": [
+    "The reported running normal job is not substituted for completed authoritative normal release plus exact 44/7/9 and owned-cleanup proof.",
+    "No fallback target is created. The QA builder still requires root-approved existing target identity and sole-target availability after the normal job terminates.",
+    "The old 49-file source packet and its original null template remain immutable.",
+    "No future product or QA binary SHA, version, or target filesystem identity is inferred from these path strings."
+  ]
+}

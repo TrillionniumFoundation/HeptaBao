@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.mac-native-proc-ancestor-read-probe-contract.r2",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "previousActualTree": "83c0d88327a8ad5bfee5ae8a8c55dea4fea6f1eb",
+  "previousVerdict": "FAIL_KNOWN_IN_KERNEL_REFUSALS",
+  "previousNativeAbiSelfAndNestedCustodyObserved": true,
+  "previousFourKernelRefusalsUnqualified": true,
+  "freshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/native-proc-sandbox-probe-r2",
+  "request": {
+    "bytes": 78264,
+    "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+    "git_blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12"
+  },
+  "key": "heptabao-mac-native-proc-ancestor-read-4dc7cc28-20261105-r2",
+  "controller": {
+    "bytes": 76658,
+    "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "git_blob": "e3bc464388fbeb53f830713bdfc9054617432314"
+  },
+  "addedPermission": {
+    "rule": "(allow file-read* (literal \"/Volumes/T5/hepta-vnext-recovery-20261013\"))\n",
+    "bytes": 73,
+    "actuallyNewBeyondDevnull": true,
+    "literalDirectoryOnly": true,
+    "subtree": false,
+    "write": false,
+    "network": false,
+    "privateFileLiteralSetUnchanged": true,
+    "purpose": "Allow the existing held-parent O_RDONLY|O_DIRECTORY open; no directory listing is added by code."
+  },
+  "sourceChanges": [
+    "new fresh probe root/schema/loader/key",
+    "one explicit ancestor literal in generated patched profile",
+    "fixed public source-label/line traceback projection capped at16; no message/filename/locals",
+    "typed report must acknowledge exactly the new rule/path"
+  ],
+  "sourceUnchanged": {
+    "threeNativeModules": true,
+    "captureProfileFunction": true,
+    "originalFourKernelRefusalBody": true,
+    "remaining17Definitions": true,
+    "allOriginalPrivatePaths": true,
+    "childAndOuterOwnedLifecycle": true
+  },
+  "bounds": {
+    "shared45": 45,
+    "projection4": 4,
+    "diskutil30": 30,
+    "supervisor60": 60,
+    "publicReadBytesAggregate": 8388608,
+    "resultMax": 262144,
+    "originalCleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "projectionMax": 4
+    }
+  },
+  "diagnosis": {
+    "staticMissingAncestorRead": true,
+    "previousActualLinenoUnavailable": true,
+    "noUniqueDynamicCauseClaim": true,
+    "successMustCompleteAllFourKernelRefusals": true
+  },
+  "runtimeScope": {
+    "db": false,
+    "credential": false,
+    "sqlite": false,
+    "consumer": false,
+    "provider": false,
+    "j3160": false,
+    "productionService": false,
+    "oldRootReused": false,
+    "priorJobReplayed": false,
+    "mainlineHelperReplaced": false
+  },
+  "verifier": {
+    "initialFailure": "Verifier used ast.literal_eval on the unchanged 8*1024*1024 expression and stopped before selected profiles. Original failure retained.",
+    "correctedComparison": "Compare the original bound AST exactly; no candidate bound or code was changed for this verifier correction.",
+    "actualExit": 0,
+    "candidateMainExecuted": false,
+    "nativeApiCalls": 0,
+    "physicalHostActions": 0,
+    "sourceAstCompiled": true,
+    "fixedPublicDiagnosticCases": 3,
+    "original27NativeComponentsNotRerun": true
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.native-h2-source.strict-diffs.v1",
+  "proof": [
+    {
+      "file": "controller-reference-to-h2.review.diff",
+      "hunks": 14,
+      "strict_apply_whole_equal": true
+    },
+    {
+      "file": "binding-reference-to-h2-final.review.diff",
+      "hunks": 13,
+      "strict_apply_whole_equal": true
+    },
+    {
+      "file": "binding-draft1-to-draft2.review.diff",
+      "hunks": 2,
+      "strict_apply_whole_equal": true
+    },
+    {
+      "file": "builder-draft1-to-draft2.review.diff",
+      "hunks": 6,
+      "strict_apply_whole_equal": true
+    }
+  ]
+}

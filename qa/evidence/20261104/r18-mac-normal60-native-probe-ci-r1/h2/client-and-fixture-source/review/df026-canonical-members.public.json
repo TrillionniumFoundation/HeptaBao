@@ -1,0 +1,64 @@
+{
+  "root": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "dirs": 358,
+  "leaves": 3913,
+  "all_tree_merkle_verified": true,
+  "selected_whole_blob_members": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "bytes": 43899,
+      "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "mode": "100644"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "bytes": 14013,
+      "sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d",
+      "blob": "6828ae88590184830da949001b13abd82a4f9b10",
+      "mode": "100644"
+    }
+  ]
+}

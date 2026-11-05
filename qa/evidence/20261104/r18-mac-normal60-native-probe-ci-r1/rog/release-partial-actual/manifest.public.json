@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.raw-source-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "normal-release-result.public.json",
+      "bytes": 3137,
+      "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+      "blob": "60ee91f8996765b8a0ec42f8cb10e55a863d970c"
+    },
+    {
+      "path": "native-build.public.json",
+      "bytes": 772,
+      "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+      "blob": "17f42f7984a5b335ba7b4bb3cd1d9a1d4dc59846"
+    },
+    {
+      "path": "normal-release-build.public.json",
+      "bytes": 709,
+      "sha256": "bca26acb4b2e11c24f014b57adc504f4ae0fb1a9f7ecf85e2a852a9092a59e99",
+      "blob": "2d821678a00d81ca0051778626d01dcf1ad5b007"
+    },
+    {
+      "path": "sdk/three_receipts.public.json",
+      "bytes": 6034,
+      "sha256": "bf7bb0d0c51f47e3f0438def01e0b5c88e7efbd375cc255a24a131b2f27f2ebf",
+      "blob": "d3fe64d883ad4eb6a1b09ac3ef63c5411d37a694"
+    },
+    {
+      "path": "sdk/release_event.public.json",
+      "bytes": 4471,
+      "sha256": "dd5a62a53473934e7de0f486c47fd15c2adb0f1580331b0cf79d723d92da6903",
+      "blob": "3031f49d436d197ce98d66c070ea0f268546eef8"
+    },
+    {
+      "path": "authority.running.public.json",
+      "bytes": 471,
+      "sha256": "07699453397ec001fb3af6507517a7831e92e9dcbeb7d1b6235dfeb4489a66ca",
+      "blob": "ed8883120c502beaceed616f6798495de46bd3fe"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 2286,
+      "sha256": "85e2a01df82445cccd550c86b8031a00abe3742efb837630687c7df8f22f9e5e",
+      "blob": "18c5d5be71a59ee8f03d336442ba1f378140bdfc"
+    }
+  ]
+}

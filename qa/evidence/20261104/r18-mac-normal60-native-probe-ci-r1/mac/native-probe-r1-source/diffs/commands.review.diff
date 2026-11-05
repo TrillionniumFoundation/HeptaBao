@@ -1,0 +1,12 @@
+diff --git a/mac_native_owned_commands_r1.py b/mac_native_owned_commands_r1.py
+--- a/mac_native_owned_commands_r1.py
++++ b/mac_native_owned_commands_r1.py
+@@ -8,7 +8,7 @@
+ from __future__ import annotations
+ from contextlib import contextmanager
+ import hashlib, os, select, signal, subprocess, time
+-from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped
++from mac_native_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped
+ 
+ class CommandRefused(RuntimeError):pass
+ def need(value,code):

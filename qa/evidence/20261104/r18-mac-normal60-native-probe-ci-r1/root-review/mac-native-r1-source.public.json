@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.mac-native-proc-source-root-review.v1",
+  "status": "PASS_SOURCE_REVIEW_PENDING_INDEPENDENT_PEER_AND_EXACT_DISPATCH",
+  "source_tree": "5bf399d0b9686b12c6b39ecc95801156395b0e48",
+  "whole_files": 47,
+  "whole_bytes": 843928,
+  "merkle_trees": 20,
+  "request_blob": "7d1ae6a81a2024881bdfe0e59186883e970f0548",
+  "request_bytes": 76645,
+  "request_sha256": "d11b8ac9f836b3406857e9c0bebc9a7d3e95bffcc95fab61fdf9268dea21fd71",
+  "probe_blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c",
+  "probe_bytes": 75075,
+  "probe_sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+  "strict_diffs": [
+    {
+      "name": "custody",
+      "base": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "diff": "04902daf5d21ffb53b71afdc1af16cbc6a0297ac",
+      "target": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+      "hunks": 3,
+      "whole_exact": true
+    },
+    {
+      "name": "commands",
+      "base": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "diff": "df17ce1a8dc9fdc24ab3fdde334fa69e53ead5f0",
+      "target": "3cf86925b936062de7453193548b8ed32e2c4e45",
+      "hunks": 1,
+      "whole_exact": true
+    },
+    {
+      "name": "probe",
+      "base": "7f3114022a5fb142af0082af0eca641c1464ee63",
+      "diff": "e2969be573ed45a67d3bbf77d3a18550d46349d6",
+      "target": "a9803712eae05b6b48479ea23cf8a027ffd2684c",
+      "hunks": 13,
+      "whole_exact": true
+    }
+  ],
+  "root_independent_ast": {
+    "four_sources_compile_not_import": true,
+    "original_functions_exact": 16,
+    "embedded_modules_exact": 3,
+    "candidate_modules_executed": 0,
+    "host_calls": 0,
+    "prior_oversized_local_command_rejected_before_process_creation": true
+  },
+  "read_scope": [
+    "complete projection and explicit 136-byte layout, fixed install names and symbol observations",
+    "complete custody delta and Commands import-only delta",
+    "complete probe nonembedded lifecycle; embedded payload whole hashes independently matched",
+    "exact stdin and loader; one fresh root, original shared45/query4/diskutil30/outer60",
+    "typed success requires one nested diskutil known exit0, retained child identity and group closure before reap, no signals after reap, four original kernel refusals, source/tool/module/T5 full fences and postclosure deadline"
+  ],
+  "limits": [
+    "Apple exact upstream commits are reference ABI, not installed kernel/dylib whole pins",
+    "synchronous native calls cannot be individually preempted; late return must fail",
+    "actual group/zombie ABI and permission behavior still unqualified",
+    "original PID11754 unknown permanently preserved; no old probe or business replay"
+  ],
+  "scope": {
+    "public_only": true,
+    "current_credentials": false,
+    "production_capture": false,
+    "mainline_helper_replacement": false,
+    "service_changes": false,
+    "production_cutover": false,
+    "old_cleanup": false
+  }
+}

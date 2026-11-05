@@ -1,0 +1,246 @@
+{
+  "schema": "heptabao.mac-source35-full-originals-root-review.v1",
+  "tree": "875f2bdaf6408eba86b428b7f6198ac1f98f6fa1",
+  "files": 134,
+  "bytes": 2575608,
+  "merkle": {
+    "root_sha": "875f2bdaf6408eba86b428b7f6198ac1f98f6fa1",
+    "trees_verified": 3
+  },
+  "native_text_file_reads": 103,
+  "version_pinned_binary_reads": 14,
+  "canonical_source_and_index_whole_exact": [
+    {
+      "label": "027-git-ls-tree",
+      "size": 450325,
+      "sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+      "chunks": 7,
+      "version": "16777244:72557824:450325:1793851760388323421:1793851760388323421",
+      "canonical_rows": 3913,
+      "canonical_whole_exact": true
+    },
+    {
+      "label": "028-git-ls-files",
+      "size": 438586,
+      "sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26",
+      "chunks": 7,
+      "version": "16777244:72557827:438586:1793851760416904181:1793851760416904181",
+      "canonical_rows": 3913,
+      "canonical_whole_exact": true
+    }
+  ],
+  "command_closure": [
+    {
+      "label": "000-t5-volume-identity",
+      "pid": 29675,
+      "cap": 30,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "001-git-rev-parse",
+      "pid": 29677,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "002-git-rev-parse",
+      "pid": 29679,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "003-git-status",
+      "pid": 29681,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "004-independent-local-clone",
+      "pid": 29683,
+      "cap": 180,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "005-git-remote",
+      "pid": 29694,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "006-git-remote",
+      "pid": 29697,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "007-git-bundle",
+      "pid": 29701,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "008-git-bundle",
+      "pid": 29704,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "009-git--c",
+      "pid": 29706,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "010-git-rev-parse",
+      "pid": 29711,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "011-git-show",
+      "pid": 29713,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "012-git-show",
+      "pid": 29715,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "013-git-show",
+      "pid": 29717,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "014-git-show",
+      "pid": 29719,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "015-git-show",
+      "pid": 29721,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "016-git-rev-list",
+      "pid": 29723,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "017-git-rev-list",
+      "pid": 29725,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "018-git-rev-list",
+      "pid": 29727,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "019-git-rev-list",
+      "pid": 29729,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "020-git-checkout",
+      "pid": 29731,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "021-git-rev-parse",
+      "pid": 29743,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "022-git-rev-parse",
+      "pid": 29745,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "023-git-status",
+      "pid": 29747,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "024-git-fsck",
+      "pid": 29756,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "025-git-rev-parse",
+      "pid": 29770,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "026-git-rev-parse",
+      "pid": 29772,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "027-git-ls-tree",
+      "pid": 29774,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "028-git-ls-files",
+      "pid": 29776,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "029-git-rev-parse",
+      "pid": 29778,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "030-git-rev-parse",
+      "pid": 29780,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "031-git-status",
+      "pid": 29782,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "032-git-rev-parse",
+      "pid": 29784,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "033-git-rev-parse",
+      "pid": 29786,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    },
+    {
+      "label": "034-git-status",
+      "pid": 29788,
+      "cap": 90,
+      "exit0_reaped_empty": true
+    }
+  ],
+  "old_core_archival_pending_preserved_as_history": true,
+  "all_105_original_files_verified": true
+}

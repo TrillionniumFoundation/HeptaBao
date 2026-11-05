@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.mac-native-proc-exact-public-probe-admission.v1",
+  "decision": "GO_ONE_NEW_PUBLIC_PROBE_ONLY",
+  "at_utc": "2026-11-05 04:36:45 UTC",
+  "source_tree": "5bf399d0b9686b12c6b39ecc95801156395b0e48",
+  "root_source_review": "530daa52426764d125892023cc0ca5efca5fba8f",
+  "independent_peer": "b73c417ac797e5eba8b98fffba7a0a86887caad0",
+  "exact_request": {
+    "blob": "7d1ae6a81a2024881bdfe0e59186883e970f0548",
+    "bytes": 76645,
+    "sha256": "d11b8ac9f836b3406857e9c0bebc9a7d3e95bffcc95fab61fdf9268dea21fd71",
+    "host": "mac",
+    "key": "heptabao-mac-native-proc-custody-a24d8182-20261105-r1",
+    "source_stdin_bytes": 75075,
+    "source_stdin_sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857"
+  },
+  "scheduling": {
+    "previous_mac_normal_job": "1a1a9eb00ff-fc05-39a5",
+    "independent_authoritative_terminal_sdk": "4c815948aba8504693f6f12bb46bcf648ee29383",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false
+  },
+  "bounds": {
+    "shared_seconds": 45,
+    "projection_max_seconds": 4,
+    "nested_diskutil_max_seconds": 30,
+    "outer_seconds": 60,
+    "original_cleanup_seconds": {
+      "term": 1,
+      "wait": 5,
+      "group": 3
+    }
+  },
+  "qualifies_only_on_actual_complete_terminal": {
+    "exit0": true,
+    "all_child_closure": true,
+    "no_unknown": true,
+    "actual_native_abi_and_self_identity": true,
+    "one_nested_diskutil_exit0": true,
+    "four_owned_kernel_refusals": true,
+    "whole_before_after_source_and_tool_fences": true,
+    "postclosure_original_deadline": true
+  },
+  "prohibitions": {
+    "production_capture": false,
+    "credentials": false,
+    "mainline_helper_replacement": false,
+    "consumer_provider_j3160": false,
+    "production_service_change": false,
+    "prior_probe_or_business_replay": false,
+    "production_cutover_or_cleanup": false
+  },
+  "history": "PID11754 original nested outcome unknown and system/owned-copy ps known failures remain unchanged."
+}

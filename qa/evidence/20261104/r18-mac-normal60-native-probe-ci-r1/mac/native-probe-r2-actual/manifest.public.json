@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.mac-native-proc-r2-actual-packet.v1",
+  "status": "PASS_PUBLIC_NATIVE_PROJECTION_RETAINED_CUSTODY_AND_FOUR_KERNEL_REFUSALS",
+  "jobId": "1a1aa0eabee-fc05-3c36",
+  "sourceTree": "c18b0dbdd6dc90742d0152644914c50736b3a5c8",
+  "submissionInvocations": 1,
+  "files": [
+    {
+      "path": "runtime/intent.original.json",
+      "mode": "100644",
+      "bytes": 78264,
+      "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+      "git_blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12"
+    },
+    {
+      "path": "runtime/root-go.original.json",
+      "mode": "100644",
+      "bytes": 2165,
+      "sha256": "890dfb7a9fccbf550262ea60db2a4966ae0fd2b89c96796c6679437ead7b28e8",
+      "git_blob": "e1725cbd3cb31019cb698c199d3ae705f466a153"
+    },
+    {
+      "path": "runtime/start-ack.original.json",
+      "mode": "100644",
+      "bytes": 1431,
+      "sha256": "f0eb6d4dd1fa817a985b90698c9d515f4c6dea7aae509f97b395e9c4ee95d13f",
+      "git_blob": "8201eec73accdd3d0764dd6614e0fe737f98fb7e"
+    },
+    {
+      "path": "runtime/start-ack.mcp-snapshot.json",
+      "mode": "100644",
+      "bytes": 1690,
+      "sha256": "9348eecda66e20a4d570ff14c8dee60cc9a2c950015c9d9508e57d93de23d932",
+      "git_blob": "0a20e4861cad058ef634968c39c721ff265eb225"
+    },
+    {
+      "path": "runtime/authority.original.json",
+      "mode": "100644",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "git_blob": "da54efb279857250790f0ed946c55aaad405d505"
+    },
+    {
+      "path": "runtime/authority.mcp-snapshot.json",
+      "mode": "100644",
+      "bytes": 956,
+      "sha256": "d1303347f4bcae9998573e41da19d770b3fb44c5505101ad0cd96ca6d5f0d5f8",
+      "git_blob": "959020ef3a5db32fff4b4cf2cd8bd8bacfe9ce0f"
+    },
+    {
+      "path": "runtime/read-0.original.json",
+      "mode": "100644",
+      "bytes": 51222,
+      "sha256": "efcc428f7618b63bbe0ca467bd5e8f6c3d07bc559d7c13eb623e66a983ab5989",
+      "git_blob": "eef64f2ff213fb9ba944626322825b3fc606e73c"
+    },
+    {
+      "path": "runtime/read-1.original.json",
+      "mode": "100644",
+      "bytes": 24044,
+      "sha256": "5f792ec0bd5598cdd12f0ea9a81e7756601f8a8062d1e48f55c06106361f6332",
+      "git_blob": "ec75a4da47b831eae4286c6ed49cd7abe5ad6fe4"
+    },
+    {
+      "path": "runtime/read-2.original.json",
+      "mode": "100644",
+      "bytes": 329,
+      "sha256": "2e374ad7a9cebc5083563fa39da7f0353b85762aba0347c8aa4f2e34dbfcf97e",
+      "git_blob": "00cd57a993a66c6c59b7c1400bff8fb1b19013b2"
+    },
+    {
+      "path": "runtime/read-0.mcp-snapshot.json",
+      "mode": "100644",
+      "bytes": 54894,
+      "sha256": "fa21e3b9026feb891360b054bb088d1e0f36a022f978bef75c0281c58f0c6b3d",
+      "git_blob": "019b0b06ff31744ba821702500c2fb071bedc932"
+    },
+    {
+      "path": "runtime/read-1.mcp-snapshot.json",
+      "mode": "100644",
+      "bytes": 25769,
+      "sha256": "318f79802b2e82d2f79ecb12cdcb07281b06cc61ab7839b7f3b46f9cb71fe1de",
+      "git_blob": "39b1832460377998ec9f5288b689f816be816feb"
+    },
+    {
+      "path": "runtime/read-2.mcp-snapshot.json",
+      "mode": "100644",
+      "bytes": 513,
+      "sha256": "b8858485d67df6f298f32a0609805d129e9e9fbf6fa65d3b3b81dc49d8b067da",
+      "git_blob": "5527cadb33bf5a32229a023b15d298d167f28ed7"
+    },
+    {
+      "path": "runtime/stdout.original.json",
+      "mode": "100644",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "git_blob": "08056cb82289a44037c771b0ea03982ea11064be"
+    },
+    {
+      "path": "runtime/child-stdout.original.json",
+      "mode": "100644",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "git_blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+    },
+    {
+      "path": "runtime/reconstruction.public.json",
+      "mode": "100644",
+      "bytes": 1170,
+      "sha256": "3b69c603db46efc1421b8a93f0ebf12651a8aade25734a68da35cdee546b3d7c",
+      "git_blob": "1649accd2973c2083c5707c1d164359e0f841d4d"
+    },
+    {
+      "path": "author-terminal-review.public.json",
+      "mode": "100644",
+      "bytes": 20700,
+      "sha256": "9bc5b23135ed31d49d848b65d036cbfecdd258dc72617655b5b8986946361341",
+      "git_blob": "e4f96e1ac7caedba378dfdae335f1bb5361992f6"
+    }
+  ]
+}

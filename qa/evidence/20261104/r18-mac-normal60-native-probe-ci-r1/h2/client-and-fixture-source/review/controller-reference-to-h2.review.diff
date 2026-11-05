@@ -1,0 +1,739 @@
+--- reference/phaseb_controller_r3.py
++++ candidate/native_h2_gate_r1.py
+@@ -1,9 +1,9 @@
+ #!/usr/bin/env python3
+-"""NEW Phase B R3: official OpenBao 2.7.1 CLI against real native HA archives.
+-
+-The unavailable R2 controller is not reproduced or granted its source review.
+-Run only after the new binding, prepare receipt and this complete source are
+-reviewed. No production state, provider, J3160, or old live fixture is used.
++"""NEW independent normal-native HTTP/2 gate for exact df026.
++
++Reuse the recovered normal setup and owned lifecycle. Two explicit H2 GETs
++and one independent H1 archive control are new operations in a fresh fixture.
++No official CLI command, restore, replay, provider or production cutover runs.
+ """
+ from __future__ import annotations
+ 
+@@ -17,22 +17,20 @@
+ import re
+ import signal
+ import stat
++import ssl
++import struct
+ import subprocess
+ import sys
+ import time
+ from types import FunctionType
+ 
+ sys.dont_write_bytecode = True
+-SCHEMA = "heptabao.official271-native-cli-phaseb-r3.controller.v1"
++SCHEMA = "heptabao.normal-native-h2-gate.controller.v1"
+ BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
+ SNAPSHOT_ROUTE = "/v1/sys/storage/raft/snapshot"
+-CASES = (
+-    ("B01", "leader_save_archive_A", "save", "leader"),
+-    ("B02", "leader_restore_archive_A", "restore", "leader"),
+-    ("B03", "leader_save_archive_B", "save", "leader"),
+-    ("B04", "default_standby_save", "save", "standby"),
+-    ("B05", "default_standby_restore_archive_B", "restore", "standby"),
+-)
++H2_BODY_LIMIT = 8 * 1024 * 1024
++CLIENT_REPORT_FIELDS = frozenset(["schema","candidate_commit","candidate_tree","stage","error_code","deadline_monotonic_ns","operation","connections_started","tls_chain_and_hostname_verified","selected_alpn_h2","tls_version","peer_leaf_sha256","request_dispatched","send_request_calls","stream_id","response_status","header_count","header_bytes","header_sha256","content_length","content_type","data_frames","data_none_observed","trailers_completed","trailers_empty","recv_end_stream","response_complete","body_bytes","body_sha256","connection_task_joined","connection_task_cancelled_after_observation","completed_before_original_deadline","outcome_unknown","client_reconnects","client_request_retries","redirects_followed","trace_enabled","raw_error_messages_emitted","product_or_official_cli_qualification"])
++
+ 
+ 
+ class Failure(RuntimeError):
+@@ -84,7 +82,7 @@
+     require(sys.flags.isolated == 1 and sys.flags.no_site == 1 and sys.flags.dont_write_bytecode == 1,
+             "explicit_python_I_S_B_required")
+     require(binding_path.is_absolute() and binding_path.parent.parent == BASE
+-            and re.fullmatch(r"official271-native-cli-phaseb-r3-control-r[0-9]+",
++            and re.fullmatch(r"normal-native-h2-gate-control-r[0-9]+",
+                              binding_path.parent.name) is not None
+             and binding_path.name == "binding.private.json", "bootstrap_binding_path")
+     st = binding_path.lstat()
+@@ -115,7 +113,7 @@
+     spec = json.loads(raw, object_pairs_hook=no_duplicates)
+     require(spec.get("ready_for_readonly_prepare") is True, "binding_still_unresolved")
+     expected = {
+-        "phaseb_controller_r3.py", "phaseb_binding_r3.py", "phaseb_evidence_r3.py",
++        "native_h2_gate_r1.py", "native_h2_binding_r1.py", "phaseb_evidence_r3.py",
+         "native_fixture_reference_r8.py", "official_cli_reference_r4.py",
+     }
+     require(set(spec["qa_files"]) == expected, "bootstrap_exact_qa_set")
+@@ -149,7 +147,7 @@
+         require(sha(content) == pin["sha256"] and len(content) == pin["bytes"], "bootstrap_qa_digest")
+         if name in recovered:
+             require((len(content), sha(content)) == recovered[name], "exact_recovered_reference_before_exec")
+-        if name == "phaseb_controller_r3.py":
++        if name == "native_h2_gate_r1.py":
+             require(path == Path(__file__).absolute(), "executed_controller_exact_location")
+             continue
+         module_spec = importlib.util.spec_from_file_location("phaseb_r3_" + name[:-3], path)
+@@ -158,7 +156,7 @@
+         sys.modules[module_spec.name] = module
+         exec(compile(content, str(path), "exec"), module.__dict__)
+         loaded[name] = module
+-    return (loaded["phaseb_binding_r3.py"], loaded["phaseb_evidence_r3.py"],
++    return (loaded["native_h2_binding_r1.py"], loaded["phaseb_evidence_r3.py"],
+             loaded["native_fixture_reference_r8.py"], loaded["official_cli_reference_r4.py"])
+ 
+ 
+@@ -292,6 +290,9 @@
+             self.seed_owned = None
+             self.spawn_counts = {}
+             self.cold_results = []
++            self.h2_results = []
++            self.h2_intents = []
++            self.h2_state_unchanged = False
+             self.secret_values = []
+             self.checks = []
+             self.failures = []
+@@ -622,274 +623,267 @@
+             self.deadline()
+             return value
+ 
+-        def mutate_version3(self, marker: str, label: str) -> dict:
+-            self.mutation_allowed()
+-            role = self.roles(label + "-roles")
+-            self.actual_leader = role["actual_leader"]
+-            self.operation_inflight = {"kind": "single_cas2_write_version3", "label": label,
+-                                       "node": self.actual_leader}
+-            try:
+-                observation, raw = self.request(
+-                    self.actual_leader, "POST", "/v1/wire/data/seed", label + "-cas2-once",
+-                    body={"options": {"cas": 2}, "data": {"marker": marker}})
+-                self.check(label + "_single_cas2_ack", observation["status"] == 200
+-                           and evidence.decode_json(raw).get("data", {}).get("version") == 3)
+-                self.operation_inflight = None
+-            except BaseException:
+-                self.outcome_unknown = True
+-                self.boundary_known = False
+-                raise
+-            current = self.state_view(label + "-readback")
+-            for node, values in current["nodes"].items():
+-                self.check(label + "_node" + node + "_new_distinct_version3",
+-                           values["version3"]["data"] == {"marker": marker}
+-                           and values["metadata"]["current_version"] == 3
+-                           and values["versions"] == self.initial_state["nodes"][node]["versions"])
+-            return current
+-
+         def audit_window(self, before: dict) -> dict:
+             after = evidence.capture_audits(self.root, self.deadline())
+             return evidence.audit_delta(before, after, self.deadline())
+ 
+-        def audit_cli_terminal(self, audit: dict, command: str, target: int) -> dict:
++        def one_audit_pair(self, before: dict, target: int, label: str) -> dict:
++            audit = self.audit_window(before)
++            # Keep the recovered audit parser byte-identical; describe this
++            # new request window explicitly instead of adopting its old label.
++            audit["reference_association_scope"] = audit.pop("association_scope")
++            audit["association_scope"] = "single_owned_" + label + "_window_without_other_controller_http"
+             pairs = audit["pairs"]
+-            complete = (audit["complete_known_request_response_pairs"]
+-                        and not audit["historical_delivery_veto_observed"]
+-                        and len(pairs) in (1, 2)
+-                        and all(pair["kind"] == "request" for pair in pairs)
+-                        and len({pair["node"] for pair in pairs}) == len(pairs)
+-                        and sum(pair["node"] == target for pair in pairs) == 1)
+-            statuses = [pair["status"] for pair in pairs]
+-            redirects = [pair for pair in pairs if pair["status"] == 307]
+-            terminal = [pair for pair in pairs if pair["status"] != 307]
+-            if redirects:
+-                complete = (complete and len(redirects) == 1 and redirects[0]["node"] == target
+-                            and len(terminal) == 1)
+-            else:
+-                complete = complete and len(pairs) == 1 and len(terminal) == 1
+-            status = terminal[0]["status"] if len(terminal) == 1 else None
+-            # 202, conflicts and server failures may retain committed history
+-            # with uncertain delivery. Never infer retry permission from them.
+-            known_status = status in (200, 204, 400, 403, 404, 405)
+-            if command == "restore":
+-                known_status = status in (200, 204, 400, 403)
+-            return {"single_cli_window_pair_pattern": bool(complete),
+-                    "terminal_status": status, "statuses": statuses,
+-                    "server_boundary_known": bool(complete and known_status),
+-                    "client_http_framing_observed": False,
+-                    "redirects_followed_by_controller": 0}
+-
+-        def cli_case(self, case_id: str, label: str, command: str, role: str,
+-                     archive_input: Path | None = None) -> dict:
++            self.check(label + "_one_actual_server_pair",
++                       audit["complete_known_request_response_pairs"]
++                       and not audit["unexpected_event_kind"]
++                       and not audit["historical_delivery_veto_observed"]
++                       and audit["request_count"] == len(pairs) == 1
++                       and pairs[0]["node"] == target and pairs[0]["kind"] == "request"
++                       and pairs[0]["status"] == 200)
++            return audit
++
++        def h1_control(self) -> None:
+             self.mutation_allowed()
+-            self.binding.quick_fence(self.verified)
+-            before_nodes = self.node_fence()
+-            roles = self.roles(case_id + "-before-cli")
+-            self.actual_leader = roles["actual_leader"]
+-            target = self.actual_leader if role == "leader" else next(
+-                node for node in (1, 2, 3) if node != self.actual_leader)
+-            directory = self.root / "cases" / case_id
+-            directory.mkdir(mode=0o700)
+-            output = self.private / (case_id + ".snapshot")
+-            input_fence = None
+-            if command == "restore":
+-                require(archive_input is not None and archive_input.parent == self.private,
+-                        "owned_verified_archive_input")
+-                archive, _ = evidence.archive_observation(archive_input, self.deadline())
+-                self.check(case_id + "_valid_real_native_input", archive["archive_valid"])
+-                input_fence = archive["file"]
+-            before_audit = evidence.capture_audits(self.root, self.deadline())
+-            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)
+-            intent = {
+-                "case": case_id, "label": label, "command": command, "role_before": role,
+-                "actual_leader_before": self.actual_leader, "target_node": target,
+-                "address": "https://127.0.0.1:%d" % bm.API_PORTS[target],
+-                "path": SNAPSHOT_ROUTE, "cli_seconds": 15, "deadline_monotonic_ns": until,
+-                "action_deadline_monotonic_ns": self.action_until, "started_unix_ns": time.time_ns(),
+-                "official_cli_sha256": bm.OFFICIAL_SHA, "valid_restore_input": command == "restore",
+-                "input_file": input_fence, "input_source": "actual_prior_native_cli_save" if archive_input else None,
+-                "controller_retry_count": 0, "manual_redirect_count": 0,
+-                "default_official_cli_redirect_behavior": True, "tls_skip_verify": False,
+-                "private_credentials": "owned_synthetic_fixture_only", "before_nodes": before_nodes,
+-            }
+-            write_json(directory / "intent.public.json", intent)
+-            self.cli_intents.append(case_id)
+-            self.cli_inflight = case_id
+-            record = {"case": case_id, "intent": intent, "outcome_unknown": True}
+-            process = None
++            roles = self.roles("H01-before")
++            target = roles["actual_leader"]
++            before = evidence.capture_audits(self.root, self.deadline())
++            self.operation_inflight = {"kind": "H1_archive_control", "case": "H01"}
++            self.boundary_known = False
++            record = {"case": "H01", "target_node": target, "outcome_unknown": True}
+             try:
+-                raw, _ = evidence.checked_bytes(self.private / "bootstrap.json", 64 * 1024,
+-                                                 self.deadline(), owner=os.getuid())
+-                bootstrap = evidence.decode_json(raw)
+-                env = {
+-                    "PATH": "/usr/bin:/bin", "HOME": str(self.private / "cli-home"),
+-                    "LANG": "C", "LC_ALL": "C", "BAO_ADDR": intent["address"],
+-                    "BAO_CACERT": str(self.root / "ca.crt"), "BAO_TOKEN": bootstrap["root_token"],
+-                    "BAO_CLIENT_TIMEOUT": "15s", "BAO_TLS_SKIP_VERIFY": "false",
+-                }
+-                argv = [str(self.binding.cli), "operator", "raft", "snapshot", command,
+-                        str(archive_input if command == "restore" else output)]
+-                process = self.owner.invoke(argv, case_id + "-official-cli", until, env)
+-                record["process"] = process
+-                self.deadline()
+-                require(process["direct_child_reaped"] and not process["remaining"]
+-                        and not process["timed_out"] and process["returncode"] in (0, 1, 2),
+-                        "unknown_cli_process_boundary")
++                observation, raw = self.request(target, "GET", SNAPSHOT_ROUTE,
++                                                "H01-leader-normal-h1-snapshot")
++                self.check("H01_actual_complete_200", observation["status"] == 200
++                           and observation["response_complete"]
++                           and not observation["outcome_unknown"])
++                self.check("H01_selected_small_body_bound", len(raw) <= H2_BODY_LIMIT)
++                path = self.private / "H01-h1.snapshot"
++                write_new(path, raw)
++                archive, _ = evidence.archive_observation(path, self.deadline())
++                self.check("H01_real_native_archive", archive["archive_valid"])
++                record.update(http_observation=observation, archive=archive,
++                              audit=self.one_audit_pair(before, target, "H01_h1"))
+                 record["after_nodes"] = self.node_fence()
+-                audit = self.audit_window(before_audit)
+-                record["audit"] = audit
+-                terminal = self.audit_cli_terminal(audit, command, target)
+-                record["server_terminal"] = terminal
+-                if archive_input is not None:
+-                    _, after_input = evidence.checked_bytes(archive_input, evidence.MAX_ARCHIVE,
+-                                                              self.deadline(), owner=os.getuid())
+-                    require(after_input == input_fence, "restore_input_file_changed")
+-                    record["restore_input_unchanged"] = True
+-                output_observation, _ = evidence.archive_observation(output, self.deadline())
+-                record["output"] = output_observation
+-                category = process["error_class"]
+-                # These are observed process/server outcomes. Audit does not
+-                # stand in for TLS framing or a successful native restore.
+-                recognized = (category == "cli_success"
+-                              or command == "save" and category == "incomplete_snapshot"
+-                              or category == "api_400")
+-                require(terminal["server_boundary_known"] and recognized,
+-                        "unknown_cli_or_server_boundary_no_replay")
+-                if process["returncode"] == 0 and command == "save":
+-                    require(output_observation["archive_valid"], "successful_save_file_not_complete")
+-                record["known_complete_business_terminal"] = True
++                record["qualified"] = True
+                 record["outcome_unknown"] = False
+-                record["cli_exit_zero"] = process["returncode"] == 0
+-                record["archive_save_qualified"] = bool(
+-                    command == "save" and process["returncode"] == 0
+-                    and output_observation["archive_valid"] and terminal["terminal_status"] == 200)
+-                record["restore_success_not_inferred_from_exit"] = command == "restore"
+-                self.cli_inflight = None
++                self.operation_inflight = None
+                 self.boundary_known = True
+             except BaseException as error:
+                 self.outcome_unknown = True
+                 self.boundary_known = False
+-                record["outcome_unknown"] = True
++                record["failure_code"] = fixed_error(error)
++                raise
++            finally:
++                self.h2_results.append(record)
++                write_json(self.root / "cases" / "H01.outcome.public.json", record)
++
++        def h2_private_spec(self, target: int, operation: int, until: int) -> tuple[bytes, str]:
++            self.deadline()
++            raw, _ = evidence.checked_bytes(self.private / "bootstrap.json", 64 * 1024,
++                                             self.deadline(), owner=os.getuid())
++            bootstrap = evidence.decode_json(raw)
++            token = bootstrap["root_token"].encode("ascii")
++            require(16 <= len(token) <= 16 * 1024 and all(33 <= byte <= 126 for byte in token),
++                    "h2_private_token_shape")
++            ca_raw, _ = evidence.checked_bytes(self.root / "ca.crt", 16 * 1024,
++                                                self.deadline(), owner=os.getuid())
++            leaf_raw, _ = evidence.checked_bytes(self.root / ("node%d" % target) / "tls.crt",
++                                                  16 * 1024, self.deadline(), owner=os.getuid())
++            def der(value: bytes) -> bytes:
++                text = value.decode("ascii")
++                require(text.count("-----BEGIN CERTIFICATE-----") == 1
++                        and text.count("-----END CERTIFICATE-----") == 1, "one_owned_tls_certificate")
++                return ssl.PEM_cert_to_DER_cert(text)
++            ca, leaf = der(ca_raw), der(leaf_raw)
++            require(128 <= len(ca) <= 16 * 1024 and 0 < until < 2 ** 64
++                    and target in (1, 2, 3) and operation in (1, 2), "h2_closed_spec_values")
++            expected_leaf = sha(leaf)
++            spec = (b"HBH2QA01" + struct.pack(">QHBI", until, bm.API_PORTS[target],
++                                            operation, len(ca)) + ca
++                    + bytes.fromhex(expected_leaf) + struct.pack(">H", len(token)) + token)
++            require(len(spec) <= 64 * 1024, "h2_private_spec_bound")
++            return spec, expected_leaf
++
++        def run_h2_once(self, label: str, spec: bytes, until: int) -> tuple[dict, bytes, dict]:
++            require(self.operation_inflight is not None, "h2_pending_before_dispatch")
++            input_path = self.private / (label + ".stdin.private")
++            body_path = self.private / (label + ".body.private")
++            meta_path = self.private / (label + ".report.private.json")
++            write_new(input_path, spec)
++            before = input_path.lstat()
++            require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++                    and before.st_uid == os.getuid() and stat.S_IMODE(before.st_mode) == 0o600,
++                    "h2_input_custody")
++            input_fd = os.open(input_path, os.O_RDONLY | os.O_NOFOLLOW)
++            process = None
++            timed_out = False
++            started = time.monotonic_ns()
++            try:
++                require(stable_identity(os.fstat(input_fd)) == stable_identity(before),
++                        "h2_input_same_fd")
++                with body_path.open("xb") as output, meta_path.open("xb") as error:
++                    cli.remaining(until)
++                    argv = [str(self.binding.h2_executable), "--spec-sha256", sha(spec)]
++                    process = self.owner.start_child(
++                        argv, until=until, cwd=self.root, stdin=input_fd, stdout=output,
++                        stderr=error, start_new_session=True, env=neutral_environment(self.root))
++                    try:
++                        process.wait(timeout=cli.remaining(until))
++                    except (subprocess.TimeoutExpired, cli.Refused):
++                        timed_out = True
++                        captured = self.owner.children[-1][1]
++                        current = cli.process_identity(process.pid)
++                        require(captured is not None and (current is None
++                                or current["start_ticks"] == captured["start_ticks"]),
++                                "h2_child_identity_before_timeout_kill")
++                        if process.poll() is None:
++                            require(current is not None and current["pgid"] == process.pid
++                                    and current["ppid"] == os.getpid(), "h2_live_owned_group_before_kill")
++                            os.killpg(process.pid, signal.SIGKILL)
++                        # Preserve the reference's independent timeout-stage wait;
++                        # final explicit stop uses the single original 5+5 ledger.
++                        process.wait(timeout=5)
++                    output.flush()
++                    error.flush()
++                    os.fsync(output.fileno())
++                    os.fsync(error.fileno())
++                require(stable_identity(os.fstat(input_fd)) == stable_identity(before)
++                        and stable_identity(input_path.lstat()) == stable_identity(before),
++                        "h2_private_input_unchanged")
++            finally:
++                os.close(input_fd)
++            completed = time.monotonic_ns()
++            remaining = cli.group_members(process.pid)
++            process_record = {
++                "pid": process.pid, "returncode": process.returncode,
++                "direct_child_reaped": process.returncode is not None, "remaining": remaining,
++                "timed_out": timed_out, "request_deadline_monotonic_ns": until,
++                "completed_monotonic_ns": completed, "elapsed_ns": completed - started,
++                "completed_before_original_deadline": completed < until,
++                "private_input_fd_closed": True, "private_input_unchanged": True,
++            }
++            require(process.returncode == 0 and not timed_out
++                    and process.returncode is not None and not remaining and completed < until,
++                    "h2_child_terminal_not_qualified")
++            raw, meta_fence = evidence.checked_bytes(meta_path, 64 * 1024,
++                                                       self.deadline(), owner=os.getuid())
++            body, body_fence = evidence.checked_bytes(body_path, H2_BODY_LIMIT,
++                                                       self.deadline(), owner=os.getuid())
++            require(not any(value in raw for value in evidence.secret_variants(self.secret_values)),
++                    "h2_report_contains_fixture_secret_variant")
++            result = evidence.decode_json(raw)
++            require(type(result) is dict and set(result) == CLIENT_REPORT_FIELDS,
++                    "h2_exact_client_report")
++            process_record["private_report"] = meta_fence
++            process_record["private_body"] = body_fence
++            return process_record, body, result
++
++        def h2_case(self, case: str, operation: int) -> None:
++            self.mutation_allowed()
++            self.binding.quick_fence(self.verified)
++            before_nodes = self.node_fence()
++            roles = self.roles(case + "-before")
++            target = roles["actual_leader"]
++            before_audit = evidence.capture_audits(self.root, self.deadline())
++            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)
++            spec, expected_leaf = self.h2_private_spec(target, operation, until)
++            path = "/v1/wire/data/seed?version=2" if operation == 1 else SNAPSHOT_ROUTE
++            intent = {
++                "case": case, "target_node": target, "actual_leader_before": target,
++                "method": "GET", "path": path, "loopback_port": bm.API_PORTS[target],
++                "server_name": "localhost", "offered_alpn": ["h2"],
++                "expected_peer_leaf_sha256": expected_leaf,
++                "private_spec_sha256": sha(spec), "private_spec_bytes": len(spec),
++                "client_seconds": 15, "deadline_monotonic_ns": until,
++                "action_deadline_monotonic_ns": self.action_until,
++                "client_sha256": self.binding.h2_client["executable"]["sha256"],
++                "client_connections_allowed": 1, "client_requests_allowed": 1,
++                "client_reconnects_allowed": 0, "client_retries_allowed": 0,
++                "redirects_allowed": 0, "before_nodes": before_nodes,
++            }
++            write_json(self.root / "cases" / (case + ".intent.public.json"), intent)
++            self.h2_intents.append(case)
++            self.operation_inflight = {"kind": "h2_native_request", "case": case}
++            self.boundary_known = False
++            record = {"case": case, "intent": intent, "outcome_unknown": True}
++            try:
++                process, body, client = self.run_h2_once(case, spec, until)
++                record["process"] = process
++                require(client["schema"] == "heptabao.h2-single-request-client.v1"
++                        and client["candidate_commit"] == bm.COMMIT
++                        and client["candidate_tree"] == bm.TREE
++                        and client["operation"] == operation
++                        and client["deadline_monotonic_ns"] == str(until)
++                        and client["stage"] == "complete" and client["error_code"] is None,
++                        "h2_exact_bound_client_terminal")
++                require(client["tls_chain_and_hostname_verified"] is True
++                        and client["selected_alpn_h2"] is True
++                        and client["tls_version"] in ("TLS1.2", "TLS1.3")
++                        and client["peer_leaf_sha256"] == expected_leaf,
++                        "h2_actual_tls_identity_and_alpn")
++                require(client["connections_started"] == client["send_request_calls"] == 1
++                        and client["request_dispatched"] is True and client["stream_id"] == 1
++                        and client["client_reconnects"] == client["client_request_retries"]
++                        == client["redirects_followed"] == 0, "h2_single_actual_request")
++                require(client["response_status"] == 200
++                        and client["response_complete"] is True
++                        and client["data_none_observed"] is True
++                        and client["trailers_completed"] is True
++                        and client["trailers_empty"] is True and client["recv_end_stream"] is True
++                        and client["content_length"] == client["body_bytes"] == len(body)
++                        and client["body_sha256"] == sha(body),
++                        "h2_actual_complete_200_eos_and_exact_content_length")
++                require(client["connection_task_joined"] is True
++                        and client["completed_before_original_deadline"] is True
++                        and client["outcome_unknown"] is False
++                        and client["trace_enabled"] is False
++                        and client["raw_error_messages_emitted"] is False
++                        and client["product_or_official_cli_qualification"] is False,
++                        "h2_owned_connection_completed")
++                record["client"] = client
++                record["audit"] = self.one_audit_pair(before_audit, target, case + "_h2")
++                if operation == 1:
++                    require(client["content_type"] == "application/json", "h2_kv2_media_type")
++                    data = evidence.decode_json(body).get("data")
++                    require(data == self.initial_state["nodes"][str(target)]["versions"]["2"]
++                            and data["metadata"]["version"] == 2
++                            and data["data"] == {"marker": "normal33-wire-seed-2"},
++                            "h2_actual_kv2_value_and_version")
++                    record["actual_kv2_exact_version_and_value"] = True
++                else:
++                    require(client["content_type"] == "application/gzip", "h2_native_archive_media_type")
++                    archive, _ = evidence.archive_observation(
++                        self.private / (case + ".body.private"), self.deadline())
++                    require(archive["archive_valid"], "h2_real_native_archive_complete")
++                    record["archive"] = archive
++                record["after_nodes"] = self.node_fence()
++                record["qualified"] = True
++                record["outcome_unknown"] = False
++                self.operation_inflight = None
++                self.boundary_known = True
++            except BaseException as error:
++                self.outcome_unknown = True
++                self.boundary_known = False
+                 record["failure_code"] = fixed_error(error)
+                 raise
+             finally:
+                 record["terminal_unix_ns"] = time.time_ns()
+-                self.cli_cases.append(record)
+-                write_json(directory / "outcome.public.json", record)
+-            return record
+-
+-        def finish_restore_readback(self, case_id: str, record: dict, before: dict) -> dict:
+-            require(record.get("known_complete_business_terminal") and not record["outcome_unknown"]
+-                    and self.cli_inflight is None, "restore_readback_requires_known_terminal")
+-            # The CLI/server terminal is distinct from verified restoration.
+-            # Keep an explicit pending boundary across all API/JSON/state
+-            # checks; any unavailable or malformed observation is unknown.
+-            self.operation_inflight = {"kind": "restore_state_verification", "case": case_id}
+-            self.boundary_known = False
+-            try:
+-                actual = self.state_view(case_id + "-after-cli")
+-                restored = actual == self.initial_state
+-                unchanged = actual == before
+-                terminal_status = record["server_terminal"]["terminal_status"]
+-                qualifies = bool(record["cli_exit_zero"] and terminal_status in (200, 204) and restored)
+-                known_rejection = terminal_status in (400, 403) and unchanged
+-                # A success status with different state, or a rejection with an
+-                # unaccounted mutation, is uncertain. Stop rather than restart it.
+-                if not qualifies and not known_rejection:
+-                    raise Failure("restore_terminal_state_unaccounted_no_replay")
+-                report = {
+-                    "case": case_id, "cli_exit_zero": record["cli_exit_zero"],
+-                    "terminal_status": terminal_status, "actual_restored_baseline": restored,
+-                    "actual_unchanged_mutated_state": unchanged, "known_rejection": known_rejection,
+-                    "native_restore_qualified": qualifies, "version_values_metadata_exact_on_all_nodes": True,
+-                    "no_replay": True,
+-                }
+-                write_json(self.root / (case_id + "-restore-readback.public.json"), report)
+-                record["restore_readback"] = report
+-                self.operation_inflight = None
+-                self.boundary_known = True
+-            except BaseException:
+-                self.outcome_unknown = True
+-                self.boundary_known = False
+-                raise
+-            self.cold_restart(case_id, actual)
+-            return report
+-
+-        def cold_restart(self, case_id: str, expected: dict) -> None:
+-            self.mutation_allowed()
+-            require(case_id in ("B02", "B05")
+-                    and any(item["case"] == case_id and item.get("known_complete_business_terminal")
+-                            and not item["outcome_unknown"] for item in self.cli_cases),
+-                    "cold_restart_requires_known_original_cli_terminal")
+-            pre_audit = evidence.capture_audits(self.root, self.deadline())
+-            self.node_fence()
+-            stopped = []
+-            for node in (1, 2, 3):
+-                process, captured = self.nodes[node]
+-                result = self.stop_fixture_owned_once(process, captured)
+-                stopped.append({"node": node, **result})
+-            self.check(case_id + "_all_owned_nodes_stopped_before_restart",
+-                       all(item["owned_stopped"] for item in stopped))
+-            self.nodes = {}
+-            self.generated_fence()
+-            for node in (2, 3, 1):
+-                self.spawn(node, native=True)
+-            for node in (1, 2, 3):
+-                self.ready(node, initialized=True, sealed=True)
+-            self.stable_leader(sealed=True)
+-            raw, _ = evidence.checked_bytes(self.private / "bootstrap.json", 64 * 1024,
+-                                             self.deadline(), owner=os.getuid())
+-            bootstrap = evidence.decode_json(raw)
+-            for node in (1, 2, 3):
+-                observation, body = self.request(
+-                    node, "POST", "/v1/sys/unseal", case_id + "-cold-unseal-node%d-once" % node,
+-                    body={"key": bootstrap["keys_base64"][0]}, credential="none")
+-                self.check(case_id + "_cold_unseal_node%d" % node,
+-                           observation["status"] == 200 and evidence.decode_json(body).get("sealed") is False)
+-            self.actual_leader = self.stable_leader(sealed=False)
+-            actual = self.state_view(case_id + "-cold-readback")
+-            self.check(case_id + "_cold_state_exact_pre_restart", actual == expected)
+-            post_audit = evidence.capture_audits(self.root, self.deadline())
+-            audit = evidence.audit_delta(pre_audit, post_audit, self.deadline())
+-            self.check(case_id + "_audit_chain_preserved_through_cold", not audit["historical_delivery_veto_observed"])
+-            result = {
+-                "case": case_id, "cold_restart_completed": True, "stopped_before_restart": stopped,
+-                "actual_leader_after": self.actual_leader, "same_native_state_after_cold": True,
+-                "all_node_audit_prefix_and_chain_preserved": True,
+-                "audit_delta": audit,
+-                "activation_repeated": False, "restore_upload_repeated": False,
+-                "known_terminal_authorized_owned_restart": True,
+-            }
+-            self.cold_results.append(result)
+-            write_json(self.root / (case_id + "-cold.public.json"), result)
++                self.h2_results.append(record)
++                write_json(self.root / "cases" / (case + ".outcome.public.json"), record)
+ 
+         def execute(self) -> None:
+             self.setup_phase()
+             (self.root / "cases").mkdir(mode=0o700)
+-            (self.private / "cli-home").mkdir(mode=0o700)
+-            with self.action("B01_leader_save_archive_A"):
+-                a = self.cli_case(*CASES[0])
+-                self.check("B01_leader_save_positive_control", a["archive_save_qualified"])
+-                self.archive_a = self.private / "B01.snapshot"
+-            with self.action("B02_leader_restore_archive_A"):
+-                before = self.mutate_version3("phaseb-r3-before-restore-A", "before-B02")
+-                result = self.cli_case(*CASES[1], archive_input=self.archive_a)
+-                restored = self.finish_restore_readback("B02", result, before)
+-                self.check("B02_actual_leader_restore_positive_control", restored["native_restore_qualified"])
+-            with self.action("B03_leader_save_archive_B"):
+-                b = self.cli_case(*CASES[2])
+-                self.check("B03_independent_leader_save_positive_control", b["archive_save_qualified"])
+-                self.archive_b = self.private / "B03.snapshot"
+-                self.check("B03_distinct_archive_files", self.archive_b != self.archive_a)
+-            with self.action("B04_default_standby_save"):
+-                self.cli_case(*CASES[3])
+-                # A recognized complete business failure is preserved. Archive B
+-                # came from a separate verified leader save, so B05 need not
+-                # substitute or retry the failed B04 save.
+-            with self.action("B05_default_standby_restore_archive_B"):
+-                before = self.mutate_version3("phaseb-r3-before-restore-B", "before-B05")
+-                result = self.cli_case(*CASES[4], archive_input=self.archive_b)
+-                self.finish_restore_readback("B05", result, before)
++            with self.action("H01_normal_h1_leader_archive_control"):
++                self.h1_control()
++            with self.action("H02_actual_h2_native_kv2_version2"):
++                self.h2_case("H02", 1)
++            with self.action("H03_actual_h2_leader_native_archive"):
++                self.h2_case("H03", 2)
++                after = self.state_view("h2-gate-all-node-after")
++                self.check("h2_gate_two_versions_all_nodes_unchanged", after == self.initial_state)
++                self.h2_state_unchanged = True
+ 
+         def finish(self, failure: str | None) -> int:
+             # Once a signal/failure ends the action, only read-only observations
+@@ -926,36 +920,38 @@
+                                          and item.get("direct_child_reaped") for item in cleanup)
+             incomplete_http = sorted(set(range(1, self.seq + 1)) -
+                                      {item["sequence"] for item in self.observations})
+-            incomplete_cli = sorted(set(self.cli_intents) -
+-                                    {item["case"] for item in self.cli_cases})
+-            unknown = (self.outcome_unknown or bool(incomplete_http) or bool(incomplete_cli)
+-                       or self.cli_inflight is not None or self.operation_inflight is not None
+-                       or any(item.get("outcome_unknown") for item in self.cli_cases)
++            incomplete_h2 = sorted(set(self.h2_intents) -
++                                   {item["case"] for item in self.h2_results})
++            unknown = (self.outcome_unknown or bool(incomplete_http) or bool(incomplete_h2)
++                       or self.operation_inflight is not None
++                       or any(item.get("outcome_unknown") for item in self.h2_results)
+                        or any(item.get("outcome_unknown") for item in self.observations)
+                        or not clean)
+-            case_map = {item["case"]: item for item in self.cli_cases}
+-            qualifications = {
+-                "B01": bool(case_map.get("B01", {}).get("archive_save_qualified")),
+-                "B02": bool(case_map.get("B02", {}).get("restore_readback", {}).get("native_restore_qualified")),
+-                "B03": bool(case_map.get("B03", {}).get("archive_save_qualified")),
+-                "B04": bool(case_map.get("B04", {}).get("archive_save_qualified")),
+-                "B05": bool(case_map.get("B05", {}).get("restore_readback", {}).get("native_restore_qualified")),
+-            }
+-            complete = (len(self.cli_cases) == 5 and self.cli_intents == [item[0] for item in CASES]
+-                        and len(self.cold_results) == 2 and not unknown and not final_errors and failure is None)
++            final_observations_completed = time.monotonic_ns()
++            if final_observations_completed >= final_until:
++                final_errors.append({"stage": "final_deadline", "code": "original_final_deadline"})
++            case_map = {item["case"]: item for item in self.h2_results}
++            qualifications = {case: bool(case_map.get(case, {}).get("qualified"))
++                              for case in ("H01", "H02", "H03")}
++            complete = (list(case_map) == ["H01", "H02", "H03"]
++                        and self.h2_intents == ["H02", "H03"]
++                        and self.h2_state_unchanged and not unknown
++                        and not final_errors and failure is None)
+             passed = complete and all(qualifications.values()) and all(item["passed"] for item in self.checks)
+-            status = "passed" if passed else "completed_with_compatibility_failures" if complete else "failed"
++            status = "passed" if passed else "failed"
+             report = {
+                 "schema": SCHEMA, "status": status, "failure_code": failure,
+                 "final_errors": final_errors, "candidate_commit": bm.COMMIT, "candidate_tree": bm.TREE,
+                 "input_binding_sha256": binding.sha256, "prepared": prepared,
+                 "verified_inputs_before": self.verified, "verified_inputs_after": after,
+-                "actions": self.actions, "cli_cases": self.cli_cases, "case_qualifications": qualifications,
+-                "cold_results": self.cold_results, "checks": self.checks,
+-                "checks_total": len(self.checks), "checks_passed": sum(item["passed"] for item in self.checks),
++                "actions": self.actions, "h2_gate_cases": self.h2_results,
++                "case_qualifications": qualifications, "all_node_state_unchanged": self.h2_state_unchanged,
++                "checks": self.checks, "checks_total": len(self.checks),
++                "checks_passed": sum(item["passed"] for item in self.checks),
+                 "checks_are_dynamic_invariants_not_full_replacement_denominator": True,
+                 "http_intents": self.seq, "http_outcomes": len(self.observations),
+-                "incomplete_http_intents": incomplete_http, "incomplete_cli_intents": incomplete_cli,
++                "incomplete_http_intents": incomplete_http, "incomplete_h2_intents": incomplete_h2,
++                "h2_client_requests": len(self.h2_intents),
+                 "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean),
+                 "owned_cleanup": cleanup, "child_provenance": self.owner.child_provenance,
+                 "child_exec_visibility": self.owner.child_exec_visibility,
+@@ -963,13 +959,18 @@
+                 "reference_startup_scope": self.reference_startup_scope,
+                 "normal_default_features": True, "fixture_feature_startup": False,
+                 "production_changed": False, "provider_requests": 0, "j3160_requests": 0,
+-                "physical_hosts": 1, "process_nodes": 3, "native_archive_only": True,
+-                "official_openbao_state_archive_interoperability_claimed": False,
+-                "cli_exit_zero_is_not_restore_success": True,
++                "physical_hosts": 1, "process_nodes": 3,
++                "actual_negotiated_h2_native_path_only": True, "h2_body_limit_bytes": H2_BODY_LIMIT,
++                "official_cli_commands": 0, "restore_uploads": 0, "post_restore_cold_starts": 0,
++                "official271_cli_or_archive_interoperability_qualified": False,
++                "large_34MiB_transport_qualified": False,
+                 "audit_is_not_client_response_framing_proof": True,
+-                "controller_request_or_restore_replays": 0,
+-                "full_replacement_qualification": False,
+-                "original_r2_source_or_qualification_inherited": False,
++                "client_exit_zero_is_not_product_success": True,
++                "no_late_reset_or_whole_bidirectional_session_claim": True,
++                "controller_request_or_restore_replays": 0, "full_replacement_qualification": False,
++                "original_44_existing_7_new_9_denominators_unchanged": True,
++                "final_deadline_monotonic_ns": final_until,
++                "final_observations_completed_monotonic_ns": final_observations_completed,
+                 "terminal_unix_ns": time.time_ns(),
+             }
+             try:
+@@ -993,7 +994,7 @@
+                                   "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean)},
+                                  sort_keys=True), flush=True)
+                 return 1
+-            return 0 if passed else 1
++            return 0 if passed and time.monotonic_ns() < final_until else 1
+     return PhaseB()
+ 
+ 
+@@ -1022,14 +1023,19 @@
+         cleanup = owner.cleanup()
+     clean = all(item.get("owned_stopped") and item.get("direct_child_reaped")
+                                   for item in cleanup)
++    completed_after_cleanup = time.monotonic_ns()
++    if completed_after_cleanup >= until and failure is None:
++        failure = "original_prepare_deadline"
+     report = {
+-        "schema": "heptabao.official271-native-cli-phaseb-r3.prepare.v1",
++        "schema": "heptabao.normal-native-h2-gate.prepare.v1",
+         "status": "passed" if failure is None and clean else "failed",
+         "binding_sha256": binding.sha256, "inputs": inputs, "failure_code": failure,
+         "owned_cleanup": cleanup, "all_owned_stopped": clean,
+         "child_provenance": owner.child_provenance, "child_exec_visibility": owner.child_exec_visibility,
+         "runtime_started": False, "server_processes": 0, "cli_snapshot_commands": 0,
+         "production_changed": False, "readiness_is_not_runtime_qualification": True,
++        "deadline_monotonic_ns": until,
++        "completed_after_cleanup_monotonic_ns": completed_after_cleanup,
+         "terminal_unix_ns": time.time_ns(),
+     }
+     raw = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
+@@ -1037,7 +1043,7 @@
+     print(json.dumps({"status": report["status"], "result": str(binding.prepare / "result.public.json"),
+                       "result_sha256": sha(raw), "runtime_started": False,
+                       "all_owned_stopped": clean}, sort_keys=True), flush=True)
+-    return 0 if report["status"] == "passed" else 1
++    return 0 if report["status"] == "passed" and time.monotonic_ns() < until else 1
+ 
+ 
+ def main() -> int:
+@@ -1060,7 +1066,7 @@
+     raw, _ = bm.read_file(binding.prepare / "result.public.json", 4 * 1024 * 1024, until)
+     require(sha(raw) == args.prepare_result_sha256, "exact_prior_prepare_result")
+     prepared = bm.parse(raw)
+-    require(prepared["schema"] == "heptabao.official271-native-cli-phaseb-r3.prepare.v1"
++    require(prepared["schema"] == "heptabao.normal-native-h2-gate.prepare.v1"
+             and prepared["status"] == "passed" and prepared["all_owned_stopped"] is True
+             and prepared["binding_sha256"] == binding.sha256
+             and prepared["runtime_started"] is False, "prior_prepare_admission")

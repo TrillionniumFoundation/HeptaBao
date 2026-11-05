@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root-df026-standalone-export-exact-go.r1",
+  "asof": "2026-11-05 04:59:22 UTC",
+  "verdict": "GO_SINGLE_EXACT_STANDALONE_SOURCE_EXPORT",
+  "inert_job": "1a1aa0f5515-fc05-3c46",
+  "inert_authoritative_exit": 0,
+  "root_independent_actual_full_file_readback": true,
+  "source_blob": "47c96d89591c71e43566da3e529fa49702a8f66b",
+  "source_bytes": 15324,
+  "source_sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa",
+  "source_version": "66306:27968139:15324:1793854495917219384:1793854495917963296",
+  "receipt_blob": "d8660ea410c61427b35e517bb1992a9e56525c5e",
+  "request_blob": "b04d34925a097f5291fbc71d2f6a3f26641dc3cd",
+  "request_bytes": 346,
+  "request_sha256": "21d61d1eca1e48e2c99f5886572b5f367aef6fa2bb75d12afea78bec840255a3",
+  "key": "heptabao-df026-standalone-source-export-a9b3ea42-20261105-r1",
+  "original_bounds": {
+    "total": 300,
+    "git": 90,
+    "term": 5,
+    "kill": 5,
+    "outer": 330
+  },
+  "target": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "expected_full_history": 3757,
+  "expected_prerequisites": [],
+  "root_originals": [
+    {
+      "name": "r18_exporter_inert_root_file_read_sdk",
+      "blob": "5cb4ab4721ac8f83a85e8dbb5284299a029ff881",
+      "bytes": 18007,
+      "sha256": "dbd0aaa53b473a995df241a9e8964c3b61084e2a795a5d93c2b87fedfbefdcc5"
+    },
+    {
+      "name": "r18_exporter_inert_root_file_read_native",
+      "blob": "e98ff6b57c6c200e92339cf78eff0be4097fd973",
+      "bytes": 17388,
+      "sha256": "17064945e8d549e6b48387c3c3acf4bd610ab55625cb59d042cc6daef970dd31"
+    },
+    {
+      "name": "r18_exporter_inert_root_authority_sdk",
+      "blob": "7acfbdd3630e8e03a3cadc9c201dbc69703ba12c",
+      "bytes": 909,
+      "sha256": "e05ddb048e194030cc1fceb5b96ddbaa6310562fef8035cd03295ad3590fe4ae"
+    },
+    {
+      "name": "r18_exporter_inert_root_authority_native",
+      "blob": "ba62369f330eca26040fbe9ee60ee338b521d6e9",
+      "bytes": 729,
+      "sha256": "b925bc7f9e8250013eae555a381e04541d003d8a7c1927f6c2226e2b5959961e"
+    }
+  ],
+  "scope": "Create-only standalone public Git bundle and proof. Source remains read-only, no Cargo/server/credential/provider execution. Independent from ongoing normal-build target; no build deadline or source modification.",
+  "success_requires": "Exact unique ACK, full/durable authoritative terminal, all original Git command/stream receipts and closure, source before/after, whole bundle hash/size/version, exact zero-prerequisite header and original300-second publication. No transport GO or product qualification follows merely from export success."
+}

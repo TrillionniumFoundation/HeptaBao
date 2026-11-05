@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.df026-source-export-offline-delta.v1",
+  "status": "passed_source_only",
+  "scope": "Exact-text substitutions, AST parse/compile without execution, and original function source comparison; no host operation.",
+  "rows": [
+    {
+      "after": {
+        "bytes": 15324,
+        "git_blob": "47c96d89591c71e43566da3e529fa49702a8f66b",
+        "sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa"
+      },
+      "before": {
+        "bytes": 15352,
+        "git_blob": "c723e01d563a9e51ce83aaf01c0d8cf1fe8f0000",
+        "sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a"
+      },
+      "byte_identical_definitions": [
+        "on_signal",
+        "digest",
+        "identity",
+        "remaining",
+        "stable",
+        "fsync_dir",
+        "create",
+        "public",
+        "process_snapshot",
+        "group_members",
+        "stop_active",
+        "stop_owned",
+        "persist_command",
+        "owned_argv",
+        "owned",
+        "git",
+        "freeze",
+        "source_snapshot",
+        "bundle_header",
+        "prove_canonical"
+      ],
+      "candidate_executed": false,
+      "changed_definitions": [],
+      "definition_count": 20,
+      "diff": {
+        "bytes": 1953,
+        "git_blob": "20cb85717a60a65ac58de9d553bc08c5d813bbea",
+        "sha256": "c3e564f68821706c91bef3b39f01703d9dbbe71aca611236dcc68914162b1bf8"
+      },
+      "exact_literal_inverse_whole_equal": true,
+      "label": "exporter",
+      "literal_replacements": 10,
+      "parse_and_compile_only": true
+    },
+    {
+      "after": {
+        "bytes": 4813,
+        "git_blob": "656db30aa62f86b84f0a8dd905486d24eeb574de",
+        "sha256": "ab33ef2ad5c80caff5753901a4ec8799aa80be632cafbd55a6f0678c9e9d3d56"
+      },
+      "before": {
+        "bytes": 4816,
+        "git_blob": "462b8a3e21a6a9c7395823939eece9ab85fc3b00",
+        "sha256": "e9c2fb72e868b53ea90cd5ec87f6a619bce5ac3be560a960e261036658920cd1"
+      },
+      "byte_identical_definitions": [
+        "sha",
+        "ident",
+        "sync_dir",
+        "exact",
+        "publish"
+      ],
+      "candidate_executed": false,
+      "changed_definitions": [],
+      "definition_count": 5,
+      "diff": {
+        "bytes": 2055,
+        "git_blob": "4d1052ee43b9125bb008a5ebc7d5b7ace9e70112",
+        "sha256": "d4342069025a80688355251f69c8fe2d2ec5b4cb010b3acd47bd95dcd12de463"
+      },
+      "exact_literal_inverse_whole_equal": true,
+      "label": "inert",
+      "literal_replacements": 7,
+      "parse_and_compile_only": true
+    }
+  ],
+  "full_offline_report": {
+    "bytes": 4062,
+    "sha256": "663e14d2acf5e4c621126ea230bab001b790a76cf9e404452689f2c1d3cde516",
+    "blob": "f7f00be220148417503593cc8ae2e95222ec6251"
+  },
+  "full_offline_checker": {
+    "bytes": 4757,
+    "sha256": "a85f00bc45e2a5fb9bad94b2a43e46a0056dc631d69212aeb4da734a7b46b1e0",
+    "blob": "4d288831dd6e1d347b2852743286722bd33d0213"
+  },
+  "unrelated_binding_harness_first_failure_retained": {
+    "status": "failed",
+    "scope": "offline AST harness only; no candidate module executed",
+    "error": "KeyError: PRODUCT_PINS",
+    "reason": "ast.literal_eval cannot resolve the preexisting OBSERVER_PATH key in PRODUCT_PINS",
+    "exit_code": 1
+  },
+  "runtime_qualification": false
+}

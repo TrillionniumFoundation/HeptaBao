@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.cold-h2-fresh-cache-source-plan.v1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "canonical_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+  "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+  "revision_control": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3",
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "admission": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/build-control-r3",
+  "output": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3",
+  "old_missing_target_recreated": false,
+  "source_and_original_control_overwritten": false,
+  "production_changed": false,
+  "prior_early_failure_tree": "d41d983f57118cbe69202212b2ec02d8b9f466fb",
+  "actual_metadata_tree": "d7570930ea9aa7b1114c792dd795c29782440293",
+  "original_target_removal_cause_known": false,
+  "fresh_cache": true,
+  "inherits_prior_cache_performance": false,
+  "runner": {
+    "unchanged": true,
+    "bytes": 26659,
+    "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+    "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+  },
+  "stage_result_sha256": "7364fb449d5c46afa65507469b88427c8acc088fe4ef166cd1c5a436e56be9be",
+  "order": [
+    "Verify original stage / runner / groups pins and fresh output/admission/target absence",
+    "Create fresh admission receipt only; verify canonical and all R8/R9/R10/successful3cb/failedbf0 source and retained artifact fences",
+    "Verify four actual early-failure/metadata public fences plus unchanged original rejected launcher",
+    "Create new target/release/empty lock with held directory descriptors, O_EXCL, owner/mode checks, fsync and current named-versus-held identity",
+    "Close all four new preparation descriptors; failure or elapsed original outer deadline rejects admission",
+    "Run byte-identical original holders/flock block against the new lock; recheck early-failure/source fences",
+    "Same-PID exec byte-identical original runner with original outer start and fresh target/output paths"
+  ],
+  "budgets": {
+    "outer_original": 12000,
+    "release_original": 1800,
+    "libtest_original": 3600,
+    "list_original": 30,
+    "each_original44_group": 600,
+    "existing7_shared": 600,
+    "new9_shared": 600,
+    "term_original": 5,
+    "kill_original": 5
+  },
+  "scope_limits": [
+    "Only a future separate inert job may publish five new control/evidence files; it does not create target or invoke Cargo",
+    "Only a separately reviewed build job may create the new cache and compile/test",
+    "No reuse/replay of the failed original key",
+    "No alternate-cache search, no old target recreation, no public source fetch"
+  ],
+  "strict_diff_hunks": 8,
+  "original_functions_ast_unchanged": 9,
+  "selected_local_components": 18,
+  "local_component_scope": "Actual selected helper with owned temporary local files, injected error/race cases, zero host calls/children/Cargo; not normal-build qualification"
+}

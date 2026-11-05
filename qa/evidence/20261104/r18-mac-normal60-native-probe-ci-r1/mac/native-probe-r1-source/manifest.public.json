@@ -1,0 +1,356 @@
+{
+  "schema": "heptabao.mac-native-proc-source-packet.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "candidateProductChanges": false,
+  "hostJobSubmitted": false,
+  "oldSourceModified": false,
+  "priorProbeReplay": false,
+  "referenceXnuCommit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+  "referenceDyldCommit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+  "intendedFreshRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/native-proc-sandbox-probe-r1",
+  "proposedKey": "heptabao-mac-native-proc-custody-a24d8182-20261105-r1",
+  "request": {
+    "path": "dispatch/request.public.json",
+    "bytes": 76645,
+    "sha256": "d11b8ac9f836b3406857e9c0bebc9a7d3e95bffcc95fab61fdf9268dea21fd71",
+    "git_blob": "7d1ae6a81a2024881bdfe0e59186883e970f0548"
+  },
+  "source": {
+    "path": "source/native_proc_sandbox_probe_r1.py",
+    "bytes": 75075,
+    "sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+    "git_blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c"
+  },
+  "verificationScope": {
+    "actualSelectedComponents": 27,
+    "candidateMainsExecuted": 0,
+    "physicalHostActions": 0,
+    "nativeLibrariesLoaded": 0,
+    "sourceAstCompiled": 4,
+    "strictWholeDiffs": 3
+  },
+  "files": [
+    {
+      "path": "source/mac_darwin_owned_projection_r1.py",
+      "mode": "100644",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "git_blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb"
+    },
+    {
+      "path": "source/mac_native_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "git_blob": "5a90c395dc7c88335eb7e06f7984a013b280af02"
+    },
+    {
+      "path": "source/mac_native_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+      "git_blob": "3cf86925b936062de7453193548b8ed32e2c4e45"
+    },
+    {
+      "path": "source/native_proc_sandbox_probe_r1.py",
+      "mode": "100644",
+      "bytes": 75075,
+      "sha256": "a24d818266ffc2f791dab4c075a02cf26874cb50c84d2bd38d934caf3dfb8857",
+      "git_blob": "a9803712eae05b6b48479ea23cf8a027ffd2684c"
+    },
+    {
+      "path": "diffs/custody.review.diff",
+      "mode": "100644",
+      "bytes": 9795,
+      "sha256": "84defd9e115bfee887f984bdc4f43c1edd5261369edc64015a080364404e834b",
+      "git_blob": "04902daf5d21ffb53b71afdc1af16cbc6a0297ac"
+    },
+    {
+      "path": "diffs/commands.review.diff",
+      "mode": "100644",
+      "bytes": 621,
+      "sha256": "81f2a3e2e1380f696ed7cfccac6199af11ae3dd1844d23a64f71a6955dc1b9dc",
+      "git_blob": "df17ce1a8dc9fdc24ab3fdde334fa69e53ead5f0"
+    },
+    {
+      "path": "diffs/probe.review.diff",
+      "mode": "100644",
+      "bytes": 60207,
+      "sha256": "f3edd2e27d614b7245d7773a3022818524e6ce48466ee7422370e03bcabe9246",
+      "git_blob": "e2969be573ed45a67d3bbf77d3a18550d46349d6"
+    },
+    {
+      "path": "dispatch/loader.py",
+      "mode": "100644",
+      "bytes": 310,
+      "sha256": "987627b07d336041e99e71d0510796a6fab5f0816dae7b9ad80f04cf6a63640b",
+      "git_blob": "9fa0abacba713e96169bc4bb8175feb4ac7c8696"
+    },
+    {
+      "path": "dispatch/request.public.json",
+      "mode": "100644",
+      "bytes": 76645,
+      "sha256": "d11b8ac9f836b3406857e9c0bebc9a7d3e95bffcc95fab61fdf9268dea21fd71",
+      "git_blob": "7d1ae6a81a2024881bdfe0e59186883e970f0548"
+    },
+    {
+      "path": "references/qa/mac_current_capture_entry_r1.py",
+      "mode": "100644",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    },
+    {
+      "path": "references/qa/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    {
+      "path": "references/qa/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    },
+    {
+      "path": "references/qa/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    },
+    {
+      "path": "references/devnull_probe_r1.py",
+      "mode": "100644",
+      "bytes": 28201,
+      "sha256": "5229fa7089b9164e853dec4628c31969e39a212253618573f38b8a26df3d29a5",
+      "git_blob": "7f3114022a5fb142af0082af0eca641c1464ee63"
+    },
+    {
+      "path": "references/frozen-t5-anchor.public.json",
+      "mode": "100644",
+      "bytes": 967,
+      "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+      "git_blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
+    },
+    {
+      "path": "references/frozen-public-utility-pins.public.json",
+      "mode": "100644",
+      "bytes": 1053,
+      "sha256": "09689c6c8213589c623e133e0df53ef3eaa34ee5f8dd34b85178dc0c36527889",
+      "git_blob": "fdbbbc4c882255a0426de976f40d602814ef5f41"
+    },
+    {
+      "path": "verification/components.py",
+      "mode": "100644",
+      "bytes": 11162,
+      "sha256": "6d0a0320b77835a163b542b94885f4f240e15b978db6b0f87fd32a715580d604",
+      "git_blob": "f48966368a07150a0e6d9c2caf43d8dc9b73f5a4"
+    },
+    {
+      "path": "verification/verify_source.py",
+      "mode": "100644",
+      "bytes": 3765,
+      "sha256": "6d1c3e222de777e3d258f11eb38721c159803c551cb5eca9bead522391eab782",
+      "git_blob": "cacb8d47d9929dcefeb727f333db7a4cfd72338e"
+    },
+    {
+      "path": "policies/original.sb",
+      "mode": "100644",
+      "bytes": 7728,
+      "sha256": "d9fe6042d1075fe80c87aed7106f451edeb34cb6971e4c0018088c48f3186d1b",
+      "git_blob": "83819774c309114903acedcf6e7d78c3946ad894"
+    },
+    {
+      "path": "policies/patched.sb",
+      "mode": "100644",
+      "bytes": 7769,
+      "sha256": "ccfcb2787eae7b4333c0df1718ba75e6da2cd536b78cf25f5a351445552c7692",
+      "git_blob": "f3952b09d32137befc814352faee140a9c2a3106"
+    },
+    {
+      "path": "verification/components.stdout.public.json",
+      "mode": "100644",
+      "bytes": 1527,
+      "sha256": "4e861850f51968f7ae736467d6731bf11a004428950d4aafaa931644174104d3",
+      "git_blob": "163982db543a6bb601a8e8e8b56fda50622afb3d"
+    },
+    {
+      "path": "verification/components.observed-exec-response.public.json",
+      "mode": "100644",
+      "bytes": 1740,
+      "sha256": "1488cf3388469514fc49e6423f37b25656f7263ce90c1079762a4929c710861b",
+      "git_blob": "acc9d1f548da3b9ac820330a99231d8b48ec56cb"
+    },
+    {
+      "path": "verification/components.provenance.public.json",
+      "mode": "100644",
+      "bytes": 634,
+      "sha256": "9532dc934246b6b2a26ca31f95fdc92e57715a98c29160d9cdf9e685e8839aa0",
+      "git_blob": "074fbc138f460e4feabf59f2d4e117cef165fcbc"
+    },
+    {
+      "path": "verification/invariance.stdout.public.json",
+      "mode": "100644",
+      "bytes": 3015,
+      "sha256": "2d021867b723be76d06924ad417df5ccf936462a48554c5e2c98038428d1b85d",
+      "git_blob": "aa029d4b7170b5d565edb2dfd15a9351f6a2299c"
+    },
+    {
+      "path": "verification/invariance.observed-exec-response.public.json",
+      "mode": "100644",
+      "bytes": 3383,
+      "sha256": "9f143cdd0f7a180ef9bb9a67d945ced6fceae5fbbf7e5b0c0f84333c5eb21026",
+      "git_blob": "23291c633a2ea54bbd105ddaf9db51edaea552e9"
+    },
+    {
+      "path": "verification/strict-diff.public.json",
+      "mode": "100644",
+      "bytes": 370,
+      "sha256": "000f6084f113cf198703d33ef18b810538978dd7daab62a4ab793dcb3bede3b8",
+      "git_blob": "e1a228487158ba9b64e5d5bb1649a8987de059f2"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/proc_info.h",
+      "mode": "100644",
+      "bytes": 31682,
+      "sha256": "f898ba1f6acecf128f6bb960bf07c7029fdd936620e03b6206419834cf2941fa",
+      "git_blob": "718a69fcf5340f547893ed8dc85908f253c1ce81"
+    },
+    {
+      "path": "references/apple/xnu/libsyscall/wrappers/libproc/libproc.h",
+      "mode": "100644",
+      "bytes": 7580,
+      "sha256": "37c7629819a18c5ef10d19a9bea00eb7e0bd31e0b127ecd2ae108c74f47c39e2",
+      "git_blob": "602e4fe897d1fc5a7ceacc372c78f184ea242bfe"
+    },
+    {
+      "path": "references/apple/xnu/libsyscall/wrappers/libproc/libproc.c",
+      "mode": "100644",
+      "bytes": 28996,
+      "sha256": "5c8a771427e04c5e1d55c4cdf5a077f3b52c5be4a091683b970084bfdda76df2",
+      "git_blob": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e"
+    },
+    {
+      "path": "references/apple/xnu/bsd/kern/proc_info.c",
+      "mode": "100644",
+      "bytes": 105375,
+      "sha256": "557092f14fbad3341100f59e0391d2e812c54b79a7404c89b2af97471ad67082",
+      "git_blob": "c061a09289afe73572456395af70de2cd92b69fc"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/proc.h",
+      "mode": "100644",
+      "bytes": 27350,
+      "sha256": "bf5c7214b8ff8a4022ca31f17d9002ba57cb4382c71213a29dcec0239bd0b73b",
+      "git_blob": "9197a7eda8be28984288b8199dbd9ace9072348f"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/_types.h",
+      "mode": "100644",
+      "bytes": 4612,
+      "sha256": "508393c2752392fb306f3f9540f848e766f9bb4b52a5f616739a9cc63006f9ec",
+      "git_blob": "5aa02f270135bca45af4d073df9ca7279091ef6e"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/param.h",
+      "mode": "100644",
+      "bytes": 10141,
+      "sha256": "ee6024c8fee1eb9bcd280203532cba183fb015c5549eebcd8f45f4667529ad4a",
+      "git_blob": "8d3deecf6f350205166eae2a3b4e437fe8727b87"
+    },
+    {
+      "path": "references/apple/xnu/libsyscall/Libsyscall.xcodeproj/project.pbxproj",
+      "mode": "100644",
+      "bytes": 134980,
+      "sha256": "aa8dc1a1a9c70e0c31143131b4f00ebcddc156d54d9f5f9abfb6b41362758b91",
+      "git_blob": "28edb216edc4b9c819f842a5b0a9be9caff4c398"
+    },
+    {
+      "path": "references/apple/xnu/libsyscall/Libsyscall.xcconfig",
+      "mode": "100644",
+      "bytes": 4044,
+      "sha256": "965997e7c4934fd75bb5b00f9b71db4a7a4a8bb93da64f513f12a1ed11fa1d2a",
+      "git_blob": "8b4b2197eb69b89551cdd669344c0216d964f4fd"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/sysctl.h",
+      "mode": "100644",
+      "bytes": 68828,
+      "sha256": "adbdc68ccd8e8dece9c1914fd056c48e421d343d5d6d93553ef33473f5688dda",
+      "git_blob": "9dc917dea1f9330c54fe395e46e11bfb68067f70"
+    },
+    {
+      "path": "references/apple/dyld/include/dlfcn.h",
+      "mode": "100644",
+      "bytes": 3326,
+      "sha256": "1cb2a8a0509d0429d0f983e8ab794a569eb69d17eb0c99696f76667310817d33",
+      "git_blob": "e1bc166977c735dc371f2baa1c22f485a9311c77"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/_types/_uid_t.h",
+      "mode": "100644",
+      "bytes": 1458,
+      "sha256": "d2140a65a17943a857381757c0b73a920f35ade41dc9809437c168be457c276a",
+      "git_blob": "a9769db30db26c48c8a3b157fcc5127bb1721df2"
+    },
+    {
+      "path": "references/apple/xnu/bsd/sys/_types/_gid_t.h",
+      "mode": "100644",
+      "bytes": 1438,
+      "sha256": "e687ad58c03701c132a02ebf20699c8cacfd34c3a67271bd2a415a5a8e4a9ea7",
+      "git_blob": "ebf497068955d30b6a8f68986c2bf3de7eff0434"
+    },
+    {
+      "path": "references/apple/xnu-main-ref.original.json",
+      "mode": "100644",
+      "bytes": 352,
+      "sha256": "22b01159c8fe76290d6078544fbaad7a23d56d5bec97b2b114db66982240ab41",
+      "git_blob": "bef4bbe3c042634bb208dcde7c5923316d1feff1"
+    },
+    {
+      "path": "references/apple/dyld-main-ref.original.json",
+      "mode": "100644",
+      "bytes": 354,
+      "sha256": "37a21ede0546b94ce536a6d352fc6aed867bcb3f5e9c5e3313892fef25f7d737",
+      "git_blob": "a3e98a89858fa113da61020797a3c84ee5692036"
+    },
+    {
+      "path": "references/apple/source-pins.public.json",
+      "mode": "100644",
+      "bytes": 7374,
+      "sha256": "b9662eb9650e03298bf82d7d241f9e805443c38edb6c7b7ff35849ba9606ff09",
+      "git_blob": "a9377aebfcfad8a6cf0491266d48ea3e50e462eb"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "mode": "100644",
+      "bytes": 6650,
+      "sha256": "ff85af8b194e2d88abf6679deca5591193cfaa4aa1c772bd6489577e58f42271",
+      "git_blob": "4b9c2258e938aa2f972bdda0c58e30446f654c44"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 5449,
+      "sha256": "c529ade9fddaafcc19fec68a86c8452f9834e3df7fb39bd3a3a039605723127e",
+      "git_blob": "a88766e9defc6f6d109ffce6790b9f2394d677de"
+    },
+    {
+      "path": "REFERENCE_ABI_REVIEW.md",
+      "mode": "100644",
+      "bytes": 6365,
+      "sha256": "c96b01231fe08a0b3e5666472d25a16f70ca2c50f458b68c69d281954586de02",
+      "git_blob": "0078abd72e86acd9ff1e07b5e66a446d2f30b6c6"
+    },
+    {
+      "path": "verification/execution-input-map.public.json",
+      "mode": "100644",
+      "bytes": 1488,
+      "sha256": "f4083a1a28841976de9fd5db9c6ef88e99801379ad555875b727172935eb1ed9",
+      "git_blob": "e2390faf34d897e45e2ab695c912b9fcc52a8cfb"
+    }
+  ]
+}

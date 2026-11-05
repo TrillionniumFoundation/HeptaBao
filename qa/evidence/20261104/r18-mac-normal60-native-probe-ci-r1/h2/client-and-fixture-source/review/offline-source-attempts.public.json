@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.native-h2-qa.offline-source-attempts.v1",
+  "first_single_file_wrapper": {
+    "chunk_id": "7b6849",
+    "wall_time_seconds": 0.000027101,
+    "exit_code": 1,
+    "original_token_count": 32,
+    "output": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\nNameError: name 'native_h2_gate_r1' is not defined\n"
+  },
+  "corrected_single_file_wrapper": {
+    "chunk_id": "feeb07",
+    "wall_time_seconds": 0.074319138,
+    "exit_code": 0,
+    "original_token_count": 79,
+    "output": "{\"source_bytes\": 61174, \"ast_parse\": true, \"compile_only\": true, \"top_level_definitions\": [\"Failure\", \"require\", \"sha\", \"fixed_error\", \"stable_identity\", \"write_new\", \"write_json\", \"bootstrap_modules\", \"owner_class\", \"neutral_environment\", \"readonly_runner\", \"make_fixture\", \"prepare\", \"main\"], \"executed\": false}\n"
+  },
+  "scope": "The first wrapper lost Python string quoting in the shell invocation; it raised NameError during compile naming, not during a product/controller main. The corrected invocation parsed and compiled the same source. No host/client request or product operation occurred.",
+  "combined_source_review_initial": {
+    "chunk_id": "58fa56",
+    "wall_time_seconds": 1.001677032,
+    "session_id": 25182,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "combined_source_review_terminal": {
+    "chunk_id": "dc8120",
+    "wall_time_seconds": 0.000028934,
+    "exit_code": 0,
+    "original_token_count": 850,
+    "output": "{\"cargo_executed\": false, \"component_count\": 12, \"controller_definition_source_comparison\": {\"byte_identical\": [\"Failure\", \"bootstrap_modules.no_duplicates\", \"fixed_error\", \"make_fixture.PhaseB.action\", \"make_fixture.PhaseB.audit_window\", \"make_fixture.PhaseB.check\", \"make_fixture.PhaseB.collect_secrets\", \"make_fixture.PhaseB.deadline\", \"make_fixture.PhaseB.generated_fence\", \"make_fixture.PhaseB.interrupted\", \"make_fixture.PhaseB.mutation_allowed\", \"make_fixture.PhaseB.node_fence\", \"make_fixture.PhaseB.openssl\", \"make_fixture.PhaseB.read_json\", \"make_fixture.PhaseB.request\", \"make_fixture.PhaseB.setup_phase\", \"make_fixture.PhaseB.spawn\", \"make_fixture.PhaseB.start_owned_child\", \"make_fixture.PhaseB.state_view\", \"make_fixture.PhaseB.stop_fixture_owned_once\", \"neutral_environment\", \"owner_class\", \"owner_class.Owned\", \"owner_class.Owned.__init__\", \"owner_class.Owned.cleanup\", \"owner_class.Owned.invoke\", \"owner_class.Owned.stop_once\", \"readonly_runner\", \"readonly_runner.run\", \"require\", \"sha\", \"stable_identity\", \"write_json\", \"write_new\"], \"changed\": [\"bootstrap_modules\", \"main\", \"make_fixture\", \"make_fixture.PhaseB\", \"make_fixture.PhaseB.__init__\", \"make_fixture.PhaseB.execute\", \"make_fixture.PhaseB.finish\", \"prepare\"], \"new\": [\"make_fixture.PhaseB.h1_control\", \"make_fixture.PhaseB.h2_case\", \"make_fixture.PhaseB.h2_private_spec\", \"make_fixture.PhaseB.h2_private_spec.der\", \"make_fixture.PhaseB.one_audit_pair\", \"make_fixture.PhaseB.run_h2_once\"], \"removed\": [\"make_fixture.PhaseB.audit_cli_terminal\", \"make_fixture.PhaseB.cli_case\", \"make_fixture.PhaseB.cold_restart\", \"make_fixture.PhaseB.finish_restore_readback\", \"make_fixture.PhaseB.mutate_version3\"]}, \"diffs\": [{\"bytes\": 47006, \"path\": \"/workspace/scratch/f86faac821c4/native-h2-qa-review-r1/controller-reference-to-h2.review.diff\", \"sha256\": \"834667e62e72ee0a1f71a5d5a7ec7b6ec3949c400fc2d523b8fcc83b635a9563\"}, {\"bytes\": 25625, \"path\": \"/workspace/scratch/f86faac821c4/native-h2-qa-review-r1/binding-reference-to-h2.review.diff\", \"sha256\": \"a5150c975decd7f61bfef1cff362df773bc164a255d70da8d46559242eddce34\"}], \"network_or_child_component_calls\": 0, \"product_main_executed\": false, \"python\": [{\"ast\": true, \"bytes\": 34154, \"compile_only\": true, \"file\": \"build_native_h2_client_r1.py\", \"sha256\": \"45e7a1a83ad1932b02fcd53adf00cb68d4c2c65b2d55605edf64e7354d0e764b\"}, {\"ast\": true, \"bytes\": 37675, \"compile_only\": true, \"file\": \"native_h2_binding_r1.py\", \"sha256\": \"53def4bda9c884ed1ae8237202e3cebed4533662c164c755e60900641a7c8d32\"}, {\"ast\": true, \"bytes\": 61973, \"compile_only\": true, \"file\": \"native_h2_gate_r1.py\", \"sha256\": \"2f5470874d7d0ca983563c1f0bcd3a2421e8056757a245c47ed3a9d24caa9ae3\"}], \"scope\": \"offline source parse and selected pure lock-subset components\", \"selected_pure_lock_subset_components\": [{\"name\": \"exact_real_canonical_registry_subset\", \"passed\": true}, {\"name\": \"version_not_canonical\", \"passed\": true}, {\"name\": \"wrong_checksum\", \"passed\": true}, {\"name\": \"foreign_registry\", \"passed\": true}, {\"name\": \"duplicate_package\", \"passed\": true}, {\"name\": \"unchecksummed_path_package\", \"passed\": true}, {\"name\": \"two_owned_qa_packages\", \"passed\": true}, {\"name\": \"foreign_package_field\", \"passed\": true}, {\"name\": \"non_string_dependency\", \"passed\": true}, {\"name\": \"unknown_top_level\", \"passed\": true}, {\"name\": \"only_owned_root\", \"passed\": true}, {\"name\": \"wrong_owned_package_version\", \"passed\": true}]}\n"
+  },
+  "current_draft2_source_review": {
+    "chunk_id": "13ca61",
+    "wall_time_seconds": 0.154950655,
+    "exit_code": 0,
+    "original_token_count": 325,
+    "output": "{\"builder_reused_definition_bytes\": {\"identical\": [\"need\", \"remaining\", \"sha\", \"identity\", \"exact_path\", \"no_symlink_ancestors\", \"duplicate_free\", \"parse\", \"pin_file\", \"load_verified_module\"], \"read_file_only_delta\": \"tracked open_fd/close_fd calls; same original custody, fullhash and deadline code\"}, \"current_sources\": [{\"ast\": true, \"bytes\": 37800, \"compile_only\": true, \"file\": \"native_h2_binding_r1.py\", \"sha256\": \"4313eb8064624d7112722d64f13a89b431aff82ba246471e675b8b37eb3ff010\"}, {\"ast\": true, \"bytes\": 35155, \"compile_only\": true, \"file\": \"build_native_h2_client_r1.py\", \"sha256\": \"2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35\"}], \"diffs\": [{\"bytes\": 4495, \"path\": \"builder-draft1-to-draft2.review.diff\", \"sha256\": \"7fdc8b703b5a9e09327d383a81ce57f9b06309c928cc5b899e42954a7a9f6501\"}, {\"bytes\": 1063, \"path\": \"binding-draft1-to-draft2.review.diff\", \"sha256\": \"73c051b748b908e64c317ae18942c3d27dba69c8352733e7b62bab107ed7f09d\"}, {\"bytes\": 25749, \"path\": \"binding-reference-to-h2-final.review.diff\", \"sha256\": \"11bdf49be7768b6de6d91f9d618afbf5916d8feeb74ef35aedccf356ec189950\"}], \"network_or_child_component_calls\": 0, \"scope\": \"source-only AST and exact function bytes; no main or Rust execution\", \"selected_12_lock_subset_components_retain_exact_function_bytes\": true}\n"
+  },
+  "component_scope": "12 selected pure lock-subset checks; no Python controller main, Cargo or Rust executed"
+}

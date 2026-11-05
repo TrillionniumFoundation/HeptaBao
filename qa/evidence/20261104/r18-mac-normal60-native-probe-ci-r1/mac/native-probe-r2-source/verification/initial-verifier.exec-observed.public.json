@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a0ded0",
+  "wall_time_seconds": 0.032342954,
+  "exit_code": 1,
+  "original_token_count": 336,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac-native-custody-probe-r1.OCWqri/verify_successor_r2.py\", line 25, in <module>\n    assert value(ot,name)==value(nt,name)\n           ^^^^^^^^^^^^^^\n  File \"/tmp/mac-native-custody-probe-r1.OCWqri/verify_successor_r2.py\", line 19, in value\n    return ast.literal_eval(node.value)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/ast.py\", line 112, in literal_eval\n    return _convert(node_or_string)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/ast.py\", line 111, in _convert\n    return _convert_signed_num(node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/ast.py\", line 85, in _convert_signed_num\n    return _convert_num(node)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/ast.py\", line 76, in _convert_num\n    _raise_malformed_node(node)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/ast.py\", line 73, in _raise_malformed_node\n    raise ValueError(msg + f': {node!r}')\nValueError: malformed node or string on line 30: <ast.BinOp object at 0x7f6300c78710>\n"
+}

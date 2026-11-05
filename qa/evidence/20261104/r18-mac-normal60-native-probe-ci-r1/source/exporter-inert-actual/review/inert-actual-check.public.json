@@ -1,0 +1,20 @@
+{
+  "authority_success_complete_durable": true,
+  "elapsed_nanoseconds": "5769558",
+  "host_operations_during_this_offline_check": 0,
+  "integer_comparison": "Python exact arbitrary-precision integers from original JSON strings",
+  "job_id": "1a1aa0f5515-fc05-3c46",
+  "original_core_stdout_equal": true,
+  "product_runtime_qualification": false,
+  "receipt_sha256": "734ccd14943efe7db69d931ce6442c68b540a178b8ba38d3877c143d4e519e0e",
+  "receipt_version": "66306:27968140:953:1793854495918751712:1793854495919427597",
+  "schema": "heptabao.df026-export-inert-actual-check.v1",
+  "source_bytes": 15324,
+  "source_complete_bytes_equal": true,
+  "source_executed": false,
+  "source_sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa",
+  "source_version": "66306:27968139:15324:1793854495917219384:1793854495917963296",
+  "status": "passed_inert_only",
+  "stderr_bytes": 0,
+  "stdout_bytes": 795
+}

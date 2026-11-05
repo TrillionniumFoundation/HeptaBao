@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root-df026-source-export-inert-go.r1",
+  "asof": "2026-11-05 04:54:12 UTC",
+  "verdict": "GO_SINGLE_EXACT_INERT_PUBLICATION_ONLY",
+  "source_tree": "660436d2f5573012d41e2100a9bb9a68bb97a316",
+  "files": 14,
+  "bytes": 129612,
+  "merkle_trees": 5,
+  "inert": {
+    "blob": "656db30aa62f86b84f0a8dd905486d24eeb574de",
+    "bytes": 4813,
+    "sha256": "ab33ef2ad5c80caff5753901a4ec8799aa80be632cafbd55a6f0678c9e9d3d56"
+  },
+  "request": {
+    "blob": "f22c688866f35762729cf2fcc5068b535e73cab9",
+    "bytes": 25791,
+    "sha256": "9ff39cc5a3d78f58cc56cd7e291bdaad72d6df2bdd7ae894251d4b19a7465625",
+    "key": "heptabao-df026-standalone-source-export-inert-ab33ef2a-20261105-r1"
+  },
+  "exporter": {
+    "blob": "47c96d89591c71e43566da3e529fa49702a8f66b",
+    "bytes": 15324,
+    "sha256": "a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa"
+  },
+  "checks": {
+    "full_source_read": true,
+    "two_whole_diffs_exact": [
+      3,
+      3
+    ],
+    "request_code_exact": true,
+    "stdin_carrier_exact": true,
+    "decoded_exporter_exact": true,
+    "source_stage_actual_accepted": true,
+    "independent_new_controls_directory": true,
+    "create_only_publication": true
+  },
+  "scope": "One fixed public Python source, AST compile only, no Git/Cargo/product/provider/credential execution. Retain exact ACK and authoritative terminal, whole file readback and receipt before requesting exporter GO.",
+  "following_export": "Not yet authorized by this inert GO. Original exporter 300/90/5+5 and external330 remain; zero-prerequisite actual bundle and closure required."
+}

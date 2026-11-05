@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.normal-native-h2-gate.dispatch-templates.v1",
+  "ready": false,
+  "requests_authorized": false,
+  "source_bundle_only": true,
+  "precondition": "root must first freeze real input files and hashes, then issue a separate single-use stage/build/prepare/live authorization",
+  "templates": {
+    "qa_build": {
+      "host": "rog",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build_native_h2_client_r1.py",
+        "--binding",
+        "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build-binding.private.json",
+        "--binding-sha256",
+        "UNRESOLVED_ACTUAL_BUILD_BINDING_SHA256",
+        "--self-sha256",
+        "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+      ],
+      "cwd": "/home/qian-qi",
+      "idempotency_key": "heptabao-native-h2-qa-build-df026-20261105-r1",
+      "timeout_seconds": 660
+    },
+    "prepare": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3.12",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r1/qa/native_h2_gate_r1.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r1/binding.private.json",
+        "--binding-sha256",
+        "UNRESOLVED_ACTUAL_FIXTURE_BINDING_SHA256",
+        "--prepare-only"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "idempotency_key": "heptabao-native-h2-gate-prepare-df026-20261105-r1",
+      "timeout_seconds": 330
+    },
+    "live": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3.12",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r1/qa/native_h2_gate_r1.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-gate-control-r1/binding.private.json",
+        "--binding-sha256",
+        "UNRESOLVED_ACTUAL_FIXTURE_BINDING_SHA256",
+        "--run",
+        "--prepare-result-sha256",
+        "UNRESOLVED_ACTUAL_PREPARE_RESULT_SHA256"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "idempotency_key": "heptabao-native-h2-gate-live-df026-20261105-r1",
+      "timeout_seconds": 2400
+    }
+  }
+}

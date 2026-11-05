@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.df026-rog-freshcache-normal-release-stage-evidence.v1",
+  "status": "PASS_RELEASE_BUILD_ONLY_COMBINED_JOB_RUNNING",
+  "job_id": "1a1a9f65382-fc05-3a6c",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "release_elapsed_seconds": 1333.7623211960017,
+  "original_release_budget_seconds": 1800,
+  "release_child_direct_reaped": true,
+  "release_child_remaining": [],
+  "release_binary": {
+    "bytes": 110339520,
+    "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2"
+  },
+  "receipt_pins": [
+    {
+      "name": "normal-release-result.public.json",
+      "bytes": 3137,
+      "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+      "blob": "60ee91f8996765b8a0ec42f8cb10e55a863d970c",
+      "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
+    },
+    {
+      "name": "native-build.public.json",
+      "bytes": 772,
+      "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+      "blob": "17f42f7984a5b335ba7b4bb3cd1d9a1d4dc59846",
+      "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+    },
+    {
+      "name": "normal-release-build.public.json",
+      "bytes": 709,
+      "sha256": "bca26acb4b2e11c24f014b57adc504f4ae0fb1a9f7ecf85e2a852a9092a59e99",
+      "blob": "2d821678a00d81ca0051778626d01dcf1ad5b007",
+      "version": "66306:31618598:709:1793854196442521344:1793854196442521344"
+    }
+  ],
+  "combined_normal60_qualification": false,
+  "remaining_libtest_and_44_plus7_plus9": "not terminal at this evidence snapshot",
+  "no_replay": true,
+  "no_budget_extension": true,
+  "production_changed": false,
+  "raw_cargo_streams_pending_full_archive": true
+}

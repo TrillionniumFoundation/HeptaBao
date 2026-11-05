@@ -1,0 +1,13 @@
+--- a/read_stopped_postrecovery_frontier_r2.py
++++ b/read_stopped_postrecovery_frontier_cold_h2_r1.py
+@@ -16,8 +16,8 @@
+ 
+ BASELINE_FAILURE_SHA = "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912"
+ ROOTS = {
+-    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r2", 501),
+-    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2", 1000),
++    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/cold-h2-pocket3-mac1-postrecovery-cold-node1-r1", 501),
++    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1", 1000),
+ }
+ # Exact stopped-fixture metadata observations, per node; no permission changes.
+ LOG_MODES = {1: (0o755, 0o644), 2: (0o775, 0o664)}

@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.df026-source-export-input-provenance.v1",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "sole_parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+  "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+  "full_history_count": 3757,
+  "tracked_leaf_count": 3913,
+  "tracked_bytes": 62212769,
+  "full_leaf_index_sha256": "e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54",
+  "actual_source_stage": {
+    "bytes": 25754,
+    "sha256": "7364fb449d5c46afa65507469b88427c8acc088fe4ef166cd1c5a436e56be9be",
+    "blob": "d3e0f506ffaf761c3692e2ebe317010fabb5c61f",
+    "path": "reference/actual-df026-source-stage.result.public.json",
+    "actual_build_qualification": false
+  },
+  "existing_incremental_bundle": {
+    "bytes": 24337,
+    "sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+    "prerequisites": [
+      "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+    ],
+    "accepted_as_standalone": false
+  },
+  "new_export": {
+    "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+    "bytes": null,
+    "sha256": null,
+    "version": null,
+    "required_prerequisites": [],
+    "required_heads": [
+      [
+        "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+        "HEAD"
+      ]
+    ]
+  },
+  "product_runtime_or_normal_build_inferred": false
+}

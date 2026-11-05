@@ -1,0 +1,28 @@
+{
+  "pages": [
+    {
+      "page": 0,
+      "offset": 0,
+      "nextOffset": 16384,
+      "size": 19388,
+      "eof": false,
+      "textEqualsHex": true,
+      "bytes": 16384
+    },
+    {
+      "page": 1,
+      "offset": 16384,
+      "nextOffset": 19388,
+      "size": 19388,
+      "eof": true,
+      "textEqualsHex": true,
+      "bytes": 3004
+    }
+  ],
+  "full": {
+    "bytes": 19388,
+    "sha256": "e47be79ba25da9f05f76ddc7b7049305d3047d2a1709ff6474043fc530fdaf0e",
+    "git_blob": "96812c60658f6d210c71ec363fbd1527c9451144"
+  },
+  "stderrEmpty": true
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.mac-df026-source105-readback.r1",
+  "status": "COMPLETE_EXISTING_SOURCE_STAGE_ARCHIVE",
+  "actual_core_tree": "25f8e29ae2dbb5d711b4a934d638923d66d6a2ac",
+  "actual_job": "1a1a9e58987-fc05-393c",
+  "command_receipts": 35,
+  "stdout_stderr_files": 70,
+  "all_owned_commands_exit_zero_reaped_empty": true,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "canonical_leaves": 3913,
+  "total_tracked_bytes": 62212769,
+  "indexes_preserved_as_base64_with_raw_sha": true,
+  "old_core_unchanged": true,
+  "new_remote_operations_for_this_pack": 0,
+  "compile_or_product_qualification_claimed": false
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.native-h2-qa.client-selection.v1",
+  "actual_curl_capability": {
+    "tree": "836c5c155883ea432262d6cf9997eb0b4cb50c8a",
+    "review_blob": "57e876ffc0fdb284b25f871b8a74b867eb8bcd50",
+    "job": "1a1a9c5e804-fc05-378c",
+    "executable": "/usr/bin/curl",
+    "bytes": 297288,
+    "sha256": "1ccbd3dae948374ba8eef1ebda26c64b783ede50b463196e53666e0880bdac60",
+    "observed_version": "8.5.0",
+    "http2_feature_observed": true,
+    "argv": [
+      "-q",
+      "--version"
+    ],
+    "http_requests": 0
+  },
+  "upstream_curl_reference": {
+    "tag": "curl-8_5_0",
+    "http2_source_blob": "973848484a44c77f78259fcf104f53ca98d04157",
+    "transfer_source_blob": "96f1fde7559a75a7f7f9684b349e08c8bc81ab3e",
+    "observations": [
+      "REFUSED_STREAM can set refused_stream and enter an internal retry path independent of a user retry count",
+      "RST_STREAM(NO_ERROR) closure is not itself a directly exposed positive END_STREAM observation"
+    ],
+    "installed_ubuntu_binary_claimed_equal_to_upstream_source": false,
+    "installed_client_runtime_bug_reproduced": false
+  },
+  "choice": "independent one-connection Rust h2 client",
+  "reason": "The selected curl public result interface does not directly prove received END_STREAM, and a source-visible retry path conflicts with the desired one-call proof. Retain its observed capability without treating it as an H2 request qualification.",
+  "h2_upstream": {
+    "version": "0.4.19",
+    "commit": "d57d1b852fec9dda6d42d3454502006d52104da8",
+    "cargo_checksum": "ef8e5e5a340588f4452631496976cf8636d4a7ecf600239fdc27615d2530bc16",
+    "independent_review_blob": "3876fe3d5c0488f81faf6bb947945b25f85102ad",
+    "data_none_alone_sufficient": false,
+    "receive_eos_required": true,
+    "trailer_completion_required": true,
+    "late_reset_absence_claim": false
+  },
+  "qa_runtime_qualification": false
+}

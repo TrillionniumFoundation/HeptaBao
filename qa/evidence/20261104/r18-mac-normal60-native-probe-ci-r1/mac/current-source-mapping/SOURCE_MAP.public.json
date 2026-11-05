@@ -1,0 +1,514 @@
+{
+  "schema": "heptabao.mac-native-current-candidate-source-map.r1",
+  "status": "PROPOSED_SOURCE_MAPPING_ONLY",
+  "baseline": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+    "sourceCount": 18,
+    "sourcePins": {
+      "mac_current_fixture_materializer_r1.py": {
+        "bytes": 23643,
+        "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f",
+        "git_blob": "c22afefd15d026017e99ea47a47c0138ed6b469d"
+      },
+      "mac_current_capture_entry_r1.py": {
+        "bytes": 19011,
+        "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+        "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+      },
+      "mac_owned_launchd_r3.py": {
+        "bytes": 35532,
+        "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+        "git_blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57"
+      },
+      "mac_current_server_owner_r1.py": {
+        "bytes": 13210,
+        "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+        "git_blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0"
+      },
+      "mac_current_phase_owner_r2.py": {
+        "bytes": 24971,
+        "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4",
+        "git_blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9"
+      },
+      "mac_native_process_observer_r1.py": {
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+        "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+      },
+      "mac_guarded_current_capture_r3.py": {
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+        "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+      },
+      "mac_owned_commands_r1.py": {
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+        "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+      },
+      "mac_t5_volume_guard_r1.py": {
+        "bytes": 13387,
+        "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+        "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+      },
+      "mac_owned_unreaped_r1.py": {
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+        "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+      },
+      "mac_capture_sqlite_synthetic_r1.py": {
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+        "git_blob": "992fa2b52760e5f3d0b192837053728011e11500"
+      },
+      "mac_capture_sqlite_synthetic_r2.py": {
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+        "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+      },
+      "mac_current_cycle_r2.mjs": {
+        "bytes": 24007,
+        "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+        "git_blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769"
+      },
+      "mac_single_native_r2.mjs": {
+        "bytes": 28527,
+        "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+        "git_blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680"
+      },
+      "mac_auth_rows_cas_r1.mjs": {
+        "bytes": 3103,
+        "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+        "git_blob": "50cf42a76cd313fb4de889e954bb9abe2e716530"
+      },
+      "mac_authbus_cache_cas_r1.mjs": {
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+        "git_blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+      },
+      "mac_current_outer_inputs_r2.py": {
+        "bytes": 27059,
+        "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+        "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a"
+      },
+      "mac_current_outer_r4.py": {
+        "bytes": 59462,
+        "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+        "git_blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1"
+      }
+    },
+    "runtimeRequestBlob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+    "knownRuntime": "FAIL_KNOWN_BEFORE_PRODUCTION_DB_OR_CONSUMER_START",
+    "notReplayed": true
+  },
+  "proposed": {
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1",
+    "sourceCount": 21,
+    "addedModuleCount": 3,
+    "captureEntryName": "mac_current_capture_entry_native_r1.py",
+    "outerName": "mac_current_outer_native_r1.py",
+    "exactNewLabels": {
+      "server": "org.heptabao.qa.mac-authbus-r10-native-r1.server",
+      "consumer": "org.heptabao.qa.mac-authbus-r10-native-r1.consumer"
+    }
+  },
+  "categories": {
+    "oldRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+    "newProposedRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1",
+    "projectionUsedOnlyIn": "new capture entry sandbox process",
+    "unchangedByteSources": [
+      "mac_guarded_current_capture_r3.py",
+      "mac_capture_sqlite_synthetic_r1.py",
+      "mac_capture_sqlite_synthetic_r2.py",
+      "mac_owned_commands_r1.py",
+      "mac_owned_unreaped_r1.py",
+      "mac_t5_volume_guard_r1.py",
+      "mac_native_process_observer_r1.py",
+      "mac_authbus_cache_cas_r1.mjs"
+    ],
+    "pathOnlySources": [
+      "mac_current_fixture_materializer_r1.py",
+      "mac_current_server_owner_r1.py",
+      "mac_current_phase_owner_r2.py",
+      "mac_current_cycle_r2.mjs",
+      "mac_single_native_r2.mjs",
+      "mac_auth_rows_cas_r1.mjs",
+      "mac_current_outer_inputs_r2.py"
+    ],
+    "rootAndLabelOnlySources": [
+      "mac_owned_launchd_r3.py"
+    ],
+    "semanticIntegrationSources": [
+      "mac_current_capture_entry_r1.py",
+      "mac_current_outer_r4.py"
+    ],
+    "addedProbeQualifiedSources": [
+      "mac_darwin_owned_projection_r1.py",
+      "mac_native_owned_unreaped_r1.py",
+      "mac_native_owned_commands_r1.py"
+    ]
+  },
+  "closed18SourceDependencyObservations": [
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "bytes": 23643,
+      "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f",
+      "matches": []
+    },
+    {
+      "name": "mac_current_capture_entry_r1.py",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "matches": [
+        {
+          "line": 20,
+          "text": "NAMES=('mac_current_capture_entry_r1.py','mac_guarded_current_capture_r3.py',"
+        },
+        {
+          "line": 21,
+          "text": "       'mac_t5_volume_guard_r1.py','mac_owned_commands_r1.py','mac_owned_unreaped_r1.py')"
+        },
+        {
+          "line": 256,
+          "text": "        from mac_owned_commands_r1 import Commands"
+        },
+        {
+          "line": 263,
+          "text": "        commands=Commands(SignalState())"
+        }
+      ]
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "bytes": 35532,
+      "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+      "matches": [
+        {
+          "line": 184,
+          "text": "            names=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',"
+        }
+      ]
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "bytes": 13210,
+      "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+      "matches": [
+        {
+          "line": 19,
+          "text": "PUBLIC_MODULES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',"
+        },
+        {
+          "line": 125,
+          "text": "        from mac_owned_commands_r1 import Signals,Commands"
+        },
+        {
+          "line": 132,
+          "text": "        commands=Commands(CommandSignals())"
+        }
+      ]
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "bytes": 24971,
+      "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4",
+      "matches": [
+        {
+          "line": 89,
+          "text": "    from mac_owned_unreaped_r1 import (require_waitid, capture_child,"
+        },
+        {
+          "line": 95,
+          "text": "    remaining(until);require_waitid()"
+        },
+        {
+          "line": 119,
+          "text": "            row['custody']=capture_child(proc,until=until)"
+        },
+        {
+          "line": 146,
+          "text": "                cleanup=stop_once_unreaped(proc,row['custody'])"
+        },
+        {
+          "line": 297,
+          "text": "                     'mac_owned_unreaped_r1.py',"
+        },
+        {
+          "line": 403,
+          "text": "                from mac_owned_unreaped_r1 import stop_once_unreaped"
+        },
+        {
+          "line": 404,
+          "text": "                item.update(stop_once_unreaped(p,row.get('custody')))"
+        }
+      ]
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+      "matches": [
+        {
+          "line": 23,
+          "text": "from mac_owned_unreaped_r1 import exit_observation as retained_exit_observation"
+        }
+      ]
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "matches": []
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "matches": [
+        {
+          "line": 11,
+          "text": "from mac_owned_unreaped_r1 import require_waitid, capture_child, exit_observation, observed_returncode, stop_once_unreaped"
+        },
+        {
+          "line": 42,
+          "text": "        require_waitid();remaining()"
+        },
+        {
+          "line": 54,
+          "text": "            row['custody']=capture_child(p,until=until)"
+        },
+        {
+          "line": 80,
+          "text": "                    try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'])"
+        }
+      ]
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "matches": []
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "matches": [
+        {
+          "line": 16,
+          "text": "def require_waitid():"
+        },
+        {
+          "line": 39,
+          "text": "def ps_rows(pid=None, *, seconds=4.0, until=None):"
+        },
+        {
+          "line": 73,
+          "text": "def capture_child(child, *, until):"
+        },
+        {
+          "line": 74,
+          "text": "    require_waitid()"
+        },
+        {
+          "line": 75,
+          "text": "    rows = ps_rows(child.pid, until=until)"
+        },
+        {
+          "line": 96,
+          "text": "        fresh = ps_rows(child.pid, until=until)"
+        },
+        {
+          "line": 106,
+          "text": "    rows = ps_rows(child.pid, until=until)"
+        },
+        {
+          "line": 123,
+          "text": "    rows = ps_rows(until=until)"
+        },
+        {
+          "line": 133,
+          "text": "def stop_once_unreaped(child, owner):"
+        },
+        {
+          "line": 135,
+          "text": "    require_waitid()"
+        },
+        {
+          "line": 145,
+          "text": "            owner=capture_child(child,until=term_until)"
+        },
+        {
+          "line": 193,
+          "text": "            rows=[row for row in ps_rows(until=group_until) if row['pgid']==child.pid]"
+        }
+      ]
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "matches": [
+        {
+          "line": 17,
+          "text": "       'mac_t5_volume_guard_r1.py','mac_owned_unreaped_r1.py','mac_owned_commands_r1.py')"
+        },
+        {
+          "line": 87,
+          "text": "        from mac_owned_commands_r1 import Commands"
+        },
+        {
+          "line": 95,
+          "text": "        commands=Commands(SignalState())"
+        }
+      ]
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+      "matches": [
+        {
+          "line": 18,
+          "text": "       'mac_t5_volume_guard_r1.py','mac_owned_unreaped_r1.py','mac_owned_commands_r1.py')"
+        },
+        {
+          "line": 89,
+          "text": "        from mac_owned_commands_r1 import Commands"
+        },
+        {
+          "line": 97,
+          "text": "        commands=Commands(SignalState())"
+        }
+      ]
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "bytes": 24007,
+      "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+      "matches": []
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "bytes": 28527,
+      "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+      "matches": []
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+      "matches": []
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "matches": []
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "matches": []
+    },
+    {
+      "name": "mac_current_outer_r4.py",
+      "bytes": 59462,
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+      "matches": [
+        {
+          "line": 23,
+          "text": " 'mac_capture_sqlite_synthetic_r2.py','mac_owned_commands_r1.py','mac_t5_volume_guard_r1.py',"
+        },
+        {
+          "line": 24,
+          "text": " 'mac_owned_unreaped_r1.py','mac_native_process_observer_r1.py','mac_current_phase_owner_r2.py',"
+        },
+        {
+          "line": 26,
+          "text": " 'mac_current_capture_entry_r1.py','mac_current_outer_inputs_r2.py','mac_current_outer_r4.py',"
+        },
+        {
+          "line": 29,
+          "text": "ENTRY_NAMES=('mac_current_capture_entry_r1.py','mac_guarded_current_capture_r3.py',"
+        },
+        {
+          "line": 30,
+          "text": " 'mac_t5_volume_guard_r1.py','mac_owned_commands_r1.py','mac_owned_unreaped_r1.py')"
+        },
+        {
+          "line": 535,
+          "text": "    from mac_current_capture_entry_r1 import capture_profile"
+        },
+        {
+          "line": 545,
+          "text": "        str(QA/'mac_current_capture_entry_r1.py'),'--stage',stage,'--absolute-until',repr(deadline),"
+        },
+        {
+          "line": 756,
+          "text": "        from mac_owned_commands_r1 import Signals,Commands"
+        },
+        {
+          "line": 759,
+          "text": "        from mac_current_capture_entry_r1 import admitted_synthetic"
+        },
+        {
+          "line": 760,
+          "text": "        from mac_current_outer_inputs_r2 import Inputs,PLUGIN_FILES"
+        },
+        {
+          "line": 763,
+          "text": "        ctx.signals=Signals();ctx.signals.install();commands=Commands(ctx.signals)"
+        }
+      ]
+    }
+  ],
+  "captureBoundary": {
+    "oldEntryNAMESLines": [
+      20,
+      21
+    ],
+    "oldEntryImportLines": [
+      254,
+      257
+    ],
+    "oldEntryDiskutilLines": [
+      266,
+      271
+    ],
+    "oldEntryProductionReadLines": [
+      282,
+      284
+    ],
+    "oldOuterCaptureOnceLines": [
+      534,
+      580
+    ],
+    "requiredNewEntryModules": [
+      "mac_current_capture_entry_native_r1.py",
+      "mac_guarded_current_capture_r3.py",
+      "mac_t5_volume_guard_r1.py",
+      "mac_darwin_owned_projection_r1.py",
+      "mac_native_owned_unreaped_r1.py",
+      "mac_native_owned_commands_r1.py"
+    ],
+    "onlyNativeCommandsConsumer": "new sandboxed capture entry",
+    "unchangedExternalPsConsumers": [
+      "outer Commands",
+      "OwnedLaunchd command/ProcessReader",
+      "server wrapper Commands/ProcessReader",
+      "phase owner retained child cleanup",
+      "native observer lineage reader"
+    ],
+    "noGlobalOldModuleReplacement": true,
+    "originalCaptureSourceSha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "originalPrivateInputsAndQueriesUnchanged": true,
+    "publicNativeQualificationRequiredBeforeCurrentDbOpen": true
+  },
+  "pathOnlyImportantException": {
+    "captureLibraryHistoricSyntheticRootKept": true,
+    "syntheticR1AndR2ScriptsRemainHistoricByteIdentityAndAreNotExecuted": true,
+    "reason": "The exact successful SQLite proof binds capture source606b; a blanket ROOT substitution would break that source gate. Current-mode LIVE is independent of its historic synthetic-root allowlist.",
+    "copiedHistoricalProofBytesRemainOriginal": true
+  }
+}

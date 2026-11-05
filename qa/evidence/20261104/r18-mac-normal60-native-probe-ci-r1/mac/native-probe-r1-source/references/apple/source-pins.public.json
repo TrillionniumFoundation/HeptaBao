@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.apple-reference-source-pins.r1",
+  "installedWholeLibraryPin": false,
+  "installedKernelVersionAssumed": false,
+  "sourceFiles": [
+    {
+      "path": "bsd/sys/proc_info.h",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/proc_info.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 31682,
+      "sha256": "f898ba1f6acecf128f6bb960bf07c7029fdd936620e03b6206419834cf2941fa",
+      "git_blob": "718a69fcf5340f547893ed8dc85908f253c1ce81",
+      "packet_path": "references/apple/xnu/bsd/sys/proc_info.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "libsyscall/wrappers/libproc/libproc.h",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/libsyscall/wrappers/libproc/libproc.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 7580,
+      "sha256": "37c7629819a18c5ef10d19a9bea00eb7e0bd31e0b127ecd2ae108c74f47c39e2",
+      "git_blob": "602e4fe897d1fc5a7ceacc372c78f184ea242bfe",
+      "packet_path": "references/apple/xnu/libsyscall/wrappers/libproc/libproc.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "libsyscall/wrappers/libproc/libproc.c",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/libsyscall/wrappers/libproc/libproc.c?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 28996,
+      "sha256": "5c8a771427e04c5e1d55c4cdf5a077f3b52c5be4a091683b970084bfdda76df2",
+      "git_blob": "c3e7369f886fbb7bbc8d77f8fca9ecc943bb5f4e",
+      "packet_path": "references/apple/xnu/libsyscall/wrappers/libproc/libproc.c",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "bsd/kern/proc_info.c",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/kern/proc_info.c?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 105375,
+      "sha256": "557092f14fbad3341100f59e0391d2e812c54b79a7404c89b2af97471ad67082",
+      "git_blob": "c061a09289afe73572456395af70de2cd92b69fc",
+      "packet_path": "references/apple/xnu/bsd/kern/proc_info.c",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "bsd/sys/proc.h",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/proc.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 27350,
+      "sha256": "bf5c7214b8ff8a4022ca31f17d9002ba57cb4382c71213a29dcec0239bd0b73b",
+      "git_blob": "9197a7eda8be28984288b8199dbd9ace9072348f",
+      "packet_path": "references/apple/xnu/bsd/sys/proc.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "bsd/sys/_types.h",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/_types.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 4612,
+      "sha256": "508393c2752392fb306f3f9540f848e766f9bb4b52a5f616739a9cc63006f9ec",
+      "git_blob": "5aa02f270135bca45af4d073df9ca7279091ef6e",
+      "packet_path": "references/apple/xnu/bsd/sys/_types.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "bsd/sys/param.h",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/param.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 10141,
+      "sha256": "ee6024c8fee1eb9bcd280203532cba183fb015c5549eebcd8f45f4667529ad4a",
+      "git_blob": "8d3deecf6f350205166eae2a3b4e437fe8727b87",
+      "packet_path": "references/apple/xnu/bsd/sys/param.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea"
+    },
+    {
+      "path": "libsyscall/Libsyscall.xcodeproj/project.pbxproj",
+      "packet_path": "references/apple/xnu/libsyscall/Libsyscall.xcodeproj/project.pbxproj",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/libsyscall/Libsyscall.xcodeproj/project.pbxproj?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 134980,
+      "sha256": "aa8dc1a1a9c70e0c31143131b4f00ebcddc156d54d9f5f9abfb6b41362758b91",
+      "git_blob": "28edb216edc4b9c819f842a5b0a9be9caff4c398"
+    },
+    {
+      "path": "libsyscall/Libsyscall.xcconfig",
+      "packet_path": "references/apple/xnu/libsyscall/Libsyscall.xcconfig",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/libsyscall/Libsyscall.xcconfig?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 4044,
+      "sha256": "965997e7c4934fd75bb5b00f9b71db4a7a4a8bb93da64f513f12a1ed11fa1d2a",
+      "git_blob": "8b4b2197eb69b89551cdd669344c0216d964f4fd"
+    },
+    {
+      "path": "bsd/sys/sysctl.h",
+      "packet_path": "references/apple/xnu/bsd/sys/sysctl.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/sysctl.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 68828,
+      "sha256": "adbdc68ccd8e8dece9c1914fd056c48e421d343d5d6d93553ef33473f5688dda",
+      "git_blob": "9dc917dea1f9330c54fe395e46e11bfb68067f70"
+    },
+    {
+      "path": "include/dlfcn.h",
+      "packet_path": "references/apple/dyld/include/dlfcn.h",
+      "repository": "apple-oss-distributions/dyld",
+      "commit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+      "url": "https://api.github.com/repos/apple-oss-distributions/dyld/contents/include/dlfcn.h?ref=fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+      "bytes": 3326,
+      "sha256": "1cb2a8a0509d0429d0f983e8ab794a569eb69d17eb0c99696f76667310817d33",
+      "git_blob": "e1bc166977c735dc371f2baa1c22f485a9311c77"
+    },
+    {
+      "path": "bsd/sys/_types/_uid_t.h",
+      "packet_path": "references/apple/xnu/bsd/sys/_types/_uid_t.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/_types/_uid_t.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 1458,
+      "sha256": "d2140a65a17943a857381757c0b73a920f35ade41dc9809437c168be457c276a",
+      "git_blob": "a9769db30db26c48c8a3b157fcc5127bb1721df2"
+    },
+    {
+      "path": "bsd/sys/_types/_gid_t.h",
+      "packet_path": "references/apple/xnu/bsd/sys/_types/_gid_t.h",
+      "repository": "apple-oss-distributions/xnu",
+      "commit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/contents/bsd/sys/_types/_gid_t.h?ref=f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+      "bytes": 1438,
+      "sha256": "e687ad58c03701c132a02ebf20699c8cacfd34c3a67271bd2a415a5a8e4a9ea7",
+      "git_blob": "ebf497068955d30b6a8f68986c2bf3de7eff0434"
+    }
+  ]
+}

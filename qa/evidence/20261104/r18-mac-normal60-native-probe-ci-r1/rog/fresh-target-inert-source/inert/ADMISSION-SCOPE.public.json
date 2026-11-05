@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.cold-h2-fresh-cache-inert-source-review-input.v1",
+  "scope": "PROPOSED_INERT_ONLY",
+  "key": "heptabao-cold-h2-fresh-target-controls-20261105-r3-11971f77-98b7838c",
+  "carrier": {
+    "bytes": 10106,
+    "sha256": "11971f770d2d7c0c4fe4b3f3940779d49efa7c404c6f27f5776beceb72c21d6a",
+    "blob": "079d04ca19437e56da30c1cacdeb384ee63101b8"
+  },
+  "stdin": {
+    "bytes": 74423,
+    "sha256": "64d7e01aa6dac0a999a1cd19e47d22f0573f60bac3d0a865e65acd194697eeb7",
+    "blob": "c2845f3195289c96412d208aeeb16cec085026d1"
+  },
+  "bindings": [
+    {
+      "name": "launch_normal_cold_h2.py",
+      "bytes": 39664,
+      "sha256": "98b7838cd4550467b76bc3c9fd3b4925b806075536b7e22dc1cba1c79063bde3",
+      "blob": "8e2f73cf6a286077522268c8c1857ca4004cf258"
+    },
+    {
+      "name": "prior-normal-early-failure.authority.original.json",
+      "bytes": 726,
+      "sha256": "9188213431c349616ecd8dd329f930d909fb3b973ff27848ae3afb7957e2bfae",
+      "blob": "fbd4bd712283922334a30cc8767c94a97a3b7582"
+    },
+    {
+      "name": "prior-normal-early-failure.stderr",
+      "bytes": 693,
+      "sha256": "bb032403580f205d6e15f90da809c666b4accec08a0acf00f0a83611ecbbe01e",
+      "blob": "5851a2b4296af66b5e1fe01e0c7cbd1e00da31f4"
+    },
+    {
+      "name": "prior-normal-target-metadata.stdout.json",
+      "bytes": 13741,
+      "sha256": "e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a",
+      "blob": "54e665b8eec967fc561820d337ad5bb14f621e32"
+    },
+    {
+      "name": "prior-normal-target-metadata.authority.original.json",
+      "bytes": 733,
+      "sha256": "70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752",
+      "blob": "84c19eed8f67e2cc324b7e84f92da6089ecfec5e"
+    }
+  ],
+  "root": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1",
+  "only_new_directory": "control-r3",
+  "files": 5,
+  "outer_new_seconds": 60,
+  "inner_new_seconds": 45,
+  "all_original_four_files_checked_before_and_after": true,
+  "all_decode_and_compile_before_first_write": true,
+  "new_target_created_by_inert": false,
+  "any_cargo_or_product_started_by_inert": false,
+  "mode": "0700 directory / 0600 public files",
+  "partial_failure_preserved_no_replay": true,
+  "receipt_location": "durable authoritative job stdout; no extra receipt filename added to control directory",
+  "source_module_executed": false,
+  "known_prior_atomic_idiom_blob": "d7b4b99093626ad38ec1a459b781c26b8cd5507d",
+  "original_atomic_helper_byte_identity_claimed": false,
+  "actual_local_ast_entry_checks": 5,
+  "separate_build_request_requires_root_go": true
+}

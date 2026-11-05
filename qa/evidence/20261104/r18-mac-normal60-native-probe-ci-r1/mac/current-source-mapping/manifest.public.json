@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.mac-native-current-successor-mapping-packet.r1",
+  "status": "SOURCE_MAPPING_AND_UNBOUND_TEMPLATE_ONLY",
+  "hostActions": 0,
+  "newCandidateImplemented": false,
+  "nativeActualQualified": false,
+  "files": [
+    {
+      "path": "SOURCE_MAP.public.json",
+      "mode": "100644",
+      "bytes": 17440,
+      "sha256": "b9f9457c4662cb11832379c575f58613581e99b99ae5247880b5fa3f79938e88",
+      "git_blob": "37f4a8f01f1c6438d74b459e9478188913c45505"
+    },
+    {
+      "path": "BINDING_TEMPLATE.public.json",
+      "mode": "100644",
+      "bytes": 5036,
+      "sha256": "b90504d1f1c90e6b4d0e889280b4194a26ff63413728dea10111a059d0c0b026",
+      "git_blob": "550cef947a8469ca2f8798f3e6e06161279cc099"
+    },
+    {
+      "path": "references/current_capture_entry_r1.py",
+      "mode": "100644",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    },
+    {
+      "path": "references/current_outer_r4.py",
+      "mode": "100644",
+      "bytes": 59462,
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+      "git_blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1"
+    },
+    {
+      "path": "references/current_outer_inputs_r2.py",
+      "mode": "100644",
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a"
+    },
+    {
+      "path": "references/guarded_current_capture_r3.py",
+      "mode": "100644",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+    },
+    {
+      "path": "PLAN.md",
+      "mode": "100644",
+      "bytes": 8910,
+      "sha256": "7e131eeee4d05e5208538c50b539a4f5b028da4748c9b4105b983134386b63cc",
+      "git_blob": "220890cc778f3caac03f38cfd6a24962c4d4a3f5"
+    }
+  ]
+}

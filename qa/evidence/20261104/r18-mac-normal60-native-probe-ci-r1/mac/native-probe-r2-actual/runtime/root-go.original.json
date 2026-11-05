@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root-mac-native-proc-r2-exact-go.r1",
+  "asof": "2026-11-05 04:53:34 UTC",
+  "verdict": "GO_SINGLE_EXACT_PUBLIC_PROBE_ONLY",
+  "source_tree": "c18b0dbdd6dc90742d0152644914c50736b3a5c8",
+  "files": 27,
+  "bytes": 379695,
+  "merkle_trees": 8,
+  "source": {
+    "blob": "e3bc464388fbeb53f830713bdfc9054617432314",
+    "bytes": 76658,
+    "sha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d"
+  },
+  "request": {
+    "blob": "9d8b6b31c2ae2e28ea0322947e9a2a9e06351f12",
+    "bytes": 78264,
+    "sha256": "5beb8ec511d7b342cccb69197599855469b2023952e94dbf28e19c0014e58454",
+    "key": "heptabao-mac-native-proc-ancestor-read-4dc7cc28-20261105-r2"
+  },
+  "reviewed": {
+    "strict_whole_diff_hunks": 8,
+    "stdin_whole_source_exact": true,
+    "loader_size_and_hash_exact": true,
+    "ha_peer_blob": "80e04804cb40152746c6e8fcce758d59ee13a058",
+    "policy_one_literal_removed_and_fresh_root_rebound_whole_exact": true,
+    "added_directory_rule_bytes": 73,
+    "additional_private_file_write_or_network_rules": false,
+    "kernel_refusals_and_three_native_modules_unchanged": true
+  },
+  "bounds": {
+    "shared": 45,
+    "native_projection": 4,
+    "diskutil": 30,
+    "outer": 60
+  },
+  "scope": "Only the fresh public native sandbox probe. No current credential or DB capture, consumer startup, production mutation, provider/J3160 call, prior job replay or helper overwrite.",
+  "failure_history": "R1 known failure remains; old PID11754 custody unknown remains. Adding the exact ancestor-directory read repairs a static permission omission; no claim that R1's unique dynamic failing instruction was identified.",
+  "qualification": "Requires authoritative terminal, full output, all owned FD/group/stream closure and all four actual kernel refusals. SOURCE review is not runtime qualification.",
+  "review_note": "An initial root comparison incorrectly expected the added rule to be appended without fresh-root rebinding and returned false. The corrected comparison removes the unique literal rule and rebinds r2 to r1; every remaining policy byte is identical. This final GO records the clock tool's actual UTC read."
+}

@@ -1,0 +1,20 @@
+--- candidate/native_h2_binding_r1.py
++++ draft2/native_h2_binding_r1.py
+@@ -47,7 +47,7 @@
+     "component_tests::native_h2_client_rejects_short_eos_and_duplicate_content_length",
+     "component_tests::native_h2_client_refuses_expired_or_extended_original_deadline"
+ ]
+-H2_BUILD_CONTROLLER_SHA = "45e7a1a83ad1932b02fcd53adf00cb68d4c2c65b2d55605edf64e7354d0e764b"
++H2_BUILD_CONTROLLER_SHA = "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+ H2_BUILD_CAPS = {
+     "total_seconds": 600,
+     "git_seconds": 15,
+@@ -413,6 +413,8 @@
+              and build.get("caps") == H2_BUILD_CAPS
+              and build.get("all_owned_stopped") is True
+              and build.get("all_input_fds_closed") is True
++             and build.get("command_outcome_unknown") is False
++             and build.get("incomplete_command_labels") == []
+              and build.get("completed_within_original_build_deadline") is True
+              and build.get("source_before") == build.get("source_after")
+              == {"commit": COMMIT, "tree": TREE, "status": ""}

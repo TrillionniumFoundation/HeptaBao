@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1aa0eabee-fc05-3c36",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 24032,
+    "offset": 24032,
+    "size": 24032,
+    "text": ""
+  }
+}
