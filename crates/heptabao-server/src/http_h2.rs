@@ -250,34 +250,36 @@ async fn exchange(
     }
     let wire = request_wire(&parts, &payload);
     let reply = tokio::task::spawn_blocking(move || {
-        let (wire, rejection) = match wire {
-            Ok(wire) => (wire, None),
-            Err(error) => (Zeroizing::new(Vec::new()), Some(error)),
-        };
-        let mut source = io::Cursor::new(wire);
-        let parsed = match rejection {
-            Some(error) => Err(error),
-            None => read_request_with_ui(
+        run_unentered_service_worker(deadline, move || {
+            let (wire, rejection) = match wire {
+                Ok(wire) => (wire, None),
+                Err(error) => (Zeroizing::new(Vec::new()), Some(error)),
+            };
+            let mut source = io::Cursor::new(wire);
+            let parsed = match rejection {
+                Some(error) => Err(error),
+                None => read_request_with_ui(
+                    &mut source,
+                    deadline.saturating_duration_since(Instant::now()),
+                    true,
+                    context.ui_assets.is_some(),
+                ),
+            };
+            process_parsed_request(
+                &context.service,
+                context.ui_assets.as_deref(),
+                parsed,
                 &mut source,
-                deadline.saturating_duration_since(Instant::now()),
-                true,
-                context.ui_assets.is_some(),
-            ),
-        };
-        process_parsed_request(
-            &context.service,
-            context.ui_assets.as_deref(),
-            parsed,
-            &mut source,
-            context.certificates.clone(),
-            context.peer,
-            &attempt,
-            context.consistency,
-            deadline,
-        )
+                context.certificates.clone(),
+                context.peer,
+                &attempt,
+                context.consistency,
+                deadline,
+            )
+        })
     })
     .await
-    .map_err(|_| ())?;
+    .map_err(|_| ())??;
     send_reply(sender, reply.0, reply.1, &reply.2, deadline).await
 }
 
@@ -321,6 +323,35 @@ fn request_wire(
     wire.extend_from_slice(payload);
     Ok(wire)
 }
+
+// This function is called only inside the already-owned Tokio blocking job.
+// A new OS thread has no inherited Tokio enter guard. Keep the blocking job
+// occupied until its scoped child has joined, including panic and cancellation.
+fn run_unentered_service_worker<F, T>(deadline: Instant, work: F) -> Result<T, ()>
+where
+    F: FnOnce() -> T + Send,
+    T: Send,
+{
+    if Instant::now() >= deadline {
+        return Err(());
+    }
+    std::thread::scope(|scope| {
+        let worker = std::thread::Builder::new()
+            .name("heptabao-h2-service".into())
+            .spawn_scoped(scope, move || {
+                if Instant::now() >= deadline {
+                    return Err(());
+                }
+                Ok(work())
+            })
+            .map_err(|_| ())?;
+        worker.join().map_err(|_| ())?
+    })
+}
+
+#[cfg(test)]
+#[path = "http_h2_sync_worker_tests.rs"]
+mod sync_worker_tests;
 
 async fn send_reply(
     mut sender: h2::server::SendResponse<Bytes>,
