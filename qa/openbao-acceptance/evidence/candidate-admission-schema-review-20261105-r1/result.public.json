@@ -1,0 +1,31 @@
+{
+  "actual_thirteen_origin_positive_admission": false,
+  "all_four_entrypoints_still_draft": true,
+  "archive": {
+    "bytes": 167917,
+    "path": "/workspace/scratch/d1dc83a5698d/formal_kv2_restore_prepare/schema-evidence-archive-20261105-r1/draft-admission-and-recovery-schema-review.tar.gz",
+    "sha256": "2e3fb8d1170600423d0ea0de66cb35eb45619e22a55da53619839ede8566c541"
+  },
+  "archiver": {
+    "path": "/workspace/scratch/d1dc83a5698d/formal_kv2_restore_prepare/schema-evidence-archive-20261105-r1/package_schema_review.py",
+    "sha256": "6f062fdea1ef50240e0a568963d82c2d5f2e4ea06350e85fb0a7e15ad012105f"
+  },
+  "deterministic_archive_bytes_verified": true,
+  "every_member_readback_verified": true,
+  "formal_recovery_25_executions": 0,
+  "manifest": {
+    "bytes": 23292,
+    "path": "/workspace/scratch/d1dc83a5698d/formal_kv2_restore_prepare/schema-evidence-archive-20261105-r1/MANIFEST.public.json",
+    "sha256": "a2488843c292578d99ccacf475bd7cf393362b407111913e350810a790d3f2d3"
+  },
+  "new_product_or_semantic_control_tests_run": false,
+  "new_products_started": false,
+  "original_48_members_preserved": true,
+  "original_members_unchanged_after_archive": true,
+  "replacement_qualified": false,
+  "schema": "heptabao.draft-schema-review-public-archive-receipt.v1",
+  "sensitive_pattern_matches": 0,
+  "source_members": 51,
+  "status": "archived",
+  "tar_members_including_manifest": 52
+}

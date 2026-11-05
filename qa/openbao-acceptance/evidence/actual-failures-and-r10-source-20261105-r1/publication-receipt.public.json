@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.evidence-publication-receipt.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-replacement-evidence-20261105-r1",
+  "previous_head": "fcfd7c80909d025028fab036df3433e1a253fea2",
+  "commit": "ee8d0814b150b1498196eba4203df9fd67254639",
+  "tree": "90b5ff20d7c750e69555b6c0b330b5e81d400fc2",
+  "archive_git_blob": "2f963ffef86304618c03c047c24ec25c4d7d482e",
+  "archive_bytes": 913466,
+  "archive_sha256": "baa17e8cfd40b3b53cdce5817318d1cb75a35a3553af550b5677e904d898dad0",
+  "remote_archive_full_base64_byte_equal": true,
+  "remote_branch_readback": true,
+  "main_modified": false,
+  "replacement_qualified": false
+}
