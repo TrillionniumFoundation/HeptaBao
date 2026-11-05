@@ -22,7 +22,7 @@ from core_isolation import ROOT, file_hash
 from ha_destructive import FixtureError
 from native_snapshot_cli_live import cli, contains_any, private_parent
 from native_snapshot_ha_live import SaveCluster, client_view, capacity_data, strict_archive
-from native_snapshot_ha_restore_live import applied_index, canonical, publication, restart, restore_http
+from native_snapshot_ha_restore_live import applied_index, canonical, checked_before_capacity, publication, restart, restore_http
 from official_openbao_launcher import pinned_artifact, verify_inputs
 from online_evidence import admit_output, complete_checks, source_identity
 from provider_renewal_upgrade import durable_manifest
@@ -204,15 +204,17 @@ def run(binary,bao,work,checks,observations):
             'epoch_response_observed':False,'one_restore_command':True}
         verify('all_cli_restored')
         # This is a new, deliberate mutation phase, not retry/reconciliation of
-        # the successful CLI restore. Its response exposes the epoch counter.
+        # the successful CLI restore. A separate authenticated capacity read
+        # observes its epoch; the restore's 204 response has no body.
         check('second_changed',leader.call('PUT',MOUNT+'/k01',{'value':'second-changed'},token=token)[0]==204)
         check('second_later_written',leader.call('PUT',MOUNT+'/later',{'value':'second-later'},token=token)[0]==204)
         leader=resolve_leader(cluster,former);check('raw_restore_resolved',True)
-        before=capacity_data(leader,token)['generation']
-        second=publication(restore_http(leader,token,archive),before,metadata['generation'],previous_epoch=1)
+        before_capacity=checked_before_capacity(capacity_data(leader,token),1)
+        second=publication(restore_http(leader,token,archive),before_capacity,metadata['generation'],
+                           capacity_data(leader,token),expected_before_epoch=1)
         check('raw_second_restore',second is not None)
         check('raw_epoch_two',second['replay_epoch']==2)
-        check('raw_new_publication',capacity_data(leader,token)['generation']==second['published_local_generation'])
+        check('raw_new_publication',capacity_data(leader,token)['generation']==second['observed_local_generation'])
         observations['independent_second_restore']=second
         verify('all_second_restored')
         restart(cluster);check('restarted',True);verify('all_reopened')

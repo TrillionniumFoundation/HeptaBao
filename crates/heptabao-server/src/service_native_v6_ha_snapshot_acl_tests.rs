@@ -177,10 +177,15 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
         &archive.body,
         None,
     )?;
-    assert_eq!(restored.status, 200);
-    let body: Value = serde_json::from_slice(&restored.body)?;
-    assert_eq!(body["data"]["replay_epoch"], 1);
-    assert_eq!(selection(&pipeline, leader, migration_source)?.0, 1);
+    assert_eq!(restored.status, 204);
+    assert!(
+        restored.body.is_empty(),
+        "complete TLS output has no 204 body"
+    );
+    assert!(!restored.headers.contains_key("content-length"));
+    assert!(!restored.headers.contains_key("transfer-encoding"));
+    let installed = selection(&pipeline, leader, migration_source)?;
+    assert_eq!(installed.0, 1);
     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
     expect(
         pipeline.call(
@@ -193,6 +198,55 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
         404,
         "actual-nonroot-restore-removes-later-version",
     )?;
+    // These also use External SnapshotTransfer on the public POST/PUT route,
+    // but their typed PendingRestore observation must retain the 200 JSON
+    // reconciliation result. Read the actual committed ID, never replay upload.
+    let operation = installed
+        .1
+        .epoch_transitions()
+        .last()
+        .ok_or("actual committed restore transition")?
+        .operation_digest();
+    let reference = format!(
+        "native-v6-restore-{}",
+        operation
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    );
+    for (method, query, expected_state) in [
+        (
+            "POST",
+            "inspect_pending_restore=true".to_owned(),
+            "not_pending",
+        ),
+        (
+            "PUT",
+            format!("cancel_pending_restore={reference}"),
+            "committed",
+        ),
+    ] {
+        let reconciled = wire(
+            &pipeline,
+            leader,
+            method,
+            &format!("{SNAPSHOT}?{query}"),
+            pipeline.admin(),
+            b"",
+            None,
+        )?;
+        assert_eq!(reconciled.status, 200);
+        let body: Value = serde_json::from_slice(&reconciled.body)?;
+        assert_eq!(body["data"]["state"], expected_state);
+        assert_eq!(body["data"]["replay_epoch"], 1);
+        assert_eq!(body["restore_performed"], false);
+        assert_eq!(body["retry_allowed"], false);
+        if method == "PUT" {
+            assert_eq!(body["data"]["recovery_reference"], reference);
+        }
+        assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
+        assert!(observed_pending_reference(&pipeline, leader)?.is_none());
+    }
     no_snapshot_custody(&pipeline, leader)?;
     Ok(())
 }

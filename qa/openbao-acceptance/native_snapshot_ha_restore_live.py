@@ -76,19 +76,42 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
 
 
-def publication(response, previous, imported, *, previous_epoch=None):
+def checked_before_capacity(observation, expected_epoch):
+    # Called on the existing actual capacity read BEFORE any upload. A stale
+    # phase expectation cannot authorize another mutation or be patched up by
+    # a post-restore epoch that happens to match an old expected number.
+    if (not isinstance(observation, dict) or type(expected_epoch) is not int or expected_epoch < 0
+            or any(type(observation.get(k)) is not int or observation[k] < 0
+                   for k in ('generation', 'replay_epoch'))
+            or observation['replay_epoch'] != expected_epoch):
+        raise FixtureError('restore_before_capacity_epoch_mismatch')
+    return dict(observation)
+
+
+def publication(response, before, uploaded_generation, observation, *, expected_before_epoch):
+    # Public restore returns no metadata. Separate authenticated before/after
+    # capacity reads observe a committed generation and exact epoch transition;
+    # existing full-value and later-marker checks prove the archive's effect.
+    # Neither the 204 nor its empty body is itself proof of a restored state.
     status, body = response
-    data = body.get('data', {})
-    if status != 200 or body.get('auth') or body.get('wrap_info') or not isinstance(data, dict):
+    if type(status) is not int or status != 204 or body != {} or not isinstance(observation, dict):
         return None
-    fields = ('imported_generation', 'previous_local_generation', 'published_local_generation', 'replay_epoch')
-    if (any(type(data.get(k)) is not int or data[k] < 0 for k in fields)
-            or data.get('cluster_coordinated') is not True
-            or data['imported_generation'] != imported or data['previous_local_generation'] != previous
-            or data['published_local_generation'] <= previous or data['replay_epoch'] < 1
-            or (previous_epoch is not None and data['replay_epoch'] != previous_epoch + 1)):
+    try:
+        before = checked_before_capacity(before, expected_before_epoch)
+    except FixtureError:
         return None
-    return {k: data[k] for k in fields}
+    if (type(uploaded_generation) is not int or uploaded_generation < 0
+            or any(type(observation.get(k)) is not int or observation[k] < 0
+                   for k in ('generation', 'replay_epoch'))
+            or observation['generation'] <= before['generation']
+            or observation['replay_epoch'] != before['replay_epoch'] + 1):
+        return None
+    return {'uploaded_archive_generation': uploaded_generation,
+            'previous_local_generation': before['generation'],
+            'previous_replay_epoch': before['replay_epoch'],
+            'observed_local_generation': observation['generation'],
+            'replay_epoch': observation['replay_epoch'],
+            'observation_source': 'sys/internal/capacity', 'restore_http_status': status}
 
 
 def registered_mount(response, name, expected_kind):
@@ -131,6 +154,17 @@ def restore_http(node, token, archive, *, expire=False):
                 else:
                     with archive.open('rb') as stream: tls.sendall(stream.read())
                 response = http.client.HTTPResponse(tls); response.begin()
+                if response.status == 204:
+                    if (response.getheader('Content-Length') is not None
+                            or response.getheader('Transfer-Encoding') is not None or response.fp is None):
+                        raise FixtureError('restore_204_response_must_be_empty')
+                    # The request already selects Connection: close. Observe
+                    # actual EOF through the original buffer, not the stdlib's
+                    # status-based zero-length shortcut; no new socket/retry.
+                    if response.fp.read(1) != b'':
+                        raise FixtureError('restore_204_response_must_be_empty')
+                    response.close()
+                    return 204, {}
                 payload = response.read(65537)
                 if len(payload) > 65536: raise FixtureError('restore_response_unbounded')
                 return response.status, json.loads(payload)
@@ -226,11 +260,12 @@ def run(binary, legacy, bao, work, checks, observations):
         imported = meta['generation']
         check('changed',call('PUT',MOUNT+'/k00',{'value':'changed'})[0] == 204)
         check('later_written',call('PUT',MOUNT+'/later',{'value':'must-disappear'})[0] == 204)
-        before = capacity_data(leader,token)['generation']
+        before_capacity = checked_before_capacity(capacity_data(leader,token),0)
         raft_before = applied_index(leader,token)
-        first = publication(restore_http(leader,token,archive),before,imported)
+        first = publication(restore_http(leader,token,archive),before_capacity,imported,
+                            capacity_data(leader,token),expected_before_epoch=0)
         check('initial_restore', first is not None); observations['initial_publication'] = first
-        check('new_publication',capacity_data(leader,token)['generation'] == first['published_local_generation'])
+        check('new_publication',capacity_data(leader,token)['generation'] == first['observed_local_generation'])
         raft_after = applied_index(leader,token)
         check('raft_frontier_advanced',raft_after > raft_before)
         observations['raft_applied_before_after'] = [raft_before,raft_after]
@@ -243,8 +278,9 @@ def run(binary, legacy, bao, work, checks, observations):
         check('cli_new_generation',capacity_data(leader,token)['generation'] > before)
         verify('all_cli_restored')
         # Another observed restore establishes the exact current epoch after CLI publication.
-        before = capacity_data(leader,token)['generation']
-        observed = publication(restore_http(leader,token,archive),before,imported,previous_epoch=first['replay_epoch']+1)
+        before_capacity = checked_before_capacity(capacity_data(leader,token),first['replay_epoch']+1)
+        observed = publication(restore_http(leader,token,archive),before_capacity,imported,
+                               capacity_data(leader,token),expected_before_epoch=first['replay_epoch']+1)
         check('cli_epoch_advanced',observed is not None); observations['after_cli_publication'] = observed
         status, body = call('POST','auth/token/create',{'policies':['root'],'ttl':'1s'})
         check('expiring_actor_created',status == 200 and bool(body.get('auth',{}).get('client_token')))
@@ -263,8 +299,9 @@ def run(binary, legacy, bao, work, checks, observations):
                 radius_credentials(),wrap_ttl='60s',timeout=7)
             try:
                 check('provider_inflight',provider.received.wait(1) and not provider.failed)
-                before = capacity_data(leader,token)['generation']
-                latest = publication(restore_http(leader,token,archive),before,imported,previous_epoch=observed['replay_epoch'])
+                before_capacity = checked_before_capacity(capacity_data(leader,token),observed['replay_epoch'])
+                latest = publication(restore_http(leader,token,archive),before_capacity,imported,
+                                     capacity_data(leader,token),expected_before_epoch=observed['replay_epoch'])
                 check('restore_while_provider_pending',latest is not None)
                 check('epoch_advanced',latest['replay_epoch'] == observed['replay_epoch']+1)
             finally:
@@ -273,7 +310,7 @@ def run(binary, legacy, bao, work, checks, observations):
                   and provider.gate_elapsed is not None and provider.gate_elapsed < 2.7 and provider.count() == count+1)
             response = pending.result(timeout=7)
         check('late_auth_denied',late_denied(response))
-        check('late_auth_no_publication',capacity_data(leader,token)['generation'] == latest['published_local_generation'])
+        check('late_auth_no_publication',capacity_data(leader,token)['generation'] == latest['observed_local_generation'])
         status, body = leader.call('POST','auth/restore-radius/login',radius_credentials())
         check('fresh_auth_succeeds',status == 200 and bool(body.get('auth',{}).get('client_token')) and provider.count() == count+2)
         samples.append(body['auth']['client_token'].encode()); observations['last_publication'] = latest
@@ -300,12 +337,12 @@ def run(binary, legacy, bao, work, checks, observations):
         check('admin_consistent_save_unchanged',capacity_data(leader,token)['generation'] == before)
         check('empty_database_mount',call('POST','sys/mounts/empty-db',{'type':'database'})[0] == 204)
         check('empty_database_registered',registered_mount(call('GET','sys/mounts'),'empty-db','database'))
-        before = capacity_data(leader,token)['generation']
-        empty_restore = publication(restore_http(leader,token,consistent),before,consistent_meta['generation'],
-                                    previous_epoch=latest['replay_epoch'])
+        before_capacity = checked_before_capacity(capacity_data(leader,token),latest['replay_epoch'])
+        empty_restore = publication(restore_http(leader,token,consistent),before_capacity,consistent_meta['generation'],
+                                    capacity_data(leader,token),expected_before_epoch=latest['replay_epoch'])
         check('empty_database_restore',empty_restore is not None)
         observations['empty_database_publication'] = empty_restore
-        check('empty_database_new_publication',capacity_data(leader,token)['generation'] == empty_restore['published_local_generation'])
+        check('empty_database_new_publication',capacity_data(leader,token)['generation'] == empty_restore['observed_local_generation'])
         verify('all_empty_database_restored')
         for node in cluster.nodes:
             check('empty_database_absent_node_'+str(node.node_id),registered_mount(

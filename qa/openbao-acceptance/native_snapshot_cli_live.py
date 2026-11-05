@@ -269,7 +269,15 @@ def header(instance, method, route='snapshot-force', framing='', token=None):
 def response_status(tls):
     response = http.client.HTTPResponse(tls); response.begin()
     status = response.status
-    if len(response.read(65537)) > 65536: raise ValueError('unexpected_large_error')
+    if status == 204:
+        if (response.getheader('Content-Length') is not None
+                or response.getheader('Transfer-Encoding') is not None or response.fp is None):
+            raise ValueError('restore_204_response_must_be_empty')
+        # Use the original buffered TLS stream, before HTTPResponse.read()
+        # discards it based on the status code's assumed zero-length body.
+        if response.fp.read(1) != b'': raise ValueError('restore_204_response_must_be_empty')
+    elif len(response.read(65537)) > 65536:
+        raise ValueError('unexpected_large_error')
     response.close()
     return status
 
@@ -542,7 +550,7 @@ def run(binary, bao, work, checks, observations, postgres_bin=None):
         verify(original,'restored')
         check('other_owner_restored',call('GET','secret/data/native-control')[1].get('data',{}).get('data') == {'value':'before'})
         check('later_absent',call('GET',MOUNT+'/later')[0] == 404)
-        check('chunked_restore',chunked_restore(instance,archive) == 200)
+        check('chunked_restore',chunked_restore(instance,archive) == 204)
         verify(original,'chunked_restored')
         old_unseal, unseal = unseal, rekey_share(call, unseal, check)
         generation = capacity()['generation']; seal_hash = file_hash(instance.root/'data'/'seal.json')

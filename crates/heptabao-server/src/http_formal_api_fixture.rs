@@ -180,9 +180,16 @@ impl FormalApiListener {
                     deadline,
                 );
                 let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
+                let no_content = matches!(
+                    &reply,
+                    snapshot::NativeReply::Json(response) if response.status == 204
+                );
                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
                 if redirect {
                     snapshot::finish_redirect_connection(&mut stream);
+                } else if no_content {
+                    stream.conn.send_close_notify();
+                    stream.flush()?;
                 }
                 Ok(())
             })?;
@@ -267,7 +274,11 @@ impl FormalApiListener {
         );
         client.read_exact(&mut output[header_length..])?;
         remaining()?;
-        // The complete Content-Length response is already owned. Close the
+        if status_code == 204 && client.read(&mut byte)? != 0 {
+            return Err("formal API 204 response has unexpected body bytes".into());
+        }
+        remaining()?;
+        // The complete Content-Length response or 204 TLS EOF is already owned. Close the
         // actual socket before joining the 307 response-side drain; a cloned
         // cleanup descriptor must not keep that drain open until the deadline.
         client.conn.send_close_notify();
