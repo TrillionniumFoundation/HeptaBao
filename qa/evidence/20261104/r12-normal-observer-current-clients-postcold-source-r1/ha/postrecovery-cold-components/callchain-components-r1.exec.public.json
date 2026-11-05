@@ -1,0 +1,7 @@
+{
+  "chunk_id": "b1da59",
+  "wall_time_seconds": 0.326672389,
+  "exit_code": 1,
+  "original_token_count": 91,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/heptabao_postcold_qa_source_review_r1/callchain_components_draft1.py\", line 78, in <module>\n    check(\"new_phase_remaining_respects_original_controller\",p._postcold_remaining(300)==20)\n  File \"<component-definitions-only>\", line 10, in check\nAssertionError: ('new_phase_remaining_respects_original_controller', {})\n"
+}

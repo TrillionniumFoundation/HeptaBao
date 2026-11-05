@@ -1,0 +1,12 @@
+diff --git a/mac_current_phase_owner_r2.py b/mac_current_phase_owner_r2.py
+--- a/mac_current_phase_owner_r2.py
++++ b/mac_current_phase_owner_r2.py
+@@ -178,6 +178,8 @@
+                    or not 1<=len(c['case'])<=256 or type(c.get('passed')) is not bool
+                    for c in checks)):
+             return False,unavailable
++        if value['ok'] and (value['outcomeUnknown'] or any(not c['passed'] for c in checks)):
++            return False,unavailable
+         return True,value
+     except Exception:
+         return False,unavailable

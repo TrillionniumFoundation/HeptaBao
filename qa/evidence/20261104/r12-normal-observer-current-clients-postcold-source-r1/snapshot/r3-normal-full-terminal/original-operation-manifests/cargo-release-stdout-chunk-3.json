@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "cargo-release-stdout-chunk-3",
+    "id": "f3e9a69568c5b27734080556b1672cedf25097be3b138e2241cd02e8f91db91e",
+    "bytes": 87857,
+    "sha256": "74906fe28a5200595cb1fc0e3fe34a4347dd2354c7ae0d55a01046ba4cd2f7e7"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-000000.json",
+      "bytes": 22534,
+      "sha256": "5d81ed96c4737832063e41e5077efa868c93276ca2af91fcd6d19fff1f7d2fe3",
+      "blob": "a3b66b0f6bff21ff05304ba4bf18960bcaa7051f"
+    },
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-016384.json",
+      "bytes": 22538,
+      "sha256": "28a994b47265c3e1969c44ce47b1c07f0206e97d13a78021d60f489904fcc797",
+      "blob": "792bc27c369e0c1ba9081a24b0eb449f9a4ea519"
+    },
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-032768.json",
+      "bytes": 22538,
+      "sha256": "6a032ddaacbcee6d11e0bc5a8ce2ccb295b86ef4c06df382d7889889df202c45",
+      "blob": "4d52b90722c682bbc0a2f3d400b9624102fab59c"
+    },
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-049152.json",
+      "bytes": 22538,
+      "sha256": "6bd6a26ca1a7d6cb50629eb9e58464549ea99a0c49a40555aa577391c91302f7",
+      "blob": "136689d9509f93fd1e963fa083b25c9dea8a5cf6"
+    },
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-065536.json",
+      "bytes": 22538,
+      "sha256": "4368263c00d8da138cbf5959b947fca9a0c60cf76e5efa03c1266f5b342ab2fe",
+      "blob": "2a81479023aeba46e86087b18d8f11e2df62b076"
+    },
+    {
+      "path": "original-operation-pages/cargo-release-stdout-chunk-3-081920.json",
+      "bytes": 8605,
+      "sha256": "12bb6599ad270f5b350aafe19fa72f3a8d63eb81c9450c2bccfef72bd3590bb0",
+      "blob": "b4b55687dd7b82ceaffdd8a80556723f43cf3bd7"
+    },
+    {
+      "path": "original-sdk/cargo-release-stdout-chunk-3.json",
+      "bytes": 87857,
+      "sha256": "74906fe28a5200595cb1fc0e3fe34a4347dd2354c7ae0d55a01046ba4cd2f7e7",
+      "blob": "caa16597d1d7502f15686eeccc5a24b7b037a0b5"
+    }
+  ]
+}

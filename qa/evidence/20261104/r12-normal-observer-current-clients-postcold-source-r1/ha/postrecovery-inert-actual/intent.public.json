@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.postrecovery-cold12.inert-intent.r1",
+  "stage": "inert-only-before-submit",
+  "prepared_at_utc": "2026-11-04T23:36:27.403Z",
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args_prefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 60,
+  "idempotency_key": "heptabao-r10-postcold-inert-r1-5c4cd927-06acd609",
+  "source": {
+    "key": "carrier",
+    "bytes": 6858,
+    "sha256": "cf47218bc182308c150f76c7c5212943196c035a7fa713f414cbcdffbf7c5db2",
+    "git_blob": "f809869a4a091209b466238b402416751dc290ba"
+  },
+  "stdin": {
+    "key": "stdin",
+    "bytes": 448380,
+    "sha256": "f9de338e5b56d21a6844f2d0b3aa0b1b11bf10ac5100857081f88de12f182c5e",
+    "git_blob": "c41f0dae73aa9ede831668bb64bac25275015d4f"
+  },
+  "frozen_dispatch": {
+    "key": "dispatch",
+    "bytes": 4997,
+    "sha256": "3f846ed2369d798ad4bfbfc188878ddd65ad97c7538b9e9e7fea57402fe70851",
+    "git_blob": "f7b963be1cf06d0bad22bc26083fc55291686f82"
+  },
+  "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1",
+  "files": [
+    {
+      "path": "launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "bytes": 22623,
+      "sha256": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
+      "blob": "306fce05dbad9fd4db6d75dcd3a8e79a83af2f1b"
+    },
+    {
+      "path": "native_v6_pocket_source_postrecovery_cold_r10_r1.py",
+      "bytes": 54668,
+      "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+      "blob": "33694332d042aa407e77206973fb28328652d720"
+    },
+    {
+      "path": "read_stopped_postrecovery_frontier_r1.py",
+      "bytes": 16274,
+      "sha256": "e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43",
+      "blob": "b503857b2747034aecd2172bcba8cfea649a9cb7"
+    },
+    {
+      "path": "read_stopped_recovered_cipher_r1.py",
+      "bytes": 13207,
+      "sha256": "096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956",
+      "blob": "29b333078d8bac67b2e6a59812fd38de3e9fcd59"
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    },
+    {
+      "path": "deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    {
+      "path": "deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b"
+    }
+  ],
+  "source_review_tree": "e9a5f1f673f18a4d2b7162f4188a6bbc221e29ac",
+  "component_tree": "984e0227399d2628f50803741700a5757595eba3",
+  "previous_remote_submission": false,
+  "store_reset_recovery": "Recovered exact immutable Git blobs, all original byte lengths/SHA256/Git blob ids verified; no source or operation re-created.",
+  "authorization_scope": "Nine source files and new control directory only; no prepare, business module execution, product process, Git, Cargo, SSH or Mac action. Root inert-only GO."
+}

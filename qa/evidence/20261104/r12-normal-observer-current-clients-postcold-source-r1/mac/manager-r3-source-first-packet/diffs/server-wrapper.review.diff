@@ -1,0 +1,34 @@
+diff --git a/mac_current_server_owner_r1.py b/mac_current_server_owner_r1.py
+--- a/mac_current_server_owner_r1.py
++++ b/mac_current_server_owner_r1.py
+@@ -103,7 +103,8 @@
+     guard=None;commands=None;generation=None;plan=None;candidate=None
+     report={'schema':'heptabao.mac-owned-launchd-server-wrapper.r1','ok':False,
+         'execObservedByWrapper':False,'managerMustObserveSamePidBirthAndServerExecutable':True,
+-        'newWrapperSeconds':30,'outcomeUnknown':False,'currentPrivateInputsOpened':False,
++        'newWrapperSeconds':30,'outcomeUnknown':False,'productionCurrentPrivateInputsOpened':False,
++        'ownedPrivateInputReadAttempted':False,'ownedPrivateInputReadCompleted':False,
+         'productionChanged':False,'providerRequestSent':False,'j3160Contacted':False}
+     try:
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_owner')
+@@ -137,7 +138,9 @@
+         need(row['exitCode']==0 and row['completeBeforeDeadline']
+              and not row['outcomeUnknown'],'actual_volume_probe_complete')
+         guard.accept_diskutil(out)
++        report['ownedPrivateInputReadAttempted']=True
+         raw=guard.read(args.plan)
++        report['ownedPrivateInputReadCompleted']=True
+         need(sha(raw)==args.plan_sha256,'exact_private_server_plan')
+         plan=json.loads(raw);need(isinstance(plan,dict),'server_plan_object');generation=plan.get('generation')
+         need(isinstance(plan,dict) and set(plan)=={'schema','generation','binaryPath',
+@@ -222,7 +225,9 @@
+     # A successful exec retains PID/birth and consumes this wrapper. The
+     # independent manager must actually observe that transition and pinned file.
+     try:
+-        for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,signal.SIG_DFL)
++        for name in ('SIGTERM','SIGINT','SIGPIPE','SIGXFZ','SIGXFSZ'):
++            sig=getattr(signal,name,None)
++            if sig is not None:signal.signal(sig,signal.SIG_DFL)
+         os.execve(str(BINARY),[str(BINARY),'--config',str(ROOT/'server/server.json')],
+             {'PATH':'/usr/bin:/bin','LANG':'C','LC_ALL':'C',
+              'HOME':str(ROOT/'server/home'),'TMPDIR':str(ROOT/'server/tmp')})

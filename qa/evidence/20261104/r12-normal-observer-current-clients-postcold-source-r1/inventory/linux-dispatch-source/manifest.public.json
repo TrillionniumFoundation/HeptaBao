@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.public-source-packet-manifest.v1",
+  "status": "SOURCE_ONLY",
+  "files": [
+    {
+      "path": "x230-inert-exact-start-args.public.json",
+      "bytes": 163560,
+      "sha256": "fcb5a9eca0b48de8b80c01a9c71cd8873dc7072a6d45bcba17edfe09f1c6cbe6",
+      "blob": "55a7b8d6a28a4eb5e8aafbe7567b339f0fdc8d7d",
+      "mode": "100644"
+    },
+    {
+      "path": "x230-readonly-exact-start-args.public.json",
+      "bytes": 142896,
+      "sha256": "807c516eddb119a4a464e6e88ebc00d6c467a10d00288aec7eca99b73fcd6bbd",
+      "blob": "b7c3e6bf0fd51e5b79014af5477f936128d25c3b",
+      "mode": "100644"
+    },
+    {
+      "path": "rog-inert-exact-start-args.public.json",
+      "bytes": 163561,
+      "sha256": "e751cb73cc323b82b51be3e7f7600dc6166cc4156b71e483e4f9d1e6cc0b4464",
+      "blob": "dd00d2ba4ab2299e5eff9d8db82608f3cc7c61be",
+      "mode": "100644"
+    },
+    {
+      "path": "rog-readonly-exact-start-args.public.json",
+      "bytes": 142896,
+      "sha256": "a5ab85a67e97de57b63f6e7bd70ed5aa3cecb8305627b80586347a2bb867e4b0",
+      "blob": "fc808bf2ca4f813956b1faf9844854aa8a16a149",
+      "mode": "100644"
+    },
+    {
+      "path": "root-source-review.public.json",
+      "bytes": 2084,
+      "sha256": "69bd31adac2429e975a99db21a81a1724f49a84597046cff5c1872fb34b7cde1",
+      "blob": "2f88e584a02262cae1e3709173e0b94fb2a0f83e",
+      "mode": "100644"
+    },
+    {
+      "path": "DISPATCH.public.json",
+      "bytes": 2792,
+      "sha256": "2360bf124ce17d178e4620d3bb61502fd1095012f8e9d97724ffefceb97660ff",
+      "blob": "1ffba049c58e9b5e12255464acda68d166861a41",
+      "mode": "100644"
+    },
+    {
+      "path": "inert_validator.py",
+      "bytes": 3137,
+      "sha256": "06d098c2fd5621a02ffcc74220601bbbb471d36c5ce346a99eeaf6b1f8109da2",
+      "blob": "4f45517161025ebcc04a6346d68c323fb49a8ae3",
+      "mode": "100644"
+    }
+  ]
+}

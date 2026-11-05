@@ -1,0 +1,1633 @@
+{
+  "schema": "heptabao.official271-mapping-independent-check.v1",
+  "audited_tree": "53081eed42653db1b8f51b840b7eb4b89e3bf7cb",
+  "scope": "Mappings and retained qualification only; no repeated primary-source or runtime audit",
+  "checks": [
+    {
+      "name": "59_unique_and_original_id_order",
+      "passed": true
+    },
+    {
+      "name": "59_historical_fields_and_scope_exact",
+      "passed": true
+    },
+    {
+      "name": "status_counts_not_promoted",
+      "passed": true
+    },
+    {
+      "name": "current_path_resolution55",
+      "passed": true
+    },
+    {
+      "name": "legacy_actual69_family_intersection_complete",
+      "passed": false,
+      "detail": [
+        {
+          "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+          "mapped": [],
+          "actual_families": [
+            "kv",
+            "transit"
+          ],
+          "exact_matching_case_ids": [
+            "kv.mount",
+            "transit.mount"
+          ]
+        },
+        {
+          "surface_id": "HB-SURFACE-POLICY-ACL",
+          "mapped": [],
+          "actual_families": [
+            "token"
+          ],
+          "exact_matching_case_ids": [
+            "token.policy",
+            "token.write_denied",
+            "token.denial_no_effect"
+          ]
+        },
+        {
+          "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+          "mapped": [],
+          "actual_families": [
+            "pki"
+          ],
+          "exact_matching_case_ids": [
+            "pki.lease_expire_issue",
+            "pki.lease_expire_lookup"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "69_unique_ids_both_sides_exact",
+      "passed": true
+    },
+    {
+      "name": "69_each_candidate_and_oracle_all_values_exact",
+      "passed": true
+    },
+    {
+      "name": "69_family_counts_exact",
+      "passed": true
+    },
+    {
+      "name": "69_source_is_495033_not_3cb",
+      "passed": true
+    },
+    {
+      "name": "69_uncovered_and_no_full_qualification_preserved",
+      "passed": true
+    },
+    {
+      "name": "security_delta_count_ids_values_exact",
+      "passed": true
+    },
+    {
+      "name": "feature_and_correctness_delta_count_ids_values_exact",
+      "passed": true
+    },
+    {
+      "name": "required_gates_count_ids_values_exact",
+      "passed": true
+    },
+    {
+      "name": "delta_baseline_exact_frozen_source",
+      "passed": true
+    },
+    {
+      "name": "delta_full_replacement_false",
+      "passed": true
+    }
+  ],
+  "failures": [
+    {
+      "name": "legacy_actual69_family_intersection_complete",
+      "detail": [
+        {
+          "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+          "mapped": [],
+          "actual_families": [
+            "kv",
+            "transit"
+          ],
+          "exact_matching_case_ids": [
+            "kv.mount",
+            "transit.mount"
+          ]
+        },
+        {
+          "surface_id": "HB-SURFACE-POLICY-ACL",
+          "mapped": [],
+          "actual_families": [
+            "token"
+          ],
+          "exact_matching_case_ids": [
+            "token.policy",
+            "token.write_denied",
+            "token.denial_no_effect"
+          ]
+        },
+        {
+          "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+          "mapped": [],
+          "actual_families": [
+            "pki"
+          ],
+          "exact_matching_case_ids": [
+            "pki.lease_expire_issue",
+            "pki.lease_expire_lookup"
+          ]
+        }
+      ]
+    }
+  ],
+  "legacy": {
+    "rows": 59,
+    "status_counts": {
+      "runtime_complete": 2,
+      "runtime_partial": 52,
+      "tooling_partial": 5
+    },
+    "current_source_paths": 55,
+    "per_row": [
+      {
+        "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-POLICY-ACL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-IDENTITY",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-TOKEN",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-TOKEN",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-USERPASS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-APPROLE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-CERT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-LDAP",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-RADIUS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUTH-KERBEROS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-KV",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-TRANSIT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-TOTP",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-PKI",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-SSH",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-DATABASE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-DB-POSTGRESQL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-DB-MYSQL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-DB-CASSANDRA",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-DB-INFLUXDB",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-DB-VALKEY",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUDIT-FILE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUDIT-HTTP",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUDIT-SOCKET",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-STORAGE-RAFT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PLUGIN-AUTH",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PLUGIN-SECRET",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PLUGIN-KMS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLUSTER-MTLS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLUSTER-FORWARDING",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLUSTER-READ-STANDBY",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLUSTER-STEPDOWN",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-EDGE-HTTP-TLS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-CLI-ROOT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-AGENT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PROXY",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-OPENAPI-UI",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-OPERATIONS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-NAMESPACE-TREE",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-SELF-INIT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      },
+      {
+        "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
+        "field_matches": {
+          "old_target": true,
+          "old_declared_status": true,
+          "old_whole_surface_admitted": true,
+          "old_profiles": true,
+          "runtime_source": true,
+          "not_current_qualified": true,
+          "unmapped_not_pass": true,
+          "current_path": true,
+          "full_read_flag": true
+        },
+        "all_original_fields_and_scope_match": true
+      }
+    ],
+    "family_omissions": [
+      {
+        "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+        "mapped": [],
+        "actual_families": [
+          "kv",
+          "transit"
+        ],
+        "exact_matching_case_ids": [
+          "kv.mount",
+          "transit.mount"
+        ]
+      },
+      {
+        "surface_id": "HB-SURFACE-POLICY-ACL",
+        "mapped": [],
+        "actual_families": [
+          "token"
+        ],
+        "exact_matching_case_ids": [
+          "token.policy",
+          "token.write_denied",
+          "token.denial_no_effect"
+        ]
+      },
+      {
+        "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+        "mapped": [],
+        "actual_families": [
+          "pki"
+        ],
+        "exact_matching_case_ids": [
+          "pki.lease_expire_issue",
+          "pki.lease_expire_lookup"
+        ]
+      }
+    ]
+  },
+  "actual69": {
+    "rows": [
+      {
+        "id": "approle.invalid_secret_id_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "approle.login",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "approle.secret_id_replay_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "core.unknown_route_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "edge_tls.health",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_create",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_delete",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_deleted",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_disable",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_disabled",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "identity.entity_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.cas_no_effect",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.cas_rejected",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.deleted_metadata",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.deleted_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.destroy_v1",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.destroyed_metadata",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.destroyed_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.list",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.metadata_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.metadata_write",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.mount",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.read_old_version",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.read_v1",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.restored_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.soft_delete",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.undelete",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.write_v1",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "kv.write_v2",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "operations.seal_status",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.cert_lookup",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.crl_json",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.issue",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.lease_expire_issue",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.lease_expire_lookup",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.lease_lookup",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.lease_revoke",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.mount",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.revoked_lease_absent",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.role",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.role_read",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "pki.root",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "system.init_status",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.create",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.create_expiring",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.denial_no_effect",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.expired_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.invalid_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.policy",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.read_allowed",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.revoke",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.revoked_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "token.write_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "totp.mount",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "totp.roundtrip",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.create_key",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.decrypt_old_after_rotation",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.decrypt_v1",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.decrypt_v2",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.encrypt_v1",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.encrypt_v2",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.mount",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.read_key",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.read_rotated_key",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "transit.rotate",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "userpass.login",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "wrapping.create",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "wrapping.replay_denied",
+        "candidate_exact": true,
+        "oracle_exact": true
+      },
+      {
+        "id": "wrapping.unwrap",
+        "candidate_exact": true,
+        "oracle_exact": true
+      }
+    ],
+    "candidate_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "family_counts": {
+      "approle": 3,
+      "core": 1,
+      "edge_tls": 1,
+      "identity": 6,
+      "kv": 18,
+      "operations": 1,
+      "pki": 12,
+      "system": 1,
+      "token": 10,
+      "totp": 2,
+      "transit": 10,
+      "userpass": 1,
+      "wrapping": 3
+    }
+  },
+  "delta": {
+    "rows": {
+      "security_delta": [
+        {
+          "id": "sanitized_acme_eab_mac_key",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "root_generation_and_rekey_audit_fail_closed",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "approle_secret_id_expiry_before_tidy",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "approle_form_encoded_login",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "certificate_quota_tls_identity",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "kubernetes_renewal_post_revocation",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "cross_namespace_policy_cache_isolation",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "plugins_root_namespace_only",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "unauthorized_workflow_policy_denial",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "agent_proxy_quit_request_header",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "canonical_resolve_path_operation",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "plugin_command_path_confinement",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "sdk_malformed_audit_redaction",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "pki_acme_unvalidated_san_rejection",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "oidc_ui_prompt_none_disabled",
+          "exact_source_row": true,
+          "status": "OPEN"
+        }
+      ],
+      "feature_and_correctness_delta": [
+        {
+          "id": "postgresql_horizontal_scale",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "external_kms_hsm_pki_transit",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "pqc_tls_mldsa",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "pebble_storage",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "indexed_consistency",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "control_groups_second_party_approval",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "grpc_invalidation",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "raft_auto_join_provider_port",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "sdk_lifetime_watcher_backoff",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "barrier_rotation_disabled_field_persistence",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "linux_package_default_pebbledb",
+          "exact_source_row": true,
+          "status": "OPEN"
+        }
+      ],
+      "required_gates": [
+        {
+          "id": "exact_head_native",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "prospective_main_merge",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "module_evidence_integrity",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "scalable_state_storage",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "replay_identity_lifecycle",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "complete_surface_admission",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "external_provider_semantics",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "full_asset_migration",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "multi_host_fault_upgrade",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "openbao_2_7_1_oracle",
+          "exact_source_row": true,
+          "status": "OPEN"
+        },
+        {
+          "id": "security_release_supply_chain",
+          "exact_source_row": true,
+          "status": "OPEN"
+        }
+      ]
+    }
+  },
+  "host_actions": 0,
+  "product_operations": 0
+}

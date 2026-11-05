@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.mac-capture-prerequisite-inert-independent-readback.r1",
+  "status": "PASS_INERT_ONLY",
+  "job_id": "1a1a8eb69a3-fc05-3007",
+  "authorized_source_tree": "c81dfdf1a001fe183bdf5ab7f98d818689cb86c8",
+  "authorized_intent_blob": "ac224509705484b7a1a8a4c190f533d43e8ab52c",
+  "fixed_idempotency_key": "heptabao-mac-capture-owned-prereq-inert-606b5df5-20261104-r1",
+  "authority_exit_code": 0,
+  "authority_complete": true,
+  "authority_durable": true,
+  "stdout_hex_and_text_byte_exact": true,
+  "stdout_bytes": 5428,
+  "stderr_bytes": 0,
+  "both_streams_eof": true,
+  "elapsed_seconds": 0.190549791790545,
+  "inner_seconds": 45,
+  "outer_seconds": 60,
+  "candidate_receipt_sha256": "875f58f36bdd5ac7eb9af892c75b8afd22a3a46309347f115338a88ed736b0eb",
+  "candidate_receipt_alone_is_not_terminal_proof": true,
+  "whole_payload_files_verified": [
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "uid": 501,
+      "mode": "0600",
+      "nlink": 1,
+      "whole_readback": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "uid": 501,
+      "mode": "0600",
+      "nlink": 1,
+      "whole_readback": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "uid": 501,
+      "mode": "0600",
+      "nlink": 1,
+      "whole_readback": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "uid": 501,
+      "mode": "0600",
+      "nlink": 1,
+      "whole_readback": true
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "uid": 501,
+      "mode": "0600",
+      "nlink": 1,
+      "whole_readback": true
+    }
+  ],
+  "exact_public_anchor_sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+  "original_three_anchor_path_and_identity_fields_exact": true,
+  "volume_uuid_verified": true,
+  "observed_diskutil_commands": 1,
+  "command_exit_codes": [
+    0
+  ],
+  "all_command_streams_closed": true,
+  "owned_live_group_empty_before_first_reap": true,
+  "all_group_rows_empty_after_reap": true,
+  "no_post_reap_signal": true,
+  "all_owned_descriptors_closed": true,
+  "original_deadline_met_after_closure": true,
+  "outcome_unknown": false,
+  "sqlite_or_synthetic_executed": false,
+  "production_sqlite_opened": false,
+  "current_private_inputs_opened": false,
+  "consumer_executed": false,
+  "service_started": false,
+  "cargo_or_git_started": false,
+  "source_readback": "Fresh held read descriptor; not claimed to be the write descriptor.",
+  "further_authorization": "Synthetic execution and current-data capture remain separate and have not been started.",
+  "original_raw_evidence_preserved": true,
+  "local_verifier_note": "Two local verifier shape assumptions were corrected: files is a filename-to-base64 object, and anchor object member order differs while each exact path and identity array is equal. Both checks now use the actual schema. No new host operation resulted."
+}

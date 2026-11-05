@@ -1,0 +1,364 @@
+{
+  "schema": "heptabao.root.normal-r3-full-original-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:05:45.980Z",
+  "pass": true,
+  "packet_tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+  "files": 243,
+  "bytes": 4117340,
+  "merkle_trees": 10,
+  "job_id": "1a1a8b55dda-fc05-2f85",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "original44": {
+    "passed": 44,
+    "exact_six_group_names_and_original600_caps": true
+  },
+  "separate7": {
+    "passed": 7,
+    "exact_runner_literal_names": true,
+    "shared600_actual_seconds": 0.5895433480036445
+  },
+  "owned_children": [
+    {
+      "label": "ingress-observer-7",
+      "pid": 3846257,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013522699009627104,
+      "cap_seconds": 599.6079322010046
+    },
+    {
+      "label": "ingress-observer-7-list",
+      "pid": 3846255,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.012878515000920743,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-6",
+      "pid": 3846252,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.014182171988068148,
+      "cap_seconds": 599.6372159940074
+    },
+    {
+      "label": "ingress-observer-6-list",
+      "pid": 3846250,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.012347221985692158,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-5",
+      "pid": 3846247,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013504144008038566,
+      "cap_seconds": 599.6652182909893
+    },
+    {
+      "label": "ingress-observer-5-list",
+      "pid": 3846245,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.014729465008713305,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-4",
+      "pid": 3846242,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013467846991261467,
+      "cap_seconds": 599.695686268009
+    },
+    {
+      "label": "ingress-observer-4-list",
+      "pid": 3846240,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015400649979710579,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-3",
+      "pid": 3846180,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.0759053569927346,
+      "cap_seconds": 599.7898751140165
+    },
+    {
+      "label": "ingress-observer-3-list",
+      "pid": 3846178,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015539489017101005,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-2",
+      "pid": 3846118,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.07591526600299403,
+      "cap_seconds": 599.8836719169922
+    },
+    {
+      "label": "ingress-observer-2-list",
+      "pid": 3846116,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.016324606986017898,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-1",
+      "pid": 3846056,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.07753643600153737,
+      "cap_seconds": 599.9800872149935
+    },
+    {
+      "label": "ingress-observer-1-list",
+      "pid": 3846054,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.018612604006193578,
+      "cap_seconds": 30
+    },
+    {
+      "label": "no_forward6",
+      "pid": 3843859,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 8.112403331993846,
+      "cap_seconds": 600
+    },
+    {
+      "label": "no_forward6-list",
+      "pid": 3843847,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.017009557981509715,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ordinary5",
+      "pid": 3843837,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.04573095898376778,
+      "cap_seconds": 600
+    },
+    {
+      "label": "ordinary5-list",
+      "pid": 3843825,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.017505424009868875,
+      "cap_seconds": 30
+    },
+    {
+      "label": "actor2",
+      "pid": 3843777,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 10.111169131996576,
+      "cap_seconds": 600
+    },
+    {
+      "label": "actor2-list",
+      "pid": 3843765,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015967749000992626,
+      "cap_seconds": 30
+    },
+    {
+      "label": "redirect5",
+      "pid": 3843719,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.12930319798761047,
+      "cap_seconds": 600
+    },
+    {
+      "label": "redirect5-list",
+      "pid": 3843705,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.016204151994315907,
+      "cap_seconds": 30
+    },
+    {
+      "label": "mount1",
+      "pid": 3843701,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.28182386700063944,
+      "cap_seconds": 600
+    },
+    {
+      "label": "mount1-list",
+      "pid": 3843689,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.01589226900250651,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ssh25",
+      "pid": 3841034,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 44.14493169399793,
+      "cap_seconds": 600
+    },
+    {
+      "label": "ssh25-list",
+      "pid": 3841022,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.018127768009435385,
+      "cap_seconds": 30
+    },
+    {
+      "label": "build",
+      "pid": 3828859,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 1080.5543959179777,
+      "cap_seconds": 3600
+    },
+    {
+      "label": "normal-release-build",
+      "pid": 3579859,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 666.3053706680075,
+      "cap_seconds": 1800
+    }
+  ],
+  "original_sdk": {
+    "payloads": 24,
+    "reconstructed_from_immutable_pages": 23,
+    "pages": 88,
+    "all_bytes_and_sha256_exact": true,
+    "read_files_matched_to_archived_originals": 88,
+    "terminal_hex_text_exact": true,
+    "known_wrong_path_read_error_preserved": true,
+    "transport_metadata_does_not_claim_client_wire_delivery": true
+  },
+  "cargo": [
+    {
+      "kind": "release",
+      "bytes": 387098,
+      "events": 445,
+      "blob": "5359b92200368b279363df2cdcd4d0aeaeadd3af",
+      "sha256": "1c6c8bc26d0348383b1bfc003dea30106b411be8e88d59066ee3f5fe8925bd8c"
+    },
+    {
+      "kind": "libtest",
+      "bytes": 385153,
+      "events": 443,
+      "blob": "4e25f390f48813a9f63bd2c98cb67a2f6c89daef",
+      "sha256": "fc6c7c96d225578345a418def98a3f0cec6d5c0e8dded09e925169326cd51e41"
+    }
+  ],
+  "total_elapsed_ns_exact": "1812535687089",
+  "source_and_artifacts_unchanged": true,
+  "artifacts": {
+    "heptabao-seed": {
+      "bytes": 101143984,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "bdbf53cfebc25d3932aaba3bf608e0459e3399c513bbdeafecde5659eb688689"
+    },
+    "heptabao-server": {
+      "bytes": 109074848,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0"
+    }
+  },
+  "libtest": {
+    "bytes": 187656088,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "94e2daa8448807079472264fb19d39d00619ac6a046c59ac7849aa39a70161fa"
+  },
+  "authority_exit_zero_full_durable": true,
+  "business_replay": false,
+  "verification_harness_note": "First derived root analysis parsed the retained known SDK tool-error text as JSON and stopped. The corrected reviewer preserves and checks isError before JSON parsing; all evidence assertions were then rerun successfully. No host operation or source change occurred.",
+  "full_openbao_replacement": false
+}

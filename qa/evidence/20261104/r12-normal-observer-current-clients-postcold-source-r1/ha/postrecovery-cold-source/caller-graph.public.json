@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.postcold12.pinned-caller-graph.v1",
+  "product": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "canonical_source_edited": false
+  },
+  "cold_order": [
+    "original Direct98 prepare/bootstrap/activate/failover/full_cold_restart",
+    "original R3 missing_cipher_leader with same stop2/new real quorum frontier/stop1+3/actual3-to1 guard",
+    "same recovered inventory scan additionally returns actual immutable leaf identities and SHA; no second discovery scan",
+    "original remaining-node unseals and all-host small ReadIndex complete",
+    "new post_recovery_cold12 under min(local phase start+300, original launcher absolute2400)",
+    "pre-stop exact version metadata and passive frontiers; stop all3 through original owners",
+    "one stopped numeric read and one exact captured-leaf read on Mac1",
+    "start all3 once with new owned process identities; actual sealed election under original60",
+    "unseal each once; current actual ready leader and all local frontiers",
+    "leader17 live large versions plus2 retired states; all3 exact metadata/retired-state/denied-write and smallReadIndex",
+    "original finish_application deletes all original synthetic metadata and verifies absence",
+    "original owned cleanup, original98 final native.complete"
+  ],
+  "deadlines": [
+    {
+      "caller": "launcher",
+      "edge": "subprocess.run(new runner)",
+      "cap": 2400,
+      "shared": "qa_until computed before dispatch, passed by exact environment value to same-host Python child, timeout=min(original2400,qa_until-now)"
+    },
+    {
+      "caller": "post_recovery_cold",
+      "edge": "all B operations",
+      "cap": 300,
+      "shared": "postcold_until=min(started+300,controller_until); never reset"
+    },
+    {
+      "caller": "NativeRun.request(parent)",
+      "edge": "base.api(parent)",
+      "cap": 15,
+      "shared": "timeout shortened before ledger intent and again before urllib open; same original response semantics; parent checked after return"
+    },
+    {
+      "caller": "base.wait_listener(parent)",
+      "edge": "base.api(parent)",
+      "cap": 1.5,
+      "shared": "listener45 also capped by parent; sleep capped"
+    },
+    {
+      "caller": "postcold leader/frontier loops",
+      "edge": "self.request(parent)",
+      "cap": "2/8/4; original election/frontier60",
+      "shared": "local absolute loop deadline min(parent,now+60), each request and sleep shares it"
+    },
+    {
+      "caller": "NativeRun.start/stop(parent)",
+      "edge": "DirectLanRun.owned_process_action(parent)",
+      "shared": "same one-shot originals; no new operation on expired caller"
+    },
+    {
+      "caller": "Direct Mac",
+      "edge": "ForegroundSession.start/stop(parent)",
+      "cap": "60 start/5 stop",
+      "shared": "local absolute min parent; original WNOWAIT/Popen custody and failure-only rescue retained; relative optional endpoint allocation"
+    },
+    {
+      "caller": "Direct Linux",
+      "edge": "process_action(parent) -> base.ssh(parent) -> checked_run(parent)",
+      "cap": "60 control/5 actual stop; assert-stopped15 with ps5",
+      "shared": "bounded script checks relative allocation inside original observe/sleep/Popen/stop; local absolute caller remains authority"
+    },
+    {
+      "caller": "postcold fixed readonly helpers",
+      "edge": "base.ssh(parent)",
+      "cap": "45 SSH, remote pure reader15",
+      "shared": "one dispatch per numeric/cipher scope; same local absolute parent; relative remote allocation; unknown stops"
+    },
+    {
+      "caller": "same recovered reference capture before B",
+      "edge": "cipher_inventory(capture_reference=True,parent=controller_until)",
+      "cap": 60,
+      "shared": "same original scan and original max60 SSH; global2400 applies; B300 has not started"
+    }
+  ],
+  "default_none": {
+    "canonical_files_unchanged": true,
+    "private_overlay_files": 4,
+    "selected_only_by_new_pinned_runner": true,
+    "old_R3_qualification_reassigned": false,
+    "claimed_proof": "Complete original/diff plus exact-module AST and pure mock comparison; actual new fixture qualification awaits future runtime.",
+    "unchanged_native_methods": [
+      "prepare",
+      "bootstrap_v5",
+      "activate_and_grow",
+      "failover_and_quorum",
+      "full_cold_restart",
+      "missing_cipher_leader",
+      "finish_application",
+      "cleanup",
+      "check",
+      "execute"
+    ],
+    "unchanged_foreground_custody": [
+      "require_waitid",
+      "exit_observation",
+      "ps_rows",
+      "stable",
+      "verify_unreaped",
+      "live_group",
+      "stop_unreaped"
+    ]
+  },
+  "reference": {
+    "same_capture_scan": true,
+    "hardcoded_338": false,
+    "files_max": 4096,
+    "leaf_bytes_max": 1048576,
+    "total_bytes_max": 67108864,
+    "input_and_output_max_bytes": 1048576,
+    "cold_reader_files": "Only names from captured set, never enumerates unreferenced ciphertext.",
+    "identity": "Actual dev/inode/uid/mode/nlink/size/mtime_ns/ctime_ns; named-before, held FD, named-after; full held parent directory named checks.",
+    "directory_cross_phase": "Bind actual dev/inode/uid/mode; directory mtime/size may legitimately change during owner stop and are only stable-within-observation checked.",
+    "cold_scope_claim": "Mac1 recovered immutable reference persistence, current stopped numeric state, later actual cluster data semantics; not physical power loss or backup validity."
+  },
+  "expected_counts": {
+    "original_checks": 98,
+    "extra_checks": 12,
+    "original_checks_reordered": false,
+    "lifecycle_versions": 19,
+    "live_large_versions": 17,
+    "extra_unseal_mutations": 3,
+    "actual_total_mutation_count_requires_runtime": true
+  },
+  "cleanup": "Any B failure/unknown stops new work. Original cleanup retains original finite budgets; failure-only cleanup cannot convert the extra phase or whole run to PASS.",
+  "cross_host_clock_limit": "Remote durations are relative allocations, not an assertion that remote monotonic epochs equal the desktop clock. A phase succeeds only if its local caller receives and publishes the result within the one shared deadline."
+}

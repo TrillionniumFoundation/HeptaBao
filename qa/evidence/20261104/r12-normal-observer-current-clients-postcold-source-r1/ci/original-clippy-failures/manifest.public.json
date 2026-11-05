@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.immutable-public-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "ci-head-original.log",
+      "bytes": 4229155,
+      "sha256": "2ecca0ae383f8918456d597d931095051f4364573c6f7d6c40ca38f5bf173735",
+      "blob": "13a357cbf7ebcaf2624ec4a48c7f939bd92c413d"
+    },
+    {
+      "path": "ci-merge-original.log",
+      "bytes": 4244880,
+      "sha256": "ec3128aad204d35a233c94b176b3d7979184a51cc394e7f7a7f0aae696b4a0a8",
+      "blob": "3fcc6daf9d694eef9c4afeef3a31a8eaad575fed"
+    },
+    {
+      "path": "jobs-original.json",
+      "bytes": 34684,
+      "sha256": "e082c35c2822c7a47f5d2bc63679a09876fb806de18dd630e99747f00007a935",
+      "blob": "0f108cbe4d5fcf5aad05e7b7df51b2701b57aa1b"
+    },
+    {
+      "path": "original-log-readback.public.json",
+      "bytes": 636,
+      "sha256": "1c63c4c9714af4d6ef858ba3c7d92cf26224c0d804c30510fa4dca0ae0b81ccd",
+      "blob": "14619d67810438deb9fb8fc2f0e645d2c709553f"
+    },
+    {
+      "path": "prior-derived-assessment.public.json",
+      "bytes": 6169,
+      "sha256": "173b6bf5ac132320fb2238c51d32c804e87afe3e0d9b0dd82e6140b51828d408",
+      "blob": "5cf0a19bc7fef01101bd7aeb30a808fe1a72a14c"
+    },
+    {
+      "path": "root-assessment.public.json",
+      "bytes": 6798,
+      "sha256": "c27e3d870afaf18fdd3fbc721aa3f3b68a588caeb9fb51c7343e6d1fe7debc46",
+      "blob": "c1f013b792afe52f6ea9bc6d09d46069bc96ba03"
+    }
+  ]
+}

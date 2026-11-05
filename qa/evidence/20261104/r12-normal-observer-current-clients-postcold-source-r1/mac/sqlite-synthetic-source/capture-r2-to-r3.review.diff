@@ -1,0 +1,139 @@
+diff --git a/mac_guarded_current_capture_r3.py b/mac_guarded_current_capture_r3.py
+--- a/mac_guarded_current_capture_r3.py
++++ b/mac_guarded_current_capture_r3.py
+@@ -8,7 +8,7 @@
+ do not turn this into a SQLite transaction snapshot or a cross-agent snapshot.
+ """
+ from __future__ import annotations
+-import base64, hashlib, json, os, re, sqlite3, stat, sys, time
++import base64, hashlib, json, os, re, sqlite3, stat, sys, time, _sqlite3
+ from pathlib import Path
+ 
+ LIVE=Path('/Users/qianqi/.openclaw')
+@@ -36,15 +36,18 @@
+ def parent_identity(s):return identity(s)[:5]
+ 
+ class FixedInputs:
+-    def __init__(self, *, until, critical, live=LIVE, synthetic=False):
+-        need(callable(critical),'descriptor_signal_guard_required')
+-        need(live==LIVE or synthetic,'synthetic_root_requires_explicit_component_mode')
+-        self.live=Path(live);self.synthetic=synthetic;self.until=until;self.critical=critical
++    def __init__(self, *, until, critical, cancelled, live=LIVE, synthetic=False):
++        need(callable(critical) and callable(cancelled),'descriptor_signal_and_cancellation_guards_required')
++        synthetic_root=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/capture-sqlite-synthetic-r1')
++        need(live==LIVE or (synthetic and Path(live).is_relative_to(synthetic_root)),
++             'synthetic_root_requires_fixed_owned_component_scope')
++        self.live=Path(live);self.synthetic=synthetic;self.until=until;self.critical=critical;self.cancelled=cancelled
+         self.fds=[];self.parents={};self.files={};self.absent={};self.connections=[];self.byte_count=0
+         self.closed=False;self.close_errors=[];self.verified=False
+         self.uid=os.geteuid()
+         need(self.uid==501 or synthetic,'actual_mac_uid')
+     def remaining(self,until=None):
++        need(not self.cancelled(),'capture_cancelled')
+         n=min(self.until,until if until is not None else self.until)-time.monotonic()
+         need(n>0,'original_capture_or_query_deadline_exhausted')
+         return n
+@@ -72,8 +75,12 @@
+                      'held_parent_chain_order')
+                 name=directory.name
+                 named=os.stat(name,dir_fd=previous['fd'],follow_symlinks=False)
+-            need(stat.S_ISDIR(named.st_mode) and not stat.S_IMODE(named.st_mode)&0o022,
+-                 'current_parent_plain_no_external_write')
++            known_synthetic_mount=(self.synthetic and directory==Path('/Volumes/T5')
++                and named.st_uid==0 and named.st_gid==0 and stat.S_IMODE(named.st_mode)==0o775)
++            need(stat.S_ISDIR(named.st_mode) and (known_synthetic_mount
++                 or not stat.S_IMODE(named.st_mode)&0o022),'current_parent_plain_no_external_write')
++            # The component's separate HeldT5 UUID/whole-identity guard admits
++            # only this actual root-owned mount; production /Users code has no exception.
+             if directory==self.live or directory.is_relative_to(self.live):
+                 need(named.st_uid==self.uid,'current_parent_owner')
+             row=self._open_fd(name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,
+@@ -184,17 +191,49 @@
+             'sqliteConnectionsClosed':sum(r['closed'] for r in self.connections),
+             'closeErrors':list(self.close_errors)}
+ 
+-def runtime_identity():
+-    return {'pythonExecutable':str(Path(sys.executable).resolve(strict=True)),
++def public_code_pin(path,*,remaining,critical):
++    # Public interpreter/extension/source hashes have their own fixed 64MiB
++    # per-file bound. They do not pretend to be measured SQLite page I/O.
++    remaining();path=Path(path).resolve(strict=True)
++    with critical():
++        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
++    try:
++        before=os.fstat(fd)
++        need(stat.S_ISREG(before.st_mode) and 0<before.st_size<=64*MIB
++             and not stat.S_IMODE(before.st_mode)&0o022,'public_runtime_code_custody')
++        digest=hashlib.sha256();count=0
++        while count<=before.st_size:
++            remaining()
++            raw=os.read(fd,min(MIB,before.st_size+1-count))
++            if not raw:break
++            count+=len(raw);digest.update(raw)
++        need(count==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),
++             'public_runtime_code_changed')
++        remaining()
++        result={'path':str(path),'bytes':count,'sha256':digest.hexdigest()}
++    finally:
++        with critical():os.close(fd)
++    remaining()
++    return result
++
++def runtime_identity(*,remaining,critical):
++    return {'pythonExecutable':public_code_pin(sys.executable,remaining=remaining,critical=critical),
++            'sqliteExtension':public_code_pin(_sqlite3.__file__,remaining=remaining,critical=critical),
+             'pythonVersion':sys.version,'sqliteVersion':sqlite3.sqlite_version,
+             'sqliteVersionInfo':list(sqlite3.sqlite_version_info)}
+ 
+-def validate_synthetic_proof(raw, expected_sha):
++
++def validate_synthetic_proof(raw, expected_sha,*,remaining,critical):
++    remaining()
+     need(isinstance(raw,bytes) and len(raw)<=65536 and sha(raw)==expected_sha,
+          'actual_synthetic_proof_original_bytes')
+     proof=json.loads(raw)
+-    need(proof.get('schema')=='heptabao.mac-immutable-capture-synthetic.r1'
+-         and proof.get('ok') is True and proof.get('runtime')==runtime_identity(),
++    need(isinstance(proof,dict)
++         and proof.get('schema')=='heptabao.mac-immutable-capture-synthetic.r1'
++         and proof.get('ok') is True
++         and proof.get('runtime')==runtime_identity(remaining=remaining,critical=critical)
++         and proof.get('captureSourceSha256')==public_code_pin(
++             __file__,remaining=remaining,critical=critical)['sha256'],
+          'actual_same_runtime_synthetic_proof_required')
+     need(proof.get('ownedDatabaseOnly') is True and proof.get('productionOpened') is False
+          and proof.get('sameHeldFdUriCode') is True and proof.get('readonlyImmutableConnection') is True
+@@ -203,6 +242,7 @@
+          and proof.get('journalRefusedBeforeConnect') is True
+          and proof.get('oversizeRowRefused') is True and proof.get('driftRefused') is True
+          and proof.get('allOwnedDescriptorsClosed') is True,'synthetic_negative_boundaries_required')
++    remaining()
+ 
+ def immutable_query(inputs,main,query):
+     inputs.verify()
+@@ -319,11 +359,12 @@
+             'sourceConfigSha256':CONFIG_SHA}
+     return models
+ 
+-def capture_current(*,critical,synthetic_proof,synthetic_proof_sha,until):
+-    validate_synthetic_proof(synthetic_proof,synthetic_proof_sha)
++def capture_current(*,critical,cancelled,synthetic_proof,synthetic_proof_sha,until):
+     need(sys.platform=='darwin' and os.getuid()==501,'exact_current_mac')
+     need(until<=time.monotonic()+NEW_CAPTURE_SECONDS,'one_capture_budget_no_reset')
+-    inputs=FixedInputs(until=until,critical=critical)
++    inputs=FixedInputs(until=until,critical=critical,cancelled=cancelled)
++    validate_synthetic_proof(synthetic_proof,synthetic_proof_sha,
++                            remaining=inputs.remaining,critical=critical)
+     document=None
+     try:
+         raw_config=inputs.read(LIVE/'openclaw.json')
+@@ -357,7 +398,8 @@
+             'agentIds':list(AGENTS),'models':models,'authDocuments':documents,
+             'authbusCaches':{'directoryPresent':cache_directory is not None,'files':caches},
+             'nativeHomes':native,'registry':registry,
+-            'runtime':runtime_identity(),'syntheticProofSha256':synthetic_proof_sha,
++            'runtime':runtime_identity(remaining=inputs.remaining,critical=critical),
++            'syntheticProofSha256':synthetic_proof_sha,
+             'scope':'bounded_point_in_time_observation_not_database_or_cross_agent_snapshot'}
+         need(len(encoded(document))<=4*MIB,'combined_private_capsule_bound')
+         inputs.verify()

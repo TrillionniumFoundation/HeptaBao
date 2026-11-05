@@ -1,0 +1,20 @@
+[
+  {
+    "job_id": 126845969276,
+    "path": "ci-head-original.log",
+    "bytes": 4229155,
+    "sha256": "2ecca0ae383f8918456d597d931095051f4364573c6f7d6c40ca38f5bf173735",
+    "blob": "13a357cbf7ebcaf2624ec4a48c7f939bd92c413d",
+    "server_whole_exact_readback": true,
+    "raw_log_not_json_reserialized": true
+  },
+  {
+    "job_id": 126845968973,
+    "path": "ci-merge-original.log",
+    "bytes": 4244880,
+    "sha256": "ec3128aad204d35a233c94b176b3d7979184a51cc394e7f7a7f0aae696b4a0a8",
+    "blob": "3fcc6daf9d694eef9c4afeef3a31a8eaad575fed",
+    "server_whole_exact_readback": true,
+    "raw_log_not_json_reserialized": true
+  }
+]

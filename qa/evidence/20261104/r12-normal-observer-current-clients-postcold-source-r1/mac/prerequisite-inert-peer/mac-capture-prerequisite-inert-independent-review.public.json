@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.mac-capture-prerequisite-inert-independent-review.r1",
+  "verdict": "PASS_FIXED_INERT_SOURCE_ADMISSION_ONLY",
+  "source_tree": "c81dfdf1a001fe183bdf5ab7f98d818689cb86c8",
+  "reviewed_packet_files": 9,
+  "all_packet_full_bytes_and_git_ids_verified": true,
+  "critical_pins": [
+    {
+      "path": "mac_capture_prerequisite_inert_r1.py",
+      "bytes": 8157,
+      "sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c",
+      "git_blob": "3cc4133672f83e0b3afdf608a187336d1944664b"
+    },
+    {
+      "path": "inert-input.public.json",
+      "bytes": 95426,
+      "sha256": "bc808674f8a013c242d2e6ae2a68c8271e89030e9420c3383f53da524f27d874",
+      "git_blob": "8a9e3fa11845a60869379110a23c4606401c91c4"
+    },
+    {
+      "path": "inert-start.public.json",
+      "bytes": 104078,
+      "sha256": "7c82ef716af8783f11a8fc260e6021046db25df45d693e08706ee6be16375f2c",
+      "git_blob": "ac224509705484b7a1a8a4c190f533d43e8ab52c"
+    },
+    {
+      "path": "synthetic-start.public.json",
+      "bytes": 2642,
+      "sha256": "8c632fe2f1db8eebc24487269492c1c3f01fe76711651367335118826c5468f9",
+      "git_blob": "eeb6cd8b8d0ff40cfb822da629ae3d1795ec070d"
+    }
+  ],
+  "binding_checks": {
+    "five_payload_sources_decoded_to_exact_prior_reviewed_04a900_bytes": true,
+    "anchor967_sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "start_c_source_exact": true,
+    "start_stdin_exact": true,
+    "synthetic_pins_argument_exact": true,
+    "synthetic_anchor_argument_exact": true,
+    "interpreter": "/opt/homebrew/bin/python3",
+    "python_flags": [
+      "-I",
+      "-S",
+      "-B"
+    ],
+    "host": "mac",
+    "cwd": "/Users/qianqi",
+    "inner_new_seconds": 45,
+    "outer_new_seconds": 60,
+    "diskutil_max_seconds": 30
+  },
+  "source_findings": [
+    "Complete payload decode, exact five SHA/size checks and AST+compile occur before any source publication.",
+    "Only three pinned definition modules are executed from verified stdin bytes: retained custody, Commands, HeldT5. Their library top levels contain imports/definitions/constants, not product, SQLite, provider or credential operations. Capture and synthetic entrypoints are not executed by inert.",
+    "Fixed bounded diskutil succeeds and HeldT5 checks actual UUID/anchor/device before creating only the fresh ROOT, qa, five source files and candidate receipt. Existing or partial roots cause failure; no overwrite/retry authorization.",
+    "One original 45-second success deadline covers input, compilation, guards, file readbacks and closure. Diskutil is clamped to min(remaining,30); original retained-child cleanup cannot renew success.",
+    "Final success requires prepared candidate, all five readbacks, complete retained command closure, guard descriptor closure, final anchor, no unknown, and original deadline. Candidate receipt precedes closure and cannot qualify by itself; final stdout and authoritative exit0 remain required.",
+    "Synthetic dispatch uses exact same frozen source pins, anchor and interpreter, but is a distinct later operation requiring actual inert review and separate root GO."
+  ],
+  "blocking_findings": [],
+  "limitations": [
+    "This is source-only review, not actual Mac capability, inert completion or SQLite-case qualification.",
+    "Readback reopens the published source through a new held read FD after write FD closure; no claim is made that writing and reading use one identical open descriptor.",
+    "Runtime identity later covers Python/_sqlite3/source SHA and versions, not all dynamic-library dependencies.",
+    "Original public-code-FD failure-report scope from review f69593365f9529ca17de4f0f120f75656bd582bc remains unchanged.",
+    "V8 store was reset after completed reading and decoding; fixed original Git objects and visible whole-byte verification records retain provenance. No source or host operation was reconstructed from a guessed implementation."
+  ],
+  "host_actions_by_reviewer": 0,
+  "synthetic_execution_authorized_by_this_receipt": false,
+  "production_capture_authorized_by_this_receipt": false
+}

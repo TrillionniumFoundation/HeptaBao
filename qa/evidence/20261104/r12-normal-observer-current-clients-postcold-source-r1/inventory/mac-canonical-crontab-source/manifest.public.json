@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-canonical-crontab-source-manifest.r1",
+  "files": [
+    {
+      "path": "mac_canonical_crontab_r1.py",
+      "bytes": 7115,
+      "sha256": "b99284c5cd046835b74e182360a4e6629a1ca2022546dc6dcd450e3adc2e6866",
+      "blob": "6d90b71a58f6939017dd500e402002fd013fc809"
+    },
+    {
+      "path": "exact-start-arguments.json",
+      "bytes": 7584,
+      "sha256": "21aea3fe0ddc348b74029b3e2d7d798984049688912bef7fdadcec4934773807",
+      "blob": "b5da3c779cf2b76703b31b522fc550b16004e6ad"
+    },
+    {
+      "path": "SOURCE_CONTRACT.public.json",
+      "bytes": 1955,
+      "sha256": "8831856351ceebd5e7731f88cf65089d1a1dfc0e6ea047c664e8c5c814d70c2c",
+      "blob": "749a3844d29cf3bc4c4a1fb9e9447c74048deaf3"
+    }
+  ]
+}

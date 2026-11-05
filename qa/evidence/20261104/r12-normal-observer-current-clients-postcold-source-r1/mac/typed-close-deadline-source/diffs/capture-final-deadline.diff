@@ -1,0 +1,13 @@
+diff --git a/mac_guarded_current_capture_r1.py b/mac_guarded_current_capture_r1.py
+--- a/mac_guarded_current_capture_r1.py
++++ b/mac_guarded_current_capture_r1.py
+@@ -364,4 +364,9 @@
+     finally:inputs.close()
+     public=inputs.public()
+     need(public['allOwnedDescriptorsClosed'] and not public['closeErrors'],'current_input_descriptor_closure')
++    completed=time.monotonic()
++    need(completed<until,'original_capture_deadline_after_close_and_summary')
++    public['completedMonotonic']=completed
++    public['originalCaptureDeadlineMonotonic']=until
++    public['outerMustRecheckAfterPrivatePublication']=True
+     return document,public

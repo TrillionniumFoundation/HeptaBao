@@ -1,0 +1,50 @@
+--- base/deadline_qa/native_v6_ha_direct_lan_live.py
++++ candidate/deadline_qa/native_v6_ha_direct_lan_live.py
+@@ -25,7 +25,8 @@
+ import native_ha_foreground_watchdog as foreground
+ 
+ base = native.base
+-PEER_PREFLIGHT = Path(__file__).resolve().parents[2] / "tools/physical_ha_peer_preflight.py"
++# The overlay is outside the canonical source tree; this unchanged helper stays pinned there.
++PEER_PREFLIGHT = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-validation-source-r1/tools/physical_ha_peer_preflight.py")
+ DIRECT_CHECKS = frozenset(
+     (native.REQUIRED_CHECKS - {"complete_loopback_mesh"})
+     | {"direct_lan_endpoints_configured"}
+@@ -119,7 +120,9 @@
+                             + " -B - <<'PY2'\n" + script + "PY2\n", timeout=15))
+         self.report["foreground_python_identity"] = result
+ 
+-    def owned_process_action(self, node, action, *, native=True):
++    def owned_process_action(self, node, action, *, native=True, parent_deadline=None):
++        if parent_deadline is not None:
++            base.parent_remaining(parent_deadline, 60)
+         if action == "start" and native and node in self.foreground_nodes:
+             if node.alias in self.foreground_sessions:
+                 raise base.FixtureError("foreground_unknown_start_must_not_repeat")
+@@ -132,18 +135,23 @@
+             self.foreground_sessions[node.alias] = session
+             self.report["foreground_sessions"].append(session.receipt)
+             try:
+-                return session.start()
++                return (session.start() if parent_deadline is None
++                        else session.start(parent_deadline=parent_deadline))
+             except foreground.Refusal as error:
+                 raise base.FixtureError(str(error)) from error
+         if action == "stop" and node.alias in self.foreground_sessions:
+             session = self.foreground_sessions[node.alias]
+             try:
+-                pid = session.stop()
++                pid = (session.stop() if parent_deadline is None
++                       else session.stop(parent_deadline=parent_deadline))
+             except foreground.Refusal as error:
+                 raise base.FixtureError(str(error)) from error
+             del self.foreground_sessions[node.alias]
+             return pid
+-        return super().owned_process_action(node, action, native=native)
++        if parent_deadline is None:
++            return super().owned_process_action(node, action, native=native)
++        return super().owned_process_action(node, action, native=native,
++                                            parent_deadline=parent_deadline)
+ 
+     def request(self, *args, **kwargs):
+         for session in self.foreground_sessions.values():

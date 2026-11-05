@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.root.ha-postrecovery-inert-terminal-review.r1",
+  "pass": true,
+  "reviewed_at_utc": "2026-11-04T23:55:19.834Z",
+  "actual_tree": "c81c062ab6b0a6423b9bb3eb98b7e4fab1afcee4",
+  "files": 18,
+  "bytes": 64770,
+  "merkle_trees": 3,
+  "job_id": "1a1a8ec2d2a-fc05-300b",
+  "authority_blob": "5640ffa6970ff124fe14f70ac14f013797faa7a6",
+  "stdout_blob": "1d350bd1a45c4b9f133919a85f2277818a686563",
+  "receipt_blob": "abe5adaa54e668398617d3b1556f231bfebec90d",
+  "elapsed_ns_exact": "235589697",
+  "checks": {
+    "original_sdk_hex_text_exact": true,
+    "receipt_original_sdk_exact": true,
+    "stdout_and_receipt_lossless_equal": true,
+    "nine_source_hash_size_owner_mode_nlink_exact": true,
+    "nine_independent_postterminal_metadata_full_versions_exact": true,
+    "authority_exit_zero_full_durable": true,
+    "source_compile_only": true,
+    "no_services_or_business_children": true
+  },
+  "next_scope": "Permit frozen dispatch f7b963be1cf06d0bad22bc26083fc55291686f82 prepare only; no live fixture until prepared proof and dedicated host window review."
+}

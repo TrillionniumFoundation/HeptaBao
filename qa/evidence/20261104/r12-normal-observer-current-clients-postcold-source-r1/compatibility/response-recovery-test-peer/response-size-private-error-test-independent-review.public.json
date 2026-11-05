@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.response-size-private-error-test-independent-review.r1",
+  "verdict": "PASS_SINGLE_TEST_HUNK_SOURCE_ONLY",
+  "draft_tree": "8031070e5f47979546e0d548ae53bd2946f1f7c5",
+  "pins": [
+    {
+      "k": "before",
+      "bytes": 162112,
+      "sha256": "7cb338f64c5a8b63cf9ed0662b2b9dba3e2447fbe7619263fd8b41ae4f5083f7",
+      "git_blob": "de29a7578f4b922c553e5317f5b885c5fe710397"
+    },
+    {
+      "k": "after",
+      "bytes": 162286,
+      "sha256": "49b5902bef73d133b25de026794e322e3e72e1d295380687481ca62c77d22a0c",
+      "git_blob": "d0b33f09f4897582c3c6966f72396c07ce3a6d34"
+    },
+    {
+      "k": "diff",
+      "bytes": 560,
+      "sha256": "05ccf9fe43c12e0d1eafc6126222c838a152d22f27d9b5740983ea9883c0a29a",
+      "git_blob": "cdea40d24e1c79638ba8ea5e9fd2c8307a3443f6"
+    }
+  ],
+  "strict_diff": {
+    "hunks": 1,
+    "old_start": 3693,
+    "old_count": 6,
+    "new_start": 3693,
+    "new_count": 11,
+    "complete_file_reconstructed_exact": true,
+    "removing_exact_five_inserted_lines_restores_original": true
+  },
+  "scope": {
+    "test_module": "ha_index_phase_tests",
+    "cfg_test_existing": true,
+    "existing_use_super_glob": true,
+    "private_type": "HaRecoveryIndexAdmissionFailure",
+    "declared_in_parent_module": true,
+    "test": "recovery_index_admission_error_stays_below_large_error_threshold",
+    "predicate": "std::mem::size_of::<HaRecoveryIndexAdmissionFailure>() < 128",
+    "test_returns_unit": true,
+    "business_bytes_changed": false
+  },
+  "limits": [
+    "No source edits, host access, Rust/Cargo execution or independent CI PASS claim.",
+    "Existing header draft1 is outside this new-hunk review and remains separately reviewed; no repeat full-file business audit.",
+    "Root owns exact base/tree membership and two-leaf PR integration. This receipt confirms the supplied whole original/new recovery-file identities and single test-only delta."
+  ],
+  "blocking_findings": []
+}

@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "child-records-a",
+    "id": "8a671860d925dfe681785c2e4abfc4ac078a070aec0aecfc4b2fbf4161b71fc8",
+    "bytes": 17258,
+    "sha256": "64a83370063b380cda6bb0e9043748bec8bdf80456419ff9aa5048e173d53cf3"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/child-records-a-000000.json",
+      "bytes": 22534,
+      "sha256": "356ffae381ecdc6c6f5295c61e6464d3e82c4843f5471b0cf7bc9152af96a7fe",
+      "blob": "e2048c485934c391d84b54cb55fe39a62efe3b9a"
+    },
+    {
+      "path": "original-operation-pages/child-records-a-016384.json",
+      "bytes": 1857,
+      "sha256": "0d02686c8ca688bac0f8d9b063a8933ded5143c73d733aa5c84d0b91e1829c9e",
+      "blob": "90b097ce241ed1f895c50d808da59b35ca27fe39"
+    },
+    {
+      "path": "original-sdk/child-records-a.json",
+      "bytes": 17258,
+      "sha256": "64a83370063b380cda6bb0e9043748bec8bdf80456419ff9aa5048e173d53cf3",
+      "blob": "2fd6105db3469a6232b325dc28d068a26e107bd1"
+    },
+    {
+      "path": "owned-children/ingress-observer-7.public.json",
+      "bytes": 743,
+      "sha256": "bf722ab064c901f71cf6ff1acbb517f98835831c766da867f946c4a72ebac0e3",
+      "blob": "78007db7eb46c4220c894a9596247d5c890912bf",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-7.public.json",
+      "source_version": "66306:28096730:743:1793833635650089640:1793833635650089640"
+    },
+    {
+      "path": "owned-children/ingress-observer-7-list.public.json",
+      "bytes": 706,
+      "sha256": "b472214862733008b1bdc9f4c6a96606aeac1a4558ea91a10387403b08513571",
+      "blob": "657f91d6f960355e328193079f5a135631d325a6",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-7-list.public.json",
+      "source_version": "66306:28096727:706:1793833635635435115:1793833635635435115"
+    },
+    {
+      "path": "owned-children/ingress-observer-6.public.json",
+      "bytes": 745,
+      "sha256": "5e950de5f8ca7403a2528006bec6244af50310aeb564f0299a76d875e7cce690",
+      "blob": "09060dececda65b94a5a708a3270e176a2496c94",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-6.public.json",
+      "source_version": "66306:28096724:745:1793833635621482342:1793833635621482342"
+    },
+    {
+      "path": "owned-children/ingress-observer-6-list.public.json",
+      "bytes": 708,
+      "sha256": "d7e26a9847c8f08eddeb929a0e4906dc1d29c1eaeb5999aec98cea2fdc839406",
+      "blob": "a81edc0be637538f219c5b74ca09980328730598",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-6-list.public.json",
+      "source_version": "66306:28096721:708:1793833635606228006:1793833635606228006"
+    },
+    {
+      "path": "owned-children/ingress-observer-5.public.json",
+      "bytes": 742,
+      "sha256": "c9cfdb70d2a44851d4a33a6753ff9ab3e7062f996f60bfe01d57e44f253b7bdd",
+      "blob": "3fff88a92202c6592f8f8d2586063de2e73c7331",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-5.public.json",
+      "source_version": "66306:28096718:742:1793833635592787730:1793833635592787730"
+    },
+    {
+      "path": "owned-children/ingress-observer-5-list.public.json",
+      "bytes": 705,
+      "sha256": "5a418db130e72c585eabc5ee754523fd15b58b0156ebe614ea7b7e4a4db0a38f",
+      "blob": "78d86054a1833038bf6b8fa1ea3a4ed549f6bb52",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-5-list.public.json",
+      "source_version": "66306:28096715:705:1793833635578175424:1793833635578175424"
+    },
+    {
+      "path": "owned-children/ingress-observer-4.public.json",
+      "bytes": 734,
+      "sha256": "c01c4cb54fd6f500ce5dd0e1fd3f2fd8b17b2d4ac329628620fdc0b7306ced01",
+      "blob": "f81492f30b68c5ca866f96ed7aed49fe242fdf5a",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-4.public.json",
+      "source_version": "66306:28096712:734:1793833635562272425:1793833635562272425"
+    },
+    {
+      "path": "owned-children/ingress-observer-4-list.public.json",
+      "bytes": 698,
+      "sha256": "eba470321aca3314778d21809768ec726572c293c7366e2bce4774acf6a8e47f",
+      "blob": "0c4aec73bf24c1ff5838c9857e186de938df4fc9",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-4-list.public.json",
+      "source_version": "66306:28096709:698:1793833635547097170:1793833635547097170"
+    },
+    {
+      "path": "owned-children/ingress-observer-3.public.json",
+      "bytes": 760,
+      "sha256": "8f85469af294badb71755c177fe6d5cfd632c1139d5ac41ff350871bf1e31ffa",
+      "blob": "1fef6b60be32783e3a4b66bbea86b3a64fc38b7b",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-3.public.json",
+      "source_version": "66306:28096706:760:1793833635530627819:1793833635530627819"
+    },
+    {
+      "path": "owned-children/ingress-observer-3-list.public.json",
+      "bytes": 725,
+      "sha256": "119a494c984c1026555564e52f6c983b79f205c66fefb8f435b9c8530cda490d",
+      "blob": "791c948ee2352bf8cfc802b3a2ca840e828a30a8",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-3-list.public.json",
+      "source_version": "66306:28096703:725:1793833635453507321:1793833635453507321"
+    },
+    {
+      "path": "owned-children/ingress-observer-2.public.json",
+      "bytes": 764,
+      "sha256": "5eae6ddd74e352c6a1f8c24c32eca873e8b6f80d3b1a4e699b4abf5c496f3a6f",
+      "blob": "fe64cf7e6df6358bce7af1f711c4f131cdd2bf24",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-2.public.json",
+      "source_version": "66306:28096700:764:1793833635436781213:1793833635436781213"
+    },
+    {
+      "path": "owned-children/ingress-observer-2-list.public.json",
+      "bytes": 728,
+      "sha256": "c4c3048089c84b1e940503b3daaf7913c74e1a9c8836ffc94e2f66a11313516b",
+      "blob": "7ae3427a8901489f8cae25e91372c99acf40c822",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-2-list.public.json",
+      "source_version": "66306:28096697:728:1793833635359624878:1793833635359624878"
+    },
+    {
+      "path": "owned-children/ingress-observer-1.public.json",
+      "bytes": 755,
+      "sha256": "3ea48193511c4b1e52adc8f8d6c0788a97ad349d65ed5cfa93880fd5d09f763a",
+      "blob": "8db6956ce158af532a295ed3bf31030cf6794fb2",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-1.public.json",
+      "source_version": "66306:28096694:755:1793833635342000781:1793833635342000781"
+    },
+    {
+      "path": "owned-children/ingress-observer-1-list.public.json",
+      "bytes": 719,
+      "sha256": "aedd61415be0200a4e3b70e5ea76d60ebc2058a68ca8242aba75255dad4f8d37",
+      "blob": "e1c47d14fe156349bbad89b8fceb1cdbb2586ebb",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-1-list.public.json",
+      "source_version": "66306:28096691:719:1793833635263207435:1793833635263207435"
+    }
+  ]
+}

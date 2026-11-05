@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.mac-source-increment2-narrow-fixes.v1",
+  "source_only": true,
+  "previous_tree": "3bce42e15082fdb126746170d268f98cd4fc0b23",
+  "files": [
+    {
+      "path": "candidate/mac_native_process_observer_r1.py",
+      "mode": "100644",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+      "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+    },
+    {
+      "path": "candidate/mac_current_phase_owner_r2.py",
+      "mode": "100644",
+      "bytes": 24684,
+      "sha256": "e64b1436e7241b4ae72ed0f1e5e340b3045895051a4c79f91ad044710dda617e",
+      "git_blob": "8d66bd60bfa3dea8d7b0053a0e0796b7d6d0957b"
+    },
+    {
+      "path": "draft/mac_guarded_current_capture_r1.py",
+      "mode": "100644",
+      "bytes": 21178,
+      "sha256": "faf10984269fd350b78d11685e46b079171ff89ce8de8572d110a55e1c05aed2",
+      "git_blob": "064d9ad74743139aa977807d7b4e39dab58a1c9d"
+    },
+    {
+      "path": "diffs/observer-close-ledger.diff",
+      "mode": "100644",
+      "bytes": 4947,
+      "sha256": "ce0d489e042420868e9afdd4ba13a4144a06722d147f06a3c7d31d240ae2e5a2",
+      "git_blob": "38091b2d46ed869aedf5f14538b919ee712977c6"
+    },
+    {
+      "path": "diffs/phase-observer-close-result.diff",
+      "mode": "100644",
+      "bytes": 881,
+      "sha256": "a8865be827fe4703d6a29ebf55a4171c00e6f60dcd7ef59e1cb93ea6669a92f3",
+      "git_blob": "558e8f9911f499156e9bea925f1eba8156c9891c"
+    },
+    {
+      "path": "diffs/capture-final-deadline.diff",
+      "mode": "100644",
+      "bytes": 648,
+      "sha256": "43d85d395f98a9f44d068fb57e0edfe260fb8477e57127bc6661ca496c1593c4",
+      "git_blob": "f02a8b0ab2c5733c192967fbc7f65d601b224b2a"
+    },
+    {
+      "path": "diffs/phase-typed-report.diff",
+      "mode": "100644",
+      "bytes": 2766,
+      "sha256": "8d82b9746f9ad768da8a04b336cfd0300fa1e2bad29b95870c345569735bb3c7",
+      "git_blob": "0f4d511e2ba7a0d6737b7ad6ae051f8c1b2571d6"
+    }
+  ]
+}

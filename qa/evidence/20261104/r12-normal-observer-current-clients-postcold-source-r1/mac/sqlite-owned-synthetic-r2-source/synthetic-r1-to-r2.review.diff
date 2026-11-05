@@ -1,0 +1,62 @@
+diff --git a/mac_capture_sqlite_synthetic_r2.py b/mac_capture_sqlite_synthetic_r2.py
+--- a/mac_capture_sqlite_synthetic_r2.py
++++ b/mac_capture_sqlite_synthetic_r2.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Owned-only Mac SQLite prerequisite for guarded current capture.
++"""Owned-only Mac SQLite prerequisite, reviewed second source generation.
+ 
+ This is a separate one-shot component, not production credential capture.
+ Its actual final stdout plus authoritative exit zero is the proof input.
+@@ -12,8 +12,9 @@
+ 
+ START=time.monotonic();UNTIL=START+45.0
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
+-QA=ROOT/'qa';OWNED=ROOT/'capture-sqlite-synthetic-r1'
+-NAMES=('mac_capture_sqlite_synthetic_r1.py','mac_guarded_current_capture_r3.py',
++QA=ROOT/'qa';OWNED=ROOT/'capture-sqlite-synthetic-r1/reviewed-attempt-r2'
++NAMES=('mac_capture_sqlite_synthetic_r2.py','mac_capture_sqlite_synthetic_r1.py',
++       'mac_guarded_current_capture_r3.py',
+        'mac_t5_volume_guard_r1.py','mac_owned_unreaped_r1.py','mac_owned_commands_r1.py')
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -70,7 +71,8 @@
+     report={'schema':'heptabao.mac-immutable-capture-synthetic.r1','ok':False,
+         'ownedDatabaseOnly':True,'productionOpened':False,
+         'wholeDatabaseBackupQualified':False,'crossAgentAtomicSnapshotClaimed':False,
+-        'newOriginalSyntheticSeconds':45,'cases':[],'outcomeUnknown':False}
++        'newOriginalSyntheticSeconds':45,'cases':[],'outcomeUnknown':False,
++        'controllerGeneration':'r2','originalFailedCasePathsUsedAsInputs':False}
+     guard=None;commands=None;setup_connections=[];input_sets=[];extra_fds=[]
+     cap=None;pins=None;complete=False
+     try:
+@@ -80,7 +82,7 @@
+         pins=json.loads(source_raw)
+         need(isinstance(pins,dict) and set(pins)==set(NAMES)
+              and all(isinstance(v,str) and len(v)==64 and all(c in '0123456789abcdef' for c in v)
+-                     for v in pins.values()),'exact_five_public_sources')
++                     for v in pins.values()),'exact_six_public_sources_including_preserved_r1')
+         for name,pin in pins.items():code_bytes(QA/name,pin)
+         sys.path.insert(0,str(QA))
+         from mac_t5_volume_guard_r1 import HeldT5
+@@ -216,7 +218,7 @@
+         report['oversizeRowRefused']=True
+ 
+         live,path=make_database('drift-before-query')
+-        inputs=input_set(live);inputs.database(path)
++        inputs=input_set(live);main=inputs.database(path)
+         with guard.parent(path) as (parent,name):
+             with critical():
+                 fd=os.open(name,os.O_WRONLY|os.O_APPEND|os.O_NOFOLLOW,dir_fd=parent)
+@@ -228,7 +230,10 @@
+                 with critical():
+                     opened['closeAttempted']=True;os.close(fd);opened['closed']=True
+         refusal=None
+-        try:capture.auth_rows(inputs,'main')
++        # Exercise the actual immutable-query admission on the already held
++        # main inode. Re-entering database() would first reject its previously
++        # recorded absent sidecars, never reaching this drift verification.
++        try:capture.immutable_query(inputs,main,lambda _db,_until: None)
+         except capture.CaptureRefused as error:refusal=str(error)
+         record('held_inode_drift_refused_before_connection',inputs,
+             refusal=='current_input_fd_name_or_metadata_changed' and not inputs.connections,refusalCode=refusal)

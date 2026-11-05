@@ -1,0 +1,1159 @@
+{
+  "schema": "heptabao.postrecovery-cold12.actual-boundary-assessment.r1",
+  "job_id": "1a1a9094b62-fc05-30ab",
+  "fixture_run_id": "e70cd7fda3c928604cd82e8c1a157502",
+  "scope": "Actual B r1 known preparation failure; public mutation metadata only",
+  "qualification": false,
+  "original_checks_observed": 83,
+  "original_checks_missing": 15,
+  "new_cold_checks_observed": 0,
+  "mutation_intents": 45,
+  "mutation_outcomes": 45,
+  "unknown_mutation_transport_outcomes": 0,
+  "automatic_retry": false,
+  "budget_histogram": {
+    "12": 1,
+    "15": 44
+  },
+  "http_status_histogram": {
+    "200": 37,
+    "204": 7,
+    "503": 1
+  },
+  "pairs": [
+    {
+      "sequence": 1,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "sys/init",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 167.424,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 2,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 120.699,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 3,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "sys/mounts/secret",
+      "budget_seconds": 12,
+      "http_status": 204,
+      "elapsed_ms": 52.202,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 4,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "secret/config",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 49.108,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 5,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 34.7,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 6,
+      "node_id": 1,
+      "stage": "fresh_standalone_v5_seed",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 36.1,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 7,
+      "node_id": 1,
+      "stage": "native_ha_initial_start",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 346.835,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 8,
+      "node_id": 2,
+      "stage": "native_ha_initial_start",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 46.214,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 9,
+      "node_id": 3,
+      "stage": "native_ha_initial_start",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 49.897,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 10,
+      "node_id": 1,
+      "stage": "actual_native_ha_activation",
+      "method": "POST",
+      "route": "sys/storage/native-v6/activate",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 731.488,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 11,
+      "node_id": 1,
+      "stage": "actual_native_ha_activation",
+      "method": "POST",
+      "route": "secret/config",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 181.635,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 12,
+      "node_id": 1,
+      "stage": "actual_native_ha_activation",
+      "method": "DELETE",
+      "route": "secret/metadata/native-ha-e70cd7fda3c928604cd82e8c1a157502/never-created",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 183.841,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 13,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1423.331,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 14,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1303.707,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 15,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1618.417,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 16,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1599.265,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 17,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1769.266,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 18,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1964.169,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 19,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2185.846,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 20,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2164.464,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 21,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2642.142,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 22,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2320.938,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 23,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2415.728,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 24,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2616.146,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 25,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2683.805,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 26,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2828.014,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 27,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2895.225,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 28,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 3092.925,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 29,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 3249.9,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 30,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/delete/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 2835.951,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 31,
+      "node_id": 1,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/destroy/native-ha-e70cd7fda3c928604cd82e8c1a157502/history",
+      "budget_seconds": 15,
+      "http_status": 204,
+      "elapsed_ms": 2834.89,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 32,
+      "node_id": 2,
+      "stage": "seventeen_actual_native_history_writes",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/standby-forwarded",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 5985.542,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 33,
+      "node_id": 3,
+      "stage": "actual_native_leader_sigkill",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/after-failover",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1411.14,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 34,
+      "node_id": 1,
+      "stage": "actual_native_leader_sigkill",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 2910.749,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 35,
+      "node_id": 3,
+      "stage": "actual_native_quorum_loss",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/quorum-denied",
+      "budget_seconds": 15,
+      "http_status": 503,
+      "elapsed_ms": 14006.643,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 36,
+      "node_id": 1,
+      "stage": "actual_native_quorum_loss",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 566.42,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 37,
+      "node_id": 2,
+      "stage": "actual_native_quorum_loss",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 251.885,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 38,
+      "node_id": 3,
+      "stage": "actual_native_quorum_loss",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/after-quorum-recovery",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1650.455,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 39,
+      "node_id": 1,
+      "stage": "all_three_persistent_cold_restart",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 578.059,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 40,
+      "node_id": 2,
+      "stage": "all_three_persistent_cold_restart",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 261.668,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 41,
+      "node_id": 3,
+      "stage": "all_three_persistent_cold_restart",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 497.676,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 42,
+      "node_id": 3,
+      "stage": "all_three_persistent_cold_restart",
+      "method": "POST",
+      "route": "secret/data/native-ha-e70cd7fda3c928604cd82e8c1a157502/after-all-cold-restart",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 1723.768,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 43,
+      "node_id": 1,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 562.687,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 44,
+      "node_id": 2,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 260.315,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    },
+    {
+      "sequence": 45,
+      "node_id": 3,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "http_status": 200,
+      "elapsed_ms": 438.61,
+      "transport_returned": true,
+      "unknown": false,
+      "attempts_allowed": 1
+    }
+  ],
+  "metadata_versions": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00001.intent.json",
+      "size": 442,
+      "sha256": "6edaac6453836fc268b0b1845385cb709a994a0d2f8810ad3240fddcedd685e1",
+      "version": "2050:538267:442:1793837363724524955:1793837363724524955"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00001.outcome.json",
+      "size": 426,
+      "sha256": "1cc83c0937651a16c15de6cdae4e2e23447a5add4ab12de143e41dc16435c854",
+      "version": "2050:538266:426:1793837364053101901:1793837364053101901"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00002.intent.json",
+      "size": 444,
+      "sha256": "42cdb51f3c1dd5694d0eb46b19977e545455c12a0956306c09ce33aa72cc4c68",
+      "version": "2050:538270:444:1793837364197179654:1793837364197179654"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00002.outcome.json",
+      "size": 426,
+      "sha256": "e9588bb5a662b8960799eb12be72f16e82686526e1febf98f133623d70a7314a",
+      "version": "2050:538271:426:1793837364320307962:1793837364320307962"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00003.intent.json",
+      "size": 451,
+      "sha256": "febf447a28e4009b79a1a3cb0da5bbdda863a44215f0eee55edb2cd26d584913",
+      "version": "2050:538274:451:1793837364432954299:1793837364432954299"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00003.outcome.json",
+      "size": 425,
+      "sha256": "0afc28266244822abca866907f84ff518daeb7928277b2724dadc9900fad874d",
+      "version": "2050:538275:425:1793837364522398664:1793837364522398664"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00004.intent.json",
+      "size": 446,
+      "sha256": "ab9f91eb1089ddc3a27feda83d9d669cd4e84e24736df38c07d94dfb714606a7",
+      "version": "2050:538278:446:1793837364653370320:1793837364653370320"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00004.outcome.json",
+      "size": 425,
+      "sha256": "3e1a9ede67de6683871ae08726a3cdb85b08be9c33df4e723bbcbc0277dd2dd4",
+      "version": "2050:538279:425:1793837364704475295:1793837364704475295"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00005.intent.json",
+      "size": 623,
+      "sha256": "25c60049f83153b851e95308f730fe465a23a372be0a5020e73a1d0c9fe087dd",
+      "version": "2050:538282:623:1793837364709192002:1793837364709192002"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00005.outcome.json",
+      "size": 449,
+      "sha256": "84eb1a61334e1e54b2800d1dd9c305e4bbf3c5d7aae8f524c72371167879359d",
+      "version": "2050:538283:449:1793837364745948954:1793837364745948954"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00006.intent.json",
+      "size": 624,
+      "sha256": "3dfb7d1bd923aba21d672b59621b3343df9df87c25f4b10bfbf0412b737c0345",
+      "version": "2050:538288:624:1793837364751780660:1793837364751780660"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00006.outcome.json",
+      "size": 449,
+      "sha256": "b025449988c48d1b738b1c19ad07b6fa5f99f50cd876fe2bdf1ed58996b40de1",
+      "version": "2050:538290:449:1793837364790022301:1793837364790022301"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00007.intent.json",
+      "size": 443,
+      "sha256": "c4e5198f33fc293847d9872217d96ebc7643331e7c9c20940bec391d20869bcc",
+      "version": "2050:538664:443:1793837382174631107:1793837382174631107"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00007.outcome.json",
+      "size": 426,
+      "sha256": "e9e099e52ba1da5f06ec0f90640a5abb9b1b1a852cf8fc7741afc26845810bcb",
+      "version": "2050:538695:426:1793837382523922614:1793837382523922614"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00008.intent.json",
+      "size": 442,
+      "sha256": "f50bf070d1e720169413321423b312d637e151d73747501faeb738727267f85e",
+      "version": "2050:538700:442:1793837382585410349:1793837382585410349"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00008.outcome.json",
+      "size": 425,
+      "sha256": "63027c88439158788f928b3fd9b4ebc88197daf999d21b7bef4a85c8efd10a7b",
+      "version": "2050:538708:425:1793837382633664476:1793837382633664476"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00009.intent.json",
+      "size": 443,
+      "sha256": "66b9333055d3bda614b2de59be4c7aee1eab784f760c169c5ce8a3d10da0081a",
+      "version": "2050:538743:443:1793837382651593302:1793837382651593302"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00009.outcome.json",
+      "size": 425,
+      "sha256": "ba62597f402ae13d96fe65039fffcaf31137d8aae048e427c66f7f56271942ac",
+      "version": "2050:538752:425:1793837382704810618:1793837382704810618"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00010.intent.json",
+      "size": 467,
+      "sha256": "088cf5752b2ecaf43b46080926fb36bc40792fd3b5e674b0119e4a55918126d2",
+      "version": "2050:539852:467:1793837391672492186:1793837391672492186"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00010.outcome.json",
+      "size": 427,
+      "sha256": "89ccf5fefbfcf6450d48cfc1fb4f840c0723107436a57171bfa83fcfc40e9c78",
+      "version": "2050:539854:427:1793837392406143397:1793837392406143397"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00011.intent.json",
+      "size": 451,
+      "sha256": "a94c23c4e018940ba17f7d62f4477a9c6c3b2683d7c16ba5289ca9ec0ba54353",
+      "version": "2050:539925:451:1793837395112281491:1793837395112281491"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00011.outcome.json",
+      "size": 427,
+      "sha256": "d7b94b81b38de58d1937f940b7db7cb94981a9fa6f47fe9f5096e0fd3eab7d7c",
+      "version": "2050:539927:427:1793837395308204822:1793837395308204822"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00012.intent.json",
+      "size": 512,
+      "sha256": "11799221313d0cde27e539d6efc93fd4926546983969a8c5817f59dc8a9ebe27",
+      "version": "2050:540012:512:1793837395491428827:1793837395491428827"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00012.outcome.json",
+      "size": 427,
+      "sha256": "fc2e5a1900703dbfa6ad3581acdfd892a8beac203a49e31c631dfcca88de6569",
+      "version": "2050:539933:427:1793837395689421082:1793837395689421082"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00013.intent.json",
+      "size": 639,
+      "sha256": "5692898e853b83d0c717bc607ff026863850eb40017f3fd44430ce82e7171143",
+      "version": "2050:540019:639:1793837395964647821:1793837395964647821"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00013.outcome.json",
+      "size": 454,
+      "sha256": "68647956f0caf22c7cb0e96b26e41168e6dc4400be84397cfc88cec159cbbbed",
+      "version": "2050:540020:454:1793837397408069008:1793837397408069008"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00014.intent.json",
+      "size": 639,
+      "sha256": "f28ae09ae417dd625f6ae41ac1f482ab45009339666ef18d4ab472f1bc03efd2",
+      "version": "2050:540040:639:1793837397881478363:1793837397881478363"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00014.outcome.json",
+      "size": 454,
+      "sha256": "337b4fff61003253fcb7c002da24289f09bfdf14a94cbdc347b9e8f445744fdf",
+      "version": "2050:540084:454:1793837399208928196:1793837399208928196"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00015.intent.json",
+      "size": 639,
+      "sha256": "49ade14d3608a4edb148322fac2b3a4544c833e15bd71a61ffe9b87a49f81697",
+      "version": "2050:540123:639:1793837399590940876:1793837399590940876"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00015.outcome.json",
+      "size": 454,
+      "sha256": "cefa99da23d53a79cd96843ab9798ae1b4b364234af8b5910e38d76e909af0c5",
+      "version": "2050:540125:454:1793837401251973760:1793837401251973760"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00016.intent.json",
+      "size": 638,
+      "sha256": "29819d77662afd588b10609c87b8e508b786a032d6784d5a9a6277d05da608e9",
+      "version": "2050:540129:638:1793837401610163868:1793837401610163868"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00016.outcome.json",
+      "size": 454,
+      "sha256": "18c96448a96ae840e4e3ea9e68d5afe86086e884be9ef145d2432bfa2c38726d",
+      "version": "2050:540131:454:1793837403211684056:1793837403211684056"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00017.intent.json",
+      "size": 638,
+      "sha256": "0c3f732ff3218c77c3d94cf052a4cf725ec6309a2136517771280c94cb29c335",
+      "version": "2050:540139:638:1793837403611754868:1793837403611754868"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00017.outcome.json",
+      "size": 454,
+      "sha256": "cbe521fc4a3ea712177d47b97e4867155a177b4fa13b8655f388dca7bd7ad48b",
+      "version": "2050:540223:454:1793837405389217253:1793837405389217253"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00018.intent.json",
+      "size": 638,
+      "sha256": "ca0cdd50e0fa5abb431e23078d60ea6142eade1eb41d3e87b529ac9b4aa283ee",
+      "version": "2050:540149:638:1793837405803277160:1793837405803277160"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00018.outcome.json",
+      "size": 454,
+      "sha256": "21f6dcf5ac0918a02d018aeb13b92aca565bccf4425cc1ea62e415c05241f4d9",
+      "version": "2050:540187:454:1793837407771611264:1793837407771611264"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00019.intent.json",
+      "size": 639,
+      "sha256": "6c1a921d5df1db694ec0380b9ed9a2ff91aef438e08440e029b2689f3336cee4",
+      "version": "2050:540370:639:1793837408190570432:1793837408190570432"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00019.outcome.json",
+      "size": 454,
+      "sha256": "b634efdefc499c71697d47350d77a2a97ee66520b9f6c7afa4d9bfb01d44cced",
+      "version": "2050:540371:454:1793837410381461091:1793837410381461091"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00020.intent.json",
+      "size": 639,
+      "sha256": "a2aaf519dacbeaf389f2d8059c7109a3a74ba3187de0d2476db6e43276a0466a",
+      "version": "2050:540378:639:1793837410850516950:1793837410850516950"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00020.outcome.json",
+      "size": 455,
+      "sha256": "ba891fac85246d3dea9ae25c66de201b12b37a4a7599e1920129583b7af5935e",
+      "version": "2050:540375:455:1793837413021120806:1793837413021120806"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00021.intent.json",
+      "size": 641,
+      "sha256": "5e1b6c7aa06cf5cdd9c80184532b7a58a4d03eb6d04007190642bc0792e0d41a",
+      "version": "2050:540385:641:1793837413518960925:1793837413518960925"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00021.outcome.json",
+      "size": 455,
+      "sha256": "0871b01cb4bec0de417ac0f029e21f6340348574efb2ab9f340013106eefaf99",
+      "version": "2050:540396:455:1793837416165947465:1793837416165947465"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00022.intent.json",
+      "size": 640,
+      "sha256": "b888a32cdef283eef1db6fea7b0958121ce7e89e8a29cf258ba8c609138271c8",
+      "version": "2050:540400:640:1793837416658519690:1793837416658519690"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00022.outcome.json",
+      "size": 455,
+      "sha256": "2761a624c0173de1744b70b1cb5d364b5eda8becc86d70b536b2c7875e855e18",
+      "version": "2050:540417:455:1793837418984261529:1793837418984261529"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00023.intent.json",
+      "size": 641,
+      "sha256": "a6905232e1fd1eafaa37f58ef7b48396fc51b250fda1d01c820238378ffcc786",
+      "version": "2050:540460:641:1793837419466021699:1793837419466021699"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00023.outcome.json",
+      "size": 455,
+      "sha256": "7b6e8bed43404d81e41a12ff7b7779891e174b760f2556cdc01c1744ff3304e1",
+      "version": "2050:540473:455:1793837421886355093:1793837421886355093"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00024.intent.json",
+      "size": 641,
+      "sha256": "9645f97160654d70e5cb1f749ae66a8905b9be1e7a131edbc655608e68564ede",
+      "version": "2050:540461:641:1793837422369920193:1793837422369920193"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00024.outcome.json",
+      "size": 455,
+      "sha256": "5e234617b542b418eff87a6788e749b33e85ac93a4919cc2e80ae2cc37550b8f",
+      "version": "2050:540468:455:1793837424991491152:1793837424991491152"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00025.intent.json",
+      "size": 641,
+      "sha256": "112549ffae12b4c7b04f3a04096056b7f34f0794955ed775854984c5898a8500",
+      "version": "2050:540495:641:1793837425475556304:1793837425475556304"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00025.outcome.json",
+      "size": 455,
+      "sha256": "861e8e108ed613459a5fb04372cb87bf7c71e654bca54b987fe4ede7c1d92173",
+      "version": "2050:540502:455:1793837428162538100:1793837428162538100"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00026.intent.json",
+      "size": 641,
+      "sha256": "f9f7b0131ea67128a1ac7b780f64a57833a5a693e284d64038b4cd70c1281686",
+      "version": "2050:540572:641:1793837428662495933:1793837428662495933"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00026.outcome.json",
+      "size": 455,
+      "sha256": "54959313663b36f668306726081b8f143a02a3ccfca61bc9ed06d93a12988a38",
+      "version": "2050:540573:455:1793837431493117692:1793837431493117692"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00027.intent.json",
+      "size": 641,
+      "sha256": "bafdad78dd90c106acce67015716b159e9eb096edf8f57fa3cd2ec9c7962e898",
+      "version": "2050:540616:641:1793837432016193314:1793837432016193314"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00027.outcome.json",
+      "size": 455,
+      "sha256": "5ac78143d4aefc026940d335c892fb4250bfa94a344d6dd91f718610a713695d",
+      "version": "2050:540650:455:1793837434918637783:1793837434918637783"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00028.intent.json",
+      "size": 641,
+      "sha256": "f199506d6102e76ac3d5eb79d3ce007db60e96be14d85d861f9bc66346008ecd",
+      "version": "2050:540705:641:1793837435446425446:1793837435446425446"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00028.outcome.json",
+      "size": 455,
+      "sha256": "4653edd831c4da3dff319b7803efe87a9e0eb39ec59fc858717e9500b036d2d6",
+      "version": "2050:540747:455:1793837438553684901:1793837438553684901"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00029.intent.json",
+      "size": 641,
+      "sha256": "0c9140aa242505f4bdce572bfe3253459e5508145808666050a7ec4b13290420",
+      "version": "2050:540774:641:1793837439237835539:1793837439237835539"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00029.outcome.json",
+      "size": 453,
+      "sha256": "2909d29ba4aa6fa48d9cdec1a8ffaa3c8b6ccf0a8824ec4b84d9f46d41506ec2",
+      "version": "2050:540794:453:1793837442943231144:1793837442943231144"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00030.intent.json",
+      "size": 512,
+      "sha256": "25cd3c0de4b60fa1fc87c08c48f18392ebafc5aa320e72dc2f1dc5e955ddafa9",
+      "version": "2050:540880:512:1793837452387381145:1793837452387381145"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00030.outcome.json",
+      "size": 428,
+      "sha256": "500f1f04363815a97234c6188f4515bf129129ece21f228e155611a3fc4d63b5",
+      "version": "2050:541243:428:1793837455225461111:1793837455225461111"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00031.intent.json",
+      "size": 513,
+      "sha256": "faae59a9e06a140965ab7777e3e42d0b9692072089d41515843db3b494160e47",
+      "version": "2050:541268:513:1793837455266155260:1793837455266155260"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00031.outcome.json",
+      "size": 427,
+      "sha256": "e5df3d96d0139bf9fa73a6951afdcfa46b0dfee686f1fcb301ff185d8f3b4ec1",
+      "version": "2050:541286:427:1793837458104256952:1793837458104256952"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00032.intent.json",
+      "size": 648,
+      "sha256": "9be3eb7de3d0b98d3038278f01abbdcab63f3639537ba66b79005b09e123b962",
+      "version": "2050:541939:648:1793837467333908312:1793837467333908312"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00032.outcome.json",
+      "size": 454,
+      "sha256": "d9b07730f75ec99ee3676bbd8bde464c5f3c4aefb31c7a9d0cd842be4eeb4354",
+      "version": "2050:541941:454:1793837473386424155:1793837473386424155"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00033.intent.json",
+      "size": 635,
+      "sha256": "4a9267aa9c42480e20272fa1d3982e4c441f344693907a39d795bb437e61b8b3",
+      "version": "2050:541951:635:1793837491725188946:1793837491725188946"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00033.outcome.json",
+      "size": 453,
+      "sha256": "1c06f6bb8e293b115167844df3a176a4633213040700127fc02ed625ab852b8c",
+      "version": "2050:541952:453:1793837493166182497:1793837493166182497"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00034.intent.json",
+      "size": 449,
+      "sha256": "50707c0f3498267b9ca473f138471598ac4eb08e1bb35af04bea4922a1d73038",
+      "version": "2050:541962:449:1793837496661878828:1793837496661878828"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00034.outcome.json",
+      "size": 428,
+      "sha256": "1e27d402ee7e4110faf7b2e2e570abfe491270aad45dbcdab34ae6b4edbe5597",
+      "version": "2050:541963:428:1793837499625793288:1793837499625793288"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00035.intent.json",
+      "size": 632,
+      "sha256": "234f7e604b77591b93d5efd5511ea2a5a0b916db1388fd38a7b739cd1165559d",
+      "version": "2050:541973:632:1793837507707145239:1793837507707145239"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00035.outcome.json",
+      "size": 429,
+      "sha256": "bc068060aa28f290348eb3eaeda48aaac5b31ef9029c6b9d16233d2f207e7f8d",
+      "version": "2050:541974:429:1793837521746113434:1793837521746113434"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00036.intent.json",
+      "size": 446,
+      "sha256": "5caf9843f28de6092346d2d6267d0afaed230b14a1005d247dc7433743297b22",
+      "version": "2050:541985:446:1793837531721059605:1793837531721059605"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00036.outcome.json",
+      "size": 426,
+      "sha256": "9e8f6918e4e15d140ac3095f631bf482a0a65e06050cd5b1d898380a23bad015",
+      "version": "2050:541986:426:1793837532292944189:1793837532292944189"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00037.intent.json",
+      "size": 446,
+      "sha256": "71484266b810070a5cb51c82dc430bb5ee0ec4f5de90e9ca611af4a94862a6a2",
+      "version": "2050:541988:446:1793837532373455882:1793837532373455882"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00037.outcome.json",
+      "size": 427,
+      "sha256": "294495e7a684596c6d322e129f131ea50c13bd826b83234aaae3d18889db4c7f",
+      "version": "2050:541989:427:1793837532665777663:1793837532665777663"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00038.intent.json",
+      "size": 639,
+      "sha256": "e7564a3e4500666ec3fb12926491ea3debf63d3c0bf760c823e29ac4aba046d6",
+      "version": "2050:541993:639:1793837537655286522:1793837537655286522"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00038.outcome.json",
+      "size": 454,
+      "sha256": "f2f951f444259dd1d6e7fd9f3718aef5f831c9b74a5773b2602c3c668b31ec80",
+      "version": "2050:541994:454:1793837539391398119:1793837539391398119"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00039.intent.json",
+      "size": 453,
+      "sha256": "11e6af9e2c9c04964ff900d0a0b842da0cebe2619a663b8accf118133dcddcae",
+      "version": "2050:542011:453:1793837556433621482:1793837556433621482"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00039.outcome.json",
+      "size": 427,
+      "sha256": "5755a0bd92ce6fe0e89ef46db077812a4287fdae2852f11890835cb815e7f1b0",
+      "version": "2050:542012:427:1793837557014396091:1793837557014396091"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00040.intent.json",
+      "size": 454,
+      "sha256": "175a6d3411c2257ffab9abc0b624bfb0b133a6dd7cfd8f9d428b86ecf72940f1",
+      "version": "2050:542014:454:1793837557035027958:1793837557035027958"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00040.outcome.json",
+      "size": 427,
+      "sha256": "8f825dfeceaa27bb2542cb15c7b1cb463fdfb4eeef9904f3df0bcada8b2de69a",
+      "version": "2050:542015:427:1793837557300450102:1793837557300450102"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00041.intent.json",
+      "size": 454,
+      "sha256": "7e8a39ed6e3315cee7a1f044789601d8b7d55263cdb4adc9126cf2f27c7192ae",
+      "version": "2050:542017:454:1793837557326590268:1793837557326590268"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00041.outcome.json",
+      "size": 427,
+      "sha256": "35395684d219238bc2922746af7ddd6ee7d39f8588b2d278220014e4bc81fe3e",
+      "version": "2050:542018:427:1793837557826660564:1793837557826660564"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00042.intent.json",
+      "size": 649,
+      "sha256": "41efcdf82dad7bc6571388bbf19779fbcd52589a670d015e3207390a43d2904f",
+      "version": "2050:542023:649:1793837567616819443:1793837567616819443"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00042.outcome.json",
+      "size": 454,
+      "sha256": "25501ca3c053abd3a7e9b42cb53490d985e408f4c17180bb78a718910100d182",
+      "version": "2050:542024:454:1793837569347490777:1793837569347490777"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00043.intent.json",
+      "size": 457,
+      "sha256": "872813d6400ac21043ba6d622447bddddd79bb52a9703cbe584ee5599b803d9c",
+      "version": "2050:542037:457:1793837582770324637:1793837582770324637"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00043.outcome.json",
+      "size": 427,
+      "sha256": "8f484e5d54cea3ed1a83c0749b4a6196f0bae32907001cb386776a6a2c2eb157",
+      "version": "2050:542038:427:1793837583335290008:1793837583335290008"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00044.intent.json",
+      "size": 457,
+      "sha256": "82618bb1a69737f079a425a7be713fb24876e538135aefb99ca88e5bc0826cbb",
+      "version": "2050:542042:457:1793837585047225609:1793837585047225609"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00044.outcome.json",
+      "size": 427,
+      "sha256": "5b90a09fa296f29ba2f41779bdcae2ab7cfad7f3f6fa201b09a332a5fabaf478",
+      "version": "2050:542045:427:1793837585310062449:1793837585310062449"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00045.intent.json",
+      "size": 457,
+      "sha256": "cace2c3ba5b6fa620046f729f40b66d31c729a090c35770ffe41046002878a19",
+      "version": "2050:542047:457:1793837587185958913:1793837587185958913"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00045.outcome.json",
+      "size": 426,
+      "sha256": "2fab8dec8f2dc7ca1820e4add7393eda19eede10a5f54d2788a8adfe34b3984f",
+      "version": "2050:542048:426:1793837587626885545:1793837587626885545"
+    }
+  ],
+  "limitations": [
+    "Transport completion is not inferred durable storage commit. The original outcome labels are retained.",
+    "The final health GET inside the 60-second role preparation has response_observed=false in summary; this 45-pair ledger concerns mutating operations and is not a claim that every read-only GET completed.",
+    "Only fixed mutation-NNNNN.intent/outcome.json public projections were read. credentials.json and request/response secret bodies were not read.",
+    "Reads occurred after the authoritative terminal and are pinned individually by immutable version; no cross-file atomic snapshot is claimed.",
+    "The original B failure and all earlier qualification/failure receipts remain unchanged."
+  ]
+}

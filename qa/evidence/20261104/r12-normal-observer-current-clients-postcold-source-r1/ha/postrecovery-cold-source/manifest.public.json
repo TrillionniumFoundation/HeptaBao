@@ -1,0 +1,255 @@
+{
+  "schema": "heptabao.postcold-fresh-fixture-source-draft1.v1",
+  "status": "SOURCE_DRAFT_NOT_RUNTIME_AUTHORIZED",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "existing_R3_qualification_unchanged": true,
+  "original_checks": 98,
+  "extra_checks": 12,
+  "host_runtime_submitted": false,
+  "base_provenance": {
+    "canonical_four_QA": "Exact495033 files; original foreground blob e32a89555dd5f4952eb2cdb3dc8550574f511039.",
+    "R3": "Exact source tree23f7381a96f85e219f7223b2dba48ce390b141ef; actual PASS coreaa4ab5c3a04ed3c9e35eaebfe4219a22fd584a5f."
+  },
+  "differences": [
+    {
+      "base": "base/launch_normal_r10_pocket_direct98_r3.py",
+      "candidate": "candidate/launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "diff": "diffs/candidate__launch_normal_r10_pocket_postrecovery_cold_r1.py.diff",
+      "hunks": 11,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/native_v6_pocket_source_direct98_r10_r3.py",
+      "candidate": "candidate/native_v6_pocket_source_postrecovery_cold_r10_r1.py",
+      "diff": "diffs/candidate__native_v6_pocket_source_postrecovery_cold_r10_r1.py.diff",
+      "hunks": 9,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/read_stopped_direction_frontier_r3.py",
+      "candidate": "candidate/read_stopped_postrecovery_frontier_r1.py",
+      "diff": "diffs/candidate__read_stopped_postrecovery_frontier_r1.py.diff",
+      "hunks": 2,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/deadline_qa/ha_multihost_live.py",
+      "candidate": "candidate/deadline_qa/ha_multihost_live.py",
+      "diff": "diffs/candidate__deadline_qa__ha_multihost_live.py.diff",
+      "hunks": 5,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/deadline_qa/native_v6_ha_multihost_live.py",
+      "candidate": "candidate/deadline_qa/native_v6_ha_multihost_live.py",
+      "diff": "diffs/candidate__deadline_qa__native_v6_ha_multihost_live.py.diff",
+      "hunks": 10,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/deadline_qa/native_v6_ha_direct_lan_live.py",
+      "candidate": "candidate/deadline_qa/native_v6_ha_direct_lan_live.py",
+      "diff": "diffs/candidate__deadline_qa__native_v6_ha_direct_lan_live.py.diff",
+      "hunks": 3,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/deadline_qa/native_ha_foreground_watchdog.py",
+      "candidate": "candidate/deadline_qa/native_ha_foreground_watchdog.py",
+      "diff": "diffs/candidate__deadline_qa__native_ha_foreground_watchdog.py.diff",
+      "hunks": 22,
+      "strict_apply_exact": true
+    },
+    {
+      "base": "base/inert_carrier_r3.py",
+      "candidate": "inert_carrier.py",
+      "diff": "diffs/inert_carrier.py.diff",
+      "hunks": 5,
+      "strict_apply_exact": true
+    }
+  ],
+  "files": [
+    {
+      "path": "candidate/launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "bytes": 22623,
+      "sha256": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
+      "blob": "306fce05dbad9fd4db6d75dcd3a8e79a83af2f1b"
+    },
+    {
+      "path": "candidate/native_v6_pocket_source_postrecovery_cold_r10_r1.py",
+      "bytes": 54668,
+      "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+      "blob": "33694332d042aa407e77206973fb28328652d720"
+    },
+    {
+      "path": "candidate/read_stopped_postrecovery_frontier_r1.py",
+      "bytes": 16274,
+      "sha256": "e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43",
+      "blob": "b503857b2747034aecd2172bcba8cfea649a9cb7"
+    },
+    {
+      "path": "candidate/read_stopped_recovered_cipher_r1.py",
+      "bytes": 13207,
+      "sha256": "096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956",
+      "blob": "29b333078d8bac67b2e6a59812fd38de3e9fcd59"
+    },
+    {
+      "path": "candidate/probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    },
+    {
+      "path": "candidate/deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+    },
+    {
+      "path": "candidate/deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    {
+      "path": "candidate/deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    {
+      "path": "candidate/deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b"
+    },
+    {
+      "path": "base/launch_normal_r10_pocket_direct98_r3.py",
+      "bytes": 17895,
+      "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+      "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+    },
+    {
+      "path": "base/native_v6_pocket_source_direct98_r10_r3.py",
+      "bytes": 25523,
+      "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+      "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+    },
+    {
+      "path": "base/read_stopped_direction_frontier_r3.py",
+      "bytes": 16250,
+      "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+      "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+    },
+    {
+      "path": "base/deadline_qa/ha_multihost_live.py",
+      "bytes": 77805,
+      "sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+      "blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0"
+    },
+    {
+      "path": "base/deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 75357,
+      "sha256": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+      "blob": "423cfe07588310fccf3846f4b291ad484639c58b"
+    },
+    {
+      "path": "base/deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1"
+    },
+    {
+      "path": "base/deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 37462,
+      "sha256": "74925449ae1141848c2dcbbe798ed0030fbbf9b1f599187c211d02ec03d34d61",
+      "blob": "e32a89555dd5f4952eb2cdb3dc8550574f511039"
+    },
+    {
+      "path": "inert_carrier.py",
+      "bytes": 6858,
+      "sha256": "cf47218bc182308c150f76c7c5212943196c035a7fa713f414cbcdffbf7c5db2",
+      "blob": "f809869a4a091209b466238b402416751dc290ba"
+    },
+    {
+      "path": "inert-inputs.private.json",
+      "bytes": 448380,
+      "sha256": "f9de338e5b56d21a6844f2d0b3aa0b1b11bf10ac5100857081f88de12f182c5e",
+      "blob": "c41f0dae73aa9ede831668bb64bac25275015d4f"
+    },
+    {
+      "path": "base/inert_carrier_r3.py",
+      "bytes": 5573,
+      "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+      "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+    },
+    {
+      "path": "proposed-dispatch.public.json",
+      "bytes": 4997,
+      "sha256": "3f846ed2369d798ad4bfbfc188878ddd65ad97c7538b9e9e7fea57402fe70851",
+      "blob": "f7b963be1cf06d0bad22bc26083fc55291686f82"
+    },
+    {
+      "path": "caller-graph.public.json",
+      "bytes": 6204,
+      "sha256": "2a510e6985efa875b5c3d4c51462ab42256cd4d7f6e51e4d203546aa9a2d15d5",
+      "blob": "c08c8b63aa748d424535b8a921cff2a3450b4a27"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 6648,
+      "sha256": "9b57ce818fa106a81e2c86610e2415e816a86cff8c8e1463fc7c78c1c17e2c77",
+      "blob": "9c7da32da7c660d1a352384305d7be7039917217"
+    },
+    {
+      "path": "diffs/candidate__launch_normal_r10_pocket_postrecovery_cold_r1.py.diff",
+      "bytes": 19917,
+      "sha256": "2a1ee37e17d8ee879200e69df73963056b21fa04d2b1b9090d5c0d440d91661d",
+      "blob": "2127998c3dfd5828d5575df5897ff3c13d6871c1"
+    },
+    {
+      "path": "diffs/candidate__native_v6_pocket_source_postrecovery_cold_r10_r1.py.diff",
+      "bytes": 35787,
+      "sha256": "aaed46d5e88a083eb5c65920c0888b0eba30dd1116ead309af997f3cc3b2876e",
+      "blob": "e953b789cc746f9d55f85f8311ee841f1b25c676"
+    },
+    {
+      "path": "diffs/candidate__read_stopped_postrecovery_frontier_r1.py.diff",
+      "bytes": 1227,
+      "sha256": "9734fe20ec7719d996359c3eb3f4b9116276a1197ca8d143d52105f7d84d02a5",
+      "blob": "3a0cbbe513c02ac17cfba7400f27f64d21a32720"
+    },
+    {
+      "path": "diffs/candidate__deadline_qa__ha_multihost_live.py.diff",
+      "bytes": 4519,
+      "sha256": "455fba076d13fc2f1daba15d2feeda74c34d86ed6c0bda5b0d1e0c52a9d963fa",
+      "blob": "93a54eb3748893c69384d70e4598c4a4022e1e82"
+    },
+    {
+      "path": "diffs/candidate__deadline_qa__native_v6_ha_multihost_live.py.diff",
+      "bytes": 20678,
+      "sha256": "1c1ad8227c5fd9b0e79bb0b3edbb51376d3d3bf9dacaba54aa8e8ecbf122dcc1",
+      "blob": "7ee7ed3f6d9ca27a56bb433f4cd401caf858b647"
+    },
+    {
+      "path": "diffs/candidate__deadline_qa__native_v6_ha_direct_lan_live.py.diff",
+      "bytes": 2732,
+      "sha256": "b5beba615ebc2f1fad3f10d1ca4cb061153209f5c2860ac432c3f55a02b3d31a",
+      "blob": "40ccd0dacdc0a5db35b68c79953b5ec38227cc9c"
+    },
+    {
+      "path": "diffs/candidate__deadline_qa__native_ha_foreground_watchdog.py.diff",
+      "bytes": 19065,
+      "sha256": "a27203199190a5ebabd283cb9520c14ad4723b34477adf3fb65e444b1da31d2c",
+      "blob": "d0ad061dd3efd320b669e94859dc145c23c88c67"
+    },
+    {
+      "path": "diffs/inert_carrier.py.diff",
+      "bytes": 5228,
+      "sha256": "696689dd8f1415e79c46285049bfab074c6e128884f04bbced34bf13fb194487",
+      "blob": "bac813c87bf4c477238df538a2ea6a7b2f98b038"
+    }
+  ],
+  "validation_status": "Source files and generated remote programs parsed/compile-only in cloud /tmp; consolidated pure component proof pending. No live claims."
+}

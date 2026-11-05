@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.root.mac-owned-sqlite-r2-source-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:22:27.932Z",
+  "source_tree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d",
+  "whole_packet_files": 16,
+  "whole_packet_bytes": 326000,
+  "merkle_trees": 3,
+  "controller_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+  "controller_sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+  "carrier_blob": "d6d9ffc04a93fd18e0dc639cd8271c4ae2359b3f",
+  "strict_diff_reconstruction": {
+    "controller_hunks": 6,
+    "carrier_hunks": 7,
+    "complete_after_files_exact": true
+  },
+  "exact_unchanged_production_capture_source_sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+  "old_five_files_all_nine_identity_strings_from_actual_inert_exact": true,
+  "six_payload_sources_and_raw_anchor_exact": true,
+  "case6_change": "Use the already held main descriptor with the actual immutable_query entrypoint; retain exact metadata-drift refusal and zero opened connections.",
+  "separate_new_attempt_path": true,
+  "original45_shared_and3_query_budgets_unchanged": true,
+  "root_decision": "Admit only exact inert append request. Require its authoritative terminal proof before R2 synthetic; no current production capture, consumers or services.",
+  "inert_request_blob": "bcf5419d13fcbe9a2f6252e8f5c593b38386f62f",
+  "inert_key": "heptabao-mac-capture-synthetic-r2-source-inert-f3c6bb33-20261105-r2",
+  "synthetic_request_blob": "d8877cfe683c3124bf3bd17b27dccbd7f76b51f0",
+  "source_only": true
+}

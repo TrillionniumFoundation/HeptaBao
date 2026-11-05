@@ -1,0 +1,34 @@
+--- callchain_components_r1.py
++++ callchain_components_r2.py
+@@ -74,14 +74,25 @@
+ base=types.SimpleNamespace(FixtureError=FixtureError,parent_remaining=q["parent_remaining"])
+ ns={"time":clock,"base":base,"direct":types.SimpleNamespace(DirectLanRun=object),"POSTCOLD_SECONDS":300.0}
+ selected(runner,ns,classes={"PocketSourcePostRecoveryColdRun":("_postcold_remaining",)})
+-p=ns["PocketSourcePostRecoveryColdRun"]();p.postcold_until=350.0;p.controller_until=120.0
+-check("new_phase_remaining_respects_original_controller",p._postcold_remaining(300)==20)
+-p.controller_until=1000;p.postcold_until=105
+-check("new_phase_remaining_respects_shared_phase",p._postcold_remaining(300)==5)
++p=ns["PocketSourcePostRecoveryColdRun"]()
++# Execute the actual entry's first four statements: the phase stores min(300,parent)
++# once; the remaining helper then consumes that already-clamped absolute value.
++entry=copy.deepcopy(node(runner,"post_recovery_cold","PocketSourcePostRecoveryColdRun"))
++assert len(entry.body)>4 and isinstance(entry.body[2],ast.Assign)
++entry.body=entry.body[:4]
++exec(compile(ast.fix_missing_locations(ast.Module(body=[entry],type_ignores=[])),"<actual-cold-entry-prefix>","exec"),ns)
++p.controller_until=120
++ns["post_recovery_cold"](p,None,None)
++check("new_phase_entry_clamps_original_controller",p.postcold_until==120 and p._postcold_remaining(300)==20)
++p.controller_until=1000
++ns["post_recovery_cold"](p,None,None)
++check("new_phase_entry_clamps_shared_300",p.postcold_until==400 and p._postcold_remaining(300)==300)
++p.controller_until=105
++ns["post_recovery_cold"](p,None,None)
+ check("new_phase_remaining_respects_leaf_limit",p._postcold_remaining(2)==2)
+ check("new_phase_remaining_respects_nested_until",p._postcold_remaining(15,until=102)==2)
+-p.postcold_until=99
+-check("new_phase_expired_fails_before_operation",refused(p._postcold_remaining,15))
++p.controller_until=99
++check("new_phase_expired_entry_before_reference_or_child",refused(ns["post_recovery_cold"],p,None,None))
+ # Original runner execute chain is recovered by removing precisely one new scope call.
+ cls0=next(x for x in ast.parse(source("base/native_v6_pocket_source_direct98_r10_r3.py")).body if isinstance(x,ast.ClassDef))
+ cls1=next(x for x in ast.parse(runner).body if isinstance(x,ast.ClassDef))

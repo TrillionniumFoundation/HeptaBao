@@ -1,0 +1,162 @@
+diff --git a/inert-synthetic-source-r2.py b/inert-synthetic-source-r2.py
+--- a/inert-synthetic-source-r2.py
++++ b/inert-synthetic-source-r2.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create only a new Mac capture prerequisite ROOT/qa and five fixed sources.
++"""Append one new synthetic source under the already verified Mac ROOT/qa.
+ 
+ No current credentials, production SQLite, consumer, manager or server is read
+ or executed. Three pinned import-safe custody libraries are loaded from the
+@@ -12,6 +12,7 @@
+ START=time.monotonic();UNTIL=START+45.0
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
+ QA=ROOT/'qa'
++NEW_NAME='mac_capture_sqlite_synthetic_r2.py'
+ PINS={
+     "mac_guarded_current_capture_r3.py": [
+         23578,
+@@ -32,8 +33,69 @@
+     "mac_owned_unreaped_r1.py": [
+         10990,
+         "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
++    ],
++    "mac_capture_sqlite_synthetic_r2.py": [
++        16915,
++        "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+     ]
+ }
++PRESERVED={
++    "mac_guarded_current_capture_r3.py": [
++        "16777244",
++        "72546528",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "23578",
++        "1793835363123696870",
++        "1793835363123706328"
++    ],
++    "mac_capture_sqlite_synthetic_r1.py": [
++        "16777244",
++        "72546529",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "16476",
++        "1793835363125849429",
++        "1793835363125857554"
++    ],
++    "mac_owned_commands_r1.py": [
++        "16777244",
++        "72546530",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "5965",
++        "1793835363126339808",
++        "1793835363126345391"
++    ],
++    "mac_t5_volume_guard_r1.py": [
++        "16777244",
++        "72546531",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "13387",
++        "1793835363126785478",
++        "1793835363126791353"
++    ],
++    "mac_owned_unreaped_r1.py": [
++        "16777244",
++        "72546532",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "10990",
++        "1793835363127259607",
++        "1793835363127265315"
++    ]
++}
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -76,7 +138,7 @@
+ def main():
+     os.umask(0o077)
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
+-    report={'schema':'heptabao.mac-capture-prerequisite-inert.r1','ok':False,'files':[],
++    report={'schema':'heptabao.mac-capture-synthetic-source-append-inert.r2','ok':False,'files':[],
+         'currentPrivateInputsOpened':False,'productionSqliteOpened':False,'sqliteExecuted':False,
+         'consumerExecuted':False,'serviceStarted':False,'gitStarted':False,'cargoStarted':False,
+         'fixedLibraryDefinitionsLoadedOnly':True,'newOriginalInertSeconds':45}
+@@ -85,9 +147,9 @@
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_inert_owner')
+         raw=stdin_once();payload=json.loads(raw)
+         need(set(payload)=={'schema','files','anchorBase64'}
+-            and payload['schema']=='heptabao.mac-capture-prerequisite-public-inputs.r1',
++            and payload['schema']=='heptabao.mac-capture-synthetic-append-public-inputs.r2',
+             'exact_public_payload_schema')
+-        need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_five_sources')
++        need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_six_sources_and_one_new_member')
+         decoded={}
+         for name,(size,pin) in PINS.items():
+             content=base64.b64decode(payload['files'][name],validate=True)
+@@ -117,18 +179,33 @@
+               until=min(UNTIL,time.monotonic()+30),maximum=262144)
+         need(query['exitCode']==0 and not query['outcomeUnknown'],'actual_prewrite_t5_complete')
+         guard.accept_diskutil(out);report['volumeProbe']=query
+-        guard.mkdir_new(ROOT);report['createdRoot']=str(ROOT)
+-        guard.mkdir_new(QA);report['createdQa']=str(QA)
+-        for name,content in decoded.items():
+-            written=guard.write_new(QA/name,content)
+-            readback=guard.read(QA/name,1048576)
+-            need(readback==content and written['sha256']==PINS[name][1]
+-                and written['bytes']==PINS[name][0],'same_fd_whole_source_readback')
+-            report['files'].append({'name':name,**written,'wholeReadbackVerified':True})
++        need(set(PRESERVED)==set(PINS)-{NEW_NAME},'preserved_five_member_contract')
++        def preserve_sources():
++            values=[]
++            for name,expected in PRESERVED.items():
++                with guard.parent(QA/name) as (parent,leaf):
++                    initial=volume.identity(os.stat(leaf,dir_fd=parent,follow_symlinks=False))
++                    need(initial==tuple(expected),'original_inert_source_named_identity')
++                    observed=guard.read(QA/name,1048576)
++                    final=volume.identity(os.stat(leaf,dir_fd=parent,follow_symlinks=False))
++                    need(initial==final and observed==decoded[name],'original_inert_source_unchanged')
++                    values.append({'name':name,'bytes':len(observed),'sha256':sha(observed),
++                                   'identity':list(final)})
++            return values
++        report['preservedSourcesBefore']=preserve_sources()
++        written=guard.write_new(QA/NEW_NAME,decoded[NEW_NAME])
++        readback=guard.read(QA/NEW_NAME,1048576)
++        need(readback==decoded[NEW_NAME] and written['sha256']==PINS[NEW_NAME][1]
++             and written['bytes']==PINS[NEW_NAME][0],'held_readback_exact_new_source')
++        report['files'].append({'name':NEW_NAME,**written,'wholeReadbackVerified':True})
++        report['preservedSourcesAfter']=preserve_sources()
++        need(report['preservedSourcesBefore']==report['preservedSourcesAfter'],
++             'all_original_five_source_identities_unchanged')
++        report['createdRoot']=False;report['createdQa']=False
+         guard.check();remaining()
+         prepared=True
+         report['preparedCandidate']=True
+-        candidate=guard.write_new(QA/'inert-candidate.public.json',encode(report))
++        candidate=guard.write_new(QA/'inert-synthetic-r2-candidate.public.json',encode(report))
+     except BaseException as error:
+         report['errorType']=type(error).__name__
+         report['errorCode']=str(error) if isinstance(error,Refused) else None
+@@ -148,7 +225,8 @@
+         report['candidateReceiptSha256']=None if candidate is None else candidate['sha256']
+         report['originalDeadlineMetAfterClosure']=completed<UNTIL
+         report['authoritativeExitZeroRequired']=True
+-        report['ok']=bool(prepared and candidate is not None and len(report['files'])==5
++        report['ok']=bool(prepared and candidate is not None and len(report['files'])==1
++            and len(report.get('preservedSourcesAfter',[]))==5
+             and stopped and closed and final_anchor and not report['outcomeUnknown'] and completed<UNTIL)
+         out=encode(report);need(len(out)<=65536,'public_result_bound')
+         sys.stdout.buffer.write(out);sys.stdout.buffer.flush()

@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.mac-capture-prerequisite-dispatch-source.r1",
+  "source_only": true,
+  "submitted": false,
+  "prerequisite_source_tree": "04a900479c73e79c37219ee0de46a6c39061ffde",
+  "steps_are_separate_and_not_auto_retries": true,
+  "files": [
+    {
+      "path": "mac_capture_prerequisite_inert_r1.py",
+      "mode": "100644",
+      "bytes": 8157,
+      "sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c",
+      "git_blob": "3cc4133672f83e0b3afdf608a187336d1944664b"
+    },
+    {
+      "path": "inert-input.public.json",
+      "mode": "100644",
+      "bytes": 95426,
+      "sha256": "bc808674f8a013c242d2e6ae2a68c8271e89030e9420c3383f53da524f27d874",
+      "git_blob": "8a9e3fa11845a60869379110a23c4606401c91c4"
+    },
+    {
+      "path": "inert-start.public.json",
+      "mode": "100644",
+      "bytes": 104078,
+      "sha256": "7c82ef716af8783f11a8fc260e6021046db25df45d693e08706ee6be16375f2c",
+      "git_blob": "ac224509705484b7a1a8a4c190f533d43e8ab52c"
+    },
+    {
+      "path": "synthetic-start.public.json",
+      "mode": "100644",
+      "bytes": 2642,
+      "sha256": "8c632fe2f1db8eebc24487269492c1c3f01fe76711651367335118826c5468f9",
+      "git_blob": "eeb6cd8b8d0ff40cfb822da629ae3d1795ec070d"
+    },
+    {
+      "path": "source-pins.public.json",
+      "mode": "100644",
+      "bytes": 513,
+      "sha256": "fcf169bbda595ab76b6402cedc5c7c0edeadf2c6828c7ab08a4f65e816a6bfd3",
+      "git_blob": "bcfe65260dc16aa8fd0cddf8bbe63893ee30af21"
+    },
+    {
+      "path": "references/prior_actual_mac_r10_inert.py",
+      "mode": "100644",
+      "bytes": 9112,
+      "sha256": "1257850838e6949b265ab36c83ade2303ff47a15d1931142bf2df2b934462b88",
+      "git_blob": "6473654405f3ae97f833182f020f2447c58fabeb"
+    },
+    {
+      "path": "carrier-ast.public.json",
+      "mode": "100644",
+      "bytes": 921,
+      "sha256": "b55e037aa7e80f6ce282bef04f94339843943506f71526c61023b6a3786c2b23",
+      "git_blob": "4f277f23dc5972f8ea194b5abd0f492d5c6f6f43"
+    },
+    {
+      "path": "REVIEW.md",
+      "mode": "100644",
+      "bytes": 3300,
+      "sha256": "c724395b67aa236003ea218206fd052f059949416fea6dacc38e14f66345e6a6",
+      "git_blob": "ad2c18f83a88e95e0f50a53d3d2f8758af0bb2bf"
+    }
+  ]
+}

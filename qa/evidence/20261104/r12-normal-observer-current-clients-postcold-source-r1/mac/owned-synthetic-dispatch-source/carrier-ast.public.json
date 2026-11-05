@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.mac-capture-inert-source-ast.r1",
+  "working_directory": "/tmp",
+  "raw_exec_result": {
+    "chunk_id": "197308",
+    "wall_time_seconds": 0.000038378,
+    "exit_code": 0,
+    "original_token_count": 124,
+    "output": "{\"ast_compile\": true, \"files_written\": false, \"rows\": [{\"bytes\": 8157, \"name\": \"mac_capture_prerequisite_inert_r1.py\", \"sha256\": \"2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c\"}, {\"bytes\": 24426, \"name\": \"mac_owned_launchd_r2.py\", \"sha256\": \"66e1a5b8e011746b58daee7d43098a7d671f4864ae5bfcf4768e47336ec9228c\"}, {\"bytes\": 25005, \"name\": \"mac_current_phase_owner_r2.py\", \"sha256\": \"42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86\"}], \"source_executed\": false}\n"
+  },
+  "carrier_verdict": "ast_parse_compile_only_pass",
+  "other_two_rows_are_unexecuted_in_progress_source_not_part_of_host_payload": true
+}

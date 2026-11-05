@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8ac366",
+  "wall_time_seconds": 0.00002621,
+  "exit_code": 0,
+  "original_token_count": 143,
+  "output": "{\"child_processes\": 0, \"product_requests\": 0, \"remote_code_executed\": false, \"rows\": [{\"bytes\": 6675, \"case\": \"native\", \"compile_only\": true, \"sha256\": \"da24a23c1cfa9d5cba7f2edd23c7348261ab59295fede1e4f4dd3aaf883b271b\"}, {\"bytes\": 7622, \"case\": \"bounded-native\", \"compile_only\": true, \"sha256\": \"0b7643221102f71c7ae4c8e15a3002ab681839c046c6eca6f7d5a29d7ab0b45b\"}, {\"bytes\": 9999, \"case\": \"captured-reference\", \"compile_only\": true, \"sha256\": \"878c68f653a028ffd0af6702aa03dedc06ee61ea471fcaba0fe41d8f0a31e18e\"}], \"schema\": \"heptabao.postcold-generated-source-compile.v1\"}\n"
+}

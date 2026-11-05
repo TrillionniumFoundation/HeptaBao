@@ -1,0 +1,365 @@
+--- base/deadline_qa/native_v6_ha_multihost_live.py
++++ candidate/deadline_qa/native_v6_ha_multihost_live.py
+@@ -198,13 +198,74 @@
+     return source.replace(anchor, marker + "\n" + anchor)
+ 
+ 
+-def process_action(node, run_id: str, action: str, *, native=True):
++def bounded_native_process_script(seconds):
++    """Only the new cold phase supplies a relative endpoint allocation."""
++    if type(seconds) not in (int, float) or not 0 < seconds <= 60:
++        raise base.FixtureError("bounded_process_allocation_invalid")
++    source = native_process_script()
++    old = "action, raw_root, has_ha, run_id = sys.argv[1:]"
++    new = """action, raw_root, has_ha, run_id, raw_seconds = sys.argv[1:]
++bounded_seconds=float(raw_seconds)
++if not 0<bounded_seconds<=60 or platform.system()!='Linux' or has_ha!='1': raise SystemExit(94)
++cold_until=time.monotonic()+bounded_seconds
++def cold_remaining(cap):
++    value=min(cap,cold_until-time.monotonic())
++    if value<=0: raise SystemExit(95)
++    return value
++cold_remaining(60)"""
++    if source.count(old) != 1:
++        raise base.FixtureError("bounded_process_original_arguments_changed")
++    source = source.replace(old, new)
++    replacements = {
++        "def observe(pid):\n": "def observe(pid):\n    cold_remaining(60)\n",
++        "    time.sleep(0.4)": "    time.sleep(cold_remaining(0.4))\n    cold_remaining(60)",
++        "        deadline = time.monotonic() + 5": "        deadline = min(time.monotonic() + 5, cold_until)",
++        "            time.sleep(0.05)": "            time.sleep(cold_remaining(0.05))",
++        "        child = subprocess.Popen(argv,": "        cold_remaining(60)\n        child = subprocess.Popen(argv,",
++        "    print(child.pid)": "    cold_remaining(60)\n    print(child.pid)",
++        "    print(pid)": "    cold_remaining(60)\n    print(pid)",
++    }
++    for old, new in replacements.items():
++        if source.count(old) != 1:
++            raise base.FixtureError("bounded_process_original_statement_changed")
++        source = source.replace(old, new)
++    # A newly introduced deadline refusal after Popen must keep direct custody.
++    # Failure-only cleanup remains the original 5s and can never turn it green.
++    start_marker, stop_marker = "if action == 'start':\n", "elif action == 'stop':\n"
++    if source.count(start_marker) != 1 or source.count(stop_marker) != 1:
++        raise base.FixtureError("bounded_process_original_branches_changed")
++    head, rest = source.split(start_marker, 1)
++    body, tail = rest.split(stop_marker, 1)
++    wrapped = ("    child=None\n    try:\n"
++               + "".join("    " + line if line.strip() else line for line in body.splitlines(True))
++               + "    except BaseException:\n"
++               + "        if child is not None and child.returncode is None:\n"
++               + "            try:\n"
++               + "                if os.getpgid(child.pid)==child.pid: os.killpg(child.pid,signal.SIGKILL)\n"
++               + "            except ProcessLookupError: pass\n"
++               + "            child.wait(timeout=5)\n"
++               + "        raise\n")
++    source = head + start_marker + wrapped + stop_marker + tail
++    return source + "\nimport sys\nsys.stdout.flush()\ncold_remaining(60)\n"
++
++
++def process_action(node, run_id: str, action: str, *, native=True, parent_deadline=None):
+     if action not in ("start", "stop"):
+         raise base.FixtureError("invalid_owned_process_action")
+-    script = native_process_script()
+-    output = base.ssh(node, f"python3 - {action} {shlex.quote(node.root)} "
+-                      f"{1 if native else 0} {shlex.quote(run_id)} <<'PY2'\n"
+-                      + script + "\nPY2\n")
++    if parent_deadline is None:
++        script = native_process_script()
++        output = base.ssh(node, f"python3 - {action} {shlex.quote(node.root)} "
++                          f"{1 if native else 0} {shlex.quote(run_id)} <<'PY2'\n"
++                          + script + "\nPY2\n")
++    else:
++        if native is not True:
++            raise base.FixtureError("parent_deadline_lane_is_native_only")
++        timeout = base.parent_remaining(parent_deadline, 60)
++        script = bounded_native_process_script(timeout)
++        timeout = base.parent_remaining(parent_deadline, timeout)
++        output = base.ssh(node, f"python3 - {action} {shlex.quote(node.root)} "
++                          f"{1 if native else 0} {shlex.quote(run_id)} {timeout!r} <<'PY2'\n"
++                          + script + "\nPY2\n", timeout=timeout, parent_deadline=parent_deadline)
+     value = output.strip().splitlines()[-1] if output.strip() else ""
+     if action == "stop" and value == "none":
+         return None
+@@ -233,7 +294,22 @@
+ """
+ 
+ 
+-def assert_stopped(node) -> None:
++def assert_stopped(node, *, parent_deadline=None) -> None:
++    if parent_deadline is not None:
++        timeout = base.parent_remaining(parent_deadline, 15)
++        bounded = STOPPED_CHECK.replace("timeout=5)", "timeout=min(5, cold_remaining()))")
++        if bounded == STOPPED_CHECK:
++            raise base.FixtureError("bounded_stopped_original_ps_changed")
++        prefix = ("from pathlib import Path\nimport shlex,subprocess,sys,time\n"
++                  "root=Path(sys.argv[1]);cold_until=time.monotonic()+float(sys.argv[2])\n"
++                  "def cold_remaining():\n"
++                  "    value=cold_until-time.monotonic()\n"
++                  "    if value<=0: raise SystemExit(95)\n"
++                  "    return value\n")
++        base.ssh(node, "python3 - " + shlex.quote(node.root) + " " + repr(timeout)
++                 + " <<'PY2'\n" + prefix + bounded + "\ncold_remaining()\nPY2\n",
++                 timeout=timeout, parent_deadline=parent_deadline)
++        return
+     base.ssh(node, "python3 - " + shlex.quote(node.root) + " <<'PY2'\n"
+              + "from pathlib import Path\nimport shlex, subprocess, sys\nroot=Path(sys.argv[1])\n"
+              + STOPPED_CHECK + "\nPY2\n", timeout=15)
+@@ -457,19 +533,124 @@
+ """
+ 
+ 
+-def cipher_inventory(node, run_id: str, action: str) -> dict:
++def captured_cipher_reference_script(source, seconds):
++    """Add observations to the same recovered scan; other inventory modes stay unchanged."""
++    if type(seconds) not in (int, float) or not 0 < seconds <= 60:
++        raise base.FixtureError("reference_capture_seconds_invalid")
++    def replace(old, new):
++        nonlocal source
++        if source.count(old) != 1:
++            raise base.FixtureError("reference_capture_original_scan_changed")
++        source = source.replace(old, new)
++    replace(
++        "        total=0\n        for name in names:\n"
++        "            metadata,_=read_entry(store_fd,name)\n"
++        "            if original.get(name)!=metadata: raise SystemExit(87)\n"
++        "            total+=metadata['bytes']\n"
++        "        result={'restored_count':len(names),'restored_bytes':total,",
++        "        if len(names)>4096: raise SystemExit(90)\n"
++        "        total=0\n        references={}\n"
++        "        for name in names:\n"
++        "            reference_within()\n"
++        "            before=os.stat(name,dir_fd=store_fd,follow_symlinks=False)\n"
++        "            metadata,opened=read_entry(store_fd,name)\n"
++        "            after=os.stat(name,dir_fd=store_fd,follow_symlinks=False)\n"
++        "            if ref_identity(before)!=ref_identity(opened) or ref_identity(opened)!=ref_identity(after):\n"
++        "                raise SystemExit(90)\n"
++        "            if original.get(name)!=metadata: raise SystemExit(87)\n"
++        "            total+=metadata['bytes']\n"
++        "            if total>64*1024*1024: raise SystemExit(90)\n"
++        "            references[name]=dict(metadata,identity=ref_identity(opened))\n"
++        "        result={'restored_reference':references,\n"
++        "                'restored_directory_reference':directory_reference,\n"
++        "                'restored_count':len(names),'restored_bytes':total,")
++    replace("        while True:\n            raw=os.read(descriptor,64*1024)",
++            "        while True:\n            reference_within()\n            raw=os.read(descriptor,64*1024)")
++    replace("            digest.update(raw); size+=len(raw)",
++            "            digest.update(raw); size+=len(raw)\n"
++            "            if size>1024*1024: raise SystemExit(90)")
++    replace("        if (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)!=(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns) or size!=before.st_size:",
++            "        if ref_identity(before)!=ref_identity(after) or size!=before.st_size:")
++    # The same original directory listing and original read_entry calls are
++    # retained. Only their held directory chain and per-file observations grow.
++    anchor = "store_fd=os.open(store, os.O_RDONLY|os.O_NOFOLLOW|getattr(os,'O_DIRECTORY',0))\n"
++    if source.count(anchor) != 1 or not source.endswith("os.close(store_fd)\n"):
++        raise base.FixtureError("reference_capture_original_directory_contract_changed")
++    head, tail = source.split(anchor, 1)
++    tail = tail[:-len("os.close(store_fd)\n")]
++    opening = """import contextlib
++with contextlib.ExitStack() as reference_stack:
++    directory_reference=[]
++    directory_facts=[]
++    def bind_directory(parent, name):
++        reference_within()
++        before=os.stat(name,dir_fd=parent,follow_symlinks=False)
++        fd=os.open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_DIRECTORY,dir_fd=parent)
++        reference_stack.callback(os.close,fd)
++        opened=os.fstat(fd)
++        named=os.stat(name,dir_fd=parent,follow_symlinks=False)
++        if (not stat.S_ISDIR(opened.st_mode) or opened.st_uid!=os.getuid()
++                or opened.st_mode&0o077 or ref_identity(before)!=ref_identity(opened)
++                or ref_identity(opened)!=ref_identity(named)):
++            raise SystemExit(90)
++        directory_facts.append((fd,parent,name,ref_identity(opened)))
++        directory_reference.append({'name':name,'identity':ref_identity(opened)})
++        return fd
++    root_fd=bind_directory(None,str(root))
++    if ref_identity(os.fstat(root_fd))!=ref_identity(info): raise SystemExit(90)
++    raft_fd=bind_directory(root_fd,'raft')
++    store_fd=bind_directory(raft_fd,'native-v6-ciphertext')
++"""
++    closing = """    for fd,parent,name,before in directory_facts:
++        reference_within()
++        named=os.stat(name,dir_fd=parent,follow_symlinks=False)
++        if (not stat.S_ISDIR(named.st_mode) or ref_identity(os.fstat(fd))!=before
++                or ref_identity(named)!=before): raise SystemExit(90)
++"""
++    source = head + opening + "".join("    "+line if line.strip() else line
++                                      for line in tail.splitlines(True)) + closing
++    prefix = """import time
++REFERENCE_UNTIL=time.monotonic()+__SECONDS__
++def reference_within():
++    if time.monotonic()>=REFERENCE_UNTIL: raise SystemExit(91)
++def ref_identity(info):
++    return {'device':info.st_dev,'inode':info.st_ino,'uid':info.st_uid,
++            'mode':stat.S_IMODE(info.st_mode),'nlink':info.st_nlink,
++            'bytes':info.st_size,'mtime_ns':info.st_mtime_ns,'ctime_ns':info.st_ctime_ns}
++"""
++    return (prefix.replace("__SECONDS__", repr(seconds)) + source
++            + "\nreference_within();sys.stdout.flush();reference_within()\n")
++
++
++def cipher_inventory(node, run_id: str, action: str, *, capture_reference=False,
++                     parent_deadline=None) -> dict:
+     if action not in ("quarantine", "empty", "recovered"):
+         raise base.FixtureError("invalid_cipher_fixture_action")
+     script = CIPHER_INVENTORY_SCRIPT.replace("    __STOPPED_CHECK__",
+                                            "\n".join("    " + line for line in STOPPED_CHECK.splitlines()))
++    timeout = 60 if parent_deadline is None else base.parent_remaining(parent_deadline, 60)
++    if capture_reference:
++        if action != "recovered" or parent_deadline is None:
++            raise base.FixtureError("reference_capture_requires_recovered_parent_deadline")
++        script = captured_cipher_reference_script(script, timeout)
+     output = base.ssh(node, f"python3 - {action} {shlex.quote(node.root)} "
+-                     f"{shlex.quote(run_id)} <<'PY2'\n" + script + "\nPY2\n", timeout=60)
++                     f"{shlex.quote(run_id)} <<'PY2'\n" + script + "\nPY2\n",
++                     timeout=timeout, parent_deadline=parent_deadline)
++    if capture_reference and len(output.encode("utf-8")) > 1024 * 1024:
++        raise base.FixtureError("restored_reference_public_metadata_bound")
+     result = json.loads(output)
+     if not isinstance(result, dict):
+         raise base.FixtureError("cipher_fixture_receipt_invalid")
++    if capture_reference:
++        references = result.get("restored_reference")
++        if (not isinstance(references, dict) or not 0 < len(references) <= 4096
++                or len(references) != result.get("restored_count")
++                or sum(row["bytes"] for row in references.values()) != result.get("restored_bytes")):
++            raise base.FixtureError("restored_reference_original_scan_incomplete")
+     return result
+ 
+ 
++
+ class NativeRun:
+     required_checks = REQUIRED_CHECKS
+ 
+@@ -549,7 +730,9 @@
+         self.events.append({"event": name, "at": time.time(), **details})
+         self.checkpoint()
+ 
+-    def request(self, node, method, path, body=None, *, authenticate=True, timeout=REQUEST_SECONDS):
++    def request(self, node, method, path, body=None, *, authenticate=True, timeout=REQUEST_SECONDS, parent_deadline=None):
++        if parent_deadline is not None:
++            timeout = base.parent_remaining(parent_deadline, timeout)
+         if not 0 < timeout <= REQUEST_SECONDS:
+             raise base.FixtureError("original_http_budget_must_not_increase")
+         mutation = method not in ("GET", "HEAD", "LIST")
+@@ -558,7 +741,8 @@
+         started = time.monotonic()
+         try:
+             status, response = base.api(self.context, node, method, path, body,
+-                                        self.root_token if authenticate else "", timeout=timeout)
++                                        self.root_token if authenticate else "", timeout=timeout,
++                                        parent_deadline=parent_deadline)
+         except BaseException as error:
+             if mutation:
+                 self.recovery.outcome(intent, elapsed=time.monotonic() - started,
+@@ -586,28 +770,29 @@
+                        elapsed_ms=round(elapsed * 1000, 3))
+         return status, response
+ 
+-    def owned_process_action(self, node, action, *, native=True):
+-        return process_action(node, self.run_id, action, native=native)
++    def owned_process_action(self, node, action, *, native=True, parent_deadline=None):
++        return process_action(node, self.run_id, action, native=native,
++                              parent_deadline=parent_deadline)
+ 
+-    def start(self, node, *, native=True):
++    def start(self, node, *, native=True, parent_deadline=None):
+         # An uncertain SSH return is not authority to repeat this startup.
+         # Cleanup will inspect only this newly owned root's identity files.
+         self.started.add(node)
+-        pid = self.owned_process_action(node, "start", native=native)
++        pid = self.owned_process_action(node, "start", native=native, parent_deadline=parent_deadline)
+         self.event("owned_server_started", node=node.node_id, pid=pid, native=native)
+         return pid
+ 
+-    def stop(self, node):
+-        pid = self.owned_process_action(node, "stop")
+-        assert_stopped(node)
++    def stop(self, node, *, parent_deadline=None):
++        pid = self.owned_process_action(node, "stop", parent_deadline=parent_deadline)
++        assert_stopped(node, parent_deadline=parent_deadline)
+         self.started.discard(node)
+         self.event("owned_server_stopped", node=node.node_id, pid=pid)
+         return pid
+ 
+-    def unseal(self, node):
+-        base.wait_listener(self.context, node)
++    def unseal(self, node, *, parent_deadline=None):
++        base.wait_listener(self.context, node, parent_deadline=parent_deadline)
+         status, body = self.request(node, "POST", "sys/unseal", {"key": self.unseal_key},
+-                                    authenticate=False)
++                                    authenticate=False, parent_deadline=parent_deadline)
+         if status != 200 or body.get("sealed") is not False:
+             raise base.FixtureError(f"node_{node.node_id}_native_cold_unseal_failed")
+ 
+@@ -658,17 +843,17 @@
+         self.acknowledged[path] = data_digest(value)
+         return path
+ 
+-    def read_data(self, node, path, *, version=None):
++    def read_data(self, node, path, *, version=None, parent_deadline=None):
+         # The real HTTP GET parser selects KV2 fields from the URL only.
+         route = "secret/data/" + path
+         if version is not None:
+             if type(version) is not int or version < 1:
+                 raise base.FixtureError("exact_history_version_must_be_positive_integer")
+             route += "?" + urllib.parse.urlencode({"version": version})
+-        return self.request(node, "GET", route)
++        return self.request(node, "GET", route, parent_deadline=parent_deadline)
+ 
+-    def exact_read(self, node, path, expected, *, version=None):
+-        status, body = self.read_data(node, path, version=version)
++    def exact_read(self, node, path, expected, *, version=None, parent_deadline=None):
++        status, body = self.read_data(node, path, version=version, parent_deadline=parent_deadline)
+         data = body.get("data", {})
+         if (status != 200 or not isinstance(data, dict) or not isinstance(data.get("data"), dict)
+                 or data_digest(data["data"]) != expected
+@@ -676,15 +861,16 @@
+             # A successful stale result is a failure, never converted to polling.
+             raise base.FixtureError(f"native_exact_read_failed_node_{node.node_id}")
+ 
+-    def small_reads(self, nodes):
++    def small_reads(self, nodes, *, parent_deadline=None):
+         for node in nodes:
+             for path, expected in self.acknowledged.items():
+-                self.exact_read(node, path, expected)
++                self.exact_read(node, path, expected, parent_deadline=parent_deadline)
+ 
+-    def history_reads(self, leader, *, retired=True):
++    def history_reads(self, leader, *, retired=True, parent_deadline=None):
+         for version, expected in sorted(self.history.items()):
+             if retired and version in self.retired:
+-                status, body = self.read_data(leader, self.path, version=version)
++                status, body = self.read_data(leader, self.path, version=version,
++                                              parent_deadline=parent_deadline)
+                 data = body.get("data")
+                 metadata = data.get("metadata") if isinstance(data, dict) else None
+                 if (status != 404 or not isinstance(data, dict) or data.get("data") is not None
+@@ -694,10 +880,12 @@
+                             and not metadata.get("deletion_time"))):
+                     raise base.FixtureError("retired_native_version_disclosed_payload")
+             else:
+-                self.exact_read(leader, self.path, expected, version=version)
++                self.exact_read(leader, self.path, expected, version=version,
++                                parent_deadline=parent_deadline)
+ 
+-    def metadata(self, leader):
+-        status, body = self.request(leader, "GET", "secret/metadata/" + self.path)
++    def metadata(self, leader, *, parent_deadline=None):
++        status, body = self.request(leader, "GET", "secret/metadata/" + self.path,
++                                    parent_deadline=parent_deadline)
+         data = body.get("data", {})
+         versions = data.get("versions", {})
+         if (status != 200 or data.get("current_version") != len(self.history)
+@@ -705,8 +893,9 @@
+             raise base.FixtureError("native_retained_version_inventory_differs")
+         return versions
+ 
+-    def absent(self, node, path):
+-        status, body = self.request(node, "GET", "secret/data/" + path)
++    def absent(self, node, path, *, parent_deadline=None):
++        status, body = self.request(node, "GET", "secret/data/" + path,
++                                    parent_deadline=parent_deadline)
+         if status != 404 or body.get("data") not in (None, {}):
+             raise base.FixtureError("denied_or_cleaned_native_write_has_effect")
+ 

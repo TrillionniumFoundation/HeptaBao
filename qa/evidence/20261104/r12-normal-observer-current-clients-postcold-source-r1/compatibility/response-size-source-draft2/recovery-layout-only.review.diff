@@ -1,0 +1,14 @@
+--- a/crates/heptabao-server/src/service_recovery_keys.rs
++++ b/crates/heptabao-server/src/service_recovery_keys.rs
+@@ -3693,6 +3693,11 @@
+ 
+     type TestResult = Result<(), Box<dyn std::error::Error>>;
+ 
++    #[test]
++    fn recovery_index_admission_error_stays_below_large_error_threshold() {
++        assert!(std::mem::size_of::<HaRecoveryIndexAdmissionFailure>() < 128);
++    }
++
+     fn local_files(root: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>, std::io::Error> {
+         let mut files = BTreeMap::new();
+         for entry in fs::read_dir(root)? {

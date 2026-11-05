@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "native_ssh_",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 44.14493169399793,
+  "exit_code": 0,
+  "label": "ssh25",
+  "outer_cap_seconds": 600,
+  "owned_pgid": 3841034,
+  "remaining": [],
+  "stderr_sha256": "6e4618aca163f68e2a089673fd0d6b6d2e6d7521f3971c4205e5eb6ff1851e72",
+  "stdout_sha256": "59df4871133986aeeacb62fc07951ede400621082f993402efff8eedaa333e45",
+  "timed_out": false
+}

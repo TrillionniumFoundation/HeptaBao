@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.mac-canonical-system-crontab.source-contract.r1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "actual_alias_evidence": {
+    "tree": "3f3fce341469924f0ee6104c099ae996d98fc9ec",
+    "stdout_blob": "439b29c2f1e6baa56958b68e56ce52e749692d4e",
+    "stdout_sha256": "61ad3e1dcd69c43f20010869225d0bd8ed6654b4e88570ecc03a239689157254",
+    "readlink_target": "private/etc"
+  },
+  "read_set": {
+    "parents": [
+      "/",
+      "private relative to held root",
+      "etc relative to held private"
+    ],
+    "original_alias": "etc relative to held root; exact original identity before/after and known readlink",
+    "leaf": "crontab relative to held canonical etc",
+    "target_path": "/private/etc/crontab",
+    "no_symlink_following": true,
+    "parent_type_owner_device_and_no_group_world_write": true,
+    "held_parent_fd_and_named_before_after_identity": true,
+    "leaf_if_present": "No-follow nonblocking regular/root-owned/nlink1/max65536; same held fd hash and safe cron projection; exact name identity after",
+    "leaf_if_absent": "Exactly two FileNotFoundError/ENOENT metadata observations under unchanged held parents; no generic exception maps to absence"
+  },
+  "budgets": {
+    "new_inner_seconds": 5,
+    "new_outer_seconds": 60,
+    "explicit_metadata_if_absent": 16,
+    "explicit_metadata_if_present": 18,
+    "readlink_operations": 1,
+    "raw_read_bytes_max": 65536,
+    "public_bytes_max": 16384
+  },
+  "projection": {
+    "same_function_body_as": "finite collector R2 cron_projection(raw)",
+    "only_application_matching_line_numbers_and_sha256": true,
+    "no_raw_cron_commands_or_credentials": true,
+    "absence_does_not_exclude_other_manual_or_unregistered_paths": true
+  },
+  "old_incomplete_result_preserved": true,
+  "completed_37_not_repeated": true,
+  "old_7_queries_not_repeated": true,
+  "commands_started": 0,
+  "files_written": 0,
+  "host_requests_so_far": 0,
+  "execution_requires_root_go": true
+}

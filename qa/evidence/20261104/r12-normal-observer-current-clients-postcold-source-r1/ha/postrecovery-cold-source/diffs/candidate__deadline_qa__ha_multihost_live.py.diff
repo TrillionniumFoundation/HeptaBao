@@ -1,0 +1,95 @@
+--- base/deadline_qa/ha_multihost_live.py
++++ candidate/deadline_qa/ha_multihost_live.py
+@@ -177,11 +177,28 @@
+         return f"https://{self.ip}:{self.api_port}"
+ 
+ 
++def parent_remaining(parent_deadline: float, cap: float) -> float:
++    """One caller clock; never create a new successful budget."""
++    if (type(parent_deadline) not in (float, int) or type(cap) not in (float, int)
++            or not 0 < cap < float("inf") or not 0 < parent_deadline < float("inf")):
++        raise FixtureError("invalid_parent_deadline")
++    remaining = min(float(cap), float(parent_deadline) - time.monotonic())
++    if remaining <= 0:
++        raise FixtureError("parent_deadline_expired_before_dispatch")
++    return remaining
++
++
+ def checked_run(argv: list[str], *, input_bytes: bytes | None = None,
+-                timeout: float = 120, stdout=None) -> subprocess.CompletedProcess:
++                timeout: float = 120, stdout=None, parent_deadline=None) -> subprocess.CompletedProcess:
+     target = subprocess.PIPE if stdout is None else stdout
+-    return subprocess.run(argv, input=input_bytes, stdout=target,
+-                          stderr=subprocess.PIPE, timeout=timeout, check=True)
++    if parent_deadline is None:
++        return subprocess.run(argv, input=input_bytes, stdout=target,
++                              stderr=subprocess.PIPE, timeout=timeout, check=True)
++    result = subprocess.run(argv, input=input_bytes, stdout=target,
++                            stderr=subprocess.PIPE,
++                            timeout=parent_remaining(parent_deadline, timeout), check=True)
++    parent_remaining(parent_deadline, timeout)
++    return result
+ 
+ 
+ def sha256_file(path: Path) -> str:
+@@ -329,11 +346,14 @@
+     }
+ 
+ 
+-def ssh(node: Node, script: str, *, timeout: float = 60) -> str:
++def ssh(node: Node, script: str, *, timeout: float = 60, parent_deadline=None) -> str:
++    if parent_deadline is not None:
++        timeout = parent_remaining(parent_deadline, timeout)
+     result = checked_run([
+         "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+         node.alias, "bash", "-s",
+-    ], input_bytes=script.encode(), timeout=timeout)
++    ], input_bytes=script.encode(), timeout=timeout, **(
++        {} if parent_deadline is None else {"parent_deadline": parent_deadline}))
+     return result.stdout.decode(errors="replace")
+ 
+ 
+@@ -570,7 +590,7 @@
+ 
+ def api(context: ssl.SSLContext, node: Node, method: str, path: str,
+         body=None, token: str = "", timeout: float = 8.0, *,
+-        wrap_ttl: str | None = None) -> tuple[int, dict]:
++        wrap_ttl: str | None = None, parent_deadline=None) -> tuple[int, dict]:
+     if not path or path.startswith("/") or ".." in path.split("/") or "://" in path:
+         raise FixtureError("invalid_api_path")
+     headers = {"Accept": "application/json", "Content-Type": "application/json"}
+@@ -589,6 +609,8 @@
+         urllib.request.ProxyHandler({}), NoRedirect(),
+         urllib.request.HTTPSHandler(context=context),
+     )
++    if parent_deadline is not None:
++        timeout = parent_remaining(parent_deadline, timeout)
+     try:
+         response = opener.open(request, timeout=timeout)
+     except urllib.error.HTTPError as error:
+@@ -600,10 +622,24 @@
+         parsed = json.loads(raw) if raw else {}
+         if not isinstance(parsed, dict):
+             raise FixtureError("api_response_not_object")
++        if parent_deadline is not None:
++            parent_remaining(parent_deadline, timeout)
+         return int(response.status), parsed
+ 
+ 
+-def wait_listener(context: ssl.SSLContext, node: Node, seconds: float = 45) -> tuple[int, dict]:
++def wait_listener(context: ssl.SSLContext, node: Node, seconds: float = 45,
++                  *, parent_deadline=None) -> tuple[int, dict]:
++    if parent_deadline is not None:
++        deadline = time.monotonic() + parent_remaining(parent_deadline, seconds)
++        while time.monotonic() < deadline:
++            try:
++                observed = api(context, node, "GET", "sys/health", timeout=1.5,
++                               parent_deadline=deadline)
++                parent_remaining(deadline, seconds)
++                return observed
++            except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
++                time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
++        raise FixtureError(f"node_{node.node_id}_listener_timeout")
+     deadline = time.monotonic() + seconds
+     while time.monotonic() < deadline:
+         try:

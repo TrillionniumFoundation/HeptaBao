@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.mac-capture-synthetic-r2-source-manifest.r1",
+  "source_only": true,
+  "prior_failed_original_tree": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+  "prior_inert_actual_tree": "c7cebe933d0d8c856db55a0f9760a61e279486dc",
+  "all_existing_library_pins_unchanged": true,
+  "root_ha_window_hold": true,
+  "file_count": 15,
+  "files": [
+    {
+      "path": "inert-append-source.py",
+      "bytes": 10622,
+      "sha256": "255bbabe28601cf53d5ea53ff047b8f27b47ac23205043eb14cc132a36b54391",
+      "git_blob": "d6d9ffc04a93fd18e0dc639cd8271c4ae2359b3f",
+      "mode": "100644"
+    },
+    {
+      "path": "inert-append.review.diff",
+      "bytes": 7337,
+      "sha256": "5b3c6b096a881d7f48e68026f533cd7c2f1c3901405ada0512325bd36c8a654a",
+      "git_blob": "60488b299aaa061214b2f603b2b07409ee8d9e7e",
+      "mode": "100644"
+    },
+    {
+      "path": "public-inputs.json",
+      "bytes": 118078,
+      "sha256": "bff76ea1a3920a96442b7c1c1b00c3e95dd0c5d229144405ce2cf1ce0437ecae",
+      "git_blob": "4cd7b552ec89aed6de60ecc991fe9d15a75c7eb3",
+      "mode": "100644"
+    },
+    {
+      "path": "source-pins.public.json",
+      "bytes": 621,
+      "sha256": "c038f3e078babbca59ded1f6cc43b9c24a1abf4d6f1d5a4f98aa779aad196636",
+      "git_blob": "b98b8aa79192851912c308a6f4b0d102e9a3f2e2",
+      "mode": "100644"
+    },
+    {
+      "path": "inert-start.public.json",
+      "bytes": 129399,
+      "sha256": "57f1dd0d7fd155e61d3b0172ef3dd39122e66c823ddabfb76064ab857d6f6f32",
+      "git_blob": "bcf5419d13fcbe9a2f6252e8f5c593b38386f62f",
+      "mode": "100644"
+    },
+    {
+      "path": "synthetic-start.public.json",
+      "bytes": 2786,
+      "sha256": "0afc9b153a8a3fb43daba7226ddaabf8c5cbc526d96344c160b2898b4539eb1f",
+      "git_blob": "d8877cfe683c3124bf3bd17b27dccbd7f76b51f0",
+      "mode": "100644"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4667,
+      "sha256": "9efba7300be59e16f87fdd95d422079e0a09c566a7c69af151fddbf7813fd5fd",
+      "git_blob": "efec6020c4c5de80939088c8c1bfe669471a9e10",
+      "mode": "100644"
+    },
+    {
+      "path": "local-source-check.stdout.json",
+      "bytes": 839,
+      "sha256": "2e5e13305e8e0aa388ab042159fd1d0657845dcbae71a351ac9e545ae89bc180",
+      "git_blob": "7e584f47cbe585828f30214f0371953b022686c9",
+      "mode": "100644"
+    },
+    {
+      "path": "local-source-check.exec.json",
+      "bytes": 1052,
+      "sha256": "8e0d1e63df42517fd5d00e5a1fbdcc8f54c712400925fc362f4c09ceca258bb6",
+      "git_blob": "27ec390b5eb28a56804cea582fa313e6c77d6c8a",
+      "mode": "100644"
+    },
+    {
+      "path": "local-entrypoint-component.stdout.json",
+      "bytes": 666,
+      "sha256": "01016bfa7aac296786b9111e8708c646b8dc4934811882d64dd31a9178a91fde",
+      "git_blob": "c5814f3e8e1b0104d4b21f326708a03af48f70ee",
+      "mode": "100644"
+    },
+    {
+      "path": "local-entrypoint-component.exec.json",
+      "bytes": 835,
+      "sha256": "94e44efbe419e25f277f69fb82b48925963992f0d60d0bcda4182c52ef4fb509",
+      "git_blob": "a9d45935a3f49ac20ecf0a31300e7af8baf63873",
+      "mode": "100644"
+    },
+    {
+      "path": "candidate/mac_capture_sqlite_synthetic_r2.py",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+      "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "mode": "100644"
+    },
+    {
+      "path": "synthetic-r1-to-r2.review.diff",
+      "bytes": 3457,
+      "sha256": "91cc9dc51d64428f1e6195254001dd5b333a6f860710c03362b5328b48baf40f",
+      "git_blob": "d297a167f70ae8d7cf723247ccb696c206ca31f0",
+      "mode": "100644"
+    },
+    {
+      "path": "reference/mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "git_blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "mode": "100644"
+    },
+    {
+      "path": "reference/inert-r1.py",
+      "bytes": 8157,
+      "sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c",
+      "git_blob": "3cc4133672f83e0b3afdf608a187336d1944664b",
+      "mode": "100644"
+    }
+  ]
+}

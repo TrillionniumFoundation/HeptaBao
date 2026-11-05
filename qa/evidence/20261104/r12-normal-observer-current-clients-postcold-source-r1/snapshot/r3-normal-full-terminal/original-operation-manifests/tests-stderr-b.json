@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "tests-stderr-b",
+    "id": "017063afe8cc5faad4d820ef47ad43ca12345337d08e57c9815e5190bc59a7d5",
+    "bytes": 5197,
+    "sha256": "755333c8ad3261ecac46b6f8e633cb112edadb0f04886f5026c6eea0ba5562c6"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/tests-stderr-b-000000.json",
+      "bytes": 7615,
+      "sha256": "2d1a1c977c5b9b463d50e417c196ded19189d552a7881c922e676602b7b6152f",
+      "blob": "5b987f796a3174b3f7d36160ca66bfeb2f5f0e84"
+    },
+    {
+      "path": "original-sdk/tests-stderr-b.json",
+      "bytes": 5197,
+      "sha256": "755333c8ad3261ecac46b6f8e633cb112edadb0f04886f5026c6eea0ba5562c6",
+      "blob": "84f86e707c003b4b2d23ef246f884334341e78df"
+    },
+    {
+      "path": "owned-children/ingress-observer-1.stderr",
+      "bytes": 428,
+      "sha256": "bf242ff1f87b64e04e744c31b376d60f73dc3033a9b2517bc7abeb85cc9c3d08",
+      "blob": "eec4660f555b8b8f136a444fc84562df42893690",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-1.stderr",
+      "source_version": "66306:28096693:428:1793833635314098634:1793833635314098634"
+    },
+    {
+      "path": "owned-children/ingress-observer-2.stderr",
+      "bytes": 832,
+      "sha256": "840fc11273029cedbf048e6838ac22ebc9829cb1af015e8712b61da38c6e596a",
+      "blob": "20d2ca9d9079f7807684308bdc56c0b1c133aacb",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-2.stderr",
+      "source_version": "66306:28096699:832:1793833635409098037:1793833635409098037"
+    },
+    {
+      "path": "owned-children/ingress-observer-3.stderr",
+      "bytes": 1388,
+      "sha256": "36ab588432f728f76abd22311b937c2e45980b4bc47a284de3a89687db0fce55",
+      "blob": "dd4c2215e32e6e054a6d432f4dcd385289fe79d2",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-3.stderr",
+      "source_version": "66306:28096705:1388:1793833635502097453:1793833635502097453"
+    },
+    {
+      "path": "owned-children/ingress-observer-4.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-4.stderr",
+      "source_version": "66306:28096711:0:1793833635548097163:1793833635548097163"
+    },
+    {
+      "path": "owned-children/ingress-observer-5.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-5.stderr",
+      "source_version": "66306:28096717:0:1793833635578175424:1793833635578175424"
+    },
+    {
+      "path": "owned-children/ingress-observer-6.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-6.stderr",
+      "source_version": "66306:28096723:0:1793833635606228006:1793833635606228006"
+    },
+    {
+      "path": "owned-children/ingress-observer-7.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-7.stderr",
+      "source_version": "66306:28096729:0:1793833635636096610:1793833635636096610"
+    }
+  ]
+}

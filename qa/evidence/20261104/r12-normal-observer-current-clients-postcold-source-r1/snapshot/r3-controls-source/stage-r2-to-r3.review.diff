@@ -1,0 +1,22 @@
+--- a/stage_source_phaseb_observer.py
++++ b/stage_source_phaseb_observer.py
+@@ -19,7 +19,7 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2')
++ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+@@ -32,8 +32,8 @@
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "normal_phaseb_observer_build.py": (20791, "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"),
+-    "launch_normal_phaseb_observer.py": (28425, "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de"),
++    "normal_phaseb_observer_build.py": (20791, "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b"),
++    "launch_normal_phaseb_observer.py": (28425, "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03"),
+     "prior-observer-build-authority.public.json": (726, "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }

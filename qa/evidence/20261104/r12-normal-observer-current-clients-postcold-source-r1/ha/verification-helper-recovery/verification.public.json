@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.reconstructed-review-helper-verification.r1",
+  "identity": "new_reconstruction_not_lost_source",
+  "known_hash_vectors": [
+    "empty",
+    "abc"
+  ],
+  "frozen_artifacts_checked": [
+    {
+      "key": "carrier",
+      "bytes": 6858,
+      "sha256": "cf47218bc182308c150f76c7c5212943196c035a7fa713f414cbcdffbf7c5db2",
+      "git_blob": "f809869a4a091209b466238b402416751dc290ba"
+    },
+    {
+      "key": "stdin",
+      "bytes": 448380,
+      "sha256": "f9de338e5b56d21a6844f2d0b3aa0b1b11bf10ac5100857081f88de12f182c5e",
+      "git_blob": "c41f0dae73aa9ede831668bb64bac25275015d4f"
+    },
+    {
+      "key": "dispatch",
+      "bytes": 4997,
+      "sha256": "3f846ed2369d798ad4bfbfc188878ddd65ad97c7538b9e9e7fea57402fe70851",
+      "git_blob": "f7b963be1cf06d0bad22bc26083fc55291686f82"
+    }
+  ],
+  "utf8_expected_hex": "e4b8adc3a9f09f9880",
+  "unpaired_surrogate_refused": true,
+  "large_integer_json_cases_passed": true,
+  "host_actions": 0
+}

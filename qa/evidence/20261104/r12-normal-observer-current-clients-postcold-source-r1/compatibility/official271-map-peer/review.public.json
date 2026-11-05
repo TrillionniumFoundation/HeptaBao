@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.official271-scope-mapping-independent-review.v1",
+  "result": "THREE_FAMILY_INTERSECTION_OMISSIONS_NO_RUNTIME_REQUALIFICATION",
+  "source_tree": "53081eed42653db1b8f51b840b7eb4b89e3bf7cb",
+  "legacy": {
+    "rows": 59,
+    "exact_original_id_order": true,
+    "original_target": "OpenBao 2.6.2",
+    "original_status_counts": {
+      "runtime_complete": 2,
+      "runtime_partial": 52,
+      "tooling_partial": 5
+    },
+    "original_status_profiles_source_and_whole_admitted_fields_exact": true,
+    "all_current_whole_surface_qualification_false": true,
+    "current_path_resolutions": 55,
+    "source_whole_read_flags_match_declared_full_read_set": true
+  },
+  "actual69": {
+    "case_ids_unique_exact_on_both_sides": true,
+    "all_candidate_and_oracle_values_exact": true,
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_is_not_diagnostic_3cb": true,
+    "counts": {
+      "approle": 3,
+      "core": 1,
+      "edge_tls": 1,
+      "identity": 6,
+      "kv": 18,
+      "operations": 1,
+      "pki": 12,
+      "system": 1,
+      "token": 10,
+      "totp": 2,
+      "transit": 10,
+      "userpass": 1,
+      "wrapping": 3
+    },
+    "no_full_replacement_or_production_qualification_preserved": true
+  },
+  "delta": {
+    "security_rows_exact": 15,
+    "feature_correctness_rows_exact": 11,
+    "required_gates_exact": 11,
+    "order_ids_and_all_values_equal_frozen_supplement": true,
+    "baseline_equal": true,
+    "open_or_null_not_reinterpreted_as_absence_of_later_evidence": true
+  },
+  "findings": [
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "mapped": [],
+      "actual_families": [
+        "kv",
+        "transit"
+      ],
+      "exact_matching_case_ids": [
+        "kv.mount",
+        "transit.mount"
+      ],
+      "severity": "mapping_correction_before_claiming_exact_intersection",
+      "reason": "README describes bounded69_families as the family intersection. These original row fixture IDs are present in the actual69 case set; the current empty mapping omits them.",
+      "recommended_change": "Populate only the listed actual_families or explicitly relabel this field as a non-exhaustive primary-family classification; keep case_count=69 and current_whole_surface_qualification=false."
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "mapped": [],
+      "actual_families": [
+        "token"
+      ],
+      "exact_matching_case_ids": [
+        "token.policy",
+        "token.write_denied",
+        "token.denial_no_effect"
+      ],
+      "severity": "mapping_correction_before_claiming_exact_intersection",
+      "reason": "README describes bounded69_families as the family intersection. These original row fixture IDs are present in the actual69 case set; the current empty mapping omits them.",
+      "recommended_change": "Populate only the listed actual_families or explicitly relabel this field as a non-exhaustive primary-family classification; keep case_count=69 and current_whole_surface_qualification=false."
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "mapped": [],
+      "actual_families": [
+        "pki"
+      ],
+      "exact_matching_case_ids": [
+        "pki.lease_expire_issue",
+        "pki.lease_expire_lookup"
+      ],
+      "severity": "mapping_correction_before_claiming_exact_intersection",
+      "reason": "README describes bounded69_families as the family intersection. These original row fixture IDs are present in the actual69 case set; the current empty mapping omits them.",
+      "recommended_change": "Populate only the listed actual_families or explicitly relabel this field as a non-exhaustive primary-family classification; keep case_count=69 and current_whole_surface_qualification=false."
+    }
+  ],
+  "limits": [
+    "Only the requested historical59 / actual69 / declared15-11-11 mapping was independently checked.",
+    "No repeated audit of all upstream source, no new full endpoint denominator, no product execution or host operation.",
+    "A family intersection is not full coverage of that historical surface; shared token or cross-surface cases must not be counted twice.",
+    "Historical partial statuses remain partial. The actual69 retains its canonical495 source; current3cb source review cannot acquire that run's qualification."
+  ],
+  "inputs": [
+    {
+      "path": "README.md",
+      "bytes": 12849,
+      "sha256": "cddfcc26c2ecce8a555cc89c8ede61f07ed174629e757c44b4767a1089b9c87a",
+      "blob": "b29bee676a0f4a79c87bea551288849e78441f74"
+    },
+    {
+      "path": "legacy-59-to-current-source.public.json",
+      "bytes": 46804,
+      "sha256": "dcfee224a9d41ce4d34f4c8a4b2374ba2cef2c1d70da124d58cc5bf012034a3b",
+      "blob": "c57450072b537aaefa8f797a4453d6c8ef3b0e86"
+    },
+    {
+      "path": "bounded69-case-map.public.json",
+      "bytes": 45700,
+      "sha256": "4bc5b847c6ba2df3cb0afbab9e7744167c0bc18dbb95d2c86b7466a15176c2a2",
+      "blob": "57a2563e6f86b4be7695a11758d97a51bbdf8922"
+    },
+    {
+      "path": "actual-bounded69-summary.public.json",
+      "bytes": 104035,
+      "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+      "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+    },
+    {
+      "path": "actual-bounded69-result.public.json",
+      "bytes": 2109,
+      "sha256": "5d028511da8fd3e6480ff1dcbcd46027ef213aa73d83168483e64652af6a809e",
+      "blob": "1740b22d4483272f949cf266bca61dbf862eb107"
+    },
+    {
+      "path": "declared-271-delta-review.public.json",
+      "bytes": 8984,
+      "sha256": "cbf07f4ac35853ad52c7c7fa1ceeadf29ae25419a0642120fd12fe23ee7cc937",
+      "blob": "50c01452da7896a399bcff0d8d02b40105761b2d"
+    },
+    {
+      "path": "source-pins.public.json",
+      "bytes": 8261,
+      "sha256": "e3ed3b7c3d8aab5383d5730c91b2d6630927712161d275440bcb9afa619c9ef7",
+      "blob": "89525b3fc20d73386e4cb6e9eb326a0ec0849ccc"
+    },
+    {
+      "path": "planning/HEPTABAO_SURFACE_WORK_V1.json",
+      "bytes": 146111,
+      "sha256": "4c5056414e12294ef56754faaba2f56f8acd25628b0987f3f3a08cc03d110b09",
+      "blob": "279310f8e329aca3f4ad8ed3d7d1f730095258fd"
+    },
+    {
+      "path": "planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+      "bytes": 11589,
+      "sha256": "5dedd15ae71507e890969ea9bf98ba5c3b292261715630803d142c93b8e140d3",
+      "blob": "4025a4a770bc9312308d3346632edfa354939745"
+    }
+  ]
+}

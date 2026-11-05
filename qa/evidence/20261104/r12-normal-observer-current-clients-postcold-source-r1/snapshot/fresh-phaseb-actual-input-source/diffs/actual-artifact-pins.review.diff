@@ -1,0 +1,40 @@
+--- reference/partial-binding-actual-artifacts
++++ candidate/partial-binding-actual-artifacts
+@@ -54,29 +54,29 @@
+   "artifacts": {
+     "server": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/heptabao-server",
+-      "sha256": null,
+-      "bytes": null,
++      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
++      "bytes": 109074848,
+       "uid": 1000,
+       "mode": 320
+     },
+     "native_receipt": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/native-build.public.json",
+-      "sha256": null,
+-      "bytes": null,
++      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
++      "bytes": 794,
+       "uid": 1000,
+       "mode": 384
+     },
+     "release_receipt": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-result.public.json",
+-      "sha256": null,
+-      "bytes": null,
++      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
++      "bytes": 3200,
+       "uid": 1000,
+       "mode": 384
+     },
+     "combined_tests": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-tests-result.public.json",
+-      "sha256": null,
+-      "bytes": null,
++      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
++      "bytes": 35178,
+       "uid": 1000,
+       "mode": 384
+     },

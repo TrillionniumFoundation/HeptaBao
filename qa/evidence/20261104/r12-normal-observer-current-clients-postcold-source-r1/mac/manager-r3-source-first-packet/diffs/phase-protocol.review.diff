@@ -1,0 +1,67 @@
+diff --git a/mac_current_phase_owner_r2.py b/mac_current_phase_owner_r2.py
+--- a/mac_current_phase_owner_r2.py
++++ b/mac_current_phase_owner_r2.py
+@@ -7,7 +7,7 @@
+ This draft is source-only. It has not captured current credentials or run a job.
+ """
+ from __future__ import annotations
+-import argparse, hashlib, json, os, plistlib, signal, stat, subprocess, sys, time
++import argparse, base64, hashlib, json, os, plistlib, signal, stat, subprocess, sys, time
+ from pathlib import Path
+ from contextlib import contextmanager
+ 
+@@ -255,7 +255,7 @@
+     parser=argparse.ArgumentParser()
+     parser.add_argument('--plan',type=Path,required=True)
+     parser.add_argument('--plan-sha256',required=True)
+-    parser.add_argument('--public-volume-anchor-json',required=True)
++    parser.add_argument('--public-volume-anchor-base64',required=True)
+     parser.add_argument('--public-volume-anchor-sha256',required=True)
+     parser.add_argument('--volume-guard-source-sha256',required=True)
+     args=parser.parse_args()
+@@ -264,7 +264,7 @@
+       'originalSharedPhaseSeconds':120,'nativeWorkerCount':0,'records':[],
+       'productionChanged':False,'providerRequestSent':False,'j3160Contacted':False,
+       'realLaunchdQualificationSuppliedByOuterManager':False,'outcomeUnknown':False}
+-    plan=None;generation=None
++    plan=None;generation=None;published_result=None
+     try:
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_owner')
+         q=ROOT/'qa'
+@@ -275,7 +275,7 @@
+              'exact_public_volume_guard_source')
+         sys.path.insert(0,str(q))
+         from mac_t5_volume_guard_r1 import HeldT5
+-        volume_guard=HeldT5(args.public_volume_anchor_json.encode('utf-8'),
++        volume_guard=HeldT5(base64.b64decode(args.public_volume_anchor_base64,validate=True),
+             args.public_volume_anchor_sha256,remaining,critical)
+         report['volumeGuard']=volume_before_private_state()
+         raw=private_read(args.plan);need(sha(raw)==args.plan_sha256,'exact_phase_plan_pin')
+@@ -283,7 +283,7 @@
+         need(plan['schema']=='heptabao.mac-five-agent-phase-plan.private.r1'
+           and plan['phase'] in ('initial','cold-new-process') and plan['mode'] in ('consume','inverse')
+           and plan['agentIds']==list(AGENTS) and plan['phaseSeconds']==120,'fixed_phase_contract')
+-        phase=ROOT/plan['phase'];generation=plan['generation']
++        phase=ROOT/plan['phase'];generation=plan['generation'];report['generation']=generation
+         need(generation in ('initial','cold-new-process','initial-inverse','cold-new-process-inverse')
+           and generation==plan['phase']+('-inverse' if plan['mode']=='inverse' else ''),
+           'unique_phase_generation')
+@@ -423,7 +423,7 @@
+             except BaseException:
+                 report['ok']=False;report['outcomeUnknown']=True
+         if plan is not None and generation is not None and volume_guard is not None:
+-            try:put(ROOT/'launchd'/(generation+'.result.public.json'),report)
++            try:published_result=put(ROOT/'launchd'/(generation+'.result.public.json'),report)
+             except BaseException:
+                 report['ok']=False;report['outcomeUnknown']=True
+         if volume_guard is not None:
+@@ -435,7 +435,8 @@
+         print(json.dumps({'ok':report['ok'],'generation':generation,
+           'allOwnedStopped':report['allOwnedStopped'],'outcomeUnknown':report['outcomeUnknown'],
+           'elapsedSeconds':time.monotonic()-START,
+-          'volumeGuardClosed':report.get('volumeGuardClosed')},sort_keys=True),flush=True)
++          'volumeGuardClosed':report.get('volumeGuardClosed'),
++          'resultSha256':None if published_result is None else published_result['sha256']},sort_keys=True),flush=True)
+     return 0 if report['ok'] and time.monotonic()<UNTIL else 1
+ 
+ if __name__=='__main__':sys.exit(main())

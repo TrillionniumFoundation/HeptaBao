@@ -1,0 +1,13 @@
+--- a/normal_phaseb_observer_build.py
++++ b/normal_phaseb_observer_build.py
+@@ -16,8 +16,8 @@
+     parser.add_argument('--' + name, required=True)
+ args = parser.parse_args()
+ source, output = Path(args.source), Path(args.output)
+-DIAGNOSTIC_COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-DIAGNOSTIC_TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
++DIAGNOSTIC_COMMIT = '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++DIAGNOSTIC_TREE = '7f4d48a647a81ca96e8a24a0a057c2c829459060'
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",

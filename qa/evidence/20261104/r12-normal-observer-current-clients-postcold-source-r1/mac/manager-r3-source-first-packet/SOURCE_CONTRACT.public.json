@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.mac-launchd-manager-source-review.r3",
+  "status": "SOURCE_ONLY_UNEXECUTED",
+  "sourceIdentity": "New R3 manager implementation, not recovery of the lost earlier draft.",
+  "actualPrerequisites": {
+    "r1InertTree": "c7cebe933d0d8c856db55a0f9760a61e279486dc",
+    "r1SyntheticFailedTree": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+    "r2SyntheticSourceOnlyTree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d"
+  },
+  "graph": [
+    [
+      "server-start",
+      "server-initial"
+    ],
+    [
+      "phase",
+      "initial"
+    ],
+    [
+      "server-kill",
+      "server-initial"
+    ],
+    [
+      "server-start",
+      "server-cold-new-process"
+    ],
+    [
+      "phase",
+      "cold-new-process"
+    ],
+    [
+      "server-kill",
+      "server-cold-new-process"
+    ],
+    [
+      "phase",
+      "initial-inverse"
+    ],
+    [
+      "phase",
+      "cold-new-process-inverse"
+    ]
+  ],
+  "agents": [
+    "main",
+    "trnm",
+    "hepta-ui",
+    "hepta",
+    "hepta-backend"
+  ],
+  "budgets": {
+    "phaseSecondsOriginal": 120,
+    "nativeSecondsOriginal": [
+      15,
+      8,
+      3
+    ],
+    "custodyCleanupOriginal": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "ps": 4
+    },
+    "managerSecondsNewProposal": 600,
+    "aggregateFailureCleanupSecondsNewProposal": 60,
+    "wrapperReadySecondsNewProposal": 30,
+    "serverExecObservationSecondsNewProposal": 10,
+    "failureTermGraceSecondsNewProposal": 20,
+    "managerPollSecondsNewProposal": 0.25,
+    "querySeconds": 10,
+    "psSeconds": 4,
+    "maxManagerCommands": 4096
+  },
+  "ownership": [
+    "launchd owns wrappers; phase wrapper owns its actual Popen children and each independent observer",
+    "exact launchd labels only; no numeric PID or PGID signal",
+    "protected once attempts; unknown forbids business replay",
+    "ready and exec-ready are candidates, not observed startup",
+    "server admission requires observed same PID and birth, pinned executable after exec",
+    "phase admission requires raw final stdout, exact result SHA, known launchd exit zero, runs one, empty known groups and closure"
+  ],
+  "limitations": [
+    "No host or launchd or SQLite or product execution of these sources.",
+    "Actual launchctl print grammar remains unqualified and fails closed.",
+    "Capture entry, kernel sandbox proof, private materializer and full outer driver remain separate source work.",
+    "No production current capture, credentials, provider, J3160, service manager, backup or cutover qualification.",
+    "Only full original successful synthetic proof plus authoritative zero exit, deadline and closure can qualify capture. R1 failed proof is unusable."
+  ],
+  "dependencies": [
+    [
+      "mac_owned_unreaped_r1.py",
+      "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    ],
+    [
+      "mac_owned_commands_r1.py",
+      "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    ],
+    [
+      "mac_t5_volume_guard_r1.py",
+      "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    ],
+    [
+      "mac_native_process_observer_r1.py",
+      "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+    ],
+    [
+      "mac_guarded_current_capture_r3.py",
+      "244f98634ab07e96f70585179a1d155fdb34f34f"
+    ]
+  ]
+}

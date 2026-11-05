@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.postrecovery-cold-components-assessment.v1",
+  "result": "PASS_PURE_COMPONENTS_ONLY",
+  "source_tree": "e9a5f1f673f18a4d2b7162f4188a6bbc221e29ac",
+  "components": {
+    "selected_functions": {
+      "passed": 83,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "call_chain_r2": {
+      "passed": 17,
+      "failed": 0,
+      "exit_code": 0
+    }
+  },
+  "input_verification": {
+    "source_reports_verified": 24,
+    "distinct_sources": 16,
+    "source_tree": "e9a5f1f673f18a4d2b7162f4188a6bbc221e29ac"
+  },
+  "scope": [
+    "All sixteen source files AST and compile-only; no full controller or product module imported/executed.",
+    "Original twelve NativeRun business methods and seven foreground custody helpers retain equal AST.",
+    "Actual selected default-None process/SSH/HTTP/listener/script/cipher-scan/request/route/metadata and start-stop-unseal/direct-dispatch behavior matches original with only absent-versus-None parent_deadline normalized.",
+    "Expired allocations reject before child/API/request-intent/foreground write; late synthetic child/body cannot pass.",
+    "Actual generated default, bounded Linux lifecycle and same-scan reference capture scripts compile; generated code itself is not executed.",
+    "Actual cipher reader consumes only its captured reference with per-file and named-parent identity/hash; modified or missing objects, changed held-parent name and expired read refuse, while remaining descriptors are closed.",
+    "Actual phase entry prefix stores min(now+300,original_controller_until); original execute business sequence is restored by removing exactly the one new cold call."
+  ],
+  "preserved_component_failure": {
+    "source": "callchain-components-r1.py",
+    "authority": "callchain-components-r1.exec.public.json",
+    "result": "FAILED_HARNESS_PRECONDITION",
+    "explanation": "The r1 mock set postcold_until=350 while controller_until=120, bypassing the actual entry that stores their minimum. The selected remaining helper intentionally consumes its already-clamped value. R2 uses the actual four entry statements before each assertion; no product or candidate source was changed.",
+    "failed_case": "new_phase_remaining_respects_original_controller",
+    "exit_code": 1
+  },
+  "limitations": [
+    "Pure mock components do not qualify TLS, SSH cleanup, cross-host deadlines, Linux/macOS child lifecycle, or the physical 98+12 fixture.",
+    "The initial failed component receipt is preserved, not relabeled as a product failure or runtime result.",
+    "None comparison covers the reported selected paths, supplemented by full source diffs; it does not claim exhaustive execution of every legacy branch.",
+    "The fixed cipher reader is not an atomic filesystem snapshot. Its caller must supply the same fresh recovered set and actual successful owned stops.",
+    "No physical host I/O, real child spawned by the harness, network request, service start, API mutation or source rewrite occurred."
+  ]
+}

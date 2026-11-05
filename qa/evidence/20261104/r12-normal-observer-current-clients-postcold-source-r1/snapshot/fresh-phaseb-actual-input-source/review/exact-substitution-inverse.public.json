@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.phaseb-local-stage-source-invariance.v1",
+  "source_only": true,
+  "raw_functions_byte_identical": true,
+  "all_18_function_bodies_ast_source_equal": true,
+  "unique_substitution_inverse_byte_equal": true,
+  "edits": [
+    {
+      "label": "control path",
+      "before": "CONTROL = BASE / \"official271-native-cli-phaseb-r3-control-r1\"",
+      "after": "CONTROL = BASE / \"official271-native-cli-phaseb-r3-control-r2\""
+    },
+    {
+      "label": "work path",
+      "before": "WORK = BASE / \"official271-native-cli-phaseb-r3-live-r1\"",
+      "after": "WORK = BASE / \"official271-native-cli-phaseb-r3-live-r2\""
+    },
+    {
+      "label": "source path",
+      "before": "SOURCE = BASE / \"normal-r10-validation-source-r1\"",
+      "after": "SOURCE = BASE / \"normal-phaseb-ingress-observer-source-r1\""
+    },
+    {
+      "label": "incoming path",
+      "before": "INCOMING = BASE / \"normal-r10-shared-artifacts-r1/incoming\"",
+      "after": "INCOMING = Path(\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming\")"
+    },
+    {
+      "label": "candidate commit",
+      "before": "HEAD = \"49503322c7f446e5eb41e7744f1fdbd7f1192ecc\"",
+      "after": "HEAD = \"3cb873919170cc77101b27f6a3ab9e98f41f8d93\""
+    },
+    {
+      "label": "candidate tree",
+      "before": "TREE = \"1d4211f91e1b34a2ed087a3bbef2e2884bac88e9\"",
+      "after": "TREE = \"7f4d48a647a81ca96e8a24a0a057c2c829459060\""
+    },
+    {
+      "label": "carrier digest",
+      "before": "PAYLOAD_SHA = \"ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34\"",
+      "after": "PAYLOAD_SHA = \"2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd\""
+    },
+    {
+      "label": "carrier size",
+      "before": "PAYLOAD_BYTES = 257060",
+      "after": "PAYLOAD_BYTES = 273490"
+    },
+    {
+      "label": "eight member pins",
+      "before": "FILES = json.loads(r'''{\n  \"phaseb_controller_r3.py\": {\n    \"bytes\": 61210,\n    \"sha256\": \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n  },\n  \"phaseb_binding_r3.py\": {\n    \"bytes\": 20742,\n    \"sha256\": \"39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501\"\n  },\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 24311,\n    \"sha256\": \"409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 5088,\n    \"sha256\": \"6ba4c570b6d48d3194b640fa891832c24229e54d2ba2d9fd694616205fac5fa0\"\n  }\n}''')",
+      "after": "FILES = json.loads(r'''{\n  \"phaseb_controller_r3.py\": {\n    \"bytes\": 61210,\n    \"sha256\": \"10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c\"\n  },\n  \"phaseb_binding_r3.py\": {\n    \"bytes\": 23664,\n    \"sha256\": \"73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25\"\n  },\n  \"phaseb_evidence_r3.py\": {\n    \"bytes\": 15201,\n    \"sha256\": \"4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024\"\n  },\n  \"native_fixture_reference_r8.py\": {\n    \"bytes\": 68149,\n    \"sha256\": \"a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416\"\n  },\n  \"official_cli_reference_r4.py\": {\n    \"bytes\": 46586,\n    \"sha256\": \"18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9\"\n  },\n  \"normal-release-tests-result.public.json\": {\n    \"bytes\": 35178,\n    \"sha256\": \"8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7\"\n  },\n  \"groups.json\": {\n    \"bytes\": 6249,\n    \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n  },\n  \"binding.partially-resolved.json\": {\n    \"bytes\": 6656,\n    \"sha256\": \"26ffaf3fd669fcf83bf78af275fc38512b1f8b6b467693b371b8c61a0f53f69c\"\n  }\n}''')"
+    },
+    {
+      "label": "server copy",
+      "before": "(\"heptabao-server\", 109091112, \"67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113\", 0o500, 0o500)",
+      "after": "(\"heptabao-server\", 109074848, \"437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0\", 0o500, 0o500)"
+    },
+    {
+      "label": "native copy",
+      "before": "(\"native-build.public.json\", 801, \"0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77\", 0o400, 0o600)",
+      "after": "(\"native-build.public.json\", 794, \"51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce\", 0o400, 0o600)"
+    },
+    {
+      "label": "release copy",
+      "before": "(\"normal-release-result.public.json\", 3227, \"75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee\", 0o400, 0o600)",
+      "after": "(\"normal-release-result.public.json\", 3200, \"6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f\", 0o400, 0o600)"
+    },
+    {
+      "label": "exact normal observer source",
+      "before": "SOURCE_PINS = {",
+      "after": "SOURCE_PINS = {\n    \"crates/heptabao-server/src/ha_native_v6_runtime.rs\": (61623, \"5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a\"),"
+    },
+    {
+      "label": "old unknown whole receipt",
+      "before": "OLD_FENCES = {",
+      "after": "OLD_FENCES = {\n    \"official271-native-cli-phaseb-r3-live-r1/result.public.json\": \"cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184\","
+    }
+  ],
+  "target_module_executed": false,
+  "source_execution_scope": "Offline ast.parse/compile only; no execution of candidate modules",
+  "stager_r1_recovered_from_blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+  "carrier_members": 8,
+  "qa_unchanged_from_prior_3cb_tree": "3d3cb2d88cf5f3dee64a31f65a4db3d76f360581"
+}

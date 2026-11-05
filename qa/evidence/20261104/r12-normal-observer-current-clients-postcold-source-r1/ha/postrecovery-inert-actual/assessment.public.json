@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.postrecovery-cold12.inert-assessment.r1",
+  "verdict": "PASS_INERT_ONLY",
+  "job_id": "1a1a8ec2d2a-fc05-300b",
+  "idempotency_key": "heptabao-r10-postcold-inert-r1-5c4cd927-06acd609",
+  "authority_exit_code": 0,
+  "authority_output_complete": true,
+  "authority_output_durable": true,
+  "automatic_retry": false,
+  "stdout_bytes": 5692,
+  "stderr_bytes": 0,
+  "receipt_bytes": 7220,
+  "receipt_sha256": "c83b716baa8ec854b39ecc6b5ac8eae20f585aacd402dec390cad9a4100b703a",
+  "receipt_version": "2050:58908078:7220:1793835414386146734:1793835414387754801",
+  "receipt_stdout_lossless_object_equal": true,
+  "carrier_observed_elapsed_ns": "235589697",
+  "outer_seconds": 60,
+  "files": [
+    {
+      "path": "launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "bytes": 22623,
+      "sha256": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "native_v6_pocket_source_postrecovery_cold_r10_r1.py",
+      "bytes": 54668,
+      "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "read_stopped_postrecovery_frontier_r1.py",
+      "bytes": 16274,
+      "sha256": "e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "read_stopped_recovered_cipher_r1.py",
+      "bytes": 13207,
+      "sha256": "096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    },
+    {
+      "path": "deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "created": true,
+      "ast_compile_only": true,
+      "original_identity_ns_preserved": true,
+      "post_terminal_file_info_same_version": true
+    }
+  ],
+  "child_processes_started_by_carrier": 0,
+  "child_count_basis": "Reviewed exact carrier has no process-start API; it only parses/compiles source and writes owned files. The controller itself is authoritatively terminal.",
+  "module_business_executed": false,
+  "prepare_executed": false,
+  "live_executed": false,
+  "product_started": false,
+  "source_code_unchanged": true,
+  "fd_closure_basis": "All source/candidate publication paths complete their exact finally/context closure before exit0; post-terminal file_info rereads exact hashes and versions. No separate OS FD inventory is claimed.",
+  "remote_read_scope": "Nine independent file_info results plus one whole receipt read; not a cross-file atomic snapshot.",
+  "next_step": "Wait for root prepare-only GO; no prepare/live submitted.",
+  "original_source_tree": "e9a5f1f673f18a4d2b7162f4188a6bbc221e29ac",
+  "component_tree": "984e0227399d2628f50803741700a5757595eba3"
+}

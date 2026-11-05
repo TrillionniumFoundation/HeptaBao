@@ -1,0 +1,36 @@
+--- legacy-59-to-current-source.public.json
++++ legacy-59-to-current-source.public.json
+@@ -70,7 +70,10 @@
+         "source_whole_read_in_this_audit": true
+       },
+       "actionable_rows": [],
+-      "bounded69_families": [],
++      "bounded69_families": [
++        "kv",
++        "transit"
++      ],
+       "current_whole_surface_qualification": false,
+       "unmapped_row_is_not_a_pass": true
+     },
+@@ -96,7 +99,9 @@
+       "actionable_rows": [
+         "native_auth_and_mfa"
+       ],
+-      "bounded69_families": [],
++      "bounded69_families": [
++        "token"
++      ],
+       "current_whole_surface_qualification": false,
+       "unmapped_row_is_not_a_pass": true
+     },
+@@ -189,7 +194,9 @@
+         "source_whole_read_in_this_audit": false
+       },
+       "actionable_rows": [],
+-      "bounded69_families": [],
++      "bounded69_families": [
++        "pki"
++      ],
+       "current_whole_surface_qualification": false,
+       "unmapped_row_is_not_a_pass": true
+     },

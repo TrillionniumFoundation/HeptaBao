@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.root.ha-postrecovery-b-known-failure-core-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:19:31.089Z",
+  "core_tree": "8dba98240fe96d29bb62c8d0fa147d1b1607c407",
+  "job_id": "1a1a9094b62-fc05-30ab",
+  "run_id": "e70cd7fda3c928604cd82e8c1a157502",
+  "authority_exit_code": 1,
+  "terminal_full_durable": true,
+  "automatic_retry": false,
+  "outer_timeout": false,
+  "original98": {
+    "passed": 83,
+    "missing": 15,
+    "exact_union_is_original98": true
+  },
+  "separate12": {
+    "observed": 0,
+    "completed": false
+  },
+  "failure": {
+    "stage": "owned_missing_cipher_leader_recovery",
+    "type": "FixtureError",
+    "code": "direction_new_committed_frontier_not_observed"
+  },
+  "failure_scope": "Role preparation did not observe a newer committed frontier in original60; missing-cipher recovery and post-recovery cold phase were not reached.",
+  "role_observation_count": 190,
+  "pre_stop_rog": {
+    "applied_index": 61,
+    "committed_index": 61,
+    "is_self": false
+  },
+  "original_prepare_seconds": 60,
+  "owned_processes_and_mesh_stopped_checks": true,
+  "all_started_server_events_have_owned_stop_events": true,
+  "mac_sessions": {
+    "count": 5,
+    "all_local_and_remote_groups_reaped_empty": true,
+    "original_stop5_satisfied": true
+  },
+  "tunnel_children": 0,
+  "post_source_build_and24_prior_fences_unchanged": true,
+  "complete_mutation_original_archive_pending": true,
+  "quiet_compute_window_can_be_released": true,
+  "full_replacement": false
+}

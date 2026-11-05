@@ -1,0 +1,19 @@
+{
+  "binary_sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+  "build_exit_code": 0,
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "provenance": {
+    "cargo_events_sha256": "1c6c8bc26d0348383b1bfc003dea30106b411be8e88d59066ee3f5fe8925bd8c",
+    "result_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+    "result_sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_freeze_verified": true,
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+}

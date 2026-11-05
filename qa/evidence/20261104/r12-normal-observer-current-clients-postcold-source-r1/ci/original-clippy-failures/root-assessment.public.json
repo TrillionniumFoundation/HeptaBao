@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.ci-exact-head-merge-large-error-failure.r1",
+  "workflow_run": 41907498576,
+  "head_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "lanes": [
+    {
+      "job": 126845969276,
+      "log_characters": 4228667,
+      "error_groups": {
+        "error: the `Err`-variant returned from this function is very large": 1196,
+        "error: the `Err`-variant returned from this closure is very large": 423,
+        "error: could not compile `heptabao-server` (lib) due to 1619 previous errors": 1
+      },
+      "non_large_err_contexts": [],
+      "completed_test_summaries": 69,
+      "failed_test_summaries": 0,
+      "first_clippy_mention_line": 807,
+      "strict_clippy_command_line": 14051
+    },
+    {
+      "job": 126845968973,
+      "log_characters": 4244392,
+      "error_groups": {
+        "error: the `Err`-variant returned from this function is very large": 1196,
+        "error: the `Err`-variant returned from this closure is very large": 423,
+        "error: could not compile `heptabao-server` (lib) due to 1619 previous errors": 1
+      },
+      "non_large_err_contexts": [],
+      "completed_test_summaries": 69,
+      "failed_test_summaries": 0,
+      "first_clippy_mention_line": 811,
+      "strict_clippy_command_line": 14084
+    }
+  ],
+  "diagnostic_sizes": {
+    "208": 1616,
+    "224": 3
+  },
+  "derived_224_sites": [
+    "2026-11-04T22:47:54.7744609Z     |\n2026-11-04T22:47:54.7745514Z     = help: try reducing the size of `service::Response`, for example by boxing large elements or replacing it with `Box<service::Response>`\n2026-11-04T22:47:54.7746223Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#result_large_err\n2026-11-04T22:47:54.7746240Z \n2026-11-04T22:47:54.7746581Z error: the `Err`-variant returned from this function is very large\n2026-11-04T22:47:54.7746876Z    --> crates/heptabao-server/src/service_recovery_keys.rs:227:10\n2026-11-04T22:47:54.7747010Z     |\n2026-11-04T22:47:54.7747357Z 227 |     ) -> Result<AdmittedRecoverySeal, HaRecoveryIndexAdmissionFailure> {\n2026-11-04T22:47:54.7747550Z     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 224 bytes\n2026-11-04T22:47:54.7747635Z     |\n2026-11-04T22:47:54.7748555Z     = help: try reducing the size of `service::recovery_keys::HaRecoveryIndexAdmissionFailure`, for example by boxing large elements or replacing it with `Box<service::recovery_keys::HaRecoveryIndexAdmissionFailure>`\n2026-11-04T22:47:54.7749182Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#result_large_err\n2026-11-04T22:47:54.7749189Z \n2026-11-04T22:47:54.7750254Z error: the `Err`-variant returned from this closure is very large\n2026-11-04T22:47:54.7750711Z    --> crates/heptabao-server/src/service_recovery_keys.rs:234:62\n2026-11-04T22:47:54.7750874Z     |",
+    "2026-11-04T22:47:54.7783181Z    --> crates/heptabao-server/src/service_recovery_keys.rs:455:67\n2026-11-04T22:47:54.7783319Z     |\n2026-11-04T22:47:54.7783807Z 455 |           let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {\n2026-11-04T22:47:54.7784057Z     |  ___________________________________________________________________^\n2026-11-04T22:47:54.7784254Z 456 | |             live(completed.deadline())?;\n2026-11-04T22:47:54.7784393Z ...   |\n2026-11-04T22:47:54.7784502Z 490 | |             Ok(())\n2026-11-04T22:47:54.7784585Z 491 | |         })();\n2026-11-04T22:47:54.7784721Z     | |__________^ the `Err`-variant is at least 224 bytes\n2026-11-04T22:47:54.7784800Z     |\n2026-11-04T22:47:54.7785842Z     = help: try reducing the size of `service::recovery_keys::HaRecoveryIndexAdmissionFailure`, for example by boxing large elements or replacing it with `Box<service::recovery_keys::HaRecoveryIndexAdmissionFailure>`\n2026-11-04T22:47:54.7786224Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#result_large_err\n2026-11-04T22:47:54.7786229Z \n2026-11-04T22:47:54.7794555Z error: the `Err`-variant returned from this function is very large\n2026-11-04T22:47:54.7794818Z    --> crates/heptabao-server/src/service_recovery_keys.rs:555:10\n2026-11-04T22:47:54.7795143Z     |",
+    "2026-11-04T22:47:54.7810218Z 621 |           let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {\n2026-11-04T22:47:54.7810749Z     |  ___________________________________________________________________^\n2026-11-04T22:47:54.7810860Z 622 | |             self.durable\n2026-11-04T22:47:54.7810952Z 623 | |                 .as_mut()\n2026-11-04T22:47:54.7811178Z 624 | |                 .ok_or_else(|| Response::error(503, \"HA local durable owner absent\"))?\n2026-11-04T22:47:54.7811255Z ...   |\n2026-11-04T22:47:54.7811351Z 638 | |             Ok(())\n2026-11-04T22:47:54.7811434Z 639 | |         })();\n2026-11-04T22:47:54.7811564Z     | |__________^ the `Err`-variant is at least 224 bytes\n2026-11-04T22:47:54.7811645Z     |\n2026-11-04T22:47:54.7812322Z     = help: try reducing the size of `service::recovery_keys::HaRecoveryIndexAdmissionFailure`, for example by boxing large elements or replacing it with `Box<service::recovery_keys::HaRecoveryIndexAdmissionFailure>`\n2026-11-04T22:47:54.7812677Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#result_large_err\n2026-11-04T22:47:54.7812686Z \n2026-11-04T22:47:54.7821284Z error: the `Err`-variant returned from this function is very large\n2026-11-04T22:47:54.7821577Z    --> crates/heptabao-server/src/service_recovery_keys.rs:743:10\n2026-11-04T22:47:54.7821724Z     |"
+  ],
+  "interpretation": {
+    "complete_workspace_tests_succeeded_in_both_lanes": true,
+    "strict_clippy_failed_in_both_lanes": true,
+    "required_matrix_failed": true,
+    "error_diagnostics_each_lane": 1619,
+    "error_classes": [
+      "clippy::result_large_err"
+    ],
+    "completed_test_summary_lines_each_lane": 69,
+    "summary_lines_are_not_the_separate_openbao271_69_case_corpus": true,
+    "threshold_or_workflow_changed": false,
+    "rerun_or_cancel": false,
+    "fix_actual_compilation": "pending; separate source-only boxing candidate"
+  },
+  "exact_command": "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+  "actual_step_environment_observation": {
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTFLAGS_listed": false,
+    "no_inference_that_unlisted_environment_variable_is_explicitly_empty": true
+  },
+  "derived_line_label_correction": "The prior clippy_start_line was the first log mention in toolchain installation. Exact Clippy command locations are now explicit; original logs and the prior derived assessment are retained."
+}

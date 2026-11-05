@@ -1,0 +1,117 @@
+--- a/DISPATCH.json
++++ b/DISPATCH.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "heptabao.phaseb-observer-fixed-source-and-normal-build-dispatch.v4",
++  "schema": "heptabao.phaseb-observer-fixed-source-and-normal-build-dispatch.v5",
+   "status": "source_review_only_not_executed",
+   "candidate": {
+     "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+@@ -11,23 +11,23 @@
+   "pins": {
+     "stage": {
+       "bytes": 24552,
+-      "sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
+-      "blob": "57e6b669158f61ccdbd8926f596b77f864638b92"
++      "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
++      "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+     },
+     "carrier": {
+       "bytes": 57660,
+-      "sha256": "d8ac6575880540b8a094de52bc0102ddfa0c725b98d5f528f04b4842d739af31",
+-      "blob": "fa0373706dada08034940b6ad05ce4a844002698"
++      "sha256": "993cdca9fa1191088205f762d262efb06bf382e45be4321e87e3777147fdd925",
++      "blob": "121c52091ac6ba4fda36063e1978c4a1fae6d8a3"
+     },
+     "launcher": {
+       "bytes": 28425,
+-      "sha256": "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de",
+-      "blob": "5df49e6993eb4ff46898ad2adce689e1d96eb953"
++      "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
++      "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+     },
+     "runner": {
+       "bytes": 20791,
+-      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+-      "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
++      "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
++      "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+     },
+     "groups": {
+       "bytes": 6249,
+@@ -45,18 +45,18 @@
+       "-c",
+       "@exact stage_source_phaseb_observer.py bytes@",
+       "--self-sha256",
+-      "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
++      "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+       "--carrier-sha256",
+-      "d8ac6575880540b8a094de52bc0102ddfa0c725b98d5f528f04b4842d739af31"
++      "993cdca9fa1191088205f762d262efb06bf382e45be4321e87e3777147fdd925"
+     ],
+     "stdin_file": "stage-carrier.private-safe-source.json",
+     "stdin_content_contains_only_public_controls": true,
+     "timeout_seconds": 330,
+     "timeout_scope": "NEW external source-stage supervision; inner NEW 300s and original Git90/clone180 remain",
+-    "idempotency_key": "heptabao-phaseb-native-ingress-observer-source-3cb8739-20261104-r2",
+-    "fresh_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2",
++    "idempotency_key": "heptabao-phaseb-native-ingress-observer-source-3cb8739-20261104-r3",
++    "fresh_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3",
+     "old_readonly_source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+-    "result_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/control/stage-result.public.json",
++    "result_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/control/stage-result.public.json",
+     "expected_tracked_leaves": 3911,
+     "expected_commit_count": 3755,
+     "python_controls_compiled_without_execution_before_write": true,
+@@ -73,7 +73,7 @@
+       "-I",
+       "-S",
+       "-B",
+-      "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/control/launch_normal_phaseb_observer.py",
++      "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/control/launch_normal_phaseb_observer.py",
+       "--host",
+       "rog",
+       "--commit",
+@@ -83,14 +83,14 @@
+       "--stage-sha256",
+       "@actual root-accepted stage-result.public.json whole SHA256@",
+       "--runner-sha256",
+-      "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
++      "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+       "--groups-sha256",
+       "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+     ],
+     "timeout_scope": "NEW aggregate build supervision accepted by root; not a historical cap and not an extension of any child or request budget",
+-    "idempotency_key": "heptabao-phaseb-native-ingress-observer-normal44-plus7-3cb8739-20261104-r2",
+-    "admission_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/build-control-r1",
+-    "output": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/normal-release-tests-r1",
++    "idempotency_key": "heptabao-phaseb-native-ingress-observer-normal44-plus7-3cb8739-20261104-r3",
++    "admission_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/build-control-r1",
++    "output": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1",
+     "toolchain": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin",
+     "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+     "target": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+@@ -148,6 +148,16 @@
+       "fenced_original_files": 12,
+       "old_failure_replayed": false,
+       "cached_authority_copied_as_original_bytes_to_new_control": true
++    },
++    "source_stage_r2": {
++      "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2",
++      "job_id": "1a1a8a17dcd-fc05-2f48",
++      "complete_packet_tree": "157babcd62143eaf154674bcb5183f38cbcfbf8d",
++      "authority_sha256": "beb121de45160e1f39c06cedb8ec0bf1cb409372a6ec8655688d5629def935fc",
++      "core_sha256": "60f261d1cc06c77bbf845b7083f3fb76039943c1ec275c0dfbd911d0e4bf7ccc",
++      "stage_passed": true,
++      "build_submitted": false,
++      "build_hold_reason": "Retained c46 runner still pins bf0 commit/tree. This R3 corrects only those two literals, uses a new root and preserves R2 without overwriting it."
+     }
+   },
+   "handoff_after_build": [
+@@ -156,5 +166,5 @@
+     "Keep Phase B main61210/10816 and normal native startup unchanged; retain reviewed string-key observation fix, correct the proposed file basename to binding.private.json, and bind actual successor source/artifact pins only."
+   ],
+   "host_actions_in_this_packet": false,
+-  "revision_reason": "One explicit Result error type source fix; new exact 3cb source/r2 roots/3755 history and canonical leaf-index pins; retained failed bf0 source/log/authority fences; original runner c46 and every original limit unchanged."
++  "revision_reason": "R2 source stage passed but its retained runner had two stale source-identity constants. R3 changes exactly those two runner literals, one launcher ROOT literal, and the stage ROOT plus derived runner/launcher hashes. Carrier and dispatch pins cascade. Source remains 3cb/7f4d; all functions, tests, caps and prior failure fences are unchanged. No R2 build was dispatched."
+ }

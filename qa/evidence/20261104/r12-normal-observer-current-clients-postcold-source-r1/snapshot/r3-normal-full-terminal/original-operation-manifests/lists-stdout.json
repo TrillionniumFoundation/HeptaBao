@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "lists-stdout",
+    "id": "a2470bd09c10cd1402628dd12c65a868e964c3083543faf4c3ba69250970d9fe",
+    "bytes": 11039,
+    "sha256": "3ad3e4d7a93364ad869d949db81ff2d5161dd3012a030b3701e90626ee51d11f"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/lists-stdout-000000.json",
+      "bytes": 15405,
+      "sha256": "eab1d33131f09c72215517c6b20de7edbac0a0e2582ff8679e7593322ea5f688",
+      "blob": "61bfbc6dd6d9024a79d594714d2e0067bb1512fe"
+    },
+    {
+      "path": "original-sdk/lists-stdout.json",
+      "bytes": 11039,
+      "sha256": "3ad3e4d7a93364ad869d949db81ff2d5161dd3012a030b3701e90626ee51d11f",
+      "blob": "70865a6fc90868dc410b4a5c1820c4c2c3dc0d6b"
+    },
+    {
+      "path": "owned-children/ssh25-list.stdout",
+      "bytes": 2918,
+      "sha256": "f675cd34ff05ce3e637e042a8242f190c5aec495a233bb7039d719bb6190b1fe",
+      "blob": "97ce3c584e84db3e3fa16f8530c0391173762c52",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ssh25-list.stdout",
+      "source_version": "66306:28096653:2918:1793833571582500207:1793833571582500207"
+    },
+    {
+      "path": "owned-children/mount1-list.stdout",
+      "bytes": 134,
+      "sha256": "01d0722a71101e62dc5cfa0a794ee3e82459b4a6a42300391419e46717a30a62",
+      "blob": "97125c66a51409907990849689f0500aac657a5d",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/mount1-list.stdout",
+      "source_version": "66306:28090736:134:1793833615839221135:1793833615839221135"
+    },
+    {
+      "path": "owned-children/redirect5-list.stdout",
+      "bytes": 599,
+      "sha256": "65e069da7f2e516bec71051cd8a4c2e1d51788605eb489d246ffff3233479cfc",
+      "blob": "15ef7e4571864fd541582db6feba863e0347dfa8",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/redirect5-list.stdout",
+      "source_version": "66306:28096665:599:1793833616230218674:1793833616230218674"
+    },
+    {
+      "path": "owned-children/actor2-list.stdout",
+      "bytes": 334,
+      "sha256": "2a564a6c351891dde3ec8bfef7fca4e3933ef9579b6aff43d31260d702c5f412",
+      "blob": "13c7c51a5b2ae0f3361373868e83515623e24913",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/actor2-list.stdout",
+      "source_version": "66306:28096671:334:1793833616467217183:1793833616467217183"
+    },
+    {
+      "path": "owned-children/ordinary5-list.stdout",
+      "bytes": 576,
+      "sha256": "5a30379da031523f57ae35dc132964fc541727708a431d208f5301ad51848530",
+      "blob": "50623071438f6538d608cdf3177be87618641e98",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ordinary5-list.stdout",
+      "source_version": "66306:28096677:576:1793833626687152878:1793833626687152878"
+    },
+    {
+      "path": "owned-children/no_forward6-list.stdout",
+      "bytes": 747,
+      "sha256": "f01d6389794270b21392033a9980b69b49891785a6100b265f9f6e49d64c715f",
+      "blob": "07536f7ccaca7b94d0ec134acfdc162f2799e6c9",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/no_forward6-list.stdout",
+      "source_version": "66306:28096683:747:1793833626844151890:1793833626844151890"
+    },
+    {
+      "path": "owned-children/ingress-observer-1-list.stdout",
+      "bytes": 157,
+      "sha256": "866cc4ad41624f4a139d8dfe391c723ae74d06d96e9241201f676f9222ec2968",
+      "blob": "4d199c9520f557f4158c26e9a21df9f9c2f0fa4c",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-1-list.stdout",
+      "source_version": "66306:28096689:157:1793833635246099062:1793833635246099062"
+    },
+    {
+      "path": "owned-children/ingress-observer-2-list.stdout",
+      "bytes": 166,
+      "sha256": "64afc54c3cb6d207ad25f921d0df74c94c6a950df80a8574c275ca74ad3e358f",
+      "blob": "f1d370fd70c4ea840f25b3ccbda3d5c57e399303",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-2-list.stdout",
+      "source_version": "66306:28096695:166:1793833635344098446:1793833635344098446"
+    },
+    {
+      "path": "owned-children/ingress-observer-3-list.stdout",
+      "bytes": 163,
+      "sha256": "e5c629ce62caa8b375ec1640ff03977507d3401ed6432f65a9622c3dfd347cc2",
+      "blob": "1dee214b314334598d0bf1cf482aac0f9b84e05b",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-3-list.stdout",
+      "source_version": "66306:28096701:163:1793833635439097849:1793833635439097849"
+    },
+    {
+      "path": "owned-children/ingress-observer-4-list.stdout",
+      "bytes": 136,
+      "sha256": "2e6dcfdb635ff0817ce4b6db3da3fdbed6e54c4336c48da2ebb7d7f3c5fcccef",
+      "blob": "ededd9d04cdecebe5b3c1b034894150caddc950d",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-4-list.stdout",
+      "source_version": "66306:28096707:136:1793833635533097258:1793833635533097258"
+    },
+    {
+      "path": "owned-children/ingress-observer-5-list.stdout",
+      "bytes": 143,
+      "sha256": "028f1cfd7c04aa7aa28c591ef6825350623a2f236d682bfd8709a622d608a91a",
+      "blob": "8e28cd79564316ac49d142bfa6928863935a8216",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-5-list.stdout",
+      "source_version": "66306:28096713:143:1793833635564097063:1793833635564097063"
+    },
+    {
+      "path": "owned-children/ingress-observer-6-list.stdout",
+      "bytes": 146,
+      "sha256": "df09b6af40a9430517a89a24bb1cd1995dad66841d9e03f94fc17cc4bacface5",
+      "blob": "dc250888e74f2c84c06d0212bcc1fcb2b9df8d5e",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-6-list.stdout",
+      "source_version": "66306:28096719:146:1793833635595096868:1793833635595096868"
+    },
+    {
+      "path": "owned-children/ingress-observer-7-list.stdout",
+      "bytes": 144,
+      "sha256": "7eef2602a8315ff0f88a8b6cf7f0d4668ebdf6598cb162fe8a3e612e9267c806",
+      "blob": "0fb51b00434d9330ad4d6d63aed984b55d141875",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ingress-observer-7-list.stdout",
+      "source_version": "66306:28096725:144:1793833635624096686:1793833635624096686"
+    }
+  ]
+}

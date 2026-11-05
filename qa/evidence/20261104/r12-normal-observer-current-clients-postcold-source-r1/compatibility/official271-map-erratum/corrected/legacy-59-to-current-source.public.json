@@ -1,0 +1,1332 @@
+{
+  "schema": "heptabao-old59-to-current271-review-map-v1",
+  "scope": "Historical 2.6.2 rows mapped to current source and limited 2.7.1 audit findings, not an exhaustive 2.7.1 denominator",
+  "candidate": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "normal_build_qualification": "in_progress_not_claimed"
+  },
+  "source_tree_leaf_binding": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "rows": [
+    {
+      "surface_id": "HB-SURFACE-CORE-REQUEST-PIPELINE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_complete",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/http.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/http.rs",
+        "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+        "bytes": 231923,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "core"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_complete",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "native_system_lifecycle"
+      ],
+      "bounded69_families": [
+        "system"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines.rs",
+        "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+        "bytes": 153342,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "kv",
+        "transit"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "core",
+        "policy_parameters",
+        "policy_templates",
+        "policy_wrapping_ttl",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_acl.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_acl.rs",
+        "blob": "3df88608d6f93679c11d36f2c75e8a48a5e71c6e",
+        "bytes": 13301,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_auth_and_mfa"
+      ],
+      "bounded69_families": [
+        "token"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-IDENTITY",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "identity",
+        "policy_templates",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/identity.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/identity.rs",
+        "blob": "ff2f31625ebe4023716afae8225a2f87092928e7",
+        "bytes": 60602,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_auth_and_mfa"
+      ],
+      "bounded69_families": [
+        "identity"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-TOKEN",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "token"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CUBBYHOLE-WRAPPING",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "core",
+        "wrapping",
+        "policy_wrapping_ttl",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_cubbyhole.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_cubbyhole.rs",
+        "blob": "b8f9ed1b5532fba5c90ad445c7b1e2c5e1d70a72",
+        "bytes": 12272,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "wrapping"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "idle"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_leases.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_leases.rs",
+        "blob": "9c9b0398b42a7758f2a7e21b5ff682c29d42f5b5",
+        "bytes": 9885,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "pki"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-TOKEN",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "token"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-USERPASS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "userpass"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-APPROLE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "approle"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-CERT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "cert_auth_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "jwt",
+        "oidc_code_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_oidc.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_oidc.rs",
+        "blob": "474a1b20d3120e81032d8d543f8fe94f813a6e3c",
+        "bytes": 80403,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_auth_and_mfa"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KUBERNETES",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "actual_kubernetes"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_kubernetes.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_kubernetes.rs",
+        "blob": "479a98d652337a2353f2f9255925a28b25c76dc6",
+        "bytes": 51042,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_auth_and_mfa"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-LDAP",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ldap_bounded",
+        "ldap_openldap_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+        "bytes": 395371,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-RADIUS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "radius_native",
+        "radius_renewal",
+        "radius_renewal_ha",
+        "radius_renewal_ha_native"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_radius_native.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_radius_native.rs",
+        "blob": "3b71000ff2d8129e180ec1928f253b1988bb97bf",
+        "bytes": 31413,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUTH-KERBEROS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "kerberos_mit_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/auth_kerberos.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/auth_kerberos.rs",
+        "blob": "d0e249650df4888cf72f476efb2e7928395197ae",
+        "bytes": 29415,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KV",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/kv.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/kv.rs",
+        "blob": "bf8f20fc26886083a22f3721ec0864c908ce001e",
+        "bytes": 37750,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "kv"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TRANSIT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed",
+        "transit-migration"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/transit.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/transit.rs",
+        "blob": "f01cc42de3e8b8306b5448a109ac17cfd1d4bf44",
+        "bytes": 88212,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "local_pki_vs_acme_external_kms"
+      ],
+      "bounded69_families": [
+        "transit"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-TOTP",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/totp.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/totp.rs",
+        "blob": "be96adf97d0bf7dfbd098bf4d6853ec2774d2285",
+        "bytes": 24922,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "totp"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-PKI",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "pki",
+        "pkiext"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/pki.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/pki.rs",
+        "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+        "bytes": 136453,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "local_pki_vs_acme_external_kms"
+      ],
+      "bounded69_families": [
+        "pki"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-SSH",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ssh",
+        "ssh_otp_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/ssh.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/ssh.rs",
+        "blob": "4ebb12aeb0a2019ed6765607f163386bab735535",
+        "bytes": 22069,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-DATABASE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "postgres",
+        "postgres_pipeline_simulated",
+        "database_config_completion_live",
+        "database_delivery_live",
+        "postgres_static_rotation_live",
+        "postgres_statement_templates_live",
+        "postgres_password_authentication_live",
+        "postgres_generation_live",
+        "postgres_root_rotation_statements_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-KUBERNETES",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "actual_kubernetes"
+      ],
+      "runtime_source": "crates/heptabao-server/src/engines/kubernetes.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/engines/kubernetes.rs",
+        "blob": "a9c4b86d8163c68bc209ae897db7bb1fea856cc6",
+        "bytes": 98692,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-OPENLDAP",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "actual_openldap_secret"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_openldap.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_openldap.rs",
+        "blob": "53d296bdb3ff3c83ba92a089e2195a2068f094b0",
+        "bytes": 59350,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "rabbitmq_4_1_checksum_plugin"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-POSTGRESQL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "postgres",
+        "postgres_static_rotation_live",
+        "postgres_statement_templates_live",
+        "postgres_password_authentication_live",
+        "postgres_generation_live",
+        "postgres_root_rotation_statements_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-MYSQL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "mysql_8_4_checksum_plugin"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-CASSANDRA",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "cassandra_5_checksum_plugin"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-INFLUXDB",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "influxdb_1_8_checksum_plugin"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-DB-VALKEY",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "valkey_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-FILE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "audit_file"
+      ],
+      "runtime_source": "crates/heptabao-server/src/audit_rotation.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/audit_rotation.rs",
+        "blob": "811b3ef171a1d6a615395330129fcbb72ce2a97b",
+        "bytes": 44742,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-HTTP",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "audit-http"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SOCKET",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "audit-socket"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AUDIT-SYSLOG",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "audit-syslog"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "postgres_storage_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/postgres_storage.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/postgres_storage.rs",
+        "blob": "2f0ffad3652c9252e81d4121dc68b8f78dc91de5",
+        "bytes": 29597,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-STORAGE-RAFT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ha",
+        "raft",
+        "ha_multihost",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+        "bytes": 169489,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_snapshot_cli_and_standby"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-AUTH",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "plugin_auth",
+        "plugin_completion_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "bytes": 92517,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "runtime_plugin_catalog_and_sdk_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-SECRET",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "plugin_secret",
+        "plugin_completion_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "bytes": 92517,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "runtime_plugin_catalog_and_sdk_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "plugin_database_live",
+        "database_config_completion_live",
+        "database_delivery_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_database.rs",
+        "blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+        "bytes": 237942,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_external_secret_and_database_owners",
+        "runtime_plugin_catalog_and_sdk_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PLUGIN-KMS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "plugin_kms_live",
+        "plugin_completion_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_plugin.rs",
+        "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+        "bytes": 92517,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "local_pki_vs_acme_external_kms",
+        "runtime_plugin_catalog_and_sdk_owners"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-MTLS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ha",
+        "ha_certificate_rotation",
+        "ha_multihost"
+      ],
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+        "bytes": 169489,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-FORWARDING",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ha",
+        "ha_multihost",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/ha_forward.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/ha_forward.rs",
+        "blob": "c4f67654fc940285233ad3db47d78681cb1e0ef5",
+        "bytes": 78860,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_snapshot_cli_and_standby"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-READ-STANDBY",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "network",
+        "ha_multihost",
+        "ha_multihost_acl"
+      ],
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+        "bytes": 169489,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-STEPDOWN",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "ha_step_down",
+        "ha_multihost"
+      ],
+      "runtime_source": "crates/heptabao-server/src/ha.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+        "bytes": 169489,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_namespaces_policy_workflow_admin"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLUSTER-AUTOPILOT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "raft",
+        "ha_multihost_autopilot"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_raft_admin.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_raft_admin.rs",
+        "blob": "8dbd8d86d1d8f1834bba530dc8e2898eedbf7607",
+        "bytes": 33183,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "native_namespaces_policy_workflow_admin"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-EDGE-HTTP-TLS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "fixed"
+      ],
+      "runtime_source": "crates/heptabao-server/src/http.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/http.rs",
+        "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+        "bytes": 231923,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [],
+      "bounded69_families": [
+        "edge_tls"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-CLI-ROOT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "tooling_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "client"
+      ],
+      "runtime_source": null,
+      "current_git_source": null,
+      "actionable_rows": [
+        "native_snapshot_cli_and_standby",
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-AGENT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "tooling_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "agent"
+      ],
+      "runtime_source": null,
+      "current_git_source": null,
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PROXY",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "tooling_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "agent"
+      ],
+      "runtime_source": null,
+      "current_git_source": null,
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-OPENAPI-UI",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "openapi"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_openapi.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_openapi.rs",
+        "blob": "de894fb1fdfbf1369bf2e2099dbe29115fff1557",
+        "bytes": 45011,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-OPERATIONS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "capacity"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "native_system_lifecycle"
+      ],
+      "bounded69_families": [
+        "operations"
+      ],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-TREE",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "namespace-tree"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_namespaces.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_namespaces.rs",
+        "blob": "336d6de0c1937c82d776e2e6538c213981e2b052",
+        "bytes": 80266,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_namespaces_policy_workflow_admin"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-NAMESPACE-SEAL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [
+        "native_system_lifecycle",
+        "native_namespaces_policy_workflow_admin"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "workflow_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service_workflows.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service_workflows.rs",
+        "blob": "5c8c1d7867323fb97a0338424c529afee8f36bf6",
+        "bytes": 49330,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_namespaces_policy_workflow_admin"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-SELF-INIT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "self_init_live"
+      ],
+      "runtime_source": "crates/heptabao-server/src/service.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "source_whole_read_in_this_audit": true
+      },
+      "actionable_rows": [],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-LOGICAL",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "tooling_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "kv-migration",
+        "transit-migration"
+      ],
+      "runtime_source": null,
+      "current_git_source": null,
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-SNAPSHOT",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "tooling_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "snapshot-inspection"
+      ],
+      "runtime_source": "crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs",
+      "current_git_source": {
+        "path": "crates/heptabao-migration/src/bin/inspect-openbao-snapshot.rs",
+        "blob": "b03d7d5b536fe6fef5733ffe6a5b09fae8520bea",
+        "bytes": 6591,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "native_snapshot_cli_and_standby",
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    },
+    {
+      "surface_id": "HB-SURFACE-MIGRATION-CUTOVER",
+      "old_target": "OpenBao 2.6.2",
+      "old_declared_status": "runtime_partial",
+      "old_whole_surface_admitted": false,
+      "old_profile_names_are_not_current_receipts": [
+        "kv-migration"
+      ],
+      "runtime_source": "qa/openbao-acceptance/live_migration_rehearsal.py",
+      "current_git_source": {
+        "path": "qa/openbao-acceptance/live_migration_rehearsal.py",
+        "blob": "79acf6110b1f1780bb5340302851929368e07b85",
+        "bytes": 32975,
+        "source_whole_read_in_this_audit": false
+      },
+      "actionable_rows": [
+        "tooling_storage_and_2_7_deltas"
+      ],
+      "bounded69_families": [],
+      "current_whole_surface_qualification": false,
+      "unmapped_row_is_not_a_pass": true
+    }
+  ],
+  "notes": [
+    "A runtime source path was resolved from the exact Git tree, not assumed fully reviewed; source_whole_read_in_this_audit distinguishes the two.",
+    "Two token mappings point to the same ten bounded cases and must not be double-counted.",
+    "Old profile names and implementation_status are historical declarations, never current runtime evidence."
+  ]
+}

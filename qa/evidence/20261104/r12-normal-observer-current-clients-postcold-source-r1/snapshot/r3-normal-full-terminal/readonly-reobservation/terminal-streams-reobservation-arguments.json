@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-3cb-r3-terminal-streams-reobservation-20261104-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1a8b55dda-fc05-2f85",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

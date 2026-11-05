@@ -1,0 +1,337 @@
+--- base/deadline_qa/native_ha_foreground_watchdog.py
++++ candidate/deadline_qa/native_ha_foreground_watchdog.py
+@@ -59,7 +59,9 @@
+         os.fsync(out.fileno())
+ 
+ 
+-def owned_file(path, *, limit=MIB, collect=True, executable=False, private=True):
++def owned_file(path, *, limit=MIB, collect=True, executable=False, private=True, until=None):
++    if until is not None:
++        need(time.monotonic() < until, "parent_deadline_expired")
+     path = Path(path)
+     need(path.is_absolute() and path.resolve(strict=True) == path, "canonical_file_required")
+     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+@@ -72,6 +74,8 @@
+             need(before.st_mode & stat.S_IXUSR, "owned_executable_required")
+         h, size, chunks = hashlib.sha256(), 0, []
+         while True:
++            if until is not None:
++                need(time.monotonic() < until, "parent_deadline_expired")
+             part = os.read(fd, MIB)
+             if not part:
+                 break
+@@ -85,6 +89,8 @@
+                     info.st_ctime_ns, info.st_uid, info.st_mode, info.st_nlink)
+         need(size == before.st_size and identity(before) == identity(os.fstat(fd))
+              == identity(path.stat()), "owned_file_changed")
++        if until is not None:
++            need(time.monotonic() < until, "parent_deadline_expired")
+         return h.hexdigest(), b"".join(chunks)
+     finally:
+         os.close(fd)
+@@ -151,9 +157,9 @@
+     return {"pid": event.si_pid, "signo": event.si_signo, "code": event.si_code, "status": event.si_status}
+ 
+ 
+-def capture_child(child):
++def capture_child(child, *, until=None):
+     require_waitid()
+-    rows = ps_rows(child.pid)
++    rows = ps_rows(child.pid, until=until)
+     need(len(rows) == 1, "owned_child_identity_missing")
+     row = rows[0]
+     need(row["ppid"] == os.getpid() and row["pgid"] == child.pid
+@@ -174,7 +180,7 @@
+             need(event is not None, "owned_live_api_failed_without_retained_exit")
+     if event is not None or row["state"].startswith("Z"):
+         event = exit_observation(child)
+-        fresh = ps_rows(child.pid)
++        fresh = ps_rows(child.pid, until=until)
+         need(event is not None and len(fresh) == 1 and stable(fresh[0]) == stable(row)
+              and fresh[0]["state"].startswith("Z") and exit_observation(child) == event,
+              "owned_exit_not_retained")
+@@ -244,12 +250,12 @@
+     return receipt
+ 
+ 
+-def public_parent_chain(pid):
++def public_parent_chain(pid, *, until=None):
+     chain = []
+     for _ in range(6):
+         if pid <= 0 or any(row["pid"] == pid for row in chain):
+             break
+-        rows = ps_rows(pid)
++        rows = ps_rows(pid, until=until)
+         if not rows:
+             break
+         chain.append(stable(rows[0]))
+@@ -271,11 +277,18 @@
+         os.fsync(stream.fileno())
+ 
+ 
+-def validate_payload(payload):
+-    need(isinstance(payload, dict) and set(payload) == {
+-        "schema", "root", "run_id", "launch_id", "binary_sha256", "helper_sha256",
+-        "source_commit", "source_tree", "expected_system", "expected_host",
+-        "python_path", "python_sha256"}, "owner_input_contract")
++def validate_payload(payload, *, until=None):
++    if until is not None:
++        need(time.monotonic() < until, "original_start_deadline_expired")
++    required = {"schema", "root", "run_id", "launch_id", "binary_sha256", "helper_sha256",
++                "source_commit", "source_tree", "expected_system", "expected_host",
++                "python_path", "python_sha256"}
++    need(isinstance(payload, dict) and set(payload) in (required, required | {"parent_start_seconds"}),
++         "owner_input_contract")
++    if "parent_start_seconds" in payload:
++        value = payload["parent_start_seconds"]
++        need(type(value) in (int, float) and 0 < value <= START_SECONDS,
++             "owner_parent_start_budget_invalid")
+     need(payload["schema"] == SCHEMA and payload["expected_system"] in ("Darwin", "Linux")
+          and platform.system() == payload["expected_system"] and platform.node() == payload["expected_host"],
+          "owner_actual_host_mismatch")
+@@ -290,7 +303,7 @@
+     info = root.lstat()
+     need(stat.S_ISDIR(info.st_mode) and info.st_uid == os.geteuid() and not info.st_mode & 0o077,
+          "owner_private_root_required")
+-    marker = json.loads(owned_file(root / "native-ha-fixture.json")[1])
++    marker = json.loads(owned_file(root / "native-ha-fixture.json", until=until)[1])
+     need(marker.get("run_id") == payload["run_id"] and marker.get("root") == str(root)
+          and marker.get("production_authority") is False and marker.get("root_device") == info.st_dev
+          and marker.get("root_inode") == info.st_ino, "owner_fixture_custody_mismatch")
+@@ -300,19 +313,31 @@
+ def serve(payload):
+     started = time.monotonic()
+     require_waitid()  # Refuse before creating a child on an unsupported interpreter.
+-    root = validate_payload(payload)
++    parent_limited = isinstance(payload, dict) and "parent_start_seconds" in payload
++    if parent_limited:
++        allocation = payload["parent_start_seconds"]
++        need(type(allocation) in (int, float) and 0 < allocation <= START_SECONDS,
++             "owner_parent_start_budget_invalid")
++        start_until = started + allocation
++        root = validate_payload(payload, until=start_until)
++    else:
++        start_until = started + START_SECONDS
++        root = validate_payload(payload)
++    start_guard = start_until if parent_limited else None
++    if parent_limited:
++        need(time.monotonic() < start_until, "original_start_deadline_expired")
+     python_path = Path(sys.executable).resolve(strict=True)
+     need(Path(payload["python_path"]).is_absolute()
+          and Path(payload["python_path"]).resolve(strict=True) == python_path,
+          "owner_python_path_changed")
+     need(owned_file(python_path, limit=16 * MIB, collect=False, executable=True,
+-                    private=False)[0] == payload["python_sha256"], "owner_python_binary_changed")
+-    need(owned_file(Path(__file__).resolve())[0] == payload["helper_sha256"], "owner_helper_changed")
++                    private=False, until=start_guard)[0] == payload["python_sha256"], "owner_python_binary_changed")
++    need(owned_file(Path(__file__).resolve(), until=start_guard)[0] == payload["helper_sha256"], "owner_helper_changed")
+     need(owned_file(root / "heptabao-server", limit=2 * 1024 ** 3,
+-                    collect=False, executable=True)[0] == payload["binary_sha256"], "owner_binary_changed")
++                    collect=False, executable=True, until=start_guard)[0] == payload["binary_sha256"], "owner_binary_changed")
+     for name in ("server.json", "ha.json"):
+-        owned_file(root / name)
+-    need(time.monotonic() < started + START_SECONDS, "original_start_deadline_expired")
++        owned_file(root / name, until=start_guard)
++    need(time.monotonic() < start_until, "original_start_deadline_expired")
+     pid_path, identity_path = root / "process.pid", root / "process.identity.json"
+     active_path = root / "foreground-watchdog.active.json"
+     need(not any(path.exists() or path.is_symlink() for path in (pid_path, identity_path, active_path)),
+@@ -351,6 +376,7 @@
+         need(len(raw) <= MAX_LINE, "owner_protocol_output_bound")
+         os.write(sys.stdout.fileno(), raw)
+     reason, error_code = "owner_preflight_failed", None
++    requested_stop_seconds = None
+     try:
+         log_path = root / "process.log"
+         fd = os.open(log_path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+@@ -360,10 +386,12 @@
+                  "owner_process_log_invalid")
+             # The ordinary CLI selects native HA through server.json storage;
+             # process custody preserves its environment, cwd and session flags.
++            if parent_limited:
++                need(time.monotonic() < start_until, "original_start_deadline_expired")
+             child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=output, stderr=output,
+                                      start_new_session=True, close_fds=True)
+         receipt["submission_count"] = 1
+-        owner = capture_child(child)
++        owner = capture_child(child, until=start_guard)
+         receipt["child_identity"] = owner
+         new_file(phase / "child-identity.json", canonical(owner))
+         identity_bytes = canonical({"platform": platform.system(), "pid": child.pid,
+@@ -371,10 +399,10 @@
+                                     "command": " ".join(argv)})
+         new_file(identity_path, identity_bytes)
+         new_file(pid_path, (str(child.pid) + "\n").encode())
+-        time.sleep(0.4)  # Preserve the original readiness stabilization interval.
+-        need(verify_unreaped(child, owner) is None, "owned_child_exited_before_ready")
+-        receipt["parent_chain_at_ready"] = public_parent_chain(child.pid)
+-        need(time.monotonic() < started + START_SECONDS, "original_start_deadline_expired")
++        time.sleep(0.4 if start_guard is None else min(0.4, max(0.0, start_guard - time.monotonic())))
++        need(verify_unreaped(child, owner, until=start_guard) is None, "owned_child_exited_before_ready")
++        receipt["parent_chain_at_ready"] = public_parent_chain(child.pid, until=start_guard)
++        need(time.monotonic() < start_until, "original_start_deadline_expired")
+         receipt.update(ready=True, owner_pid=os.getpid(), owner_ppid=os.getppid(),
+                        python_executable=sys.executable, python_version=platform.python_version())
+         new_file(phase / "ready.json", canonical(receipt))
+@@ -400,9 +428,15 @@
+             while b"\n" in pending:
+                 line, pending = pending.split(b"\n", 1)
+                 command = json.loads(line)
+-                need(isinstance(command, dict) and set(command) == {"op", "launch_id"}
++                need(isinstance(command, dict)
++                     and set(command) in ({"op", "launch_id"}, {"op", "launch_id", "stop_budget_seconds"})
+                      and command["launch_id"] == payload["launch_id"]
+                      and command["op"] in ("heartbeat", "kill"), "owner_protocol_command_refused")
++                if "stop_budget_seconds" in command:
++                    value = command["stop_budget_seconds"]
++                    need(command["op"] == "kill" and type(value) in (int, float)
++                         and 0 < value <= STOP_SECONDS, "owner_parent_stop_budget_invalid")
++                    requested_stop_seconds = value
+                 if command["op"] == "kill":
+                     reason = "explicit_original_sigkill"
+                     break
+@@ -414,23 +448,23 @@
+         error_code = str(error) if isinstance(error, Refusal) else type(error).__name__
+         reason = "owner_failure"
+     finally:
+-        terminal_until = time.monotonic() + STOP_SECONDS
++        terminal_until = time.monotonic() + (STOP_SECONDS if requested_stop_seconds is None else requested_stop_seconds)
+         receipt["stop_reason"] = reason
+         if error_code is not None:
+             receipt["error_code"] = error_code
+         if child is not None:
+             try:
+                 if owner is None:
+-                    owner = capture_child(child)
++                    owner = capture_child(child, until=terminal_until if requested_stop_seconds is not None else None)
+                     receipt["child_identity"] = owner
+                 receipt["cleanup"] = stop_unreaped(child, owner, until=terminal_until)
+                 for path, expected in ((pid_path, (str(child.pid) + "\n").encode()),
+                                        (identity_path, identity_bytes)):
+                     if path.exists():
+-                        need(expected is not None and owned_file(path)[1] == expected,
++                        need(expected is not None and owned_file(path, until=terminal_until if requested_stop_seconds is not None else None)[1] == expected,
+                              "owner_identity_file_changed_no_unlink")
+                         path.unlink()
+-                need(owned_file(active_path)[1] == active, "owner_active_file_changed_no_unlink")
++                need(owned_file(active_path, until=terminal_until if requested_stop_seconds is not None else None)[1] == active, "owner_active_file_changed_no_unlink")
+                 active_path.unlink()
+                 append_event(root, payload["launch_id"], child.pid, "stopped")
+                 receipt["stopped"] = True
+@@ -493,7 +527,7 @@
+     def _signal_change(self):
+         self._changed.set()
+ 
+-    def _send(self, operation):
++    def _send(self, operation, *, parent_deadline=None):
+         with self._send_lock:
+             if operation == "heartbeat" and not self._heartbeat:
+                 return
+@@ -501,7 +535,12 @@
+                 need(not self.kill_sent, "original_sigkill_already_submitted_no_retry")
+                 self.kill_sent = True
+                 self._heartbeat = False
+-            raw = canonical({"op": operation, "launch_id": self.launch_id})
++            command = {"op": operation, "launch_id": self.launch_id}
++            if parent_deadline is not None:
++                remaining = min(STOP_SECONDS, parent_deadline - time.monotonic())
++                need(operation == "kill" and remaining > 0, "parent_deadline_expired_before_kill")
++                command["stop_budget_seconds"] = remaining
++            raw = canonical(command)
+             need(self.child is not None and self.child.stdin is not None,
+                  "foreground_channel_not_owned")
+             written = os.write(self.child.stdin.fileno(), raw)
+@@ -568,14 +607,27 @@
+             self._changed.clear()
+         raise Refusal("foreground_" + name + "_unknown_no_retry")
+ 
+-    def start(self):
++    def start(self, *, parent_deadline=None):
+         need(self.child is None and self.receipt["submission_count"] == 0,
+              "foreground_start_already_submitted_no_retry")
+         began = time.monotonic()
++        until = began + START_SECONDS
++        if parent_deadline is not None:
++            need(type(parent_deadline) in (int, float) and 0 < parent_deadline < float("inf"),
++                 "foreground_parent_deadline_invalid")
++            until = min(until, parent_deadline)
++            need(until > began, "parent_deadline_expired_before_start")
++            self.payload["parent_start_seconds"] = until - began
++            self.receipt["parent_start_limit_seconds"] = until - began
+         require_waitid()
+         remote = self.node.root + "/native_ha_foreground_watchdog.py"
+         # The helper is installed during fixture preparation; stdin is reserved
+         # for the live parent channel, not a heredoc that reaches EOF at start.
++        if parent_deadline is not None:
++            remaining = min(START_SECONDS, until - time.monotonic())
++            need(remaining > 0, "parent_deadline_expired_before_launch_intent")
++            self.payload["parent_start_seconds"] = remaining
++            self.receipt["parent_start_limit_seconds"] = remaining
+         payload = base64.b64encode(canonical(self.payload)).decode()
+         loader = ("import hashlib,pathlib,runpy,sys;"
+                   "p=pathlib.Path(sys.argv[1]);"
+@@ -596,15 +648,17 @@
+         self.receipt["submission_count"] = 1
+         with (self.phase / "ssh.stderr.log").open("xb") as stderr:
+             os.chmod(self.phase / "ssh.stderr.log", 0o600)
++            if parent_deadline is not None:
++                need(time.monotonic() < until, "original_start_deadline_expired")
+             self.child = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=stderr, start_new_session=True, close_fds=True)
+-        self.owner = capture_child(self.child)
++        self.owner = capture_child(self.child, until=until if parent_deadline is not None else None)
+         self.receipt["local_ssh_identity"] = self.owner
+         new_file(self.phase / "ssh-identity.json", canonical(self.owner))
+         self.thread = threading.Thread(target=self._read_loop, name="native-foreground-" + self.launch_id,
+                                        daemon=True)
+         self.thread.start()
+-        ready = self._wait_for("ready", began + START_SECONDS)
++        ready = self._wait_for("ready", until)
+         need(self.terminal is None and self.failure is None, "foreground_exited_after_ready")
+         row = ready.get("child_identity", {}).get("ps", {})
+         need(type(row.get("pid")) is int and row["pid"] > 0
+@@ -614,7 +668,7 @@
+                             parent_chain_at_ready=ready.get("parent_chain_at_ready"),
+                             python_identity=ready.get("python_identity"),
+                             start_elapsed_seconds=time.monotonic() - began)
+-        need(time.monotonic() < began + START_SECONDS, "original_start_deadline_expired")
++        need(time.monotonic() < until, "original_start_deadline_expired")
+         return row["pid"]
+ 
+     def assert_running(self):
+@@ -629,7 +683,7 @@
+             if self.child is not None and self.child.stdin is not None and not self.child.stdin.closed:
+                 self.child.stdin.close()
+ 
+-    def stop(self):
++    def stop(self, *, parent_deadline=None):
+         if self.completed:
+             return self.receipt.get("native_pid")
+         if self.child is None:
+@@ -638,11 +692,16 @@
+         if self.stop_started is None:
+             self.stop_started = time.monotonic()
+             self.stop_until = self.stop_started + STOP_SECONDS
++        if parent_deadline is not None:
++            need(type(parent_deadline) in (int, float) and 0 < parent_deadline < float("inf"),
++                 "foreground_parent_deadline_invalid")
++            self.stop_until = min(self.stop_until, parent_deadline)
++            self.receipt["parent_stop_deadline_limited"] = True
+         until = self.stop_until  # A cleanup re-entry must not reset the stop clock.
+         prior_failure = self.ready is None or self.failure is not None or self.eof or self.terminal is not None
+         try:
+             if not prior_failure and not self.kill_sent:
+-                self._send("kill")
++                self._send("kill", parent_deadline=until if parent_deadline is not None else None)
+             elif prior_failure:
+                 self._close_parent_channel()
+             terminal = self._wait_for("terminal", until)
+@@ -658,7 +717,7 @@
+             need(not self.thread.is_alive(), "foreground_receiver_not_joined")
+             self._close_parent_channel()
+             if self.owner is None:
+-                self.owner = capture_child(self.child)
++                self.owner = capture_child(self.child, until=until if parent_deadline is not None else None)
+             self.local_cleanup = stop_unreaped(self.child, self.owner, until=until)
+             need(time.monotonic() < until, "original_stop_deadline_expired")
+             observed = dict(self.receipt, stopped=True, remote_cleanup=terminal["cleanup"],

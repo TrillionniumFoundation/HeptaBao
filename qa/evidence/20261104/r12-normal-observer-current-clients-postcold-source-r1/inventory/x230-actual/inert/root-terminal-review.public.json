@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.x230-inventory-inert-root-terminal-review.v1",
+  "status": "PASS_INERT_ONLY_EXACT_READONLY_GO",
+  "job": "1a1a8c083fa-fc05-2fa3",
+  "ack": {
+    "bytes": 4365,
+    "sha256": "6e6aaba2ac9e7b078fdd01bd6269f6e0dc631a872e24106897d559b211d18681",
+    "blob": "3d599bc8cef3cfd2a470c1651266984921ad55d8"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "1462eeea58ff270bc899ad7286e752025c8ce85abf1e4ab88bec7c9994ac78c8",
+    "blob": "3ab7441a493af2b1b8a9243b1ca3b0b7dd400a93"
+  },
+  "stdout": {
+    "bytes": 683,
+    "sha256": "acd4da3c6cffd9853f3632c0b68d84fe092f730dc7699153b7d116d057137589",
+    "blob": "6b1b89822999560f1424bb74067df02c9a2ffce1"
+  },
+  "original_sdk": {
+    "bytes": 2423,
+    "sha256": "12555d8be58961ac34290c138bf31eb1b313abe1a8c7cffabb2b277f380df5d5",
+    "blob": "b5cebae5498fe7e893a561a1b30ef85c90c09840"
+  },
+  "source_packet_tree": "574b8ff0f6407e8c1fb642187047950a04799080",
+  "raw_stdout_hex_text_offsets_eof_exact": true,
+  "original_source_manifest_sha_and_all_host_counts_match": true,
+  "elapsed_seconds": 0.03375625191256404,
+  "new_inert_seconds": 10,
+  "source_executed": false,
+  "host_inventory_read": false,
+  "source_files_written": false,
+  "read_only_scope": {
+    "entries": 18,
+    "passes": 5,
+    "queries": 6
+  },
+  "read_only_original45_outer60": true,
+  "full_host_or_backup_qualified": false
+}

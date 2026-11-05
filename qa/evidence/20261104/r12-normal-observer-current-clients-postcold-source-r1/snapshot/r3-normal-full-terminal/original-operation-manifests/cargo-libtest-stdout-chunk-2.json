@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "cargo-libtest-stdout-chunk-2",
+    "id": "81735f5ee003bb536f075db50d5a7594ca3397cc0ec3d00dbf8b453113ad6b4e",
+    "bytes": 87842,
+    "sha256": "c0bd1bccbfd0ecc8d09df5002eaae5458fc1437f853506c2b613067eeb487e42"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-000000.json",
+      "bytes": 22534,
+      "sha256": "c4fe46dd191ebc3c5ef34ea4f220e0115b2d19bf2c8398bc476eb3ea6ab03db0",
+      "blob": "97bbd658a1e3a276ccd28b33269f3e724200f12f"
+    },
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-016384.json",
+      "bytes": 22538,
+      "sha256": "53e7e624e0953742553be418eb91f6306b3812ba28dfb601d43c85aa04f80e6e",
+      "blob": "34a3d8ed56f0f3168f29d35f382c5f00033304f3"
+    },
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-032768.json",
+      "bytes": 22538,
+      "sha256": "d8c0718bf6d0d24b7c98f97134e46469edec9f5961dca70bddda89f75aedc123",
+      "blob": "e8fa1b4f1a03b9c3cff078510e86e0157487373d"
+    },
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-049152.json",
+      "bytes": 22538,
+      "sha256": "675367d069e259cd6baea39a52e56b1536ac030c86686b7bc186bcd67f52a15f",
+      "blob": "3f3475065b8ba540d4d8ec93ed6dd3e8f43ab906"
+    },
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-065536.json",
+      "bytes": 22538,
+      "sha256": "6f3f27103ff2ca6ae1cc4618569066a4c5e75df1c6dd8123d5f425ffd45a8684",
+      "blob": "38c643aa568e49d959f6aa3c3b9d4e38a51dbc25"
+    },
+    {
+      "path": "original-operation-pages/cargo-libtest-stdout-chunk-2-081920.json",
+      "bytes": 8585,
+      "sha256": "b743bcd0381254804818c95d8c90393d3e852e6dad807f7cd29e9b1122689a69",
+      "blob": "f7a7855f01a8a8fd03728a97ea9503cbc337bbbd"
+    },
+    {
+      "path": "original-sdk/cargo-libtest-stdout-chunk-2.json",
+      "bytes": 87842,
+      "sha256": "c0bd1bccbfd0ecc8d09df5002eaae5458fc1437f853506c2b613067eeb487e42",
+      "blob": "711684ed5b1cb81bd964f4710a935a2c4160d7ea"
+    }
+  ]
+}

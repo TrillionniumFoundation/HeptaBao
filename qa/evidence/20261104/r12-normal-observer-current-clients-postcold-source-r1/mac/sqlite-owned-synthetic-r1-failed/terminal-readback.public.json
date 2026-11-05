@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.mac-capture-synthetic-terminal-readback.r1",
+  "status": "FAIL_KNOWN_ORIGINAL_PRESERVED",
+  "job_id": "1a1a8fdfe3e-fc05-3039",
+  "fixed_idempotency_key": "heptabao-mac-immutable-sqlite-owned-synthetic-108f956e-20261104-r1",
+  "planned_cases": 7,
+  "recorded_cases": 6,
+  "passed": 5,
+  "failed": 1,
+  "not_executed": 1,
+  "failed_case": "held_inode_drift_refused_before_connection",
+  "actual_refusal_code": "absence_not_reopened_as_present",
+  "expected_refusal_code": "current_input_fd_name_or_metadata_changed",
+  "unexecuted_case": "actual_immutable_connection_rejects_write",
+  "authoritative_exit_code": 1,
+  "output_complete": true,
+  "output_durable": true,
+  "supervisor_timeout": false,
+  "stdout_bytes": 13902,
+  "stderr_bytes": 0,
+  "sdk_hex_equals_text": true,
+  "both_eof": true,
+  "original_seconds": 45,
+  "outer_seconds": 60,
+  "elapsed_seconds": 0.28781062504276633,
+  "outcome_unknown": false,
+  "all_owned_descriptors_closed": true,
+  "all_owned_commands_stopped": true,
+  "all_recorded_sqlite_connections_closed": true,
+  "held_t5_final_closure": true,
+  "production_opened": false,
+  "current_capture_authorized_or_started": false,
+  "consumer_or_service_started": false,
+  "sqlite_runtime": {
+    "pythonExecutable": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "sqliteExtension": {
+      "bytes": 165632,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+      "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+    },
+    "sqliteVersion": "3.53.4",
+    "sqliteVersionInfo": [
+      3,
+      53,
+      4
+    ]
+  },
+  "source_pins": {
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_t5_volume_guard_r1.py": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99"
+  },
+  "source_postchecks_completed": false,
+  "source_postcheck_scope": "The terminal source/runtime recheck block was not reached after the sixth case failed; the original expected pins and initially verified runtime are not claimed as successful postchecks.",
+  "diagnosis": "The drift case calls database() once to hold the inode and sidecar absence, appends to that held inode, then calls auth_rows(), which calls database() again. A repeated absent sidecar lookup is refused before immutable_query() can perform its actual metadata-drift verification.",
+  "next_scope": "Prepare a separately reviewed fixed-case controller using the held main object in the actual immutable_query() path. Keep the original expected metadata-drift refusal and zero-open-connection assertion. No host rerun has been submitted.",
+  "full_proof_qualified": false
+}

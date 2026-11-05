@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.mac-current-five-agent-source-increment2.v1",
+  "source_only": true,
+  "host_operations": 0,
+  "files": [
+    {
+      "path": "candidate/mac_current_phase_owner_r2.py",
+      "mode": "100644",
+      "bytes": 23422,
+      "sha256": "a063e88d225d69509a23dddb4faf62f1da88c337aaba8b1262bb523048b07481",
+      "git_blob": "2d8a431a145858a09c95884c4f0d2fc4cc58157b"
+    },
+    {
+      "path": "candidate/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    {
+      "path": "candidate/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    },
+    {
+      "path": "candidate/mac_native_process_observer_r1.py",
+      "mode": "100644",
+      "bytes": 12038,
+      "sha256": "b6339f2f623af4fb899665d571f0a89746532759c24511ead4e5f15d1ea6dec7",
+      "git_blob": "bf63fb2beb4d5e7ed04dcdddb1c18323f56a694e"
+    },
+    {
+      "path": "candidate/mac_single_native_r2.mjs",
+      "mode": "100644",
+      "bytes": 28527,
+      "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+      "git_blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680"
+    },
+    {
+      "path": "candidate/mac_current_cycle_r2.mjs",
+      "mode": "100644",
+      "bytes": 24007,
+      "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+      "git_blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769"
+    },
+    {
+      "path": "draft/mac_guarded_current_capture_r1.py",
+      "mode": "100644",
+      "bytes": 20914,
+      "sha256": "9562c64359f980da8dcb53dc15d40a08e7c3a325e391beb13e9108b4c38c2849",
+      "git_blob": "8f9c8d0813acbf5a00d2a26bd52f94f904973072"
+    },
+    {
+      "path": "public/t5-anchor.exact.json",
+      "mode": "100644",
+      "bytes": 967,
+      "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+      "git_blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
+    },
+    {
+      "path": "original/mac_current_phase_owner_r1.py",
+      "mode": "100644",
+      "bytes": 20969,
+      "sha256": "b73bdfcb48af65d55f92177ce2753c09899df7c2ea3d11e51f17367b5136ff33",
+      "git_blob": "d77a911a93ce425bb76a7cfe94b73774f5601379"
+    },
+    {
+      "path": "original/authbus_native_process_observer.py",
+      "mode": "100644",
+      "bytes": 11897,
+      "sha256": "2a2d8e61ba33b41a6617e5c900d502ee73b3e4a96377f1f502a64822875bb2a9",
+      "git_blob": "acc80fe9dcae285c0c162447d1fdf89e758cfa7a"
+    },
+    {
+      "path": "original/native_ha_foreground_watchdog.py",
+      "mode": "100644",
+      "bytes": 37462,
+      "sha256": "74925449ae1141848c2dcbbe798ed0030fbbf9b1f599187c211d02ec03d34d61",
+      "git_blob": "e32a89555dd5f4952eb2cdb3dc8550574f511039"
+    },
+    {
+      "path": "diffs/phase-owner-r1-to-r2.diff",
+      "mode": "100644",
+      "bytes": 22393,
+      "sha256": "3de125e393656dd5016d2a325a3b56742cbe959fd09bf55a81345ba345778e3d",
+      "git_blob": "ae3b8e904aef0735611d0b1f9694de5d230a9b3b"
+    },
+    {
+      "path": "diffs/native-observer-retained.diff",
+      "mode": "100644",
+      "bytes": 1977,
+      "sha256": "3e133580b7d8e0b4be222c5ac9941dcb4be0cf8605c00ca8819682a0ca826343",
+      "git_blob": "d9809d7a9dc6797feed13ee3ccba8f49a0433920"
+    },
+    {
+      "path": "diffs/native-r1-to-r2.diff",
+      "mode": "100644",
+      "bytes": 1999,
+      "sha256": "89403762dc499533c96490e210472a204074323eb633ab01fa440b668cd21422",
+      "git_blob": "9fff996981e6f4cef84347b806871bc9c956dea9"
+    },
+    {
+      "path": "diffs/cycle-r1-to-r2.diff",
+      "mode": "100644",
+      "bytes": 2006,
+      "sha256": "e6eccb1dacdad41317839850757c39f5ba697ea829b8006119ccb7c5a1833984",
+      "git_blob": "2f3ec2d9f8a8998eec23fd6a9dd5e036ae796feb"
+    },
+    {
+      "path": "SCOPE.md",
+      "mode": "100644",
+      "bytes": 3857,
+      "sha256": "d2cfae7e096a3d1590fb1851feded5276438c5ed3e19193136cadb9373e7763e",
+      "git_blob": "1ab248df8516f22b2aa54ed3ee144b8af22c11c5"
+    }
+  ]
+}

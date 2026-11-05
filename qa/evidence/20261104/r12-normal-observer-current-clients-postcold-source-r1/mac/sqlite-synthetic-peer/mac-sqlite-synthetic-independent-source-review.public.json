@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.mac-sqlite-synthetic-independent-source-review.r1",
+  "reviewer": "ha_validation",
+  "source_tree": "04a900479c73e79c37219ee0de46a6c39061ffde",
+  "verdict": "PASS_NARROW_SOURCE_REVIEW_NO_NEW_BLOCKING_FINDING",
+  "scope": "R2-to-R3 capture delta, complete owned synthetic entry and retained foreground command adapter; no host, SQLite execution or production-capture authorization",
+  "reviewed": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 3846,
+      "sha256": "f6c17cf0aaf01c15cd0ddd438139dbf91c7b957bb8687e3411d564c3871a8c12",
+      "git_blob": "64be3813ecadda7e4e9699d354f2cab746dd7443"
+    },
+    {
+      "path": "capture-r2-to-r3.review.diff",
+      "bytes": 7900,
+      "sha256": "6615d8a65c2ff4bfe8565714ea02957f2ae10c7d0807e003f374774bcc308029",
+      "git_blob": "a147aa1b2a2d547329458cffbbf0638a56a6c9a8"
+    },
+    {
+      "path": "mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "git_blob": "992fa2b52760e5f3d0b192837053728011e11500"
+    },
+    {
+      "path": "mac_guarded_current_capture_r3.py",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+    },
+    {
+      "path": "mac_owned_commands_r1.py",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    }
+  ],
+  "strict_diff": {
+    "base_git_blob": "064d9ad74743139aa977807d7b4e39dab58a1c9d",
+    "base_sha256": "faf10984269fd350b78d11685e46b079171ff89ce8de8572d110a55e1c05aed2",
+    "hunks": 7,
+    "exact_new_source": true
+  },
+  "findings": [],
+  "checked_boundaries": [
+    {
+      "name": "same_runtime_and_source",
+      "result": "Synthetic records actual Python executable and _sqlite3 extension path/size/SHA, runtime versions and five fixed source hashes. Both runtime and fixed sources are rechecked after cases. Later capture compares frozen proof raw bytes, actual runtime identity and its own source SHA before production input reads. This is not a transitive dynamic-library or whole-installation attestation."
+    },
+    {
+      "name": "owned_scope",
+      "result": "All seven SQLite setup databases are under the single fresh fixed synthetic root. HeldT5 guard and actual bounded diskutil acceptance precede mkdir/database setup. Only the exact root-owned T5 mount mode exception is added to the synthetic traversal; production /Users traversal has no exception."
+    },
+    {
+      "name": "fixed_input_fences",
+      "result": "Before SQLite connect, database() rejects nonempty WAL and any rollback journal. Held parent directory FDs are rechecked against names with no-follow; files require same named/held complete identity and absent sidecars remain absent. Query completion repeats these fences. They remain bounded point observations, not atomic SQLite or cross-agent snapshots."
+    },
+    {
+      "name": "shared_deadlines",
+      "result": "One NEW45s success deadline covers source/runtime hashing, diskutil, all cases and closure; diskutil is min(remaining,30s). Actual immutable query uses min(capture remaining,3s), progress interruption and post-query/post-close deadline checks. Final stdout is followed by a further original-deadline exit check; acceptance requires final raw report plus authoritative exit0, never report.ok alone."
+    },
+    {
+      "name": "retained_child_cleanup",
+      "result": "Commands registers Popen under the signal critical section, retains the direct child through WNOWAIT and runs the already reviewed one-shot custody cleanup. Pipe closure is attempted independently. Partial output, missed command deadline, custody uncertainty or closure errors cannot produce known successful command completion; diskutil additionally requires exit0. Cleanup is separate and does not renew successful command or synthetic deadlines."
+    },
+    {
+      "name": "SQLite_connection_and_FD_closure",
+      "result": "Each actual query attempts connection.close under the protected ledger; failures propagate and leave closed=false. Synthetic finally collects input, setup-connection, extra-FD, T5 and command closure facts and makes uncertain closure non-success. No retry is used to erase a failed close."
+    }
+  ],
+  "limitations": [
+    "Source-only review; the seven actual Mac SQLite cases have not been run by this reviewer and no host access occurred.",
+    "The preceding HeldT5 and retained-custody implementations were not re-audited or re-tested wholesale here.",
+    "Actual runtime must preserve original source pins, raw proof, authoritative terminal status and all closure evidence under the original limits.",
+    "Production capture still requires a separately reviewed sandbox caller and private publication path; this package alone does not authorize it.",
+    "Immutable URI success and held/name metadata fences do not prove SQLite transaction consistency, writer absence, cross-agent atomicity or whole database backup.",
+    "Failure reports do not establish public-code-FD closure from allOwnedDescriptorsClosed alone; the whole original success conjunction and authoritative exit0 are mandatory."
+  ],
+  "unchanged_business_scope": true,
+  "new_host_actions": 0,
+  "new_product_actions": 0,
+  "failure_receipt_scope": {
+    "public_code_fd_close_error": "code_bytes/public_code_pin close errors propagate before complete=True; ok remains false and the authoritative exit is nonzero. No false successful qualification was found.",
+    "allOwnedDescriptorsClosed": "On such a failed run this field aggregates registered inputs/setup/extra/T5 handles, not a separate public-code-FD ledger; true must not be interpreted as complete public-code-FD closure.",
+    "outcomeUnknown": "The failed report may also retain outcomeUnknown=false despite that unproven public-code-FD closure. Nonzero/ok=false remain disqualifying; no consumer may promote it based on the narrower flags.",
+    "decision": "Document this known failure-report scope; it is not an additional green-path blocker or an instruction to rerun/relax limits."
+  }
+}

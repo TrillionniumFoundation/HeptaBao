@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao-normal-r3-evidence-recovery-log-v1",
+  "original_job": "1a1a8b55dda-fc05-2f85",
+  "cache_loss_observed": true,
+  "original_business_dispatches_added": 0,
+  "prior_20_operations_resumed_by_exact_immutable_id": true,
+  "all_prior_sdk_payload_sizes_and_sha256_matched": true,
+  "all_pages_immediately_persisted_and_whole_read_back": true,
+  "terminal_core_reobservation": {
+    "first": "explicit read-tool error, incorrect artifacts/native-build path; 200 B original retained",
+    "corrected": "normal runner line 252 and preserved release SDK identify output/native-build.public.json",
+    "corrected_payload_whole_equal_to_prior_recorded": {
+      "bytes": 56818,
+      "sha256": "a87b45148a9083a83bd43b74ade1c3def4dbdc87213496c9d399edb769dc6112"
+    },
+    "not_a_business_replay": true
+  },
+  "terminal_streams_reobservation": {
+    "whole_equal_to_prior_recorded": {
+      "bytes": 7333,
+      "sha256": "9019455abd28c2d7c2ba350a601d05136521135509408d1082e95aec49a29005"
+    },
+    "not_a_business_replay": true
+  },
+  "transient_pre_cache_loss_transport_error_originals": "not recovered from the cleared volatile cache; no claim that every assistant RPC is included; immutable native operation payloads were recovered by exact original IDs",
+  "source_stage_external_reference": {
+    "tree": "a93b2bbf182a4ae13ad3256adfef503a3d0029b0",
+    "files": 69,
+    "stage_sha256": "0abd8e0ae42eef1bacd4866f12f0ada94563369ecf2b66e7ca69ab4388433d7f",
+    "scope": "ROOT previously verified exact source, five actual controls and all 41 stage child receipts; not rerun here"
+  },
+  "old_failure_fences_scope": "Original admission/stage receipts retained; no additional post-build inventory or old fixture restart was performed during this read-only archive."
+}

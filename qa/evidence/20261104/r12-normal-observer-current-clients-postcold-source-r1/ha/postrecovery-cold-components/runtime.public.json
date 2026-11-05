@@ -1,0 +1,7 @@
+{
+  "chunk_id": "5cd064",
+  "wall_time_seconds": 0.00003351,
+  "exit_code": 0,
+  "original_token_count": 53,
+  "output": "{\"executable\": \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3\", \"implementation\": \"CPython\", \"platform\": \"linux\", \"python\": \"3.12.14\", \"scope\": \"local cloud pure-component runtime\"}\n"
+}

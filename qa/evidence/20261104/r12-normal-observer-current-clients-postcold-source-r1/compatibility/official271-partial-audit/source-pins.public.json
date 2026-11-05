@@ -1,0 +1,214 @@
+{
+  "schema": "heptabao-271-partial-source-audit-pins-v1",
+  "product_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "product_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "official_tag": "v2.7.1",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "official_tag_raw": {
+    "bytes": 331,
+    "sha256": "6917fda36c3093a3ec884c6240f2aac24e101c61970c86be8cd4e7872db995c0",
+    "blob": "fec1f5c7b872bff8e89c620c3ad84b7d2851c6f3"
+  },
+  "official_tree": {
+    "bytes": 1563103,
+    "sha256": "bd645c77febf88b9fe045945b0732d54e645fa31a8dc61557e9ac3a58a6503cc",
+    "blob": "deb6df7923392af0305ebf6ebb4236c8c6a2f6eb"
+  },
+  "product_sources": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+      "bytes": 153342,
+      "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+      "bytes": 21719,
+      "sha256": "c5a932161eaeced8bef1c5dcd0a869ba9895bc0cafb9f4d80967cc7a21641c01"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage.rs",
+      "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+      "bytes": 8921,
+      "sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_plugin.rs",
+      "blob": "794bc0f43ef80c8ad56c743634bfa4e7ad8f798e",
+      "bytes": 92517,
+      "sha256": "a68374662b202a743d10f46a98c8b91eddb8ffb5ed19ce7ca76b64f869f223d5"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_native_pki.rs",
+      "blob": "038a43099f7cffc373c10b9548a705d93b43165b",
+      "bytes": 22801,
+      "sha256": "d45c1fdb593c0947dc21164957ded292b9613e5561a5daf5f39d1926582e95f9"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_native_ssh.rs",
+      "blob": "d2c2c5c686f106a7fac29e4531ab82ad1a77569b",
+      "bytes": 19047,
+      "sha256": "3866c284c234f2598fb0d0a7c983f41e324db25dbda6927a342f8804e8da05c1"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/pki_native.rs",
+      "blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+      "bytes": 1182,
+      "sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_raft_admin.rs",
+      "blob": "8dbd8d86d1d8f1834bba530dc8e2898eedbf7607",
+      "bytes": 33183,
+      "sha256": "e6f871bf9055b9250746cc6a7a484ae0e30ad03a837cd95a2725c0cf8fab00b8"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "blob": "91ed324a0bb20151c50bb2e1f141e70b08ad835b",
+      "bytes": 12426,
+      "sha256": "e88de0bcf6e9788046ba91aa2d7cfd26b9962626e8cc0b6a823aadbb69ec6c30"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+    }
+  ],
+  "official_sources": [
+    {
+      "path": "internal/helper/builtinplugins/registry.go",
+      "blob": "94af1a84cec148883c926941f50eea138d3644ae",
+      "bytes": 6385,
+      "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600"
+    },
+    {
+      "path": "internal/vault/logical_system_paths.go",
+      "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+      "bytes": 140958,
+      "sha256": "96863601a69c77d83f624266890c3a1566cba60c5e1845f7e19ca2a751d2878c"
+    },
+    {
+      "path": "internal/vault/logical_system_external_keys.go",
+      "blob": "6a7d6cfbe407f3a23b3c2c8d37d328175be18761",
+      "bytes": 19172,
+      "sha256": "3c626103b5f8a7526a4ab2695380b8db4d2a4b4c786c78e5d4116bee19f5b0e6"
+    },
+    {
+      "path": "internal/vault/logical_system_generate_root.go",
+      "blob": "2fc97cb48442b6c6fd20ca1bb35c8e92ddb5d578",
+      "bytes": 13940,
+      "sha256": "64eb4f0aa644efc24b0ea58fe1da0f7c991f81973deaaf979f07006cb268ade5"
+    },
+    {
+      "path": "internal/vault/logical_system_namespaces_seals.go",
+      "blob": "2d833cfab83032bcb37f711b1ba70d31fbe94ec6",
+      "bytes": 9997,
+      "sha256": "4697f9e4a98cccf8191ebf483e6fdb9b621fba818db7c658874053fec36feb77"
+    },
+    {
+      "path": "go.mod",
+      "blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+      "bytes": 16740,
+      "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56"
+    },
+    {
+      "path": "internal/vault/logical_system.go",
+      "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+      "bytes": 174841,
+      "sha256": "766eceff5b7e4a6f47208f9e1501d3db8ae3ac17fe81e83a32117380d122dc6e"
+    },
+    {
+      "path": "internal/command/operator_migrate.go",
+      "blob": "b18b0e1a9987467b0cb65962f531824051176a15",
+      "bytes": 11518,
+      "sha256": "5b3dbf2b6e7603c7426982aa2844841ad21c622abf8547dd29284a9f1a08dafa"
+    },
+    {
+      "path": "internal/vault/identity/mfa.go",
+      "blob": "b23974780a48c1644566e02452ac96cdda21c0f8",
+      "bytes": 26975,
+      "sha256": "0e5c455f934512e141a5ffc05365ebf9817d8d1e072b6e32c6d5b90ace9e2bfc"
+    },
+    {
+      "path": "internal/vault/login_mfa.go",
+      "blob": "f64d1adeacb6f73c559c79be31debba498e544a0",
+      "bytes": 63941,
+      "sha256": "d510b4dbccad07249b308cc8483eaaa308f6b0c46bde7318064c56697966c9c3"
+    },
+    {
+      "path": "internal/vault/logical_system_raft.go",
+      "blob": "d18d66bc0ec259093e4b757f8d23e81be109d26b",
+      "bytes": 27234,
+      "sha256": "31a6d3eb5a8ae09b73628fad4be064e8fac49028fa00969715643da94383358b"
+    }
+  ],
+  "historical_declarations": [
+    {
+      "path": "planning/HEPTABAO_SURFACE_WORK_V1.json",
+      "bytes": 146111,
+      "sha256": "4c5056414e12294ef56754faaba2f56f8acd25628b0987f3f3a08cc03d110b09",
+      "blob": "279310f8e329aca3f4ad8ed3d7d1f730095258fd"
+    },
+    {
+      "path": "planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json",
+      "bytes": 97411,
+      "sha256": "df423bb3688ffe0fd80665206a403a11640f2126c232a9ef1f41ea9ca371ccb9",
+      "blob": "40f5692684daac4326ac2fb8631a18ba6d0ba6b6"
+    },
+    {
+      "path": "planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+      "bytes": 11589,
+      "sha256": "5dedd15ae71507e890969ea9bf98ba5c3b292261715630803d142c93b8e140d3",
+      "blob": "4025a4a770bc9312308d3346632edfa354939745"
+    },
+    {
+      "path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
+      "bytes": 45228,
+      "sha256": "b256f4023347f4a30c0b4ca1bce2fb052716349c93e7a9535a5d0c3e853759c3",
+      "blob": "aaf511acf1408e229ae6b3fc5a6992668baf2162"
+    },
+    {
+      "path": "scripts/validate_openbao_271_release_denominator.py",
+      "bytes": 6279,
+      "sha256": "e0842fbdefdc0835465e1f53a8044cd76cca28ce0367f12111f393829a01325d",
+      "blob": "5f31b1d450891ce7303ccb6b504d2a579cea4c7f"
+    }
+  ],
+  "actual_bounded69": {
+    "bytes": 104035,
+    "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+    "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+  },
+  "actual_bounded69_result": {
+    "bytes": 2109,
+    "sha256": "5d028511da8fd3e6480ff1dcbcd46027ef213aa73d83168483e64652af6a809e",
+    "blob": "1740b22d4483272f949cf266bca61dbf862eb107"
+  },
+  "no_runtime_actions": true
+}

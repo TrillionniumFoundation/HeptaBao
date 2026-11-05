@@ -1,0 +1,50 @@
+--- a/crates/heptabao-server/src/service_response_headers.rs
++++ b/crates/heptabao-server/src/service_response_headers.rs
+@@ -8,7 +8,8 @@
+ #[derive(Default)]
+ pub(crate) struct Headers(
+     BTreeMap<String, Vec<Zeroizing<String>>>,
+-    Option<LocalRedirect>,
++    // Redirect custody is rare and remains affine; keep ordinary Response errors small.
++    Option<Box<LocalRedirect>>,
+ );
+ 
+ // This local routing capsule is not ordinary header data. SDK and HA decoders
+@@ -94,21 +95,21 @@
+     ) -> Self {
+         Self(
+             BTreeMap::new(),
+-            Some(LocalRedirect {
++            Some(Box::new(LocalRedirect {
+                 origin,
+                 profile,
+                 deadline,
+-            }),
++            })),
+         )
+     }
+     pub(super) fn has_local_redirect(&self) -> bool {
+         self.1.is_some()
+     }
+     pub(super) fn local_redirect_matches_current(&self, status: u16) -> bool {
+-        status == 307 && self.1.as_ref().is_some_and(LocalRedirect::matches_current)
++        status == 307 && self.1.as_deref().is_some_and(LocalRedirect::matches_current)
+     }
+     pub(crate) fn take_local_redirect(&mut self) -> Option<LocalRedirect> {
+-        self.1.take()
++        self.1.take().map(|redirect| *redirect)
+     }
+     pub(crate) fn into_local_redirect_metadata(self) -> Result<Self, ()> {
+         // Only the existing node-local numeric quota merge can add metadata
+@@ -355,3 +356,11 @@
+ #[cfg(test)]
+ #[path = "service_response_quota_headers_tests.rs"]
+ mod quota_tests;
++
++#[cfg(test)]
++mod response_layout_tests {
++    #[test]
++    fn response_error_stays_below_large_error_threshold() {
++        assert!(std::mem::size_of::<crate::service::Response>() < 128);
++    }
++}

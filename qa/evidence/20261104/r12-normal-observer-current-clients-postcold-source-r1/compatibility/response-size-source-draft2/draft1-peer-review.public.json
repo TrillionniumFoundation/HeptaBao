@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.response-local-redirect-box-peer-review.r1",
+  "scope": "source_only_exact_header_delta",
+  "before": {
+    "bytes": 12816,
+    "sha256": "ad213977edb9978ab14490ec6abbfb6c3b274ba8f3c044478697fdccf532c1fb",
+    "git_blob": "d688a86620bc272d8ba7eaa0c041c2a59f758c71"
+  },
+  "after": {
+    "bytes": 13142,
+    "sha256": "70f81c86c39c2601f5445dbdc7095a56e1ba2cd5d414deed8d18f1b6e72fc0cf",
+    "git_blob": "ec56db79835f69318f957caca4c402b9c39eaea5"
+  },
+  "diff": {
+    "bytes": 1727,
+    "sha256": "73728ea5600680942aca42681b7d712922de53cfae8fcc4cd5ce14972ae63e46",
+    "git_blob": "fd8fef6129c7e58e761d9a4ec90544df003e2540",
+    "strict_apply_hunks": 3,
+    "whole_reconstruction_exact": true,
+    "inverse_exact": true
+  },
+  "verdict": "no_blocking_finding_in_reviewed_scope",
+  "observations": [
+    "Headers remains pub(crate) with private tuple fields; take_local_redirect still returns Option<LocalRedirect> by value. No new public Box type or callable mint was added.",
+    "Option::take clears the stored option before consuming Box. Mapping dereferences the owned Box exactly once; this moves the existing LocalRedirect rather than cloning it.",
+    "as_deref supplies the same borrowed LocalRedirect to the unchanged method; deadline/current-profile matching is unchanged.",
+    "copy_for_forward's existing self.1.clone() now deep-clones Box<LocalRedirect>; LocalRedirect was already Clone. No new sharing, reference counting or extra logical clone call was introduced.",
+    "Headers::drop, serde rejection for a present local capsule, bounded map codec, into_local_redirect_metadata and quota methods are byte-identical. Normal Rust field destruction still drops a retained Box and its LocalRedirect after Headers::drop.",
+    "The new size_of<Response>() assertion is a test gate only. This review has not measured a layout or run Rust/Clippy and does not infer all result_large_err sites are resolved."
+  ],
+  "limits": {
+    "host_calls": 0,
+    "compiler_runs": 0,
+    "runtime_runs": 0,
+    "public_response_abi_claim": false,
+    "whole_workspace_consumers_audited": false
+  }
+}

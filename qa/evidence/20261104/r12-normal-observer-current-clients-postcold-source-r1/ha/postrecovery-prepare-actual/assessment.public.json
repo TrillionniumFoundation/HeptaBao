@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.postrecovery-cold12.prepare-assessment.r1",
+  "status": "PREPARATION_ONLY_PASS",
+  "job_id": "1a1a8fe519f-fc05-303b",
+  "source_packet_tree": "e9a5f1f673f18a4d2b7162f4188a6bbc221e29ac",
+  "frozen_dispatch_blob": "f7b963be1cf06d0bad22bc26083fc55291686f82",
+  "only_removed_documentation_field": "effect",
+  "actual_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-postcold-prepare-r1-5c4cd927-06acd609"
+  },
+  "prepared": {
+    "bytes": 40715,
+    "sha256": "95162142c09439603c1cc8564f43080b10944696aebe45b31ecdf2ad66263578",
+    "git_blob": "7cf50575cddc9240ca6971aa302ea4bbea20a3de",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json",
+    "version": "2050:58908083:40715:1793836607124880408:1793836607124880408",
+    "mode": 384,
+    "uid": 1000,
+    "nlink": 1
+  },
+  "authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "automatic_retry": false,
+    "timed_out": false
+  },
+  "terminal": {
+    "stdout_bytes": 279,
+    "stderr_bytes": 0,
+    "hex_text_equal": true,
+    "whole_eof": true
+  },
+  "frozen_constant_map_comparisons": [
+    {
+      "constant": "BUILDS",
+      "prepared_key": "build_pins",
+      "count": 2,
+      "exact": true
+    },
+    {
+      "constant": "COMPARISON_PINS",
+      "prepared_key": "comparison_pins",
+      "count": 24,
+      "exact": true
+    },
+    {
+      "constant": "DEADLINE_QA_PINS",
+      "prepared_key": "deadline_qa_pins",
+      "count": 4,
+      "exact": true
+    },
+    {
+      "constant": "QA_PINS",
+      "prepared_key": "qa_pins",
+      "count": 5,
+      "exact": true
+    },
+    {
+      "constant": "POSTCOLD_CHECKS",
+      "prepared_key": "required_extra_checks",
+      "count": 12,
+      "exact": true
+    }
+  ],
+  "normal_build_probes": [
+    {
+      "platform": "linux",
+      "files": 5,
+      "source_clean": true,
+      "target_executed": false,
+      "server_feature_targets": [
+        "heptabao_server",
+        "heptabao-seed",
+        "heptabao-server"
+      ],
+      "server_features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "normal_profile_exact": true,
+      "abi": "x86_64-unknown-linux-gnu",
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "raw_receipts_byte_equal": true
+    },
+    {
+      "platform": "mac",
+      "files": 5,
+      "source_clean": true,
+      "target_executed": false,
+      "server_feature_targets": [
+        "heptabao_server",
+        "heptabao-seed",
+        "heptabao-server"
+      ],
+      "server_features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "normal_profile_exact": true,
+      "abi": "aarch64-apple-darwin",
+      "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "raw_receipts_byte_equal": true
+    }
+  ],
+  "normal_profile": {
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "actual_build_readbacks": [
+    {
+      "platform": "linux",
+      "file": "native-build.public.json",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "version": "2050:58908079:801:1793836606565474454:1793836606565474454",
+      "embedded_base64_equals_actual_readback": true
+    },
+    {
+      "platform": "linux",
+      "file": "normal-release-result.public.json",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "version": "2050:58908080:3227:1793836606567418380:1793836606567418380",
+      "embedded_base64_equals_actual_readback": true
+    },
+    {
+      "platform": "mac",
+      "file": "native-build.public.json",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+      "version": "2050:58908081:798:1793836606569103873:1793836606569103873",
+      "embedded_base64_equals_actual_readback": true
+    },
+    {
+      "platform": "mac",
+      "file": "normal-release-result.public.json",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+      "version": "2050:58908082:3326:1793836606570858557:1793836606570858557",
+      "embedded_base64_equals_actual_readback": true
+    }
+  ],
+  "source": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "launcher_sha256": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
+    "runner_sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+    "probe_sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+    "numeric_sha256": "e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43",
+    "cipher_sha256": "096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956"
+  },
+  "scope": {
+    "original_checks": 98,
+    "extra_checks": 12,
+    "separate_unique_sets": true,
+    "canonical_qa_unchanged": true,
+    "old_fences": 24,
+    "http_seconds": 15,
+    "admission_seconds": 8,
+    "controller_seconds": 2400,
+    "postrecovery_shared_seconds": 300,
+    "role_prepare_seconds": 60,
+    "sealed_election_seconds": 60,
+    "source_node": 3,
+    "required_actual_empty_leader_node": 1,
+    "force_leader": false,
+    "wrong_direction_stops_before_target_unseal": true,
+    "readable_large_versions": 17,
+    "lifecycle_versions": 19,
+    "all_standbys_large_body_claim": false,
+    "reference_from_same_original_recovered_scan": true,
+    "extra_before_original_finish_deletion": true
+  },
+  "fixture_started": false,
+  "formal_qualification": false,
+  "live_authorized": false,
+  "limitations": [
+    "Preparation checks and real argument parsing only; no HA fixture, cold restart, restore, product test, Cargo build or service was started by this stage.",
+    "Original SDK texts and integer nanoseconds are retained. Derived projections are explicitly separate; file reads do not claim an atomic cross-file snapshot.",
+    "No additional OS process-group sweep was performed. Existing probe lifecycle and this authoritative terminal are the observed preparation evidence.",
+    "Future PASS requires the final cold-phase event, final summary, authoritative exit zero and owned cleanup; an early event/checkpoint alone is not acceptance."
+  ]
+}

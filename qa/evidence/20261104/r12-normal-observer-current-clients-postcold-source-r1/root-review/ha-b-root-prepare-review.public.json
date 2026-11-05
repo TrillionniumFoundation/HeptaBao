@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.root.ha-postrecovery-cold-prepare-review.r1",
+  "pass": true,
+  "reviewed_at_utc": "2026-11-05T00:07:20.900Z",
+  "tree": "2e7ad03c85aead3af1298cc397c879e1f7fefa93",
+  "files": 17,
+  "bytes": 128666,
+  "merkle_trees": 4,
+  "job_id": "1a1a8fe519f-fc05-303b",
+  "authority_exit_zero_full_durable": true,
+  "request_exact_frozen_prepare": true,
+  "terminal_stdout_sdk_hex_text_exact": true,
+  "prepared_original_bytes_and_independent_metadata_exact": true,
+  "prepared_sha256": "95162142c09439603c1cc8564f43080b10944696aebe45b31ecdf2ad66263578",
+  "prepared_metadata_version": "2050:58908083:40715:1793836607124880408:1793836607124880408",
+  "actual_build_receipts": [
+    {
+      "host": "linux",
+      "file": "native-build.public.json",
+      "blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+    },
+    {
+      "host": "linux",
+      "file": "normal-release-result.public.json",
+      "blob": "849d45f07a53007f6e927530900783e23197999b",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+    },
+    {
+      "host": "mac",
+      "file": "native-build.public.json",
+      "blob": "3daa9c7e0537b066502606430b9289b39a249712",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1"
+    },
+    {
+      "host": "mac",
+      "file": "normal-release-result.public.json",
+      "blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544"
+    }
+  ],
+  "build_source_and_all_ten_file_pins_match": true,
+  "normal_default_features": true,
+  "product_source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "original98_names_equal_prior_successful_R3": true,
+  "new_separate_checks": [
+    "postcold.inputs_and_history_bound",
+    "postcold.all_three_owned_processes_stopped",
+    "postcold.mac_persisted_frontier_retained",
+    "postcold.same_recovered_cipher_reference_retained",
+    "postcold.new_processes_sealed",
+    "postcold.real_sealed_leader_elected",
+    "postcold.all_three_unsealed_once",
+    "postcold.all_local_frontiers_retained",
+    "postcold.leader_retained_history_exact",
+    "postcold.all_metadata_and_retired_states_exact",
+    "postcold.all_hosts_small_readindex",
+    "postcold.shared_deadline_completed"
+  ],
+  "deadlines": {
+    "controller": 2400,
+    "new_postrecovery_shared": 300,
+    "http": 15,
+    "admission": 8,
+    "outer": 3000
+  },
+  "observed_created_to_terminal_ms": 5419,
+  "observation_interval_is_not_internal_elapsed": true,
+  "fences_unchanged": 24,
+  "no_fixture_started": true,
+  "no_forced_election": true,
+  "no_all_standby_large_body_claim": true,
+  "scope": "Prepare only. Actual 98 checks plus separate12 after recovered-state cold restart require the new live fixture and complete terminal evidence.",
+  "full_replacement": false
+}

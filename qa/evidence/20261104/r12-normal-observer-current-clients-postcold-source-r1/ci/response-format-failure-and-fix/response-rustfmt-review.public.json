@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.response-box-rustfmt-followup.r1",
+  "base_commit": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+  "base_tree": "17da0b36f418b52203040e54aae127899cf5e65e",
+  "base_tree_merkle": {
+    "root_sha": "17da0b36f418b52203040e54aae127899cf5e65e",
+    "trees_verified": 358
+  },
+  "failed_run": 41934114447,
+  "head_job": 126938155546,
+  "merge_job": 126938155391,
+  "original_command": "cargo +1.98.0 fmt --all -- --check",
+  "head_expected_source": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+  "merge_expected_source": "66f51f71e644b30804b2b632ebe161ccf5533a1f",
+  "change": {
+    "path": "crates/heptabao-server/src/service_response_headers.rs",
+    "before": "ec56db79835f69318f957caca4c402b9c39eaea5",
+    "after": "9409ee577f6864f9b7d43b455046034dc03368b5",
+    "only_one_exact_rustfmt_displayed_replacement": true,
+    "non_whitespace_bytes_unchanged": true
+  },
+  "checks": {
+    "head_and_merge_reported_same_single_format_difference": true,
+    "source_semantics_unchanged": true,
+    "original_checks_and_workflow_unchanged": true,
+    "subsequent_test_steps_skipped_in_this_run": true
+  },
+  "source_test_status": "No Rust test success claimed for this formatting-failed run; full unchanged CI will run on the new commit.",
+  "raw_logs": [
+    {
+      "name": "format-failure-head.original.txt",
+      "blob": "fd4d604327617eb0854377666b9135a175dba095",
+      "bytes": 109321,
+      "sha256": "9b14bf42272edc38ae358108bd94c1f2487381fbf632782cb54f54763c8996be"
+    },
+    {
+      "name": "format-failure-merge.original.txt",
+      "blob": "d6a273f3c0004be3a34ceb6a4efc0bf14a329f3a",
+      "bytes": 109847,
+      "sha256": "feffa3f5f304ea6bfe6fa83ab6244a134216543f03795fb72140d786810fb989"
+    }
+  ],
+  "full_replacement_qualified": false
+}

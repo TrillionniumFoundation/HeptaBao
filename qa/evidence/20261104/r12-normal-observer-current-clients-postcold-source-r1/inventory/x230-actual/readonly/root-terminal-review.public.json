@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.x230-finite-inventory-root-terminal-review.v1",
+  "status": "PASS_18_FIXED_ENTRIES_6_QUERIES_OBSERVATION_ONLY",
+  "job": "1a1a8c13ef1-fc05-2fa6",
+  "source": {
+    "bytes": 45694,
+    "sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094",
+    "blob": "0c942a8c10861c42a6ae85cd7977bdfc65805ba0"
+  },
+  "manifest": {
+    "bytes": 86481,
+    "sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+    "blob": "8d9d9cd2e6f7476812a4f5019ed2ecf11fe7c252"
+  },
+  "ack": {
+    "bytes": 49466,
+    "sha256": "f26e75a871763561a79987c0f9f784be0a9bf4bcd37f369b251956bdd53c0d96",
+    "blob": "ea113abb7a3df8e458f5aeb7c6417c569988ef97"
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "31ff6639ca384ecbce248abbd8152f18bf3832fa4aef6a20b0e6005618fa7413",
+    "blob": "6edb78a8aee0828499abd90850ebe08832cd839f"
+  },
+  "stdout": {
+    "bytes": 23439,
+    "sha256": "63f198cd17e100f9ce8e9e7329d2c1e711a46afe223878afd6cd74900e80feb5",
+    "blob": "197ff767f16fbda8eb20aac80418a02915291925"
+  },
+  "original_sdk_pages": [
+    {
+      "bytes": 50809,
+      "sha256": "fb2f339e58f3cc9746ac955adbe6b5b02f51fe0966849fa9ce2d326bdfb96a72",
+      "blob": "e136a4433d3d59a89a76785fa1325c7996abeb1f"
+    },
+    {
+      "bytes": 22150,
+      "sha256": "1aa63e6a8df4e7dc66cbbbdb29b02781638b5327aee50c29c70396f02647b1b1",
+      "blob": "04384d1c8becb0c69adab1778999ef4894375b51"
+    }
+  ],
+  "original_raw_hex_offsets_eof_and_authority_match": true,
+  "unsafe_integer_original_tokens_preserved": true,
+  "elapsed_seconds": 0.1041830531321466,
+  "original_host_limit_seconds": 45,
+  "read_bytes": 100612,
+  "read_calls": 30,
+  "entry_denominator": 18,
+  "read_verified": 5,
+  "metadata_only": 13,
+  "explicit_metadata_observations": 112,
+  "pass_count": 5,
+  "query_denominator": 6,
+  "queries_complete": 6,
+  "owned_children_closed_reaped_empty": 7,
+  "all_descriptors_closed": true,
+  "prior4_registration_hashes_match": true,
+  "observations": {
+    "proxy_service": {
+      "ActiveState": "inactive",
+      "ConditionResult": "no",
+      "ControlPID": 0,
+      "DropInPaths": [],
+      "FragmentPath": [
+        {
+          "path": "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service"
+        }
+      ],
+      "Id": "openclaw-authbus-x230-openbao-proxy.service",
+      "KillMode": "control-group",
+      "KillSignal": "15",
+      "LoadState": "loaded",
+      "MainPID": 0,
+      "SubState": "dead",
+      "TimeoutStopUSec": "1min 30s",
+      "TriggeredBy": "",
+      "Triggers": "",
+      "UnitFileState": "disabled"
+    },
+    "retained_failed_transients": [
+      {
+        "unit": "hepta-native-history-restore-v58-a2.service",
+        "state": "failed",
+        "main_pid": 0
+      },
+      {
+        "unit": "hepta-native-restore-compiler-v45-20261020.service",
+        "state": "failed",
+        "main_pid": 0
+      },
+      {
+        "unit": "hepta-native-restore-compiler-v45-a2-20261020.service",
+        "state": "failed",
+        "main_pid": 0
+      }
+    ],
+    "oracle_container": {
+      "ExitCode": 0,
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+      "Image": "ghcr.io/openbao/openbao:2.7.1",
+      "Name": "/heptabao-openbao271-oracle-r46",
+      "NetworkMode": "none",
+      "Paused": false,
+      "Pid": 2031520,
+      "Restarting": false,
+      "Running": true,
+      "StartedAt": "2026-10-10T17:14:55.727875418Z",
+      "StateStatus": "running",
+      "mounts": [],
+      "no_disposable_or_deletion_inference": true,
+      "port_bindings": {},
+      "restart_policy_sha256": "d404b4000ecf4446757d677fdda5761dbf5875035c3c79c9f1851044156d6510"
+    },
+    "owner_crontab_absent": true,
+    "system_crontab_selected_application_lines": 0
+  },
+  "service_argument_dependencies_unresolved": true,
+  "backup_items_metadata_only": 13,
+  "no_current_backup_or_restore_qualification": true,
+  "source_snapshot_atomic": false,
+  "whole_host_inventory_qualified": false,
+  "all_clients_migrated": false,
+  "production_cutover": false,
+  "legacy_cleanup_go": false,
+  "automatic_retry": false
+}

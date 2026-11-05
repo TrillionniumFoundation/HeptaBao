@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6e897a",
+  "wall_time_seconds": 0.000024176,
+  "exit_code": 0,
+  "original_token_count": 116,
+  "output": "{\"actual_functions_selected\": true, \"child_processes\": 0, \"fake_close_errors\": 2, \"fake_descriptors_attempted\": [11, 12], \"fields_cleared\": [null, null], \"host_access\": false, \"network_requests\": 0, \"real_descriptors_touched\": 0, \"schema\": \"heptabao.mac-observer-close-mock-counterexample.v1\", \"source_blobs\": {\"observer\": \"bf63fb2beb4d5e7ed04dcdddb1c18323f56a694e\", \"phase\": \"2d8a431a145858a09c95884c4f0d2fc4cc58157b\"}, \"wrapper_reported_close_success\": true}\n"
+}

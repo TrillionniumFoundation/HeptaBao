@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.response-format-publication.r1",
+  "head": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+  "tree": "46b1276c237aaadd8cc3185e8228d8a791c68214",
+  "parent": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+  "only_one_file_changed": true,
+  "other_3910_leaves_and_modes_unchanged": true,
+  "root_merkle_directories": 358,
+  "semantic_changes": false,
+  "workflow_changes": false,
+  "threshold_changes": false,
+  "pr": 152,
+  "draft": true,
+  "qualification_ci_pending": true
+}

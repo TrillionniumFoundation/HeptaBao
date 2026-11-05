@@ -1,0 +1,259 @@
+{
+  "schema": "heptabao.r12.normal-observer-current-clients-postcold-checkpoint.v1",
+  "as_of_utc": "2026-11-05T00:24:38Z",
+  "evidence_prefix": "qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1",
+  "source_frontiers": {
+    "qualified_lan_kv_and_pocket_authbus": {
+      "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+    },
+    "separate_observer_normal_build": {
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+    },
+    "draft_pr152_current": {
+      "commit": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "tree": "46b1276c237aaadd8cc3185e8228d8a791c68214",
+      "full_ci_qualified": false
+    },
+    "qualification_not_transferred_between_frontiers": true
+  },
+  "normal_observer_r3": {
+    "status": "PASS_SCOPED_NORMAL_BUILD_ORIGINAL44_PLUS_SEPARATE7",
+    "job_id": "1a1a8b55dda-fc05-2f85",
+    "original_tests": 44,
+    "separate_tests": 7,
+    "owned_children": 28,
+    "all_owned_children_reaped_empty": true,
+    "original_44_denominator_unchanged": true,
+    "extra7_shared_seconds": 600,
+    "extra7_elapsed_seconds": 0.5895433480036445,
+    "elapsed_ns_exact": "1812535687089",
+    "normal_default_features": true,
+    "fixture_features": [],
+    "source_and_artifacts_unchanged": true,
+    "release_server": {
+      "bytes": 109074848,
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0"
+    },
+    "release_seed": {
+      "bytes": 101143984,
+      "sha256": "bdbf53cfebc25d3932aaba3bf608e0459e3399c513bbdeafecde5659eb688689"
+    },
+    "raw_packet": {
+      "tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+      "files": 243,
+      "bytes": 4117340
+    },
+    "original_pages": 88,
+    "full_native_sdk_payloads": 24,
+    "root_review_blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2",
+    "actual_snapshot_cli_qualification": false
+  },
+  "formal_kv2": {
+    "existing_x230_scope": "PASS_31_31_ON_495",
+    "existing_live_payload_bytes": 35651584,
+    "retained_live_versions": 17,
+    "lifecycle_versions": 19,
+    "current_production_data_migrated": false,
+    "current_encrypted_offhost_backup_qualified": false,
+    "old_phaseb_b01": {
+      "job_id": "1a1a8177aec-fc05-2da5",
+      "status": "FAIL_UNKNOWN_PRESERVED",
+      "cli_exit": 2,
+      "archive_exists": false,
+      "blind_replay": false
+    },
+    "fresh_phaseb_source": {
+      "tree": "38520c8c2fc5545bd608fefa29e37535a086e443",
+      "state": "SOURCE_ONLY_ACTUAL_ARTIFACTS_BOUND_PARTIAL_READY_FALSE",
+      "desktop_source_and_transport": false,
+      "local_stage": false,
+      "prepare": false,
+      "runtime": false
+    }
+  },
+  "physical_ha": {
+    "prior_direct98": {
+      "job_id": "1a1a88ffe46-fc05-2f1b",
+      "status": "PASS_98_98",
+      "cipher_source_node": 3,
+      "actual_empty_leader_node": 1,
+      "restored_referenced_leaves": 338,
+      "restored_referenced_bytes": 35742393
+    },
+    "prior_original128": "PASS_SCOPED_ON_495_SEPARATE_RUN_NOT_ADDED_AS_UNIQUE_TO_98",
+    "postrecovery_cold12": {
+      "job_id": "1a1a9094b62-fc05-30ab",
+      "status": "KNOWN_PREPARATION_FAILURE_RECOVERY_AND_COLD_NOT_REACHED",
+      "prepare_job_id": "1a1a8fe519f-fc05-303b",
+      "prepare_exit_code": 0,
+      "prepared_sha256": "95162142c09439603c1cc8564f43080b10944696aebe45b31ecdf2ad66263578",
+      "prepare_tree": "2e7ad03c85aead3af1298cc397c879e1f7fefa93",
+      "start_tree": "6c89f9b03856afad4bcd43fa4430a69bd7722281",
+      "root_prepare_review_blob": "b58764dce7f7087c795e8270597f21101ddecb98",
+      "original_checks": 98,
+      "new_separate_checks": 12,
+      "controller_seconds": 2400,
+      "outer_seconds": 3000,
+      "new_shared_postrecovery_seconds": 300,
+      "ordinary_http_seconds": 15,
+      "admission_seconds": 8,
+      "forced_election": false,
+      "old_roots_replayed": false,
+      "large_body_all_standbys_qualification_claimed": false,
+      "quiet_window_exclusive": false,
+      "exit_code": 1,
+      "original_passed": 83,
+      "original_missing": 15,
+      "new_checks_executed": 0,
+      "failure_code": "direction_new_committed_frontier_not_observed",
+      "failure_stage": "owned_missing_cipher_leader_recovery",
+      "role_observations": 190,
+      "pre_stop_rog": {
+        "applied_index": 61,
+        "committed_index": 61,
+        "is_self": false
+      },
+      "core_tree": "8dba98240fe96d29bb62c8d0fa147d1b1607c407",
+      "mutation_originals_tree": "1e96e9c25850e07182850b6861fd576a505dcb86",
+      "core_root_review_blob": "668fec1db7af05d813df2fe7bf32060e9fc99ae2",
+      "all_owned_processes_and_mesh_stopped": true,
+      "mac_foreground_sessions_closed": 5,
+      "tunnels": 0,
+      "compute_window_released_after_root_core_cleanup_review": true,
+      "complete_original_mutation_root_review_pending": true
+    }
+  },
+  "authbus": {
+    "j3160_requests": 0,
+    "provider_model_refresh_or_quota_requests": 0,
+    "existing_pocket_current_consumer_scope": "PASS_SCOPED_MAIN66_AND_RESTART_INVERSE_ON_495_FOR_TWO_AGENTS",
+    "mac": {
+      "current_agents": 5,
+      "inert": {
+        "job_id": "1a1a8eb69a3-fc05-3007",
+        "status": "PASS_SCOPED",
+        "elapsed_seconds": 0.190549791790545,
+        "root_review_blob": "94d1308c7054b2078165cbedd5730fa73bdbd461"
+      },
+      "owned_sqlite_r1": {
+        "job_id": "1a1a8fdfe3e-fc05-3039",
+        "status": "KNOWN_FAIL_NOT_TIMEOUT",
+        "exit_code": 1,
+        "passed": 5,
+        "failed": 1,
+        "not_executed": 1,
+        "elapsed_seconds": 0.28781062504276633,
+        "actual_failure_code": "absence_not_reopened_as_present",
+        "expected_failure_code": "current_input_fd_name_or_metadata_changed",
+        "production_inputs_opened": false,
+        "outcome_unknown": false,
+        "owned_descriptors_and_sqlite_connections_closed": true,
+        "source_runtime_postchecks_not_executed": true,
+        "root_review_blob": "e47e0f2b29bf0dd3133743677f99e993673ebf40"
+      },
+      "owned_sqlite_r2": {
+        "source_tree": "ca999a5c11cbf1b4542ddcdafb03c63b153c509d",
+        "host_submission": "INERT_ACK_OBSERVED_JOB_1a1a916944c-fc05-3131",
+        "production_capture_library_changed": false,
+        "scope": "Source-only new attempt and minimal test-entrypoint correction; still requires actual seven-case terminal success.",
+        "state": "SOURCE_REVIEW_PASSED_INERT_APPEND_AUTHORIZED_SYNTHETIC_CONDITIONALLY_ADMITTED_NO_RUNTIME_QUALIFICATION_YET",
+        "source_root_review_blob": "8f5bee822058c37cf46afbb791ab756289eeea8b",
+        "synthetic_authorization_requires_complete_inert_terminal": true
+      },
+      "manager_r3": {
+        "source_tree": "a031a49b932794331804c2e6f405994ac1f0948b",
+        "state": "SOURCE_ONLY_OUTER_AND_CAPTURE_MATERIALIZER_INCOMPLETE",
+        "actual_launchd_qualification": false
+      },
+      "current_private_capture": false,
+      "five_agent_cycle_restart_and_rollback_qualified": false
+    }
+  },
+  "inventory": {
+    "x230": {
+      "job_id": "1a1a8c13ef1-fc05-2fa6",
+      "status": "PASS_FINITE_READONLY_OBSERVATION",
+      "elapsed_seconds": 0.104183053,
+      "fixed_entries": 18,
+      "owned_queries_including_final_ps": 7,
+      "whole_host_inventory": false,
+      "authbus_proxy": "loaded_disabled_inactive_dead_MainPID0_ConditionResultNo",
+      "oracle_container": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+      "oracle_network": "none",
+      "oracle_deletion_qualified": false
+    },
+    "mac_canonical_crontab": "OBSERVED_ABSENT_SEPARATELY_NOT_RELABELED_AS_ATOMIC_38_ENTRY_INVENTORY",
+    "rog_finite_inventory_executed": false,
+    "all_clients_and_backups_migrated": false
+  },
+  "ci": {
+    "previous_run_41907498576": {
+      "source": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "head_and_merge_workspace_tests_succeeded": true,
+      "head_and_merge_clippy_failed": true,
+      "per_lane_result_large_err_diagnostics": 1619,
+      "response_at_least_bytes": 208,
+      "recovery_failure_at_least_bytes": 224,
+      "original_command": "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings"
+    },
+    "response_fix": {
+      "commit": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "production_change": "Box only the private optional LocalRedirect payload; preserve by-value take, serialization refusal, custody and deadlines",
+      "layout_tests_added": 2,
+      "actual_new_layout_sizes_not_yet_measured": true
+    },
+    "format_run_41934114447": {
+      "head_and_merge": "FAILED_AT_FORMAT_CHECK_ONLY",
+      "later_tests": "SKIPPED",
+      "same_single_rustfmt_difference": true
+    },
+    "current": {
+      "commit": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "run_id": 41937740513,
+      "head_job": 126950393511,
+      "merge_job": 126950393239,
+      "head_and_merge_fmt_pass": true,
+      "head_and_merge_workspace_tests": "IN_PROGRESS_AT_2026-11-05T00:09:15Z_OBSERVATION",
+      "strict_clippy_qualified": false,
+      "full_qualification": false,
+      "trust_boundary_run": 41937740490,
+      "trust_boundary": "SUCCESS",
+      "original_workflow_commands_and_thresholds_unchanged": true
+    }
+  },
+  "official271_scope": {
+    "official_tag_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "actual_commit_tree": "3a8ba726d8d557a5f9b3f2ed28b406da33632182",
+    "partial_audit_primary_sources": 30,
+    "existing69_is_bounded_thirteen_family_corpus": true,
+    "old59_ledger_target": "2.6.2",
+    "all59_whole_surface_complete": false,
+    "map_erratum_only_three_family_intersections": true,
+    "full_271_denominator_established": false,
+    "profile_guards_weakened": false
+  },
+  "evidence": {
+    "packet_count": 41,
+    "packet_file_entries": 835,
+    "packet_bytes": 20036992,
+    "packet_merkle_directories": 109,
+    "original_unsafe_integer_tokens_preserved": true,
+    "original_packets_mounted_without_reserializing": true,
+    "analysis_cache_loss_did_not_cause_business_replay": true,
+    "helper_recovery_is_new_identity": true,
+    "all_transient_rpc_error_metadata_recovered": false,
+    "old_root_25_typed_and_6_custody_component_raw_exec_artifacts_recovered": false
+  },
+  "full_openbao_2_7_1_replacement_qualified": false,
+  "whole_surface_admitted": false,
+  "all_clients_and_backup_paths_migrated": false,
+  "per_host_real_credentials_restart_rollback_complete": false,
+  "production_initialized": false,
+  "production_unsealed": false,
+  "production_loaded": false,
+  "production_cutover": false,
+  "old_service_or_binary_deletion": false,
+  "latest_only_service_state_achieved": false
+}

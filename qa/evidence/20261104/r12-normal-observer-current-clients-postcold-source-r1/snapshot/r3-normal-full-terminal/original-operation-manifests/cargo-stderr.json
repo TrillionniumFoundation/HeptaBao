@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "cargo-stderr",
+    "id": "59c46beb20a5433329ff7643a6d275ce9a88c220f5dc5dcdf8dbc5ecd6c35b61",
+    "bytes": 3252,
+    "sha256": "5cca4cf73b4320663f0a2a1a305c9c1c766e897324e52f14ec43d3e13e6b2a69"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/cargo-stderr-000000.json",
+      "bytes": 5019,
+      "sha256": "98fa5850daa1cf6c8942631c7680059712fcd7db719608528221e52cf9b0732c",
+      "blob": "2de69a2b34a6c1a6ab0d8f9d549ef3b08ec16b70"
+    },
+    {
+      "path": "original-sdk/cargo-stderr.json",
+      "bytes": 3252,
+      "sha256": "5cca4cf73b4320663f0a2a1a305c9c1c766e897324e52f14ec43d3e13e6b2a69",
+      "blob": "8cb74bbd74985f3a2aac10dedb0e39160cd4fb26"
+    },
+    {
+      "path": "owned-children/normal-release-build.stderr",
+      "bytes": 2158,
+      "sha256": "eb0b339f8695d6482089e51bf731df37c3f210cf51b63fc84b824c3d8391e6d3",
+      "blob": "fe7cfde805c7d376005a8d9054312f9b9285106e",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-build.stderr",
+      "source_version": "66306:28096616:2158:1793832489768041812:1793832489768041812"
+    },
+    {
+      "path": "owned-children/build.stderr",
+      "bytes": 204,
+      "sha256": "9cd02d8475eb04badc77a7f3ea9e63811234784de06a6f0465fe023f441114a6",
+      "blob": "a9b696f910cce0ee185b242da42daff704b287cd",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/build.stderr",
+      "source_version": "66306:28096639:204:1793833570984503985:1793833570984503985"
+    }
+  ]
+}

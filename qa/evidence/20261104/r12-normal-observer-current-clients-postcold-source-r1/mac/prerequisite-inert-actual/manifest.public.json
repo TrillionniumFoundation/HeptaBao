@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.mac-capture-prerequisite-inert-evidence-manifest.r1",
+  "job_id": "1a1a8eb69a3-fc05-3007",
+  "source_only_stage_tree": "c81dfdf1a001fe183bdf5ab7f98d818689cb86c8",
+  "scope": "Actual inert prerequisite only; no SQLite, current-private-input capture, consumer or service",
+  "file_count": 7,
+  "raw_files": [
+    {
+      "path": "intent.public.json",
+      "bytes": 104078,
+      "sha256": "7c82ef716af8783f11a8fc260e6021046db25df45d693e08706ee6be16375f2c",
+      "git_blob": "ac224509705484b7a1a8a4c190f533d43e8ab52c",
+      "mode": "100644"
+    },
+    {
+      "path": "process-start-ack.raw.json",
+      "bytes": 9457,
+      "sha256": "093f02b528d5eae2231871ae7a10babe69dfea21cdab566e43782a64bbe22e6a",
+      "git_blob": "67458169b5ae2d12e1cb450ac7a6754843b24252",
+      "mode": "100644"
+    },
+    {
+      "path": "process-status.raw.json",
+      "bytes": 731,
+      "sha256": "b31ed143bb007dad34c1e796f8250072b5c348ef470d4990896ed87b93c91d6d",
+      "git_blob": "5da4e3a7bc22e30abcb269aac0ef5d7287a5e91b",
+      "mode": "100644"
+    },
+    {
+      "path": "process-read.raw.json",
+      "bytes": 17178,
+      "sha256": "fef1acfc1a86c8a13bfb5744fa990d9a6054cc4542271330f81e2866e877a235",
+      "git_blob": "8d5c1100b12528b619677ad31abe889ddb4d152e",
+      "mode": "100644"
+    },
+    {
+      "path": "stdout.raw.json",
+      "bytes": 5428,
+      "sha256": "50634805f355be396ac19d2feb5e058891647258de5404976433be64eb2adb3e",
+      "git_blob": "cad3d4ecd0b33bcb3e21f9e9b4accb52cc2ed4de",
+      "mode": "100644"
+    },
+    {
+      "path": "stderr.raw.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "readback-review.public.json",
+      "bytes": 3418,
+      "sha256": "be2c995d6bcc802bcc70636248df89d09ede091c13c909c088b1cc57e72463c1",
+      "git_blob": "28740f5c444c3c2abec508969b5ba947c6ec767b",
+      "mode": "100644"
+    }
+  ]
+}

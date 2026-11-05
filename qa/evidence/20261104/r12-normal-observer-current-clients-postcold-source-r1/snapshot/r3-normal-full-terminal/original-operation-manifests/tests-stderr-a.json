@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao-r3-immutable-read-recovery-subpacket-v1",
+  "operation": {
+    "name": "tests-stderr-a",
+    "id": "0c842b284466271e9a0026df922490cff2449b014ef3a8d6014603073e3183c3",
+    "bytes": 56860,
+    "sha256": "b4c26f09bb2945281fddeff3e857b4c1f904068711ab1ee01360c84ac992f3c8"
+  },
+  "all_original_sdk_bytes_verified": true,
+  "all_pages_whole_git_readback": true,
+  "files": [
+    {
+      "path": "original-operation-pages/tests-stderr-a-000000.json",
+      "bytes": 22534,
+      "sha256": "74ead17a4915eb6b9afdcb6bb8b2b825be64247124d12d1e4179092c36f6da04",
+      "blob": "c6b00227d8f47b5097d44891ef094f0a239f8dc6"
+    },
+    {
+      "path": "original-operation-pages/tests-stderr-a-016384.json",
+      "bytes": 22538,
+      "sha256": "7112363476bb4af397399216a4f0bbc153d623e2e72077068b903fca2108d16b",
+      "blob": "ccf6a89634412340a2586158818b9da315babe32"
+    },
+    {
+      "path": "original-operation-pages/tests-stderr-a-032768.json",
+      "bytes": 22538,
+      "sha256": "b13f9bddca32fd642b83d97580065b27148d9ee806cb05a9a95190c564a9bbeb",
+      "blob": "ba9fe058772407567de2c46ec06d4f4ef49c6f44"
+    },
+    {
+      "path": "original-operation-pages/tests-stderr-a-049152.json",
+      "bytes": 10969,
+      "sha256": "5f2d9aeca099272da37cc5d8740c1b07e86c0d0e59793856c8671b587d7f459a",
+      "blob": "b07184edec5d4107760d82076e89f4f956719fd2"
+    },
+    {
+      "path": "original-sdk/tests-stderr-a.json",
+      "bytes": 56860,
+      "sha256": "b4c26f09bb2945281fddeff3e857b4c1f904068711ab1ee01360c84ac992f3c8",
+      "blob": "5d805e20633d0c3fc8f8c8815af7465bf69ba37f"
+    },
+    {
+      "path": "owned-children/ssh25.stderr",
+      "bytes": 26020,
+      "sha256": "6e4618aca163f68e2a089673fd0d6b6d2e6d7521f3971c4205e5eb6ff1851e72",
+      "blob": "b67a8faf795c14a0dc49cfcad1b825cbc04ef805",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ssh25.stderr",
+      "source_version": "66306:28096657:26020:1793833615764221607:1793833615764221607"
+    },
+    {
+      "path": "owned-children/mount1.stderr",
+      "bytes": 162,
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "blob": "4f2ce7d7af93c803e41e01c94730d01caca9ae78",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/mount1.stderr",
+      "source_version": "66306:28096615:162:1793833615948830526:1793833615948830526"
+    },
+    {
+      "path": "owned-children/redirect5.stderr",
+      "bytes": 1304,
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "blob": "11801edbcde0236291f5dca4cace5c3078e8b772",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/redirect5.stderr",
+      "source_version": "66306:28096669:1304:1793833616423226344:1793833616423226344"
+    },
+    {
+      "path": "owned-children/actor2.stderr",
+      "bytes": 324,
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "blob": "5841b7131d95cedb13516476519651df7aceac2e",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/actor2.stderr",
+      "source_version": "66306:28096675:324:1793833619597343890:1793833619597343890"
+    },
+    {
+      "path": "owned-children/ordinary5.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/ordinary5.stderr",
+      "source_version": "66306:28096681:0:1793833626795152198:1793833626795152198"
+    },
+    {
+      "path": "owned-children/no_forward6.stderr",
+      "bytes": 19371,
+      "sha256": "0a1e4e601dda17c060e6d2d072d36ce8812c7ec803a409d9c12ac2767fd165e2",
+      "blob": "cc367a31752b261dd648ba9ed6d0f552e111f148",
+      "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/no_forward6.stderr",
+      "source_version": "66306:28096687:19371:1793833630003483782:1793833630003483782"
+    }
+  ]
+}

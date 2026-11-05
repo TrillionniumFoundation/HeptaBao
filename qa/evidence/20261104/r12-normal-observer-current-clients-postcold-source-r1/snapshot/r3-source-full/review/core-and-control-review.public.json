@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao-source-stage-r3-core-and-control-review-v1",
+  "status": "PASS_SOURCE_STAGE_ONLY",
+  "job_id": "1a1a8b0e3a3-fc05-2f79",
+  "unique_key": "heptabao-phaseb-native-ingress-observer-source-3cb8739-20261104-r3",
+  "authority": {
+    "bytes": 729,
+    "sha256": "99e404fc85cc368993dc3d12244fb34d9ab7ce47b9415d24bc480e70ac850c16",
+    "blob": "08fabcc0ab9b4a4513a3d2b752052ebf57e09175"
+  },
+  "core": {
+    "bytes": 23304,
+    "sha256": "0abd8e0ae42eef1bacd4866f12f0ada94563369ecf2b66e7ca69ab4388433d7f",
+    "blob": "cdc413a3649b6351b449b5b4683f2ada734d2d55"
+  },
+  "intent": {
+    "bytes": 1556,
+    "sha256": "fb410068277674a506d57d359beea83885c34b97571f19d9c96626ba4d52bcba",
+    "blob": "ce2413dc874c03d4b5e506f0ae2e33b5c0db13ae"
+  },
+  "elapsed_seconds": 12.377301124011865,
+  "source": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "full_worktree": {
+      "all_tracked_worktree_blobs_and_modes_match": true,
+      "full_leaf_index_sha256": "5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00",
+      "index_matches_tree": true,
+      "tracked_bytes": 62194197,
+      "tracked_leaf_count": 3911
+    },
+    "clean": true,
+    "full_strict_fsck_passed": true,
+    "no_alternates": true,
+    "no_shared_object_links": true,
+    "independent_git_directory": true
+  },
+  "checks": {
+    "authority_succeeded_exit0_complete_durable": true,
+    "within_300s": true,
+    "core_41_children_all_exit0_reaped_and_groups_empty": true,
+    "five_actual_controls_whole_byte_match": true,
+    "runner_actual_constants_match_launcher_and_source_identity": true,
+    "old_r10_source_lossless_before_after_exact": true,
+    "prior_bf0_source_12_files_and_recorded_authority_lossless_before_after_exact": true,
+    "raw_original_read_payloads_and_unsafe_integers_preserved": true
+  },
+  "scope": {
+    "source_stage_only": true,
+    "individual_child_file_receipts_pending_separate_read": true,
+    "build_dispatched": false,
+    "compiler_started": false,
+    "server_started": false,
+    "production_changed": false,
+    "full_replacement": false
+  },
+  "control_tree": "7584cf0021ac5ea603b8652f65dfd7e0991803ff",
+  "retained_r2_actual_tree": "157babcd62143eaf154674bcb5183f38cbcfbf8d"
+}

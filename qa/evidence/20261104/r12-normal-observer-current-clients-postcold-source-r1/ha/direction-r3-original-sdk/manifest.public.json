@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.direction-r3.immutable-sdk-readback.v1",
+  "scope": "existing public-only R3 receipts; no new host calls",
+  "job_id": "1a1a88ffe46-fc05-2f1b",
+  "run_id": "ec3bcae2abef07e7f6828be221adcdb4",
+  "core_tree": "aa4ab5c3a04ed3c9e35eaebfe4219a22fd584a5f",
+  "boundary_tree": "f177d3e36ebc5d165c4cb34dc15ded5dfb979256",
+  "summary": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r3/summary.json",
+    "bytes": 65585,
+    "sha256": "db362c9c2041636912ccfc95076c6ec7948ec7918efc17032af856875e61cd41",
+    "version": "2050:58908065:65585:1793829728256084992:1793829728256084992",
+    "offsets": [
+      0,
+      65536
+    ],
+    "read_sizes": [
+      65536,
+      49
+    ]
+  },
+  "boundary_files": 106,
+  "boundary_batches": 7,
+  "source": "Original single MCP TextContent JSON strings stored at completed reads, preserved byte-for-byte; parsed structured objects are not substituted.",
+  "limitations": [
+    "read_multiple_files explicitly reports atomic_snapshot=false",
+    "The receipt contents and per-file versions/digests bind the observed files; this packet does not claim a filesystem-wide atomic snapshot.",
+    "No private response/body/token files were requested.",
+    "Raw API authority text retains integer timestamp spelling."
+  ],
+  "files": [
+    {
+      "path": "sdk/process-status.raw.json",
+      "tool": "process_status",
+      "bytes": 729,
+      "sha256": "00a04460e193adb8d2797ad1dac5b6e06f7c20f736a72cfef6b8e198af93bd07",
+      "git_blob": "42ea0a1fc504f55f6afea062e5021221fde937d5"
+    },
+    {
+      "path": "sdk/exit-launch.read-multiple.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 4503,
+      "sha256": "ce004960e142635621b4e1f266f97fb6139606287a0c6d1c6a77037b36fdf3da",
+      "git_blob": "9630b2a74c7598b3f6c59316fa1e0dfb1c7c61cd"
+    },
+    {
+      "path": "sdk/process-read.raw.json",
+      "tool": "process_read",
+      "bytes": 1626,
+      "sha256": "44d70cb22003f42b8a04d4522dcda305dace0d9f3673af97b1f55a2b8da17561",
+      "git_blob": "ebcb735b247d8525d4da09acd867cef4162f9dcd"
+    },
+    {
+      "path": "sdk/summary.file-info.raw.json",
+      "tool": "file_info",
+      "bytes": 481,
+      "sha256": "81de18e0728cbe487db39a38adc668b682385a1a31677fbabec6882ed8a44d16",
+      "git_blob": "f435c6145c9e053da7f282cb92f667f45e0ab641"
+    },
+    {
+      "path": "sdk/summary.binary-read.offset-0.raw.json",
+      "tool": "binary_read",
+      "bytes": 87716,
+      "sha256": "3654b016c778a4113dc62cef9991aba485ffe573c5fce5f93d37c27324b3b64b",
+      "git_blob": "c0cdb2524c5945acca1ebc269041f7851702fe5f"
+    },
+    {
+      "path": "sdk/summary.binary-read.offset-65536.raw.json",
+      "tool": "binary_read",
+      "bytes": 403,
+      "sha256": "cc58dc3b3f1d170cfc8c71b39d03fc2cd8359bfe6053cc78a9497d747b0d047e",
+      "git_blob": "823ac8dec5f90685fd6ce8f2e77109832e8df8b6"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.0.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 13090,
+      "sha256": "d1dbeed96f285c84e4a2c4afc8f8a3a0ca700a25500ed75b44aa9aa210771a82",
+      "git_blob": "ed7d75eaab44f904a375b1ba92002b466c446318"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.1.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 13688,
+      "sha256": "4d0db757110714c5c738ec8a5b3b98795c221a10354efdd8f9e6a46a893380fc",
+      "git_blob": "ec3ea0057140837dec8890824b768145bed08ee3"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.2.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 14535,
+      "sha256": "038b7d9be8ae80229df2e3b2e7b0dbd4d539dfec69a047381dcf99464bbe51bc",
+      "git_blob": "98ec97deccdc9a55cc6953ed5ef27136448bb980"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.3.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 14222,
+      "sha256": "a3d75f3f6c41fb49502b794799f34421116feb43834c3de5b1a135d6b3307ed6",
+      "git_blob": "3747aa21f797a086970d95dd90def62b7abde303"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.4.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 13356,
+      "sha256": "271430b3e82bdc5e4167dabaef92475d22438e460be110fea0443601dd013846",
+      "git_blob": "49fd7a452069dcb27b52ddd3b76a91a9b37c7841"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.5.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 12998,
+      "sha256": "15e0c3b0f0f60f2bc0fb9956e305fb4bc42f2496a42da5e1ea355b0e946df57c",
+      "git_blob": "19f70d2ab811e75463c859d64114f92953863b13"
+    },
+    {
+      "path": "sdk/boundaries.read-multiple.6.raw.json",
+      "tool": "read_multiple_files",
+      "bytes": 8339,
+      "sha256": "0216e26aecfa83cefc49471bc88f2a4f1d9b478851841a7b2dd5d060de10f4d5",
+      "git_blob": "c96677e0954dc62bc624e9293b6ec87e661686b3"
+    }
+  ]
+}

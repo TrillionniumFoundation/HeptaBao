@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.root.mac-sqlite-synthetic-r1-known-failure-review.r1",
+  "tree": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+  "job_id": "1a1a8fdfe3e-fc05-3039",
+  "authority_exit_code": 1,
+  "full_durable_originals": true,
+  "original_sdk_hex_text_exact": true,
+  "original_45_seconds": 0.28781062504276633,
+  "passed": 5,
+  "failed": 1,
+  "not_executed": [
+    "actual_immutable_connection_rejects_write"
+  ],
+  "failure_case": "held_inode_drift_refused_before_connection",
+  "actual_refusal": "absence_not_reopened_as_present",
+  "expected_refusal": "current_input_fd_name_or_metadata_changed",
+  "outcome_unknown": false,
+  "owned_descriptors_and_sqlite_connections_closed": true,
+  "current_production_inputs_opened": false,
+  "postcase_runtime_and_source_rechecks_not_executed": true,
+  "r2_scope": "New source-only fixture wiring repair under a new owned attempt directory; original held-input and immutable-query production definitions remain unchanged. No R2 host submission at freeze.",
+  "full_replacement_qualified": false
+}

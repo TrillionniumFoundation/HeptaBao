@@ -1,0 +1,50 @@
+diff --git a/mac_current_phase_owner_r2.py b/mac_current_phase_owner_r2.py
+--- a/mac_current_phase_owner_r2.py
++++ b/mac_current_phase_owner_r2.py
+@@ -158,6 +158,30 @@
+     return lifecycle
+ 
+ 
++def decode_worker_report(raw, phase, mode, agent):
++    unavailable={'ok':False,'outcomeUnknown':True,'error':'worker_report_unavailable'}
++    try:
++        value=json.loads(raw)
++        if not isinstance(value,dict):return False,unavailable
++        expected=('heptabao.mac-five-agent-single-native-worker.r1' if agent is not None
++                  else 'heptabao.mac-five-agent-authbus-cycle-and-inverse.r1')
++        if (value.get('schema')!=expected or type(value.get('ok')) is not bool
++            or type(value.get('outcomeUnknown')) is not bool or value.get('phase')!=phase):
++            return False,unavailable
++        if agent is not None:
++            if mode!='native' or value.get('agentId')!=agent:return False,unavailable
++        elif mode not in ('cycle','rollback') or value.get('mode')!=mode:
++            return False,unavailable
++        checks=value.get('checks')
++        if (not isinstance(checks,list) or not 1<=len(checks)<=512
++            or any(not isinstance(c,dict) or not isinstance(c.get('case'),str)
++                   or not 1<=len(c['case'])<=256 or type(c.get('passed')) is not bool
++                   for c in checks)):
++            return False,unavailable
++        return True,value
++    except Exception:
++        return False,unavailable
++
+ def volume_before_private_state():
+     """Actual diskutil under original 30s and phase120, with anchors already held."""
+     global protected
+@@ -328,13 +352,12 @@
+                     native_observer=None if agent is None else {
+                       'nodeExecutable':str(Path(NODE).resolve()),'nativeExecutable':worker['nativeBinary']})
+             out_bytes=private_read(out);err_bytes=private_read(err)
+-            try: value=json.loads(out_bytes)
+-            except Exception: value={'ok':False,'error':'worker_report_unavailable'}
++            report_available,value=decode_worker_report(out_bytes,plan['phase'],mode,agent)
+             record={'name':label,'mode':mode,'agentId':agent,'lifecycle':life,
+                     'stdoutSha256':sha(out_bytes),'stderrSha256':sha(err_bytes),
+                     'stdoutBytes':len(out_bytes),'stderrBytes':len(err_bytes),'report':value}
+             report['records'].append(record)
+-            owned[-1]['deliveredReport']=True
++            owned[-1]['deliveredReport']=report_available
+             # No next worker, inverse, or cold action follows a timeout, unknown
+             # response, missing report, surviving lineage, or unsuccessful gate.
+             if (life['outcomeUnknown'] or value.get('outcomeUnknown')

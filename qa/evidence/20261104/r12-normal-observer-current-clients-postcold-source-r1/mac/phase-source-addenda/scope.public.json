@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.mac.phase-source-addenda.r1",
+  "scope": "Source-only addenda preserved across transient analysis cache loss. No Mac consumer, production capture, service or credential operation is represented by these files.",
+  "files": [
+    {
+      "path": "mac_current_phase_owner_r2.typed24815.py",
+      "sha": "ba5a0f59235acbdaf5c4eae3d52568fcf24d2bc8",
+      "bytes": 24815,
+      "digest": "b141119e3744233422fad95c2ab5096409f9a52ddc6778f8964fa7e29e7d35ac"
+    },
+    {
+      "path": "phase-success-refusal.diff",
+      "sha": "de46d8115320a04bbf1dd5d646927e28a0f81aca",
+      "bytes": 548
+    },
+    {
+      "path": "mac_current_phase_owner_r2.launchd25005.source-only.py",
+      "sha": "5dcda7880ec4526da5d5bc607debc47cbacffe92",
+      "bytes": 25005,
+      "digest": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
+    }
+  ],
+  "previous_phase_source_blob": "8d66bd60bfa3dea8d7b0053a0e0796b7d6d0957b",
+  "previous_source_blob_correction": "8d66bd60bfa3dea8d7b0053a0e0796b7d6d0957b",
+  "typed24815_previous_root_observation": {
+    "selected_typed_cases": 25,
+    "source_review_recorded_in_conversation": true,
+    "original_cloud_exec_and_harness_not_recovered_from_volatile_cache": true,
+    "not_counted_as_durable_raw_runtime_evidence": true
+  },
+  "launchd25005": {
+    "whole_blob_identity_recovered": true,
+    "complete_manager_and_outer_source_review_pending": true,
+    "runtime_qualification": false
+  },
+  "production_cutover": false
+}

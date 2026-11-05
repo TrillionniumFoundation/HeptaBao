@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.014182171988068148,
+  "exit_code": 0,
+  "label": "ingress-observer-6",
+  "outer_cap_seconds": 599.6372159940074,
+  "owned_pgid": 3846252,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "0598378891a6091b223dbe096ee37d3e3dfed97eea8a9fe1b9d6f073c06b3a60",
+  "timed_out": false
+}

@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.local-source-check-attempt.v1",
+  "status": "not_started",
+  "error": "exec-server rejected request (-32603): Argument list too long (os error 7)",
+  "scope": "Local /tmp AST-only command was rejected before process creation; no Mac or product action."
+}

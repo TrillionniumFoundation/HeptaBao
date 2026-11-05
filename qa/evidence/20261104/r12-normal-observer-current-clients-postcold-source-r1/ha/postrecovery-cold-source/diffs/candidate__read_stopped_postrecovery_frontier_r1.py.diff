@@ -1,0 +1,20 @@
+--- base/read_stopped_direction_frontier_r3.py
++++ candidate/read_stopped_postrecovery_frontier_r1.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""One bounded numeric read of a fixed fresh direction-R3 node after its owned stop.
++"""One bounded numeric read of a fixed fresh post-recovery-cold node after its owned stop.
+ Does not invoke Rust open_existing, repair/truncate a journal, or open ciphertext.
+ The controller supplies the actual fresh run ID and records the original stop.
+ """
+@@ -16,8 +16,8 @@
+ 
+ BASELINE_FAILURE_SHA = "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912"
+ ROOTS = {
+-    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r3", 501),
+-    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r3", 1000),
++    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1", 501),
++    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r1", 1000),
+ }
+ # Exact stopped-fixture metadata observations, per node; no permission changes.
+ LOG_MODES = {1: (0o755, 0o644), 2: (0o775, 0o664)}

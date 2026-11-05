@@ -1,0 +1,38 @@
+{
+  "carrier_sha256": "d8ac6575880540b8a094de52bc0102ddfa0c725b98d5f528f04b4842d739af31",
+  "compiler_started": false,
+  "controls": {
+    "launch_normal_phaseb_observer.py": {
+      "bytes": 28425,
+      "sha256": "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de"
+    },
+    "normal-test-groups.public.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "normal_phaseb_observer_build.py": {
+      "bytes": 20791,
+      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"
+    },
+    "prior-observer-build-authority.public.json": {
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"
+    }
+  },
+  "host": "rog",
+  "new_stage_total_seconds": 300,
+  "new_supervisor_seconds": 330,
+  "original_clone_cap_seconds": 180,
+  "original_git_leaf_cap_seconds": 90,
+  "production_changed": false,
+  "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2",
+  "schema": "heptabao.phaseb-observer-independent-source-stage.v2",
+  "server_started": false,
+  "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "source": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/source",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "stager_sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
+  "started_ns": 1793830519374688873,
+  "status": "failed"
+}

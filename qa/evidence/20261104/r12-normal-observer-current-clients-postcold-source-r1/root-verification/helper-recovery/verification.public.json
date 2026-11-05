@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.root-public-verification-helper-recovery.r1",
+  "result": "PASS_PUBLIC_VERIFICATION_UTILITIES_ONLY",
+  "known_hash_vectors": 4,
+  "base64_vectors": 3,
+  "lossless_integer_and_quoted_string_vector": true,
+  "primary_git_objects": [
+    {
+      "blob": "cc0f01acbbb9fa8928e1c0b3dca1259fe3e3d9be",
+      "bytes": 136314,
+      "sha256": "507eefdd71aed74eca8ef10a03f213fbcc454f033f1374a639247106139f0121"
+    },
+    {
+      "blob": "3cc4133672f83e0b3afdf608a187336d1944664b",
+      "bytes": 8157,
+      "sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c"
+    },
+    {
+      "blob": "f809869a4a091209b466238b402416751dc290ba",
+      "bytes": 6858,
+      "sha256": "cf47218bc182308c150f76c7c5212943196c035a7fa713f414cbcdffbf7c5db2"
+    },
+    {
+      "blob": "cad3d4ecd0b33bcb3e21f9e9b4accb52cc2ed4de",
+      "bytes": 5428,
+      "sha256": "50634805f355be396ac19d2feb5e058891647258de5404976433be64eb2adb3e"
+    },
+    {
+      "blob": "5da4e3a7bc22e30abcb269aac0ef5d7287a5e91b",
+      "bytes": 731,
+      "sha256": "b31ed143bb007dad34c1e796f8250072b5c348ef470d4990896ed87b93c91d6d"
+    },
+    {
+      "blob": "8d5c1100b12528b619677ad31abe889ddb4d152e",
+      "bytes": 17178,
+      "sha256": "fef1acfc1a86c8a13bfb5744fa990d9a6054cc4542271330f81e2866e877a235"
+    },
+    {
+      "blob": "d688a86620bc272d8ba7eaa0c041c2a59f758c71",
+      "bytes": 12816,
+      "sha256": "ad213977edb9978ab14490ec6abbfb6c3b274ba8f3c044478697fdccf532c1fb"
+    },
+    {
+      "blob": "ec56db79835f69318f957caca4c402b9c39eaea5",
+      "bytes": 13142,
+      "sha256": "70f81c86c39c2601f5445dbdc7095a56e1ba2cd5d414deed8d18f1b6e72fc0cf"
+    },
+    {
+      "blob": "fd8fef6129c7e58e761d9a4ec90544df003e2540",
+      "bytes": 1727,
+      "sha256": "73728ea5600680942aca42681b7d712922de53cfae8fcc4cd5ce14972ae63e46"
+    }
+  ],
+  "actual_primary_git_merkle": {
+    "root_sha": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+    "trees_verified": 358
+  },
+  "actual_pinned_three_hunk_header_diff_exact": true,
+  "cloud_exec_reference_attempt": "No process created; exec-server transport disconnected and environment became unavailable. No new Python test pass claimed.",
+  "unqualified_drafts": [
+    {
+      "issue": "SHA256 round constant transcribed with trailing f; known empty vector refused before any object qualification",
+      "fixed": true
+    },
+    {
+      "issue": "56-byte expected test digest transcribed with one extra e; length/reference fixed, algorithm unchanged",
+      "fixed": true
+    }
+  ],
+  "product_operations_or_replay": 0,
+  "old_helper_source_identity_claimed": false
+}

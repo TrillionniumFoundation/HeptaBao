@@ -1,0 +1,24 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/control/launch_normal_phaseb_observer.py",
+    "--host",
+    "rog",
+    "--commit",
+    "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "--tree",
+    "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "--stage-sha256",
+    "0abd8e0ae42eef1bacd4866f12f0ada94563369ecf2b66e7ca69ab4388433d7f",
+    "--runner-sha256",
+    "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+    "--groups-sha256",
+    "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+  ],
+  "idempotency_key": "heptabao-phaseb-native-ingress-observer-normal44-plus7-3cb8739-20261104-r3",
+  "timeout_seconds": 12000
+}

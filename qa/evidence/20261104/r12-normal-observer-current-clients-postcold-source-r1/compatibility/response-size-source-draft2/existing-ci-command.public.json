@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao-response-size-existing-ci-command-r2",
+  "source": "root-provided exact original step excerpts; original full log blobs retained without rereading",
+  "run_id": 41907498576,
+  "argv": [
+    "cargo",
+    "+1.98.0",
+    "clippy",
+    "--locked",
+    "--workspace",
+    "--all-targets",
+    "--exclude",
+    "qrcode",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "observed_step_env_names": [
+    "EXPECTED_SOURCE",
+    "PR_HEAD",
+    "PR_BASE",
+    "CARGO_BUILD_JOBS"
+  ],
+  "cargo_build_jobs": "1",
+  "rustflags_status": "not listed in captured step env; no assertion of empty or absent inherited value",
+  "head": {
+    "job_id": 126845969276,
+    "expected_source": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+    "command_line": 14051,
+    "time": "2026-11-04T22:45:43.8376686Z",
+    "raw_log_blob": "13a357cbf7ebcaf2624ec4a48c7f939bd92c413d"
+  },
+  "merge": {
+    "job_id": 126845968973,
+    "expected_source": "758789509917142bc33714c8c395ae43f868877a",
+    "command_line": 14084,
+    "time": "2026-11-04T22:47:11.8563902Z",
+    "raw_log_blob": "3fcc6daf9d694eef9c4afeef3a31a8eaad575fed"
+  },
+  "pr_base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+  "diagnostics_per_job": {
+    "result_large_err": 1619,
+    "response_208_or_more": 1616,
+    "ha_recovery_index_admission_failure_224_or_more": 3,
+    "other_error_kinds": 0
+  },
+  "workspace_test_summaries_per_job": {
+    "total": 69,
+    "failed": 0
+  },
+  "no_ci_or_lint_configuration_change": true
+}

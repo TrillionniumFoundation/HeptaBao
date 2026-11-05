@@ -1,0 +1,6 @@
+NEW reconstructed review helpers r1, after the 2026-11-04 V8 store reset.
+These are not claimed to be the lost helper source bytes or a complete recovery of that package.
+No Node, filesystem, network, external packages or host work. Load each file as a function expression with eval('('+source+')'). Hash functions take binary strings (one byte per JS code unit), not Unicode strings; call utf8binary first for text. Git blob hashing uses sha1binary('blob '+bytes.length+'\0'+bytes).
+lossless_integer_json preserves only plain integer tokens outside the JS safe range as decimal strings. It does not claim lossless fractional/exponent parsing; original SDK raw JSON must always be retained, never reserialized as original evidence. String contents/escaped quotes remain strings.
+SHA256/SHA1 were checked against empty/abc standard vectors and three preexisting independently frozen artifact byte lengths/SHA256/Git blob ids (carrier6858, stdin448380, dispatch4997). UTF8 multibyte/astral bytes and unpaired-surrogate rejection, plus large-integer/string JSON cases, were checked in V8.
+No base64, generic strict diff or Git tree Merkle audit helper is recovered here. Root can independently verify this new limited package before reuse.

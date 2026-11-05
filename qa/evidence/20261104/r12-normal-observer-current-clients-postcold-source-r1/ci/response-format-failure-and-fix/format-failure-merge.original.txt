@@ -1,0 +1,866 @@
+﻿2026-11-04T23:29:34.5008200Z Current runner version: '2.338.2'
+2026-11-04T23:29:34.5024104Z ##[group]Runner Image Provisioner
+2026-11-04T23:29:34.5024555Z Hosted Compute Agent
+2026-11-04T23:29:34.5024828Z Version: 20261021.618
+2026-11-04T23:29:34.5025120Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-04T23:29:34.5025464Z Build Date: 2026-10-21T00:45:21Z
+2026-11-04T23:29:34.5025785Z Worker ID: {61cb620c-d86d-4dab-b2c4-45ab975fc16a}
+2026-11-04T23:29:34.5026130Z Region: centralus
+2026-11-04T23:29:34.5026384Z Cloud: Azure
+2026-11-04T23:29:34.5026628Z ##[endgroup]
+2026-11-04T23:29:34.5027261Z ##[group]Operating System
+2026-11-04T23:29:34.5027536Z Ubuntu
+2026-11-04T23:29:34.5027774Z 24.04.5
+2026-11-04T23:29:34.5028003Z LTS
+2026-11-04T23:29:34.5028241Z ##[endgroup]
+2026-11-04T23:29:34.5028486Z ##[group]Runner Image
+2026-11-04T23:29:34.5028750Z Image: ubuntu-24.04
+2026-11-04T23:29:34.5029017Z Version: 20261025.353.1
+2026-11-04T23:29:34.5029661Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T23:29:34.5030541Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-04T23:29:34.5031009Z ##[endgroup]
+2026-11-04T23:29:34.5031534Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T23:29:34.5032711Z Contents: read
+2026-11-04T23:29:34.5032978Z Metadata: read
+2026-11-04T23:29:34.5033232Z ##[endgroup]
+2026-11-04T23:29:34.5034373Z Secret source: Actions
+2026-11-04T23:29:34.5034783Z Cache mode: write
+2026-11-04T23:29:34.5035324Z Prepare workflow directory
+2026-11-04T23:29:34.5357809Z Prepare all required actions
+2026-11-04T23:29:34.5388144Z Getting action download info
+2026-11-04T23:29:34.7696935Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-04T23:29:34.9718495Z Complete job name: OpenBao replacement / merge
+2026-11-04T23:29:35.0571745Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-04T23:29:35.0572361Z with:
+2026-11-04T23:29:35.0572658Z   ref: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:35.0573020Z   fetch-depth: 0
+2026-11-04T23:29:35.0573312Z   persist-credentials: false
+2026-11-04T23:29:35.0573648Z   repository: TrillionniumFoundation/HeptaBao
+2026-11-04T23:29:35.0576347Z   token: ***
+2026-11-04T23:29:35.0576602Z   ssh-strict: true
+2026-11-04T23:29:35.0576862Z   ssh-user: git
+2026-11-04T23:29:35.0577114Z   clean: true
+2026-11-04T23:29:35.0577381Z   sparse-checkout-cone-mode: true
+2026-11-04T23:29:35.0577694Z   fetch-tags: false
+2026-11-04T23:29:35.0577957Z   show-progress: true
+2026-11-04T23:29:35.0578221Z   lfs: false
+2026-11-04T23:29:35.0578468Z   submodules: false
+2026-11-04T23:29:35.0578740Z   set-safe-directory: true
+2026-11-04T23:29:35.0579047Z   allow-unsafe-pr-checkout: false
+2026-11-04T23:29:35.0579434Z env:
+2026-11-04T23:29:35.0579778Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:35.0580356Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:35.0580768Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:35.0581130Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:35.0581400Z ##[endgroup]
+2026-11-04T23:29:35.3166567Z Syncing repository: TrillionniumFoundation/HeptaBao
+2026-11-04T23:29:35.3168861Z ##[group]Getting Git version info
+2026-11-04T23:29:35.3169698Z Working directory is '/home/runner/work/HeptaBao/HeptaBao'
+2026-11-04T23:29:35.3171033Z [command]/usr/bin/git version
+2026-11-04T23:29:35.3197783Z git version 2.56.0
+2026-11-04T23:29:35.3214760Z ##[endgroup]
+2026-11-04T23:29:35.3224801Z Temporarily overriding HOME='/home/runner/work/_temp/e1662e90-54a0-4efe-acbc-283b786fa99e' before making global git config changes
+2026-11-04T23:29:35.3226325Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T23:29:35.3230422Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HeptaBao/HeptaBao
+2026-11-04T23:29:35.3295100Z Deleting the contents of '/home/runner/work/HeptaBao/HeptaBao'
+2026-11-04T23:29:35.3297264Z ##[group]Determining repository object format
+2026-11-04T23:29:35.3298332Z ##[endgroup]
+2026-11-04T23:29:35.3299160Z ##[group]Initializing the repository
+2026-11-04T23:29:35.3299723Z [command]/usr/bin/git init /home/runner/work/HeptaBao/HeptaBao
+2026-11-04T23:29:35.3402025Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T23:29:35.3403037Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T23:29:35.3403725Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T23:29:35.3404266Z hint: call:
+2026-11-04T23:29:35.3404559Z hint:
+2026-11-04T23:29:35.3404967Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T23:29:35.3405390Z hint:
+2026-11-04T23:29:35.3405880Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T23:29:35.3406503Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T23:29:35.3406990Z hint:
+2026-11-04T23:29:35.3407258Z hint: 	git branch -m <name>
+2026-11-04T23:29:35.3407561Z hint:
+2026-11-04T23:29:35.3407969Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T23:29:35.3422078Z Initialized empty Git repository in /home/runner/work/HeptaBao/HeptaBao/.git/
+2026-11-04T23:29:35.3433633Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/HeptaBao
+2026-11-04T23:29:35.3488544Z ##[endgroup]
+2026-11-04T23:29:35.3489598Z ##[group]Disabling automatic garbage collection
+2026-11-04T23:29:35.3491606Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T23:29:35.3546400Z ##[endgroup]
+2026-11-04T23:29:35.3547443Z ##[group]Setting up auth
+2026-11-04T23:29:35.3548048Z Removing SSH command configuration
+2026-11-04T23:29:35.3552579Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T23:29:35.3595605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T23:29:35.4003824Z Removing HTTP extra header
+2026-11-04T23:29:35.4009261Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T23:29:35.4055703Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T23:29:35.4298446Z Removing includeIf entries pointing to credentials config files
+2026-11-04T23:29:35.4302970Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T23:29:35.4358615Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T23:29:35.4602479Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T23:29:35.4656019Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git.path /home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:35.4705979Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:35.4756392Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:35.4806035Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:35.4856602Z ##[endgroup]
+2026-11-04T23:29:35.4857511Z ##[group]Fetching the repository
+2026-11-04T23:29:35.4864912Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-11-04T23:29:39.1843679Z From https://github.com/TrillionniumFoundation/HeptaBao
+2026-11-04T23:29:39.1844393Z  * [new branch]        agent/approle-no-default-token-20261017 -> origin/agent/approle-no-default-token-20261017
+2026-11-04T23:29:39.1845041Z  * [new branch]        agent/authbus-lifecycle-20261103-r1 -> origin/agent/authbus-lifecycle-20261103-r1
+2026-11-04T23:29:39.1845721Z  * [new branch]        agent/barrier-rotation-preparation-20261014 -> origin/agent/barrier-rotation-preparation-20261014
+2026-11-04T23:29:39.1846400Z  * [new branch]        agent/fix-v6-runtime-doc-ci-20261017 -> origin/agent/fix-v6-runtime-doc-ci-20261017
+2026-11-04T23:29:39.1846944Z  * [new branch]        agent/heptabao-archive-diagnostic-20261020-r1 -> origin/agent/heptabao-archive-diagnostic-20261020-r1
+2026-11-04T23:29:39.1847472Z  * [new branch]        agent/heptabao-authbus-gateway-canary-20261020-r1 -> origin/agent/heptabao-authbus-gateway-canary-20261020-r1
+2026-11-04T23:29:39.1847987Z  * [new branch]        agent/heptabao-continuation-20261014 -> origin/agent/heptabao-continuation-20261014
+2026-11-04T23:29:39.1848422Z  * [new branch]        agent/heptabao-continuation-20261018-r2 -> origin/agent/heptabao-continuation-20261018-r2
+2026-11-04T23:29:39.1848901Z  * [new branch]        agent/heptabao-e942-typed-io-scoped-20261015 -> origin/agent/heptabao-e942-typed-io-scoped-20261015
+2026-11-04T23:29:39.1849390Z  * [new branch]        agent/heptabao-ha-quota-lifecycle-20261020-r1 -> origin/agent/heptabao-ha-quota-lifecycle-20261020-r1
+2026-11-04T23:29:39.1850036Z  * [new branch]        agent/heptabao-historical-raft-epoch-r1-20261018 -> origin/agent/heptabao-historical-raft-epoch-r1-20261018
+2026-11-04T23:29:39.1851331Z  * [new branch]        agent/heptabao-historical-service-r1-20261018 -> origin/agent/heptabao-historical-service-r1-20261018
+2026-11-04T23:29:39.1852163Z  * [new branch]        agent/heptabao-next-gates-native-ha-authbus-20261017 -> origin/agent/heptabao-next-gates-native-ha-authbus-20261017
+2026-11-04T23:29:39.1852988Z  * [new branch]        agent/heptabao-next-gates-r6-checkpoint-20261017 -> origin/agent/heptabao-next-gates-r6-checkpoint-20261017
+2026-11-04T23:29:39.1853621Z  * [new branch]        agent/heptabao-r11-evidence-20261020-r1 -> origin/agent/heptabao-r11-evidence-20261020-r1
+2026-11-04T23:29:39.1854193Z  * [new branch]        agent/heptabao-r12-evidence-20261020-r1 -> origin/agent/heptabao-r12-evidence-20261020-r1
+2026-11-04T23:29:39.1854641Z  * [new branch]        agent/heptabao-r12-read-recovery-20261020-r1 -> origin/agent/heptabao-r12-read-recovery-20261020-r1
+2026-11-04T23:29:39.1855273Z  * [new branch]        agent/heptabao-r13-auth-quota-20261020-r1 -> origin/agent/heptabao-r13-auth-quota-20261020-r1
+2026-11-04T23:29:39.1855962Z  * [new branch]        agent/heptabao-r14-evidence-20261020-r1 -> origin/agent/heptabao-r14-evidence-20261020-r1
+2026-11-04T23:29:39.1856726Z  * [new branch]        agent/heptabao-r14-publication-read-20261020-r1 -> origin/agent/heptabao-r14-publication-read-20261020-r1
+2026-11-04T23:29:39.1857282Z  * [new branch]        agent/heptabao-r15-auth-quota-20261020-r1 -> origin/agent/heptabao-r15-auth-quota-20261020-r1
+2026-11-04T23:29:39.1857721Z  * [new branch]        agent/heptabao-r15-evidence-20261020-r1 -> origin/agent/heptabao-r15-evidence-20261020-r1
+2026-11-04T23:29:39.1858373Z  * [new branch]        agent/heptabao-r16-evidence-20261020-r1 -> origin/agent/heptabao-r16-evidence-20261020-r1
+2026-11-04T23:29:39.1858836Z  * [new branch]        agent/heptabao-r16-native-quota-routes-20261020-r1 -> origin/agent/heptabao-r16-native-quota-routes-20261020-r1
+2026-11-04T23:29:39.1859336Z  * [new branch]        agent/heptabao-r17-native-step-down-20261020-r1 -> origin/agent/heptabao-r17-native-step-down-20261020-r1
+2026-11-04T23:29:39.1859785Z  * [new branch]        agent/heptabao-r19-readonly-20261021 -> origin/agent/heptabao-r19-readonly-20261021
+2026-11-04T23:29:39.1860559Z  * [new branch]        agent/heptabao-r8o-forward-diagnostic-root-20261018 -> origin/agent/heptabao-r8o-forward-diagnostic-root-20261018
+2026-11-04T23:29:39.1861132Z  * [new branch]        agent/heptabao-r8o-replacement-20261018 -> origin/agent/heptabao-r8o-replacement-20261018
+2026-11-04T23:29:39.1861668Z  * [new branch]        agent/heptabao-resume-20261020-r10-recovered -> origin/agent/heptabao-resume-20261020-r10-recovered
+2026-11-04T23:29:39.1862155Z  * [new branch]        agent/heptabao-resume-20261020-r11-ha -> origin/agent/heptabao-resume-20261020-r11-ha
+2026-11-04T23:29:39.1862597Z  * [new branch]        agent/heptabao-successor-integration-20261014 -> origin/agent/heptabao-successor-integration-20261014
+2026-11-04T23:29:39.1863200Z  * [new branch]        agent/heptabao-v6-03428-linux66-20261015 -> origin/agent/heptabao-v6-03428-linux66-20261015
+2026-11-04T23:29:39.1863648Z  * [new branch]        agent/heptabao-v6-03428eca-scoped-20261015 -> origin/agent/heptabao-v6-03428eca-scoped-20261015
+2026-11-04T23:29:39.1864083Z  * [new branch]        agent/heptabao-v6-066b-mac66-20261015 -> origin/agent/heptabao-v6-066b-mac66-20261015
+2026-11-04T23:29:39.1864485Z  * [new branch]        agent/heptabao-v6-1423-scoped-20261015 -> origin/agent/heptabao-v6-1423-scoped-20261015
+2026-11-04T23:29:39.1864936Z  * [new branch]        agent/heptabao-v6-d150-scoped-mac66-20261015 -> origin/agent/heptabao-v6-d150-scoped-mac66-20261015
+2026-11-04T23:29:39.1865389Z  * [new branch]        agent/native-snapshot-batched-20261014 -> origin/agent/native-snapshot-batched-20261014
+2026-11-04T23:29:39.1865801Z  * [new branch]        agent/pkcs11-observer-proof-20261014 -> origin/agent/pkcs11-observer-proof-20261014
+2026-11-04T23:29:39.1866484Z  * [new branch]        agent/raft-snapshot-observation-state-fence-20261015 -> origin/agent/raft-snapshot-observation-state-fence-20261015
+2026-11-04T23:29:39.1867007Z  * [new branch]        agent/snapshot-timeout-evidence-gate-20261014 -> origin/agent/snapshot-timeout-evidence-gate-20261014
+2026-11-04T23:29:39.1867543Z  * [new branch]        agent/v6-authenticated-peer-stage-envelope-20261016 -> origin/agent/v6-authenticated-peer-stage-envelope-20261016
+2026-11-04T23:29:39.1868092Z  * [new branch]        agent/v6-aws-sha256-bounded-original15-20261015 -> origin/agent/v6-aws-sha256-bounded-original15-20261015
+2026-11-04T23:29:39.1868601Z  * [new branch]        agent/v6-client-server-leaf-pinning-20261016 -> origin/agent/v6-client-server-leaf-pinning-20261016
+2026-11-04T23:29:39.1869103Z  * [new branch]        agent/v6-durable-ciphertext-spool-20261016 -> origin/agent/v6-durable-ciphertext-spool-20261016
+2026-11-04T23:29:39.1869632Z  * [new branch]        agent/v6-durable-intent-compaction-proof-20261016 -> origin/agent/v6-durable-intent-compaction-proof-20261016
+2026-11-04T23:29:39.1870319Z  * [new branch]        agent/v6-exact-raft-intent-log-readonly-20261016 -> origin/agent/v6-exact-raft-intent-log-readonly-20261016
+2026-11-04T23:29:39.1870881Z  * [new branch]        agent/v6-ha-convergence-tree-20261015 -> origin/agent/v6-ha-convergence-tree-20261015
+2026-11-04T23:29:39.1871324Z  * [new branch]        agent/v6-ha-raft-stage-271-qa-mac-20261016 -> origin/agent/v6-ha-raft-stage-271-qa-mac-20261016
+2026-11-04T23:29:39.1872057Z  * [new branch]        agent/v6-intent-pinned-mtls-readonly-custody-20261016 -> origin/agent/v6-intent-pinned-mtls-readonly-custody-20261016
+2026-11-04T23:29:39.1872680Z  * [new branch]        agent/v6-intent-postcompaction-leader-failover-20261017 -> origin/agent/v6-intent-postcompaction-leader-failover-20261017
+2026-11-04T23:29:39.1873245Z  * [new branch]        agent/v6-kv2-271-2560k-live-20261015 -> origin/agent/v6-kv2-271-2560k-live-20261015
+2026-11-04T23:29:39.1873776Z  * [new branch]        agent/v6-local-closure-physical-verification-20261016 -> origin/agent/v6-local-closure-physical-verification-20261016
+2026-11-04T23:29:39.1874302Z  * [new branch]        agent/v6-peer-replica-verified-ingress-20261016 -> origin/agent/v6-peer-replica-verified-ingress-20261016
+2026-11-04T23:29:39.1874895Z  * [new branch]        agent/v6-physical-139m-mac-x230-mtls-20261016 -> origin/agent/v6-physical-139m-mac-x230-mtls-20261016
+2026-11-04T23:29:39.1875371Z  * [new branch]        agent/v6-physical-ha-peer-preflight-20261017 -> origin/agent/v6-physical-ha-peer-preflight-20261017
+2026-11-04T23:29:39.1875820Z  * [new branch]        agent/v6-physical-mac-x230-mtls-20261016 -> origin/agent/v6-physical-mac-x230-mtls-20261016
+2026-11-04T23:29:39.1876311Z  * [new branch]        agent/v6-physical-six-directed-mtls-matrix-20261017 -> origin/agent/v6-physical-six-directed-mtls-matrix-20261017
+2026-11-04T23:29:39.1876836Z  * [new branch]        agent/v6-physical-third-node-rog-custody-20261016 -> origin/agent/v6-physical-third-node-rog-custody-20261016
+2026-11-04T23:29:39.1877390Z  * [new branch]        agent/v6-physical-typed-intent-dual-mtls-proof-20261016 -> origin/agent/v6-physical-typed-intent-dual-mtls-proof-20261016
+2026-11-04T23:29:39.1877939Z  * [new branch]        agent/v6-pinned-mtls-readonly-reconcile-20261016 -> origin/agent/v6-pinned-mtls-readonly-reconcile-20261016
+2026-11-04T23:29:39.1878491Z  * [new branch]        agent/v6-postcompaction-full-raft-leader-reopen-20261017 -> origin/agent/v6-postcompaction-full-raft-leader-reopen-20261017
+2026-11-04T23:29:39.1879019Z  * [new branch]        agent/v6-pr128-current-docs-closure-20261016 -> origin/agent/v6-pr128-current-docs-closure-20261016
+2026-11-04T23:29:39.1879471Z  * [new branch]        agent/v6-raft-ciphertext-stage-20261015 -> origin/agent/v6-raft-ciphertext-stage-20261015
+2026-11-04T23:29:39.1879941Z  * [new branch]        agent/v6-raft-commit-authority-contract-20261015 -> origin/agent/v6-raft-commit-authority-contract-20261015
+2026-11-04T23:29:39.1880780Z  * [new branch]        agent/v6-raft-composition-exact-witness-20261016 -> origin/agent/v6-raft-composition-exact-witness-20261016
+2026-11-04T23:29:39.1881351Z  * [new branch]        agent/v6-raft-immutable-intent-prepublication-20261016 -> origin/agent/v6-raft-immutable-intent-prepublication-20261016
+2026-11-04T23:29:39.1881952Z  * [new branch]        agent/v6-raft-intent-pinned-mtls-double-readindex-20261017 -> origin/agent/v6-raft-intent-pinned-mtls-double-readindex-20261017
+2026-11-04T23:29:39.1882472Z  * [new branch]        agent/v6-raft-kv2-271-integrated-20261016 -> origin/agent/v6-raft-kv2-271-integrated-20261016
+2026-11-04T23:29:39.1882891Z  * [new branch]        agent/v6-replica-pinned-mtls-20261016 -> origin/agent/v6-replica-pinned-mtls-20261016
+2026-11-04T23:29:39.1883367Z  * [new branch]        agent/v6-root-intent-physical-closure-bound-20261016 -> origin/agent/v6-root-intent-physical-closure-bound-20261016
+2026-11-04T23:29:39.1883851Z  * [new branch]        agent/v6-target-syscall-profiler-20261015 -> origin/agent/v6-target-syscall-profiler-20261015
+2026-11-04T23:29:39.1884340Z  * [new branch]        agent/v6-two-pinned-recipient-custody-20261016 -> origin/agent/v6-two-pinned-recipient-custody-20261016
+2026-11-04T23:29:39.1884878Z  * [new branch]        agent/v6-x230-139m-271-parity-20261016 -> origin/agent/v6-x230-139m-271-parity-20261016
+2026-11-04T23:29:39.1885341Z  * [new branch]        archive/library-source-preservation-20261103 -> origin/archive/library-source-preservation-20261103
+2026-11-04T23:29:39.1885785Z  * [new branch]        backup/pr83-ha-composition-wip-20260911 -> origin/backup/pr83-ha-composition-wip-20260911
+2026-11-04T23:29:39.1886227Z  * [new branch]        candidate/heptabao-current-truth-20260911-r1 -> origin/candidate/heptabao-current-truth-20260911-r1
+2026-11-04T23:29:39.1886640Z  * [new branch]        codex/bao-service-closure-20260908 -> origin/codex/bao-service-closure-20260908
+2026-11-04T23:29:39.1887041Z  * [new branch]        codex/ci-trust-boundary-closure-20260907 -> origin/codex/ci-trust-boundary-closure-20260907
+2026-11-04T23:29:39.1887463Z  * [new branch]        codex/cleanup-and-replacement-20260919 -> origin/codex/cleanup-and-replacement-20260919
+2026-11-04T23:29:39.1887948Z  * [new branch]        codex/closure-qualified-20260923 -> origin/codex/closure-qualified-20260923
+2026-11-04T23:29:39.1888337Z  * [new branch]        codex/current-plan-remediation-20260912 -> origin/codex/current-plan-remediation-20260912
+2026-11-04T23:29:39.1888716Z  * [new branch]        codex/dynamic-secret-runtime -> origin/codex/dynamic-secret-runtime
+2026-11-04T23:29:39.1889113Z  * [new branch]        codex/fix-pr63-workflow-generation-20260905 -> origin/codex/fix-pr63-workflow-generation-20260905
+2026-11-04T23:29:39.1889525Z  * [new branch]        codex/full-convergence-20260917-r1 -> origin/codex/full-convergence-20260917-r1
+2026-11-04T23:29:39.1889884Z  * [new branch]        codex/full-gap-closure-20260916 -> origin/codex/full-gap-closure-20260916
+2026-11-04T23:29:39.1890358Z  * [new branch]        codex/full-openbao-replacement-20260912 -> origin/codex/full-openbao-replacement-20260912
+2026-11-04T23:29:39.1890755Z  * [new branch]        codex/full-remediation-20260916-r1 -> origin/codex/full-remediation-20260916-r1
+2026-11-04T23:29:39.1891155Z  * [new branch]        codex/full-replacement-closure-20260917 -> origin/codex/full-replacement-closure-20260917
+2026-11-04T23:29:39.1891585Z  * [new branch]        codex/full-replacement-closure-20260917-r2 -> origin/codex/full-replacement-closure-20260917-r2
+2026-11-04T23:29:39.1892025Z  * [new branch]        codex/full-replacement-closure-20260918-r2 -> origin/codex/full-replacement-closure-20260918-r2
+2026-11-04T23:29:39.1892473Z  * [new branch]        codex/full-replacement-hardening-20260918-r3 -> origin/codex/full-replacement-hardening-20260918-r3
+2026-11-04T23:29:39.1892955Z  * [new branch]        codex/full-replacement-openldap-dynamic-20260919 -> origin/codex/full-replacement-openldap-dynamic-20260919
+2026-11-04T23:29:39.1893553Z  * [new branch]        codex/full-replacement-p0-auth-cow-20260919 -> origin/codex/full-replacement-p0-auth-cow-20260919
+2026-11-04T23:29:39.1894006Z  * [new branch]        codex/full-replacement-remediation-20260916 -> origin/codex/full-replacement-remediation-20260916
+2026-11-04T23:29:39.1894401Z  * [new branch]        codex/h01-h02-next-foundation -> origin/codex/h01-h02-next-foundation
+2026-11-04T23:29:39.1894764Z  * [new branch]        codex/h01-oracle-exact-execution-v1 -> origin/codex/h01-oracle-exact-execution-v1
+2026-11-04T23:29:39.1895112Z  * [new branch]        codex/h01-oracle-foundation -> origin/codex/h01-oracle-foundation
+2026-11-04T23:29:39.1895429Z  * [new branch]        codex/h02-blocker-closure-v1 -> origin/codex/h02-blocker-closure-v1
+2026-11-04T23:29:39.1895782Z  * [new branch]        codex/h02-byte-rehash-execution-v1 -> origin/codex/h02-byte-rehash-execution-v1
+2026-11-04T23:29:39.1896143Z  * [new branch]        codex/h02-candidate-adapters-v1 -> origin/codex/h02-candidate-adapters-v1
+2026-11-04T23:29:39.1896571Z  * [new branch]        codex/h02-candidate-cross-platform-execution-v1 -> origin/codex/h02-candidate-cross-platform-execution-v1
+2026-11-04T23:29:39.1897008Z  * [new branch]        codex/h02-candidate-diagnostics-v1 -> origin/codex/h02-candidate-diagnostics-v1
+2026-11-04T23:29:39.1897379Z  * [new branch]        codex/h02-candidate-msrv-macos-v1 -> origin/codex/h02-candidate-msrv-macos-v1
+2026-11-04T23:29:39.1897782Z  * [new branch]        codex/h02-durable-multiprocess-closure-v2 -> origin/codex/h02-durable-multiprocess-closure-v2
+2026-11-04T23:29:39.1898168Z  * [new branch]        codex/h02-final-gap-closure-v1 -> origin/codex/h02-final-gap-closure-v1
+2026-11-04T23:29:39.1898596Z  * [new branch]        codex/h02-final-gap-closure-windows-preflight-v1 -> origin/codex/h02-final-gap-closure-windows-preflight-v1
+2026-11-04T23:29:39.1899088Z  * [new branch]        codex/h02-hostile-snapshot-noop-closure-v1 -> origin/codex/h02-hostile-snapshot-noop-closure-v1
+2026-11-04T23:29:39.1899517Z  * [new branch]        codex/h02-openraft-cluster-macos-v1 -> origin/codex/h02-openraft-cluster-macos-v1
+2026-11-04T23:29:39.1899887Z  * [new branch]        codex/h02-openraft-fault-macos-v1 -> origin/codex/h02-openraft-fault-macos-v1
+2026-11-04T23:29:39.1900613Z  * [new branch]        codex/h02-openraft-hostile-faults-linearizability-v1 -> origin/codex/h02-openraft-hostile-faults-linearizability-v1
+2026-11-04T23:29:39.1901086Z  * [new branch]        codex/h02-openraft-inmemory-cluster-v1 -> origin/codex/h02-openraft-inmemory-cluster-v1
+2026-11-04T23:29:39.1901514Z  * [new branch]        codex/h02-openraft-windows-diagnostics-v1 -> origin/codex/h02-openraft-windows-diagnostics-v1
+2026-11-04T23:29:39.1901950Z  * [new branch]        codex/h02-os-durable-clock-supplychain-v1 -> origin/codex/h02-os-durable-clock-supplychain-v1
+2026-11-04T23:29:39.1902320Z  * [new branch]        codex/h02-probes-sbom-msrv -> origin/codex/h02-probes-sbom-msrv
+2026-11-04T23:29:39.1902666Z  * [new branch]        codex/h02-seeded-behavior-harnesses -> origin/codex/h02-seeded-behavior-harnesses
+2026-11-04T23:29:39.1903047Z  * [new branch]        codex/h02-source-integrity-evidence -> origin/codex/h02-source-integrity-evidence
+2026-11-04T23:29:39.1903430Z  * [new branch]        codex/h02-supply-chain-execution-v1 -> origin/codex/h02-supply-chain-execution-v1
+2026-11-04T23:29:39.1903906Z  * [new branch]        codex/heptabao-authbus-provider-recovery-61ff-20261104 -> origin/codex/heptabao-authbus-provider-recovery-61ff-20261104
+2026-11-04T23:29:39.1904373Z  * [new branch]        codex/heptabao-authbus-qa-20261104 -> origin/codex/heptabao-authbus-qa-20261104
+2026-11-04T23:29:39.1904816Z  * [new branch]        codex/heptabao-bao-acceptance-checkpoint-20261104 -> origin/codex/heptabao-bao-acceptance-checkpoint-20261104
+2026-11-04T23:29:39.1905295Z  * [new branch]        codex/heptabao-blocker-closure-ci-20261104 -> origin/codex/heptabao-blocker-closure-ci-20261104
+2026-11-04T23:29:39.1905744Z  * [new branch]        codex/heptabao-clock-denied-61ff-20261104-r1 -> origin/codex/heptabao-clock-denied-61ff-20261104-r1
+2026-11-04T23:29:39.1906399Z  * [new branch]        codex/heptabao-ha-immutable-kv-clock-61ff-20261104-r1 -> origin/codex/heptabao-ha-immutable-kv-clock-61ff-20261104-r1
+2026-11-04T23:29:39.1906916Z  * [new branch]        codex/heptabao-ha-mac-snapshot-61ff-20261104-r1 -> origin/codex/heptabao-ha-mac-snapshot-61ff-20261104-r1
+2026-11-04T23:29:39.1907428Z  * [new branch]        codex/heptabao-ha-namespace-test-assertions-20261104 -> origin/codex/heptabao-ha-namespace-test-assertions-20261104
+2026-11-04T23:29:39.1907920Z  * [new branch]        codex/heptabao-ha-oracle-recovery-20261104 -> origin/codex/heptabao-ha-oracle-recovery-20261104
+2026-11-04T23:29:39.1908453Z  * [new branch]        codex/heptabao-immutable-kv-clock-transport-61ff-20261104-r1 -> origin/codex/heptabao-immutable-kv-clock-transport-61ff-20261104-r1
+2026-11-04T23:29:39.1909053Z  * [new branch]        codex/heptabao-invalid-gzip-http-contract-61ff-20261104-r1 -> origin/codex/heptabao-invalid-gzip-http-contract-61ff-20261104-r1
+2026-11-04T23:29:39.1909599Z  * [new branch]        codex/heptabao-native-ingress-observer-20261104 -> origin/codex/heptabao-native-ingress-observer-20261104
+2026-11-04T23:29:39.1910066Z  * [new branch]        codex/heptabao-native-ssh-http-20261104-r7 -> origin/codex/heptabao-native-ssh-http-20261104-r7
+2026-11-04T23:29:39.1910652Z  * [new branch]        codex/heptabao-native-ssh-http-20261104-r8 -> origin/codex/heptabao-native-ssh-http-20261104-r8
+2026-11-04T23:29:39.1911098Z  * [new branch]        codex/heptabao-native-ssh-owner-20261104-r4 -> origin/codex/heptabao-native-ssh-owner-20261104-r4
+2026-11-04T23:29:39.1911646Z  * [new branch]        codex/heptabao-official271-corruption-oracle-61ff-20261104-r1 -> origin/codex/heptabao-official271-corruption-oracle-61ff-20261104-r1
+2026-11-04T23:29:39.1912148Z  * [new branch]        codex/heptabao-plan-v1-2-closure -> origin/codex/heptabao-plan-v1-2-closure
+2026-11-04T23:29:39.1912559Z  * [new branch]        codex/heptabao-production-staging-20261104 -> origin/codex/heptabao-production-staging-20261104
+2026-11-04T23:29:39.1913109Z  * [new branch]        codex/heptabao-replacement-20261104 -> origin/codex/heptabao-replacement-20261104
+2026-11-04T23:29:39.1913662Z  * [new branch]        codex/heptabao-snapshot-acl-denial-61ff-20261104-r1 -> origin/codex/heptabao-snapshot-acl-denial-61ff-20261104-r1
+2026-11-04T23:29:39.1914198Z  * [new branch]        codex/heptabao-snapshot-acl-denial-61ff-20261104-r2 -> origin/codex/heptabao-snapshot-acl-denial-61ff-20261104-r2
+2026-11-04T23:29:39.1914726Z  * [new branch]        codex/heptabao-snapshot-api-origin-61ff-20261104-r1 -> origin/codex/heptabao-snapshot-api-origin-61ff-20261104-r1
+2026-11-04T23:29:39.1915251Z  * [new branch]        codex/heptabao-unified-61ff-source-20261104-r6 -> origin/codex/heptabao-unified-61ff-source-20261104-r6
+2026-11-04T23:29:39.1915823Z  * [new branch]        codex/heptabao-unsupported-owner-regression-61ff-20261104-r1 -> origin/codex/heptabao-unsupported-owner-regression-61ff-20261104-r1
+2026-11-04T23:29:39.1916357Z  * [new branch]        codex/heptabao-validation-20261104 -> origin/codex/heptabao-validation-20261104
+2026-11-04T23:29:39.1916752Z  * [new branch]        codex/integrate-remaining-20260923 -> origin/codex/integrate-remaining-20260923
+2026-11-04T23:29:39.1917149Z  * [new branch]        codex/kerberos-20260923 -> origin/codex/kerberos-20260923
+2026-11-04T23:29:39.1917570Z  * [new branch]        codex/module-doc-closure-20260916 -> origin/codex/module-doc-closure-20260916
+2026-11-04T23:29:39.1918182Z  * [new branch]        codex/module-source-truth-v2-closure-20260907 -> origin/codex/module-source-truth-v2-closure-20260907
+2026-11-04T23:29:39.1918657Z  * [new branch]        codex/next-round-product-closure-20260916 -> origin/codex/next-round-product-closure-20260916
+2026-11-04T23:29:39.1919232Z  * [new branch]        codex/openbao-2-6-production-replacement-closure-20260911-r1 -> origin/codex/openbao-2-6-production-replacement-closure-20260911-r1
+2026-11-04T23:29:39.1919877Z  * [new branch]        codex/openbao-2.6-production-gap-closure-20260911 -> origin/codex/openbao-2.6-production-gap-closure-20260911
+2026-11-04T23:29:39.1920566Z  * [new branch]        codex/openbao-26-jwt-composition-20260911 -> origin/codex/openbao-26-jwt-composition-20260911
+2026-11-04T23:29:39.1920994Z  * [new branch]        codex/openbao-analysis-export-20260908 -> origin/codex/openbao-analysis-export-20260908
+2026-11-04T23:29:39.1921427Z  * [new branch]        codex/openbao-complete-replacement-20260912 -> origin/codex/openbao-complete-replacement-20260912
+2026-11-04T23:29:39.1921840Z  * [new branch]        codex/openbao-full-runtime-20260913 -> origin/codex/openbao-full-runtime-20260913
+2026-11-04T23:29:39.1922287Z  * [new branch]        codex/openbao-replacement-final-candidate-20260909 -> origin/codex/openbao-replacement-final-candidate-20260909
+2026-11-04T23:29:39.1922835Z  * [new branch]        codex/openbao-replacement-final-candidate-review-20260909 -> origin/codex/openbao-replacement-final-candidate-review-20260909
+2026-11-04T23:29:39.1923449Z  * [new branch]        codex/openbao-replacement-final-candidate-review-pr-20260909 -> origin/codex/openbao-replacement-final-candidate-review-pr-20260909
+2026-11-04T23:29:39.1924069Z  * [new branch]        codex/openbao-replacement-final-candidate-review-pr2-20260909 -> origin/codex/openbao-replacement-final-candidate-review-pr2-20260909
+2026-11-04T23:29:39.1924602Z  * [new branch]        codex/openbao-replacement-final-pr-20260909 -> origin/codex/openbao-replacement-final-pr-20260909
+2026-11-04T23:29:39.1925073Z  * [new branch]        codex/openbao-replacement-final-review-20260909 -> origin/codex/openbao-replacement-final-review-20260909
+2026-11-04T23:29:39.1925574Z  * [new branch]        codex/openbao-replacement-final-review-pr-20260909 -> origin/codex/openbao-replacement-final-review-pr-20260909
+2026-11-04T23:29:39.1926073Z  * [new branch]        codex/openbao-replacement-full-closure-20260908 -> origin/codex/openbao-replacement-full-closure-20260908
+2026-11-04T23:29:39.1926575Z  * [new branch]        codex/openbao-replacement-gap-closure-r1-20260908 -> origin/codex/openbao-replacement-gap-closure-r1-20260908
+2026-11-04T23:29:39.1927170Z  * [new branch]        codex/openbao-replacement-gap-closure-r2-20260908 -> origin/codex/openbao-replacement-gap-closure-r2-20260908
+2026-11-04T23:29:39.1927655Z  * [new branch]        codex/openbao-replacement-rate-limit-20260908 -> origin/codex/openbao-replacement-rate-limit-20260908
+2026-11-04T23:29:39.1928132Z  * [new branch]        codex/openbao-replacement-real-closure-20260918 -> origin/codex/openbao-replacement-real-closure-20260918
+2026-11-04T23:29:39.1928656Z  * [new branch]        codex/openbao-replacement-repository-candidate-20260909 -> origin/codex/openbao-replacement-repository-candidate-20260909
+2026-11-04T23:29:39.1929242Z  * [new branch]        codex/openbao-replacement-repository-candidate-pr-20260909 -> origin/codex/openbao-replacement-repository-candidate-pr-20260909
+2026-11-04T23:29:39.1929940Z  * [new branch]        codex/openbao-replacement-repository-closure-20260909 -> origin/codex/openbao-replacement-repository-closure-20260909
+2026-11-04T23:29:39.1930687Z  * [new branch]        codex/openbao-replacement-repository-closure-20260909-staging -> origin/codex/openbao-replacement-repository-closure-20260909-staging
+2026-11-04T23:29:39.1931323Z  * [new branch]        codex/openbao-replacement-repository-closure-final-pr-20260909 -> origin/codex/openbao-replacement-repository-closure-final-pr-20260909
+2026-11-04T23:29:39.1931924Z  * [new branch]        codex/openbao-replacement-repository-closure-pr-20260909 -> origin/codex/openbao-replacement-repository-closure-pr-20260909
+2026-11-04T23:29:39.1932528Z  * [new branch]        codex/openbao-replacement-repository-closure-pr-final-20260909 -> origin/codex/openbao-replacement-repository-closure-pr-final-20260909
+2026-11-04T23:29:39.1933172Z  * [new branch]        codex/openbao-replacement-repository-closure-pr-review-20260909 -> origin/codex/openbao-replacement-repository-closure-pr-review-20260909
+2026-11-04T23:29:39.1933891Z  * [new branch]        codex/openbao-replacement-repository-closure-review-20260909 -> origin/codex/openbao-replacement-repository-closure-review-20260909
+2026-11-04T23:29:39.1934543Z  * [new branch]        codex/openbao-replacement-repository-closure-review-head-20260909 -> origin/codex/openbao-replacement-repository-closure-review-head-20260909
+2026-11-04T23:29:39.1935207Z  * [new branch]        codex/openbao-replacement-repository-closure-review-pr-20260909 -> origin/codex/openbao-replacement-repository-closure-review-pr-20260909
+2026-11-04T23:29:39.1935787Z  * [new branch]        codex/openbao-replacement-repository-final-20260909 -> origin/codex/openbao-replacement-repository-final-20260909
+2026-11-04T23:29:39.1936329Z  * [new branch]        codex/openbao-replacement-repository-final-pr-20260909 -> origin/codex/openbao-replacement-repository-final-pr-20260909
+2026-11-04T23:29:39.1936917Z  * [new branch]        codex/openbao-replacement-repository-final-pr-head-20260909 -> origin/codex/openbao-replacement-repository-final-pr-head-20260909
+2026-11-04T23:29:39.1937515Z  * [new branch]        codex/openbao-replacement-repository-final-review-20260909 -> origin/codex/openbao-replacement-repository-final-review-20260909
+2026-11-04T23:29:39.1938126Z  * [new branch]        codex/openbao-replacement-repository-final-review-pr-20260909 -> origin/codex/openbao-replacement-repository-final-review-pr-20260909
+2026-11-04T23:29:39.1938685Z  * [new branch]        codex/openbao-replacement-repository-pr-20260909 -> origin/codex/openbao-replacement-repository-pr-20260909
+2026-11-04T23:29:39.1939230Z  * [new branch]        codex/openbao-replacement-repository-review-final-20260909 -> origin/codex/openbao-replacement-repository-review-final-20260909
+2026-11-04T23:29:39.1939772Z  * [new branch]        codex/openbao-replacement-review-final-20260909 -> origin/codex/openbao-replacement-review-final-20260909
+2026-11-04T23:29:39.1940348Z  * [new branch]        codex/openbao-replacement-review-final-pr-20260909 -> origin/codex/openbao-replacement-review-final-pr-20260909
+2026-11-04T23:29:39.1940842Z  * [new branch]        codex/openbao-replacement-review-head-20260909 -> origin/codex/openbao-replacement-review-head-20260909
+2026-11-04T23:29:39.1941442Z  * [new branch]        codex/openbao-replacement-review-pr-head-20260909 -> origin/codex/openbao-replacement-review-pr-head-20260909
+2026-11-04T23:29:39.1941961Z  * [new branch]        codex/openbao-replacement-total-gap-closure-20260908 -> origin/codex/openbao-replacement-total-gap-closure-20260908
+2026-11-04T23:29:39.1942537Z  * [new branch]        codex/openbao-replacement-v2.4-authoritative-closure-20260909 -> origin/codex/openbao-replacement-v2.4-authoritative-closure-20260909
+2026-11-04T23:29:39.1943136Z  * [new branch]        codex/openbao-replacement-v2.4-blocker-closure-r1-20260909 -> origin/codex/openbao-replacement-v2.4-blocker-closure-r1-20260909
+2026-11-04T23:29:39.1943733Z  * [new branch]        codex/openbao-replacement-v2.4-compat-capture-source-20260909 -> origin/codex/openbao-replacement-v2.4-compat-capture-source-20260909
+2026-11-04T23:29:39.1944344Z  * [new branch]        codex/openbao-replacement-v2.4-federated-auth-source-20260909 -> origin/codex/openbao-replacement-v2.4-federated-auth-source-20260909
+2026-11-04T23:29:39.1944987Z  * [new branch]        codex/openbao-replacement-v2.4-migration-journal-source-20260909 -> origin/codex/openbao-replacement-v2.4-migration-journal-source-20260909
+2026-11-04T23:29:39.1945605Z  * [new branch]        codex/openbao-replacement-v2.4-migration-source-r3-20260909 -> origin/codex/openbao-replacement-v2.4-migration-source-r3-20260909
+2026-11-04T23:29:39.1946198Z  * [new branch]        codex/openbao-replacement-v2.4-provenance-candidate-20260909 -> origin/codex/openbao-replacement-v2.4-provenance-candidate-20260909
+2026-11-04T23:29:39.1946794Z  * [new branch]        codex/openbao-replacement-v2.4-selected-provenance-20260909 -> origin/codex/openbao-replacement-v2.4-selected-provenance-20260909
+2026-11-04T23:29:39.1947399Z  * [new branch]        codex/openbao-replacement-wrapping-20260908 -> origin/codex/openbao-replacement-wrapping-20260908
+2026-11-04T23:29:39.1947846Z  * [new branch]        codex/phase5-60-surface-closure-20260916 -> origin/codex/phase5-60-surface-closure-20260916
+2026-11-04T23:29:39.1948191Z  * [new branch]        codex/pkiext-20260923   -> origin/codex/pkiext-20260923
+2026-11-04T23:29:39.1948498Z  * [new branch]        codex/plan-v1.1-h00-execution -> origin/codex/plan-v1.1-h00-execution
+2026-11-04T23:29:39.1948880Z  * [new branch]        codex/plan-v1.2-canonical-gap-closure-v1 -> origin/codex/plan-v1.2-canonical-gap-closure-v1
+2026-11-04T23:29:39.1949313Z  * [new branch]        codex/plan-v1.2-deepened-blocker-closure-v1 -> origin/codex/plan-v1.2-deepened-blocker-closure-v1
+2026-11-04T23:29:39.1949789Z  * [new branch]        codex/plan-v1.2-execution-contracts-gap-closure-v1 -> origin/codex/plan-v1.2-execution-contracts-gap-closure-v1
+2026-11-04T23:29:39.1950293Z  * [new branch]        codex/plan-v1.2-landed-closure-v2 -> origin/codex/plan-v1.2-landed-closure-v2
+2026-11-04T23:29:39.1950802Z  * [new branch]        codex/plan-v1.2.1-direct-generation-closure-v2 -> origin/codex/plan-v1.2.1-direct-generation-closure-v2
+2026-11-04T23:29:39.1951274Z  * [new branch]        codex/plan-v1.2.1-exact-head-matrix-closure-v1 -> origin/codex/plan-v1.2.1-exact-head-matrix-closure-v1
+2026-11-04T23:29:39.1951704Z  * [new branch]        codex/plan-v1.2.1-final-gap-closure-v1 -> origin/codex/plan-v1.2.1-final-gap-closure-v1
+2026-11-04T23:29:39.1952160Z  * [new branch]        codex/plan-v1.2.1-initialized-generation-closure-v1 -> origin/codex/plan-v1.2.1-initialized-generation-closure-v1
+2026-11-04T23:29:39.1952638Z  * [new branch]        codex/plan-v1.2.1-operational-gap-closure-v1 -> origin/codex/plan-v1.2.1-operational-gap-closure-v1
+2026-11-04T23:29:39.1953079Z  * [new branch]        codex/plan-v1.2.1-technical-gap-closure-v1 -> origin/codex/plan-v1.2.1-technical-gap-closure-v1
+2026-11-04T23:29:39.1953508Z  * [new branch]        codex/plan-v1.2.2-unified-gap-closure-v1 -> origin/codex/plan-v1.2.2-unified-gap-closure-v1
+2026-11-04T23:29:39.1954003Z  * [new branch]        codex/plan-v1.3-foundation-closure-v1 -> origin/codex/plan-v1.3-foundation-closure-v1
+2026-11-04T23:29:39.1954396Z  * [new branch]        codex/plan-v1.3-foundation-closure-v2 -> origin/codex/plan-v1.3-foundation-closure-v2
+2026-11-04T23:29:39.1954822Z  * [new branch]        codex/plan-v1.3-foundation-closure-windows-v1 -> origin/codex/plan-v1.3-foundation-closure-windows-v1
+2026-11-04T23:29:39.1955238Z  * [new branch]        codex/plan-v1.3-full-gap-closure-v1 -> origin/codex/plan-v1.3-full-gap-closure-v1
+2026-11-04T23:29:39.1955593Z  * [new branch]        codex/plan-v1.3-gap-closure-v2 -> origin/codex/plan-v1.3-gap-closure-v2
+2026-11-04T23:29:39.1955947Z  * [new branch]        codex/plan-v1.3-unified-closure-v1 -> origin/codex/plan-v1.3-unified-closure-v1
+2026-11-04T23:29:39.1956334Z  * [new branch]        codex/plan-v1.3-v122-delta-closure-v1 -> origin/codex/plan-v1.3-v122-delta-closure-v1
+2026-11-04T23:29:39.1956722Z  * [new branch]        codex/plan-v1.3.1-final-closure-stage -> origin/codex/plan-v1.3.1-final-closure-stage
+2026-11-04T23:29:39.1957151Z  * [new branch]        codex/plan-v1.3.1-final-repository-closure-v1 -> origin/codex/plan-v1.3.1-final-repository-closure-v1
+2026-11-04T23:29:39.1957587Z  * [new branch]        codex/plan-v1.3.1-residual-gap-closure-v1 -> origin/codex/plan-v1.3.1-residual-gap-closure-v1
+2026-11-04T23:29:39.1957986Z  * [new branch]        codex/plan-v1.4-full-gap-closure-v1 -> origin/codex/plan-v1.4-full-gap-closure-v1
+2026-11-04T23:29:39.1958377Z  * [new branch]        codex/plan-v1.4.2-recovery-foundation-v1 -> origin/codex/plan-v1.4.2-recovery-foundation-v1
+2026-11-04T23:29:39.1958815Z  * [new branch]        codex/plan-v1.4.3-descriptor-fencing-clean-v1 -> origin/codex/plan-v1.4.3-descriptor-fencing-clean-v1
+2026-11-04T23:29:39.1959332Z  * [new branch]        codex/plan-v1.4.3-descriptor-fencing-v1 -> origin/codex/plan-v1.4.3-descriptor-fencing-v1
+2026-11-04T23:29:39.1959783Z  * [new branch]        codex/plan-v1.4.4-module-documentation-closure-v2 -> origin/codex/plan-v1.4.4-module-documentation-closure-v2
+2026-11-04T23:29:39.1960457Z  * [new branch]        codex/plan-v1.4.5-security-invariant-closure-clean-v1 -> origin/codex/plan-v1.4.5-security-invariant-closure-clean-v1
+2026-11-04T23:29:39.1960965Z  * [new branch]        codex/plan-v1.4.5-security-invariant-closure-v1 -> origin/codex/plan-v1.4.5-security-invariant-closure-v1
+2026-11-04T23:29:39.1961489Z  * [new branch]        codex/plan-v1.4.6-authoritative-recovery-closure-clean-v1 -> origin/codex/plan-v1.4.6-authoritative-recovery-closure-clean-v1
+2026-11-04T23:29:39.1962034Z  * [new branch]        codex/plan-v1.4.6-authoritative-recovery-closure-v1 -> origin/codex/plan-v1.4.6-authoritative-recovery-closure-v1
+2026-11-04T23:29:39.1962600Z  * [new branch]        codex/plan-v1.4.7-post-merge-truth-and-external-admission-v1 -> origin/codex/plan-v1.4.7-post-merge-truth-and-external-admission-v1
+2026-11-04T23:29:39.1963150Z  * [new branch]        codex/plan-v1.5.0-control-plane-vertical-slice-v1 -> origin/codex/plan-v1.5.0-control-plane-vertical-slice-v1
+2026-11-04T23:29:39.1963640Z  * [new branch]        codex/plan-v1.6.0-runtime-recovery-operations-v1 -> origin/codex/plan-v1.6.0-runtime-recovery-operations-v1
+2026-11-04T23:29:39.1964144Z  * [new branch]        codex/plan-v1.7.0-service-ha-plugin-compatibility-v1 -> origin/codex/plan-v1.7.0-service-ha-plugin-compatibility-v1
+2026-11-04T23:29:39.1964610Z  * [new branch]        codex/plan-v1.8.0-operational-service-v1 -> origin/codex/plan-v1.8.0-operational-service-v1
+2026-11-04T23:29:39.1965055Z  * [new branch]        codex/plan-v1.8.1-repository-scope-closure-v1 -> origin/codex/plan-v1.8.1-repository-scope-closure-v1
+2026-11-04T23:29:39.1965507Z  * [new branch]        codex/pr83-auth-composition-20260911-gpt56 -> origin/codex/pr83-auth-composition-20260911-gpt56
+2026-11-04T23:29:39.1965959Z  * [new branch]        codex/pr83-ha-compose-closure-20260911-gpt56 -> origin/codex/pr83-ha-compose-closure-20260911-gpt56
+2026-11-04T23:29:39.1966366Z  * [new branch]        codex/profiles-workflows-20260923 -> origin/codex/profiles-workflows-20260923
+2026-11-04T23:29:39.1966818Z  * [new branch]        codex/rabbitmq-provider-20260923 -> origin/codex/rabbitmq-provider-20260923
+2026-11-04T23:29:39.1967201Z  * [new branch]        codex/rep014-macos-clippy-fix-20260910 -> origin/codex/rep014-macos-clippy-fix-20260910
+2026-11-04T23:29:39.1967588Z  * [new branch]        codex/runtime-deepening-20260907 -> origin/codex/runtime-deepening-20260907
+2026-11-04T23:29:39.1967953Z  * [new branch]        codex/rust199-current-lane-20261004 -> origin/codex/rust199-current-lane-20261004
+2026-11-04T23:29:39.1968368Z  * [new branch]        codex/stacked-development-overhead-20261002 -> origin/codex/stacked-development-overhead-20261002
+2026-11-04T23:29:39.1968790Z  * [new branch]        codex/tmp-v1.2.2-parent-integrity-v1 -> origin/codex/tmp-v1.2.2-parent-integrity-v1
+2026-11-04T23:29:39.1969184Z  * [new branch]        codex/tmp-v1.2.2-remaining-materialize -> origin/codex/tmp-v1.2.2-remaining-materialize
+2026-11-04T23:29:39.1969605Z  * [new branch]        codex/tmp-v1.2.2-remaining-materialize-arm -> origin/codex/tmp-v1.2.2-remaining-materialize-arm
+2026-11-04T23:29:39.1970047Z  * [new branch]        codex/tmp-v1.2.2-remaining-materialize-macos -> origin/codex/tmp-v1.2.2-remaining-materialize-macos
+2026-11-04T23:29:39.1970647Z  * [new branch]        codex/tmp-v1.2.2-remaining-materialize-slim -> origin/codex/tmp-v1.2.2-remaining-materialize-slim
+2026-11-04T23:29:39.1971012Z  * [new branch]        codex/tmp-v1.2.2-rustfmt -> origin/codex/tmp-v1.2.2-rustfmt
+2026-11-04T23:29:39.1971318Z  * [new branch]        codex/tmp-v1.2.2-rustfmt-arm2 -> origin/codex/tmp-v1.2.2-rustfmt-arm2
+2026-11-04T23:29:39.1971661Z  * [new branch]        codex/tmp-v1.2.2-rustfmt-macos-arm -> origin/codex/tmp-v1.2.2-rustfmt-macos-arm
+2026-11-04T23:29:39.1972101Z  * [new branch]        codex/tmp-v1.2.2-rustfmt-patch -> origin/codex/tmp-v1.2.2-rustfmt-patch
+2026-11-04T23:29:39.1972438Z  * [new branch]        codex/tmp-v1.2.2-rustfmt-windows -> origin/codex/tmp-v1.2.2-rustfmt-windows
+2026-11-04T23:29:39.1972798Z  * [new branch]        codex/tmp-v1.2.2-store-materialize -> origin/codex/tmp-v1.2.2-store-materialize
+2026-11-04T23:29:39.1973209Z  * [new branch]        codex/v1.3.1-org-migration-transport-20260831 -> origin/codex/v1.3.1-org-migration-transport-20260831
+2026-11-04T23:29:39.1973702Z  * [new branch]        codex/v1.3.1-org-migration-transport-latest-20260831 -> origin/codex/v1.3.1-org-migration-transport-latest-20260831
+2026-11-04T23:29:39.1974211Z  * [new branch]        codex/v1.3.1-org-migration-transport-slim-20260831 -> origin/codex/v1.3.1-org-migration-transport-slim-20260831
+2026-11-04T23:29:39.1974651Z  * [new branch]        codex/v1.3.1-p0-saturation-closure-v1 -> origin/codex/v1.3.1-p0-saturation-closure-v1
+2026-11-04T23:29:39.1975082Z  * [new branch]        codex/v1.3.1-p0-saturation-validation-v1 -> origin/codex/v1.3.1-p0-saturation-validation-v1
+2026-11-04T23:29:39.1975498Z  * [new branch]        codex/v1.3.1-slim-admission-diagnostic-v1 -> origin/codex/v1.3.1-slim-admission-diagnostic-v1
+2026-11-04T23:29:39.1975901Z  * [new branch]        codex/v1.3.1-slim-full-lane-probe-v1 -> origin/codex/v1.3.1-slim-full-lane-probe-v1
+2026-11-04T23:29:39.1976304Z  * [new branch]        codex/v1.3.1-workflow-arbitration-closure -> origin/codex/v1.3.1-workflow-arbitration-closure
+2026-11-04T23:29:39.1976747Z  * [new branch]        codex/v1.4-durable-single-node-foundation-v1 -> origin/codex/v1.4-durable-single-node-foundation-v1
+2026-11-04T23:29:39.1977163Z  * [new branch]        codex/v1.4.6-fence-outcome-closure-v1 -> origin/codex/v1.4.6-fence-outcome-closure-v1
+2026-11-04T23:29:39.1977595Z  * [new branch]        codex/v1.4.7-remaining-blocker-closure-20260907 -> origin/codex/v1.4.7-remaining-blocker-closure-20260907
+2026-11-04T23:29:39.1978007Z  * [new branch]        codex/v2-2-raft-runtime-20260908 -> origin/codex/v2-2-raft-runtime-20260908
+2026-11-04T23:29:39.1978366Z  * [new branch]        codex/v2.0-product-closure-20260907 -> origin/codex/v2.0-product-closure-20260907
+2026-11-04T23:29:39.1978907Z  * [new branch]        codex/v2.1-main-convergence-durable-runtime-20260907 -> origin/codex/v2.1-main-convergence-durable-runtime-20260907
+2026-11-04T23:29:39.1979402Z  * [new branch]        codex/v2.3-plugin-compat-gap-closure-20260908 -> origin/codex/v2.3-plugin-compat-gap-closure-20260908
+2026-11-04T23:29:39.1979865Z  * [new branch]        evidence/v1.4.4-repository-controlled-pass-v1 -> origin/evidence/v1.4.4-repository-controlled-pass-v1
+2026-11-04T23:29:39.1980406Z  * [new branch]        exec/all-gaps-cargo-cache-20260908 -> origin/exec/all-gaps-cargo-cache-20260908
+2026-11-04T23:29:39.1980816Z  * [new branch]        exec/compact-inventory-regenerate-20260917 -> origin/exec/compact-inventory-regenerate-20260917
+2026-11-04T23:29:39.1981231Z  * [new branch]        exec/current-pr63-bundle-macos-v1 -> origin/exec/current-pr63-bundle-macos-v1
+2026-11-04T23:29:39.1981578Z  * [new branch]        exec/export-pr45-head-72c-v1 -> origin/exec/export-pr45-head-72c-v1
+2026-11-04T23:29:39.1981932Z  * [new branch]        exec/fix-migration-clippy-20260916 -> origin/exec/fix-migration-clippy-20260916
+2026-11-04T23:29:39.1982314Z  * [new branch]        exec/four-track-native-gate-20260915 -> origin/exec/four-track-native-gate-20260915
+2026-11-04T23:29:39.1982713Z  * [new branch]        exec/full-gap-closure-source-export-v1 -> origin/exec/full-gap-closure-source-export-v1
+2026-11-04T23:29:39.1983133Z  * [new branch]        exec/full-remediation-transport-20260916 -> origin/exec/full-remediation-transport-20260916
+2026-11-04T23:29:39.1983659Z  * [new branch]        exec/full-remediation-transport-trigger-20260916 -> origin/exec/full-remediation-transport-trigger-20260916
+2026-11-04T23:29:39.1984109Z  * [new branch]        exec/full-replacement-phase1-20260917 -> origin/exec/full-replacement-phase1-20260917
+2026-11-04T23:29:39.1984574Z  * [new branch]        exec/h02-closure-linux-arm64-v1 -> origin/exec/h02-closure-linux-arm64-v1
+2026-11-04T23:29:39.1984897Z  * [new branch]        exec/h02-closure-macos-v1 -> origin/exec/h02-closure-macos-v1
+2026-11-04T23:29:39.1985187Z  * [new branch]        exec/h02-closure-macos-v2 -> origin/exec/h02-closure-macos-v2
+2026-11-04T23:29:39.1985480Z  * [new branch]        exec/h02-closure-serial-v1 -> origin/exec/h02-closure-serial-v1
+2026-11-04T23:29:39.1985781Z  * [new branch]        exec/h02-closure-unified-v2 -> origin/exec/h02-closure-unified-v2
+2026-11-04T23:29:39.1986090Z  * [new branch]        exec/h02-closure-windows-v1 -> origin/exec/h02-closure-windows-v1
+2026-11-04T23:29:39.1986435Z  * [new branch]        exec/h02-openraft-pinned-family-v2 -> origin/exec/h02-openraft-pinned-family-v2
+2026-11-04T23:29:39.1986805Z  * [new branch]        exec/h02-openraft-pinned-family-v3 -> origin/exec/h02-openraft-pinned-family-v3
+2026-11-04T23:29:39.1987132Z  * [new branch]        exec/h02-repair-67082-v1 -> origin/exec/h02-repair-67082-v1
+2026-11-04T23:29:39.1987415Z  * [new branch]        exec/h02-repair-result-v1 -> origin/exec/h02-repair-result-v1
+2026-11-04T23:29:39.1987772Z  * [new branch]        exec/heptabao-object-transfer-20260919 -> origin/exec/heptabao-object-transfer-20260919
+2026-11-04T23:29:39.1988215Z  * [new branch]        exec/heptabao-remediation-objects-20260917-r1 -> origin/exec/heptabao-remediation-objects-20260917-r1
+2026-11-04T23:29:39.1988653Z  * [new branch]        exec/heptabao-verified-inputs-20260918 -> origin/exec/heptabao-verified-inputs-20260918
+2026-11-04T23:29:39.1989075Z  * [new branch]        exec/kubernetes-native-inputs-20260915-r2 -> origin/exec/kubernetes-native-inputs-20260915-r2
+2026-11-04T23:29:39.1989494Z  * [new branch]        exec/materialize-atomic-batch-20260916 -> origin/exec/materialize-atomic-batch-20260916
+2026-11-04T23:29:39.1989935Z  * [new branch]        exec/materialize-atomic-batch-20260916-actual -> origin/exec/materialize-atomic-batch-20260916-actual
+2026-11-04T23:29:39.1990578Z  * [new branch]        exec/materialize-atomic-batch-20260916-do-not-use -> origin/exec/materialize-atomic-batch-20260916-do-not-use
+2026-11-04T23:29:39.1991208Z  * [new branch]        exec/materialize-atomic-batch-20260916-final -> origin/exec/materialize-atomic-batch-20260916-final
+2026-11-04T23:29:39.1991657Z  * [new branch]        exec/materialize-atomic-batch-20260916-run -> origin/exec/materialize-atomic-batch-20260916-run
+2026-11-04T23:29:39.1992121Z  * [new branch]        exec/materialize-atomic-batch-20260916-trigger -> origin/exec/materialize-atomic-batch-20260916-trigger
+2026-11-04T23:29:39.1992596Z  * [new branch]        exec/materialize-atomic-batch-20260916-workflow -> origin/exec/materialize-atomic-batch-20260916-workflow
+2026-11-04T23:29:39.1993060Z  * [new branch]        exec/materialize-replay-retirement-20260916 -> origin/exec/materialize-replay-retirement-20260916
+2026-11-04T23:29:39.1993503Z  * [new branch]        exec/materialize-state-manifest-20260916 -> origin/exec/materialize-state-manifest-20260916
+2026-11-04T23:29:39.1993902Z  * [new branch]        exec/materialize-v13-a1e894-slim-v1 -> origin/exec/materialize-v13-a1e894-slim-v1
+2026-11-04T23:29:39.1994332Z  * [new branch]        exec/openbao-gap-closure-cargo-cache-20260908 -> origin/exec/openbao-gap-closure-cargo-cache-20260908
+2026-11-04T23:29:39.1994761Z  * [new branch]        exec/openbao-oracle-binary-20260912 -> origin/exec/openbao-oracle-binary-20260912
+2026-11-04T23:29:39.1995186Z  * [new branch]        exec/openbao-total-gap-source-export-20260909 -> origin/exec/openbao-total-gap-source-export-20260909
+2026-11-04T23:29:39.1995602Z  * [new branch]        exec/p0-transport-debug-077661-v2 -> origin/exec/p0-transport-debug-077661-v2
+2026-11-04T23:29:39.1995961Z  * [new branch]        exec/p0-transport-debug-67082-v1 -> origin/exec/p0-transport-debug-67082-v1
+2026-11-04T23:29:39.1996314Z  * [new branch]        exec/pr63-final-source-export-v1 -> origin/exec/pr63-final-source-export-v1
+2026-11-04T23:29:39.1996785Z  * [new branch]        exec/pr63-final-tuple-slim-observer-v1 -> origin/exec/pr63-final-tuple-slim-observer-v1
+2026-11-04T23:29:39.1997169Z  * [new branch]        exec/pr63-hardening-transfer-v1 -> origin/exec/pr63-hardening-transfer-v1
+2026-11-04T23:29:39.1997487Z  * [new branch]        exec/pr63-v2-body-sync-v1 -> origin/exec/pr63-v2-body-sync-v1
+2026-11-04T23:29:39.1997792Z  * [new branch]        exec/raft-tcp-cache-20260908 -> origin/exec/raft-tcp-cache-20260908
+2026-11-04T23:29:39.1998169Z  * [new branch]        exec/raft-transport-cargo-cache-20260908 -> origin/exec/raft-transport-cargo-cache-20260908
+2026-11-04T23:29:39.1998630Z  * [new branch]        exec/recover-v24-convergence-controller-20260909 -> origin/exec/recover-v24-convergence-controller-20260909
+2026-11-04T23:29:39.1999109Z  * [new branch]        exec/recover-v24-feature-controllers-20260909 -> origin/exec/recover-v24-feature-controllers-20260909
+2026-11-04T23:29:39.1999525Z  * [new branch]        exec/review-chain-v2-preflight-v1 -> origin/exec/review-chain-v2-preflight-v1
+2026-11-04T23:29:39.1999937Z  * [new branch]        exec/rust-1.98-local-closure-refresh-20260916 -> origin/exec/rust-1.98-local-closure-refresh-20260916
+2026-11-04T23:29:39.2000525Z  * [new branch]        exec/section6-source-transfer-20260915 -> origin/exec/section6-source-transfer-20260915
+2026-11-04T23:29:39.2000958Z  * [new branch]        exec/total-gap-source-cache-export-20260908 -> origin/exec/total-gap-source-cache-export-20260908
+2026-11-04T23:29:39.2001384Z  * [new branch]        exec/total-gap-source-export-20260908 -> origin/exec/total-gap-source-export-20260908
+2026-11-04T23:29:39.2001807Z  * [new branch]        exec/v1-2-1-lifecycle-materialize-arm64-v1 -> origin/exec/v1-2-1-lifecycle-materialize-arm64-v1
+2026-11-04T23:29:39.2002240Z  * [new branch]        exec/v1-2-1-lifecycle-materialize-macos-v1 -> origin/exec/v1-2-1-lifecycle-materialize-macos-v1
+2026-11-04T23:29:39.2002654Z  * [new branch]        exec/v1-2-1-source-export-windows-v1 -> origin/exec/v1-2-1-source-export-windows-v1
+2026-11-04T23:29:39.2003180Z  * [new branch]        exec/v1-2-2-cf429-exact-macos-v1 -> origin/exec/v1-2-2-cf429-exact-macos-v1
+2026-11-04T23:29:39.2003662Z  * [new branch]        exec/v1-2-2-cf429-exact-x64-v1 -> origin/exec/v1-2-2-cf429-exact-x64-v1
+2026-11-04T23:29:39.2004047Z  * [new branch]        exec/v1-3-1-deterministic-binding-077661-v1 -> origin/exec/v1-3-1-deterministic-binding-077661-v1
+2026-11-04T23:29:39.2004411Z  * [new branch]        exec/v1-3-1-exact-arm64-v1 -> origin/exec/v1-3-1-exact-arm64-v1
+2026-11-04T23:29:39.2004695Z  * [new branch]        exec/v1-3-1-exact-slim-v1 -> origin/exec/v1-3-1-exact-slim-v1
+2026-11-04T23:29:39.2005011Z  * [new branch]        exec/v1-3-1-fa4ad-exact-slim-v1 -> origin/exec/v1-3-1-fa4ad-exact-slim-v1
+2026-11-04T23:29:39.2005415Z  * [new branch]        exec/v1-3-1-final-repository-closure-arm64-v1 -> origin/exec/v1-3-1-final-repository-closure-arm64-v1
+2026-11-04T23:29:39.2005887Z  * [new branch]        exec/v1-3-1-final-repository-closure-macos-v1 -> origin/exec/v1-3-1-final-repository-closure-macos-v1
+2026-11-04T23:29:39.2006341Z  * [new branch]        exec/v1-3-1-final-repository-closure-slim-v1 -> origin/exec/v1-3-1-final-repository-closure-slim-v1
+2026-11-04T23:29:39.2006781Z  * [new branch]        exec/v1-3-1-final-repository-closure-v2 -> origin/exec/v1-3-1-final-repository-closure-v2
+2026-11-04T23:29:39.2007224Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows-v2 -> origin/exec/v1-3-1-final-repository-closure-windows-v2
+2026-11-04T23:29:39.2007699Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows-v3 -> origin/exec/v1-3-1-final-repository-closure-windows-v3
+2026-11-04T23:29:39.2008167Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows-v4 -> origin/exec/v1-3-1-final-repository-closure-windows-v4
+2026-11-04T23:29:39.2008637Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows-v5 -> origin/exec/v1-3-1-final-repository-closure-windows-v5
+2026-11-04T23:29:39.2009231Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows-v6 -> origin/exec/v1-3-1-final-repository-closure-windows-v6
+2026-11-04T23:29:39.2009737Z  * [new branch]        exec/v1-3-1-final-repository-closure-windows2022-v1 -> origin/exec/v1-3-1-final-repository-closure-windows2022-v1
+2026-11-04T23:29:39.2010402Z  * [new branch]        exec/v1-3-1-materialize-final-closure-slim-v1 -> origin/exec/v1-3-1-materialize-final-closure-slim-v1
+2026-11-04T23:29:39.2010847Z  * [new branch]        exec/v1-3-1-request-id-closure-v1 -> origin/exec/v1-3-1-request-id-closure-v1
+2026-11-04T23:29:39.2011247Z  * [new branch]        exec/v1-3-1-runner-admission-arm64-20260831 -> origin/exec/v1-3-1-runner-admission-arm64-20260831
+2026-11-04T23:29:39.2011700Z  * [new branch]        exec/v1-3-1-runner-admission-ubuntu22-20260831 -> origin/exec/v1-3-1-runner-admission-ubuntu22-20260831
+2026-11-04T23:29:39.2012094Z  * [new branch]        exec/v1-3-1-rustfmt-95805-v1 -> origin/exec/v1-3-1-rustfmt-95805-v1
+2026-11-04T23:29:39.2012412Z  * [new branch]        exec/v1-3-1-rustfmt-result-v1 -> origin/exec/v1-3-1-rustfmt-result-v1
+2026-11-04T23:29:39.2012756Z  * [new branch]        exec/v1-3-1-source-export-slim-v1 -> origin/exec/v1-3-1-source-export-slim-v1
+2026-11-04T23:29:39.2013110Z  * [new branch]        exec/v1-3-6-exact-materializer-v1 -> origin/exec/v1-3-6-exact-materializer-v1
+2026-11-04T23:29:39.2013448Z  * [new branch]        exec/v1-3-materialize-arm-v1 -> origin/exec/v1-3-materialize-arm-v1
+2026-11-04T23:29:39.2013772Z  * [new branch]        exec/v1-3-materialize-macos-v1 -> origin/exec/v1-3-materialize-macos-v1
+2026-11-04T23:29:39.2014121Z  * [new branch]        exec/v1-3-materialize-priority-v1 -> origin/exec/v1-3-materialize-priority-v1
+2026-11-04T23:29:39.2014461Z  * [new branch]        exec/v1-3-materialize-slim-v1 -> origin/exec/v1-3-materialize-slim-v1
+2026-11-04T23:29:39.2014781Z  * [new branch]        exec/v1-3-protocol-hygiene-v1 -> origin/exec/v1-3-protocol-hygiene-v1
+2026-11-04T23:29:39.2015124Z  * [new branch]        exec/v1-3-validator-hardening-v1 -> origin/exec/v1-3-validator-hardening-v1
+2026-11-04T23:29:39.2015568Z  * [new branch]        exec/v1.3.1-77c64bd-single-runner -> origin/exec/v1.3.1-77c64bd-single-runner
+2026-11-04T23:29:39.2015913Z  * [new branch]        exec/v1.3.1-arm64-admission-probe -> origin/exec/v1.3.1-arm64-admission-probe
+2026-11-04T23:29:39.2016314Z  * [new branch]        exec/v1.3.1-cancellation-handoff-materialize -> origin/exec/v1.3.1-cancellation-handoff-materialize
+2026-11-04T23:29:39.2016776Z  * [new branch]        exec/v1.3.1-cancellation-handoff-materialize-2 -> origin/exec/v1.3.1-cancellation-handoff-materialize-2
+2026-11-04T23:29:39.2017214Z  * [new branch]        exec/v1.3.1-cancellation-handoff-output -> origin/exec/v1.3.1-cancellation-handoff-output
+2026-11-04T23:29:39.2017598Z  * [new branch]        exec/v1.3.1-clippy-repair-arm64-v1 -> origin/exec/v1.3.1-clippy-repair-arm64-v1
+2026-11-04T23:29:39.2017958Z  * [new branch]        exec/v1.3.1-diagnostic-macos-b975 -> origin/exec/v1.3.1-diagnostic-macos-b975
+2026-11-04T23:29:39.2018363Z  * [new branch]        exec/v1.3.1-external-contracts-macos-20260831 -> origin/exec/v1.3.1-external-contracts-macos-20260831
+2026-11-04T23:29:39.2018765Z  * [new branch]        exec/v1.3.1-final-closure-slim-v1 -> origin/exec/v1.3.1-final-closure-slim-v1
+2026-11-04T23:29:39.2019204Z  * [new branch]        exec/v1.3.1-repository-transfer-gap-closure-20260831 -> origin/exec/v1.3.1-repository-transfer-gap-closure-20260831
+2026-11-04T23:29:39.2019648Z  * [new branch]        exec/v1.3.1-rust-arm64-preflight-v1 -> origin/exec/v1.3.1-rust-arm64-preflight-v1
+2026-11-04T23:29:39.2020014Z  * [new branch]        exec/v1.3.1-trigger-admission-stage -> origin/exec/v1.3.1-trigger-admission-stage
+2026-11-04T23:29:39.2020505Z  * [new branch]        exec/v1.4.2-exact-source-export-v1 -> origin/exec/v1.4.2-exact-source-export-v1
+2026-11-04T23:29:39.2020940Z  * [new branch]        exec/v1.4.3-clean-closure-20260901 -> origin/exec/v1.4.3-clean-closure-20260901
+2026-11-04T23:29:39.2021296Z  * [new branch]        exec/v1.4.3-clean-closure-canonical -> origin/exec/v1.4.3-clean-closure-canonical
+2026-11-04T23:29:39.2021653Z  * [new branch]        exec/v1.4.3-clean-closure-current -> origin/exec/v1.4.3-clean-closure-current
+2026-11-04T23:29:39.2021989Z  * [new branch]        exec/v1.4.3-clean-closure-exec -> origin/exec/v1.4.3-clean-closure-exec
+2026-11-04T23:29:39.2022320Z  * [new branch]        exec/v1.4.3-clean-closure-final -> origin/exec/v1.4.3-clean-closure-final
+2026-11-04T23:29:39.2022642Z  * [new branch]        exec/v1.4.3-clean-closure-run -> origin/exec/v1.4.3-clean-closure-run
+2026-11-04T23:29:39.2022953Z  * [new branch]        exec/v1.4.3-clean-closure-v1 -> origin/exec/v1.4.3-clean-closure-v1
+2026-11-04T23:29:39.2023258Z  * [new branch]        exec/v1.4.3-clean-closure-v2 -> origin/exec/v1.4.3-clean-closure-v2
+2026-11-04T23:29:39.2023559Z  * [new branch]        exec/v1.4.3-clean-closure-v3 -> origin/exec/v1.4.3-clean-closure-v3
+2026-11-04T23:29:39.2023894Z  * [new branch]        exec/v1.4.3-exact-head-observer-v1 -> origin/exec/v1.4.3-exact-head-observer-v1
+2026-11-04T23:29:39.2024275Z  * [new branch]        exec/v1.4.3-full-gap-closure-arm64-v1 -> origin/exec/v1.4.3-full-gap-closure-arm64-v1
+2026-11-04T23:29:39.2024632Z  * [new branch]        exec/v1.4.3-full-gap-closure-v2 -> origin/exec/v1.4.3-full-gap-closure-v2
+2026-11-04T23:29:39.2024947Z  * [new branch]        exec/v1.4.3-materializer-v1 -> origin/exec/v1.4.3-materializer-v1
+2026-11-04T23:29:39.2025273Z  * [new branch]        exec/v1.4.3-repository-closure-v2 -> origin/exec/v1.4.3-repository-closure-v2
+2026-11-04T23:29:39.2025620Z  * [new branch]        exec/v1.4.4-module-doc-closure-v1 -> origin/exec/v1.4.4-module-doc-closure-v1
+2026-11-04T23:29:39.2025962Z  * [new branch]        exec/v1.4.4-module-doc-closure-v2 -> origin/exec/v1.4.4-module-doc-closure-v2
+2026-11-04T23:29:39.2026305Z  * [new branch]        exec/v1.4.4-technical-observer-v1 -> origin/exec/v1.4.4-technical-observer-v1
+2026-11-04T23:29:39.2026703Z  * [new branch]        exec/v1.4.5-external-action-materializer-v1 -> origin/exec/v1.4.5-external-action-materializer-v1
+2026-11-04T23:29:39.2027205Z  * [new branch]        exec/v1.4.5-review-blocker-closure-v1 -> origin/exec/v1.4.5-review-blocker-closure-v1
+2026-11-04T23:29:39.2027587Z  * [new branch]        exec/v1.4.5-review-blocker-trigger-v1 -> origin/exec/v1.4.5-review-blocker-trigger-v1
+2026-11-04T23:29:39.2027990Z  * [new branch]        exec/v1.4.6-clean-materializer-trigger-v1 -> origin/exec/v1.4.6-clean-materializer-trigger-v1
+2026-11-04T23:29:39.2028374Z  * [new branch]        exec/v1.4.6-clean-materializer-v1 -> origin/exec/v1.4.6-clean-materializer-v1
+2026-11-04T23:29:39.2028759Z  * [new branch]        exec/v1.4.6-fence-outcome-materializer-v1 -> origin/exec/v1.4.6-fence-outcome-materializer-v1
+2026-11-04T23:29:39.2029205Z  * [new branch]        exec/v1.4.6-filesystem-test-isolation-stage-v1 -> origin/exec/v1.4.6-filesystem-test-isolation-stage-v1
+2026-11-04T23:29:39.2029645Z  * [new branch]        exec/v1.4.6-inherited-gate-fix-stage-v1 -> origin/exec/v1.4.6-inherited-gate-fix-stage-v1
+2026-11-04T23:29:39.2030074Z  * [new branch]        exec/v1.4.7-post-merge-truth-materializer-v1 -> origin/exec/v1.4.7-post-merge-truth-materializer-v1
+2026-11-04T23:29:39.2030765Z  * [new branch]        exec/v1.4.7-reviewed-integrator-v2 -> origin/exec/v1.4.7-reviewed-integrator-v2
+2026-11-04T23:29:39.2031155Z  * [new branch]        exec/v1.5.0-control-plane-materializer-v1 -> origin/exec/v1.5.0-control-plane-materializer-v1
+2026-11-04T23:29:39.2031575Z  * [new branch]        exec/v1.5.0-control-plane-materializer-v2 -> origin/exec/v1.5.0-control-plane-materializer-v2
+2026-11-04T23:29:39.2031958Z  * [new branch]        exec/v1.5.0-reviewed-integrator-v1 -> origin/exec/v1.5.0-reviewed-integrator-v1
+2026-11-04T23:29:39.2032316Z  * [new branch]        exec/v1.5.0-reviewed-integrator-v2 -> origin/exec/v1.5.0-reviewed-integrator-v2
+2026-11-04T23:29:39.2032759Z  * [new branch]        exec/v1.5.0-source-preflight-v1 -> origin/exec/v1.5.0-source-preflight-v1
+2026-11-04T23:29:39.2033102Z  * [new branch]        exec/v1.6.0-reviewed-integrator-v1 -> origin/exec/v1.6.0-reviewed-integrator-v1
+2026-11-04T23:29:39.2033459Z  * [new branch]        exec/v1.6.0-reviewed-integrator-v2 -> origin/exec/v1.6.0-reviewed-integrator-v2
+2026-11-04T23:29:39.2033871Z  * [new branch]        exec/v1.6.0-runtime-operations-materializer-v1 -> origin/exec/v1.6.0-runtime-operations-materializer-v1
+2026-11-04T23:29:39.2034336Z  * [new branch]        exec/v1.6.0-runtime-operations-materializer-v2 -> origin/exec/v1.6.0-runtime-operations-materializer-v2
+2026-11-04T23:29:39.2034789Z  * [new branch]        exec/v1.7-assets-source-export-20260908-v1 -> origin/exec/v1.7-assets-source-export-20260908-v1
+2026-11-04T23:29:39.2035182Z  * [new branch]        exec/v1.7.0-reviewed-integrator-v1 -> origin/exec/v1.7.0-reviewed-integrator-v1
+2026-11-04T23:29:39.2035540Z  * [new branch]        exec/v1.7.0-reviewed-integrator-v2 -> origin/exec/v1.7.0-reviewed-integrator-v2
+2026-11-04T23:29:39.2035898Z  * [new branch]        exec/v1.7.0-service-materializer-v1 -> origin/exec/v1.7.0-service-materializer-v1
+2026-11-04T23:29:39.2036265Z  * [new branch]        exec/v1.7.0-service-materializer-v2 -> origin/exec/v1.7.0-service-materializer-v2
+2026-11-04T23:29:39.2036686Z  * [new branch]        exec/v1.8.0-operational-service-materializer-v1 -> origin/exec/v1.8.0-operational-service-materializer-v1
+2026-11-04T23:29:39.2037163Z  * [new branch]        exec/v1.8.0-operational-service-materializer-v2 -> origin/exec/v1.8.0-operational-service-materializer-v2
+2026-11-04T23:29:39.2037576Z  * [new branch]        exec/v1.8.0-reviewed-integrator-v1 -> origin/exec/v1.8.0-reviewed-integrator-v1
+2026-11-04T23:29:39.2037929Z  * [new branch]        exec/v1.8.0-reviewed-integrator-v2 -> origin/exec/v1.8.0-reviewed-integrator-v2
+2026-11-04T23:29:39.2038347Z  * [new branch]        exec/v1.8.1-repository-closure-materializer-v1 -> origin/exec/v1.8.1-repository-closure-materializer-v1
+2026-11-04T23:29:39.2038808Z  * [new branch]        exec/v1.8.1-repository-closure-materializer-v2 -> origin/exec/v1.8.1-repository-closure-materializer-v2
+2026-11-04T23:29:39.2039298Z  * [new branch]        exec/v1.8.1-reviewed-integrator-v1 -> origin/exec/v1.8.1-reviewed-integrator-v1
+2026-11-04T23:29:39.2039650Z  * [new branch]        exec/v1.8.1-reviewed-integrator-v2 -> origin/exec/v1.8.1-reviewed-integrator-v2
+2026-11-04T23:29:39.2040046Z  * [new branch]        exec/v1.9.0-full-repository-convergence-v1 -> origin/exec/v1.9.0-full-repository-convergence-v1
+2026-11-04T23:29:39.2040621Z  * [new branch]        exec/v1.9.0-verified-publish-20260905 -> origin/exec/v1.9.0-verified-publish-20260905
+2026-11-04T23:29:39.2041037Z  * [new branch]        exec/v2-controller-cleanup-v9-20260907 -> origin/exec/v2-controller-cleanup-v9-20260907
+2026-11-04T23:29:39.2041447Z  * [new branch]        exec/v2-durable-g4-materialize-20260907 -> origin/exec/v2-durable-g4-materialize-20260907
+2026-11-04T23:29:39.2041870Z  * [new branch]        exec/v2.1-51-package-materializer-20260908 -> origin/exec/v2.1-51-package-materializer-20260908
+2026-11-04T23:29:39.2042284Z  * [new branch]        exec/v2.1-cargo-cache-export-20260908 -> origin/exec/v2.1-cargo-cache-export-20260908
+2026-11-04T23:29:39.2042688Z  * [new branch]        exec/v2.1-pr75-admission-monitor-20260908 -> origin/exec/v2.1-pr75-admission-monitor-20260908
+2026-11-04T23:29:39.2043095Z  * [new branch]        exec/v2.1-pr75-g0-remediation-20260908 -> origin/exec/v2.1-pr75-g0-remediation-20260908
+2026-11-04T23:29:39.2043495Z  * [new branch]        exec/v2.1-pr75-g0-remediation-v2-20260908 -> origin/exec/v2.1-pr75-g0-remediation-v2-20260908
+2026-11-04T23:29:39.2043938Z  * [new branch]        exec/v2.1-pr75-post-g0-source-export-20260908 -> origin/exec/v2.1-pr75-post-g0-source-export-20260908
+2026-11-04T23:29:39.2044358Z  * [new branch]        exec/v2.1-pr75-source-export-20260908 -> origin/exec/v2.1-pr75-source-export-20260908
+2026-11-04T23:29:39.2044865Z  * [new branch]        exec/v2.1-pr75-unified-convergence-20260908 -> origin/exec/v2.1-pr75-unified-convergence-20260908
+2026-11-04T23:29:39.2045320Z  * [new branch]        exec/v2.1-recover-production-modules-20260908 -> origin/exec/v2.1-recover-production-modules-20260908
+2026-11-04T23:29:39.2045775Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908 -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908
+2026-11-04T23:29:39.2046287Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp
+2026-11-04T23:29:39.2046977Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp2 -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp2
+2026-11-04T23:29:39.2047848Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp3 -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp3
+2026-11-04T23:29:39.2048564Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp4 -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp4
+2026-11-04T23:29:39.2049319Z  * [new branch]        exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp5 -> origin/exec/v2.1-rust-1.98-toolchain-export-20260908-refresh-temp5
+2026-11-04T23:29:39.2049846Z  * [new branch]        exec/v2.2-raft-source-export-20260908-v2 -> origin/exec/v2.2-raft-source-export-20260908-v2
+2026-11-04T23:29:39.2050430Z  * [new branch]        fix/openbao-runtime-continuation-20260913 -> origin/fix/openbao-runtime-continuation-20260913
+2026-11-04T23:29:39.2050854Z  * [new branch]        integration/section6-hardening-20260916 -> origin/integration/section6-hardening-20260916
+2026-11-04T23:29:39.2051260Z  * [new branch]        integration/v1.4.4-technical-candidate -> origin/integration/v1.4.4-technical-candidate
+2026-11-04T23:29:39.2051568Z  * [new branch]        main                    -> origin/main
+2026-11-04T23:29:39.2051887Z  * [new branch]        ops/e928-ci-receipt-closure-transport -> origin/ops/e928-ci-receipt-closure-transport
+2026-11-04T23:29:39.2052328Z  * [new branch]        ops/heptabao-authoritative-dispatch-20260910 -> origin/ops/heptabao-authoritative-dispatch-20260910
+2026-11-04T23:29:39.2052917Z  * [new branch]        ops/heptabao-current-truth-materializer-20260911 -> origin/ops/heptabao-current-truth-materializer-20260911
+2026-11-04T23:29:39.2053420Z  * [new branch]        ops/heptabao-exact-head-qualification-20260911 -> origin/ops/heptabao-exact-head-qualification-20260911
+2026-11-04T23:29:39.2053887Z  * [new branch]        ops/heptabao-final-remediation-r1-20260910 -> origin/ops/heptabao-final-remediation-r1-20260910
+2026-11-04T23:29:39.2054335Z  * [new branch]        ops/heptabao-final-remediation-r2-20260910 -> origin/ops/heptabao-final-remediation-r2-20260910
+2026-11-04T23:29:39.2054795Z  * [new branch]        ops/heptabao-linux-abi-flags-fix-20260909-r1 -> origin/ops/heptabao-linux-abi-flags-fix-20260909-r1
+2026-11-04T23:29:39.2055280Z  * [new branch]        ops/heptabao-macos-descriptor-probe-20260909-r1 -> origin/ops/heptabao-macos-descriptor-probe-20260909-r1
+2026-11-04T23:29:39.2055759Z  * [new branch]        ops/heptabao-offline-vendor-export-20260910 -> origin/ops/heptabao-offline-vendor-export-20260910
+2026-11-04T23:29:39.2056255Z  * [new branch]        ops/heptabao-principal-scope-materializer-20260910 -> origin/ops/heptabao-principal-scope-materializer-20260910
+2026-11-04T23:29:39.2056753Z  * [new branch]        ops/heptabao-rep012-mfa-materializer-20260909 -> origin/ops/heptabao-rep012-mfa-materializer-20260909
+2026-11-04T23:29:39.2057251Z  * [new branch]        ops/heptabao-rep014-migration-materializer-20260909 -> origin/ops/heptabao-rep014-migration-materializer-20260909
+2026-11-04T23:29:39.2057726Z  * [new branch]        ops/heptabao-validated-history-20260915 -> origin/ops/heptabao-validated-history-20260915
+2026-11-04T23:29:39.2058259Z  * [new branch]        ops/openbao-26-auth-mount-registry-20260911-r1 -> origin/ops/openbao-26-auth-mount-registry-20260911-r1
+2026-11-04T23:29:39.2058699Z  * [new branch]        ops/openbao-26-ha-recovery-20260911-r1 -> origin/ops/openbao-26-ha-recovery-20260911-r1
+2026-11-04T23:29:39.2059104Z  * [new branch]        ops/openbao-26-ha-recovery-20260911-r2 -> origin/ops/openbao-26-ha-recovery-20260911-r2
+2026-11-04T23:29:39.2059543Z  * [new branch]        ops/openbao-26-ha-registry-closure-20260911-r1 -> origin/ops/openbao-26-ha-registry-closure-20260911-r1
+2026-11-04T23:29:39.2059999Z  * [new branch]        ops/openbao-26-migration-truth-20260911-r1 -> origin/ops/openbao-26-migration-truth-20260911-r1
+2026-11-04T23:29:39.2060668Z  * [new branch]        ops/openbao-26-system-corpus-20260911-r1 -> origin/ops/openbao-26-system-corpus-20260911-r1
+2026-11-04T23:29:39.2061169Z  * [new branch]        ops/openbao-26-totp-corpus-20260911-r1 -> origin/ops/openbao-26-totp-corpus-20260911-r1
+2026-11-04T23:29:39.2061876Z  * [new branch]        ops/openbao-26-userpass-approle-corpus-20260911-r1 -> origin/ops/openbao-26-userpass-approle-corpus-20260911-r1
+2026-11-04T23:29:39.2062427Z  * [new branch]        ops/openbao-parity-source-20260913 -> origin/ops/openbao-parity-source-20260913
+2026-11-04T23:29:39.2062942Z  * [new branch]        ops/plugin-durable-materialize-20260908 -> origin/ops/plugin-durable-materialize-20260908
+2026-11-04T23:29:39.2063486Z  * [new branch]        ops/pr83-rustfmt-diagnostic-20260911 -> origin/ops/pr83-rustfmt-diagnostic-20260911
+2026-11-04T23:29:39.2064020Z  * [new branch]        ops/pr88-bootstrap-leader-barrier-20260911-gpt56 -> origin/ops/pr88-bootstrap-leader-barrier-20260911-gpt56
+2026-11-04T23:29:39.2064646Z  * [new branch]        ops/pr88-destructive-ha-fixture-20260911-gpt56 -> origin/ops/pr88-destructive-ha-fixture-20260911-gpt56
+2026-11-04T23:29:39.2065192Z  * [new branch]        ops/pr88-destructive-ha-r2-20260911-gpt56 -> origin/ops/pr88-destructive-ha-r2-20260911-gpt56
+2026-11-04T23:29:39.2065705Z  * [new branch]        ops/pr88-destructive-ha-r3-20260911-gpt56 -> origin/ops/pr88-destructive-ha-r3-20260911-gpt56
+2026-11-04T23:29:39.2066272Z  * [new branch]        ops/pr88-destructive-ha-r4-20260911-gpt56 -> origin/ops/pr88-destructive-ha-r4-20260911-gpt56
+2026-11-04T23:29:39.2066899Z  * [new branch]        ops/pr88-destructive-ha-r5-20260911-gpt56 -> origin/ops/pr88-destructive-ha-r5-20260911-gpt56
+2026-11-04T23:29:39.2067420Z  * [new branch]        ops/pr88-destructive-ha-r6-20260911-gpt56 -> origin/ops/pr88-destructive-ha-r6-20260911-gpt56
+2026-11-04T23:29:39.2067971Z  * [new branch]        ops/pr88-forwarding-materializer-20260911-gpt56 -> origin/ops/pr88-forwarding-materializer-20260911-gpt56
+2026-11-04T23:29:39.2068493Z  * [new branch]        ops/pr88-forwarding-r3-20260911-gpt56 -> origin/ops/pr88-forwarding-r3-20260911-gpt56
+2026-11-04T23:29:39.2069068Z  * [new branch]        ops/pr88-health-format-materializer-20260911-gpt56 -> origin/ops/pr88-health-format-materializer-20260911-gpt56
+2026-11-04T23:29:39.2069720Z  * [new branch]        ops/pr88-rustls-verifier-provider-20260911-gpt56 -> origin/ops/pr88-rustls-verifier-provider-20260911-gpt56
+2026-11-04T23:29:39.2070414Z  * [new branch]        ops/pr88-single-readindex-20260911-gpt56 -> origin/ops/pr88-single-readindex-20260911-gpt56
+2026-11-04T23:29:39.2070930Z  * [new branch]        ops/pr88-standby-unseal-20260911-gpt56 -> origin/ops/pr88-standby-unseal-20260911-gpt56
+2026-11-04T23:29:39.2071432Z  * [new branch]        ops/read-only-integration-source-20260913 -> origin/ops/read-only-integration-source-20260913
+2026-11-04T23:29:39.2071989Z  * [new branch]        ops/section6-source-transport-20260915-v1 -> origin/ops/section6-source-transport-20260915-v1
+2026-11-04T23:29:39.2072520Z  * [new branch]        ops/transfer-to-trillionnium-20260831 -> origin/ops/transfer-to-trillionnium-20260831
+2026-11-04T23:29:39.2073049Z  * [new branch]        ops/v23-payload-inspection-20260908 -> origin/ops/v23-payload-inspection-20260908
+2026-11-04T23:29:39.2073619Z  * [new branch]        ops/v23-salvage-materialize-20260908 -> origin/ops/v23-salvage-materialize-20260908
+2026-11-04T23:29:39.2074096Z  * [new branch]        ops/v24-clean-republisher-r1-20260909 -> origin/ops/v24-clean-republisher-r1-20260909
+2026-11-04T23:29:39.2074617Z  * [new branch]        ops/v24-clean-republisher-r2-20260909 -> origin/ops/v24-clean-republisher-r2-20260909
+2026-11-04T23:29:39.2075121Z  * [new branch]        ops/v24-clean-republisher-r3-20260909 -> origin/ops/v24-clean-republisher-r3-20260909
+2026-11-04T23:29:39.2075573Z  * [new branch]        ops/v24-compat-capture-r1-20260909 -> origin/ops/v24-compat-capture-r1-20260909
+2026-11-04T23:29:39.2076098Z  * [new branch]        ops/v24-compat-capture-r2-20260909 -> origin/ops/v24-compat-capture-r2-20260909
+2026-11-04T23:29:39.2076557Z  * [new branch]        ops/v24-compat-signature-r1-20260909 -> origin/ops/v24-compat-signature-r1-20260909
+2026-11-04T23:29:39.2077086Z  * [new branch]        ops/v24-compat-signature-r2-20260909 -> origin/ops/v24-compat-signature-r2-20260909
+2026-11-04T23:29:39.2077571Z  * [new branch]        ops/v24-controller-cleanup-r1-20260909 -> origin/ops/v24-controller-cleanup-r1-20260909
+2026-11-04T23:29:39.2096592Z  * [new branch]        ops/v24-controller-cleanup-r2-20260909 -> origin/ops/v24-controller-cleanup-r2-20260909
+2026-11-04T23:29:39.2097391Z  * [new branch]        ops/v24-controller-cleanup-r3-20260909 -> origin/ops/v24-controller-cleanup-r3-20260909
+2026-11-04T23:29:39.2098053Z  * [new branch]        ops/v24-controller-cleanup-r4-20260909 -> origin/ops/v24-controller-cleanup-r4-20260909
+2026-11-04T23:29:39.2098693Z  * [new branch]        ops/v24-convergence-orchestrator-r1-20260909 -> origin/ops/v24-convergence-orchestrator-r1-20260909
+2026-11-04T23:29:39.2099418Z  * [new branch]        ops/v24-feature-lineage-materialize-r1-20260909 -> origin/ops/v24-feature-lineage-materialize-r1-20260909
+2026-11-04T23:29:39.2100139Z  * [new branch]        ops/v24-feature-lineage-materialize-r2-20260909 -> origin/ops/v24-feature-lineage-materialize-r2-20260909
+2026-11-04T23:29:39.2101032Z  * [new branch]        ops/v24-federated-auth-r1-20260909 -> origin/ops/v24-federated-auth-r1-20260909
+2026-11-04T23:29:39.2101597Z  * [new branch]        ops/v24-federated-auth-r2-20260909 -> origin/ops/v24-federated-auth-r2-20260909
+2026-11-04T23:29:39.2102382Z  * [new branch]        ops/v24-federated-auth-r3-20260909 -> origin/ops/v24-federated-auth-r3-20260909
+2026-11-04T23:29:39.2103044Z  * [new branch]        ops/v24-final-clean-pr-opener-r1-20260909 -> origin/ops/v24-final-clean-pr-opener-r1-20260909
+2026-11-04T23:29:39.2103749Z  * [new branch]        ops/v24-final-clean-pr-opener-r2-20260909 -> origin/ops/v24-final-clean-pr-opener-r2-20260909
+2026-11-04T23:29:39.2104475Z  * [new branch]        ops/v24-final-clean-pr-opener-r3-20260909 -> origin/ops/v24-final-clean-pr-opener-r3-20260909
+2026-11-04T23:29:39.2105189Z  * [new branch]        ops/v24-final-clean-pr-opener-r4-20260909 -> origin/ops/v24-final-clean-pr-opener-r4-20260909
+2026-11-04T23:29:39.2105933Z  * [new branch]        ops/v24-final-clean-qualifier-r1-20260909 -> origin/ops/v24-final-clean-qualifier-r1-20260909
+2026-11-04T23:29:39.2106644Z  * [new branch]        ops/v24-final-clean-qualifier-r2-20260909 -> origin/ops/v24-final-clean-qualifier-r2-20260909
+2026-11-04T23:29:39.2107338Z  * [new branch]        ops/v24-final-clean-qualifier-r3-20260909 -> origin/ops/v24-final-clean-qualifier-r3-20260909
+2026-11-04T23:29:39.2108043Z  * [new branch]        ops/v24-final-clean-qualifier-r4-20260909 -> origin/ops/v24-final-clean-qualifier-r4-20260909
+2026-11-04T23:29:39.2108732Z  * [new branch]        ops/v24-final-pr-opener-r1-20260909 -> origin/ops/v24-final-pr-opener-r1-20260909
+2026-11-04T23:29:39.2109341Z  * [new branch]        ops/v24-final-qualifier-r1-20260909 -> origin/ops/v24-final-qualifier-r1-20260909
+2026-11-04T23:29:39.2109930Z  * [new branch]        ops/v24-ha-mtls-r3-20260909 -> origin/ops/v24-ha-mtls-r3-20260909
+2026-11-04T23:29:39.2110533Z  * [new branch]        ops/v24-ha-service-r1-20260909 -> origin/ops/v24-ha-service-r1-20260909
+2026-11-04T23:29:39.2111021Z  * [new branch]        ops/v24-ha-service-r2-20260909 -> origin/ops/v24-ha-service-r2-20260909
+2026-11-04T23:29:39.2111409Z  * [new branch]        ops/v24-inplace-integration-r1-20260909 -> origin/ops/v24-inplace-integration-r1-20260909
+2026-11-04T23:29:39.2111834Z  * [new branch]        ops/v24-main-integrity-audit-r1-20260909 -> origin/ops/v24-main-integrity-audit-r1-20260909
+2026-11-04T23:29:39.2112250Z  * [new branch]        ops/v24-migration-inventory-r3-20260909 -> origin/ops/v24-migration-inventory-r3-20260909
+2026-11-04T23:29:39.2112658Z  * [new branch]        ops/v24-migration-journal-r1-20260909 -> origin/ops/v24-migration-journal-r1-20260909
+2026-11-04T23:29:39.2113050Z  * [new branch]        ops/v24-migration-journal-r2-20260909 -> origin/ops/v24-migration-journal-r2-20260909
+2026-11-04T23:29:39.2113452Z  * [new branch]        ops/v24-plugin-attestation-r3-20260909 -> origin/ops/v24-plugin-attestation-r3-20260909
+2026-11-04T23:29:39.2113859Z  * [new branch]        ops/v24-plugin-toctou-fix-r1-20260909 -> origin/ops/v24-plugin-toctou-fix-r1-20260909
+2026-11-04T23:29:39.2114248Z  * [new branch]        ops/v24-plugin-toctou-fix-r2-20260909 -> origin/ops/v24-plugin-toctou-fix-r2-20260909
+2026-11-04T23:29:39.2114641Z  * [new branch]        ops/v24-provenance-select-r1-20260909 -> origin/ops/v24-provenance-select-r1-20260909
+2026-11-04T23:29:39.2115034Z  * [new branch]        ops/v24-provenance-union-r1-20260909 -> origin/ops/v24-provenance-union-r1-20260909
+2026-11-04T23:29:39.2115431Z  * [new branch]        ops/v24-source-convergence-r1-20260909 -> origin/ops/v24-source-convergence-r1-20260909
+2026-11-04T23:29:39.2115831Z  * [new branch]        ops/v24-source-convergence-r2-20260909 -> origin/ops/v24-source-convergence-r2-20260909
+2026-11-04T23:29:39.2116231Z  * [new branch]        ops/v24-source-convergence-r3-20260909 -> origin/ops/v24-source-convergence-r3-20260909
+2026-11-04T23:29:39.2116633Z  * [new branch]        ops/v24-source-convergence-r4-20260909 -> origin/ops/v24-source-convergence-r4-20260909
+2026-11-04T23:29:39.2117045Z  * [new branch]        ops/v24-source-only-recovery-r1-20260909 -> origin/ops/v24-source-only-recovery-r1-20260909
+2026-11-04T23:29:39.2117499Z  * [new branch]        tmp/check-v143-transport -> origin/tmp/check-v143-transport
+2026-11-04T23:29:39.2117842Z  * [new branch]        tmp/export-federated-auth-20260911 -> origin/tmp/export-federated-auth-20260911
+2026-11-04T23:29:39.2118276Z  * [new branch]        tmp/openbao-26-auth-mount-source-20260911-r1 -> origin/tmp/openbao-26-auth-mount-source-20260911-r1
+2026-11-04T23:29:39.2118721Z  * [new branch]        tmp/openbao-26-ha-lock-refresh-20260911 -> origin/tmp/openbao-26-ha-lock-refresh-20260911
+2026-11-04T23:29:39.2119148Z  * [new branch]        tmp/openbao-26-ha-mtls-source-20260911-r2 -> origin/tmp/openbao-26-ha-mtls-source-20260911-r2
+2026-11-04T23:29:39.2119593Z  * [new branch]        tmp/openbao-26-ha-registry-source-20260911-r1 -> origin/tmp/openbao-26-ha-registry-source-20260911-r1
+2026-11-04T23:29:39.2120087Z  * [new branch]        tmp/openbao-26-migration-truth-source-20260911-r1 -> origin/tmp/openbao-26-migration-truth-source-20260911-r1
+2026-11-04T23:29:39.2120770Z  * [new branch]        tmp/openbao-26-system-corpus-source-20260911-r1 -> origin/tmp/openbao-26-system-corpus-source-20260911-r1
+2026-11-04T23:29:39.2121242Z  * [new branch]        tmp/openbao-26-totp-corpus-source-20260911-r1 -> origin/tmp/openbao-26-totp-corpus-source-20260911-r1
+2026-11-04T23:29:39.2121772Z  * [new branch]        tmp/openbao-26-userpass-approle-corpus-source-20260911-r1 -> origin/tmp/openbao-26-userpass-approle-corpus-source-20260911-r1
+2026-11-04T23:29:39.2122294Z  * [new branch]        tmp/pr63-review-admission-v2-archive-stage -> origin/tmp/pr63-review-admission-v2-archive-stage
+2026-11-04T23:29:39.2122789Z  * [new branch]        tmp/pr63-review-admission-v2-stage -> origin/tmp/pr63-review-admission-v2-stage
+2026-11-04T23:29:39.2123233Z  * [new branch]        tmp/v1.3.1-reviewed-tree-v1 -> origin/tmp/v1.3.1-reviewed-tree-v1
+2026-11-04T23:29:39.2123544Z  * [new branch]        tmp/v1.3.1-staging-input-v1 -> origin/tmp/v1.3.1-staging-input-v1
+2026-11-04T23:29:39.2123902Z  * [new branch]        tmp/v143-candidate-transport-anchor -> origin/tmp/v143-candidate-transport-anchor
+2026-11-04T23:29:39.2124273Z  * [new branch]        tmp/workflow-blob-verification -> origin/tmp/workflow-blob-verification
+2026-11-04T23:29:39.2124621Z  * [new branch]        work/heptabao-closure-20260914 -> origin/work/heptabao-closure-20260914
+2026-11-04T23:29:39.2125000Z  * [new branch]        work/heptabao-runtime-closure-20260914 -> origin/work/heptabao-runtime-closure-20260914
+2026-11-04T23:29:39.2125418Z  * [new branch]        work/heptabao-validated-import-20260915 -> origin/work/heptabao-validated-import-20260915
+2026-11-04T23:29:39.2125866Z  * [new branch]        work/identity-live-policy-closure-20260913-r2 -> origin/work/identity-live-policy-closure-20260913-r2
+2026-11-04T23:29:39.2126300Z  * [new branch]        work/openbao-core-isolation-20260913 -> origin/work/openbao-core-isolation-20260913
+2026-11-04T23:29:39.2126703Z  * [new branch]        work/openbao-readiness-closure-20260915 -> origin/work/openbao-readiness-closure-20260915
+2026-11-04T23:29:39.2127087Z  * [new branch]        work/remaining-runtime-20260915 -> origin/work/remaining-runtime-20260915
+2026-11-04T23:29:39.2127459Z  * [new branch]        work/section6-continuation-20260915 -> origin/work/section6-continuation-20260915
+2026-11-04T23:29:39.2127861Z  * [new branch]        work/section6-integrated-remote-20260915 -> origin/work/section6-integrated-remote-20260915
+2026-11-04T23:29:39.2128286Z  * [new branch]        work/section6-storage-migration-20260915 -> origin/work/section6-storage-migration-20260915
+2026-11-04T23:29:39.2129242Z [command]/usr/bin/git rev-parse --verify --quiet 66f51f71e644b30804b2b632ebe161ccf5533a1f^{object}
+2026-11-04T23:29:39.2129871Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:39.5119638Z From https://github.com/TrillionniumFoundation/HeptaBao
+2026-11-04T23:29:39.5120146Z  * branch              66f51f71e644b30804b2b632ebe161ccf5533a1f -> FETCH_HEAD
+2026-11-04T23:29:39.5129109Z [command]/usr/bin/git rev-parse --verify --quiet 66f51f71e644b30804b2b632ebe161ccf5533a1f^{object}
+2026-11-04T23:29:39.5163364Z 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:39.5166362Z ##[endgroup]
+2026-11-04T23:29:39.5166917Z ##[group]Determining the checkout info
+2026-11-04T23:29:39.5167889Z ##[endgroup]
+2026-11-04T23:29:39.5171056Z [command]/usr/bin/git sparse-checkout disable
+2026-11-04T23:29:39.5224395Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-04T23:29:39.5261366Z ##[group]Checking out the ref
+2026-11-04T23:29:39.5263779Z [command]/usr/bin/git checkout --progress --force 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:39.7894790Z Note: switching to '66f51f71e644b30804b2b632ebe161ccf5533a1f'.
+2026-11-04T23:29:39.7895113Z 
+2026-11-04T23:29:39.7895239Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-04T23:29:39.7895502Z changes and commit them, and you can discard any commits you make in this
+2026-11-04T23:29:39.7895758Z state without impacting any branches by switching back to a branch.
+2026-11-04T23:29:39.7895908Z 
+2026-11-04T23:29:39.7896061Z If you want to create a new branch to retain commits you create, you may
+2026-11-04T23:29:39.7896439Z do so (now or later) by using -c with the switch command. Example:
+2026-11-04T23:29:39.7896651Z 
+2026-11-04T23:29:39.7896747Z   git switch -c <new-branch-name>
+2026-11-04T23:29:39.7896924Z 
+2026-11-04T23:29:39.7897015Z Or undo this operation with:
+2026-11-04T23:29:39.7897146Z 
+2026-11-04T23:29:39.7897224Z   git switch -
+2026-11-04T23:29:39.7897328Z 
+2026-11-04T23:29:39.7897503Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-04T23:29:39.7897766Z 
+2026-11-04T23:29:39.7898496Z HEAD is now at 66f51f71 Merge fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd into 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:39.7935983Z ##[endgroup]
+2026-11-04T23:29:39.7984121Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T23:29:39.8016986Z 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:39.8024080Z ##[group]Removing auth
+2026-11-04T23:29:39.8024322Z Removing SSH command configuration
+2026-11-04T23:29:39.8027152Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T23:29:39.8067900Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T23:29:39.8263261Z Removing HTTP extra header
+2026-11-04T23:29:39.8271868Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T23:29:39.8309468Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T23:29:39.8515207Z Removing includeIf entries pointing to credentials config files
+2026-11-04T23:29:39.8517908Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T23:29:39.8553332Z includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git.path
+2026-11-04T23:29:39.8553732Z includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git/worktrees/*.path
+2026-11-04T23:29:39.8554093Z includeif.gitdir:/github/workspace/.git.path
+2026-11-04T23:29:39.8554395Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T23:29:39.8560765Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git.path
+2026-11-04T23:29:39.8592647Z /home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:39.8600494Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-b6f6cecc\-2d46\-4a69\-9c2e\-9d3363db89cb\.config
+2026-11-04T23:29:39.8655971Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git/worktrees/*.path
+2026-11-04T23:29:39.8688452Z /home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:39.8694636Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/HeptaBao/HeptaBao/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-b6f6cecc\-2d46\-4a69\-9c2e\-9d3363db89cb\.config
+2026-11-04T23:29:39.8742144Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-04T23:29:39.8772569Z /github/runner_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:39.8778793Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-b6f6cecc\-2d46\-4a69\-9c2e\-9d3363db89cb\.config
+2026-11-04T23:29:39.8815862Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T23:29:39.8845340Z /github/runner_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config
+2026-11-04T23:29:39.8853709Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-b6f6cecc\-2d46\-4a69\-9c2e\-9d3363db89cb\.config
+2026-11-04T23:29:39.8898150Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T23:29:39.9089516Z Removing credentials config '/home/runner/work/_temp/git-credentials-b6f6cecc-2d46-4a69-9c2e-9d3363db89cb.config'
+2026-11-04T23:29:39.9096951Z ##[endgroup]
+2026-11-04T23:29:39.9259058Z ##[group]Run set -euo pipefail
+2026-11-04T23:29:39.9259297Z [36;1mset -euo pipefail[0m
+2026-11-04T23:29:39.9259459Z [36;1m[[ "$EXPECTED_SOURCE" =~ ^[0-9a-f]{40}$ ]][0m
+2026-11-04T23:29:39.9259685Z [36;1mtest "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"[0m
+2026-11-04T23:29:39.9259924Z [36;1mtest -z "$(git status --porcelain=v1 --untracked-files=all)"[0m
+2026-11-04T23:29:39.9260115Z [36;1mgit diff --check[0m
+2026-11-04T23:29:39.9260476Z [36;1mif test "$GITHUB_EVENT_NAME" = pull_request && test "$CANDIDATE" = merge; then[0m
+2026-11-04T23:29:39.9260723Z [36;1m  test "$(git show -s --format=%P HEAD | wc -w)" -eq 2[0m
+2026-11-04T23:29:39.9260915Z [36;1m  test "$(git rev-parse HEAD^1)" = "$PR_BASE"[0m
+2026-11-04T23:29:39.9261090Z [36;1m  test "$(git rev-parse HEAD^2)" = "$PR_HEAD"[0m
+2026-11-04T23:29:39.9261241Z [36;1mfi[0m
+2026-11-04T23:29:39.9261453Z [36;1mprintf 'source_commit=%s\nsource_tree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"[0m
+2026-11-04T23:29:39.9281223Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T23:29:39.9281410Z env:
+2026-11-04T23:29:39.9281559Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:39.9281751Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:39.9281931Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:39.9282083Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:39.9282201Z   CANDIDATE: merge
+2026-11-04T23:29:39.9282309Z ##[endgroup]
+2026-11-04T23:29:40.1800983Z source_commit=66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:40.1801360Z source_tree=17da0b36f418b52203040e54aae127899cf5e65e
+2026-11-04T23:29:40.1838451Z ##[group]Run set -euo pipefail
+2026-11-04T23:29:40.1838666Z [36;1mset -euo pipefail[0m
+2026-11-04T23:29:40.1838842Z [36;1mmkdir -m 700 "$RUNNER_TEMP/heptabao-safe-reports"[0m
+2026-11-04T23:29:40.1839036Z [36;1mpython - <<'PY'[0m
+2026-11-04T23:29:40.1839187Z [36;1mimport json, os, pathlib, subprocess[0m
+2026-11-04T23:29:40.1839477Z [36;1mreport = {"source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),[0m
+2026-11-04T23:29:40.1839866Z [36;1m          "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),[0m
+2026-11-04T23:29:40.1840569Z [36;1m          "expected_source": os.environ["EXPECTED_SOURCE"], "pr_base": os.environ["PR_BASE"],[0m
+2026-11-04T23:29:40.1840880Z [36;1m          "pr_head": os.environ["PR_HEAD"], "run_id": os.environ["GITHUB_RUN_ID"],[0m
+2026-11-04T23:29:40.1841185Z [36;1m          "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "independent_admission": False}[0m
+2026-11-04T23:29:40.1841624Z [36;1mpathlib.Path(os.environ["RUNNER_TEMP"], "heptabao-safe-reports", "source.json").write_text(json.dumps(report, sort_keys=True))[0m
+2026-11-04T23:29:40.1841935Z [36;1mPY[0m
+2026-11-04T23:29:40.1859055Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T23:29:40.1859241Z env:
+2026-11-04T23:29:40.1859395Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:40.1859601Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:40.1859792Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:40.1859960Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:40.1860093Z ##[endgroup]
+2026-11-04T23:29:40.2234072Z ##[group]Run set -euo pipefail
+2026-11-04T23:29:40.2234288Z [36;1mset -euo pipefail[0m
+2026-11-04T23:29:40.2234542Z [36;1mpython -m pip install --disable-pip-version-check --requirement requirements-plan.txt[0m
+2026-11-04T23:29:40.2234833Z [36;1mpython scripts/verify_python_environment.py[0m
+2026-11-04T23:29:40.2256391Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T23:29:40.2256597Z env:
+2026-11-04T23:29:40.2256761Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:40.2256976Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:40.2257174Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:40.2257344Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:40.2257471Z ##[endgroup]
+2026-11-04T23:29:41.1672600Z Defaulting to user installation because normal site-packages is not writeable
+2026-11-04T23:29:42.2184427Z Collecting PyYAML==6.0.2 (from -r requirements-plan.txt (line 1))
+2026-11-04T23:29:42.2755637Z   Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-11-04T23:29:42.3100960Z Collecting jsonschema==4.23.0 (from -r requirements-plan.txt (line 2))
+2026-11-04T23:29:42.3227458Z   Downloading jsonschema-4.23.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-04T23:29:42.4938825Z Collecting cryptography==46.0.4 (from -r requirements-plan.txt (line 4))
+2026-11-04T23:29:42.5072758Z   Downloading cryptography-46.0.4-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (5.7 kB)
+2026-11-04T23:29:42.5198252Z Requirement already satisfied: attrs>=22.2.0 in /usr/lib/python3/dist-packages (from jsonschema==4.23.0->-r requirements-plan.txt (line 2)) (23.2.0)
+2026-11-04T23:29:42.5454207Z Collecting jsonschema-specifications>=2023.03.6 (from jsonschema==4.23.0->-r requirements-plan.txt (line 2))
+2026-11-04T23:29:42.5586637Z   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+2026-11-04T23:29:42.5954398Z Collecting referencing>=0.28.4 (from jsonschema==4.23.0->-r requirements-plan.txt (line 2))
+2026-11-04T23:29:42.6084619Z   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+2026-11-04T23:29:42.8349051Z Collecting rpds-py>=0.7.1 (from jsonschema==4.23.0->-r requirements-plan.txt (line 2))
+2026-11-04T23:29:42.8477943Z   Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+2026-11-04T23:29:42.9367512Z Collecting cffi>=2.0.0 (from cryptography==46.0.4->-r requirements-plan.txt (line 4))
+2026-11-04T23:29:42.9501614Z   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+2026-11-04T23:29:42.9891455Z Collecting pycparser (from cffi>=2.0.0->cryptography==46.0.4->-r requirements-plan.txt (line 4))
+2026-11-04T23:29:43.0024923Z   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+2026-11-04T23:29:43.0179192Z Requirement already satisfied: typing-extensions>=4.4.0 in /usr/lib/python3/dist-packages (from referencing>=0.28.4->jsonschema==4.23.0->-r requirements-plan.txt (line 2)) (4.10.0)
+2026-11-04T23:29:43.0345011Z Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (767 kB)
+2026-11-04T23:29:43.0883437Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 767.5/767.5 kB 14.7 MB/s eta 0:00:00
+2026-11-04T23:29:43.1012710Z Downloading jsonschema-4.23.0-py3-none-any.whl (88 kB)
+2026-11-04T23:29:43.1051340Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 88.5/88.5 kB 35.0 MB/s eta 0:00:00
+2026-11-04T23:29:43.1180656Z Downloading cryptography-46.0.4-cp311-abi3-manylinux_2_34_x86_64.whl (4.5 MB)
+2026-11-04T23:29:43.1715754Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 85.8 MB/s eta 0:00:00
+2026-11-04T23:29:43.1849891Z Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+2026-11-04T23:29:43.1896077Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 221.8/221.8 kB 73.9 MB/s eta 0:00:00
+2026-11-04T23:29:43.2029146Z Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+2026-11-04T23:29:43.2179141Z Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+2026-11-04T23:29:43.2440925Z Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (371 kB)
+2026-11-04T23:29:43.2492226Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 371.3/371.3 kB 117.0 MB/s eta 0:00:00
+2026-11-04T23:29:43.2620845Z Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+2026-11-04T23:29:43.2661928Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 23.2 MB/s eta 0:00:00
+2026-11-04T23:29:43.4363794Z Installing collected packages: rpds-py, PyYAML, pycparser, referencing, cffi, jsonschema-specifications, cryptography, jsonschema
+2026-11-04T23:29:43.7425929Z Successfully installed PyYAML-6.0.2 cffi-2.1.1 cryptography-46.0.4 jsonschema-4.23.0 jsonschema-specifications-2025.9.1 pycparser-3.12 referencing-0.37.0 rpds-py-2026.9.1
+2026-11-04T23:29:44.1484956Z {"exact_direct_pins": true, "installed": {"cryptography": "46.0.4", "jsonschema": "4.23.0", "pyyaml": "6.0.2"}, "minimum_python_runtime": "3.11", "python_runtime": "3.12.3", "qualification": false, "required": {"cryptography": "46.0.4", "jsonschema": "4.23.0", "pyyaml": "6.0.2"}, "runtime_supported": true, "schema": "heptabao.python-environment.v1", "transitive_dependency_lock": false}
+2026-11-04T23:29:44.1623936Z ##[group]Run rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+2026-11-04T23:29:44.1624317Z [36;1mrustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy[0m
+2026-11-04T23:29:44.1641432Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T23:29:44.1641625Z env:
+2026-11-04T23:29:44.1641788Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:44.1642005Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:44.1642200Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:44.1642367Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:44.1642495Z ##[endgroup]
+2026-11-04T23:29:44.1763742Z info: syncing channel updates for 1.98.0-x86_64-unknown-linux-gnu
+2026-11-04T23:29:44.3722962Z info: latest update on 2026-08-20 for version 1.98.0 (88d9e12ae 2026-08-18)
+2026-11-04T23:29:44.3723512Z info: downloading 5 components
+2026-11-04T23:29:51.1435265Z 
+2026-11-04T23:29:51.1498911Z   1.98.0-x86_64-unknown-linux-gnu installed - rustc 1.98.0 (88d9e12ae 2026-08-18)
+2026-11-04T23:29:51.1499157Z 
+2026-11-04T23:29:51.1645318Z ##[group]Run cargo +1.98.0 fmt --all -- --check
+2026-11-04T23:29:51.1645536Z [36;1mcargo +1.98.0 fmt --all -- --check[0m
+2026-11-04T23:29:51.1661884Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T23:29:51.1662069Z env:
+2026-11-04T23:29:51.1662219Z   EXPECTED_SOURCE: 66f51f71e644b30804b2b632ebe161ccf5533a1f
+2026-11-04T23:29:51.1662418Z   PR_HEAD: fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd
+2026-11-04T23:29:51.1662604Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T23:29:51.1662765Z   CARGO_BUILD_JOBS: 1
+2026-11-04T23:29:51.1662886Z ##[endgroup]
+2026-11-04T23:29:56.9546787Z Diff in /home/runner/work/HeptaBao/HeptaBao/crates/heptabao-server/src/service_response_headers.rs:106:
+2026-11-04T23:29:56.9547285Z          self.1.is_some()
+2026-11-04T23:29:56.9547487Z      }
+2026-11-04T23:29:56.9547815Z      pub(super) fn local_redirect_matches_current(&self, status: u16) -> bool {
+2026-11-04T23:29:56.9554629Z -        status == 307 && self.1.as_deref().is_some_and(LocalRedirect::matches_current)
+2026-11-04T23:29:56.9554995Z +        status == 307
+2026-11-04T23:29:56.9555191Z +            && self
+2026-11-04T23:29:56.9555374Z +                .1
+2026-11-04T23:29:56.9555561Z +                .as_deref()
+2026-11-04T23:29:56.9555819Z +                .is_some_and(LocalRedirect::matches_current)
+2026-11-04T23:29:56.9556089Z      }
+2026-11-04T23:29:56.9556457Z      pub(crate) fn take_local_redirect(&mut self) -> Option<LocalRedirect> {
+2026-11-04T23:29:56.9556829Z          self.1.take().map(|redirect| *redirect)
+2026-11-04T23:29:57.7334526Z ##[error]Process completed with exit code 1.
+2026-11-04T23:29:57.7755691Z Post job cleanup.
+2026-11-04T23:29:57.8447734Z [command]/usr/bin/git version
+2026-11-04T23:29:57.8490993Z git version 2.56.0
+2026-11-04T23:29:57.8520389Z Temporarily overriding HOME='/home/runner/work/_temp/e15d2873-8743-4be5-81c1-801f56fe69d2' before making global git config changes
+2026-11-04T23:29:57.8520948Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T23:29:57.8524826Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HeptaBao/HeptaBao
+2026-11-04T23:29:57.8575808Z Removing SSH command configuration
+2026-11-04T23:29:57.8581855Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T23:29:57.8632446Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T23:29:57.8896609Z Removing HTTP extra header
+2026-11-04T23:29:57.8911669Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T23:29:57.8945314Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T23:29:57.9217315Z Removing includeIf entries pointing to credentials config files
+2026-11-04T23:29:57.9223669Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T23:29:57.9273322Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T23:29:57.9708393Z Cleaning up orphan processes

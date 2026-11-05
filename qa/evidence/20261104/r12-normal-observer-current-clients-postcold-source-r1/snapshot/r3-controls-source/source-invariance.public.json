@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao-phaseb-observer-r3-two-identity-literal-correction-v1",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "candidate": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "source_branch": "codex/heptabao-native-ingress-observer-20261104",
+    "main_pr_branch_unchanged": true
+  },
+  "changes": [
+    {
+      "label": "runner",
+      "before": {
+        "bytes": 20791,
+        "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+        "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+      },
+      "after": {
+        "bytes": 20791,
+        "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+        "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+      },
+      "diff": {
+        "bytes": 793,
+        "sha256": "f629da69f6dea016404230fd6ca1b5cd8775db5d09908d05d533d499133b5a37",
+        "blob": "25eba6ada3c4e2d37ce0b89e3d92344ba9e8d62e"
+      },
+      "hunks": 1
+    },
+    {
+      "label": "launcher",
+      "before": {
+        "bytes": 28425,
+        "sha256": "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de",
+        "blob": "5df49e6993eb4ff46898ad2adce689e1d96eb953"
+      },
+      "after": {
+        "bytes": 28425,
+        "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
+        "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+      },
+      "diff": {
+        "bytes": 560,
+        "sha256": "a73451ffc3d907d3c4887f615560ce37a135e7e9f7f4f308d3422e74e29837c2",
+        "blob": "648117850c65b2839c23ff6fb751fafbc1bb93ae"
+      },
+      "hunks": 1
+    },
+    {
+      "label": "stage",
+      "before": {
+        "bytes": 24552,
+        "sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
+        "blob": "57e6b669158f61ccdbd8926f596b77f864638b92"
+      },
+      "after": {
+        "bytes": 24552,
+        "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+        "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+      },
+      "diff": {
+        "bytes": 1408,
+        "sha256": "d922a4899cf303e8c23f4230306b24bb5a122703d7b8e121446e35f848c3a373",
+        "blob": "3aa18b41938ceea4a96edda880383b209787021f"
+      },
+      "hunks": 2
+    }
+  ],
+  "proof": {
+    "runner_exactly_two_identity_literal_substitutions": true,
+    "runner_inverse_whole_bytes_equal_c46": true,
+    "runner_all_function_bytes_and_all_top_level_except_two_assignments_unchanged": true,
+    "runner_original_identity_assert_unchanged": true,
+    "launcher_exactly_one_fresh_root_literal": true,
+    "launcher_inverse_whole_bytes_equal_r2": true,
+    "stage_exactly_fresh_root_and_two_derived_control_hashes": true,
+    "stage_inverse_whole_bytes_equal_r2": true,
+    "carrier_only_replaces_exact_runner_and_launcher_strings": true,
+    "carrier_inverse_whole_bytes_equal_r2": true,
+    "groups_original_bytes_unchanged": true,
+    "prior_bf0_authority_original_bytes_unchanged": true,
+    "old_bf0_failed_file_fence_constants_and_functions_unchanged": true,
+    "source_commit_tree_parent_history_leaf_index_unchanged": true,
+    "original_44_tests_and_separate_existing_7_unchanged": true,
+    "all_original_and_new_accepted_budgets_unchanged": true,
+    "syntax_execution_or_host_ast_performed": false
+  },
+  "retained_r2": {
+    "packet_tree": "157babcd62143eaf154674bcb5183f38cbcfbf8d",
+    "core": {
+      "bytes": 23303,
+      "sha256": "60f261d1cc06c77bbf845b7083f3fb76039943c1ec275c0dfbd911d0e4bf7ccc",
+      "blob": "1e436195f9f42e9d20ae92f9aedea02f9eb77588"
+    },
+    "authority": {
+      "bytes": 729,
+      "sha256": "beb121de45160e1f39c06cedb8ec0bf1cb409372a6ec8655688d5629def935fc",
+      "blob": "bef2494dafe0a83ead76fe1b38ad9ea876205fbb"
+    },
+    "stage_passed": true,
+    "build_not_dispatched": true,
+    "old_root_never_modified_by_this_packet": true
+  },
+  "limits": [
+    "Strict whole-byte inverse checks are source equivalence checks, not Python execution, host AST validation, a normal build, or product qualification.",
+    "A fresh actual R3 source stage and root acceptance are required before a separately authorized build; its stage digest remains null.",
+    "No R2 source/control file or old failure/result is overwritten or relabelled."
+  ]
+}

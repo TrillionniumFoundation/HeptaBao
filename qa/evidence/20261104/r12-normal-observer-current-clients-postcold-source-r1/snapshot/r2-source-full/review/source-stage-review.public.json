@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao-phaseb-native-ingress-observer-source-3cb-r2-actual-review-v1",
+  "status": "PASS_SOURCE_STAGE_ONLY_BUILD_HOLD",
+  "operation": {
+    "host": "rog",
+    "job_id": "1a1a8a17dcd-fc05-2f48",
+    "idempotency_key": "heptabao-phaseb-native-ingress-observer-source-3cb8739-20261104-r2",
+    "one_dispatch": true,
+    "authority": {
+      "bytes": 729,
+      "sha256": "beb121de45160e1f39c06cedb8ec0bf1cb409372a6ec8655688d5629def935fc",
+      "blob": "bef2494dafe0a83ead76fe1b38ad9ea876205fbb"
+    },
+    "core": {
+      "bytes": 23303,
+      "sha256": "60f261d1cc06c77bbf845b7083f3fb76039943c1ec275c0dfbd911d0e4bf7ccc",
+      "blob": "1e436195f9f42e9d20ae92f9aedea02f9eb77588"
+    },
+    "elapsed_seconds": 11.94958405100624
+  },
+  "source": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "source_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2/source",
+    "full_worktree": {
+      "all_tracked_worktree_blobs_and_modes_match": true,
+      "full_leaf_index_sha256": "5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00",
+      "index_matches_tree": true,
+      "tracked_bytes": 62194197,
+      "tracked_leaf_count": 3911
+    },
+    "source_clean": true,
+    "full_strict_fsck_passed": true,
+    "independent_git_directory": true,
+    "no_alternates": true,
+    "no_shared_object_links": true
+  },
+  "original_budgets": {
+    "stage_seconds": 300,
+    "outer_seconds": 330,
+    "git_leaf_seconds": 90,
+    "clone_seconds": 180
+  },
+  "observations": {
+    "child_originals": 41,
+    "all_child_receipts_match_core_pid_exit_cleanup": true,
+    "all_child_elapsed_less_than_effective_original_cap": true,
+    "all_child_exit_zero": true,
+    "all_direct_children_reaped": true,
+    "all_remaining_groups_empty": true,
+    "control_originals": 5,
+    "all_control_bytes_equal_reviewed_sources": true,
+    "old_source_lossless_before_after_equal": true,
+    "failed_bf0_source_and_12_files_and_recorded_authority_lossless_before_after_equal": true,
+    "raw_original_sdk_payloads": 7,
+    "raw_read_operation_admissions": 4,
+    "raw_sdk_file_texts_preserved": true,
+    "unsafe_metadata_integers_preserved_in_raw_originals": true
+  },
+  "build_hold": {
+    "build_submitted": false,
+    "compiler_started": false,
+    "server_started": false,
+    "production_changed": false,
+    "runner": {
+      "bytes": 20791,
+      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+      "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+    },
+    "diagnostic_commit_still": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "diagnostic_tree_still": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+    "guard": "assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE",
+    "new_source_args_would_be_refused_before_output_mkdir_intent_or_cargo": true,
+    "correction_scope": "New R3 control root: replace exactly the two runner identity literals and cascade control pins. Retain all R2 bytes and do not overwrite or launch the known-refusing R2 build."
+  },
+  "limits": [
+    "This result qualifies only the actual R2 source stage; it does not qualify a normal 3cb binary, the retained runner under new arguments, Phase B runtime, production migration, or full OpenBao 2.7.1 replacement.",
+    "Recorded prior bf0 authority is an immutable original used as a fence, not a fresh query of an old job.",
+    "All raw source/control and prior failure originals remain unchanged."
+  ]
+}

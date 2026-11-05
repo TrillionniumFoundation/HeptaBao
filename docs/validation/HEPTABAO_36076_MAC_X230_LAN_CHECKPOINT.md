@@ -1,5 +1,55 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前检查点：ROG 正常构建 44＋7 通过；新 HA 停在方向准备条件，完整替代仍未获资格
+
+更新于 2026-11-05T00:24:38Z。**本轮已经补齐 ROG 观察器候选的正常构建和原始证据，原 44 项测试与另列 7 项测试分别通过；Mac、ROG、Pocket4 的新回归在方向准备阶段得到明确失败，原 83 项通过、15 项未执行，新增恢复后冷启 12 项尚未进入。全量替代 OpenBao 2.7.1 的资格仍为 false。** 当前没有生产切流，也没有删除旧服务、二进制或恢复资产。[本轮机器可读状态](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/root-review/current-state.public.json)记录每项结论的来源、版本与未完成项。
+
+| 必须完成的门槛 | 当前有证据支持的结论 | 仍须完成 |
+|---|---|---|
+| KV2 正式迁移和恢复 | 既有 X230 正式 31/31、34 MiB 活跃历史、19 个生命周期版本仍绑定 495 候选；新 3cb 正常构建已经产出实际 server/seed | 实际快照 CLI 的旧 B01 仍为已保留的 UNKNOWN 失败；新入口仅完成实际产物绑定源码。当前生产数据与最新加密异机备份尚未迁移 |
+| 三机 HA | 既有两轮原 128/128 与 Pocket→空 Mac 原 98/98 分别有效；新脚本的九源落盘与 prepare 已真实通过，四份 build 回执逐字匹配 | 新作业 `1a1a9094b62-fc05-30ab` 退出 1：在原 60 秒内未观察到更高提交前沿；恢复和新增冷启尚未执行，须修正准备协议并重新获得完整原 98＋另列 12 资格 |
+| AuthBus 脱离 J3160 | 既有 Pocket 两 agent 当前消费者闭环保留；Mac T5 五源 inert 真实通过，卷身份和所有 owned 回收已核验 | Mac owned SQLite R1 为 5 通过、1 失败、第 7 未执行；R2 最小测试接入修正已审，并仅按条件准入 owned 验证；尚无七项运行通过。五 agent 凭证捕获、完整 outer、launchd 重启与逆向恢复尚未完成 |
+| 逐台切换 | X230 新有限只读清点退出码 0；Mac 的 canonical crontab 缺失观察已有独立原件 | 有限清点不等于整机所有客户端均已迁移；ROG 清点、每台真实凭证读写/重启/回滚及正式切流仍未完成 |
+| 旧版清理 | 所有旧现场及备份证据继续保留，失败和 UNKNOWN 均未改写 | 全部客户端和备份路径迁移条件尚未成立，不能将清理或“只剩最新版服务”记为完成 |
+
+### 新正常构建证据与候选版本
+
+`3cb873919170cc77101b27f6a3ab9e98f41f8d93` / tree `7f4d48a647a81ca96e8a24a0a057c2c829459060` 的唯一作业为 `1a1a8b55dda-fc05-2f85`。原 44 个名称与六组原 600 秒限额逐项核验；7 个新增测试严格取自执行源码中的固定名称，另有共享 600 秒限额，实际 0.589543348 秒。28 个独立 owned 子进程全部退出 0、已回收且无残留。release 构建为 666.305 秒 / 1800，libtest 构建为 1080.554 秒 / 3600；整体时间戳差的原整数为 1,812,535,687,089 ns。[根审阅](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/root-review/normal-r3-root-full-original-review.public.json)和[完整 243 件原包](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/snapshot/r3-normal-full-terminal/manifest.public.json)包含全部 child stdout/stderr/record、两份 Cargo 全文、24 份完整 native SDK payload 及 88 个不可变分页。原始 stdout、字节 hex、SHA-256、Git blob 与实际名字均已对齐；工具分页元数据没有被用来冒称客户端 HTTP 交付证明。
+
+| 用途 | 精确版本 | 资格边界 |
+|---|---|---|
+| 已验证的 LAN/KV2/Pocket AuthBus 正常产物 | `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` | 保留各自已经实际完成的有限范围 |
+| 新观察器正常产物 | `3cb873919170cc77101b27f6a3ab9e98f41f8d93` | 44＋另列 7、默认 features、正常构建；尚无新快照 CLI 运行通过 |
+| Draft PR #152 当前头 | `e5de554f5dfe99f0de30012122fe3e248fb60532` | 新 CI 正在执行，尚无完整终态；不继承其他提交的运行资格 |
+
+新 3cb server 为 109,074,848 B，SHA-256 `437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0`；seed 为 101,143,984 B，SHA-256 `bdbf53cfebc25d3932aaba3bf608e0459e3399c513bbdeafecde5659eb688689`。新 Phase B 的源码计划绑定这些实际产物；seed 只作为第二构建产物记录，没有擅自加入原主程序未调用的执行路径。[新输入方案](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/snapshot/fresh-phaseb-actual-input-source/manifest.public.json)仍为源码阶段。
+
+### CI 的实际失败与最小修复
+
+旧 `6d3040a` 的 run `41907498576` 两路完整 workspace tests 通过，但严格 Clippy 各报 1,619 个 `result_large_err`：其中 1,616 项对应至少 208 B 的 Response，3 项对应至少 224 B 的恢复 admission failure。保留的 [原始日志](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/ci/original-clippy-failures/)没有被删除或重分类。修复只将私有可选 LocalRedirect 放入 Box，保留取出所有权、序列化拒绝和原期限，并新增两项布局回归；没有调整 lint 阈值、工作流或编译检查命令。
+
+`fab39e28` 的下一轮在两路格式检查中暴露同一处换行差异，后续步骤均被跳过。已按 Rust 1.98 原始输出精确换行提交 `e5de554f`，表达式 token 不变，另外 3,910 个文件及 mode 不变。[格式失败及修复证据](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/ci/response-format-failure-and-fix/response-rustfmt-review.public.json)完整保留。新 run `41937740513` 的 head、merge 均已通过格式检查，在 2026-11-05T00:09:15Z 观察时进入完整 workspace tests；trust-boundary run `41937740490` 已成功。当前仍不声称新 Clippy、布局实际大小或完整 CI 通过。
+
+### 恢复后冷启动与 Mac 当前凭证的剩余工作
+
+[HA prepare 原包](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/ha/postrecovery-prepare-actual/manifest.public.json)的实际摘要 SHA 为 `95162142c09439603c1cc8564f43080b10944696aebe45b31ecdf2ad66263578`。原 98 项名称逐项等于既有成功运行，新增 12 项单列；原 controller 2400 秒、HTTP 15 秒、admission 8 秒不变，新增冷启阶段共享 300 秒且受原 controller 截止限制。只有在恢复密文的同一新现场仍保留历史时，捕获实际引用叶集合、停止三节点、重新启动并验证持久化与 ReadIndex，才能填补这个缺口。没有强制 leader，没有把 98 与 128 相加成唯一案例数，也没有把旧的恢复前冷启算作这 12 项。
+
+本次实际已在 `owned_missing_cipher_leader_recovery` 阶段报 `direction_new_committed_frontier_not_observed`。停止 ROG 前它不是 leader，applied/committed 均为 61；固定 60 秒内的 190 次有限观测没有满足新前沿条件。原 83 个通过项与 15 个 missing 恰好组成原 98 项，新增 12 项为 0；这不是已经进入密文恢复或新增冷启后的失败。权威终态退出 1、输出完整持久化、无外层超时和自动重试。5 个 Mac foreground session 的本地与远端进程组均已回收为空，所有已启动服务都有对应停止事件，tunnel 为 0，源码、构建与 24 个旧围栏不变。[根侧终态及清理审阅](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/root-review/ha-b-root-known-failure-core-review.public.json)和[45 对实际变更请求原件](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/ha/postrecovery-live-mutation-originals/)已保留；后者的 unknown=0 只针对变更账本，不能外推到最后未观察到响应的只读健康 GET。
+
+Mac R1 的 [实际失败原包](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/mac/sqlite-owned-synthetic-r1-failed/manifest.public.json)显示第六项实际返回 `absence_not_reopened_as_present`：测试先持有主文件，再经另一入口重复登记 sidecar 缺失状态，因此提前拒绝，尚未触及预期的 inode 漂移校验。作业退出 1，实际 0.287810625 秒，unknown=false，owned descriptors 与 SQLite connections 已关闭；第七项真实只读连接拒写，以及最后的 runtime/source 再核验未执行。R2 只修正该测试接入并使用新 owned attempt 目录，生产 capture 的 hold/verify 定义保持原样。完整差分、六份输入与旧五源九字段身份已审核，追加源码的唯一 inert 已获 ACK；后续 owned 七项仅在该 inert 完整终态证明满足条件时才获准执行，尚无七项实际通过结论。新 manager/server/phase 首包仅是[源码](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/mac/manager-r3-source-first-packet/manifest.public.json)，完整 outer、capture materializer 和实际 launchd 观察尚未获得运行资格。
+
+### 清点、兼容范围和证据连续性
+
+X230 的固定 18 项、7 个 owned 查询已真实完成；AuthBus proxy 当前 loaded、disabled、inactive/dead、MainPID 0。存在的 OpenBao 2.7.1 oracle 容器为 network none、无挂载和端口映射，这个事实不能单独授权删除。Mac canonical `/private/etc/crontab` 的独立缺失观察，也没有被改写为原 38 项原子清点成功。
+
+OpenBao v2.7.1 官方 tag 的 commit 为 `a5db72cef75c24b920ade02065b18dd8eb666bac`，其实际 commit tree 为 `3a8ba726d8d557a5f9b3f2ed28b406da33632182`。本轮是 30 份一手源码的有限审计；旧 59 项 ledger 仍针对 2.6.2，既有 69 案例仍是 13 个模块族的有界 corpus，均不构成 2.7.1 全表面分母。映射勘误只补正三处既有案例所属关系，没有增加测试数量，也没有取消 native profile 的拒绝边界。[审计与勘误](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/compatibility/official271-map-erratum/)保留旧件与新件。
+
+本轮附加 41 个不可变证据包、835 个包内文件条目、20,036,992 B；109 个包内 Git tree 已重算。数据按原始 blob 引用挂入，纳秒大整数和原始 SDK 字节没有经过普通 JSON 重序列化。分析缓存丢失后，通过既有 operation id 恢复原 payload，没有重新提交业务作业；新根验证 helpers 明确采用新身份。未恢复的临时 RPC 错误元数据及旧根侧 25/6 纯组件原 exec 文件没有冒称为已找回。[完整包索引](../../qa/evidence/20261104/r12-normal-observer-current-clients-postcold-source-r1/packet-tree-index.public.json)列出每个路径与对象身份。
+
+## 以下为 2026-11-04T22:21:01Z 及更早的冻结记录
+
+下面保留旧检查点正文；其中“当前”“尚未”等词以各自原时间为准，不覆盖上述新状态。
+
 ## 当前检查点：Pocket→空 Mac 恢复 98/98；当前 Mac 清点完成有界观察，完整替代仍未获资格
 
 更新于 2026-11-04T22:21:01Z。**正常默认构建的三机方向回归已真实完成：Pocket4 节点 3 为密文来源，空 Mac 节点 1 实际成为 leader，原 98 项全部通过。恢复解封 9,452.187 ms，保持原 15 秒请求限额。全量替代 OpenBao 2.7.1 的资格仍为 false。** 已通过的范围不能替代恢复后冷启动、实际快照 CLI、逐台服务切流及全部客户端与备份迁移。

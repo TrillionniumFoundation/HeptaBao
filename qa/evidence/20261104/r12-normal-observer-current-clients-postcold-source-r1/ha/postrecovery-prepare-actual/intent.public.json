@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.postrecovery-cold12.prepare-intent.r1",
+  "prepared_at_utc": "2026-11-04T23:56:22.345Z",
+  "stage": "before-single-submit",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-postcold-prepare-r1-5c4cd927-06acd609"
+  },
+  "frozen_dispatch_blob": "f7b963be1cf06d0bad22bc26083fc55291686f82",
+  "only_removed_documentation_field": "effect",
+  "inert_evidence_tree": "c81c062ab6b0a6423b9bb3eb98b7e4fab1afcee4",
+  "root_inert_review": {
+    "git_blob": "74573de13628b60e4529ef19598662b3e43311d8",
+    "bytes": 1081,
+    "sha256": "de199bd43bf924ef5743c4030e7c55b4b3149b68d12f46d10a31f31869188b55"
+  },
+  "expected_scope": "Original normal build/source/QA/24 prior-fence probes, real argument parsing, and exact new source-only contract. No fixture.",
+  "live_authorized": false,
+  "previous_submission": false
+}

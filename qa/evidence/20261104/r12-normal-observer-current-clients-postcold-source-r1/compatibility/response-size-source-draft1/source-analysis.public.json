@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao-response-size-source-proposal-r1",
+  "base_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "base_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "changed_file": "crates/heptabao-server/src/service_response_headers.rs",
+  "source_refs": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_response_headers.rs",
+      "bytes": 12816,
+      "sha256": "ad213977edb9978ab14490ec6abbfb6c3b274ba8f3c044478697fdccf532c1fb",
+      "blob": "d688a86620bc272d8ba7eaa0c041c2a59f758c71"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_wrapping.rs",
+      "bytes": 38982,
+      "sha256": "ec0bbf789cd7feb385f608d28c09f730c609887374ddaaaa7da49ab21ccb38ec",
+      "blob": "3141fe0657e57ef9f6c1095a414ed7918e8f7666"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "bytes": 14970,
+      "sha256": "6beeea5710dc3a2087216b7b9efea871f17d5c68f2ba0e24bd3a6122a8da5c43",
+      "blob": "e6d243427873b61b1a69f1a0ac63ddad27c4d0cd"
+    }
+  ],
+  "scope": "private local redirect representation and central layout regression test",
+  "whole_diff_hunks": 3,
+  "production_substitutions": 4,
+  "body_drop_and_header_drop_unchanged": true,
+  "serialize_deserialize_unchanged": true,
+  "public_return_signatures_unchanged": true,
+  "strict_clippy_flags_unchanged": true,
+  "derived224_sites": "await exact existing-log locations",
+  "rust_layout_measured": false,
+  "format_executed": false,
+  "tests_executed": false,
+  "host_actions": false,
+  "refs_mutated": false,
+  "product_qualified": false
+}

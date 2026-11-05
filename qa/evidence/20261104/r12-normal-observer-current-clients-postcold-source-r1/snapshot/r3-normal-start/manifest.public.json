@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao-3cb-r3-normal-build-start-admission-manifest-v1",
+  "status": "START_AND_ADMISSION_ONLY_NOT_TERMINAL",
+  "job_id": "1a1a8b55dda-fc05-2f85",
+  "control_tree": "7584cf0021ac5ea603b8652f65dfd7e0991803ff",
+  "actual_source_stage_tree": "a93b2bbf182a4ae13ad3256adfef503a3d0029b0",
+  "files": [
+    {
+      "path": "ack.original.json",
+      "bytes": 1586,
+      "sha256": "f20f02fe960da3364e2bbf7842d56b7844d88b91036dd118116f9c7d8f3a2842",
+      "blob": "8a09e1245f883229f469934682db7436d843ff5c"
+    },
+    {
+      "path": "launch-preflight.public.json",
+      "bytes": 20104,
+      "sha256": "8051dee00ae1a512c13e15b59f4098204abf4c60e25cfeb22ced70fac4e8bb84",
+      "blob": "2d2f8a62775c598402a0f2a240c13e20227a7cfc"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 7838,
+      "sha256": "0e291ce82061a516a5e6720eb88b43abfbf78aa9f944491d917dc8bc849f7fd1",
+      "blob": "69c625f5c7f5d61e0f904e69dcb0b5adc8bb2704"
+    },
+    {
+      "path": "admission-intent.original-sdk.json",
+      "bytes": 33302,
+      "sha256": "4b2a96a30202bedd972dda5c98fe2a8b06253ccd7af13139298458db20f25ee6",
+      "blob": "8d0fb70b5dd6256b2cbd3a860ca192edd420e2d0"
+    },
+    {
+      "path": "read-operation-admission.original.json",
+      "bytes": 553,
+      "sha256": "de6b3b58594d761244865460d63a3a51a52c867fc74e29c184665f35d65b1a4d",
+      "blob": "c6286d6f4a3c0b2c00601b6ae17a94c237574190"
+    },
+    {
+      "path": "dispatch.arguments.public.json",
+      "bytes": 784,
+      "sha256": "6e520781360601d21f702e1c7486e4e03df986ea0b79cf4dda499b3dc30d3562",
+      "blob": "d186c234802afb9878efa96881261beb1e01abcb"
+    }
+  ]
+}

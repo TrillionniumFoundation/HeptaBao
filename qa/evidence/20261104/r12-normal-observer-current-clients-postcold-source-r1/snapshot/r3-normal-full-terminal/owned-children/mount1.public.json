@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.28182386700063944,
+  "exit_code": 0,
+  "label": "mount1",
+  "outer_cap_seconds": 600,
+  "owned_pgid": 3843701,
+  "remaining": [],
+  "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+  "stdout_sha256": "7a45e1f1b0cc969a65c9dadd2016f5815380fea1bad6bc939a673f0d8db6947d",
+  "timed_out": false
+}

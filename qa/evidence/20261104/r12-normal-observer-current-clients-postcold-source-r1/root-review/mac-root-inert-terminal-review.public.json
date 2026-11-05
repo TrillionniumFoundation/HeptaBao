@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root.mac-prerequisite-inert-terminal-review.r1",
+  "pass": true,
+  "reviewed_at_utc": "2026-11-04T23:55:19.814Z",
+  "actual_tree": "c7cebe933d0d8c856db55a0f9760a61e279486dc",
+  "files": 8,
+  "bytes": 142316,
+  "merkle_trees": 1,
+  "job_id": "1a1a8eb69a3-fc05-3007",
+  "authority_blob": "5da4e3a7bc22e30abcb269aac0ef5d7287a5e91b",
+  "stdout_blob": "cad3d4ecd0b33bcb3e21f9e9b4accb52cc2ed4de",
+  "sdk_blob": "8d5c1100b12528b619677ad31abe889ddb4d152e",
+  "elapsed_seconds": 0.190549791790545,
+  "checks": {
+    "original_sdk_hex_text_exact": true,
+    "original_intent_args_and_key_exact": true,
+    "authority_exit_zero_full_durable": true,
+    "all_five_source_pins": true,
+    "all_27_anchor_decimal_strings_exact": true,
+    "t5_uuid_guard": true,
+    "owned_diskutil_reaped_group_empty_streams_closed": true,
+    "all_held_descriptors_closed": true,
+    "inner_45_outer_60": true,
+    "no_production_inputs_or_consumer": true
+  },
+  "verification_note": "Initial derived reviewer used order-sensitive JSON.stringify for anchor objects and refused before any new operation; corrected to recursive key-order-independent equality with decimal string values unchanged.",
+  "qualification_scope": "Five public source files and T5 guard only. Source writes close before independently reopening read descriptors under held parent guards; not a one-file-descriptor write/read transaction.",
+  "next_scope": "Permit exact frozen synthetic-only dispatch eeb6cd8b8d0ff40cfb822da629ae3d1795ec070d; production capture, credentials, service and cutover remain unqualified."
+}

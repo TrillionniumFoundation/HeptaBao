@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao-response-size-source-packet-r1",
+  "base_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "base_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "files": [
+    {
+      "path": "before/service_response_headers.rs",
+      "bytes": 12816,
+      "sha256": "ad213977edb9978ab14490ec6abbfb6c3b274ba8f3c044478697fdccf532c1fb",
+      "blob": "d688a86620bc272d8ba7eaa0c041c2a59f758c71"
+    },
+    {
+      "path": "candidate/service_response_headers.rs",
+      "bytes": 13142,
+      "sha256": "70f81c86c39c2601f5445dbdc7095a56e1ba2cd5d414deed8d18f1b6e72fc0cf",
+      "blob": "ec56db79835f69318f957caca4c402b9c39eaea5"
+    },
+    {
+      "path": "response-size.review.diff",
+      "bytes": 1727,
+      "sha256": "73728ea5600680942aca42681b7d712922de53cfae8fcc4cd5ce14972ae63e46",
+      "blob": "fd8fef6129c7e58e761d9a4ec90544df003e2540"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3476,
+      "sha256": "6df9fd59328389ccbd7d3a904b1e44187c9ac5de4f6b8172ec86284804bf5c94",
+      "blob": "727caa522ab354c8b1b6f4610c19a18af52fde21"
+    },
+    {
+      "path": "source-analysis.public.json",
+      "bytes": 1786,
+      "sha256": "53011e33558d7452aef3f460d7882803d2686bd925c84b56dec4aa882ace61cf",
+      "blob": "8b06d3d004f8b49b121c850277f63378440ceb26"
+    }
+  ],
+  "source_only": true,
+  "format_or_compile_or_runtime": false
+}

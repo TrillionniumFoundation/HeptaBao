@@ -1,0 +1,673 @@
+{
+  "schema": "heptabao-normal-r3-complete-original-stdio-review-r2",
+  "job_id": "1a1a8b55dda-fc05-2f85",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "owned_child_files": 84,
+  "records": [
+    {
+      "label": "ingress-observer-7",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013522699009627104,
+      "cap_seconds": 599.6079322010046
+    },
+    {
+      "label": "ingress-observer-7-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.012878515000920743,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-6",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.014182171988068148,
+      "cap_seconds": 599.6372159940074
+    },
+    {
+      "label": "ingress-observer-6-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.012347221985692158,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-5",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013504144008038566,
+      "cap_seconds": 599.6652182909893
+    },
+    {
+      "label": "ingress-observer-5-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.014729465008713305,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-4",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.013467846991261467,
+      "cap_seconds": 599.695686268009
+    },
+    {
+      "label": "ingress-observer-4-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015400649979710579,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-3",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.0759053569927346,
+      "cap_seconds": 599.7898751140165
+    },
+    {
+      "label": "ingress-observer-3-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015539489017101005,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-2",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.07591526600299403,
+      "cap_seconds": 599.8836719169922
+    },
+    {
+      "label": "ingress-observer-2-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.016324606986017898,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ingress-observer-1",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.07753643600153737,
+      "cap_seconds": 599.9800872149935
+    },
+    {
+      "label": "ingress-observer-1-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.018612604006193578,
+      "cap_seconds": 30
+    },
+    {
+      "label": "no_forward6",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 8.112403331993846,
+      "cap_seconds": 600
+    },
+    {
+      "label": "no_forward6-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.017009557981509715,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ordinary5",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.04573095898376778,
+      "cap_seconds": 600
+    },
+    {
+      "label": "ordinary5-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.017505424009868875,
+      "cap_seconds": 30
+    },
+    {
+      "label": "actor2",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 10.111169131996576,
+      "cap_seconds": 600
+    },
+    {
+      "label": "actor2-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.015967749000992626,
+      "cap_seconds": 30
+    },
+    {
+      "label": "redirect5",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.12930319798761047,
+      "cap_seconds": 600
+    },
+    {
+      "label": "redirect5-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.016204151994315907,
+      "cap_seconds": 30
+    },
+    {
+      "label": "mount1",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.28182386700063944,
+      "cap_seconds": 600
+    },
+    {
+      "label": "mount1-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.01589226900250651,
+      "cap_seconds": 30
+    },
+    {
+      "label": "ssh25",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 44.14493169399793,
+      "cap_seconds": 600
+    },
+    {
+      "label": "ssh25-list",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": false,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 0.018127768009435385,
+      "cap_seconds": 30
+    },
+    {
+      "label": "build",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 1080.5543959179777,
+      "cap_seconds": 3600
+    },
+    {
+      "label": "normal-release-build",
+      "pid_matches_cleanup": true,
+      "full_record_in_core": true,
+      "full_record_equal_when_present": true,
+      "stdout_matches_record": true,
+      "stderr_matches_record": true,
+      "exit_code": 0,
+      "reaped": true,
+      "remaining": [],
+      "elapsed_seconds": 666.3053706680075,
+      "cap_seconds": 1800
+    }
+  ],
+  "original44": [
+    {
+      "label": "ssh25",
+      "count": 25,
+      "names": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "mount1",
+      "count": 1,
+      "names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "redirect5",
+      "count": 5,
+      "names": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "actor2",
+      "count": 2,
+      "names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ordinary5",
+      "count": 5,
+      "names": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "no_forward6",
+      "count": 6,
+      "names": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "extra7": [
+    {
+      "label": "ingress-observer-1",
+      "count": 1,
+      "names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-2",
+      "count": 1,
+      "names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-3",
+      "count": 1,
+      "names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-4",
+      "count": 1,
+      "names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-5",
+      "count": 1,
+      "names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-6",
+      "count": 1,
+      "names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "label": "ingress-observer-7",
+      "count": 1,
+      "names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+      ],
+      "list_exact": true,
+      "executed_names_exact": true,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "original_44_denominator_unchanged": true,
+  "total_elapsed_ns_exact": "1812535687089",
+  "cargo": {
+    "release": {
+      "events": 445,
+      "build_finished": {
+        "reason": "build-finished",
+        "success": true
+      },
+      "compiler_errors": 0,
+      "selected": [
+        {
+          "target": "heptabao-seed",
+          "kind": [
+            "bin"
+          ],
+          "executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "fresh": false
+        },
+        {
+          "target": "heptabao-server",
+          "kind": [
+            "bin"
+          ],
+          "executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "fresh": false
+        }
+      ]
+    },
+    "libtest": {
+      "events": 443,
+      "build_finished": {
+        "reason": "build-finished",
+        "success": true
+      },
+      "compiler_errors": 0,
+      "selected": [
+        {
+          "target": "heptabao_server",
+          "kind": [
+            "lib"
+          ],
+          "executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/deps/heptabao_server-46a8765afad8ea76",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": true
+          },
+          "fresh": false
+        }
+      ]
+    }
+  },
+  "core_unchanged_flags": {
+    "source": true,
+    "binary": true,
+    "release_artifacts": true
+  },
+  "generic_public_pattern_scan": {
+    "scope": "PEM private-key delimiters and JWT-shaped strings in 84 original child files; not a universal credential scan",
+    "hits": []
+  },
+  "local_analysis_attempt1": {
+    "error": "cleanup uniqueness",
+    "cause": "analyzer used owned_pgid for core cleanup, which actually uses pid; records use owned_pgid",
+    "product_actions": 0,
+    "receipt_or_predicate_changes": 0,
+    "correct_comparison": "each record.owned_pgid equals original cleanup.pid; original raw bytes unchanged"
+  },
+  "new_product_dispatch": false,
+  "formal_replacement_qualified": false
+}

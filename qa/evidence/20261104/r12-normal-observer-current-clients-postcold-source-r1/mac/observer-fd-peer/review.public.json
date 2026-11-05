@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.mac-custody-fd-close-independent-review.v1",
+  "result": "PASS_SOURCE_AND_PURE_COMPONENT_SCOPED",
+  "current_tree": "a817eac6819ca491fc8de352ad4eb3340a470016",
+  "sources": {
+    "custody": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "observer": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "phase": {
+      "blob": "8d66bd60bfa3dea8d7b0053a0e0796b7d6d0957b",
+      "bytes": 24684,
+      "sha256": "e64b1436e7241b4ae72ed0f1e5e340b3045895051a4c79f91ad044710dda617e"
+    }
+  },
+  "scope": [
+    "Full source read of 10990-byte owned-custody module: signal operations occur before first child reap; after reap only process-group observation, and surviving rows cannot qualify success.",
+    "Full source read and exact 3-hunk reconstruction of observer FD ledger; exact phase FD delta rebuilt from its actual typed-report base.",
+    "AST-selected actual observer and phase close functions executed with synthetic OS/critical guard: 16 checks passed, including close errors, partial construction, no retry, positive close and unchanged lineage AST."
+  ],
+  "old_counterexample": {
+    "preserved": true,
+    "actual_fake_close_errors": 2,
+    "old_wrapper_reported_success": true,
+    "real_fd_operations": 0
+  },
+  "diff_verification": {
+    "typed_base_exact": true,
+    "typed_hunks": 2,
+    "fd_exact": true,
+    "fd_hunks": 2
+  },
+  "limits": [
+    "No physical host access, real FD operation, child process, signal, network or runtime qualification in components.",
+    "Typed-report phase changes are verified as the actual intermediate source chain; this review does not newly qualify their complete report semantics.",
+    "T5/launchd/complete five-agent workflow and future phase source deltas are outside this narrow result.",
+    "No blanket atomic identity claim for numeric PGID; retained direct child plus original bounded observations remain the implementation contract."
+  ],
+  "blocking_findings_remaining_in_scoped_delta": []
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.mac-capture-owned-synthetic-source.r1",
+  "scope": "source_only_not_runtime_authorization",
+  "actual_host_execution": false,
+  "production_database_opened": false,
+  "files": [
+    {
+      "path": "mac_guarded_current_capture_r3.py",
+      "mode": "100644",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+    },
+    {
+      "path": "mac_capture_sqlite_synthetic_r1.py",
+      "mode": "100644",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "git_blob": "992fa2b52760e5f3d0b192837053728011e11500"
+    },
+    {
+      "path": "mac_owned_commands_r1.py",
+      "mode": "100644",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    },
+    {
+      "path": "mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    {
+      "path": "mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    },
+    {
+      "path": "public-t5-anchor.json",
+      "mode": "100644",
+      "bytes": 967,
+      "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+      "git_blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
+    },
+    {
+      "path": "references/mac_guarded_current_capture_r2.py",
+      "mode": "100644",
+      "bytes": 21178,
+      "sha256": "faf10984269fd350b78d11685e46b079171ff89ce8de8572d110a55e1c05aed2",
+      "git_blob": "064d9ad74743139aa977807d7b4e39dab58a1c9d"
+    },
+    {
+      "path": "capture-r2-to-r3.review.diff",
+      "mode": "100644",
+      "bytes": 7900,
+      "sha256": "6615d8a65c2ff4bfe8565714ea02957f2ae10c7d0807e003f374774bcc308029",
+      "git_blob": "a147aa1b2a2d547329458cffbbf0638a56a6c9a8"
+    },
+    {
+      "path": "REVIEW.md",
+      "mode": "100644",
+      "bytes": 3846,
+      "sha256": "f6c17cf0aaf01c15cd0ddd438139dbf91c7b957bb8687e3411d564c3871a8c12",
+      "git_blob": "64be3813ecadda7e4e9699d354f2cab746dd7443"
+    },
+    {
+      "path": "source-ast-attempt.public.json",
+      "mode": "100644",
+      "bytes": 326,
+      "sha256": "b1a331630f4b3bd3f21b204ae44552cdf83686b188ca14c246ad7a69a48b7db4",
+      "git_blob": "1d836b75e4a2fa16adb8f5dbee7f654eeeef0830"
+    }
+  ]
+}

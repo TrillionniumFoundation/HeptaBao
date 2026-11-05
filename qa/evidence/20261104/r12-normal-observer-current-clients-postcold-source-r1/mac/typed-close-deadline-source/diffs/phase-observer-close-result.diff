@@ -1,0 +1,21 @@
+diff --git a/mac_current_phase_owner_r2.py b/mac_current_phase_owner_r2.py
+--- a/mac_current_phase_owner_r2.py
++++ b/mac_current_phase_owner_r2.py
+@@ -80,7 +80,7 @@
+     with critical():
+         observer_close_results[key]=False
+         try:
+-            observer.close();observer_close_results[key]=True
++            observer_close_results[key]=observer.close() is True
+         except BaseException:pass
+     return observer_close_results[key]
+ 
+@@ -95,7 +95,7 @@
+     remaining(until);require_waitid()
+     observer=None;row=None
+     with critical():
+-        observer=OwnedNativeObserver(native_observer) if native_observer else None
++        observer=OwnedNativeObserver(native_observer,critical=critical) if native_observer else None
+         if observer is not None:observers.append(observer)
+     if pending_signal is not None:raise Cancelled()
+     child_env=dict(env)

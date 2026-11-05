@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.response-box-draft-pr-publication.r1",
+  "base_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "base_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "new_commit": "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+  "new_tree": "17da0b36f418b52203040e54aae127899cf5e65e",
+  "all_leaf_count": 3911,
+  "unchanged_leaf_count": 3909,
+  "changed_files": [
+    {
+      "path": "crates/heptabao-server/src/service_response_headers.rs",
+      "before": "d688a86620bc272d8ba7eaa0c041c2a59f758c71",
+      "after": "ec56db79835f69318f957caca4c402b9c39eaea5",
+      "bytes": 13142
+    },
+    {
+      "path": "crates/heptabao-server/src/service_recovery_keys.rs",
+      "before": "de29a7578f4b922c553e5317f5b885c5fe710397",
+      "after": "d0b33f09f4897582c3c6966f72396c07ce3a6d34",
+      "bytes": 162286
+    }
+  ],
+  "workflow_and_threshold_unchanged": true,
+  "diagnostic_3cb_branch_unchanged": true,
+  "production_actions": false,
+  "new_ci_results_pending": true,
+  "branch": "codex/heptabao-blocker-closure-ci-20261104",
+  "pr": 152,
+  "ref_verified": true,
+  "previous_failure_originals_tree": "f5d1f463d4d722625be7c1a23d41549b64834bca",
+  "source_proposal_tree": "8031070e5f47979546e0d548ae53bd2946f1f7c5",
+  "source_review": {
+    "strict_header_hunks": 3,
+    "strict_recovery_hunks": 1,
+    "whole_candidates_exact": true,
+    "recovery_test_removal_restores_all_original_162112_bytes": true,
+    "existing_test_module_imports_super": true,
+    "two_actual_layout_regressions_pending_execution": true
+  },
+  "new_workflow_run": 41934114447,
+  "new_trust_boundary_run": 41934114434,
+  "new_ci_state": "in_progress",
+  "no_merge": true,
+  "no_production_change": true
+}

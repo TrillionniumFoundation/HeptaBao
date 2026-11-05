@@ -1,0 +1,567 @@
+--- base/native_v6_pocket_source_direct98_r10_r3.py
++++ candidate/native_v6_pocket_source_postrecovery_cold_r10_r1.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""The complete original DirectLanRun98 with one explicit synced data source.
++"""Fresh direct98 plus twelve independent post-recovery cold observations.
+ 
+ All three stores complete the original real cold unseals before choosing
+ Pocket4 as the sole intact ciphertext source. The original three stop calls
+@@ -17,6 +17,8 @@
+ import textwrap
+ import hashlib
+ import importlib.util
++import os
++import stat
+ import json
+ from pathlib import Path
+ import subprocess
+@@ -32,8 +34,34 @@
+ pre.add_argument('--describe-contract', action='store_true')
+ options, remaining = pre.parse_known_args()
+ SOURCE = options.candidate_source.resolve(strict=True)
+-NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_direction_frontier_r3.py')
+-NUMERIC_HELPER_SHA256 = 'e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0'
++NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_r1.py')
++NUMERIC_HELPER_SHA256 = 'e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43'
++CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_r1.py')
++CIPHER_HELPER_SHA256 = '096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956'
++DEADLINE_QA = Path(__file__).resolve().with_name('deadline_qa')
++DEADLINE_QA_PINS = {
++    "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
++    "native_v6_ha_multihost_live.py": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
++    "native_v6_ha_direct_lan_live.py": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
++    "native_ha_foreground_watchdog.py": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
++}
++POSTCOLD_SECONDS = 300.0
++POSTCOLD_CHECKS = [
++    "postcold.inputs_and_history_bound",
++    "postcold.all_three_owned_processes_stopped",
++    "postcold.mac_persisted_frontier_retained",
++    "postcold.same_recovered_cipher_reference_retained",
++    "postcold.new_processes_sealed",
++    "postcold.real_sealed_leader_elected",
++    "postcold.all_three_unsealed_once",
++    "postcold.all_local_frontiers_retained",
++    "postcold.leader_retained_history_exact",
++    "postcold.all_metadata_and_retired_states_exact",
++    "postcold.all_hosts_small_readindex",
++    "postcold.shared_deadline_completed"
++]
++CONTROLLER_UNTIL = None
++R3_SUCCESS_SUMMARY_SHA256 = 'db362c9c2041636912ccfc95076c6ec7948ec7918efc17032af856875e61cd41'
+ COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+ PINS = {
+@@ -54,15 +82,29 @@
+     assert git('status', '--porcelain') == ''
+     for name, digest in PINS.items():
+         assert hashlib.sha256((SOURCE / 'qa/openbao-acceptance' / name).read_bytes()).hexdigest() == digest
++    assert DEADLINE_QA.resolve(strict=True) == DEADLINE_QA and not DEADLINE_QA.is_symlink()
++    assert DEADLINE_QA.stat().st_uid == os.getuid() and stat.S_IMODE(DEADLINE_QA.stat().st_mode) == 0o700
++    for name, digest in DEADLINE_QA_PINS.items():
++        path = DEADLINE_QA / name
++        info = path.lstat()
++        assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1
++        assert stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size < 128 * 1024
++        assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
+ 
+ 
+ source_binding()
+ assert NUMERIC_HELPER.is_file() and not NUMERIC_HELPER.is_symlink()
+ assert hashlib.sha256(NUMERIC_HELPER.read_bytes()).hexdigest() == NUMERIC_HELPER_SHA256
++assert CIPHER_HELPER.is_file() and not CIPHER_HELPER.is_symlink()
++assert hashlib.sha256(CIPHER_HELPER.read_bytes()).hexdigest() == CIPHER_HELPER_SHA256
+ sys.path.insert(0, str(SOURCE / 'qa/openbao-acceptance'))
++sys.path.insert(0, str(DEADLINE_QA))
+ import native_v6_ha_official_history_live as original
+ 
+ direct, native, base = original.direct, original.native, original.base
++for module in (direct, native, base, direct.foreground):
++    assert Path(module.__file__).resolve().parent == DEADLINE_QA
++    assert hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest() == DEADLINE_QA_PINS[Path(module.__file__).name]
+ assert len(direct.DIRECT_CHECKS) == 98 and len(original.EXTRA_CHECKS) == 30
+ assert len(original.OfficialHistoryRun.required_checks) == 128
+ assert native.REQUEST_SECONDS == 15 and native.NATIVE_ADMISSION_SECONDS == 8
+@@ -76,16 +118,39 @@
+ assert hashlib.sha256(original_method.encode()).hexdigest() == 'cae208acf0482cfddb43f55722aa98a47eafbcac16aba6b26d52c61381835298'
+ 
+ 
+-class PocketSourceDirect98Run(direct.DirectLanRun):
++class PocketSourcePostRecoveryColdRun(direct.DirectLanRun):
+     def __init__(self, *args):
+         super().__init__(*args)
+         own = Path(__file__).resolve()
+         self.source_files[str(own)] = base.sha256_file(own)
+         self.source_files[str(NUMERIC_HELPER)] = NUMERIC_HELPER_SHA256
+         self.direction_numeric_dispatched = set()
++        if CONTROLLER_UNTIL is None:
++            raise base.FixtureError('postcold_original_controller_deadline_missing')
++        self.controller_until = CONTROLLER_UNTIL
++        base.parent_remaining(self.controller_until, 2400)
++        self.postcold_reference = None
++        self.postcold_reference_raw = None
++        self.postcold_reference_sha256 = None
++        self.postcold_until = None
++        self.postcold_remote_dispatched = set()
++        self.postcold_checks = []
++        self.source_files[str(CIPHER_HELPER)] = CIPHER_HELPER_SHA256
+         self.report.update({
+-            'schema': 'heptabao.normal-r10-explicit-pocket-source-direct98.v2',
+-            'scope': 'normal-r10-complete-direct98-plus-pocket3-to-mac1-direction',
++            'schema': 'heptabao.normal-r10-pocket-source-postrecovery-cold.v1',
++            'scope': 'new-fresh-direct98-and-independent-postrecovery-cold12',
++            'previous_r3_summary_sha256': R3_SUCCESS_SUMMARY_SHA256,
++            'new_qa_scope_does_not_rewrite_previous_r3_qualification': True,
++            'deadline_qa_pins': DEADLINE_QA_PINS,
++            'canonical_qa_files_unchanged': True,
++            'post_recovery_cold': {
++                'required_extra_checks': list(POSTCOLD_CHECKS), 'required_extra_check_count': 12,
++                'checks': self.postcold_checks, 'readonly_observations': [],
++                'new_shared_phase_seconds': POSTCOLD_SECONDS, 'completed': False,
++                'publication_within_shared_deadline': None,
++                'original98_denominator_does_not_include_these_checks': True,
++                'only_actual_leader_reads_all_large_retained_versions': True,
++            },
+             'runner_sha256': base.sha256_file(own),
+             'source_selection_controlled': True,
+             'requested_cipher_source_node': 3,
+@@ -374,7 +439,9 @@
+         self.history_reads(elected)
+         self.check("missing_cipher_leader_exact_history", True,
+                    leader=elected.node_id, retained_large_payload_bytes=TARGET_BYTES)
+-        recovered = cipher_inventory(elected, self.run_id, "recovered")
++        recovered = cipher_inventory(elected, self.run_id, "recovered", capture_reference=True,
++                                     parent_deadline=self.controller_until)
++        self._capture_postcold_reference(elected, recovered)
+         self.check("missing_cipher_actual_leaves_rebuilt",
+                    recovered.get("restored_count", 0) > 0
+                    and recovered.get("restored_bytes", 0) >= TARGET_BYTES
+@@ -392,14 +459,397 @@
+         return self.leader(self.nodes)
+ 
+ 
+-for method_name in ('execute', 'request', 'cleanup', 'check', 'start', 'stop',
++    def _capture_postcold_reference(self, node, recovered):
++        if node.node_id != 1 or self.postcold_reference is not None:
++            raise base.FixtureError("postcold_reference_must_be_same_scan_once")
++        leaves = recovered.pop("restored_reference", None)
++        directories = recovered.pop("restored_directory_reference", None)
++        if (not isinstance(leaves, dict) or not 0 < len(leaves) <= 4096
++                or len(leaves) != recovered.get("restored_count")
++                or sum(row["bytes"] for row in leaves.values()) != recovered.get("restored_bytes")
++                or not isinstance(directories, list) or len(directories) != 3):
++            raise base.FixtureError("postcold_captured_reference_incomplete")
++        value = {
++            "schema": "heptabao.postrecovery-captured-cipher-reference.v1",
++            "fixture_run_id": self.run_id, "source_commit": COMMIT, "source_tree": TREE,
++            "node_id": node.node_id, "root": node.root,
++            "captured_from_same_recovered_scan": True,
++            "inventory_sha256": recovered["inventory_sha256"],
++            "restored_count": recovered["restored_count"], "restored_bytes": recovered["restored_bytes"],
++            "directories": directories, "leaves": leaves,
++        }
++        raw = native.canonical(value) + b"\n"
++        if len(raw) > 1024 * 1024:
++            raise base.FixtureError("postcold_captured_reference_bound")
++        self.postcold_reference = value
++        self.postcold_reference_raw = raw
++        self.postcold_reference_sha256 = hashlib.sha256(raw).hexdigest()
++        reference_path = self.work / "post-recovery-captured-reference.public.json"
++        native.write_private(reference_path, raw)
++        base.parent_remaining(self.controller_until, 60)
++        self.report["post_recovery_reference"] = {
++            "relative_file": reference_path.name, "bytes": len(raw),
++            "sha256": self.postcold_reference_sha256, "captured_from_same_recovered_scan": True,
++            "actual_recovered_leaves": len(leaves), "actual_recovered_bytes": value["restored_bytes"],
++            "not_a_hardcoded_previous_run_count": True,
++        }
++
++    def _postcold_remaining(self, cap, *, until=None):
++        return base.parent_remaining(self.postcold_until if until is None else until, cap)
++
++    def _postcold_check(self, name, condition, **details):
++        self._postcold_remaining(POSTCOLD_SECONDS)
++        if name not in POSTCOLD_CHECKS or any(row["case"] == name for row in self.postcold_checks):
++            raise base.FixtureError("postcold_extra_denominator_or_duplicate")
++        row = {"case": name, "passed": condition is True, **details}
++        self.postcold_checks.append(row)
++        try:
++            self.checkpoint()
++            self._postcold_remaining(POSTCOLD_SECONDS)
++        except BaseException:
++            row["passed"] = False
++            row["publication_within_shared_deadline"] = False
++            raise
++        row["publication_within_shared_deadline"] = True
++        if condition is not True:
++            raise base.FixtureError(name)
++
++    def _postcold_remote_observation(self, node, kind):
++        if node.node_id != 1 or node in self.started or kind not in ("numeric", "cipher"):
++            raise base.FixtureError("postcold_reader_requires_stopped_mac")
++        if kind in self.postcold_remote_dispatched:
++            raise base.FixtureError("postcold_reader_would_be_repeated")
++        helper, digest = ((NUMERIC_HELPER, NUMERIC_HELPER_SHA256) if kind == "numeric"
++                          else (CIPHER_HELPER, CIPHER_HELPER_SHA256))
++        code = helper.read_bytes()
++        if hashlib.sha256(code).hexdigest() != digest:
++            raise base.FixtureError("postcold_reader_source_changed")
++        text = code.decode("utf-8")
++        delimiter = "HB_POSTCOLD_FIXED_READ_R1"
++        if delimiter in text.splitlines():
++            raise base.FixtureError("postcold_reader_source_delimiter")
++        row = {"kind": kind, "node": 1, "helper_sha256": digest, "dispatch_attempted": False,
++               "remote_completion_unknown": False, "repeated": False}
++        self.report["post_recovery_cold"]["readonly_observations"].append(row)
++        self.postcold_remote_dispatched.add(kind)
++        self.event("postcold_readonly_intent", node=1, kind=kind, helper_sha256=digest)
++        remaining = self._postcold_remaining(45)
++        seconds = min(15.0, remaining)
++        args = ["--run-id", self.run_id, "--max-seconds", repr(seconds)]
++        if kind == "numeric":
++            args += ["--node", "1"]
++        else:
++            args += ["--reference-sha256", self.postcold_reference_sha256]
++            text = "REFERENCE_JSON = " + repr(self.postcold_reference_raw.decode("utf-8")) + "\n" + text
++        if len(text.encode("utf-8")) > 2 * 1024 * 1024:
++            raise base.FixtureError("postcold_reader_input_bound")
++        command = ("exec " + shlex.quote(self.args.darwin_watchdog_python) + " -B - "
++                   + shlex.join(args) + " <<'" + delimiter + "'\n" + text + "\n" + delimiter + "\n")
++        self._postcold_remaining(45)
++        row.update(dispatch_attempted=True, remote_completion_unknown=True,
++                   allocated_read_seconds=seconds, allocated_ssh_seconds=remaining)
++        began = time.monotonic()
++        output = base.ssh(node, command, timeout=remaining, parent_deadline=self.postcold_until)
++        row["remote_completion_unknown"] = False
++        row["ssh_elapsed_seconds"] = time.monotonic() - began
++        self._postcold_remaining(45)
++        limit = 65536 if kind == "numeric" else 1024 * 1024
++        if row["ssh_elapsed_seconds"] > remaining or len(output.encode("utf-8")) > limit:
++            raise base.FixtureError("postcold_reader_output_or_deadline_bound")
++        result = json.loads(output)
++        if (result.get("status") != "completed" or result.get("fixture_run_id") != self.run_id
++                or result.get("child_processes") != 0 or result.get("file_writes") != 0
++                or result.get("product_requests") != 0):
++            raise base.FixtureError("postcold_reader_terminal_unqualified")
++        if kind == "numeric":
++            if (result.get("schema") != "heptabao.direction-r3-stopped-node-numeric-observer.v1"
++                    or result.get("publication_within_original_observer_deadline") is not True
++                    or result.get("new_observer_deadline_seconds") != seconds):
++                raise base.FixtureError("postcold_numeric_reader_binding")
++        elif (result.get("schema") != "heptabao.postrecovery-stopped-cipher-reference.v1"
++              or result.get("publication_within_original_read_deadline") is not True
++              or result.get("new_read_seconds") != seconds
++              or result.get("reference_sha256") != self.postcold_reference_sha256):
++            raise base.FixtureError("postcold_cipher_reader_binding")
++        observed = result.get("observation", {})
++        if observed.get("node_id") != 1 or observed.get("fixed_root") != node.root:
++            raise base.FixtureError("postcold_reader_fixed_root_binding")
++        row["public_result_sha256"] = hashlib.sha256(output.encode("utf-8")).hexdigest()
++        row["result"] = result
++        self.event("postcold_readonly_complete", node=1, kind=kind,
++                   public_result_sha256=row["public_result_sha256"])
++        self._postcold_remaining(45)
++        return observed
++
++    def _postcold_wait_leader(self, *, sealed):
++        until = min(self.postcold_until, time.monotonic() + 60.0)
++        candidate, since = None, 0.0
++        while time.monotonic() < until:
++            active = []
++            for node in self.nodes:
++                try:
++                    status, body = self.request(node, "GET", "sys/health", authenticate=False,
++                                                timeout=2, parent_deadline=until)
++                except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
++                    continue
++                if sealed:
++                    if body.get("sealed") is not True:
++                        raise base.FixtureError("postcold_sealed_election_observed_unsealed")
++                    if body.get("ha_active") is True and body.get("standby") is False:
++                        active.append(node)
++                elif status == 200:
++                    if (body.get("ha_active") is not True or body.get("ha_application_ready") is not True
++                            or body.get("standby") is not False or body.get("sealed") is not False):
++                        raise base.FixtureError("postcold_health_without_actual_ready_authority")
++                    active.append(node)
++            if len(active) > 1:
++                raise base.FixtureError("postcold_multiple_actual_leaders")
++            observed = active[0] if active else None
++            if observed is not None and not sealed:
++                status, body = self.request(observed, "GET", "sys/leader",
++                                            timeout=8, parent_deadline=until)
++                if status != 200 or body.get("is_self") is not True:
++                    observed = None
++            now = time.monotonic()
++            if now >= until:
++                break
++            if observed is not None:
++                if candidate == observed and now - since >= 2.2:
++                    self._postcold_remaining(60, until=until)
++                    return observed
++                if candidate != observed:
++                    candidate, since = observed, now
++            else:
++                candidate, since = None, 0.0
++            time.sleep(min(0.1, max(0.0, until - time.monotonic())))
++        raise base.FixtureError("postcold_actual_election_not_observed_in_original_60s")
++
++    def _postcold_frontier(self, node, required):
++        if type(required) is not int or not 0 < required <= (1 << 64) - 1:
++            raise base.FixtureError("postcold_invalid_frontier")
++        until = min(self.postcold_until, time.monotonic() + 60.0)
++        while time.monotonic() < until:
++            try:
++                status, body = self.request(node, "GET", "sys/leader", authenticate=False,
++                                            timeout=4, parent_deadline=until)
++                observed = base.parsed_local_frontier(body) if status == 200 else None
++                if observed is not None and observed[1] >= required:
++                    self._postcold_remaining(60, until=until)
++                    return {"committed_index": observed[0], "applied_index": observed[1]}
++            except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
++                pass
++            time.sleep(min(0.1, max(0.0, until - time.monotonic())))
++        raise base.FixtureError("postcold_local_frontier_not_observed")
++
++    def _postcold_retired_states(self, node):
++        for version, state in sorted(self.retired.items()):
++            status, body = self.read_data(node, self.path, version=version,
++                                          parent_deadline=self.postcold_until)
++            data = body.get("data")
++            metadata = data.get("metadata") if isinstance(data, dict) else None
++            if (status != 404 or not isinstance(data, dict) or data.get("data") is not None
++                    or not isinstance(metadata, dict) or metadata.get("version") != version
++                    or metadata.get("destroyed") is not (state == "destroyed")
++                    or (state == "deleted" and not metadata.get("deletion_time"))):
++                raise base.FixtureError("postcold_retired_version_disclosed_payload")
++
++    def post_recovery_cold(self, leader, denied_path):
++        self.stage = "post_recovery_extra_cold_scope"
++        started = time.monotonic()
++        self.postcold_until = min(started + POSTCOLD_SECONDS, self.controller_until)
++        self._postcold_remaining(POSTCOLD_SECONDS)
++        scope = self.report["post_recovery_cold"]
++        scope.update(started_monotonic=started, shared_absolute_deadline=self.postcold_until,
++                     controller_absolute_deadline=self.controller_until, completed=False)
++        mac = next(node for node in self.nodes if node.node_id == 1)
++        try:
++            if (self.postcold_reference is None
++                    or set(self.history) != set(range(1, 20)) or self.retired != {1: "deleted", 2: "destroyed"}
++                    or len(self.history.keys() - self.retired.keys()) != 17
++                    or self.report.get("directional_observed_pair", {}).get("requested_pair_observed") is not True):
++                raise base.FixtureError("postcold_requires_this_fresh_successful_recovery")
++            reference_path = self.work / "post-recovery-captured-reference.public.json"
++            flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
++            before = reference_path.lstat()
++            fd = os.open(reference_path, flags)
++            try:
++                opened = os.fstat(fd)
++                identity = lambda item: (item.st_dev, item.st_ino, item.st_mode, item.st_uid,
++                                         item.st_nlink, item.st_size, item.st_mtime_ns, item.st_ctime_ns)
++                if (not stat.S_ISREG(opened.st_mode) or opened.st_uid != os.getuid()
++                        or stat.S_IMODE(opened.st_mode) != 0o600 or opened.st_nlink != 1
++                        or not 0 < opened.st_size <= 1024 * 1024 or identity(before) != identity(opened)):
++                    raise base.FixtureError("postcold_captured_reference_file_identity")
++                pieces, size = [], 0
++                while True:
++                    self._postcold_remaining(POSTCOLD_SECONDS)
++                    part = os.read(fd, 65536)
++                    if not part:
++                        break
++                    size += len(part)
++                    if size > 1024 * 1024:
++                        raise base.FixtureError("postcold_captured_reference_file_bound")
++                    pieces.append(part)
++                after, named = os.fstat(fd), reference_path.lstat()
++                if (identity(before) != identity(after) or identity(after) != identity(named)
++                        or size != before.st_size or b"".join(pieces) != self.postcold_reference_raw):
++                    raise base.FixtureError("postcold_captured_reference_file_changed")
++            finally:
++                os.close(fd)
++            status, body = self.request(leader, "GET", "sys/leader", authenticate=False,
++                                        timeout=4, parent_deadline=self.postcold_until)
++            anchor = base.parsed_local_frontier(body) if status == 200 else None
++            if anchor is None or body.get("is_self") is not True:
++                raise base.FixtureError("postcold_original_actual_leader_frontier_missing")
++            frontier = anchor[0]
++            before_frontiers = {str(node.node_id): self._postcold_frontier(node, frontier)
++                                for node in self.nodes}
++            metadata = {str(node.node_id): native.canonical(self.metadata(node,
++                        parent_deadline=self.postcold_until)) for node in self.nodes}
++            if len(set(metadata.values())) != 1:
++                raise base.FixtureError("postcold_original_metadata_not_identical")
++            expected_metadata = metadata["1"]
++            before_mutations = dict(self.recovery.public_receipt)
++            scope["before"] = {"actual_leader_node": leader.node_id, "committed_index": frontier,
++                               "node_frontiers": before_frontiers,
++                               "version_metadata_sha256": hashlib.sha256(expected_metadata).hexdigest(),
++                               "history_digest_map": {str(k): v for k, v in self.history.items()},
++                               "retired_states": {str(k): v for k, v in self.retired.items()},
++                               "small_acknowledged_path_digests": dict(self.acknowledged)}
++            self._postcold_check(POSTCOLD_CHECKS[0], True, lifecycle_versions=19, readable_large_versions=17,
++                                 captured_recovered_leaves=self.postcold_reference["restored_count"],
++                                 captured_recovered_bytes=self.postcold_reference["restored_bytes"])
++            stopped = {}
++            for node in self.nodes:
++                stopped[str(node.node_id)] = self.stop(node, parent_deadline=self.postcold_until)
++            self._postcold_check(POSTCOLD_CHECKS[1],
++                                 not self.started and all(type(v) is int and v > 0 for v in stopped.values()),
++                                 original_owned_pids=stopped)
++            numeric = self._postcold_remote_observation(mac, "numeric")
++            projection = numeric.get("numeric_projection", {})
++            committed = projection.get("committed_log_id")
++            self._postcold_check(POSTCOLD_CHECKS[2],
++                projection.get("complete_current_epoch_journal") is True
++                and projection.get("retained_log_contiguous") is True
++                and projection.get("committed_not_beyond_last_log") is True
++                and projection.get("projection_is_read_authority") is False
++                and isinstance(committed, dict) and committed.get("index", -1) >= before_frontiers["1"]["applied_index"],
++                required_pre_stop_applied_index=before_frontiers["1"]["applied_index"],
++                stopped_committed_log_id=committed, passive_metadata_is_not_read_authority=True)
++            cipher = self._postcold_remote_observation(mac, "cipher")
++            actual_files = {row["name"]: row for row in cipher.get("files", [])}
++            expected_files = self.postcold_reference["leaves"]
++            self._postcold_check(POSTCOLD_CHECKS[3],
++                cipher.get("all_captured_leaves_match") is True
++                and cipher.get("unreferenced_leaves_enumerated_or_read") is False
++                and cipher.get("actual_reference_count") == len(expected_files)
++                and cipher.get("actual_reference_bytes") == self.postcold_reference["restored_bytes"]
++                and len(actual_files) == len(cipher.get("files", []))
++                and set(actual_files) == set(expected_files)
++                and all(actual_files[name]["bytes"] == row["bytes"]
++                        and actual_files[name]["sha256"] == row["sha256"]
++                        and actual_files[name]["before"] == row["identity"]
++                        and actual_files[name]["after"] == row["identity"]
++                        and actual_files[name]["named_after"] == row["identity"]
++                        for name, row in expected_files.items()),
++                reference_sha256=self.postcold_reference_sha256, actual_reference_count=len(expected_files),
++                actual_reference_bytes=self.postcold_reference["restored_bytes"])
++            new_pids = {}
++            for node in self.nodes[1:] + self.nodes[:1]:
++                new_pids[str(node.node_id)] = self.start(node, parent_deadline=self.postcold_until)
++            for node in self.nodes:
++                _, health = base.wait_listener(self.context, node, parent_deadline=self.postcold_until)
++                if health.get("sealed") is not True:
++                    raise base.FixtureError("postcold_new_process_not_sealed")
++            self._postcold_check(POSTCOLD_CHECKS[4],
++                set(self.started) == set(self.nodes)
++                and all(type(pid) is int and pid > 0 and pid != stopped[node] for node, pid in new_pids.items()),
++                new_owned_pids=new_pids, original_ownership_guards_retained=True)
++            elected = self._postcold_wait_leader(sealed=True)
++            self._postcold_check(POSTCOLD_CHECKS[5], elected in self.nodes,
++                                 actual_sealed_leader_node=elected.node_id, forced_leader=False)
++            for node in self.nodes:
++                self.unseal(node, parent_deadline=self.postcold_until)
++            after_mutations = self.recovery.public_receipt
++            self._postcold_check(POSTCOLD_CHECKS[6],
++                after_mutations["mutation_intents"] - before_mutations["mutation_intents"] == 3
++                and after_mutations["mutation_responses"] - before_mutations["mutation_responses"] == 3
++                and after_mutations["unknown_transport_outcomes"] == before_mutations["unknown_transport_outcomes"] == 0,
++                original_keys=True, original_inputs_reseeded=False, unseal_attempts=3, automatic_retry=False)
++            leader = self._postcold_wait_leader(sealed=False)
++            after_frontiers = {str(node.node_id): self._postcold_frontier(node, frontier)
++                               for node in self.nodes}
++            scope["after"] = {"actual_leader_node": leader.node_id, "node_frontiers": after_frontiers}
++            self._postcold_check(POSTCOLD_CHECKS[7],
++                                 all(row["applied_index"] >= frontier for row in after_frontiers.values()),
++                                 required_original_committed_index=frontier, observed_nodes=3)
++            self.history_reads(leader, parent_deadline=self.postcold_until)
++            self._postcold_check(POSTCOLD_CHECKS[8], True, actual_leader_node=leader.node_id,
++                                 readable_large_versions=17, lifecycle_versions=19,
++                                 retained_large_payload_bytes=TARGET_BYTES,
++                                 every_standby_large_body_direct_read_claimed=False)
++            for node in self.nodes:
++                if native.canonical(self.metadata(node, parent_deadline=self.postcold_until)) != expected_metadata:
++                    raise base.FixtureError("postcold_exact_version_metadata_changed")
++                self._postcold_retired_states(node)
++                self.absent(node, denied_path, parent_deadline=self.postcold_until)
++            self._postcold_check(POSTCOLD_CHECKS[9], True, observed_nodes=3,
++                                 deleted_version=1, destroyed_version=2,
++                                 denied_quorum_write_still_absent=True,
++                                 exact_version_metadata_sha256=hashlib.sha256(expected_metadata).hexdigest())
++            self.small_reads(self.nodes, parent_deadline=self.postcold_until)
++            self._postcold_check(POSTCOLD_CHECKS[10], True, observed_nodes=3,
++                                 acknowledged_keys=len(self.acknowledged), actual_normal_readindex=True)
++            self._postcold_check(POSTCOLD_CHECKS[11],
++                                 len(self.postcold_checks) == 11
++                                 and all(row["passed"] is True for row in self.postcold_checks),
++                                 requested_shared_seconds=POSTCOLD_SECONDS,
++                                 original_controller_seconds=2400, original_http_seconds=15,
++                                 original_admission_seconds=8)
++            self.event("post_recovery_cold_scope_complete", actual_leader_node=leader.node_id,
++                       extra_checks=len(self.postcold_checks))
++            completed = time.monotonic()
++            if completed >= self.postcold_until:
++                raise base.FixtureError("postcold_final_publication_after_shared_deadline")
++            scope.update(completed=True, elapsed_seconds=completed - started,
++                         publication_within_shared_deadline=True,
++                         phase_observations_only_until_original98_and_cleanup_complete=True)
++            return leader
++        except BaseException:
++            failed_at = time.monotonic()
++            scope.update(completed=False, failure_within_shared_deadline=failed_at < self.postcold_until,
++                         failed_at_monotonic=failed_at)
++            if self.postcold_checks and self.postcold_checks[-1]["case"] == POSTCOLD_CHECKS[-1]:
++                self.postcold_checks[-1]["passed"] = False
++            raise
++
++    def execute(self):
++        self.prepare()
++        leader = self.bootstrap_v5()
++        self.activate_and_grow(leader)
++        leader, denied = self.failover_and_quorum(leader)
++        leader = self.full_cold_restart(leader, denied)
++        leader = self.missing_cipher_leader(leader)
++        leader = self.post_recovery_cold(leader, denied)
++        self.finish_application(leader)
++
++
++for method_name in ('request', 'cleanup', 'check', 'start', 'stop',
+                     'unseal', 'leader', 'wait_sealed_leader',
+                     'full_cold_restart', 'failover_and_quorum', 'finish_application'):
+-    assert getattr(PocketSourceDirect98Run, method_name) is getattr(direct.DirectLanRun, method_name)
++    assert getattr(PocketSourcePostRecoveryColdRun, method_name) is getattr(direct.DirectLanRun, method_name)
+ 
+ if options.describe_contract:
+     print(json.dumps({
+-        'schema': 'heptabao.normal-r10-explicit-pocket-source-direct98-contract.v1',
++        'schema': 'heptabao.normal-r10-postrecovery-cold-contract.v1',
++        'deadline_qa_pins': DEADLINE_QA_PINS,
++        'required_extra_checks': list(POSTCOLD_CHECKS), 'required_extra_check_count': 12,
++        'new_shared_postrecovery_seconds': POSTCOLD_SECONDS, 'original_controller_seconds': 2400,
++        'extra_phase_before_original_finish_application': True,
++        'canonical_qa_unchanged': True, 'none_optional_deadline_preserves_old_defaults': True,
++        'reference_captured_in_original_recovered_scan': True,
++        'cipher_helper_sha256': CIPHER_HELPER_SHA256,
++        'prior_r3_success_summary_sha256': R3_SUCCESS_SUMMARY_SHA256,
+         'source_commit': COMMIT, 'source_tree': TREE, 'qa_pins': PINS,
+         'required_checks': sorted(direct.DirectLanRun.required_checks),
+         'required_check_count': 98, 'original_direct_count': 98,
+@@ -418,10 +868,13 @@
+         'real_new_committed_frontier_required_before_quarantine': True,
+         'actual_election_required': True, 'leader_selection_forced': False,
+         'wrong_actual_direction_stops_before_target_unseal': True,
+-        'only_runtime_method_override': 'missing_cipher_leader',
++        'runtime_method_overrides': ['missing_cipher_leader', 'execute'],
++        'original98_checks_and_finish_deletion_order_preserved': True,
++        'readable_large_versions': 17, 'lifecycle_versions': 19,
++        'large_body_all_standbys_read_claimed': False,
+         'original_method_normalized_sha256': hashlib.sha256(original_method.encode()).hexdigest(),
+-        'direction_method_normalized_sha256': hashlib.sha256(textwrap.dedent(inspect.getsource(PocketSourceDirect98Run.missing_cipher_leader)).strip().encode()).hexdigest(),
+-        'inherited_execute_request_check_cleanup_identities_verified': True,
++        'direction_method_normalized_sha256': hashlib.sha256(textwrap.dedent(inspect.getsource(PocketSourcePostRecoveryColdRun.missing_cipher_leader)).strip().encode()).hexdigest(),
++        'inherited_request_check_cleanup_identities_verified': True,
+         'canonical128_summary_sha256': '9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e',
+         'fixture_started': False,
+     }, sort_keys=True))
+@@ -431,4 +884,8 @@
+ args = parsed[0]
+ if args.source_commit != COMMIT or args.source_tree != TREE:
+     raise SystemExit('directional_source_binding_mismatch')
+-raise SystemExit(native.execute_fixture(*parsed, run_type=PocketSourceDirect98Run))
++CONTROLLER_UNTIL = float(os.environ['HEPTABAO_SYNTHETIC_CONTROLLER_DEADLINE'])
++remaining_controller = CONTROLLER_UNTIL - time.monotonic()
++if not 0 < remaining_controller <= 2400:
++    raise SystemExit('postcold_original_controller_deadline_invalid')
++raise SystemExit(native.execute_fixture(*parsed, run_type=PocketSourcePostRecoveryColdRun))

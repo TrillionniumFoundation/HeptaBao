@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.source-ast-attempt.r1",
+  "attempted": "cloud_local_ast_parse_and_compile_only",
+  "process_creation_succeeded": false,
+  "source_executed": false,
+  "files_written": false,
+  "error": "exec-server rejected process creation (-32603): No such file or directory (os error 2)",
+  "syntax_verdict": null
+}

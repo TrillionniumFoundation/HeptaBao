@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "result_path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/control/stage-result.public.json", "server_started": false, "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93", "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060", "status": "prepared", "within_new_stage_deadline": true}

@@ -1,0 +1,42 @@
+diff --git a/mac_single_native_r2.mjs b/mac_single_native_r2.mjs
+--- a/mac_single_native_r2.mjs
++++ b/mac_single_native_r2.mjs
+@@ -27,7 +27,7 @@
+ let service, baoAgent, plan, nativeClient;
+ let nativeStarted = 0, nativeSpawned = 0;
+ let nativeControlBaseline;
+-let nativeUntil, nativeCloseAttempted = false;
++let nativeUntil, nativeCloseAttempted = false, nativeCloseConfirmed = false;
+ const workerStarted = process.hrtime.bigint();
+ function boundedNativeMs(cap) {
+   need(nativeUntil !== undefined, 'native_phase_allocation_required');
+@@ -38,7 +38,9 @@
+ async function closeNativeOnce(client) {
+   need(!nativeCloseAttempted, 'native_close_not_repeated');
+   nativeCloseAttempted = true;
+-  return client.closeAndWait({ exitTimeoutMs: boundedNativeMs(3000) });
++  const complete = await client.closeAndWait({ exitTimeoutMs: boundedNativeMs(3000) });
++  nativeCloseConfirmed = complete === true;
++  return complete;
+ }
+ const nativeStderr = [];
+ let blockedOperations = 0;
+@@ -406,11 +408,17 @@
+     if (!report.nativeControlFilesBytesUnchangedAfterClose) report.ok=false;
+   }
+   try { if (plan) save(plan.custodyOutput,{tokens:[]}); } catch { report.ok=false; }
++  report.nativeCloseAttempted = nativeCloseAttempted;
++  report.nativeCloseConfirmed = nativeCloseConfirmed;
++  report.outcomeUnknown = Boolean(report.nativeRpc?.sent?.some(item => !item.completed)
++    || ((nativeStarted > 0 || nativeSpawned > 0) && !nativeCloseConfirmed));
++  if (report.outcomeUnknown) report.ok = false;
+ }
+ if (sensitive.some(value=>JSON.stringify(report).includes(value))) {
++  const outcomeUnknown = report.outcomeUnknown === true;
+   for (const key of Object.keys(report)) delete report[key];
+   Object.assign(report,{schema:'heptabao.mac-five-agent-single-native-worker.r1',ok:false,
+-    error:'public_projection_contains_sensitive_value'});
++    error:'public_projection_contains_sensitive_value',outcomeUnknown});
+ }
+ process.stdout.write(JSON.stringify(report)+'\n');
+ process.exitCode=report.ok?0:1;

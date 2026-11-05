@@ -1,0 +1,39 @@
+diff --git a/mac_current_cycle_r2.mjs b/mac_current_cycle_r2.mjs
+--- a/mac_current_cycle_r2.mjs
++++ b/mac_current_cycle_r2.mjs
+@@ -28,6 +28,7 @@
+   allAccountsQualified: false, checks: [], wire: [] };
+ let service, baoAgent, plan, sdkRuntime, storeRuntime, baselineDoc;
+ let serviceStopAttempted = false, serviceStopped = true;
++let inverseMutationAttempted = false, inverseCompleted = false;
+ const workerStarted = process.hrtime.bigint();
+ let workerUntil;
+ function remainingMs(cap) {
+@@ -216,6 +217,7 @@
+       check('inverse_local_write_candidate.'+id,digest(allLocal[id])===digest(candidate.localStores[id]));
+       check('inverse_raw_candidate.'+id,authRowsDigest(rawBefore[id])===authRowsDigest(candidate.authRows[id]));
+     }
++    inverseMutationAttempted=true;
+     for(const id of agentIds){
+       let applied=false;
+       const value=await storeApi.m({agentDir:path.join(plan.stateRoot,'agents',id,'agent'),updater:store=>{
+@@ -242,6 +244,7 @@
+       restoreAuthBusCachesWithCas(plan.stateRoot,candidate.authbusCaches,baselineDoc.authbusCaches));
+     check('six_original_cache_bytes_modes_absences',
+       cacheContentDigest(captureAuthBusCaches(plan.stateRoot))===cacheContentDigest(baselineDoc.authbusCaches));
++    inverseCompleted=true;
+     report.inverseWritesOnlyLocalAndRaw=true;
+     report.effectiveStoresOnlyRecomputedAndVerified=true;
+     report.rollbackAttemptedOnce=true;report.rollbackRetried=false;
+@@ -343,8 +346,10 @@
+     try{await stopServiceOnce();}catch{serviceStopped=false;}
+   }
+   report.serviceStopped=serviceStopped;
++  report.inverseMutationAttempted=inverseMutationAttempted;
++  report.inverseCompleted=inverseCompleted;
+   report.outcomeUnknown=report.wire.some(x=>!x.complete||x.aborted||x.responseError||x.requestError)
+-    ||!serviceStopped;
++    ||!serviceStopped||(inverseMutationAttempted&&!inverseCompleted);
+   if(report.outcomeUnknown)report.ok=false;
+   baoAgent?.destroy();
+   if(plan?.mode==='cycle'&&baselineDoc&&sdkRuntime&&serviceStopped){

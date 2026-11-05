@@ -1,0 +1,115 @@
+diff --git a/mac_native_process_observer_r1.py b/mac_native_process_observer_r1.py
+--- a/mac_native_process_observer_r1.py
++++ b/mac_native_process_observer_r1.py
+@@ -97,24 +97,17 @@
+ 
+ 
+ class OwnedNativeObserver:
+-    def __init__(self, expected):
++    def __init__(self, expected, *, critical):
++        require(callable(critical), 'observer_fd_signal_guard_required')
++        self.critical = critical
++        self.fd_closures = {}
+         self.expected = {
+             'nodeExecutable': str(Path(expected['nodeExecutable']).resolve()),
+             'nativeExecutable': str(Path(expected['nativeExecutable']).resolve()),
+         }
+         self.reader = ProcessReader()
+-        self.request_read, request_write = os.pipe()
+-        response_read, self.response_write = os.pipe()
+-        self.child_fds = (request_write, response_read)
+-        self.child_env = {
+-            'HEPTABAO_NATIVE_OBSERVER_REQUEST_FD': str(request_write),
+-            'HEPTABAO_NATIVE_OBSERVER_RESPONSE_FD': str(response_read),
+-        }
+-        os.set_blocking(self.request_read, False)
+-        os.set_blocking(self.response_write, False)
+-        self.buffer = bytearray()
+-        self.handled = False
+-        self.rejected = False
++        self.request_read = self.response_write = None
++        self.child_fds = ()
+         self.child_ends_closed = False
+         self.report = {
+             'required': True, 'verified': False,
+@@ -122,11 +115,46 @@
+             'applicationFilesRead': False, 'networkUsed': False,
+             'otherProcessArgumentsRead': False, 'requests': 0,
+         }
++        try:
++            with self.critical():
++                self.request_read, request_write = os.pipe()
++                for fd in (self.request_read, request_write):
++                    self.fd_closures[fd] = {'fd': fd, 'attempted': False, 'closed': False, 'errorType': None}
++                response_read, self.response_write = os.pipe()
++                for fd in (response_read, self.response_write):
++                    self.fd_closures[fd] = {'fd': fd, 'attempted': False, 'closed': False, 'errorType': None}
++                self.child_fds = (request_write, response_read)
++            self.child_env = {
++                'HEPTABAO_NATIVE_OBSERVER_REQUEST_FD': str(request_write),
++                'HEPTABAO_NATIVE_OBSERVER_RESPONSE_FD': str(response_read),
++            }
++            os.set_blocking(self.request_read, False)
++            os.set_blocking(self.response_write, False)
++            self.buffer = bytearray()
++            self.handled = False
++            self.rejected = False
++        except BaseException:
++            self.close()
++            raise
+ 
++    def close_fd_once(self, fd):
++        require(fd in self.fd_closures, 'unknown_observer_fd_no_close')
++        row = self.fd_closures[fd]
++        if row['attempted']:
++            return row['closed']
++        with self.critical():
++            row['attempted'] = True
++            try:
++                os.close(fd)
++                row['closed'] = True
++            except OSError as error:
++                row['errorType'] = type(error).__name__
++        return row['closed']
++
+     def parent_after_spawn(self, proc):
+-        for fd in self.child_fds:
+-            os.close(fd)
+-        self.child_ends_closed = True
++        closed = [self.close_fd_once(fd) for fd in self.child_fds]
++        self.child_ends_closed = all(closed)
++        require(self.child_ends_closed, 'observer_child_end_close_unconfirmed')
+         self.proc = proc
+         self.outer_pid = os.getpid()
+ 
+@@ -236,21 +264,15 @@
+                                beforeFirstNativeRpc=True,
+                                nativeObservationBudgetSeconds=3,
+                                parentAbsoluteDeadlinePreserved=True)
+-        os.close(self.response_write)
++        require(self.close_fd_once(self.response_write), 'observer_response_end_close_unconfirmed')
+         self.response_write = None
+ 
+     def close(self):
+-        if not self.child_ends_closed:
+-            for fd in self.child_fds:
+-                try:
+-                    os.close(fd)
+-                except OSError:
+-                    pass
+-        for name in ('request_read', 'response_write'):
+-            fd = getattr(self, name, None)
+-            if fd is not None:
+-                try:
+-                    os.close(fd)
+-                except OSError:
+-                    pass
+-                setattr(self, name, None)
++        for fd in self.fd_closures:
++            self.close_fd_once(fd)
++        self.child_ends_closed = all(self.fd_closures[fd]['closed'] for fd in self.child_fds)
++        self.request_read = None
++        self.response_write = None
++        self.report['pipeFdClosures'] = [dict(row) for row in self.fd_closures.values()]
++        self.report['allPipeFdsClosed'] = all(row['closed'] for row in self.fd_closures.values())
++        return self.report['allPipeFdsClosed']

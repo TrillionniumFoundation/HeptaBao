@@ -1,0 +1,7 @@
+{
+  "chunk_id": "211190",
+  "wall_time_seconds": 0.000027031,
+  "exit_code": 0,
+  "original_token_count": 167,
+  "output": "{\"actual_selected_library_definitions\": 3, \"candidate_bytes\": 16915, \"candidate_git_blob\": \"92930e43caa1b87bc857c642fd545b5b0147226d\", \"candidate_sha256\": \"f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2\", \"connection_attempts\": 0, \"filesystem_sqlite_network_or_child_used\": false, \"host_runtime\": false, \"new_actual_entrypoint_refusal\": \"current_input_fd_name_or_metadata_changed\", \"ok\": true, \"old_actual_entrypoint_refusal\": \"absence_not_reopened_as_present\", \"pure_fake_cases\": 2, \"query_calls\": 0, \"schema\": \"heptabao.mac-synthetic-r2-selected-entrypoint-component.r1\", \"whole_candidate_ast_compile_only\": true, \"whole_module_executed\": false}\n"
+}
