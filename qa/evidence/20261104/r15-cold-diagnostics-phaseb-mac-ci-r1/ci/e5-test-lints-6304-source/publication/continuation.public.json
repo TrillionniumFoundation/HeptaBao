@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.ci-test-lint-source-continuation-publication.v1",
+  "commit": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+  "tree": "ec716cea85a52fab285f5c96d51c0624a045cc02",
+  "parent": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+  "ref_confirmed": true,
+  "update_result_was_text_only": true,
+  "source_tree_verification": {
+    "all_other_blobs_unchanged": true,
+    "leaves": 3911,
+    "changed": [
+      "crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs",
+      "crates/heptabao-server/src/http_no_forward_tests.rs",
+      "crates/heptabao-server/src/http_response_coalescing_tests.rs",
+      "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+      "crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs",
+      "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "crates/heptabao-server/src/service_native_ssh_tests.rs",
+      "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs"
+    ],
+    "merkle": {
+      "root_sha": "ec716cea85a52fab285f5c96d51c0624a045cc02",
+      "trees_verified": 358
+    }
+  },
+  "parent_ci": {
+    "commit": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+    "run_id": 41937740513,
+    "head_job": 126950393511,
+    "merge_job": 126950393239,
+    "both_fmt_passed": true,
+    "both_locked_workspace_suites_passed": true,
+    "both_same_18_test_clippy_failures": true
+  },
+  "current_ci": {
+    "commit": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "run_id": 41955523659,
+    "observed_at_utc": "2026-11-05T02:47:18Z",
+    "jobs": [
+      {
+        "id": 127009390051,
+        "status": "in_progress",
+        "conclusion": null,
+        "fmt": {
+          "name": "Check formatting without changing source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        "workspace": {
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 10
+        }
+      },
+      {
+        "id": 127009390540,
+        "status": "in_progress",
+        "conclusion": null,
+        "fmt": {
+          "name": "Check formatting without changing source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        "workspace": {
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 10
+        }
+      }
+    ],
+    "full_ci_qualified": false
+  },
+  "source_semantics": {
+    "files_changed": 8,
+    "only_tests": true,
+    "product_logic_changes": false,
+    "new_lint_suppressions": 0,
+    "original_budgets_unchanged": true,
+    "raw_namespace_production_prefix_unchanged": true
+  },
+  "pr152": {
+    "draft": true,
+    "open": true,
+    "merged": false,
+    "body_exact_verified": true
+  },
+  "no_qualification_inheritance": true
+}

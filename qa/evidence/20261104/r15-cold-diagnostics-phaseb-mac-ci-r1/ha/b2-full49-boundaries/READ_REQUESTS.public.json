@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.boundary-read-requests.v1",
+  "requests": [
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00042.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00042.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00043.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00043.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00044.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00044.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00045.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00045.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00046.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00046.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00047.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00047.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00048.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00048.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00049.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00049.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00001.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00001.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00002.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00002.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00003.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00003.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00004.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00004.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00005.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00005.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00006.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00006.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00007.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00007.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00008.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00008.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00009.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00009.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00010.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00010.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00011.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00011.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00012.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00012.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00013.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00013.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00014.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00014.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00015.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00015.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00016.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00016.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00017.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00017.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00018.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00018.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00019.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00019.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00020.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00020.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00021.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00021.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00022.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00022.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00023.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00023.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00024.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00024.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00025.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00025.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00026.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00026.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00027.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00027.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00028.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00028.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00029.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00029.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00030.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00030.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00031.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00031.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00032.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00032.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00033.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00033.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00034.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00034.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00035.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00035.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00036.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00036.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00037.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00037.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00038.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00038.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00039.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00039.outcome.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00040.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00040.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    },
+    {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00041.intent.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/private-recovery/mutation-00041.outcome.json"
+      ],
+      "max_file_bytes": 4096,
+      "max_response_bytes": 65536
+    }
+  ],
+  "host": "desktop",
+  "read_only": true,
+  "new_processes_started": 0,
+  "products_started": 0,
+  "non_atomic_cross_file_snapshot": true
+}

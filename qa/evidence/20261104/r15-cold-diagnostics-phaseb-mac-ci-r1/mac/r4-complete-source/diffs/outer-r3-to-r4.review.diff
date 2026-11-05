@@ -1,0 +1,102 @@
+diff --git a/source/mac_current_outer_r4.py b/source/mac_current_outer_r4.py
+--- a/source/mac_current_outer_r4.py
++++ b/source/mac_current_outer_r4.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""New R3 outer caller for the isolated Mac five-agent launchd fixture.
++"""New R4 outer caller for the isolated Mac five-agent launchd fixture.
+ 
+ This is executable source for review, not a runtime grant. Production input
+ reads occur only inside the separately admitted kernel-sandboxed capture entry.
+@@ -23,7 +23,7 @@
+  'mac_capture_sqlite_synthetic_r2.py','mac_owned_commands_r1.py','mac_t5_volume_guard_r1.py',
+  'mac_owned_unreaped_r1.py','mac_native_process_observer_r1.py','mac_current_phase_owner_r2.py',
+  'mac_current_server_owner_r1.py','mac_owned_launchd_r3.py','mac_current_fixture_materializer_r1.py',
+- 'mac_current_capture_entry_r1.py','mac_current_outer_inputs_r1.py','mac_current_outer_r3.py',
++ 'mac_current_capture_entry_r1.py','mac_current_outer_inputs_r2.py','mac_current_outer_r4.py',
+  'mac_current_cycle_r2.mjs','mac_single_native_r2.mjs','mac_auth_rows_cas_r1.mjs',
+  'mac_authbus_cache_cas_r1.mjs')
+ ENTRY_NAMES=('mac_current_capture_entry_r1.py','mac_guarded_current_capture_r3.py',
+@@ -612,7 +612,7 @@
+     init=client.call('initialize','POST','sys/init',{'secret_shares':1,'secret_threshold':1},
+                      token='',validate=initialization)
+     root=init['root_token'];unseal=init['keys_base64'][0];secrets.update((root,unseal));client.root_token=root
+-    guard.write_new(ROOT/'outer-r3/recovery.private.json',encoded({'rootToken':root,'unsealKey':unseal}))
++    guard.write_new(ROOT/'outer-r4/recovery.private.json',encoded({'rootToken':root,'unsealKey':unseal}))
+     client.call('unseal','POST','sys/unseal',{'key':unseal},token='',
+                 validate=lambda v:need(v.get('sealed') is False,'actual_unsealed'))
+     client.call('kv2-mount','POST','sys/mounts/openclaw-auth',{'type':'kv','options':{'version':'2'}},expected=204)
+@@ -730,14 +730,14 @@
+     guard=None;commands=None;inputs=None;materializer=None;manager=None;client=None
+     manager_terminal=None;candidate_result=None;completed=False;capsule_before=None;output_created=False
+     secrets=set();qa_identities={};proof=None;packet=None;capture_reports=[];phase_results=[]
+-    report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.r3','ok':False,
++    report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.r4','ok':False,
+         'outcomeUnknown':False,'sourceCommit':COMMIT,'sourceTree':TREE,'checks':[],
+         'productionCaptureAttempted':False,'productionChangedByController':False,
+         'productionServiceOperationDispatched':False,'providerRequested':False,'j3160Contacted':False,
+         'currentProviderAvailabilityQualified':False,'allAccountsQualified':False,
+         'productionManagerQualification':False,'fullReplacementQualified':False,
+         'automaticBusinessRetry':False,'credentialValuesPublished':False,
+-        'sourceGeneration':'new_r3_complete_outer_not_reconstructed_old_generation',
++        'sourceGeneration':'new_r4_public_input_admission_successor',
+         'newOuterSeconds':900,'newManagerSeconds':600,'newManagerCleanupSeconds':60,
+         'originalPhaseSeconds':120,'originalNativeSeconds':[15,8,3],
+         'originalHttpSeconds':10,'originalCaptureSeconds':45}
+@@ -757,7 +757,7 @@
+         from mac_t5_volume_guard_r1 import HeldT5
+         from mac_guarded_current_capture_r3 import validate_synthetic_proof
+         from mac_current_capture_entry_r1 import admitted_synthetic
+-        from mac_current_outer_inputs_r1 import Inputs,PLUGIN_FILES
++        from mac_current_outer_inputs_r2 import Inputs,PLUGIN_FILES
+         from mac_current_fixture_materializer_r1 import Materializer
+         from mac_owned_launchd_r3 import OwnedLaunchd
+         ctx.signals=Signals();ctx.signals.install();commands=Commands(ctx.signals)
+@@ -768,13 +768,13 @@
+             until=min(ctx.until,time.monotonic()+30),maximum=262144)
+         need(row['exitCode']==0 and row['completeBeforeDeadline'] and not row['outcomeUnknown'],
+              'actual_t5_before_private_outer_io');guard.accept_diskutil(out)
+-        need(args.candidate==ROOT/'candidate-current-manager-r3.public.json' and valid_pin(args.candidate_sha256),
++        need(args.candidate==ROOT/'candidate-current-manager-r4.public.json' and valid_pin(args.candidate_sha256),
+              'fixed_public_manager_candidate')
+         candidate_raw=guard.read(args.candidate,65536);need(sha(candidate_raw)==args.candidate_sha256,'whole_public_candidate')
+         candidate=exact_json(candidate_raw)
+         need(isinstance(candidate,dict) and set(candidate)=={'schema','sourceCommit','sourceTree','sourcePins',
+             'syntheticBinding','publicVolumeAnchorSha256','utilityPins','budgets'}
+-            and candidate['schema']=='heptabao.mac-current-manager-candidate.r3'
++            and candidate['schema']=='heptabao.mac-current-manager-candidate.r4'
+             and candidate['sourceCommit']==COMMIT and candidate['sourceTree']==TREE
+             and candidate['sourcePins']==pins and candidate['syntheticBinding']==SYNTHETIC
+             and candidate['utilityPins']=={path:value['sha256'] for path,value in FIXED_UTILITIES.items()}
+@@ -789,16 +789,16 @@
+         runtime,report['normalSourceBinding']=inputs.normal_and_base_sources()
+         packet,report['frozenSourceProjection']=inputs.project_frozen()
+         add_secrets(secrets,packet);secrets.update(packet['targetProfileIds'])
+-        guard.mkdir_new(ROOT/'outer-r3');output_created=True
++        guard.mkdir_new(ROOT/'outer-r4');output_created=True
+         for path in (ROOT/'captures',ROOT/'launchd',ROOT/'server',
+                      ROOT/'server/data',ROOT/'server/tls',ROOT/'installed-plugin-copy',
+                      ROOT/'installed-plugin-copy/node_modules',ROOT/'credentials-consumer'):
+             guard.mkdir_new(path)
+-        guard.write_new(ROOT/'outer-r3/intent.public.json',encoded({
++        guard.write_new(ROOT/'outer-r4/intent.public.json',encoded({
+             'schema':report['schema'],'candidateSha256':args.candidate_sha256,'sourcePins':pins,
+             'syntheticBinding':SYNTHETIC,'budgets':candidate['budgets'],'twoOwnedLaunchdLabelsOnly':True,
+             'productionWriteAuthorized':False,'providerAuthorized':False,'businessReplaysAuthorized':False}))
+-        guard.write_new(ROOT/'outer-r3/managed12.private.json',encoded(packet))
++        guard.write_new(ROOT/'outer-r4/managed12.private.json',encoded(packet))
+         report['productionCaptureAttempted']=True
+         capsule_before,before_public=capture_once(ctx,guard,commands,'before',pins,
+             anchor_raw,args.public_volume_anchor_sha256);capture_reports.append(before_public)
+@@ -942,9 +942,9 @@
+             need(len(raw)<=MAX_PUBLIC_REPORT and all(value.encode() not in raw for value in secrets),
+                  'public_outer_report_contains_no_secret_values')
+             if guard is not None and output_created and time.monotonic()<ctx.until and not ctx.signals.pending:
+-                candidate_result=guard.write_new(ROOT/'outer-r3/result.public.json',raw)
++                candidate_result=guard.write_new(ROOT/'outer-r4/result.public.json',raw)
+         except BaseException as error:
+-            report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.r3','ok':False,
++            report={'schema':'heptabao.mac-current-five-agent-owned-launchd-outer.r4','ok':False,
+                 'outcomeUnknown':True,'errorType':type(error).__name__,
+                 'errorCode':'public_report_or_candidate_publication_refused',
+                 'productionManagerQualification':False,'automaticBusinessRetry':False,

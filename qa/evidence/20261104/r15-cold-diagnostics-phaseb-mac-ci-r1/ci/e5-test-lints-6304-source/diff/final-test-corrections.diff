@@ -1,0 +1,330 @@
+--- a/crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs
++++ b/crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs
+@@ -88,7 +88,7 @@
+                 let bytes = reader.read_object(reference).map_err(engine_error)?;
+                 reference.verify(&key, &bytes).map_err(engine_error)?;
+                 let window = reader.window.borrow();
+-                assert!(window.pending.len() + 1 <= MAX_OUTSTANDING);
++                assert!(window.pending.len() < MAX_OUTSTANDING);
+                 assert!(window.encoded_bytes + bytes.len() <= MAX_ENCODED_BYTES);
+                 observed_count_bound |= window.pending.len() + 1 == MAX_OUTSTANDING;
+                 observed_byte_bound |= window.encoded_bytes + bytes.len()
+@@ -244,7 +244,10 @@
+                         bytes.push(0);
+                         Ok(Zeroizing::new(bytes))
+                     }
+-                    _ => panic!("synthetic bounded prefetch worker failure"),
++                    // Exercise unwind cleanup without depending on a panic hook.
++                    _ => std::panic::resume_unwind(Box::new(
++                        "synthetic bounded prefetch worker failure",
++                    )),
+                 }
+             },
+             &|| Ok(()),
+@@ -425,7 +428,8 @@
+                 entered_rx
+                     .recv_timeout(deadline.instant().saturating_duration_since(Instant::now()))
+                     .map_err(|_| super::super::rejected())?;
+-                panic!("synthetic private writer unwind");
++                // The fixture tests scoped joining during unwinding, not panic hooks.
++                std::panic::resume_unwind(Box::new("synthetic private writer unwind"));
+             },
+         );
+     }));
+
+--- a/crates/heptabao-server/src/http_no_forward_tests.rs
++++ b/crates/heptabao-server/src/http_no_forward_tests.rs
+@@ -101,7 +101,7 @@
+     headers: &str,
+     body: &Value,
+ ) -> Vec<u8> {
+-    let body = serde_json::to_vec(body).expect("synthetic JSON object");
++    let body = body.to_string().into_bytes();
+     let mut bytes = format!("{method} {target} HTTP/1.1\r\nHost: attacker.invalid\r\nX-Forwarded-Host: attacker.invalid\r\nX-Forwarded-Proto: http\r\nX-Vault-Token: {token}\r\n{headers}Content-Type: application/json\r\nContent-Length: {}\r\n\r\n", body.len()).into_bytes();
+     bytes.extend_from_slice(&body);
+     bytes
+
+--- a/crates/heptabao-server/src/http_snapshot_redirect_tests.rs
++++ b/crates/heptabao-server/src/http_snapshot_redirect_tests.rs
+@@ -253,7 +253,11 @@
+         ..Default::default()
+     };
+     assert_eq!(
+-        reply()?.write(&mut zero, false).unwrap_err().kind(),
++        reply()?
++            .write(&mut zero, false)
++            .err()
++            .ok_or("expected original I/O failure")?
++            .kind(),
+         io::ErrorKind::WriteZero
+     );
+     assert_eq!((zero.writes, zero.flushes), (1, 0));
+@@ -262,7 +266,11 @@
+         ..Default::default()
+     };
+     assert_eq!(
+-        reply()?.write(&mut flush, false).unwrap_err().kind(),
++        reply()?
++            .write(&mut flush, false)
++            .err()
++            .ok_or("expected original I/O failure")?
++            .kind(),
+         io::ErrorKind::BrokenPipe
+     );
+     assert_eq!((flush.writes, flush.flushes), (1, 1));
+@@ -270,7 +278,8 @@
+     assert_eq!(
+         reply()?
+             .write_with_namespace(&mut invalid, false, "invalid\r\nnamespace")
+-            .unwrap_err()
++            .err()
++            .ok_or("expected original I/O failure")?
+             .kind(),
+         io::ErrorKind::InvalidInput,
+     );
+
+--- a/crates/heptabao-server/src/http_response_coalescing_tests.rs
++++ b/crates/heptabao-server/src/http_response_coalescing_tests.rs
+@@ -218,7 +218,8 @@
+     };
+     assert_eq!(
+         write_response(&mut zero, Response::error(501, REJECTION), false)
+-            .unwrap_err()
++            .err()
++            .ok_or("expected original I/O failure")?
+             .kind(),
+         io::ErrorKind::WriteZero
+     );
+@@ -230,7 +231,8 @@
+     };
+     assert_eq!(
+         write_response(&mut broken, Response::error(501, REJECTION), false)
+-            .unwrap_err()
++            .err()
++            .ok_or("expected original I/O failure")?
+             .kind(),
+         io::ErrorKind::BrokenPipe
+     );
+@@ -244,7 +246,8 @@
+     };
+     assert_eq!(
+         write_response(&mut flush, Response::error(501, REJECTION), false)
+-            .unwrap_err()
++            .err()
++            .ok_or("expected original I/O failure")?
+             .kind(),
+         io::ErrorKind::BrokenPipe
+     );
+@@ -258,7 +261,8 @@
+             false,
+             "invalid\r\nnamespace"
+         )
+-        .unwrap_err()
++        .err()
++        .ok_or("expected original I/O failure")?
+         .kind(),
+         io::ErrorKind::InvalidInput
+     );
+
+--- a/crates/heptabao-server/src/service_native_plain_namespace.rs
++++ b/crates/heptabao-server/src/service_native_plain_namespace.rs
+@@ -226,7 +226,14 @@
+         assert!(scope.check(&poisoned).is_err());
+         let mut poisoned = state.clone();
+         poisoned.namespaces.entries.remove("scoped");
+-        assert_eq!(scope.check(&poisoned).unwrap_err().status, 503);
++        assert_eq!(
++            scope
++                .check(&poisoned)
++                .err()
++                .ok_or("absent namespace admitted")?
++                .status,
++            503
++        );
+         // A typed negative fixture binds the previously selected namespace.
+         // It is never queued, persisted, or authorized as a control-group grant.
+         let retained = crate::auth::control_groups::DeferredRequest {
+@@ -278,7 +285,8 @@
+         assert_eq!(initial.status, 404);
+         assert_eq!(
+             validate_control_group_scope(&poisoned, &retained)
+-                .unwrap_err()
++                .err()
++                .ok_or("absent retained namespace admitted")?
+                 .status,
+             503
+         );
+
+--- a/crates/heptabao-server/src/service_native_ssh_tests.rs
++++ b/crates/heptabao-server/src/service_native_ssh_tests.rs
+@@ -524,9 +524,11 @@
+             "POST",
+             "auth/token/revoke",
+             json!({"token":revoke_actor.as_str()}),
+-        )
+-        .expect("actual token revocation");
+-        status(&revoked, 204);
++        );
++        assert!(
++            matches!(revoked, Ok(ref reply) if reply.status == 204),
++            "actual token revocation"
++        );
+     })?;
+     let response = f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?;
+     assert!(response.status >= 400);
+@@ -549,9 +551,7 @@
+             service
+                 .state
+                 .as_ref()
+-                .expect("state")
+-                .engines
+-                .native_ssh_signature_count("ssh/"),
++                .and_then(|state| state.engines.native_ssh_signature_count("ssh/")),
+             Some(1)
+         );
+         response.status = 503;
+@@ -701,17 +701,17 @@
+     let mut hook_now = f.now + 1;
+     let _hook = after_audit(move |service, response| {
+         assert!(response.status == 200 && response.body["data"]["username"].is_string());
+-        status(
+-            &call(
+-                service,
+-                &mut hook_now,
+-                &revoke_root,
+-                "POST",
+-                "auth/token/revoke",
+-                json!({"token":revoke_actor.as_str()}),
+-            )
+-            .expect("actual issuer revoke"),
+-            204,
++        let revoked = call(
++            service,
++            &mut hook_now,
++            &revoke_root,
++            "POST",
++            "auth/token/revoke",
++            json!({"token":revoke_actor.as_str()}),
++        );
++        assert!(
++            matches!(revoked, Ok(ref reply) if reply.status == 204),
++            "actual issuer revoke"
+         );
+     })?;
+     let response = f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?;
+
+--- a/crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs
++++ b/crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs
+@@ -46,15 +46,14 @@
+     wire_response(response, &namespace, &path, attempt)
+ }
+ 
+-fn signed_fixture() -> Result<
+-    (
+-        crate::service::tests::Root,
+-        Service,
+-        Zeroizing<String>,
+-        Zeroizing<String>,
+-    ),
+-    Box<dyn std::error::Error>,
+-> {
++type SignedFixture = (
++    crate::service::tests::Root,
++    Service,
++    Zeroizing<String>,
++    Zeroizing<String>,
++);
++
++fn signed_fixture() -> Result<SignedFixture, Box<dyn std::error::Error>> {
+     let root = crate::service::tests::Root::new();
+     let mut service = root.service()?;
+     service.configure_native_v6_storage(NativeStorageProfile::File)?;
+
+--- a/crates/heptabao-server/src/service_no_forwarding_ha_tests.rs
++++ b/crates/heptabao-server/src/service_no_forwarding_ha_tests.rs
+@@ -116,13 +116,13 @@
+ fn http(
+     pipeline: &PkiPipeline,
+     node: usize,
+-    method: &str,
+-    target: &str,
++    request_line: (&str, &str),
+     actor: &str,
+     fields: &str,
+     body: Value,
+     attempt: u8,
+ ) -> TestResult<Wire> {
++    let (method, target) = request_line;
+     let until = Instant::now() + REQUEST_BUDGET;
+     let raw = request(method, target, actor, fields, &body);
+     let service = pipeline.services[node]
+@@ -172,8 +172,7 @@
+         let response = http(
+             &pipeline,
+             follower,
+-            "GET",
+-            target,
++            ("GET", target),
+             &actor,
+             fields,
+             json!({}),
+@@ -194,8 +193,7 @@
+     let response = http(
+         &pipeline,
+         follower,
+-        "POST",
+-        write_target,
++        ("POST", write_target),
+         &actor,
+         "X-Vault-No-Request-Forwarding: 1\r\n",
+         json!({"options":{"cas":0},"data":{"value":"must-not-be-written"}}),
+@@ -222,8 +220,7 @@
+     let health = http(
+         &pipeline,
+         follower,
+-        "GET",
+-        "/v1/sys/health?standbyok=true",
++        ("GET", "/v1/sys/health?standbyok=true"),
+         "",
+         "X-Vault-No-Request-Forwarding: 1\r\n",
+         json!({}),
+@@ -286,8 +283,7 @@
+         let response = http(
+             &pipeline,
+             follower,
+-            "POST",
+-            &format!("/v1/{path}"),
++            ("POST", &format!("/v1/{path}")),
+             pipeline.admin(),
+             fields,
+             json!({"options":{"cas":0},"data":{"value":"exact-once"}}),
+@@ -326,8 +322,7 @@
+     let response = http(
+         &pipeline,
+         leader,
+-        "POST",
+-        "/v1/secret/data/no-forward-leader",
++        ("POST", "/v1/secret/data/no-forward-leader"),
+         pipeline.admin(),
+         "X-Vault-No-Request-Forwarding: false\r\n",
+         json!({"options":{"cas":0},"data":{"value":"leader-once"}}),
+@@ -372,8 +367,7 @@
+     let positive = http(
+         &pipeline,
+         follower,
+-        "GET",
+-        target,
++        ("GET", target),
+         &actor,
+         fields,
+         json!({}),
+@@ -419,8 +413,7 @@
+     let refused = http(
+         &pipeline,
+         follower,
+-        "GET",
+-        target,
++        ("GET", target),
+         &actor,
+         fields,
+         json!({}),

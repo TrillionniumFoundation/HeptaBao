@@ -1,0 +1,7 @@
+{
+  "chunk_id": "42d99e",
+  "wall_time_seconds": 0.041305081,
+  "exit_code": 0,
+  "original_token_count": 42,
+  "output": "{\"status\": \"passed\", \"source_bytes\": 10338, \"sha256\": \"aecb42cd4f25699e9be552ce20eb95465af6fd8208a4b6a1acd245e8f6da3dbe\", \"module_executed\": false, \"host_calls\": 0}\n"
+}

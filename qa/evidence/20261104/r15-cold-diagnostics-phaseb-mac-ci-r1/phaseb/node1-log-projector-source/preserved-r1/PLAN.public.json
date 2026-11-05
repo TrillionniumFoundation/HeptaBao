@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.phaseb-3cb-node1-normal-log-projection-source-plan.v1",
+  "source_only": true,
+  "executed": false,
+  "product_started": false,
+  "scope": {
+    "host": "desktop",
+    "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/node1",
+    "leaf": "native-start0.stderr.private.log",
+    "node": 1,
+    "candidate_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "runtime_source_blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+    "fixture_result_blob": "73dad48403355e4504ddfd7adc872a5c89f27f28",
+    "fixture_result_sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+    "metadata_blob": "0af2cce8ce210ee9bc5b986b33821a43e6375f4e",
+    "metadata_sha256": "f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2",
+    "log_sha256": "eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201",
+    "version": "2050:4755604:4577:1793845333664873175:1793845333664873175",
+    "bytes": 4577
+  },
+  "budgets": {
+    "single_observation_seconds": 15,
+    "new_process_outer_seconds": 45,
+    "max_input_bytes": 2097152,
+    "max_markers": 128,
+    "max_output_bytes": 65536,
+    "max_timing_buckets": 64
+  },
+  "preserved_reference": {
+    "blob": "07632a3e595d7a44d8f586e95dbb93abcf75a7cb",
+    "bytes": 22580,
+    "sha256": "5c518fd3411d1c506f9814bb61bcbe2e5e65b6dc2dfe7a748757cb271ac74345",
+    "unchanged_definitions": [
+      "Refused",
+      "on_signal",
+      "remaining",
+      "facts",
+      "same_directory",
+      "same_file",
+      "timing_object_pairs",
+      "timing_integer",
+      "timing_noninteger",
+      "checked_timing_uint",
+      "parse_timing_marker",
+      "parse_marker"
+    ]
+  },
+  "changes": "17 exact substitutions, inverse reconstructs the full reference. Fixed root/leaf/metadata and explicit new fixture/candidate identity; add nine fresh-ingress sync labels, one code and ten exact timing pairs. All parser functions and FD/deadline operation ordering remain unchanged.",
+  "public_output": "Only fixed marker fields, line ordinals/lengths/hashes, whole file hash and safe metadata. Unselected log lines and raw private CLI stderr remain unreported.",
+  "correlation_limits": [
+    "The original native log was not checkpointed at CLI start. No per-request ID is present in these normal markers.",
+    "B01 was the only CLI window, on actual leader node1, with audit count60 to62 and a single response503; this is contextual association, not HTTP framing, authenticated-route or marker-to-request proof.",
+    "Earlier setup/health markers may be present. No ordinary marker is automatically assigned to B01.",
+    "A missing matching marker does not prove no inner failure."
+  ],
+  "failure_handling": "Any input identity/hash change, malformed selected marker, unknown closed label, deadline/signal or close error fails observation; no internal retry, no product restart or upload.",
+  "components": {
+    "checks": 24,
+    "target_log_used": false,
+    "main_called": false,
+    "candidate_file_io": false,
+    "network_or_child_activity": false,
+    "initial_fixture_error_retained": "The first synthetic wrong-scope case selected scope_total, which is legitimately allowed under committed_read_entry. Only that synthetic input was corrected to fresh_ingress_permission; the candidate was unchanged."
+  },
+  "dispatch_scope": "Root reviews full source and exact request before one observation. This plan itself grants no execution.",
+  "node2_and_node3_body_reads_authorized": false,
+  "cli_stderr_body_authorized": false
+}

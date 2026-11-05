@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.b2-timing-projection-actual-packet.v1",
+  "job_id": "1a1a997c484-fc05-3636",
+  "files": {
+    "ACK.public.json": {
+      "bytes": 25207,
+      "sha256": "558a125b65dc5f83ef6f6847c1033c2bfafd94d8586fad9ff6507c160e92bfdc",
+      "blob": "bb107e71629cec604d8b6b899947612fcd5d1c39"
+    },
+    "AUTHORITY.public.json": {
+      "bytes": 733,
+      "sha256": "f8bc332be09ff9b078e08b1d687d1da3e6c756fc3eb754a7ecbb3a746477e8ba",
+      "blob": "eea7a06cc1c84d82b0ee485283ff9f82ee89904e"
+    },
+    "RESULT.public.json": {
+      "bytes": 50742,
+      "sha256": "1a1cf352b213f4f58e505c736a329b743eb679ad4ef51c182aea20c05589216c",
+      "blob": "52633c5c0cfad1c34216a898e355207177ef19c5"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "ASSESSMENT.public.json": {
+      "bytes": 14190,
+      "sha256": "683b6af3909653d67030845dc7b9a71a22ac2d8f92dd559ad6ef30c2cfea310d",
+      "blob": "6e004fdbd32261dd8f409bd96b01e43cb0589958"
+    },
+    "sdk/process_start.original.json": {
+      "bytes": 27914,
+      "sha256": "80ed5b4cbfbab292a78905c2265b452b38b5631d585dfd69cbae5a42dc343380",
+      "blob": "bb4c3eb517fdddb93f9f6949945f414471b53111"
+    },
+    "sdk/process_status.original.json": {
+      "bytes": 956,
+      "sha256": "1d79a2092d80c1228b3b155f9ebdd273e068adc388de5997ae593a48bd45c7dd",
+      "blob": "af45e79c46033af0a7a2c069fb2d32f44a58abe3"
+    },
+    "sdk/process_read_offset_00000.original.json": {
+      "bytes": 54987,
+      "sha256": "c30e62e08f553909f8bbdd9d633cd7c18387e541825a6c6104f9e11ab378cf19",
+      "blob": "09d1542daf711c0f1b13fb414464ce962729f4a9"
+    },
+    "sdk/process_read_offset_16384.original.json": {
+      "bytes": 54688,
+      "sha256": "f44f8c9f66a7d056bee76977a9bb347efd71a5e84d8c974f5f67707c11af4c8c",
+      "blob": "895fe81f7137c801f25f593d7447e7868b4c0c46"
+    },
+    "sdk/process_read_offset_32768.original.json": {
+      "bytes": 54904,
+      "sha256": "35d93f02cdad668ba86cc5f4c11d4ce33f557aeb82920fccfd6ce005d53da28d",
+      "blob": "1d53bf3b9b4f83645b1f5efd839ba23d709fea81"
+    },
+    "sdk/process_read_offset_49152.original.json": {
+      "bytes": 5678,
+      "sha256": "0e62cb7ea05b054a4579dbb008748f8d7a22ba41841cf10b69d8a24924e92576",
+      "blob": "fe3f4d502e8665eb34f1534e5b0994dbfbad7f22"
+    }
+  },
+  "reused_git_blobs": [
+    {
+      "path": "INTENT.public.json",
+      "blob": "d89a15c3488499b6b8aa83ed8ce812ae8220972d"
+    },
+    {
+      "path": "REQUEST.json",
+      "blob": "f03a71516326a97baf9236908b433bab593da745"
+    },
+    {
+      "path": "SOURCE.py",
+      "blob": "7cf15c4fac367a2a556376e26dc40ecb475d04ce"
+    },
+    {
+      "path": "ROOT_ADMISSION.public.json",
+      "blob": "80b80d5569b7192239143f370fcf69528710277a"
+    }
+  ],
+  "read_only": true,
+  "product_requests": 0,
+  "business_qualification_unchanged": "FAILED91/98; extra postcold0/12"
+}

@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.root-phaseb-fixed-public-display-hash-match.v1",
+  "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5",
+  "ingress_source_blob": "d3789a93c8bc3a4678e831c886315527ec086902",
+  "actual_log_projection_blob": "242a6303ef87b317eb9f6fe72ca9b16ae682d378",
+  "actual_line": 9,
+  "candidates": [
+    {
+      "variant": "HaError::InvalidNode",
+      "display": "HA node identifier is invalid",
+      "sha256": "51989c7e4536ddcdfee812cfc7e837bceb191ee5863642491a3da33a1caf2edc"
+    },
+    {
+      "variant": "HaError::InvalidCluster",
+      "display": "HA cluster configuration is invalid",
+      "sha256": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed"
+    },
+    {
+      "variant": "HaError::InvalidOperation",
+      "display": "HA client operation is invalid",
+      "sha256": "d29f9010b2432758874904c61f699dcbfaabf101417db65c0e697614f778f6d5"
+    },
+    {
+      "variant": "HaError::InvalidFrame",
+      "display": "HA peer frame is invalid",
+      "sha256": "413deec1a00ed513e86d027830b6cdad9ae539ec9f7254f1b8f7940cf0e24001"
+    },
+    {
+      "variant": "HaError::InvalidSnapshot",
+      "display": "HA snapshot is invalid",
+      "sha256": "e788c4775601890cb7ed67a06b3cf470e9b420e35113f319aa68dbb44aeafb8d"
+    },
+    {
+      "variant": "HaError::InvalidMembership",
+      "display": "HA membership transition is invalid",
+      "sha256": "b6395852a4812c64f35774247d399c17805762767e387e6cfc5e8daf58872e4b"
+    },
+    {
+      "variant": "HaError::UnknownPeer",
+      "display": "HA peer is unknown",
+      "sha256": "36b98a50d765e8e9096df1eab47b4bcea87d277305bead518e3c551826463312"
+    },
+    {
+      "variant": "HaError::PeerAuthenticationFailed",
+      "display": "HA peer authentication failed",
+      "sha256": "6b5b9ba2ae2a491ac054bd612b3b7d9253f96fb68ae37d18dc4cb4c476f01bf6"
+    },
+    {
+      "variant": "HaError::ReplayDetected",
+      "display": "HA peer replay was detected",
+      "sha256": "a150335c5434c65967135a425f1a865cff38f4f93c68d3646cb3f641fde76093"
+    },
+    {
+      "variant": "HaError::WriterBusy",
+      "display": "HA peer sequence store already has a writer",
+      "sha256": "2d003cfb643ce5e4cadd4c7e58e52668b474ed5cd807d6c745d58323aa5a0b14"
+    },
+    {
+      "variant": "HaError::QuorumUnavailable",
+      "display": "HA quorum is unavailable",
+      "sha256": "e89774e22d40a5bf6917a698f8852dc98a44d5de56e3fc81cc76452abee5020f"
+    },
+    {
+      "variant": "HaError::NotLeader",
+      "display": "HA node is not leader",
+      "sha256": "374168a6680d1b14c47989aa5b63d04eb51157d2d6dbf2717bb3a4bb1e0eb0a2"
+    },
+    {
+      "variant": "HaError::OperationIdConflict",
+      "display": "HA operation ID was reused with different input",
+      "sha256": "f762f4e792eeb7a41b15707c45304812f13b5c11aefa5234a8b6adcf4f4c2616"
+    },
+    {
+      "variant": "HaError::StaleLeaderResponse",
+      "display": "HA leader response is stale",
+      "sha256": "f1dd31003cfba31137acdabf3fc839466999d2c0e7a830d2fec8ab38f6f73058"
+    },
+    {
+      "variant": "HaError::CapacityExceeded",
+      "display": "HA bounded capacity is exceeded",
+      "sha256": "c7aa78966ffda62883d85238d197adc494ed6d1e786fe3fa49f3e83579ec4df6"
+    },
+    {
+      "variant": "HaError::Transport",
+      "display": "HA peer transport failed",
+      "sha256": "79443b4c6187639e258aa6399b6f4db4f57410e1c207611c5221cacb8addef16"
+    },
+    {
+      "variant": "HaError::OutcomeUnknown",
+      "display": "HA durable outcome is unknown",
+      "sha256": "0d8ae792b77b8b0e70481a13c0b797fd19a495e62ad381c494ce05f866c72254"
+    },
+    {
+      "variant": "HaError::InvalidRoot",
+      "display": "HA peer state root is invalid",
+      "sha256": "8b14d3eb92cb22e8c1d1e43ad5b40b13ec8c61277b88c1692bc780b997ef6693"
+    },
+    {
+      "variant": "HaError::Tampered",
+      "display": "HA peer state authentication failed",
+      "sha256": "d44ccf735f78e42b1b178fa414bdd23479198377e0e5e6db5c416aa49924e832"
+    },
+    {
+      "variant": "HaError::Io",
+      "display": "HA peer state I/O failed",
+      "sha256": "a4716090a932dee6166e4b56d1a6fe0684451b6771ea33e8f977357f41d44a0e"
+    }
+  ],
+  "matches": [
+    {
+      "variant": "HaError::InvalidCluster",
+      "display": "HA cluster configuration is invalid",
+      "sha256": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed"
+    }
+  ],
+  "source_only_match": true,
+  "private_values_inferred": false,
+  "actual_guard_unique": false,
+  "marker_to_B01_request_correlation": false
+}

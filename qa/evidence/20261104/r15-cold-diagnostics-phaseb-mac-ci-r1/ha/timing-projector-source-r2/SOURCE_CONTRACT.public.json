@@ -1,0 +1,360 @@
+{
+  "schema": "heptabao.b2-normal-timing-static-projection-contract.r1",
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "entry": {
+    "http": {
+      "file": "http.rs",
+      "lines": [
+        1251,
+        1310
+      ],
+      "pin": {
+        "bytes": 231923,
+        "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb",
+        "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+      }
+    },
+    "service": {
+      "file": "service.rs",
+      "lines": [
+        2264,
+        2312
+      ],
+      "pin": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "bytes": 518245,
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+      }
+    }
+  },
+  "formatter": {
+    "file": "ha_native_v6_runtime.rs",
+    "lines": [
+      71,
+      327
+    ],
+    "pin": {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    }
+  },
+  "types": {
+    "schema": "fixed-string",
+    "request_class": [
+      "health",
+      "ordinary"
+    ],
+    "forwarded": "bool",
+    "status": "u16 >=500",
+    "elapsed_us": "u128",
+    "entry_remaining_ns": "u128",
+    "exit_remaining_ns": "u128",
+    "bucket_limit": 64,
+    "bucket_bound_reached": "bool",
+    "phases": "unique pairs, <=64"
+  },
+  "bucket_types": {
+    "scope": "static admitted pair",
+    "phase": "static admitted pair",
+    "calls": "u64 >=1",
+    "advanced": "u64",
+    "completed": "u64",
+    "failed": "u64",
+    "elapsed_us": "u128",
+    "maximum_elapsed_us": "u128",
+    "first_entry_remaining_ns": "u128",
+    "last_exit_remaining_ns": "u128",
+    "minimum_entry_remaining_ns": "u128",
+    "minimum_exit_remaining_ns": "u128"
+  },
+  "counter_contract": "calls=min(u64::MAX,advanced+completed+failed); exact source uses one outcome per call and saturating counters; maximum<=saturating sum; recorded minima do not exceed first/last respective values.",
+  "canonical_json": "exact serde field order/compact ASCII shape; no duplicate/extra/missing keys, floats, signs, nonfinite, escaped static spellings, extra whitespace or CRLF. New public u64/u128 values are decimal strings.",
+  "static_pairs": [
+    [
+      "committed_read_entry",
+      "committed_changed_root_recover"
+    ],
+    [
+      "committed_read_entry",
+      "committed_enrollment"
+    ],
+    [
+      "committed_read_entry",
+      "committed_final_witness"
+    ],
+    [
+      "committed_read_entry",
+      "committed_read_entry"
+    ],
+    [
+      "committed_read_entry",
+      "committed_read_index"
+    ],
+    [
+      "committed_read_entry",
+      "committed_same_root_reopen"
+    ],
+    [
+      "committed_read_entry",
+      "scope_total"
+    ],
+    [
+      "forward_delivery",
+      "exchange_and_applied"
+    ],
+    [
+      "forward_exchange",
+      "peer_exchange"
+    ],
+    [
+      "forward_exchange",
+      "wait_applied"
+    ],
+    [
+      "install_received_graph",
+      "install_detached_metadata"
+    ],
+    [
+      "install_received_graph",
+      "install_local_objects"
+    ],
+    [
+      "install_received_graph",
+      "install_local_root_cas"
+    ],
+    [
+      "install_received_graph",
+      "install_local_root_readback"
+    ],
+    [
+      "install_received_graph",
+      "install_locator_batches"
+    ],
+    [
+      "install_received_graph",
+      "install_post_cas_graph"
+    ],
+    [
+      "install_received_graph",
+      "install_pre_cas_graph"
+    ],
+    [
+      "install_received_graph",
+      "install_prepare_root_cas"
+    ],
+    [
+      "install_received_graph",
+      "install_published_local_plan"
+    ],
+    [
+      "install_received_graph",
+      "install_received_graph"
+    ],
+    [
+      "install_received_graph",
+      "install_root_binding"
+    ],
+    [
+      "install_received_graph",
+      "scope_total"
+    ],
+    [
+      "sync_environment",
+      "scope_total"
+    ],
+    [
+      "sync_environment",
+      "sync_changed_root_install"
+    ],
+    [
+      "sync_environment",
+      "sync_current_local_finish"
+    ],
+    [
+      "sync_environment",
+      "sync_current_local_graph"
+    ],
+    [
+      "sync_environment",
+      "sync_current_local_graph_after_repair"
+    ],
+    [
+      "sync_environment",
+      "sync_current_local_repair"
+    ],
+    [
+      "sync_environment",
+      "sync_environment"
+    ],
+    [
+      "sync_environment",
+      "sync_final_environment"
+    ],
+    [
+      "sync_environment",
+      "sync_local_guard"
+    ],
+    [
+      "sync_environment",
+      "sync_local_selection"
+    ],
+    [
+      "sync_environment",
+      "sync_process_witness"
+    ],
+    [
+      "sync_environment",
+      "sync_publish_local_state"
+    ],
+    [
+      "sync_environment",
+      "sync_v5_source"
+    ],
+    [
+      "sync_migration_source",
+      "scope_total"
+    ],
+    [
+      "sync_migration_source",
+      "sync_after_migration"
+    ],
+    [
+      "sync_migration_source",
+      "sync_migration_source"
+    ],
+    [
+      "sync_migration_source",
+      "sync_predecessor_read_boundary"
+    ]
+  ],
+  "static_evidence": [
+    {
+      "file": "ha_native_v6_runtime.rs",
+      "scope": "committed_read_entry",
+      "startLine": 1088,
+      "phases": [
+        "committed_read_entry",
+        "committed_read_index",
+        "committed_enrollment",
+        "committed_same_root_reopen",
+        "committed_changed_root_recover",
+        "committed_final_witness",
+        "scope_total"
+      ],
+      "exact_fragment": "    fn native_v6_committed_read_inner_bound(\n        &self,\n        deadline: OriginalDeadline,\n        complete_root_hint: Option<[u8; 32]>,\n        recapture: Option<NativeV6ReadRecapture<'_>>,\n    ) -> Result<Option<CommittedNativeV6Read>, String> {\n        let failure = NativeV6FailureObservation::start(\"committed_read_entry\", deadline.instant());\n        deadline.check().map_err(|error| error.to_string())?;\n        let native = self\n            .native_v6\n            .as_ref()\n            .filter(|native| native.enabled())\n            .ok_or(\"native HA was not explicitly enabled\")?;\n        let node = self.node.as_ref().ok_or(\"HA process is shut down\")?;\n        let native_operation = native\n            .storage\n            .get()\n            .ok_or(\"native ciphertext store absent\")?\n            .begin_native_operation()\n            .map_err(|error| error.to_string())?;\n        failure.step(\"committed_read_index\");\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let read_started = Instant::now();\n        let selected = self.runtime.block_on(async {\n            match recapture {\n                Some(NativeV6ReadRecapture::ApplicationProgress(previous)) => node\n                    .native_v6_same_root_progress_read(previous)\n                    .await\n                    .map(Some),\n                Some(NativeV6ReadRecapture::SameSelection(previous)) => node\n                    .native_v6_fresh_same_selection_read(previous)\n                    .await\n                    .map(Some),\n                None => node.native_v6_committed_root_read(deadline.instant()).await,\n            }\n        });\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        observe_committed_read_phase(\n            \"read_index\",\n            read_started,\n            deadline.instant(),\n            selected.is_ok(),\n        );\n        let selected = selected.map_err(|error| {\n            let reason = error.to_string();\n            failure.refused(\"read_index_refused\", &reason);\n            reason\n        })?;\n        let Some(selected) = selected else {\n            deadline.check().map_err(|error| error.to_string())?;\n            failure.complete();\n            return Ok(None);\n        };\n        failure.step(\"committed_enrollment\");\n        native.validate_enrollment(&self.codec, selected.enrollment())?;\n        // The selected process handle is consumed. A complete local closure is\n        // physically reopened even when Service has not installed this root\n        // yet: its old root digest says nothing about locally staged ciphertext.\n        // The shared reader verifies every manifest/leaf and a terminal fresh\n        // same-selection ReadIndex. Incomplete/corrupt closures retain the\n        // original immutable repair; neither path creates a Raft command/ACK.\n        let storage = native\n            .storage\n            .get()\n            .ok_or(\"native HA ciphertext store unavailable\")?;\n        let selected = if complete_root_hint == Some(selected.root().root_digest()) {\n            failure.step(\"committed_same_root_reopen\");\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            let read_started = Instant::now();\n            let selected = read_or_recover_native_v6_committed_closure(\n                node,\n                self.runtime.handle(),\n                &native.transport,\n                &self.peers,\n                storage,\n                selected,\n            );\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            observe_committed_read_phase(\n                \"same_root_read_or_recover\",\n                read_started,\n                deadline.instant(),\n                selected.is_ok(),\n            );\n            selected.map_err(|error| {\n                let reason = error.to_string();\n                failure.refused(\"same_root_reopen_refused\", &reason);\n                reason\n            })?\n        } else {\n            failure.step(\"committed_changed_root_recover\");\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            let read_started = Instant::now();\n            let selected = read_or_recover_native_v6_committed_closure(\n                node,\n                self.runtime.handle(),\n                &native.transport,\n                &self.peers,\n                storage,\n                selected,\n            );\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            observe_committed_read_phase(\n                \"changed_root_recover\",\n                read_started,\n                deadline.instant(),\n                selected.is_ok(),\n            );\n            selected.map_err(|error| {\n                let reason = error.to_string();\n                failure.refused(\"changed_root_recover_refused\", &reason);\n                reason\n            })?\n        };\n        let read = CommittedNativeV6Read {\n            _operation: native_operation,\n            instance: native.identity.clone(),\n            selected,\n            deadline,\n        };\n        failure.step(\"committed_final_witness\");\n        self.verify_native_v6_committed_read(&read)\n            .inspect_err(|reason| failure.refused(\"final_witness_refused\", reason))?;\n        failure.complete();\n        Ok(Some(read))\n    }\n\n"
+    },
+    {
+      "file": "service_native_v6_ha_install.rs",
+      "scope": "sync_migration_source",
+      "startLine": 1091,
+      "phases": [
+        "sync_migration_source",
+        "sync_predecessor_read_boundary",
+        "sync_after_migration",
+        "scope_total"
+      ],
+      "exact_fragment": "        let failure = NativeV6FailureObservation::start(\n            \"sync_migration_source\",\n            committed.deadline().instant(),\n        );\n        live(committed.deadline())?;\n        // This historical installation publishes no application activation.\n        // Every failure after its root CAS requires a cold reconciliation;\n        // no caller may release the intermediate V5 owner as a current read.\n        let predecessor_installed =\n            self.sync_native_v6_migration_source(ha, &committed, original_actor)?;\n        let result = (|| {\n            // A successful retained-V5 installation is a completed phase,\n            // not a failed native install to replay. Before beginning the V6\n            // phase, obtain a new actual quorum read of that EXACT selection.\n            // Keep the original operation deadline and Actor; the old witness\n            // must still verify. Every refusal remains inside the existing\n            // post-predecessor recovery fence below.\n            let committed = if predecessor_installed {\n                failure.step(\"sync_predecessor_read_boundary\");\n                original_actor(&self.state.as_ref().ok_or_else(unavailable)?.auth)?;\n                let process = ha.lock_for_request().map_err(|_| unavailable())?;\n                process\n                    .recapture_native_v6_same_selection(&committed)\n                    .map_err(|_| unavailable())?\n            } else {\n                committed\n            };\n            failure.step(\"sync_after_migration\");\n            self.sync_native_v6_after_migration_checked(\n                ha,\n                committed,\n                original_actor,\n                payload_validation,\n                published_plan,\n            )\n        })();\n        if predecessor_installed && result.is_err() {\n            self.recovery_required = true;\n            self.ha_activation = None;\n            self.ha_read_cache = None;\n        }\n        if result.is_ok() {\n            failure.complete();\n        }\n        result\n    }\n\n"
+    },
+    {
+      "file": "service_native_v6_ha_install.rs",
+      "scope": "sync_environment",
+      "startLine": 1219,
+      "phases": [
+        "sync_environment",
+        "sync_process_witness",
+        "sync_local_selection",
+        "sync_local_guard",
+        "sync_v5_source",
+        "sync_current_local_graph",
+        "sync_current_local_repair",
+        "sync_current_local_graph_after_repair",
+        "sync_current_local_finish",
+        "sync_changed_root_install",
+        "sync_final_environment",
+        "sync_publish_local_state",
+        "scope_total"
+      ],
+      "exact_fragment": "        let failure = NativeV6FailureObservation::start(\"sync_environment\", deadline.instant());\n        live(deadline)?;\n        let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);\n        let environment = LocalHaEnvironment::capture(self, ha, &key, deadline)?;\n        let actual = self.state.as_ref().ok_or_else(unavailable)?.clone();\n        root_namespace_only(&actual)?;\n        let source_auth = actual.auth.clone();\n        original_actor(&source_auth)?;\n        let old_identity = self.current_state_identity()?;\n        failure.step(\"sync_process_witness\");\n        let process = ha.lock_for_request().map_err(|_| unavailable())?;\n        if !process.native_v6_enabled() || process.cluster_id() != actual.cluster_id {\n            return Err(unavailable());\n        }\n        process\n            .verify_native_v6_committed_read(committed)\n            .map_err(|_| {\n                witness_refused.set(true);\n                unavailable()\n            })?;\n        // Raft already committed any higher epoch. Allocate the new activation\n        // before local publication; an entropy failure fences that authority.\n        let next_activation =\n            self.prepare_epoch_activation(committed.enrollment().epoch(), true)?;\n        let mut durable = self.durable.take().ok_or_else(unavailable)?;\n        let root_committed = Cell::new(false);\n        let denial = RefCell::new(None);\n        let result = (|| -> Result<State, Response> {\n            failure.step(\"sync_local_selection\");\n            let selected = LocalSelection::read(&mut durable, committed)?;\n            if selected.source.cluster_id != actual.cluster_id\n                || selected.local_epoch != actual.replay_epoch\n                || match selected.native.as_ref() {\n                    Some(root) => {\n                        root.identity().map_err(|_| unavailable())? != old_identity\n                            || self\n                                .native_root\n                                .as_ref()\n                                .and_then(|root| root.identity().ok())\n                                != Some(old_identity)\n                            || self.record_root.is_some()\n                    }\n                    None => {\n                        selected.source.identity().map_err(|_| unavailable())? != old_identity\n                            || self\n                                .record_root\n                                .as_ref()\n                                .and_then(|root| root.identity().ok())\n                                != Some(old_identity)\n                            || self.native_root.is_some()\n                    }\n                }\n            {\n                return Err(unavailable());\n            }\n            if let Some(prepared) = published_plan {\n                prepared.check_selection(&selected, committed)?;\n            }\n            // This scope owns no mutable Service alias. The guard stays borrowed\n            // by every gate and by the inner installer until the result returns.\n            // A refusal here still follows the outer durable restore/fence path.\n            failure.step(\"sync_local_guard\");\n            let borrowed = BorrowedLocalHaService::capture(self, &environment, old_identity)?;\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            let gate_metrics = NativeHaGateMetrics::new();\n            let original = RefCell::new(|| -> Result<(), ServiceError> {\n                let check = (|| {\n                    // The same real seal-file check remains at every old gate.\n                    // The borrowed in-memory fields cannot change in this scope.\n                    #[cfg(feature = \"private-ha-forward-diagnostic\")]\n                    let environment_result = gate_metrics.observe(0, || borrowed.check_seal());\n                    #[cfg(not(feature = \"private-ha-forward-diagnostic\"))]\n                    let environment_result = borrowed.check_seal();\n                    environment_result?;\n                    #[cfg(feature = \"private-ha-forward-diagnostic\")]\n                    let actor_result = gate_metrics.observe(2, || original_actor(&source_auth));\n                    #[cfg(not(feature = \"private-ha-forward-diagnostic\"))]\n                    let actor_result = original_actor(&source_auth);\n                    actor_result?;\n                    #[cfg(feature = \"private-ha-forward-diagnostic\")]\n                    let witness_result = gate_metrics\n                        .observe(3, || process.verify_native_v6_committed_read(committed));\n                    #[cfg(not(feature = \"private-ha-forward-diagnostic\"))]\n                    let witness_result = process.verify_native_v6_committed_read(committed);\n                    witness_result.map_err(|_| {\n                        witness_refused.set(true);\n                        unavailable()\n                    })?;\n                    live(deadline)\n                })();\n                check.map_err(|error| {\n                    if denial.borrow().is_none() {\n                        *denial.borrow_mut() = Some(error);\n                    }\n                    ServiceError::BarrierFailure\n                })\n            });\n            let mut gate = || (original.borrow_mut())();\n            gate().map_err(storage_rejected)?;\n            if selected.native.is_none() {\n                failure.step(\"sync_v5_source\");\n                verify_v5_source(&durable, &selected.source, &actual, &mut gate)?;\n                selected\n                    .check(&mut durable, selected.initial_generation)\n                    .map_err(storage_rejected)?;\n            }\n            // An exact-current warm root reopens its typed metadata and every\n            // real payload locator. Selected point reads retain AEAD/address\n            // authentication; cold loads and new-root installs remain full.\n            if old_identity == StateIdentity::RecordsV6(committed.published().root_digest()) {\n                let root = selected.native.as_ref().ok_or_else(unavailable)?;\n                NativeHaCursor::decode(\n                    selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose(),\n                )?\n                .matches_current(committed)?;\n                failure.step(\"sync_current_local_graph\");\n                let (metadata, native) = match read::materialize_current_local_request(\n                    &mut durable,\n                    root,\n                    deadline,\n                    &mut gate,\n                ) {\n                    Ok(local) => local,\n                    Err(_) => {\n                        failure.step(\"sync_current_local_repair\");\n                        // Repair remains under the original witness/Actor. Its\n                        // actual no-replace readback distinguishes a missing\n                        // file from a corrupt existing one; it never masks the latter.\n                        process\n                            .with_native_v6_source(committed, |codec, store| {\n                                repair_current_local_objects(\n                                    &mut durable,\n                                    &selected,\n                                    committed,\n                                    codec,\n                                    store,\n                                    &mut gate,\n                                )\n                            })\n                            .map_err(|_| unavailable())??;\n                        failure.step(\"sync_current_local_graph_after_repair\");\n                        materialize_local(&mut durable, root, deadline, &mut gate)?\n                    }\n                };\n                failure.step(\"sync_current_local_finish\");\n                Self::check_native_installed(&actual, &metadata, &native, root, deadline)?;\n                selected\n                    .check(&mut durable, selected.initial_generation)\n                    .map_err(storage_rejected)?;\n                gate().map_err(storage_rejected)?;\n                return Ok(actual);\n            }\n            failure.step(\"sync_changed_root_install\");\n            process\n                .with_native_v6_source(committed, |codec, store| {\n                    borrowed\n                        .service()\n                        .install_native_v6_replica_inner_with_local_plan(\n                            &mut durable,\n                            &selected,\n                            committed,\n                            LocalInstallSource {\n                                storage: NativeV6ObjectStorage { codec, store },\n                                payload_validation,\n                            },\n                            published_plan,\n                            &mut gate,\n                            &root_committed,\n                        )\n                })\n                .map_err(|_| unavailable())?\n        })();\n        let uncertain = root_committed.get() && result.is_err() || durable.recovery_required();\n        self.durable = Some(durable);\n        self.ha_read_cache = None;\n        let installed = match result {\n            Ok(installed) => installed,\n            Err(error) => {\n                self.ha_activation = None;\n                if uncertain {\n                    self.recovery_required = true;\n                    return Err(Response::error(\n                        503,\n                        \"native V6 HA local publication requires cold reconciliation\",\n                    ));\n                }\n                return Err(denial.into_inner().unwrap_or(error));\n            }\n        };\n        failure.step(\"sync_final_environment\");\n        let final_check = (|| {\n            environment.check(self)?;\n            if self.current_state_identity()? != old_identity {\n                return Err(unavailable());\n            }\n            original_actor(&source_auth)?;\n            process\n                .verify_native_v6_committed_read(committed)\n                .map_err(|_| unavailable())?;\n            let root_bytes = self\n                .durable\n                .as_ref()\n                .ok_or_else(unavailable)?\n                .get(\"system\", \"state\")\n                .map_err(storage_rejected)?\n                .ok_or_else(unavailable)?;\n            let root = RecordStateRootV6::decode(root_bytes.expose()).map_err(|_| unavailable())?;\n            if root.identity().map_err(|_| unavailable())?.digest()\n                != committed.published().root_digest()\n            {\n                return Err(unavailable());\n            }\n            live(deadline)?;\n            Ok(root)\n        })();\n        let root = final_check.inspect_err(|_| {\n            if root_committed.get() {\n                self.recovery_required = true;\n            }\n            self.ha_activation = None;\n        })?;\n        failure.step(\"sync_publish_local_state\");\n        self.state = Some(installed);\n        self.state_digest = Some(committed.published().root_digest());\n        self.record_root = None;\n        self.native_root = Some(root);\n        self.record_writes_since_gc = 0;\n        self.install_epoch_activation(next_activation);\n        live(deadline).inspect_err(|_| {\n            self.recovery_required = true;\n            self.ha_activation = None;\n        })?;\n        failure.complete();\n        Ok(ha_received::HaSyncProgress::Current)\n    }\n\n    // Keep the four validated outputs together at this single install boundary.\n    #[allow(clippy::type_complexity)]\n    fn stage_published_native_v6_local_plan(\n        &self,\n        durable: &mut DurableService<AeadBarrier>,\n        selected: &LocalSelection,\n        read: &CommittedNativeV6Read,\n        input: PublishedLocalInstallSource<'_>,\n        gate: &mut impl FnMut() -> Result<(), ServiceError>,\n    ) -> Result<\n        (\n            RecordStateRootV6,\n            Zeroizing<Vec<u8>>,\n            State,\n            Vec<(String, Option<Secret>)>,\n        ),\n        Response,\n    > {\n        let PublishedLocalInstallSource { prepared, storage } = input;\n        let NativeV6ObjectStorage { codec, store } = storage;\n        gate().map_err(storage_rejected)?;\n        prepared.check_selection(selected, read)?;\n        selected\n            .check(durable, selected.initial_generation)\n            .map_err(storage_rejected)?;\n        let plan = prepared.plan;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let cipher_phase = NativeHaPhaseTimer::start(\n            \"install_published_plan_cipher_graph\",\n            read.deadline().instant(),\n            selected.initial_generation,\n            read.published().intent().object_count,\n            read.published().intent().ciphertext_bytes,\n        );\n        // Reopen the ACTUAL committed cipher directory and its authenticated\n        // small root under the same process/Actor gate. The original plan is\n        // not evidence that current HA files remain present or unchanged.\n        let cipher = codec\n            .open_native_v6_committed_read(read.enrollment(), read.published(), store, &mut || {\n                gate().map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Gate)\n            })\n            .map_err(|_| unavailable())?;\n        if cipher.root_bytes() != plan.bytes.as_slice()\n            || cipher.root().identity().map_err(|_| unavailable())?\n                != plan.root.identity().map_err(|_| unavailable())?\n        {\n            return Err(unavailable());\n        }\n        let physical = store\n            .reopen_root_closure(read.published(), &mut || {\n                gate().map_err(|_| heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged)\n            })\n            .map_err(|_| unavailable())?;\n        gate().map_err(storage_rejected)?;\n        if physical.as_slice() != cipher.references() {\n            return Err(unavailable());\n        }\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        cipher_phase.finish(true);\n        let owner_bytes = plan\n            .root\n            .owners\n            .iter()\n            .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))\n            .ok_or_else(unavailable)?;\n        if owner_bytes > self.opaque_owner_limit() as u64 {\n            return Err(Response::error(\n                507,\n                \"native opaque owner capacity exhausted\",\n            ));\n        }\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let phase = NativeHaPhaseTimer::start(\n            \"install_published_plan_local_objects\",\n            read.deadline().instant(),\n            selected.initial_generation,\n            plan.objects.len() as u64,\n            plan.root.kv2.iter().fold(0u64, |sum, graph| {\n                sum.saturating_add(graph.logical_payload_bytes)\n            }),\n        );\n        // These are the original typed plaintext objects, held immutably from\n        // preparation through the real Raft publication. They cannot substitute\n        // for either store's physical proof: local HBA1 encryption, actual-fd\n        // no-replace/fsync, readback and old-root session are still performed.\n        let session = native_blob_source::session(durable, selected.root_bytes.expose())\n            .map_err(storage_rejected)?;\n        let mut pending = plan.objects.iter().peekable();\n        let mut locators = Vec::new();\n        while pending.peek().is_some() {\n            gate().map_err(storage_rejected)?;\n            selected\n                .check(durable, selected.initial_generation)\n                .map_err(storage_rejected)?;\n            let mut batch = Vec::new();\n            let mut ciphertext_bytes = 0usize;\n            while let Some(&((domain, _), object)) = pending.peek() {\n                let next_bytes = ciphertext_bytes\n                    .checked_add(object.bytes().len())\n                    .and_then(|bytes| bytes.checked_add(32))\n                    .ok_or_else(unavailable)?;\n                if batch.len() == heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS\n                    || next_bytes > ImmutableSourceSession::MAX_BATCH_CIPHERTEXT_BYTES\n                {\n                    break;\n                }\n                ciphertext_bytes = next_bytes;\n                batch.push((domain, object.as_ref()));\n                pending.next();\n            }\n            if batch.is_empty() {\n                return Err(unavailable());\n            }\n            let markers = native_blob_source::stage_batch(durable, &session, &batch, gate)\n                .map_err(storage_rejected)?;\n            if markers.len() != batch.len() {\n                return Err(unavailable());\n            }\n            for ((domain, object), marker) in batch.into_iter().zip(markers) {\n                gate().map_err(storage_rejected)?;\n                let resource = v6_records::native_resource(domain, object.reference());\n                match durable.get(\"system\", &resource).map_err(storage_rejected)? {\n                    Some(actual) if actual.expose() == marker.expose() => {}\n                    Some(actual) if actual.expose() == object.bytes() => {\n                        locators.push((resource, Some(marker)));\n                    }\n                    Some(_) => return Err(unavailable()),\n                    None => locators.push((resource, Some(marker))),\n                }\n                gate().map_err(storage_rejected)?;\n            }\n        }\n        drop(session);\n        // Keep the same cipher reader/store borrowed through all local fsyncs.\n        // A full physical closure reopen after them must select exactly the\n        // same references; the gate keeps its original process read/deadline.\n        let after = store\n            .reopen_root_closure(read.published(), &mut || {\n                gate().map_err(|_| heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged)\n            })\n            .map_err(|_| unavailable())?;\n        if after != physical || cipher.root_bytes() != plan.bytes.as_slice() {\n            return Err(unavailable());\n        }\n        selected\n            .check(durable, selected.initial_generation)\n            .map_err(storage_rejected)?;\n        gate().map_err(storage_rejected)?;\n        prepared.check_selection(selected, read)?;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        phase.finish(true);\n        // The common installer will freshly authenticate the complete local\n        // closure BEFORE and AFTER the root CAS and compare it with this exact\n        // typed candidate. Unchanged old leaves are not assumed healthy.\n        Ok((\n            plan.root.clone(),\n            Zeroizing::new(plan.bytes.to_vec()),\n            prepared.installed.clone(),\n            locators,\n        ))\n    }\n\n"
+    },
+    {
+      "file": "service_native_v6_ha_install.rs",
+      "scope": "install_received_graph",
+      "startLine": 1639,
+      "phases": [
+        "install_received_graph",
+        "install_published_local_plan",
+        "install_root_binding",
+        "install_local_objects",
+        "install_detached_metadata",
+        "install_locator_batches",
+        "install_pre_cas_graph",
+        "install_prepare_root_cas",
+        "install_local_root_cas",
+        "install_local_root_readback",
+        "install_post_cas_graph",
+        "scope_total"
+      ],
+      "exact_fragment": "    fn install_native_v6_replica_inner_with_local_plan(\n        &self,\n        durable: &mut DurableService<AeadBarrier>,\n        selected: &LocalSelection,\n        read: &CommittedNativeV6Read,\n        source: LocalInstallSource<'_>,\n        published_plan: Option<PublishedLocalPlan<'_>>,\n        gate: &mut impl FnMut() -> Result<(), ServiceError>,\n        root_committed: &Cell<bool>,\n    ) -> Result<State, Response> {\n        let LocalInstallSource {\n            storage,\n            payload_validation,\n        } = source;\n        let NativeV6ObjectStorage { codec, store } = storage;\n        let deadline = read.deadline();\n        let failure =\n            NativeV6FailureObservation::start(\"install_received_graph\", deadline.instant());\n        let shared_gate = RefCell::new(gate);\n        // Received/pre-CAS/post-CAS readers capture their own real source and\n        // generation. Only the exact authenticated bytes' JSON semantics may\n        // also have been checked during this same request or cold recovery call.\n        let codec_gate = || {\n            (shared_gate.borrow_mut())()\n                .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)\n        };\n        let (root, root_bytes, installed, locators) = if let Some(prepared) = published_plan {\n            failure.step(\"install_published_local_plan\");\n            self.stage_published_native_v6_local_plan(\n                durable,\n                selected,\n                read,\n                PublishedLocalInstallSource {\n                    prepared,\n                    storage: NativeV6ObjectStorage { codec, store },\n                },\n                &mut || (shared_gate.borrow_mut())(),\n            )?\n        } else {\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            let phase = NativeHaPhaseTimer::start(\n                \"install_received_graph\",\n                deadline.instant(),\n                selected.initial_generation,\n                read.published().intent().object_count,\n                read.published().intent().ciphertext_bytes,\n            );\n            // The codec obtains the canonical root from the committed small seal.\n            // Its closure/full typed reader rejects missing, extra and wrong-domain data.\n            let received = open_native_v6_ha_objects_with_payload_validation(\n                NativeV6ObjectStorage { codec, store },\n                read.enrollment(),\n                read.published(),\n                ReadContext {\n                    expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),\n                    cluster_id: &selected.source.cluster_id,\n                    replay_epoch: read.enrollment().epoch(),\n                    minimum_state_schema: selected.source.state_schema,\n                    maximum_state_schema: MAX_SUPPORTED_STATE_SCHEMA,\n                    reader_format: crate::state_record_root_v6::READER_FORMAT,\n                },\n                deadline,\n                &mut || codec_gate(),\n                payload_validation,\n            )\n            .map_err(|_| unavailable())?;\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            phase.finish(true);\n            failure.step(\"install_root_binding\");\n            let root = received.root().clone();\n            let root_bytes = Zeroizing::new(received.root_bytes().to_vec());\n            if root.reader_floor.native_kv2_format != 2\n                || root.replay_epoch != read.enrollment().epoch()\n            {\n                return Err(unavailable());\n            }\n            let owner_bytes = root\n                .owners\n                .iter()\n                .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))\n                .ok_or_else(unavailable)?;\n            if owner_bytes > self.opaque_owner_limit() as u64 {\n                return Err(Response::error(\n                    507,\n                    \"native opaque owner capacity exhausted\",\n                ));\n            }\n            let epoch_scope =\n                (selected.local_epoch < root.replay_epoch).then_some(EpochInstallScope {\n                    selected,\n                    committed: read,\n                });\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            let phase = NativeHaPhaseTimer::start(\n                \"install_local_objects\",\n                deadline.instant(),\n                selected.initial_generation,\n                read.published().intent().object_count,\n                read.published().intent().ciphertext_bytes,\n            );\n            failure.step(\"install_local_objects\");\n            let mut locators = Vec::new();\n            let session = native_blob_source::session(durable, selected.root_bytes.expose())\n                .map_err(storage_rejected)?;\n            received\n                .visit_verified_object_batches(codec, store, &mut || codec_gate(), &mut |objects| {\n                    let markers =\n                        native_blob_source::ha_local_stage::stage_verified_received_batch(\n                            durable,\n                            &session,\n                            objects,\n                            epoch_scope.as_ref(),\n                            &mut || (shared_gate.borrow_mut())(),\n                        )\n                        .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?;\n                    if markers.len() != objects.len() {\n                        return Err(crate::ha_state::native_v6::NativeV6CodecError::Storage);\n                    }\n                    for (object, marker) in objects.iter().zip(markers) {\n                        codec_gate()?;\n                        let resource =\n                            v6_records::native_resource(object.domain(), object.reference());\n                        match durable\n                            .get(\"system\", &resource)\n                            .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?\n                        {\n                            Some(actual) if actual.expose() == marker.expose() => {}\n                            Some(actual) if actual.expose() == object.plaintext() => {\n                                locators.push((resource, Some(marker)))\n                            }\n                            Some(_) => {\n                                return Err(\n                                    crate::ha_state::native_v6::NativeV6CodecError::Storage,\n                                );\n                            }\n                            None => locators.push((resource, Some(marker))),\n                        }\n                        codec_gate()?;\n                    }\n                    codec_gate()\n                })\n                .map_err(|_| unavailable())?;\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            phase.finish(true);\n            drop(session);\n            failure.step(\"install_detached_metadata\");\n            let (mut installed, native, _) = received\n                .into_detached_parts(&mut || codec_gate())\n                .map_err(|_| unavailable())?;\n            installed\n                .engines\n                .install_native_views(native)\n                .map_err(Response::from_engine_error)?;\n            (root, root_bytes, installed, locators)\n        };\n        let identity = root.identity().map_err(|_| unavailable())?;\n        let epoch_scope = (selected.local_epoch < root.replay_epoch).then_some(EpochInstallScope {\n            selected,\n            committed: read,\n        });\n        root_namespace_only(&installed)?;\n        if epoch_scope.is_some() {\n            if let Some(current) = self.state.as_ref() {\n                Self::validate_snapshot_protected_floor(current, &installed)?;\n            }\n            // A cold node has no warm State. Its authenticated old local\n            // protected owners still supply the non-regression floor; missing\n            // obsolete KV payloads need not be read, and no archived/new Auth\n            // substitutes for that original protected source.\n            if let Some(previous) = selected.native.as_ref() {\n                let source =\n                    native_blob_source::NativeSource::new_checked(durable, deadline, || {\n                        (shared_gate.borrow_mut())()\n                    })\n                    .map_err(|_| unavailable())?;\n                let (mut metadata, native) = v6_records::materialize_metadata_for_service(\n                    previous,\n                    context(previous)?,\n                    &source,\n                )\n                .map_err(|_| unavailable())?;\n                metadata\n                    .engines\n                    .install_native_views(native)\n                    .map_err(Response::from_engine_error)?;\n                root_namespace_only(&metadata)?;\n                Self::validate_snapshot_protected_floor(&metadata, &installed)?;\n            } else if self.state.is_none() {\n                return Err(unavailable());\n            }\n        }\n        root_namespace_only(&installed)?;\n        let operation = format!(\n            \"native6-ha-install-{}\",\n            hex(&crypto::random::<16>().map_err(|_| unavailable())?)\n        );\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let phase = NativeHaPhaseTimer::start(\n            \"install_locator_batches\",\n            deadline.instant(),\n            selected.initial_generation,\n            read.published().intent().object_count,\n            read.published().intent().ciphertext_bytes,\n        );\n        failure.step(\"install_locator_batches\");\n        let mut expected_generation = selected.initial_generation;\n        for (batch_index, batch) in locators\n            .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)\n            .enumerate()\n        {\n            (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n            selected\n                .check(durable, expected_generation)\n                .map_err(storage_rejected)?;\n            durable\n                .apply_batch_conditionally_before_publish(\n                    BatchPublication {\n                        replay_epoch: selected.local_epoch,\n                        principal: \"heptabao-server\".into(),\n                        namespace: \"system\".into(),\n                        request_id: format!(\"{operation}-locators-{batch_index}\"),\n                        authorization_digest: identity.digest(),\n                        mutations: batch.to_vec(),\n                    },\n                    selected.conditions(),\n                    &mut || (shared_gate.borrow_mut())(),\n                )\n                .map_err(storage_rejected)?;\n            expected_generation = expected_generation.checked_add(1).ok_or_else(unavailable)?;\n            selected\n                .check(durable, expected_generation)\n                .map_err(storage_rejected)?;\n            (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n        }\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        phase.finish(true);\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let phase = NativeHaPhaseTimer::start(\n            \"install_pre_cas_local_graph\",\n            deadline.instant(),\n            selected.initial_generation,\n            read.published().intent().object_count,\n            read.published().intent().ciphertext_bytes,\n        );\n        failure.step(\"install_pre_cas_graph\");\n        let (metadata, native) = materialize_local_with_payload_validation(\n            durable,\n            &root,\n            deadline,\n            &mut || (shared_gate.borrow_mut())(),\n            Some(payload_validation),\n        )?;\n        Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        phase.finish(true);\n        selected\n            .check(durable, expected_generation)\n            .map_err(storage_rejected)?;\n        failure.step(\"install_prepare_root_cas\");\n        let publication_generation = expected_generation.checked_add(1).ok_or_else(unavailable)?;\n        let cursor = match &selected.active {\n            Some(cursor) => cursor.advance(&root, publication_generation)?,\n            None => NativeActiveCursor::for_migration(\n                &selected.source,\n                selected.initial_generation,\n                &root,\n                publication_generation,\n            )?,\n        };\n        let cursor_bytes = cursor.encode()?;\n        let ha_bytes = NativeHaCursor::new(read, publication_generation)?.encode()?;\n        let mut mutations = vec![\n            (\n                \"state\".into(),\n                Some(Secret::new(root_bytes.to_vec()).map_err(storage_rejected)?),\n            ),\n            (\n                ACTIVE_CURSOR_RESOURCE.into(),\n                Some(Secret::new(cursor_bytes.to_vec()).map_err(storage_rejected)?),\n            ),\n            (\n                HA_CURSOR_RESOURCE.into(),\n                Some(Secret::new(ha_bytes.to_vec()).map_err(storage_rejected)?),\n            ),\n        ];\n        if selected.active.is_none() {\n            mutations.push((\n                ACTIVE_SOURCE_ROOT_RESOURCE.into(),\n                Some(selected.root_bytes.clone()),\n            ));\n        }\n        (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let phase = NativeHaPhaseTimer::start(\n            \"install_local_root_cas\",\n            deadline.instant(),\n            selected.initial_generation,\n            read.published().intent().object_count,\n            read.published().intent().ciphertext_bytes,\n        );\n        failure.step(\"install_local_root_cas\");\n        let publication = BatchPublication {\n            replay_epoch: root.replay_epoch,\n            principal: \"heptabao-server\".into(),\n            namespace: \"system\".into(),\n            request_id: format!(\"{operation}-root\"),\n            authorization_digest: identity.digest(),\n            mutations,\n        };\n        if epoch_scope.is_some() {\n            durable.publish_epoch_batch_conditionally_before_publish(\n                expected_generation,\n                selected.local_epoch,\n                publication,\n                selected.conditions(),\n                &mut || (shared_gate.borrow_mut())(),\n            )\n        } else {\n            durable.apply_batch_conditionally_before_publish(\n                publication,\n                selected.conditions(),\n                &mut || (shared_gate.borrow_mut())(),\n            )\n        }\n        .map_err(storage_rejected)?;\n        failure.step(\"install_local_root_readback\");\n        root_committed.set(true);\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        phase.finish(true);\n        (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n        durable.verify_live_ownership().map_err(storage_rejected)?;\n        if durable.generation() != publication_generation\n            || durable.replay_epoch() != root.replay_epoch\n        {\n            return Err(unavailable());\n        }\n        for (resource, expected) in [\n            (\"state\", root_bytes.as_slice()),\n            (ACTIVE_CURSOR_RESOURCE, cursor_bytes.as_slice()),\n            (HA_CURSOR_RESOURCE, ha_bytes.as_slice()),\n        ] {\n            if durable\n                .get(\"system\", resource)\n                .map_err(storage_rejected)?\n                .ok_or_else(unavailable)?\n                .expose()\n                != expected\n            {\n                return Err(unavailable());\n            }\n            (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n        }\n        let source = durable\n            .get(\"system\", ACTIVE_SOURCE_ROOT_RESOURCE)\n            .map_err(storage_rejected)?\n            .ok_or_else(unavailable)?;\n        if source.expose()\n            != selected\n                .source\n                .encode()\n                .map_err(|_| unavailable())?\n                .as_slice()\n        {\n            return Err(unavailable());\n        }\n        cursor.validate(&selected.source, &root, durable.generation())?;\n        let observed = NativeHaCursor::decode(ha_bytes.as_slice())?;\n        observed.matches_current(read)?;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        let phase = NativeHaPhaseTimer::start(\n            \"install_post_cas_local_graph\",\n            deadline.instant(),\n            selected.initial_generation,\n            read.published().intent().object_count,\n            read.published().intent().ciphertext_bytes,\n        );\n        failure.step(\"install_post_cas_graph\");\n        let (metadata, native) = materialize_local_with_payload_validation(\n            durable,\n            &root,\n            deadline,\n            &mut || (shared_gate.borrow_mut())(),\n            Some(payload_validation),\n        )?;\n        Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;\n        #[cfg(feature = \"private-ha-forward-diagnostic\")]\n        phase.finish(true);\n        (shared_gate.borrow_mut())().map_err(storage_rejected)?;\n        failure.complete();\n        Ok(installed)\n    }\n}\n"
+    },
+    {
+      "file": "service.rs",
+      "line": 4183,
+      "scope": "forward_delivery",
+      "phases": [
+        "exchange_and_applied"
+      ]
+    },
+    {
+      "file": "ha.rs",
+      "line": 1553,
+      "scope": "forward_exchange",
+      "phases": [
+        "peer_exchange"
+      ]
+    },
+    {
+      "file": "ha.rs",
+      "line": 1633,
+      "scope": "forward_exchange",
+      "phases": [
+        "wait_applied"
+      ]
+    }
+  ],
+  "whitelist_scope": "39 pairs derived from four normal failure scopes plus three normal timing spans in actual 495 sources. Not a claim of exhaustive repository-wide discovery. Any other pair causes fail-closed diagnostic refusal with a fixed code, never reflection or silent acceptance. The test-only local_stage_batch spans are excluded.",
+  "threat_and_limits": [
+    "No request-ID field exists; class ordinary is not a route.",
+    "No assumed content or correlation for input line178.",
+    "Original two public marker types preserve line order around any new marker.",
+    "A missing, rejected, truncated-by-source-bucket-bound or failed-to-log record cannot diagnose the request.",
+    "The final output cap remains64KiB even if many valid timing lines would exceed it; this is a refusal, not a larger output budget.",
+    "Component execution is pure selected-parser and AST compile only, not actual log/FD/host qualification."
+  ],
+  "input_binding": {
+    "prior_result_blob": "0868b78a56b7c2287264a84d4d5f167933122a9e",
+    "prior_result_sha256": "852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4",
+    "actual_fields": {
+      "bytes": 37545,
+      "ctime_ns": "1793843323209252035",
+      "device": 66306,
+      "gid": 1000,
+      "inode": 38844679,
+      "mode": 384,
+      "mtime_ns": "1793843323209252035",
+      "nlink": 1,
+      "type": 32768,
+      "uid": 1000
+    },
+    "sha256": "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892",
+    "authority_blob": "3daf02b30fb9d6cf88d8d3afd0e161ca00a1a01b",
+    "input_identity_source": "raw stat/FD fields, not a native connector version token"
+  },
+  "source_preservation": {
+    "hunks": 7,
+    "whole_exact": true
+  }
+}

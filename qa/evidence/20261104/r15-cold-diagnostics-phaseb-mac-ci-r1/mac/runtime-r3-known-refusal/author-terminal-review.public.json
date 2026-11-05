@@ -1,0 +1,132 @@
+{
+  "schema": "heptabao.mac-current-five-agent-runtime-author-terminal-review.r1",
+  "job_id": "1a1a968c3e6-fc05-3501",
+  "status": "FAIL_INPUT_ADMISSION",
+  "exact_request_blob": "bd112cd7ea0a9ea34595b03d6e790f1a5a019ae5",
+  "unique_submission": true,
+  "authority_exit_code": 1,
+  "complete": true,
+  "durable": true,
+  "supervisor_timeout": false,
+  "stdout_bytes": 15368,
+  "stdout_sha256": "38d5674cb161a83fa52a87f7a533b4cbe7bd4567e718fc48e3bda779be3c3ddb",
+  "stdout_sdk_hex_text_and_lossless_eof_equal": true,
+  "stderr_bytes": 0,
+  "elapsed_seconds": 0.25087299989536405,
+  "outcome_unknown": false,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "failed_source_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+  "error_type": "InputRefused",
+  "original_error_code_field": null,
+  "original_error_frames": [
+    {
+      "file": "mac_current_outer_inputs_r1.py",
+      "line": 305
+    },
+    {
+      "file": "mac_current_outer_inputs_r1.py",
+      "line": 201
+    },
+    {
+      "file": "mac_current_outer_inputs_r1.py",
+      "line": 135
+    },
+    {
+      "file": "contextlib.py",
+      "line": 141
+    },
+    {
+      "file": "mac_current_outer_inputs_r1.py",
+      "line": 109
+    },
+    {
+      "file": "mac_current_outer_inputs_r1.py",
+      "line": 59
+    }
+  ],
+  "exact_static_predicate": {
+    "function": "Inputs.parents",
+    "lines": [
+      109,
+      110,
+      111,
+      112
+    ],
+    "code": "readonly_input_parent_custody_or_exact_held_anchor",
+    "requires": [
+      "a named directory",
+      "owner UID 0 or 501",
+      "if /, /Volumes or /Volumes/T5, exact frozen nine-field identity",
+      "otherwise neither group-write nor other-write permission"
+    ],
+    "not_a_demonstrated_sha_mismatch": true
+  },
+  "completed_input_evidence": {
+    "source_records": 19,
+    "public_code_aliases": 15,
+    "selected_public_code_allowlist": 40,
+    "selected_allowlist_is_not_completed_hash_count": true,
+    "total_hashed_bytes": 100936945,
+    "last_completed_record": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/package.json"
+  },
+  "source_order_inference": {
+    "next_requested_code_path": "/opt/homebrew/lib/node_modules/openclaw/package.json",
+    "basis": "code_allowed insertion order and complete original record/alias sequence; first SDK_FILES item",
+    "specific_resolved_parent": null,
+    "specific_refusal_subcondition": null,
+    "current_metadata_not_yet_observed": true
+  },
+  "no_business_started": {
+    "production_capture_attempted": false,
+    "private_frozen_inputs_attempted": false,
+    "current_sqlite_opened": false,
+    "credential_projection_attempted": false,
+    "owned_phases": 0,
+    "consumer_checks": 0,
+    "production_service_operation": false,
+    "provider": false,
+    "j3160": false
+  },
+  "cleanup": {
+    "commands": 1,
+    "only_command": [
+      "/usr/sbin/diskutil",
+      "info",
+      "-plist",
+      "/Volumes/T5"
+    ],
+    "direct_child_reaped": true,
+    "live_group_empty_before_reap": true,
+    "remaining_after_reap": [],
+    "post_reap_signal_sent": false,
+    "command_streams_closed": true,
+    "input_descriptors_closed": true,
+    "t5_descriptors_closed": true,
+    "outer_descriptors_closed": true,
+    "reservation_attempted": false,
+    "all_registrations_lineages_helpers_closed": true
+  },
+  "budgets": {
+    "outer": 900,
+    "supervisor": 1080,
+    "manager": 600,
+    "failure_cleanup": 60,
+    "phase": 120,
+    "capture": 45,
+    "http": 10,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "original_deadline_after_closure_met": true
+  },
+  "unchanged_claims": {
+    "known_failure_not_reclassified": true,
+    "no_runtime_qualification": true,
+    "no_source_mutation": true,
+    "no_automatic_retry": true
+  },
+  "next_scope": "Retain this failure and frozen sources. Only exact public parent metadata can locate the rejected component; no inference about credentials or permission relaxation."
+}

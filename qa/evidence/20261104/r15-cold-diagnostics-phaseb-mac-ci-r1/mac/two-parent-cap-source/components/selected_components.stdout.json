@@ -1,0 +1,82 @@
+{
+  "actual_fd_operations": 0,
+  "actual_sockets": 0,
+  "checks": [
+    {
+      "case": "actual_original_guard_rejects_both_observed_0775",
+      "passed": true
+    },
+    {
+      "case": "only_two_exact_public_parent_identities_return_all_nine_fields",
+      "passed": true
+    },
+    {
+      "case": "private_read_public_and_general_context_keep_original_refusal",
+      "passed": true
+    },
+    {
+      "case": "other_775_and_777_parent_never_borrow_homebrew_binding",
+      "passed": true
+    },
+    {
+      "case": "all_nine_substituted_parent_fields_rejected_for_each_binding",
+      "passed": true
+    },
+    {
+      "case": "ordinary_strict_parent_retains_original_six_field_custody",
+      "passed": true
+    },
+    {
+      "case": "actual_before_and_after_fd_named_expressions_check_all_nine",
+      "passed": true
+    },
+    {
+      "case": "actual_context_requires_original_closed_pin_and_resolved_path_not_private_or_later_added",
+      "passed": true
+    },
+    {
+      "case": "default_denies_exception_and_private_public_receipt_functions_are_byte_identical",
+      "passed": true
+    },
+    {
+      "case": "closed_set_frozen_once_at_exact_original_forty",
+      "passed": true
+    },
+    {
+      "case": "actual_final_verify_reenters_pin_code_and_preserves_other_read_limits_and_privacy",
+      "passed": true
+    },
+    {
+      "case": "eleven_unchanged_methods_and_original_per_file_cap_predicate_retained",
+      "passed": true
+    },
+    {
+      "case": "actual_original_record_comparison_refuses_same_plugin_at_smaller_collect_cap",
+      "passed": true
+    },
+    {
+      "case": "new_public_code_comparison_separates_call_cap_private_and_read_public_stay_exact",
+      "passed": true
+    },
+    {
+      "case": "every_real_file_identity_field_and_all_nine_metadata_fields_remain_exact",
+      "passed": true
+    },
+    {
+      "case": "actual_8m_collect_256m_hash_and_1g_aggregate_caps_are_unchanged_and_enforced",
+      "passed": true
+    }
+  ],
+  "children": 0,
+  "failed": 0,
+  "full_runtime_qualified": false,
+  "network": 0,
+  "passed": 16,
+  "physical_host_calls": 0,
+  "read_cap_identity_source_boundary_checked": true,
+  "schema": "heptabao.mac-public-parent-guard-pure-components.r1",
+  "scope": "AST-selected actual parent/context/FD/final-verify logic and static invariance only",
+  "sqlite": 0,
+  "status": "passed",
+  "whole_module_executed": false
+}

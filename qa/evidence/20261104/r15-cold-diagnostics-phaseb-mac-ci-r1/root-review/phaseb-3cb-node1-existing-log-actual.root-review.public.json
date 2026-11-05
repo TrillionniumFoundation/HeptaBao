@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.root-phaseb-node1-existing-log-actual-review.v1",
+  "tree": "52dbf5d681903711b38f673fc0bdc72be67195d8",
+  "files": 24,
+  "bytes": 282682,
+  "merkle_trees": 7,
+  "job_id": "1a1a99b05aa-fc05-364b",
+  "exit_code": 0,
+  "complete": true,
+  "durable": true,
+  "immutable_pages": 4,
+  "original_sdk_payloads": 2,
+  "original_start_sdk_exact": true,
+  "derived_payload_serialization": {
+    "authority": "exact original payload",
+    "streams0": "exact original payload"
+  },
+  "full_stdout_bytes": 12843,
+  "same_original_input_bytes": 4577,
+  "same_original_10field_identity": true,
+  "same_original_input_sha256": "eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201",
+  "markers": 8,
+  "scanned_lines": 11,
+  "unselected_lines_not_emitted": 3,
+  "all7_descriptors_closed": true,
+  "elapsed_seconds": 0.0019168308936059475,
+  "inner_seconds": 15,
+  "line9": {
+    "step": "fresh_ingress_same_root_closure",
+    "code": "fresh_ingress_read_refused",
+    "reason_sha": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed",
+    "elapsed_us": "1444",
+    "step_elapsed_us": "7",
+    "remaining_ns": "14993533703",
+    "deadline_expired": false
+  },
+  "line11": {
+    "request_class": "ordinary",
+    "status": 503,
+    "elapsed_us": "4434",
+    "phase_failed": "fresh_ingress_same_root_closure",
+    "failed_calls": "1",
+    "prior_permission_runtime_storage_read_index_enrollment_phases_advanced": true
+  },
+  "public_error_source": {
+    "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "lib_blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5",
+    "fixed_display_string": "HA cluster configuration is invalid",
+    "variant": "HaError::InvalidCluster",
+    "exact_sha256_match": true,
+    "precise_inner_guard_unresolved": true
+  },
+  "limits": [
+    "Ordinary marker and log adjacency do not establish B01 identity or route.",
+    "B01 remains UNKNOWN with no archive and no replay.",
+    "Static enum match names an error variant, not yet the exact internal guard."
+  ],
+  "no_child_write_network_or_product_request": true,
+  "exclusive_diagnostic_window_released": true,
+  "full_replacement_qualification": false
+}

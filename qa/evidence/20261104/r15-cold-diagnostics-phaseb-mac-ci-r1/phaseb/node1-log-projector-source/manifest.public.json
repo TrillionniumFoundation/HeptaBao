@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.phaseb-3cb-node1-log-source-packet.v2",
+  "source_only": true,
+  "target_filter_executed": false,
+  "product_requests": 0,
+  "files": [
+    {
+      "path": "candidate/phaseb_3cb_node1_normal_log_projection_r2.py",
+      "bytes": 23851,
+      "sha256": "213251facd4baf26e1be10c5939d551e7920ea825d3b35a85c37f59ce9fd2cce",
+      "blob": "74cdbee3ced0d4e0a891e62485d87d5f7b0b1cc2"
+    },
+    {
+      "path": "dispatch/exact-request-r2.json",
+      "bytes": 25763,
+      "sha256": "66dbdd133e426d2c7c5d5321bcfb28bcdabcd1a335428b4fa3153c7ce8a39e19",
+      "blob": "60e3144d33649c8ff734998c0a03f907a6567998"
+    },
+    {
+      "path": "input/node1-stderr.file-info.original.json",
+      "bytes": 509,
+      "sha256": "f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2",
+      "blob": "0af2cce8ce210ee9bc5b986b33821a43e6375f4e"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 4565,
+      "sha256": "8ea9c2f253478e1c453120c52c3a82bdc63faa1f000b932841c2f9decc5e6b26",
+      "blob": "a70c987be8886fddcf2e356dbe25b1d2a8fefd5a"
+    },
+    {
+      "path": "preserved-r1/candidate/phaseb_3cb_node1_normal_log_projection.py",
+      "bytes": 23813,
+      "sha256": "378c6112428d59f3e1f07ce0ff9099190ca7e2b1302d00399284abbe8d895c3c",
+      "blob": "7dbf7fc44b5e331a84b73f1e2b8c13d48ba54c08"
+    },
+    {
+      "path": "preserved-r1/dispatch/exact-request.json",
+      "bytes": 25661,
+      "sha256": "0cc37fc4b539fc500fe4e825958ff884c0dff76e5e78b5e5b6369c99127b326d",
+      "blob": "3a425eefafd0a41ddde4d65327cb7150a2823eb0"
+    },
+    {
+      "path": "preserved-r1/PLAN.public.json",
+      "bytes": 3571,
+      "sha256": "cfad36c6adc4cdd30b9af38993b71365262c9f655b5f35cc70e5c31c61f69676",
+      "blob": "c1ecbe4e2be481c0326f219a8fbf9019f31b3c94"
+    },
+    {
+      "path": "preserved-r1/README.md",
+      "bytes": 2204,
+      "sha256": "6063532c94272d55ae383ac0aca91c52016f2d9680eab451a30e9c84c174a75c",
+      "blob": "4a61c320a155e5ed02669518ea1ea1667a36936b"
+    },
+    {
+      "path": "preserved-r1/reference/ha_native_v6_runtime.3cb.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    },
+    {
+      "path": "preserved-r1/reference/ha_node2_normal_timing.py",
+      "bytes": 22580,
+      "sha256": "5c518fd3411d1c506f9814bb61bcbe2e5e65b6dc2dfe7a748757cb271ac74345",
+      "blob": "07632a3e595d7a44d8f586e95dbb93abcf75a7cb"
+    },
+    {
+      "path": "preserved-r1/review/binding-and-labels.review.diff",
+      "bytes": 7946,
+      "sha256": "aa9d9e92699df3de911c482099401dbcd4d85f2bda0f5f83af611d1749e447f1",
+      "blob": "909a7dd89a83a1d86f163d2a13d0c9382b6598d0"
+    },
+    {
+      "path": "preserved-r1/review/components.execution.original.json",
+      "bytes": 11459,
+      "sha256": "1c01395961d4695e724de5cf9e6812518bab0e3e1544248be1d7b32204cd9e35",
+      "blob": "970debf4a36cec3251385119929e2be133e3dfb1"
+    },
+    {
+      "path": "preserved-r1/review/components.public.json",
+      "bytes": 1789,
+      "sha256": "0679e9885755404206f5e4f05f818a09dd4638f5d2797f87e951a050c35df82d",
+      "blob": "10486d2d5822425b3edaeda1e7a4a50d00185f28"
+    },
+    {
+      "path": "preserved-r1/review/components.py",
+      "bytes": 3927,
+      "sha256": "ac34727823700b6cc50fff308a9f609199f7ed8428df652a95a2de9960364acf",
+      "blob": "4b8d3526cb920ebba4a38a19b40a460f0aa501ce"
+    },
+    {
+      "path": "preserved-r1/review/exact-substitutions.json",
+      "bytes": 6358,
+      "sha256": "57eb43a6efd3e6efe5033f6d688a1c8ce3224e4eecc4b19e90a5c4d611cf975c",
+      "blob": "4efd6611cd4a0259f2f112d94938a085cac79aed"
+    },
+    {
+      "path": "preserved-r1/review/initial-components.execution.original.json",
+      "bytes": 289,
+      "sha256": "dda61f7bf50147db868bd514b4d362a560a10b2ef3d905ed5d9717d32f524108",
+      "blob": "67a7decf2e3104abf271aa467556cbff22e650ed"
+    },
+    {
+      "path": "preserved-r1/review/initial-components.py",
+      "bytes": 3861,
+      "sha256": "3f1f34c8b2a9a62b2ff5060b23bbaf5e4f8d3d714b470d938fbb0279a0cac537",
+      "blob": "4a0cb0b7c4069a476f6a41d6fa7a6562bf4e2283"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3596,
+      "sha256": "9c6234a9c33e43a237240bc08a338c944c766b63781be7435a76d7259ead7f94",
+      "blob": "9ab857157c2459a976fe905a015277820f014a2b"
+    },
+    {
+      "path": "reference/ha_v6_native_codec.3cb.rs",
+      "bytes": 52138,
+      "sha256": "5817213ce2ab37c6a536717565405e448c21380908fa92658e8ce825f5c3c369",
+      "blob": "98e2ab5e8132d7c33dd313bef54366c05636a291"
+    },
+    {
+      "path": "review/codec-components.execution.original.json",
+      "bytes": 11801,
+      "sha256": "3388b6e8584392e8af1d21b723a9520314f8123b6d1389cd08c266e6acd36a7a",
+      "blob": "56ca268cf324b31c6bdeda198ffaff3b07a83650"
+    },
+    {
+      "path": "review/codec-components.public.json",
+      "bytes": 1136,
+      "sha256": "a674b3db1f887f2da4c9f60c34f685974a78c25db8d15080eafcfb6bcd77be23",
+      "blob": "3ec65927268263373a0c2071be2ab644645600d4"
+    },
+    {
+      "path": "review/codec-components.py",
+      "bytes": 4179,
+      "sha256": "64c88c3c1864e2d1f2bcebc74b55131a5209b94071d04ac6cf8b6bdcb70b6214",
+      "blob": "b0531209d2d0d376d63e610b5011bf572ae1003b"
+    },
+    {
+      "path": "review/codec-pair-only.review.diff",
+      "bytes": 474,
+      "sha256": "7ec59c42e20e10be85a0b7c0c5b89fb57dead2bfd27a6abc4d93895fc0346567",
+      "blob": "077684b9a64f5ceb92c9dbd25b1ff07f0cf4d684"
+    },
+    {
+      "path": "review/codec-source-anchor.public.json",
+      "bytes": 1725,
+      "sha256": "2d3786152d4fea0baf5e537f8d666f7cfdc21289bafc1a85668cf98586fb5648",
+      "blob": "15e273cdb4a08802ebbcbcf5a1f595f19d0a9a63"
+    },
+    {
+      "path": "review/exact-substitutions-r2.json",
+      "bytes": 6500,
+      "sha256": "0274109ad216dcddb946cbfd4a939e681d2c247b7218dae8edc3b90c26b49280",
+      "blob": "611f1558e4231ba16ab412b27f2c30cfa16b1514"
+    },
+    {
+      "path": "review/reference-to-r2.review.diff",
+      "bytes": 8305,
+      "sha256": "12f4ab932d05de5ec8d92407496030cf1bb1d5f63a0328b3b54b91383660ee9b",
+      "blob": "6ebf572a91d86e3762555425cd4a5f3975d7b79c"
+    }
+  ]
+}

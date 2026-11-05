@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.root-phaseb-live-terminal-core-review.v1",
+  "job_id": "1a1a983309e-fc05-35aa",
+  "core_packet_tree": "e18364ffe8b86073c249cb48622ab97920a391df",
+  "core_packet_files": 10,
+  "core_blob": "73dad48403355e4504ddfd7adc872a5c89f27f28",
+  "core_bytes": 278829,
+  "core_sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+  "core_exact_version": "2050:4756300:278829:1793845340825312226:1793845340825312226",
+  "authority_complete_durable_known_exit": 1,
+  "actual_ack_exact": true,
+  "terminal_stdout_full_hex_text_eof_verified": true,
+  "actual_result": "FAILED_UNKNOWN_CLI_OR_SERVER_BOUNDARY_NO_REPLAY",
+  "setup_ms": 20857.670922,
+  "B01": {
+    "cli_exit": 2,
+    "cli_elapsed_ms": 231.681634,
+    "private_stderr_bytes": 178,
+    "private_stderr_sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "archive_exists": false,
+    "single_audit_pair": [
+      61,
+      62
+    ],
+    "server_status": 503,
+    "server_boundary_known": false,
+    "outcome_unknown": true
+  },
+  "case_qualifications": {
+    "B01": false,
+    "B02": false,
+    "B03": false,
+    "B04": false,
+    "B05": false
+  },
+  "cold_results": 0,
+  "controller_replays": 0,
+  "guarded_unique_child_identities": 84,
+  "all_owned_children_matching_guard_reaped_group_empty": true,
+  "source_binary_fences_before_after_equal": true,
+  "final_errors": [],
+  "runtime_window_released": true,
+  "http_intent_outcome_report_counts": [
+    69,
+    69
+  ],
+  "all_http_pair_independent_archival": "pending; core counts are not represented as full archival",
+  "dynamic_checks_passed": 84,
+  "dynamic_checks_are_not_B01_B05_or_full_replacement": true,
+  "production_changed": false,
+  "full_replacement": false
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "2952a4",
+  "wall_time_seconds": 0.016291388,
+  "exit_code": 1,
+  "original_token_count": 143,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac-public-parent-guard-r1-bf4B0d/components.py\", line 82, in <module>\n    case('actual_before_and_after_fd_named_expressions_check_all_nine',descriptors)\n  File \"/tmp/mac-public-parent-guard-r1-bf4B0d/components.py\", line 33, in case\n    call()\n  File \"/tmp/mac-public-parent-guard-r1-bf4B0d/components.py\", line 77, in descriptors\n    assert eval(before_fd,ns) and eval(after_fd,ns)\n           ^^^^^^^^^^^^^^^^^^\n  File \"<actual-condition>\", line 133, in <module>\nNameError: name 'fd' is not defined. Did you mean: 'id'?\n"
+}

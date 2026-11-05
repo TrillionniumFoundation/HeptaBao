@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-node1-log-213251fa-status-20261105-r2",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a99b05aa-fc05-364b"
+    }
+  }
+}

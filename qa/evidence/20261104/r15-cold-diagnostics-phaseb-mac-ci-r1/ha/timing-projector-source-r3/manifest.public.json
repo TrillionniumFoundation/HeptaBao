@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.b2-timing-codec-source-packet.r3",
+  "source_only": true,
+  "files": {
+    "source/node2_log_projector_r3.py": {
+      "bytes": 22618,
+      "sha256": "0630a5ea9aaaa790df935d137ccc337f319187cfaf392366d44bf36ac85d800b",
+      "blob": "7cf15c4fac367a2a556376e26dc40ecb475d04ce"
+    },
+    "diffs/r2-to-r3.codec-only.review.diff": {
+      "bytes": 420,
+      "sha256": "e0b2ac791d9ab4c8e932330e0e40e8b18591a77719ac6d9a175a06a06ca91459",
+      "blob": "8bd868e3c68a56a9f080c6c49cc2a376fa0e19bd"
+    },
+    "REQUEST.proposed.json": {
+      "bytes": 24437,
+      "sha256": "5ddae71ff619f52feaf1cf0da2d18e3a3299bf0d87fd030df90e9c5bb2368872",
+      "blob": "f03a71516326a97baf9236908b433bab593da745"
+    },
+    "CODEC_SOURCE_CORRECTION.public.json": {
+      "bytes": 12862,
+      "sha256": "9faf1367b67c54ca9c1b17f296abd7fd04b8746a2d6d4bc3f734494b409b90f9",
+      "blob": "4075a4c6b339a2d8e4749534d42a0e7981800ac0"
+    },
+    "components/codec_pair_components.py": {
+      "bytes": 53903,
+      "sha256": "abd46199aceaa6d8b851aa1d0d85d3029b8898d770ef3545643d7f4f1ca5aced",
+      "blob": "44b52bc73bf6eea016513f6e1105cbee8454fcf0"
+    },
+    "components/codec_pair_components.executor.json": {
+      "bytes": 2310,
+      "sha256": "5e6603aa9e1449903af990eace853c9cd3049cd05823846f9c23cdc8824b4761",
+      "blob": "15a4d414ce94c15cfce1e586657ad472ede6936d"
+    },
+    "components/codec_pair_components.public.json": {
+      "bytes": 1864,
+      "sha256": "5e36d12e085518b1b21aba7aabcf5e061758a7bca0899d0f1a370ee79dedcaca",
+      "blob": "bff7f3dc74fde936c64e2c78f3c9373211d81f1a"
+    },
+    "README.md": {
+      "bytes": 1396,
+      "sha256": "c7968891e8fd33046499c7067b8f6b3061112e54a49e3ba66caa0c8b99fc8d50",
+      "blob": "9590d00fda1073da9482cd04f8a911914ef69ffb"
+    }
+  },
+  "reused_git_blobs": [
+    {
+      "path": "references/original_39_projector_r2.py",
+      "blob": "07632a3e595d7a44d8f586e95dbb93abcf75a7cb"
+    },
+    {
+      "path": "references/original_39_source_contract.public.json",
+      "blob": "32dd19cb98fc688961c5d90e21b11fde4511d576"
+    },
+    {
+      "path": "references/original_46_components.public.json",
+      "blob": "93a216a4d65a980025b4bd82dcae60e4f35f1245"
+    },
+    {
+      "path": "references/previous_projection.public.json",
+      "blob": "0868b78a56b7c2287264a84d4d5f167933122a9e"
+    },
+    {
+      "path": "references/previous_projection_authority.public.json",
+      "blob": "3daf02b30fb9d6cf88d8d3afd0e161ca00a1a01b"
+    },
+    {
+      "path": "references/previous_root_review.public.json",
+      "blob": "b1085898c0456bcdf8611e280e56227899fc6aad"
+    },
+    {
+      "path": "source495/ha_v6_native_codec.rs",
+      "blob": "98e2ab5e8132d7c33dd313bef54366c05636a291"
+    },
+    {
+      "path": "source495/service_native_v6_ha_objects.rs",
+      "blob": "0593818bc986a7d57c1814b0ca2e026437d6fc13"
+    },
+    {
+      "path": "source495/service_native_v6_ha_install.rs",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "source495/service_native_v6_ha_read.rs",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    },
+    {
+      "path": "source495/ha_native_v6_runtime.rs",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    }
+  ],
+  "product_requests": 0,
+  "request_submitted": false
+}

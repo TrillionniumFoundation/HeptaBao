@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-localstage-nativechunk1-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/native_fixture_reference_r8.py",
+      "expected_version": "2050:4755374:68149:1793843795033473679:1793843795033473679",
+      "offset": 65536,
+      "limit": 65536
+    }
+  }
+}

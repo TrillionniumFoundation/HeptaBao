@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.mac-owned-qa-metadata.submission-intent.r1",
+  "request_blob": "96b0c762382169ccfab808473c7a1afdbfdeee2c",
+  "request_bytes": 11001,
+  "request_sha256": "a820b9a28033098479aa61d37ad6cc64644e6a2bc02e9a8901f802170b4b1710",
+  "source_tree": "9862f20ebbb9379add5ab1650b2f89ace3c913e5",
+  "root_admission": "5d1df01374592b3171e767d4f67ab383c8af8346",
+  "key": "heptabao-mac-owned-qa-metadata-aecb42cd-20261105-r1",
+  "scope": "one fixed directory metadata observation only; no inert replay or runtime"
+}

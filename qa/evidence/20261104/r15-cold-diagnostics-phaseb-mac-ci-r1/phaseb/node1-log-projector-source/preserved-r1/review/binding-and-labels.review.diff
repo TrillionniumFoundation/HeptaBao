@@ -1,0 +1,117 @@
+--- reference/ha-node2-normal-timing.py
++++ candidate/phaseb_3cb_node1_normal_log_projection.py
+@@ -1,4 +1,4 @@
+-"""Same fixed stopped synthetic node log; add strict normal timing projection."""
++"""One fixed stopped 3cb Phase B node1 log; exact metadata and normal markers."""
+ import hashlib
+ import json
+ import os
+@@ -8,15 +8,17 @@
+ import sys
+ import time
+ 
+-ROOT = "/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2"
+-LEAF = "process.log"
+-RUN_ID = "1d2269955b8e0cac332c40625057bb0f"
++ROOT = "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/node1"
++LEAF = "native-start0.stderr.private.log"
++FIXTURE_RESULT_SHA256 = "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e"
++CANDIDATE_COMMIT = "3cb873919170cc77101b27f6a3ab9e98f41f8d93"
++RUNTIME_SOURCE_BLOB = "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+ MAX_INPUT = 2 * 1024 * 1024
+ MAX_MARKERS = 128
+ MAX_OUTPUT = 65536
+ TOTAL_SECONDS = 15.0
+-PHASES = frozenset(["committed_changed_root_recover","committed_enrollment","committed_final_witness","committed_read_entry","committed_read_index","committed_same_root_reopen","install_detached_metadata","install_local_objects","install_local_root_cas","install_local_root_readback","install_locator_batches","install_post_cas_graph","install_pre_cas_graph","install_prepare_root_cas","install_published_local_plan","install_received_graph","install_root_binding","sync_after_migration","sync_changed_root_install","sync_current_local_finish","sync_current_local_graph","sync_current_local_graph_after_repair","sync_current_local_repair","sync_environment","sync_final_environment","sync_local_guard","sync_local_selection","sync_migration_source","sync_predecessor_read_boundary","sync_process_witness","sync_publish_local_state","sync_v5_source"])
+-CODES = frozenset(["changed_root_recover_refused","final_witness_refused","read_index_refused","same_root_reopen_refused","scope_not_completed"])
++PHASES = frozenset(["committed_changed_root_recover","committed_enrollment","committed_final_witness","committed_read_entry","committed_read_index","committed_same_root_reopen","install_detached_metadata","install_local_objects","install_local_root_cas","install_local_root_readback","install_locator_batches","install_post_cas_graph","install_pre_cas_graph","install_prepare_root_cas","install_published_local_plan","install_received_graph","install_root_binding","sync_after_migration","sync_changed_root_install","sync_current_local_finish","sync_current_local_graph","sync_current_local_graph_after_repair","sync_current_local_repair","sync_environment","sync_final_environment","sync_local_guard","sync_local_selection","sync_migration_source","sync_predecessor_read_boundary","sync_process_witness","sync_publish_local_state","sync_v5_source","fresh_ingress_permission","fresh_ingress_runtime","fresh_ingress_storage_operation","fresh_ingress_read_index","fresh_ingress_enrollment","fresh_ingress_same_root_closure","fresh_ingress_original_repair","fresh_ingress_changed_root_recover","fresh_ingress_final_witness"])
++CODES = frozenset(["changed_root_recover_refused","final_witness_refused","read_index_refused","same_root_reopen_refused","scope_not_completed","fresh_ingress_read_refused"])
+ U128_MAX = (1 << 128) - 1
+ SYNC = re.compile(rb"HBHA-NATIVE-SYNC-FAIL step=([a-z0-9_]{1,64}) code=([a-z0-9_]{1,64}) reason_sha=(-|[0-9a-f]{64}) elapsed_us=([0-9]{1,39}) step_elapsed_us=([0-9]{1,39}) original_deadline_expired=(true|false) original_remaining_ns=([0-9]{1,39}) panicking=(true|false)\n")
+ UNSEAL = re.compile(rb"HBHA-DIAG-UNSEAL route_status=([0-9]{1,5}) state_loaded=(true|false) recovery_required=(true|false) barrier_loaded=(true|false) record_root=(true|false) activation=(true|false) original_deadline_present=(true|false)\n")
+@@ -78,25 +80,35 @@
+     ("sync_migration_source", "sync_after_migration"),
+     ("sync_migration_source", "sync_migration_source"),
+     ("sync_migration_source", "sync_predecessor_read_boundary"),
++    ("fresh_ingress_permission", "fresh_ingress_permission"),
++    ("fresh_ingress_permission", "fresh_ingress_runtime"),
++    ("fresh_ingress_permission", "fresh_ingress_storage_operation"),
++    ("fresh_ingress_permission", "fresh_ingress_read_index"),
++    ("fresh_ingress_permission", "fresh_ingress_enrollment"),
++    ("fresh_ingress_permission", "fresh_ingress_same_root_closure"),
++    ("fresh_ingress_permission", "fresh_ingress_original_repair"),
++    ("fresh_ingress_permission", "fresh_ingress_changed_root_recover"),
++    ("fresh_ingress_permission", "fresh_ingress_final_witness"),
++    ("fresh_ingress_permission", "scope_total"),
+ ])
+ EXPECTED_INPUT_FIELDS = (
+     "device", "inode", "uid", "gid", "mode", "type",
+     "nlink", "bytes", "mtime_ns", "ctime_ns",
+ )
+ EXPECTED_INPUT_IDENTITY = (
+-    "66306",
+-    "38844679",
++    "2050",
++    "4755604",
+     "1000",
+     "1000",
+     "384",
+     "32768",
+     "1",
+-    "37545",
+-    "1793843323209252035",
+-    "1793843323209252035",
++    "4577",
++    "1793845333664873175",
++    "1793845333664873175",
+ )
+-EXPECTED_INPUT_SHA256 = "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892"
+-PREVIOUS_PROJECTION_SHA256 = "852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4"
++EXPECTED_INPUT_SHA256 = "eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201"
++METADATA_RECEIPT_SHA256 = "f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2"
+ 
+ INTERRUPTED = False
+ 
+@@ -306,8 +318,9 @@
+     descriptors = []
+     directories = []
+     result = {
+-        "schema": "heptabao.b2-stopped-node2-public-log-projection.v2",
+-        "fixture_run_id": RUN_ID, "node_id": 2,
++        "schema": "heptabao.phaseb-3cb-stopped-native-node1-log-projection.v1",
++        "fixture_result_sha256": FIXTURE_RESULT_SHA256, "node_id": 1,
++        "candidate_commit": CANDIDATE_COMMIT, "runtime_source_blob": RUNTIME_SOURCE_BLOB,
+         "root": ROOT, "leaf": LEAF, "status": "refused", "complete": False,
+         "read_only": True, "product_requests": 0, "children_started": 0,
+         "files_written": 0, "new_shared_seconds": TOTAL_SECONDS,
+@@ -317,8 +330,8 @@
+         "no_matching_marker_does_not_prove_no_internal_failure": True,
+         "unsigned_128_time_fields_encoded_as_decimal_strings": True,
+         "unsigned_64_timing_counts_encoded_as_decimal_strings": True,
+-        "previous_projection_sha256": PREVIOUS_PROJECTION_SHA256,
+-        "same_previous_input_binding_verified": False,
++        "metadata_receipt_sha256": METADATA_RECEIPT_SHA256,
++        "same_metadata_input_binding_verified": False,
+         "normal_timing_scope_phase_pairs_allowed": len(TIMING_PAIRS),
+         "max_timing_line_bytes": MAX_TIMING_LINE,
+         "timing_class_is_not_request_route_or_correlation_id": True,
+@@ -377,7 +390,7 @@
+         if not same_file(before, opened) or not same_file(opened, named):
+             raise Refused("log_open_identity_changed")
+         if tuple(str(before[key]) for key in EXPECTED_INPUT_FIELDS) != EXPECTED_INPUT_IDENTITY:
+-            raise Refused("log_differs_from_previous_projection_identity")
++            raise Refused("log_differs_from_bound_metadata_identity")
+         result["input_before"] = before
+         digest = hashlib.sha256()
+         data = bytearray()
+@@ -394,8 +407,8 @@
+         result["scanned_bytes"] = len(data)
+         result["input_sha256"] = digest.hexdigest()
+         if result["input_sha256"] != EXPECTED_INPUT_SHA256:
+-            raise Refused("log_differs_from_previous_projection_whole_sha")
+-        result["same_previous_input_binding_verified"] = True
++            raise Refused("log_differs_from_bound_metadata_whole_sha")
++        result["same_metadata_input_binding_verified"] = True
+         for line_number, line in enumerate(data.splitlines(keepends=True), 1):
+             remaining(until)
+             result["scanned_lines"] = line_number

@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.mac-public-parent-guard-source-review.r1",
+  "strict_apply": {
+    "hunks": 9,
+    "fuzz": 0,
+    "before": {
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+      "git_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b"
+    },
+    "after": {
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a"
+    },
+    "diff": {
+      "bytes": 9093,
+      "sha256": "39e3879d6086b335657ba225ba4c5a51e23faa8ef6621a1c91e3fe10c0e2e2c0",
+      "git_blob": "3f8a87f50af6b0e2fc73efd0218cd8e24f63a2cd"
+    },
+    "whole_bytes_exact": true
+  },
+  "local_components": {
+    "passed": 16,
+    "failed": 0,
+    "complete_candidate_module_executed": false,
+    "source": {
+      "bytes": 12140,
+      "sha256": "9b6aa97f3176d12512dd7565faa8f0d30a679be3b8eb45efb4e53c1161a662dd",
+      "git_blob": "66695672083b5a7f420b1c834f24618a0ce8d1df"
+    },
+    "executor_result": {
+      "bytes": 2732,
+      "sha256": "e7045eaee30f0ca5dcef467c9a141d31234122e37a9c184d8d8eb7e2e96f4b98",
+      "git_blob": "33409d85254d3859cfeb9834fd7e1b58d186be90"
+    },
+    "stdout": {
+      "bytes": 2390,
+      "sha256": "36188d01928ece65a6b3929fadc27f0491439817e13e278476f3b1d8b6e8fa21",
+      "git_blob": "489ed748fec2c21a807d55206e52632915ff7c5e"
+    }
+  },
+  "initial_component_harness_failure": {
+    "retained": true,
+    "candidate_source_unchanged": true,
+    "reason": "Selected before-FD expression required fake local fd; the test environment omitted it. NameError occurred with no actual FD operation. Only the component environment was corrected.",
+    "source": {
+      "bytes": 12132,
+      "sha256": "ecfbbe3815beff21bd09176f3d0ea6199e5ba49279bb04ea726872202b51b6c7",
+      "git_blob": "6fbc8b41ffd92f9fdf654634ff37013ccf3711d5"
+    },
+    "executor_result": {
+      "bytes": 717,
+      "sha256": "03fb306cc24fbe5c60ed6de1a1e0f37c7fbd758ba07d8d6f7ece31278cf8be23",
+      "git_blob": "65fc133e1b5a493f411660a8ae393cfe90c723c8"
+    }
+  },
+  "host_or_runtime_actions": 0
+}

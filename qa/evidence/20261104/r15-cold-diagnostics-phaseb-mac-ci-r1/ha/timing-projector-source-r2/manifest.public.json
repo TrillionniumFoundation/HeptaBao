@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.b2-timing-projector-source-packet.r2",
+  "source_only": true,
+  "files": {
+    "source/node2_log_projector_r2.py": {
+      "bytes": 22580,
+      "sha256": "5c518fd3411d1c506f9814bb61bcbe2e5e65b6dc2dfe7a748757cb271ac74345",
+      "blob": "07632a3e595d7a44d8f586e95dbb93abcf75a7cb"
+    },
+    "diffs/r1-to-r2.review.diff": {
+      "bytes": 12020,
+      "sha256": "21d255257b63c164002301b6a48e77b29017ad85578efc81a095e510a455b1a8",
+      "blob": "96773d490c3b9d195c13f81ba39d4ff505043538"
+    },
+    "REQUEST.proposed.json": {
+      "bytes": 24394,
+      "sha256": "7fa753407f72a7055b5d17e420cb679b3187034fc9a36340befaac5af93b57e9",
+      "blob": "258b4611b7d39f2244cc8b57b69418563bc1401b"
+    },
+    "SOURCE_CONTRACT.public.json": {
+      "bytes": 53890,
+      "sha256": "af858907aa51595ff53fc9a4e25f7f2650e5322f2cd7f7b6c0ce7422c2ba3fcb",
+      "blob": "32dd19cb98fc688961c5d90e21b11fde4511d576"
+    },
+    "README.md": {
+      "bytes": 2205,
+      "sha256": "4c50d17ee956ab1b773f84340a70308bdd2dbcecb57213616f0ba3d4ba4e5ebe",
+      "blob": "81d874388370ee1d0bd107e7246fd8ffe8d2d489"
+    },
+    "components/parser_components.py": {
+      "bytes": 57617,
+      "sha256": "9053fa5b93ebd4eea86ba0ca20630a388a719e619016a09c1eaaec2a737aa053",
+      "blob": "c383a3365e8f367789c6084b551600f95ae8eb37"
+    },
+    "components/parser_components.executor.json": {
+      "bytes": 18203,
+      "sha256": "5a6378ef4babd397452e14510f165b0505994629b1c1f40563fcf1b0feca36f5",
+      "blob": "b49cc2a1b640d097906dea92f9dff82e89088532"
+    },
+    "components/parser_components.public.json": {
+      "bytes": 4845,
+      "sha256": "cfd15f2878769498950d1550dc5df44afe5d0f5cd71cde903148427c588a9c50",
+      "blob": "93a216a4d65a980025b4bd82dcae60e4f35f1245"
+    },
+    "references/original_projector_r1.py": {
+      "bytes": 13427,
+      "sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+      "blob": "3fbf4d7e7348118018af0e37354c078a2ffeb34c"
+    }
+  },
+  "reused_exact_blobs": [
+    {
+      "path": "references/previous_projection.public.json",
+      "blob": "0868b78a56b7c2287264a84d4d5f167933122a9e"
+    },
+    {
+      "path": "references/previous_projection_authority.public.json",
+      "blob": "3daf02b30fb9d6cf88d8d3afd0e161ca00a1a01b"
+    },
+    {
+      "path": "references/previous_root_review.public.json",
+      "blob": "b1085898c0456bcdf8611e280e56227899fc6aad"
+    },
+    {
+      "path": "references/previous_peer_review.public.json",
+      "blob": "60273719554d54eab83d7d4462f5abbaebcbdc19"
+    },
+    {
+      "path": "references/cold_matrix.public.json",
+      "blob": "9cc30c5c3563d01775edbff0f4906a829c84120e"
+    },
+    {
+      "path": "source495/ha_native_v6_runtime.rs",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    {
+      "path": "source495/service_native_v6_ha_install.rs",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "source495/ha.rs",
+      "blob": "95533302d0a7afa31078b712624c1701f5edb9c8"
+    },
+    {
+      "path": "source495/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    {
+      "path": "source495/http.rs",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    },
+    {
+      "path": "source495/service_native_v6_ha_local_stage.rs",
+      "blob": "97356cc6a07079f66d846b721c2bd37898b31c2d"
+    }
+  ],
+  "no_host_dispatched": true
+}

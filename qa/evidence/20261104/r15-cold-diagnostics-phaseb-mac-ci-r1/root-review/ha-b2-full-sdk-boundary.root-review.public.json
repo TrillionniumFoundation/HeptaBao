@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.ha-b2-root-full-sdk-boundary-review.v1",
+  "core_tree": "1588543e11e9e336fae94c103860abbb8ce95942",
+  "boundary_tree": "831be6738354b237c8bcdb6801441df42d43f876",
+  "pass": true,
+  "haSDK": {
+    "completeCoreWrappers": 8,
+    "summaryChunks": 2,
+    "summaryVersion": "2050:4755361:71123:1793843325753242624:1793843325753242624",
+    "wholeSummaryBytes": 71123,
+    "terminalRawStreamsExact": true
+  },
+  "boundarySDK": {
+    "wrappers": 7,
+    "exactOriginalFiles": 98,
+    "consecutiveIntentOutcomePairs": 49,
+    "statusDistribution": {
+      "200": 39,
+      "204": 8,
+      "503": 2
+    },
+    "originalSecondsDistribution": {
+      "12": 1,
+      "15": 48
+    },
+    "summary49EventsExactStatusElapsedMethodMatch": true,
+    "unknown": 0,
+    "automaticRetry": false,
+    "storageCommitNotInferredFromHTTP": true
+  },
+  "responseHashMatchingFixedLocalPublicationUnavailable": true,
+  "innerFailureCauseStillUndetermined": true,
+  "localVerifierCorrection": "First comparator expected a single-file payload where actual SDK used read_multiple; after inspecting shape, all comparisons were rerun against unchanged cached originals. No host request or business replay."
+}

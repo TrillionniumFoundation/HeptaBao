@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.mac-sdk-parent-metadata-author-review.r1",
+  "status": "KNOWN_PUBLIC_PARENT_CUSTODY_MISMATCH_IDENTIFIED",
+  "job_id": "1a1a96d3196-fc05-3524",
+  "failed_business_job": "1a1a968c3e6-fc05-3501",
+  "authority_exit_zero_complete_durable": true,
+  "requested": "/opt/homebrew/lib/node_modules/openclaw/package.json",
+  "resolved": "/opt/homebrew/lib/node_modules/openclaw/package.json",
+  "no_alias_changed": true,
+  "all_four_metadata_chains_equal": true,
+  "first_original_nonanchor_guard_failure": {
+    "path": "/opt/homebrew/lib",
+    "identity": [
+      "16777233",
+      "10827971",
+      "501",
+      "80",
+      "16893",
+      "459",
+      "14688",
+      "1791866883454202812",
+      "1791866883454202812"
+    ],
+    "uid": 501,
+    "gid": 80,
+    "mode": "0o775",
+    "group_or_other_write": true
+  },
+  "explicit_python_calls": {
+    "lstat": 28,
+    "readlink": 0,
+    "Path_resolve": 2,
+    "counter": 30,
+    "Path_resolve_internal_metadata_calls_not_individually_counted": true
+  },
+  "inner_seconds": 5,
+  "supervisor_seconds": 60,
+  "elapsed_seconds": 0.00015250034630298615,
+  "stdout_bytes": 9126,
+  "private_input_content_read": false,
+  "SDK_file_content_read": false,
+  "source_or_credentials_mutated": false,
+  "production_or_owned_business_replayed": false,
+  "guard_relaxed": false,
+  "no_file_hash_failure_proven": true,
+  "next_source_proposal": "Keep the original runtime failure. Any proposed exception is limited to the observed public code parent, all nine identity fields, a held FD and before/after named checks; private inputs and every other parent retain their prior predicates. Source review is required before a new generation can run."
+}

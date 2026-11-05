@@ -1,0 +1,48 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/qa/mac_current_outer_r3.py",
+      "--candidate",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/candidate-current-manager-r3.public.json",
+      "--candidate-sha256",
+      "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92",
+      "--public-source-pins-base64",
+      "ewogICJtYWNfY3VycmVudF9vdXRlcl9yMy5weSI6ICI1ZWNjNTc4MDVmMWZiMmIxNjJjMzhkMjhkMjhkZWJlNWUwMzVjYTMxMzVkYjZiMWI3ZGY1NWRhYTYyMjdkZjUwIiwKICAibWFjX2N1cnJlbnRfb3V0ZXJfaW5wdXRzX3IxLnB5IjogImJlNWRhNjVjZTNiZDk4NTg2ZDM2YjExZWRiYTZhNDYxOTYwMGI3NGZiYWJiOTMwNTBhMzMyNWU4OWU5ZWQyNTQiLAogICJtYWNfY3VycmVudF9maXh0dXJlX21hdGVyaWFsaXplcl9yMS5weSI6ICJmNzY2YmEzM2YyMjIzMGQ3OGU2MzU0NzdiMzVlNTI3ZTc4MTU0NTJlNTkxZTdiYzdhMDNmYTJhZTZjOTAyYjdmIiwKICAibWFjX2N1cnJlbnRfY2FwdHVyZV9lbnRyeV9yMS5weSI6ICJmZTU2ZDk2NzZhYWNmNWNmNGZlYjM3MzEzMGJlOTNjNGExN2ZhYjI1ODlhMTQzOWRhNGViZTk2YTRjYWQ0MDI0IiwKICAibWFjX293bmVkX2xhdW5jaGRfcjMucHkiOiAiMWMxOGJlOTA2OWI0ZjcyMTlhNzkzYzg4ZTA4YTY0ODg0MWJjYWI5OTJiODk0N2E5MDY0ZDU1NzEyNTM5YzA5YyIsCiAgIm1hY19jdXJyZW50X3NlcnZlcl9vd25lcl9yMS5weSI6ICIzOTMyZGRhZGE2OTMxMGI3MDBiN2I2YWFmZDMyNTIwMmMxZGVkYTg0YzJmMTJkNzExZTI3ZDAyMjExMWJkZmI2IiwKICAibWFjX2N1cnJlbnRfcGhhc2Vfb3duZXJfcjIucHkiOiAiYmJmMzYzNmY0MzIzZTNlOTkwMjA0YzhlYTA0Yzk4NmY4NzQwYjNmMzRmYTk2NmE5MzdmOTQ3Yjc2N2VlMTVjNCIsCiAgIm1hY19uYXRpdmVfcHJvY2Vzc19vYnNlcnZlcl9yMS5weSI6ICJjYzBmYTk5MTdkMDVjNmRjMmMyOTU1OTRmOTgwYzFmNzdkMDg5YzExOTZlNjI3OWExNGYyZmRhZjJkNzdhZTliIiwKICAibWFjX2d1YXJkZWRfY3VycmVudF9jYXB0dXJlX3IzLnB5IjogIjYwNmI1ZGY1ODkwOWViZWRjMDM1ZWJiZmY2YTRhYTVlNzU0ZDE5YzZhN2UwZjVlNGU4OGM5ZGRmYzU3YzI2OTMiLAogICJtYWNfb3duZWRfY29tbWFuZHNfcjEucHkiOiAiZWI2NzZlNmRlZGI2ZDU5NGQ5NDRlOTIxNzM4Y2Y5YjM4NGYyYTk4YTM3ZWUyYmQxZmE1NDMzYjg0OGEzNjg2NyIsCiAgIm1hY190NV92b2x1bWVfZ3VhcmRfcjEucHkiOiAiMTBlMTQwYjM3YTE3YjVmN2ZkNWNjNTY5YjE2MzJkYTk5YjYxZmQ1NDRlYzczMmE4ODA2ZmY0MDJkNGVlMGQ5OSIsCiAgIm1hY19vd25lZF91bnJlYXBlZF9yMS5weSI6ICJhMTQzYmEzMzQxNTk5MzFkNTMwYjQ5YTU1YzI0NDcxZjU2ZmExYjYyZjFlMTAxMmUxMmM3NWUyMWYzYzIyYjFkIiwKICAibWFjX2NhcHR1cmVfc3FsaXRlX3N5bnRoZXRpY19yMS5weSI6ICIxMDhmOTU2ZWIzNzc5ZmNlMzFlMDFkNjMwNTQ3MzQ0ZTIyMzYyODM5MDQxYWZlY2IzODIxYmY4MDUzZmYzOTJjIiwKICAibWFjX2NhcHR1cmVfc3FsaXRlX3N5bnRoZXRpY19yMi5weSI6ICJmM2M2YmIzMzY4MTQ0MTFhYTRhMjQ0OTBmMDkwNGNkYmQwZmFjMmJiODlkYmNjMzZkNjE1MWFkYTEzYTUxYmEyIiwKICAibWFjX2N1cnJlbnRfY3ljbGVfcjIubWpzIjogIjJiOTgyMzgzY2U2NjAyODE1OWFlODQ4NDViZjVhMGQzNTE1ZTAzMDhiYWI2OTE2OTQ0YmQ3MTk1YmI5NDgxNzciLAogICJtYWNfc2luZ2xlX25hdGl2ZV9yMi5tanMiOiAiZjkwYmJiMmU5YTFmYTY3OWQwNGZiZWY0MzI4ZjNhMWI5ZmM1MTJkMmI4MDlkYWNkN2VhZmNlNjdmOWNmZDkzYyIsCiAgIm1hY19hdXRoX3Jvd3NfY2FzX3IxLm1qcyI6ICIwMDIxZmE3NTM5ZjRmYjM2ZTJhYzkwNzMxNWRhMWM5ZDllNDA3YzljY2FjNjA2ZDE5MDhlMGI3YTNmNzA0MmRkIiwKICAibWFjX2F1dGhidXNfY2FjaGVfY2FzX3IxLm1qcyI6ICI5MTY0NGI5N2FlN2RlYjRlZGU0Njg4MzJkM2Y5MTY0NmJiMDBjZDkxOTE0OWE1MTBiZmZmZTM4ZDIzNTQ0YWY4Igp9Cg==",
+      "--public-source-pins-sha256",
+      "84860e3108a85650e7a4ec798fa4639b778ca049572bafbc82bee8f3783059a0",
+      "--public-volume-anchor-base64",
+      "ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",
+      "--public-volume-anchor-sha256",
+      "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"
+    ],
+    "created_unix_ms": 1793843577830,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1a968c3e6-fc05-3501",
+    "idempotency_key": "heptabao-mac-current-five-agent-launchd-r3-5ecc5780-20261105-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1a968c3e6-fc05-3501",
+    "request_digest": "0429e365e560d86c39148fccc5b1f5d7a1f11fcfc5306e53f1a90de72c6984bb",
+    "request_fingerprint": 300020876976380012,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a968c3e6-fc05-3501"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 73059,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a968c3e6-fc05-3501"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

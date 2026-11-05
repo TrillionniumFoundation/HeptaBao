@@ -1,0 +1,75 @@
+LINES 489..519
+489:     if observed['platform'] == 'Linux':
+490:         return observed['arguments'] in ([exe, '--config', config], [exe, '--config', config, '--ha-config', str(root / 'ha.json')])
+491:     return observed['command'] in (' '.join([exe, '--config', config]), ' '.join([exe, '--config', config, '--ha-config', str(root / 'ha.json')]))
+492: 
+493: def write_owned(path, payload):
+494:     temporary = path.with_name(path.name + '.copying')
+495:     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, 'O_NOFOLLOW', 0)
+496:     with os.fdopen(os.open(temporary, flags, 0o600), 'w') as output:
+497:         output.write(payload); output.flush(); os.fsync(output.fileno())
+498:     os.replace(temporary, path)
+499: 
+500: if action == 'start':
+501:     if pid_path.exists() or identity_path.exists():
+502:         raise SystemExit(73)
+503:     if not all(Path(item).is_file() and not Path(item).is_symlink()
+504:                for item in (exe, config, *([argv[-1]] if has_ha == '1' else []))):
+505:         raise SystemExit(74)
+506:     with os.fdopen(os.open(root / 'process.log', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600), 'ab') as output:
+507:         child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=output, stderr=output,
+508:                                  start_new_session=True, close_fds=True)
+509:     time.sleep(0.4)
+510:     observed = observe(child.pid)
+511:     if child.poll() is not None or not expected(observed) or os.getpgid(child.pid) != child.pid:
+512:         if child.poll() is None:
+513:             child.kill(); child.wait(timeout=5)
+514:         raise SystemExit(75)
+515:     write_owned(identity_path, json.dumps(observed, sort_keys=True) + '\n')
+516:     write_owned(pid_path, str(child.pid) + '\n')
+517:     with os.fdopen(os.open(root / 'pids.log', os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600), 'a') as output:
+518:         output.write(str(time.time()) + ' ' + str(child.pid) + ' started\n')
+519:     print(child.pid)
+LINES 591..632
+591: def api(context: ssl.SSLContext, node: Node, method: str, path: str,
+592:         body=None, token: str = "", timeout: float = 8.0, *,
+593:         wrap_ttl: str | None = None, parent_deadline=None) -> tuple[int, dict]:
+594:     if not path or path.startswith("/") or ".." in path.split("/") or "://" in path:
+595:         raise FixtureError("invalid_api_path")
+596:     headers = {"Accept": "application/json", "Content-Type": "application/json"}
+597:     if token:
+598:         headers["X-Vault-Token"] = token
+599:     if wrap_ttl is not None:
+600:         if not isinstance(wrap_ttl, str) or re.fullmatch(r"[0-9]{1,10}", wrap_ttl) is None:
+601:             raise FixtureError("invalid_fixture_wrap_ttl")
+602:         headers["X-Vault-Wrap-TTL"] = wrap_ttl
+603:     request = urllib.request.Request(
+604:         f"{node.api_origin}/v1/{path}",
+605:         data=None if body is None else json.dumps(body, separators=(",", ":")).encode(),
+606:         headers=headers, method=method,
+607:     )
+608:     opener = urllib.request.build_opener(
+609:         urllib.request.ProxyHandler({}), NoRedirect(),
+610:         urllib.request.HTTPSHandler(context=context),
+611:     )
+612:     if parent_deadline is not None:
+613:         timeout = parent_remaining(parent_deadline, timeout)
+614:     try:
+615:         response = opener.open(request, timeout=timeout)
+616:     except urllib.error.HTTPError as error:
+617:         response = error
+618:     with response:
+619:         raw = response.read(MAX_BODY + 1)
+620:         if len(raw) > MAX_BODY:
+621:             raise FixtureError("api_response_too_large")
+622:         parsed = json.loads(raw) if raw else {}
+623:         if not isinstance(parsed, dict):
+624:             raise FixtureError("api_response_not_object")
+625:         if parent_deadline is not None:
+626:             parent_remaining(parent_deadline, timeout)
+627:         return int(response.status), parsed
+628: 
+629: 
+630: def wait_listener(context: ssl.SSLContext, node: Node, seconds: float = 45,
+631:                   *, parent_deadline=None) -> tuple[int, dict]:
+632:     if parent_deadline is not None:

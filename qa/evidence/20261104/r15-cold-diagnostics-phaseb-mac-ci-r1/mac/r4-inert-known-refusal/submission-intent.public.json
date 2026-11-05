@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.mac-current-input-r4.inert-submission-intent.r1",
+  "request_blob": "a9a64ceb6b4bbc188acfed52959989f818a3a37c",
+  "request_bytes": 658018,
+  "request_sha256": "af9252ca583fa46c7fceb3b04c91bc2e5e517800406a86a27c9b6e05528bfe6e",
+  "source_tree": "96a6b844d745653558dbca8f18c7d45ad8326252",
+  "root_source_admission": "39bd83efa48650864a2bfce6d9bba71c60037174",
+  "scope": "append-only inert three files; no runtime",
+  "idempotency_key": "heptabao-mac-current-inputs-r4-source-inert-c160d359-20261105-r1"
+}

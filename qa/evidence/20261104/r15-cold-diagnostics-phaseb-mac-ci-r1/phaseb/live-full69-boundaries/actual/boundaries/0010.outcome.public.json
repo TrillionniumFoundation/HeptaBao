@@ -1,0 +1,16 @@
+{
+  "caller_elapsed_ms": 238.978445,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 2,
+  "elapsed_ms": 4.26415,
+  "error_type": "ConnectionRefusedError",
+  "label": "readiness",
+  "node": 1,
+  "outcome_unknown": false,
+  "phase": "before_connect",
+  "request_sent": false,
+  "response_complete": false,
+  "sequence": 10
+}

@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.mac-public-inputs-peer-review.ha-validation.r1",
+  "result": "PASS_SOURCE_SCOPED",
+  "reviewer": "ha_validation",
+  "input_tree": "522c6ee3bf7802d08b2f0392579d87635a0459cb",
+  "source": {
+    "hunks": 9,
+    "wholeExact": true,
+    "before": {
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+      "blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b"
+    },
+    "after": {
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "blob": "80a5fc810df942412c1e2d56162b2286de75667a"
+    },
+    "diff": {
+      "bytes": 9093,
+      "sha256": "39e3879d6086b335657ba225ba4c5a51e23faa8ef6621a1c91e3fe10c0e2e2c0",
+      "blob": "3f8a87f50af6b0e2fc73efd0218cd8e24f63a2cd"
+    },
+    "unchanged": [
+      {
+        "method": "remaining",
+        "wholeEqual": true
+      },
+      {
+        "method": "_close",
+        "wholeEqual": true
+      },
+      {
+        "method": "read_private",
+        "wholeEqual": true
+      },
+      {
+        "method": "read_public",
+        "wholeEqual": true
+      },
+      {
+        "method": "_admit_code",
+        "wholeEqual": true
+      },
+      {
+        "method": "admit_utilities",
+        "wholeEqual": true
+      },
+      {
+        "method": "project_frozen",
+        "wholeEqual": true
+      },
+      {
+        "method": "admit_actual_harnesses",
+        "wholeEqual": true
+      },
+      {
+        "method": "public_pins",
+        "wholeEqual": true
+      },
+      {
+        "method": "close",
+        "wholeEqual": true
+      },
+      {
+        "method": "public",
+        "wholeEqual": true
+      }
+    ]
+  },
+  "scope": [
+    "Two exact observed public-code parent identities",
+    "Operational read cap excluded only from original closed public-code identity comparison"
+  ],
+  "evidence": {
+    "closed40": {
+      "bytes": 10832,
+      "sha256": "a6f6eb77a2949f076e88fcbc4ac281c033c568aa27eb1723e6dc7aee1d212941",
+      "blob": "2fb08eca8dad260b914e63f48cc37eff2d2b945e"
+    },
+    "observed_metadata": {
+      "bytes": 115966,
+      "sha256": "dc9674e24a4f36cd4d3db2550cf4e54bc045531144c146ed23ceb2eb61181740",
+      "blob": "0f26874725507dc4094055fe4e4a5f328bfc22e4"
+    },
+    "actual_parent_identity_before_after_equal": {
+      "/opt/homebrew/Cellar": [
+        "16777233",
+        "10827980",
+        "501",
+        "80",
+        "16893",
+        "105",
+        "3360",
+        "1793687928283555715",
+        "1793687928283555715"
+      ],
+      "/opt/homebrew/lib": [
+        "16777233",
+        "10827971",
+        "501",
+        "80",
+        "16893",
+        "459",
+        "14688",
+        "1791866883454202812",
+        "1791866883454202812"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "boundary": "parent_scope",
+      "status": "closed",
+      "detail": "_file admits public_code only when private is false, original frozen forty-map and current code map both equal the requested SHA and the original alias resolves to the same explicit path. Other public/private readers retain public_code=None. Later harness/utility additions cannot acquire the exception merely through a path prefix."
+    },
+    {
+      "boundary": "parent_custody",
+      "status": "closed",
+      "detail": "Only /opt/homebrew/Cellar and /opt/homebrew/lib use their nine observed string fields. The same nine fields bind named-before, opened FD and named/FD-after under the held parent chain, with O_DIRECTORY/O_NOFOLLOW. No chmod or generic permission exception is added. Other parents retain their original six-field custody and anchor/permission checks."
+    },
+    {
+      "boundary": "file_and_alias",
+      "status": "closed",
+      "detail": "Whole SHA, all nine leaf identity fields, exact alias lstat/resolve, regular-file owner/mode checks, and final verify remain required; final original-code verify re-enters pin_code to recheck both special parent identities."
+    },
+    {
+      "boundary": "cap_vs_identity",
+      "status": "closed",
+      "detail": "Only an admitted original public-code record compares with cap normalized to its first record. The read still independently enforces the current <=256MiB hash cap or 8MiB collected-code cap before reading, and the same aggregate 1GiB counter. Path/bytes/SHA/nine identity fields/private and all other recorded keys remain exact. Private and read_public equality remain byte-identical."
+    }
+  ],
+  "validation": {
+    "strict_hunks": 9,
+    "strict_apply_whole_exact": true,
+    "unchanged_methods": [
+      "remaining",
+      "_close",
+      "read_private",
+      "read_public",
+      "_admit_code",
+      "admit_utilities",
+      "project_frozen",
+      "admit_actual_harnesses",
+      "public_pins",
+      "close",
+      "public"
+    ],
+    "independent_new_components_run": false,
+    "author_16_pure_components_read": {
+      "bytes": 2390,
+      "sha256": "36188d01928ece65a6b3929fadc27f0491439817e13e278476f3b1d8b6e8fa21",
+      "blob": "489ed748fec2c21a807d55206e52632915ff7c5e"
+    },
+    "author_initial_harness_failure_retained": true,
+    "full_other_18_source_review_repeated": false
+  },
+  "limits": {
+    "source_review_only": true,
+    "no_host_requests": true,
+    "no_candidate_execution": true,
+    "no_product_or_provider": true,
+    "no_new_runtime_qualification": true,
+    "actual_future_metadata_must_still_match": true,
+    "latest_bundle_and_dispatch_require_root_admission": true
+  },
+  "blocking_findings": []
+}

@@ -1,0 +1,26 @@
+{
+  "candidate_children": 0,
+  "candidate_host_calls": 0,
+  "candidate_modules_executed": false,
+  "candidate_sqlite_calls": 0,
+  "full_python_ast_compiled": [
+    "after.py",
+    "outer_r3.py",
+    "outer_r4.py",
+    "inert_r3.py",
+    "inert_r4.py"
+  ],
+  "inert_shared_top_level_functions_byte_identical": [
+    "critical",
+    "encode",
+    "load_definition_module",
+    "need",
+    "on_signal",
+    "remaining",
+    "sha",
+    "stdin_once"
+  ],
+  "outer_original_source_artifacts_anchor_profile_caps_and_deadlines_unchanged": true,
+  "schema": "heptabao.mac-input-successor-r4.source-ast-review.r1",
+  "status": "passed"
+}

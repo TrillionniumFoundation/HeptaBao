@@ -1,0 +1,10 @@
+--- preserved-r1/phaseb_3cb_node1_normal_log_projection.py
++++ candidate/phaseb_3cb_node1_normal_log_projection_r2.py
+@@ -41,6 +41,7 @@
+     "last_exit_remaining_ns", "minimum_entry_remaining_ns", "minimum_exit_remaining_ns",
+ )
+ TIMING_PAIRS = frozenset([
++    ("codec", "open_committed_read"),
+     ("committed_read_entry", "committed_changed_root_recover"),
+     ("committed_read_entry", "committed_enrollment"),
+     ("committed_read_entry", "committed_final_witness"),

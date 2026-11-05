@@ -1,0 +1,374 @@
+diff --git a/control/mac_input_successor_r4_inert.py b/control/mac_input_successor_r4_inert.py
+--- a/control/mac_input_successor_r4_inert.py
++++ b/control/mac_input_successor_r4_inert.py
+@@ -13,18 +13,8 @@
+ ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
+ QA=ROOT/'qa'
+ NEW_NAMES=[
+-    "mac_current_outer_r3.py",
+-    "mac_current_outer_inputs_r1.py",
+-    "mac_current_fixture_materializer_r1.py",
+-    "mac_current_capture_entry_r1.py",
+-    "mac_owned_launchd_r3.py",
+-    "mac_current_server_owner_r1.py",
+-    "mac_current_phase_owner_r2.py",
+-    "mac_native_process_observer_r1.py",
+-    "mac_current_cycle_r2.mjs",
+-    "mac_single_native_r2.mjs",
+-    "mac_auth_rows_cas_r1.mjs",
+-    "mac_authbus_cache_cas_r1.mjs"
++    "mac_current_outer_r4.py",
++    "mac_current_outer_inputs_r2.py"
+ ]
+ PINS={
+     "mac_current_outer_r3.py": [
+@@ -98,6 +88,14 @@
+     "mac_authbus_cache_cas_r1.mjs": [
+         6846,
+         "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
++    ],
++    "mac_current_outer_inputs_r2.py": [
++        27059,
++        "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603"
++    ],
++    "mac_current_outer_r4.py": [
++        59462,
++        "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f"
+     ]
+ }
+ PRESERVED={
+@@ -166,6 +164,138 @@
+         "16915",
+         "1793838192075174831",
+         "1793838192075185998"
++    ],
++    "mac_current_outer_r3.py": [
++        "16777244",
++        "72549039",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "59477",
++        "1793842695709399765",
++        "1793842695709409932"
++    ],
++    "mac_current_outer_inputs_r1.py": [
++        "16777244",
++        "72549040",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "24973",
++        "1793842695710161221",
++        "1793842695710168888"
++    ],
++    "mac_current_fixture_materializer_r1.py": [
++        "16777244",
++        "72549041",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "23643",
++        "1793842695710631595",
++        "1793842695710636928"
++    ],
++    "mac_current_capture_entry_r1.py": [
++        "16777244",
++        "72549042",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "19011",
++        "1793842695711298385",
++        "1793842695711305676"
++    ],
++    "mac_owned_launchd_r3.py": [
++        "16777244",
++        "72549043",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "35532",
++        "1793842695711757925",
++        "1793842695711763008"
++    ],
++    "mac_current_server_owner_r1.py": [
++        "16777244",
++        "72549044",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "13210",
++        "1793842695713241629",
++        "1793842695713248588"
++    ],
++    "mac_current_phase_owner_r2.py": [
++        "16777244",
++        "72549045",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "24971",
++        "1793842695713712461",
++        "1793842695713717336"
++    ],
++    "mac_native_process_observer_r1.py": [
++        "16777244",
++        "72549046",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "13423",
++        "1793842695714172168",
++        "1793842695714177335"
++    ],
++    "mac_current_cycle_r2.mjs": [
++        "16777244",
++        "72549047",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "24007",
++        "1793842695714620250",
++        "1793842695714625000"
++    ],
++    "mac_single_native_r2.mjs": [
++        "16777244",
++        "72549048",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "28527",
++        "1793842695715067624",
++        "1793842695715072582"
++    ],
++    "mac_auth_rows_cas_r1.mjs": [
++        "16777244",
++        "72549049",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "3103",
++        "1793842695716528287",
++        "1793842695716535287"
++    ],
++    "mac_authbus_cache_cas_r1.mjs": [
++        "16777244",
++        "72549050",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "6846",
++        "1793842695717560534",
++        "1793842695717567409"
+     ]
+ }
+ DOCUMENTS={
+@@ -180,10 +310,52 @@
+     "candidate-current-manager-r3.public.json": [
+         3442,
+         "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92"
++    ],
++    "candidate-current-manager-r4.public.json": [
++        3442,
++        "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825"
+     ]
+ }
+-PAYLOAD_BYTES=514784
+-PAYLOAD_SHA='1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556'
++PRESERVED_DOCUMENTS={
++    "proofs/synthetic-r2.stdout.public.json": [
++        "16777244",
++        "72549052",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "16228",
++        "1793842695718112907",
++        "1793842695718117782"
++    ],
++    "proofs/synthetic-r2.authority.public.json": [
++        "16777244",
++        "72549053",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "733",
++        "1793842695718558239",
++        "1793842695718563198"
++    ],
++    "candidate-current-manager-r3.public.json": [
++        "16777244",
++        "72549054",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "3442",
++        "1793842695718977613",
++        "1793842695718982405"
++    ]
++}
++NEW_DOCUMENTS=('candidate-current-manager-r4.public.json',)
++RUNTIME_ABSENT=('outer-r3','outer-r4','captures','launchd','server','credentials-consumer',
++                'installed-plugin-copy','initial','cold-new-process')
++PAYLOAD_BYTES=635018
++PAYLOAD_SHA='e8fe5f984ddab5fc7d8ab0758c8e2b3ba8ded25dfea6e62e04694147c8bb1b68'
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -228,7 +400,7 @@
+ def main():
+     os.umask(0o077)
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
+-    report={'schema':'heptabao.mac-current-complete-source-append-inert.r3','ok':False,'files':[],
++    report={'schema':'heptabao.mac-current-complete-source-append-inert.r4','ok':False,'files':[],
+         'currentPrivateInputsOpened':False,'productionSqliteOpened':False,'sqliteExecuted':False,
+         'consumerExecuted':False,'serviceStarted':False,'gitStarted':False,'cargoStarted':False,
+         'fixedLibraryDefinitionsLoadedOnly':True,'newOriginalInertSeconds':45}
+@@ -237,9 +409,9 @@
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_inert_owner')
+         raw=stdin_once();payload=json.loads(raw)
+         need(set(payload)=={'schema','files','documents','anchorBase64'}
+-            and payload['schema']=='heptabao.mac-current-complete-source-append-public-inputs.r3',
++            and payload['schema']=='heptabao.mac-current-complete-source-append-public-inputs.r4',
+             'exact_public_payload_schema')
+-        need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_eighteen_reviewed_sources')
++        need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_twenty_distribution_sources_runtime_uses_eighteen')
+         decoded={}
+         for name,(size,pin) in PINS.items():
+             content=base64.b64decode(payload['files'][name],validate=True)
+@@ -247,7 +419,7 @@
+             if name.endswith('.py'):compile(ast.parse(content,filename=name),name,'exec')
+             decoded[name]=content
+         need(isinstance(payload['documents'],dict) and set(payload['documents'])==set(DOCUMENTS),
+-             'exact_three_public_documents')
++             'exact_three_preserved_and_one_new_public_documents')
+         document_bytes={}
+         for name,(size,pin) in DOCUMENTS.items():
+             content=base64.b64decode(payload['documents'][name],validate=True)
+@@ -277,9 +449,46 @@
+               until=min(UNTIL,time.monotonic()+30),maximum=262144)
+         need(query['exitCode']==0 and not query['outcomeUnknown'],'actual_prewrite_t5_complete')
+         guard.accept_diskutil(out);report['volumeProbe']=query
+-        need(len(NEW_NAMES)==12 and len(set(NEW_NAMES))==12
+-             and set(PRESERVED)==set(PINS)-set(NEW_NAMES) and len(PRESERVED)==6,
+-             'preserved_six_and_new_twelve_contract')
++        need(len(NEW_NAMES)==2 and len(set(NEW_NAMES))==2
++             and set(PRESERVED)==set(PINS)-set(NEW_NAMES) and len(PRESERVED)==18
++             and set(PRESERVED_DOCUMENTS)==set(DOCUMENTS)-set(NEW_DOCUMENTS)
++             and len(PRESERVED_DOCUMENTS)==3 and len(NEW_DOCUMENTS)==1,
++             'preserved_eighteen_plus_three_and_new_two_plus_one_contract')
++        def qa_members(expected):
++            remaining()
++            with guard.parent(QA/'mac_current_outer_r3.py') as (parent,_):
++                initial=volume.identity(os.fstat(parent))
++                members=os.listdir(parent)
++                remaining()
++                final=volume.identity(os.fstat(parent))
++                need(initial==final and len(members)==len(expected)
++                     and set(members)==set(expected),'exact_qa_members_no_unlisted_entries')
++                return {'identity':list(final),'members':sorted(members)}
++        def absent(relative):
++            values=[]
++            for name in relative:
++                remaining()
++                with guard.parent(ROOT/name) as (parent,leaf):
++                    for _ in range(2):
++                        try:os.stat(leaf,dir_fd=parent,follow_symlinks=False)
++                        except FileNotFoundError:pass
++                        else:raise Refused('fixed_runtime_or_new_document_already_exists')
++                        remaining()
++                    values.append({'path':name,'twiceAbsent':True})
++            return values
++        def preserve_documents():
++            values=[]
++            for name,expected in PRESERVED_DOCUMENTS.items():
++                with guard.parent(ROOT/name) as (parent,leaf):
++                    initial=volume.identity(os.stat(leaf,dir_fd=parent,follow_symlinks=False))
++                    need(initial==tuple(expected),'original_public_document_named_identity')
++                    observed=guard.read(ROOT/name,1048576)
++                    final=volume.identity(os.stat(leaf,dir_fd=parent,follow_symlinks=False))
++                    need(initial==final and observed==document_bytes[name],
++                         'original_public_document_unchanged')
++                    values.append({'name':name,'bytes':len(observed),'sha256':sha(observed),
++                                   'identity':list(final)})
++            return values
+         def preserve_sources():
+             values=[]
+             for name,expected in PRESERVED.items():
+@@ -292,30 +501,41 @@
+                     values.append({'name':name,'bytes':len(observed),'sha256':sha(observed),
+                                    'identity':list(final)})
+             return values
++        report['qaBefore']=qa_members(PRESERVED)
++        report['runtimeAbsenceBefore']=absent(RUNTIME_ABSENT)
++        report['newDocumentAbsenceBefore']=absent(NEW_DOCUMENTS)
+         report['preservedSourcesBefore']=preserve_sources()
++        report['preservedDocumentsBefore']=preserve_documents()
+         for name in NEW_NAMES:
+             written=guard.write_new(QA/name,decoded[name])
+             readback=guard.read(QA/name,1048576)
+             need(readback==decoded[name] and written['sha256']==PINS[name][1]
+                  and written['bytes']==PINS[name][0],'held_readback_exact_new_source')
+             report['files'].append({'path':'qa/'+name,**written,'wholeReadbackVerified':True})
+-        report['proofDirectoryIdentity']=guard.mkdir_new(ROOT/'proofs')
+-        report['createdProofDirectory']=True
+-        for name,content in document_bytes.items():
++        report['createdProofDirectory']=False
++        for name in NEW_DOCUMENTS:
++            content=document_bytes[name]
+             written=guard.write_new(ROOT/name,content)
+             readback=guard.read(ROOT/name,1048576)
+             need(readback==content and written['sha256']==DOCUMENTS[name][1]
+                  and written['bytes']==DOCUMENTS[name][0],'held_readback_exact_public_document')
+             report['files'].append({'path':name,**written,'wholeReadbackVerified':True})
+-            if name=='candidate-current-manager-r3.public.json':candidate=written
++            if name=='candidate-current-manager-r4.public.json':candidate=written
+         report['preservedSourcesAfter']=preserve_sources()
+-        need(report['preservedSourcesBefore']==report['preservedSourcesAfter'],
+-             'all_original_six_source_identities_unchanged')
++        report['preservedDocumentsAfter']=preserve_documents()
++        report['qaAfter']=qa_members(PINS)
++        report['runtimeAbsenceAfter']=absent(RUNTIME_ABSENT)
++        need(report['preservedSourcesBefore']==report['preservedSourcesAfter']
++             and report['preservedDocumentsBefore']==report['preservedDocumentsAfter'],
++             'all_original_eighteen_sources_and_three_documents_unchanged')
++        need(report['qaBefore']['identity'][:6]==report['qaAfter']['identity'][:6]
++             and report['runtimeAbsenceBefore']==report['runtimeAbsenceAfter'],
++             'same_qa_directory_inode_and_runtime_paths_still_absent')
+         report['createdRoot']=False;report['createdQa']=False
+         guard.check();remaining()
+         prepared=True
+         report['preparedCandidate']=True
+-        need(candidate is not None and len(report['files'])==15,'all_append_members_complete')
++        need(candidate is not None and len(report['files'])==3,'all_append_members_complete')
+     except BaseException as error:
+         report['errorType']=type(error).__name__
+         report['errorCode']=str(error) if isinstance(error,Refused) else None
+@@ -335,8 +555,9 @@
+         report['publishedCandidateSha256']=None if candidate is None else candidate['sha256']
+         report['originalDeadlineMetAfterClosure']=completed<UNTIL
+         report['authoritativeExitZeroRequired']=True
+-        report['ok']=bool(prepared and candidate is not None and len(report['files'])==15
+-            and len(report.get('preservedSourcesAfter',[]))==6
++        report['ok']=bool(prepared and candidate is not None and len(report['files'])==3
++            and len(report.get('preservedSourcesAfter',[]))==18
++            and len(report.get('preservedDocumentsAfter',[]))==3
+             and stopped and closed and final_anchor and not report['outcomeUnknown'] and completed<UNTIL)
+         out=encode(report);need(len(out)<=65536,'public_result_bound')
+         sys.stdout.buffer.write(out);sys.stdout.buffer.flush()

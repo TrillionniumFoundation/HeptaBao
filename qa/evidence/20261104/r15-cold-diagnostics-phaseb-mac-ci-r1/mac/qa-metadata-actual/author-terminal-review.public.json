@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.mac-owned-qa-metadata-author-terminal-review.r1",
+  "verdict": "PASS_FINITE_METADATA_OBSERVATION_ONLY",
+  "original_membership_guard": "FAIL_ON_THIS_NEW_OBSERVATION",
+  "job_id": "1a1a998e315-fc05-363f",
+  "idempotency_key": "heptabao-mac-owned-qa-metadata-aecb42cd-20261105-r1",
+  "exact_frozen_request_git_blob": "96b0c762382169ccfab808473c7a1afdbfdeee2c",
+  "source_git_blob": "9a42418e99ca98a53667f5e24820ed1e98abea7e",
+  "authority": {
+    "exit_code": 0,
+    "complete": true,
+    "durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "stderr_bytes": 0
+  },
+  "stdout": {
+    "bytes": 10228,
+    "sha256": "c3ad8b27fa33ec6f4a19c422a0dc1b2452f37bd9ad1864956822e4dd17188554",
+    "git_blob": "a825f743d886ed463f318b764107e275d387464e",
+    "original_hex_equals_text": true,
+    "eof": true
+  },
+  "observations": {
+    "expected_original_source_members": 18,
+    "actual_members": 20,
+    "original_source_names_present": 18,
+    "missing_original_names": 0,
+    "unexpected_known_new_names": 0,
+    "unknown_name_hashes": [
+      "84e8004701d3e5c723ff17831779e4b5774acad00fee7c7fbaa3b16b854545d7",
+      "1a6a19d097d587641b77579b62487d9131e64bd3ee59c17a9c8f6573a3ee843e"
+    ],
+    "unknown_regular_file_bytes": [
+      3405,
+      4691
+    ],
+    "qa_identity_stable": true,
+    "count_matches": false,
+    "set_matches": false,
+    "metadata_calls": 44,
+    "explicit_directory_fds_closed": 6,
+    "iterator_close_confirmed": true,
+    "all_chain_named_fd_identity_stable": true,
+    "t5_anchor_string_fields_exact": 27,
+    "elapsed_seconds": 0.0004060836508870125,
+    "original_inner_seconds": 5,
+    "outer_seconds": 60,
+    "unknown": false
+  },
+  "scope": {
+    "regular_file_body_read": false,
+    "private_read": false,
+    "children_started": false,
+    "network_used": false,
+    "files_written": false,
+    "permission_changed": false,
+    "original_guard_changed": false,
+    "business_replayed": false,
+    "uuid_requeried": false
+  },
+  "limits": [
+    "The two unexpected names remain hashed in the raw result; later public-origin correlation is a separate source-only record.",
+    "No current content hash was read for any directory member.",
+    "This observation is not a reconstruction of the earlier failed compound predicate and does not turn the earlier inert failure green.",
+    "No current capture, credentials, consumer, launchd, runtime, or production qualification."
+  ],
+  "original_record_handling": "All native JSON and raw stdout retained byte-for-byte; cached MCP snapshots are serialized available tool objects, not claimed wire bytes."
+}

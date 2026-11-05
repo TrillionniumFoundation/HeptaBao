@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.phaseb-3cb-live-core-only-packet.v1",
+  "job_id": "1a1a983309e-fc05-35aa",
+  "files": [
+    {
+      "path": "actual/coreinfo.original.json",
+      "bytes": 493,
+      "sha256": "e43d46779dfdadc440fc0a9d5fd47afb48ff0f3d4b700cf40eeb1c54fc55450c",
+      "blob": "a2d95122406b589584e378f58a31f3c06f5aec66"
+    },
+    {
+      "path": "actual/result.public.json",
+      "bytes": 278829,
+      "sha256": "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e",
+      "blob": "73dad48403355e4504ddfd7adc872a5c89f27f28"
+    },
+    {
+      "path": "actual/start.ack.json",
+      "bytes": 1514,
+      "sha256": "fd664e0e26ce6e87629a37c2e56209fb4c776ba8b3320759c6926525442a9a6c",
+      "blob": "257338d4ca10e7b4f0ec988d6b4c8119b44592a9"
+    },
+    {
+      "path": "actual/status0.original.json",
+      "bytes": 726,
+      "sha256": "a2c73317f5a5c75b31b32d795a44e93d9d1bd17ffec6ce3a3682a4d3017e35bd",
+      "blob": "d8d615b7aaa9821a0cb6093d160f4f3f01d4f510"
+    },
+    {
+      "path": "actual/streams.original.json",
+      "bytes": 1665,
+      "sha256": "00411bd5308cbd7eeb646511f1e093f0ec63da6982e91ef9880e32a6d13fe78b",
+      "blob": "a9293ad368fa1a07d592e0a464a322f07e8e5d90"
+    },
+    {
+      "path": "actual/terminal.stdout",
+      "bytes": 437,
+      "sha256": "67f52732d78fb26677e79933e9b85596294431f0c9c1b444ea4d8b98cc2b8bea",
+      "blob": "2ffd9656973f46ed7699256bb864ddc955017bff"
+    },
+    {
+      "path": "dispatch/live.request.json",
+      "bytes": 648,
+      "sha256": "d57ce2159ef4519690f6b838d79c1330ef5bd80bff95efe7edd85bd139423cb4",
+      "blob": "0501832a51e37e147b5869a7b0279c164fbf5bc0"
+    },
+    {
+      "path": "original-sdk/start.sdk.json",
+      "bytes": 1735,
+      "sha256": "89c9feea42b31c98c043b5bcb6ff43f3db946b06c734391239d87c2f2de1f9c1",
+      "blob": "2957ea724688475eb72dd8e78eee4bccb52beb78"
+    },
+    {
+      "path": "README.md",
+      "bytes": 889,
+      "sha256": "8f9d57690442feccb5c4dc596eae602bc944108d305214c7b062eed771de1de7",
+      "blob": "08f5ae690b5536fc62749ab5c8d596d539ccb61d"
+    }
+  ]
+}

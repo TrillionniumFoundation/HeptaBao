@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.b2-stopped-node2-log-filter-independent-source-review.v1",
+  "scope": "Static review of main exception handling, descriptor custody, deadline and publication success gate only",
+  "source": {
+    "blob": "3fbf4d7e7348118018af0e37354c078a2ffeb34c",
+    "bytes": 13427,
+    "sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329"
+  },
+  "status": "no_additional_blocking_source_finding",
+  "observations": [
+    "One exact stopped synthetic root and process.log are addressed; all ancestors are walked through held dirfds with O_NOFOLLOW and named identity checks before and after the read.",
+    "The leaf is regular, UID 1000, mode 0600, nlink 1, and bounded at 2 MiB. Complete bytes, one-byte EOF and unchanged held/named full file metadata are required before observed/complete are set.",
+    "The deferred signal flag avoids a Python exception between open and descriptor registration. Every registered descriptor is visited once in the final reverse close loop; an OSError makes complete false and prevents a successful exit.",
+    "Remaining-time guards span path walking, each read, each parsed line, final held/named checks, closure and publication. The post-flush remaining(until) guard prevents exit 0 after the original 15-second observation deadline.",
+    "Only the two exact marker grammars, the closed step/code sets and bounded numeric/hash fields are emitted. Other lines are counted but their contents are not emitted.",
+    "An empty marker set does not claim absence of an internal failure. The source explicitly disclaims cross-request correlation."
+  ],
+  "caller_requirements": [
+    "The source_sha256_argument is syntactically checked, not an in-process proof of source bytes; the external exact-source/argv admission remains necessary.",
+    "Stopped-fixture ownership is established by the previously accepted terminal/cleanup evidence. This read-only filter does not re-probe processes.",
+    "Use authoritative exit 0 with the complete output and closed descriptors. The publication_within_original_deadline flag alone is set before write/flush and is not a replacement for the post-flush exit gate."
+  ],
+  "existing_parser_components_repeated": false,
+  "candidate_code_executed": false,
+  "host_access": false,
+  "files_read_from_host": 0,
+  "product_started": false,
+  "runtime_qualification": false,
+  "permission_to_run": false
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.mac-owned-qa-metadata.manifest.r1",
+  "source_only": true,
+  "files": [
+    {
+      "path": "source/qa_members_metadata_r1.py",
+      "mode": "100644",
+      "git_blob": "9a42418e99ca98a53667f5e24820ed1e98abea7e",
+      "bytes": 10338,
+      "sha256": "aecb42cd4f25699e9be552ce20eb95465af6fd8208a4b6a1acd245e8f6da3dbe"
+    },
+    {
+      "path": "dispatch/read-only-start.public.json",
+      "mode": "100644",
+      "git_blob": "96b0c762382169ccfab808473c7a1afdbfdeee2c",
+      "bytes": 11001,
+      "sha256": "a820b9a28033098479aa61d37ad6cc64644e6a2bc02e9a8901f802170b4b1710"
+    },
+    {
+      "path": "scope.public.json",
+      "mode": "100644",
+      "git_blob": "a8ea8cb3d2a6b3ab7bd372fdaf76f69dae3180fa",
+      "bytes": 1732,
+      "sha256": "f4be21e3737631dfec8f1ceedf1cd6d0f6968765945cd9a69040227fb6e66b5b"
+    },
+    {
+      "path": "ast-compile.executor.json",
+      "mode": "100644",
+      "git_blob": "887eb66a377a36c21647e7725f2c7594baf237bf",
+      "bytes": 307,
+      "sha256": "c95d470e284b924fbd277abdaaf0a236e9a224905f1aaf51f66deb4ba6c7a6f2"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_blob": "b187e0ba3fe8c0caa2d704c88def9a3b31bc1d0d",
+      "bytes": 1562,
+      "sha256": "2f5cefce508bf99e5d323320cd3bbd3a664885e3b6571501dd403c3da8bcd10b"
+    }
+  ],
+  "submitted": false
+}

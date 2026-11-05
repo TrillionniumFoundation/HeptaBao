@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.mac-sdk-parent-root-observation-review.v1",
+  "tree": "28e34a812f5cc81d451362f09f9e3854787e3c9b",
+  "job_id": "1a1a96d3196-fc05-3524",
+  "authority_and_raw_full_stream_verified": true,
+  "scope": "One explicit package.json path and fixed lexical/resolved parent chains; no whole installation inventory",
+  "complete": true,
+  "elapsed_seconds": 0.00015250034630298615,
+  "one_observed_original_parent_failure": {
+    "directory": true,
+    "gid": 80,
+    "group_or_other_write": true,
+    "identity": [
+      "16777233",
+      "10827971",
+      "501",
+      "80",
+      "16893",
+      "459",
+      "14688",
+      "1791866883454202812",
+      "1791866883454202812"
+    ],
+    "owner_allowed_by_original": true,
+    "path": "/opt/homebrew/lib",
+    "permission_octal": "0o775",
+    "regular": false,
+    "symlink": false,
+    "uid": 501
+  },
+  "no_symlink_in_fixed_chain": true,
+  "all_before_after_metadata_exact": true,
+  "explicit_lstat_operations": 28,
+  "Path_resolve_calls": 2,
+  "resolve_internal_syscall_count_not_claimed": true,
+  "no_file_opens_children_network_writes_or_private_reads": true,
+  "whole_runtime_qualified": false,
+  "source_guard_exception_not_yet_implemented_or_admitted": true,
+  "private_input_guard_must_remain_unchanged": true
+}

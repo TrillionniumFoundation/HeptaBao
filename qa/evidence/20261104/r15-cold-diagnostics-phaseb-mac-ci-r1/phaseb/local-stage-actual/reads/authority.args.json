@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-localstage-authority-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a96c027d-fc05-3519"
+    }
+  }
+}

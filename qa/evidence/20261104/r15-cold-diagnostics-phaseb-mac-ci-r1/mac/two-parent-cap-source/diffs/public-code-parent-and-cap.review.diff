@@ -1,0 +1,148 @@
+diff --git a/source/mac_current_outer_inputs_r1.py b/source/mac_current_outer_inputs_r1.py
+--- a/source/mac_current_outer_inputs_r1.py
++++ b/source/mac_current_outer_inputs_r1.py
+@@ -53,6 +53,10 @@
+ MAX_CODE=256*1024*1024
+ MAX_ALL_HASHED=1024*1024*1024
+ MAX_PUBLIC_CODE_FILES=96
++PUBLIC_CODE_PARENT_IDENTITIES={
++ "/opt/homebrew/Cellar":("16777233","10827980","501","80","16893","105","3360","1793687928283555715","1793687928283555715"),
++ "/opt/homebrew/lib":("16777233","10827971","501","80","16893","459","14688","1791866883454202812","1791866883454202812"),
++}
+ 
+ class InputRefused(RuntimeError):pass
+ def need(value,code):
+@@ -65,6 +69,18 @@
+     return tuple(str(v) for v in (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,
+         s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns))
+ def inode(s):return identity(s)[:6]
++def parent_custody_identity(current,named,anchor,public_code):
++    bound=PUBLIC_CODE_PARENT_IDENTITIES.get(str(current)) if public_code else None
++    expected=tuple(anchor['identity']) if anchor is not None else bound
++    need(stat.S_ISDIR(named.st_mode) and named.st_uid in (0,501)
++         and (identity(named)==expected if expected is not None
++              else not (stat.S_IMODE(named.st_mode)&0o022)),
++         'readonly_input_parent_custody_or_exact_held_anchor')
++    return identity(named) if bound is not None else inode(named)
++def same_recorded_input(value,recorded,public_code):
++    if public_code is None:return value==recorded
++    compared=dict(value);compared['cap']=recorded['cap']
++    return compared==recorded
+ def valid_pin(value):return isinstance(value,str) and re.fullmatch('[0-9a-f]{64}',value) is not None
+ def exact_json(raw):
+     def pairs(items):
+@@ -81,6 +97,7 @@
+         self.rows=[];self.records={};self.code_allowed={};self.aliases={}
+         self.total_hashed=0;self.close_errors=[];self.closed=False
+         self.private_attempted=False;self.projected=False;self.old_sources=None;self.tools_allowed=set()
++        self.base_public_codes=None;self.base_code_reads={}
+ 
+     def remaining(self):
+         need(not self.closed and self.signals.pending is None,'input_reader_open_uncancelled')
+@@ -96,7 +113,7 @@
+                 row['errorType']=type(error).__name__;self.close_errors.append(type(error).__name__)
+ 
+     @contextmanager
+-    def parents(self,path):
++    def parents(self,path,*,public_code=False):
+         self.remaining();path=Path(path)
+         need(path.is_absolute() and path==Path(os.path.normpath(str(path))),'normalized_explicit_input_path')
+         local=[];parent=None
+@@ -106,33 +123,38 @@
+                 named=os.lstat('/') if parent is None else os.stat(component,dir_fd=parent['fd'],follow_symlinks=False)
+                 current=Path(component) if parent is None else current/component
+                 anchor=next((x for x in self.guard.expected['anchors'] if x['path']==str(current)),None)
+-                need(stat.S_ISDIR(named.st_mode) and named.st_uid in (0,501)
+-                     and (identity(named)==tuple(anchor['identity']) if anchor is not None
+-                          else not (stat.S_IMODE(named.st_mode)&0o022)),
+-                     'readonly_input_parent_custody_or_exact_held_anchor')
++                parent_identity=parent_custody_identity(current,named,anchor,public_code)
+                 with self.signals.critical():
+                     fd=os.open('/' if parent is None else component,
+                         os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,
+                         **({} if parent is None else {'dir_fd':parent['fd']}))
+-                    row={'fd':fd,'parent':parent,'name':component,'identity':inode(named),
++                    row={'fd':fd,'parent':parent,'name':component,'identity':parent_identity,
+                          'attempted':False,'closed':False};self.rows.append(row);local.append(row)
+-                need(inode(os.fstat(fd))==row['identity'],'readonly_input_parent_fd')
++                need(identity(os.fstat(fd))[:len(row['identity'])]==row['identity'],'readonly_input_parent_fd')
+                 parent=row
+             yield parent['fd'],path.name
+             self.remaining()
+             for row in local:
+                 named=os.lstat('/') if row['parent'] is None else os.stat(
+                     row['name'],dir_fd=row['parent']['fd'],follow_symlinks=False)
+-                need(inode(named)==inode(os.fstat(row['fd']))==row['identity'],'readonly_input_parent_changed')
++                need(identity(named)[:len(row['identity'])]==identity(os.fstat(row['fd']))[:len(row['identity'])]
++                     ==row['identity'],'readonly_input_parent_changed')
+         finally:
+             for row in reversed(local):self._close(row)
+             need(all(r['closed'] for r in local),'readonly_parent_close')
+ 
+-    def _file(self,path,pin,cap,*,private,collect,record=True):
++    def _file(self,path,pin,cap,*,private,collect,record=True,public_code=None):
+         self.remaining();path=Path(path)
+         need(valid_pin(pin) and type(cap) is int and 0<cap<=MAX_CODE,'bounded_pinned_read')
++        if public_code is not None:
++            need(not private and isinstance(public_code,str)
++                 and self.base_public_codes is not None
++                 and self.base_public_codes.get(public_code)==pin
++                 and self.code_allowed.get(public_code)==pin
++                 and Path(public_code).resolve(strict=True)==path,
++                 'only_original_closed_public_pin_code_parent_context')
+         fdrow=None
+-        with self.parents(path) as (parent,name):
++        with self.parents(path,public_code=public_code is not None) as (parent,name):
+             try:
+                 with self.signals.critical():
+                     fd=os.open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=parent)
+@@ -158,7 +180,8 @@
+                      and h.hexdigest()==pin,'finite_input_whole_sha_and_name_fd')
+                 value={'path':str(path),'bytes':count,'sha256':pin,'identity':list(identity(before)),
+                        'private':private,'cap':cap}
+-                if str(path) in self.records:need(value==self.records[str(path)],'same_original_input_identity')
++                if str(path) in self.records:
++                    need(same_recorded_input(value,self.records[str(path)],public_code),'same_original_input_identity')
+                 elif record:self.records[str(path)]=value
+                 self.remaining()
+                 return bytes(raw) if collect else value
+@@ -198,11 +221,14 @@
+                 and any(resolved.is_relative_to(Path(p)) for p in ('/System','/usr','/bin','/sbin')))),
+              'resolved_public_code_scope')
+         cap=8*1024*1024 if collect else MAX_CODE
+-        value=self._file(resolved,pin,cap,private=False,collect=collect)
++        original_public=(str(path) if self.base_public_codes is not None
++                         and self.base_public_codes.get(str(path))==pin else None)
++        value=self._file(resolved,pin,cap,private=False,collect=collect,public_code=original_public)
+         need(identity(path.lstat())==before and path.resolve(strict=True)==resolved,'fixed_code_alias_before_after')
+         alias={'path':str(path),'resolved':str(resolved),'identity':list(before),'sha256':pin}
+         if str(path) in self.aliases:need(alias==self.aliases[str(path)],'original_public_code_alias')
+         else:self.aliases[str(path)]=alias
++        if original_public is not None:self.base_code_reads[str(resolved)]=original_public
+         self.remaining();return value
+ 
+     def admit_utilities(self,pins):
+@@ -301,6 +327,9 @@
+         node=Path('/opt/homebrew/bin/node');resolved=node.resolve(strict=True)
+         need(valid_pin(self.old_sources.get(str(resolved))),'actual_node_from_exact_original_inventory')
+         self._admit_code(node,self.old_sources[str(resolved)])
++        need(self.base_public_codes is None and len(self.code_allowed)==40,
++             'exact_original_closed_forty_public_code_set')
++        self.base_public_codes=dict(self.code_allowed)
+         for path in list(self.code_allowed):
+             if Path(path)!=BINARY:self.pin_code(path)
+         need(self.code_allowed[str(CODEX/'dist/shared-client-4ICy3U6d.js')]=='bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103'
+@@ -345,8 +374,11 @@
+     def verify(self):
+         self.remaining()
+         for path,value in list(self.records.items()):
+-            self._file(Path(path),value['sha256'],value['cap'],private=value['private'],
+-                       collect=False,record=False)
++            if path in self.base_code_reads:
++                self.pin_code(self.base_code_reads[path])
++            else:
++                self._file(Path(path),value['sha256'],value['cap'],private=value['private'],
++                           collect=False,record=False)
+         for path,value in self.aliases.items():
+             need(identity(Path(path).lstat())==tuple(value['identity'])
+                  and str(Path(path).resolve(strict=True))==value['resolved'],'all_original_code_aliases_after')

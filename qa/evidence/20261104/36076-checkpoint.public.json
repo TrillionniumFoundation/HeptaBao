@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-05T01:56:28Z",
+  "as_of_utc": "2026-11-05T02:53:56Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -5522,6 +5522,461 @@
       "bounded69_complete271_denominator": false,
       "actual495_and3cb_qualification_separate": true,
       "root_full_semantic_review_complete": false
+    }
+  },
+  "r15_cold_diagnostics_phaseb_mac_ci_checkpoint": {
+    "schema": "heptabao.r15.cold-diagnostics-phaseb-mac-ci-checkpoint.v1",
+    "as_of_utc": "2026-11-05T02:53:56Z",
+    "evidence_prefix": "qa/evidence/20261104/r15-cold-diagnostics-phaseb-mac-ci-r1",
+    "previous_checkpoint": {
+      "commit": "3a6b62142a9c632006c99364b2a987a30dca46e9",
+      "tree": "e9150a39570b1e297b833678d02c0bcf362a760a",
+      "as_of_utc": "2026-11-05T01:56:28Z"
+    },
+    "source_frontiers": {
+      "lan_formal_kv2_and_pocket_authbus": {
+        "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+      },
+      "normal_fresh_ingress_observer": {
+        "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+        "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+      },
+      "draft_pr152_current": {
+        "commit": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+        "tree": "ec716cea85a52fab285f5c96d51c0624a045cc02",
+        "parent": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+        "full_ci_qualified": false
+      },
+      "qualification_not_transferred_between_frontiers": true
+    },
+    "formal_kv2": {
+      "retained_x230_original31": "PASS_ON_495_SEPARATE_RUN",
+      "retained_large_active_versions": 17,
+      "retained_lifecycle_versions": 19,
+      "retained_lan_recovered_referenced_bytes": 35742423,
+      "current_production_migration_and_cross_host_backup_complete": false,
+      "official_state_archive_interoperability_qualified": false
+    },
+    "ha": {
+      "retained_original128": "PASS_SCOPED_SEPARATE_RUN_ON_495",
+      "retained_independent_original98": "PASS_SCOPED_SEPARATE_RUN_ON_495",
+      "b2": {
+        "job_id": "1a1a95f8b98-fc05-34b1",
+        "status": "KNOWN_FAIL_NODE2_COLD_UNSEAL",
+        "source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "original_required": 98,
+        "original_passed": 91,
+        "original_missing": 7,
+        "separate_extra_required": 12,
+        "separate_extra_passed": 0,
+        "postrecovery_witness_known_statuses": [
+          200,
+          204
+        ],
+        "ordinary_higher_term_frontier": [
+          [
+            2,
+            2,
+            61
+          ],
+          [
+            3,
+            3,
+            66
+          ]
+        ],
+        "same_leader_branch_covered": false,
+        "empty_mac_leader": 1,
+        "cipher_source_pocket": 3,
+        "referenced_leaves_restored": 338,
+        "referenced_bytes_restored": 35742423,
+        "large_versions_preserved": 17,
+        "cold_node2_http_status": 503,
+        "cold_node2_http_elapsed_ms": 9423.826,
+        "response_body_sha256": "f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1",
+        "response_is_generic_local_publication_unavailable": true,
+        "full49_pairs_archived": true,
+        "known_boundary_status_counts": {
+          "200": 39,
+          "204": 8,
+          "503": 2
+        },
+        "unknown_transport_outcomes": 0,
+        "all16_owned_servers_stopped": true,
+        "all6_mac_sessions_closed": true,
+        "all_original_stop5_budgets_met": true,
+        "replayed": false,
+        "full_boundary_tree": "831be6738354b237c8bcdb6801441df42d43f876"
+      },
+      "existing_log": {
+        "source_only_branch_matrix_tree": "9fb0df290775957be300a57d7f183b11300eb576",
+        "initial_projector_actual_tree": "a6aec3b400d24d6365e24d51e7ceba4f602d908a",
+        "timing_successor_source_tree": "6fa38d05d7612b6c4773ca546fb6f033a944b8f4",
+        "timing_actual_tree": "48f9ea7eee98ce0f363e80f17edaad1195e6a613",
+        "root_review_blob": "e718ef71b1d9a3bfb9083414e0dbd95722db3322",
+        "job_id": "1a1a997c484-fc05-3636",
+        "same_stopped_log_sha256": "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892",
+        "same_log_bytes": 37545,
+        "all_10_original_identity_fields_equal": true,
+        "original6markers_unchanged": true,
+        "timing_markers": 99,
+        "timing_health": 96,
+        "timing_ordinary": 3,
+        "last_unseal_line177": {
+          "status": 503,
+          "state_loaded": false,
+          "barrier_loaded": false,
+          "record_root": false,
+          "activation": false
+        },
+        "last_timing_line178": {
+          "status": 503,
+          "request_class": "ordinary",
+          "elapsed_us": "9414388",
+          "read_index_us": "31924",
+          "changed_root_recover_us": "9369972",
+          "remaining_ns": "4580997890",
+          "final_witness_completed": "1",
+          "scope_completed": "1",
+          "failed_counts_all_zero": true
+        },
+        "request_correlation_proven": false,
+        "unique_inner_cause_proven": false,
+        "all6_descriptors_closed": true,
+        "inner15s_met": true,
+        "source_only_next_step": "Review cold-loader unobserved local selection/root-binding/installation/materialization/final-gate branches; no new product run is admitted by this checkpoint."
+      },
+      "full_required_ha_regression_qualified": false
+    },
+    "mac": {
+      "r3_runtime": {
+        "job_id": "1a1a968c3e6-fc05-3501",
+        "status": "KNOWN_PUBLIC_PARENT_GUARD_REFUSAL_BEFORE_PRIVATE_INPUT",
+        "full_actual_tree": "628b817f6a4a894ea1b444a663bfdf3c3ba748cd"
+      },
+      "public40_metadata": {
+        "job_id": "1a1a9711582-fc05-3542",
+        "tree": "b901623f1362a550132c9c4a5bb66f0cb10e19a5",
+        "fixed_public_aliases": 40,
+        "unique_parents": 43,
+        "all_observed_identity_fields_stable": true,
+        "only_old_guard_rejected_parents": [
+          "/opt/homebrew/lib",
+          "/opt/homebrew/Cellar"
+        ],
+        "exact_9field_public_context_exceptions_only": true
+      },
+      "minimal_inputs_source": {
+        "tree": "522c6ee3bf7802d08b2f0392579d87635a0459cb",
+        "source_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+        "source_sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+        "root_review_blob": "730a30a6c01b3ec0138b09921a6a01bd429120a4",
+        "two_exact_public_parents_only": true,
+        "read_caps_still_enforced": true,
+        "cap_compared_separately_from_frozen_public_file_identity": true,
+        "private_read_guards_unchanged": true,
+        "actual_current_runtime_qualified": false
+      },
+      "r4_inert": {
+        "source_tree": "96a6b844d745653558dbca8f18c7d45ad8326252",
+        "actual_tree": "c38c255174149a4b67180171772eb9d8afca3e03",
+        "root_review_blob": "9bd3d8f73fd22b1981b9c98d032ce442d5946806",
+        "job_id": "1a1a98ec7b8-fc05-35fb",
+        "status": "KNOWN_FAIL_QA_MEMBERSHIP_COMPOUND_GUARD",
+        "exit_code": 1,
+        "error_code": "exact_qa_members_no_unlisted_entries",
+        "new_files": 0,
+        "private_input_reads": 0,
+        "old21_identity_checks_reached": false,
+        "runtime9_absence_checks_reached": false,
+        "all_owned_children_and_descriptors_closed": true,
+        "original45s_met": true,
+        "outcome_unknown": false,
+        "runtime_started": false
+      },
+      "qa_metadata": {
+        "job_id": "1a1a998e315-fc05-363f",
+        "source_tree": "9862f20ebbb9379add5ab1650b2f89ace3c913e5",
+        "stdout_blob": "a825f743d886ed463f318b764107e275d387464e",
+        "stdout_bytes": 10228,
+        "status": "COMPLETE_CURRENT_METADATA_OBSERVATION",
+        "observed_members": 20,
+        "original18_all_present": true,
+        "additional_members": 2,
+        "additional_sizes": [
+          3405,
+          4691
+        ],
+        "unknown_names_public_hash_only": true,
+        "full_directory_identity_stable": true,
+        "count_matches_original18": false,
+        "set_matches_original18": false,
+        "explicit_metadata_calls": 44,
+        "all6_held_fds_and_iterator_closed": true,
+        "files_or_private_inputs_opened": false,
+        "child_network_write_or_guard_change": false,
+        "prior_failure_subpredicate_not_reconstructed": true,
+        "actual_tree": "75ab1634c39c7b5b2ce3d0ded6291fe57a36f4d3",
+        "root_review_blob": "9c2a0bc1ba1bba95c18e743c9a11245ac79ee2a4",
+        "original18_full162_identity_strings_equal": true
+      },
+      "current_private_capture": false,
+      "actual_five_agent_cycle": false,
+      "launchd_current_credential_restart_and_inverse_qualified": false,
+      "production_keepalive_qualified": false
+    },
+    "snapshot": {
+      "old_B01_unknown_preserved": true,
+      "normal_3cb_build": {
+        "original44": true,
+        "separate7": true,
+        "default_features": true
+      },
+      "stage": {
+        "job_id": "1a1a96c027d-fc05-3519",
+        "tree": "0cec6db550e859fb4126dfbb0bfccfbe3dc2dfef",
+        "status": "PASS",
+        "elapsed_seconds": 2.178611086,
+        "actual_binding_sha256": "778697b6f271762ebeebebb8000fe1a92ec88593f725ea460afb62db2a5f9242",
+        "all_descriptors_closed": true
+      },
+      "prepare": {
+        "job_id": "1a1a97d2685-fc05-3584",
+        "tree": "f887788a89a348659496b120b44d75ebcbc13a89",
+        "status": "PASS",
+        "core_sha256": "155f4d300c478c93df2209a286edc70fc1c40c5d38c2250f7296c1d77ec5f9d0",
+        "immutable_inputs": 19,
+        "git_guards": 3,
+        "full_fsck_belongs_to_separate_import_not_prepare": true
+      },
+      "live": {
+        "job_id": "1a1a983309e-fc05-35aa",
+        "tree": "28d0fd4fc45e85cfba196b527c87a8c625bce8c0",
+        "root_full_boundary_review": "3c11b0d1db3ff50d557628150601bb65e5ccf7e3",
+        "status": "FAIL_UNKNOWN_B01_NO_REPLAY",
+        "exit_code": 1,
+        "full_durable_output": true,
+        "setup_elapsed_ms": 20857.670922,
+        "setup_dynamic_invariants": 84,
+        "cli_cases_executed": 1,
+        "case": "B01",
+        "actual_leader": 1,
+        "cli_exit": 2,
+        "cli_elapsed_ms": 231.681634,
+        "cli_timed_out": false,
+        "cli_stderr_bytes": 178,
+        "cli_stderr_body_not_read": true,
+        "server_audit_status": 503,
+        "audit_sequences": [
+          61,
+          62
+        ],
+        "audit_mac_not_authenticated_by_observer": true,
+        "client_http_framing_proven": false,
+        "server_boundary_known": false,
+        "outcome_unknown": true,
+        "archive_exists": false,
+        "case_qualifications": {
+          "B01": false,
+          "B02": false,
+          "B03": false,
+          "B04": false,
+          "B05": false
+        },
+        "cold_restarts": 0,
+        "unknown_replays": 0,
+        "original_http_pairs": 69,
+        "strict_complete_http_responses": 68,
+        "known_before_connect_no_request": 1,
+        "all_http_intents_before_B01": true,
+        "all84_owned_children_reaped": true,
+        "final_cleanup_errors": 0,
+        "all19_inputs_unchanged": true
+      },
+      "node1_log_projection": {
+        "metadata_tree": "93d9cac8e1a4272391841fb3d1e0eabdfbab1c37",
+        "source_tree": "a78c3e1671777debee33f471967704ea1dcc87d2",
+        "root_admission_blob": "1b0e64a96418b604552eed2c75457d7bd3fb2486",
+        "status": "PASS_PASSIVE_PROJECTION_ONLY_B01_REMAINS_UNKNOWN",
+        "job_id": "1a1a99b05aa-fc05-364b",
+        "input_bytes": 4577,
+        "input_sha256": "eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201",
+        "request_correlation_proven": false,
+        "actual_tree": "52dbf5d681903711b38f673fc0bdc72be67195d8",
+        "root_review_blob": "1123b2913c176cf197f9a7cee0164750fab5dee9",
+        "exit_code": 0,
+        "full_stdout_bytes": 12843,
+        "all7_fds_closed": true,
+        "original15s_met": true,
+        "actual_sync_line9": {
+          "step": "fresh_ingress_same_root_closure",
+          "code": "fresh_ingress_read_refused",
+          "reason_sha": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed",
+          "elapsed_us": "1444",
+          "step_elapsed_us": "7",
+          "remaining_ns": "14993533703",
+          "deadline_expired": false
+        },
+        "actual_timing_line11": {
+          "request_class": "ordinary",
+          "status": 503,
+          "elapsed_us": "4434",
+          "phase_failed": "fresh_ingress_same_root_closure",
+          "failed_calls": "1",
+          "prior_permission_runtime_storage_read_index_enrollment_phases_advanced": true
+        },
+        "public_error_variant": "HaError::InvalidCluster",
+        "exact_public_display_sha_match": true,
+        "precise_inner_guard_unique_at_this_checkpoint": false
+      },
+      "official_openbao_state_archive_interoperability_qualified": false
+    },
+    "inventory": {
+      "retained_scope": "Prior finite Mac/ROG/X230 inventories and Nov2/3 backup receipts remain historical observations, not whole-host/current atomic inventories.",
+      "rog_current_config_sha256": "6e3659907327039243c60a10b2925edb51e83e4c73f0925c60279ae6a8169819",
+      "rog_authbus_enabled": false,
+      "rog_gateway_state": "loaded_enabled_inactive_dead_PID0",
+      "rog_old_configuration_not_restored": true,
+      "x230_proxy_state": "inactive_disabled_dead_PID0",
+      "current_all_clients_and_backups_complete": false
+    },
+    "ci": {
+      "schema": "heptabao.ci-test-lint-source-continuation-publication.v1",
+      "commit": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "tree": "ec716cea85a52fab285f5c96d51c0624a045cc02",
+      "parent": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "ref_confirmed": true,
+      "update_result_was_text_only": true,
+      "source_tree_verification": {
+        "all_other_blobs_unchanged": true,
+        "leaves": 3911,
+        "changed": [
+          "crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs",
+          "crates/heptabao-server/src/http_no_forward_tests.rs",
+          "crates/heptabao-server/src/http_response_coalescing_tests.rs",
+          "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+          "crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs",
+          "crates/heptabao-server/src/service_native_plain_namespace.rs",
+          "crates/heptabao-server/src/service_native_ssh_tests.rs",
+          "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs"
+        ],
+        "merkle": {
+          "root_sha": "ec716cea85a52fab285f5c96d51c0624a045cc02",
+          "trees_verified": 358
+        }
+      },
+      "parent_ci": {
+        "commit": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+        "run_id": 41937740513,
+        "head_job": 126950393511,
+        "merge_job": 126950393239,
+        "both_fmt_passed": true,
+        "both_locked_workspace_suites_passed": true,
+        "both_same_18_test_clippy_failures": true
+      },
+      "current_ci": {
+        "commit": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+        "run_id": 41955523659,
+        "observed_at_utc": "2026-11-05T02:47:18Z",
+        "jobs": [
+          {
+            "id": 127009390051,
+            "status": "in_progress",
+            "conclusion": null,
+            "fmt": {
+              "name": "Check formatting without changing source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            "workspace": {
+              "name": "Test the complete locked Rust workspace",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 10
+            }
+          },
+          {
+            "id": 127009390540,
+            "status": "in_progress",
+            "conclusion": null,
+            "fmt": {
+              "name": "Check formatting without changing source",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            "workspace": {
+              "name": "Test the complete locked Rust workspace",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 10
+            }
+          }
+        ],
+        "full_ci_qualified": false
+      },
+      "source_semantics": {
+        "files_changed": 8,
+        "only_tests": true,
+        "product_logic_changes": false,
+        "new_lint_suppressions": 0,
+        "original_budgets_unchanged": true,
+        "raw_namespace_production_prefix_unchanged": true
+      },
+      "pr152": {
+        "draft": true,
+        "open": true,
+        "merged": false,
+        "body_exact_verified": true
+      },
+      "no_qualification_inheritance": true
+    },
+    "official271_scope": {
+      "official_version": "2.7.1",
+      "official_binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "retained_bounded_runtime_corpus": 69,
+      "retained_family_count": 13,
+      "old59_profile_target": "2.6.2",
+      "full_route_operation_configuration_lifecycle_denominator_established": false,
+      "source_registry_counts_are_not_API_coverage": true,
+      "native_profile_gaps_do_not_prove_all_other_product_profiles_missing": true,
+      "full_runtime_coverage_qualified": false
+    },
+    "full_openbao_2_7_1_replacement_qualified": false,
+    "j3160_requests": 0,
+    "provider_model_refresh_or_quota_requests": 0,
+    "production_initialized": false,
+    "production_unsealed": false,
+    "production_loaded": false,
+    "per_host_current_credentials_restart_rollback_complete": false,
+    "all_clients_and_backup_paths_migrated": false,
+    "production_cutover": false,
+    "old_service_or_binary_deletion": false,
+    "latest_only_service_state_achieved": false,
+    "evidence": {
+      "packet_count": 23,
+      "packet_file_entries": 903,
+      "packet_bytes": 20944737,
+      "packet_merkle_directories": 126,
+      "all_packet_blobs_and_git_merkle_verified": true,
+      "original_sdk_native_payloads_retained": true,
+      "unsafe_integer_tokens_not_reserialized": true,
+      "all_prior_index_fields_except_top_as_of_retained": true
+    },
+    "exclusive_window": {
+      "product_jobs_running": false,
+      "ha_b2_cleanup_root_verified": true,
+      "phaseb_live_cleanup_root_verified": true,
+      "mac_r4_inert_cleanup_root_verified": true,
+      "three_readonly_diagnostics_terminal_and_closed": true,
+      "next_source_reviews_only": [
+        "Mac preserve two previously omitted public QA receipts plus controlled-append directory identity comparison",
+        "495 cold-loader bounded static timing proposal",
+        "3cb fresh-ingress InvalidCluster source-callchain and blocking-context correction"
+      ],
+      "next_product_run_not_admitted_by_checkpoint": true
     }
   }
 }

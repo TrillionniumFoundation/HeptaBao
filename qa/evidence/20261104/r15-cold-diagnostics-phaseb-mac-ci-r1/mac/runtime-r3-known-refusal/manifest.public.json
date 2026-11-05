@@ -1,0 +1,107 @@
+{
+  "schema": "heptabao.mac-current-runtime-failure-packet.v1",
+  "job": "1a1a968c3e6-fc05-3501",
+  "status": "FAIL_INPUT_ADMISSION",
+  "original_source_tree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "actual_inert_tree": "1bd9b5b359543acf6c84ec082dfd7e008491d4e8",
+  "exact_intent_tree": "463cd36a27ad2cf7789286d476795e84c0dafe91",
+  "root_admission_review_blob": "018e41637ac0949c60491cec33d540e50c36742b",
+  "files": [
+    {
+      "path": "original/runtime-start.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd112cd7ea0a9ea34595b03d6e790f1a5a019ae5",
+      "bytes": 4667,
+      "sha256": "dbc8fe3b1048cbcce46f6ac8819af29a280255df7d7e39610076483527bc80ca"
+    },
+    {
+      "path": "original/start-ack.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d8a573a5a02540a37cfd79d0b9913ab180e67ab",
+      "bytes": 5537,
+      "sha256": "c4def1a0d8aec35f34a65112507263ab67239505d7bb232dd0c40efaef462dc0"
+    },
+    {
+      "path": "original/authority.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4ab9211abaed55b5e4456ec9863468d780a4ea0",
+      "bytes": 730,
+      "sha256": "e2960f07d638af0e8a5ffa0158db30317c989c7735fbfa6c453be5cea6e225bf"
+    },
+    {
+      "path": "original/process-read.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0fa20186ed438a220eb71327e714fc35e3e4cfd3",
+      "bytes": 47966,
+      "sha256": "1a3af9d28359c812893973997cb65d3c5f0897eea7dba6172ecd7fcbba6dca68"
+    },
+    {
+      "path": "original/stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c701fd2847fae23feee0686462a07dfb841c6833",
+      "bytes": 15368,
+      "sha256": "38d5674cb161a83fa52a87f7a533b4cbe7bd4567e718fc48e3bda779be3c3ddb"
+    },
+    {
+      "path": "original/stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sdk/start-return.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36856f8278d7819f6a823c2db818a2cd6002a67c",
+      "bytes": 5821,
+      "sha256": "e58f2287b66811e268b3f7d23fd6ad4354135d76a07dedd273ed01bb2f0d476a"
+    },
+    {
+      "path": "sdk/status-return.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff626cbc8e00fd09800299bbe225c1c3e3382ba6",
+      "bytes": 953,
+      "sha256": "429806d9cd9ed82b02fedcbaf8f6ca38b0f77df05e82068a6cac6c40fdbff223"
+    },
+    {
+      "path": "sdk/read-return.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d7f0cc7e071cb5922ffb177aa1c390d07ddf024",
+      "bytes": 51223,
+      "sha256": "3eccbc97d9cf51bb4570c59c7fbe4e4dcba74e356b3cd062f4e199a202953e48"
+    },
+    {
+      "path": "author-terminal-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1a123ae1247da741037c3104454dd879a3dab30",
+      "bytes": 3993,
+      "sha256": "9c95bc20896cd457c6b6be152ac0fbb938c0c255877178445fdc438b3ebfb71d"
+    },
+    {
+      "path": "source/failed-input-admission.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e301c2c9f4749d7fb8644bd06bf52b6a2862f8b",
+      "bytes": 1279,
+      "sha256": "03f7714ce07151d24fceeac09a38494242b72043251aee5d3f59d147ebe2526b"
+    }
+  ]
+}

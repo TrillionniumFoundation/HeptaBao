@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.mac-public-input-admission-successor-manifest.r1",
+  "source_only": true,
+  "files": [
+    {
+      "path": "references/before/mac_current_outer_inputs_r1.py",
+      "mode": "100644",
+      "git_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254"
+    },
+    {
+      "path": "source/mac_current_outer_inputs_r1.py",
+      "mode": "100644",
+      "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603"
+    },
+    {
+      "path": "diffs/public-code-parent-and-cap.review.diff",
+      "mode": "100644",
+      "git_blob": "3f8a87f50af6b0e2fc73efd0218cd8e24f63a2cd",
+      "bytes": 9093,
+      "sha256": "39e3879d6086b335657ba225ba4c5a51e23faa8ef6621a1c91e3fe10c0e2e2c0"
+    },
+    {
+      "path": "components/initial_harness.py",
+      "mode": "100644",
+      "git_blob": "6fbc8b41ffd92f9fdf654634ff37013ccf3711d5",
+      "bytes": 12132,
+      "sha256": "ecfbbe3815beff21bd09176f3d0ea6199e5ba49279bb04ea726872202b51b6c7"
+    },
+    {
+      "path": "components/initial_harness.executor.json",
+      "mode": "100644",
+      "git_blob": "65fc133e1b5a493f411660a8ae393cfe90c723c8",
+      "bytes": 717,
+      "sha256": "03fb306cc24fbe5c60ed6de1a1e0f37c7fbd758ba07d8d6f7ece31278cf8be23"
+    },
+    {
+      "path": "components/selected_components.py",
+      "mode": "100644",
+      "git_blob": "66695672083b5a7f420b1c834f24618a0ce8d1df",
+      "bytes": 12140,
+      "sha256": "9b6aa97f3176d12512dd7565faa8f0d30a679be3b8eb45efb4e53c1161a662dd"
+    },
+    {
+      "path": "components/selected_components.executor.json",
+      "mode": "100644",
+      "git_blob": "33409d85254d3859cfeb9834fd7e1b58d186be90",
+      "bytes": 2732,
+      "sha256": "e7045eaee30f0ca5dcef467c9a141d31234122e37a9c184d8d8eb7e2e96f4b98"
+    },
+    {
+      "path": "components/selected_components.stdout.json",
+      "mode": "100644",
+      "git_blob": "489ed748fec2c21a807d55206e52632915ff7c5e",
+      "bytes": 2390,
+      "sha256": "36188d01928ece65a6b3929fadc27f0491439817e13e278476f3b1d8b6e8fa21"
+    },
+    {
+      "path": "review/strict_apply.js",
+      "mode": "100644",
+      "git_blob": "57c0910b0caa879fd28985aa116bd65957a08587",
+      "bytes": 1179,
+      "sha256": "eec18077a75cad1fdd5808f8757d0ebd89a3da4cf0ea27c5e8d0a738f381cb90"
+    },
+    {
+      "path": "review/source-review.public.json",
+      "mode": "100644",
+      "git_blob": "a17c8ad1eb6c5f06253bc40c70b8043aabb54440",
+      "bytes": 2133,
+      "sha256": "08f0a94fda2afa53fa06293a2e138702ab2dc08eb047c2fdeb4deece60543123"
+    },
+    {
+      "path": "review/scope.public.json",
+      "mode": "100644",
+      "git_blob": "22aa0c6c2443a0cf8fb8db08d372e1d9d07cb54a",
+      "bytes": 4013,
+      "sha256": "ddb145fdfbe87f03d366bc9e7ff66a96ee67868155fb3b94e530ad258ea6bbd8"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_blob": "ad6656485d6bf4d8b3202247548a5c661b0e3d39",
+      "bytes": 4457,
+      "sha256": "38b212bdecc6f13f008af5a092628b1ab13b61341163ff1a215cd08ed63e2f33"
+    },
+    {
+      "path": "references/original-runtime-failure.public.json",
+      "mode": "100644",
+      "git_blob": "c701fd2847fae23feee0686462a07dfb841c6833",
+      "bytes": 15368,
+      "sha256": "38d5674cb161a83fa52a87f7a533b4cbe7bd4567e718fc48e3bda779be3c3ddb"
+    },
+    {
+      "path": "references/closed40.public.json",
+      "mode": "100644",
+      "git_blob": "2fb08eca8dad260b914e63f48cc37eff2d2b945e",
+      "bytes": 10832,
+      "sha256": "a6f6eb77a2949f076e88fcbc4ac281c033c568aa27eb1723e6dc7aee1d212941"
+    },
+    {
+      "path": "references/closed40-parent-observation.public.json",
+      "mode": "100644",
+      "git_blob": "0f26874725507dc4094055fe4e4a5f328bfc22e4",
+      "bytes": 115966,
+      "sha256": "dc9674e24a4f36cd4d3db2550cf4e54bc045531144c146ed23ceb2eb61181740"
+    }
+  ],
+  "payload_file_count": 15,
+  "payload_bytes": 245184,
+  "host_runtime_started": false,
+  "product_qualification": false
+}

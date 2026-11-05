@@ -1,0 +1,175 @@
+{
+  "schema": "heptabao.root-ci-e5-strict-test-lints-review.v1",
+  "base_commit": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+  "base_tree": "46b1276c237aaadd8cc3185e8228d8a791c68214",
+  "both_workspace_suites_passed": true,
+  "both_strict_clippy_failed_with_same_18_test_diagnostics": true,
+  "diagnostics": [
+    {
+      "message": "error: unnecessary `>= y + 1` or `x - 1 >=`",
+      "location": "--> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:91:25",
+      "lint": "int_plus_one"
+    },
+    {
+      "message": "error: `panic` should not be present in production code",
+      "location": "--> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:247:26",
+      "lint": "panic"
+    },
+    {
+      "message": "error: `panic` should not be present in production code",
+      "location": "--> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:428:17",
+      "lint": "panic"
+    },
+    {
+      "message": "error: used `expect()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_no_forward_tests.rs:104:16",
+      "lint": "expect_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_snapshot_redirect_tests.rs:256:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_snapshot_redirect_tests.rs:265:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_snapshot_redirect_tests.rs:271:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_response_coalescing_tests.rs:220:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_response_coalescing_tests.rs:232:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_response_coalescing_tests.rs:246:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/http_response_coalescing_tests.rs:255:9",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/service_native_plain_namespace.rs:229:20",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `unwrap_err()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/service_native_plain_namespace.rs:280:13",
+      "lint": "unwrap_used"
+    },
+    {
+      "message": "error: used `expect()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/service_native_ssh_tests.rs:520:23",
+      "lint": "expect_used"
+    },
+    {
+      "message": "error: used `expect()` on an `Option` value",
+      "location": "--> crates/heptabao-server/src/service_native_ssh_tests.rs:549:13",
+      "lint": "expect_used"
+    },
+    {
+      "message": "error: used `expect()` on a `Result` value",
+      "location": "--> crates/heptabao-server/src/service_native_ssh_tests.rs:705:14",
+      "lint": "expect_used"
+    },
+    {
+      "message": "error: very complex type used. Consider factoring parts into `type` definitions",
+      "location": "--> crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs:49:24",
+      "lint": "type_complexity"
+    },
+    {
+      "message": "error: this function has too many arguments (8/7)",
+      "location": "--> crates/heptabao-server/src/service_no_forwarding_ha_tests.rs:116:1",
+      "lint": "too_many_arguments"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs",
+      "blob": "abccb11e1e90fb6e584be1d4e985d5fc623daa7d",
+      "bytes": 16446,
+      "sha256": "facd804e100291afb607055960e14516607a85c81a2f865fa0e995c99a47ad26"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_no_forward_tests.rs",
+      "blob": "45b411877cd5c28e61bff7a836e3cb3f3d305fc5",
+      "bytes": 8233,
+      "sha256": "69a74c24eddc924de3be8ecc926dc9634b6057879c2dde5ded4d760ed1a47801"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+      "blob": "606c203cd4cc98ef5ede006234a9c7e069440ade",
+      "bytes": 21410,
+      "sha256": "131bcd7a5959afaee5f6c5bb1fb3f5718fab478b23ba8b7b4e6dc97e3b619fb8"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_response_coalescing_tests.rs",
+      "blob": "ca9a78c12301a908bb1d65eb1f7b8b8f68e5b5d4",
+      "bytes": 18145,
+      "sha256": "d93853be0b227683e119acb9009142f310fc11aaba2c4927417e3cee6b2a3a2c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "blob": "4fd9f8cd0c6bde2d6d7d57d0eee68ec0d3fee891",
+      "bytes": 12612,
+      "sha256": "621ddba65bfb429614154c21a5912ab52aa72e9157f09234491ca88d01525e47"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_tests.rs",
+      "blob": "a63396a42529c802bb5c733bc31b7c2818677230",
+      "bytes": 36367,
+      "sha256": "8cf860c40d21c027b55a4072e0c8ee2ad31ab22b3a8dccbb9cc685a777dde24a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs",
+      "blob": "0dd51de5d998f3774079d971f9043595abdc1953",
+      "bytes": 28144,
+      "sha256": "e206b68a63cb2c098b141a2141a03e6f78865f0774ff0f209903a9bf88c5e6cb"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+      "blob": "052e96ae3b6d1d8d58c4013c07d28a2adf0af9d8",
+      "bytes": 16516,
+      "sha256": "e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8"
+    }
+  ],
+  "product_logic_changed": false,
+  "namespace_production_prefix_unchanged": true,
+  "new_lint_suppressions": 0,
+  "assertion_semantics": [
+    "require the original expected I/O error kinds; an Ok result still fails the test",
+    "require actual token/issuer revocation success with status 204",
+    "missing live state still fails the exact signature-count assertion",
+    "inject genuine unwinding to verify worker joining and scope cleanup; no panic-hook assertion exists",
+    "retain equivalent outstanding-worker bound and all original byte/time capacities",
+    "preserve all seven HTTP method/target pairs and all request bodies/actors",
+    "name the existing signed-fixture tuple without changing its shape"
+  ],
+  "formatter_job_id": "1a1a984e7b7-fc05-35b7",
+  "formatter_sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+  "formatter_actual_seconds": 0.26736163199529983,
+  "formatter_children": 8,
+  "all_formatter_children_reaped": true,
+  "original_format_budgets_preserved": {
+    "inner": 50,
+    "per_child": 10,
+    "outer": 60
+  },
+  "formatter_full_output_readback": true,
+  "formatting_delta_reviewed_whitespace_only": true,
+  "new_candidate_compilation_tests_and_clippy": "not yet executed; required CI after publication",
+  "branch_remains_draft_pr152": true
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.source-only-observer-manifest.v1",
+  "files": {
+    "project_stopped_node2_log_r1.py": {
+      "bytes": 13427,
+      "sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+      "blob": "3fbf4d7e7348118018af0e37354c078a2ffeb34c"
+    },
+    "exact-request.proposed.json": {
+      "bytes": 14583,
+      "sha256": "453ea2fd047aa0bc7cfc2eb7b8793b0f7a814e52d4b51de6a513037ef11cdf0a",
+      "blob": "854c6172b62d68ac2b2a80d4f22f978534584992"
+    },
+    "components_parser_r1.py": {
+      "bytes": 18291,
+      "sha256": "ae06d469961eae393e9fe4ea2fdaf53cfa908da03393eff6859c9745f4881c56",
+      "blob": "c1d3219b254d2993fcdc5974d05f8c0fd01c1f91"
+    },
+    "components.stdout.json": {
+      "bytes": 3980,
+      "sha256": "7a3e2319842949ab83fb637399a941ec49b7db0e6fb10f437496ea8597bd29d5",
+      "blob": "cec925b19f94f947cf7a02260678302fb97b6722"
+    },
+    "components.exec.original.json": {
+      "bytes": 4545,
+      "sha256": "9821ca3a6456282e372e79e258f5b174c353e0e4200f09df215aae748890c6c4",
+      "blob": "05c5b99ae97031a978609d72b6c808a3f86d3e26"
+    },
+    "source/ha_native_v6_runtime.rs": {
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    "source/service_native_v6_ha_install.rs": {
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    "source/service_native_v6_ha_read.rs": {
+      "bytes": 26803,
+      "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    },
+    "source/native_fixture_recovery.py": {
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928"
+    },
+    "source/service-unseal-response.excerpts.txt": {
+      "bytes": 4606,
+      "sha256": "aebd0c3a4c12dbe83a5165a9524d06f845c2106d266ad5c0447d0875db5588fd",
+      "blob": "6d1c8477d084fb4d051297c2024b13e91614136f"
+    },
+    "source/executed-qa-log-and-http.excerpts.txt": {
+      "bytes": 4170,
+      "sha256": "2d6625876e89d80d2878f14caa8a60dec87942d0a8967de1907357b44462a1fd",
+      "blob": "9874d3a339bf278595a334f7a6b5c77606d73749"
+    },
+    "SOURCE_BINDINGS.public.json": {
+      "bytes": 5296,
+      "sha256": "9e2259fd9e8d51a0454e7f4325a3bd603cd3b02babaefcf8d3cac9fa3bda1abd",
+      "blob": "27f5f27972964fe44f306b1895259756a30e33bc"
+    },
+    "RESPONSE_HASH_MATCH.public.json": {
+      "bytes": 868,
+      "sha256": "105698ddcbdd2b3a1d2f5b7b5f1fd17d3efd921d281576b97d999a5bc8468639",
+      "blob": "d5c8c1b9c72ae899e734627405338c323eeb502f"
+    },
+    "PLAN.md": {
+      "bytes": 3342,
+      "sha256": "434c933010a563e11a48e6526c1f8df7fec1d2560cd379db2ceb2ea0c99a4fd5",
+      "blob": "8df6348d87d6e3e5f13de42d4e21aef70adabd1d"
+    }
+  },
+  "scope": "bounded fixed failed-fixture log projection; no runtime admission"
+}

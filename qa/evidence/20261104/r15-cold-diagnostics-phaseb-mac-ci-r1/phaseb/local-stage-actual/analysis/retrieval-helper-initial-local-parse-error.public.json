@@ -1,0 +1,6 @@
+{
+  "source": "async(prefix,label,expected){\n const collect=eval(\"(\"+load(\"phaseb_collect_raw_operation_js\")+\")\");\n const v=await collect(prefix,label),p=v.body,args=load(prefix+\"_read_\"+label+\"_args\").operation.arguments;\n const d64=eval(\"(\"+load(\"source_decode_base64_js\")+\")\"),h=eval(\"(\"+load(\"source_hash_sha256_js\")+\")\");\n const bytes=d64(p.data_base64);\n if(p.path!==expected.path||p.version!==expected.version||p.size!==expected.size||p.offset!==args.offset||p.next_offset!==p.offset+bytes.length||bytes.length>args.limit||h(bytes)!==p.chunk_sha256||p.eof!==(p.next_offset===p.size))throw Error(\"binary chunk mismatch \"+label);\n store(prefix+\"_\"+label+\"_bytes\",bytes);\n store(prefix+\"_\"+label+\"_parsed\",p);\n return{label,bytes:bytes.length,offset:p.offset,next_offset:p.next_offset,eof:p.eof,version:p.version,chunk_sha256:p.chunk_sha256,actual:v.actual};\n}",
+  "error": "Unexpected token {",
+  "execution": "eval failed before any collector/tool invocation",
+  "candidate_changes": false
+}

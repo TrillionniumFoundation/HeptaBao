@@ -1,0 +1,212 @@
+{
+  "schema": "heptabao.b2-timing-projector-pure-parser-review.r1",
+  "status": "passed",
+  "passed": 46,
+  "failed": 0,
+  "checks": [
+    {
+      "case": "normal_empty_ordinary_503_is_valid_and_ordered",
+      "passed": true
+    },
+    {
+      "case": "all_39_source_derived_pairs_are_individually_valid_in_one_record",
+      "passed": true
+    },
+    {
+      "case": "source_u16_failure_status_health_and_forwarded_remain_distinct",
+      "passed": true
+    },
+    {
+      "case": "source_saturating_counts_and_u128_bounds_project_losslessly",
+      "passed": true
+    },
+    {
+      "case": "zero_status_bool_is_not_u16",
+      "passed": true
+    },
+    {
+      "case": "successful_status_cannot_be_failure_report",
+      "passed": true
+    },
+    {
+      "case": "u16_status_overflow_rejected",
+      "passed": true
+    },
+    {
+      "case": "u64_count_overflow_rejected",
+      "passed": true
+    },
+    {
+      "case": "u128_time_overflow_rejected",
+      "passed": true
+    },
+    {
+      "case": "boolean_counter_rejected",
+      "passed": true
+    },
+    {
+      "case": "negative_integer_rejected",
+      "passed": true
+    },
+    {
+      "case": "negative_zero_rejected",
+      "passed": true
+    },
+    {
+      "case": "float_rejected",
+      "passed": true
+    },
+    {
+      "case": "exponent_rejected",
+      "passed": true
+    },
+    {
+      "case": "nonfinite_rejected",
+      "passed": true
+    },
+    {
+      "case": "unexpected_bucket_limit_rejected",
+      "passed": true
+    },
+    {
+      "case": "more_than_64_buckets_rejected",
+      "passed": true
+    },
+    {
+      "case": "bound_reached_requires_full_64_buckets",
+      "passed": true
+    },
+    {
+      "case": "duplicate_scope_phase_pair_rejected",
+      "passed": true
+    },
+    {
+      "case": "known_individual_labels_cannot_form_unreviewed_pair",
+      "passed": true
+    },
+    {
+      "case": "unknown_secret_like_phase_rejected_without_reflection",
+      "passed": true
+    },
+    {
+      "case": "unknown_request_class_rejected",
+      "passed": true
+    },
+    {
+      "case": "schema_mismatch_rejected",
+      "passed": true
+    },
+    {
+      "case": "extra_report_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "missing_report_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "extra_bucket_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "missing_bucket_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "nonboolean_flags_rejected",
+      "passed": true
+    },
+    {
+      "case": "nonlist_bucket_collection_rejected",
+      "passed": true
+    },
+    {
+      "case": "nonobject_bucket_rejected",
+      "passed": true
+    },
+    {
+      "case": "duplicate_top_level_json_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "duplicate_nested_json_key_rejected",
+      "passed": true
+    },
+    {
+      "case": "report_field_order_preserved",
+      "passed": true
+    },
+    {
+      "case": "extra_json_whitespace_rejected",
+      "passed": true
+    },
+    {
+      "case": "trailing_json_payload_rejected",
+      "passed": true
+    },
+    {
+      "case": "missing_final_lf_rejected",
+      "passed": true
+    },
+    {
+      "case": "crlf_not_original_formatter_rejected",
+      "passed": true
+    },
+    {
+      "case": "oversized_timing_line_rejected",
+      "passed": true
+    },
+    {
+      "case": "invalid_ascii_json_rejected",
+      "passed": true
+    },
+    {
+      "case": "zero_or_mismatched_outcome_counts_rejected",
+      "passed": true
+    },
+    {
+      "case": "maximum_elapsed_cannot_exceed_accumulated_elapsed",
+      "passed": true
+    },
+    {
+      "case": "minimum_remaining_aggregates_preserve_source_order",
+      "passed": true
+    },
+    {
+      "case": "request_remaining_cannot_increase",
+      "passed": true
+    },
+    {
+      "case": "original_two_marker_parsers_and_unselected_line_behavior_unchanged",
+      "passed": true
+    },
+    {
+      "case": "original_signal_deadline_identity_helpers_and_all_bounds_unchanged",
+      "passed": true
+    },
+    {
+      "case": "same_old_stopped_input_ten_fields_and_whole_hash_bound",
+      "passed": true
+    }
+  ],
+  "source_sha256": "5c518fd3411d1c506f9814bb61bcbe2e5e65b6dc2dfe7a748757cb271ac74345",
+  "base_sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+  "source_bytes": 22580,
+  "whole_source_ast_compile_only": true,
+  "module_main_executed": false,
+  "original_helper_ast_unchanged": [
+    "Refused",
+    "on_signal",
+    "remaining",
+    "facts",
+    "same_directory",
+    "same_file"
+  ],
+  "candidate_file_reads": 0,
+  "candidate_fd_operations": 0,
+  "children": 0,
+  "network": 0,
+  "physical_host_requests": 0,
+  "actual_log_accessed": false,
+  "scope": "actual AST-selected parsers with source-derived synthetic records; no runtime evidence or request correlation"
+}

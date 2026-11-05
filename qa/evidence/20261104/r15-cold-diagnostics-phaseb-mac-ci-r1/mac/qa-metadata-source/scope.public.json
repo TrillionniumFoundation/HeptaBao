@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.mac-owned-qa-metadata.source-scope.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "source": {
+    "bytes": 10338,
+    "sha256": "aecb42cd4f25699e9be552ce20eb95465af6fd8208a4b6a1acd245e8f6da3dbe",
+    "git_blob": "9a42418e99ca98a53667f5e24820ed1e98abea7e"
+  },
+  "prior_known_refused_job": "1a1a98ec7b8-fc05-35fb",
+  "prior_actual_tree": "c38c255174149a4b67180171772eb9d8afca3e03",
+  "root_terminal_review": "9bd3d8f73fd22b1981b9c98d032ce442d5946806",
+  "target": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/qa",
+  "expected_old_public_names": 18,
+  "known_public_names": 20,
+  "max_observed_members": 32,
+  "member_scan_recursive": false,
+  "max_explicit_metadata_calls": 64,
+  "held_directory_chain_paths": 6,
+  "full_identity_fields_per_directory": 9,
+  "fixed_t5_anchor_strings": 27,
+  "uuid_not_requeried": true,
+  "known_name_literal_allowed_only_from_fixed_twenty": true,
+  "unknown_names_public_hash_only": true,
+  "member_file_body_opened": false,
+  "symlink_followed": false,
+  "permissions_changed": false,
+  "children_started": false,
+  "network_used": false,
+  "inner_seconds": 5,
+  "supervisor_seconds": 60,
+  "success_means": "Complete current metadata observation with stable held named/FD chain and closed resources, not that the old QA membership guard passes.",
+  "guard_result_booleans_separate": [
+    "qa_full_identity_stable",
+    "member_count_matches_expected",
+    "member_set_matches_expected"
+  ],
+  "old_failure_reclassified": false,
+  "old_inert_replayed": false,
+  "original_r4_guard_unchanged": true,
+  "scope_note": "At 32 observed entries without an observed EOF the probe refuses; it does not fetch a 33rd entry or claim completeness."
+}

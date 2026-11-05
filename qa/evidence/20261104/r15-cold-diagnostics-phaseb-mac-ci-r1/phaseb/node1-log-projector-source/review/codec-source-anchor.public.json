@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.phaseb-3cb-normal-codec-source-anchor.v1",
+  "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "read_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/contents/crates/heptabao-server/src/ha_v6_native_codec.rs?ref=3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "read_content_equals_blob": true,
+  "path": "crates/heptabao-server/src/ha_v6_native_codec.rs",
+  "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "blob": "98e2ab5e8132d7c33dd313bef54366c05636a291",
+  "bytes": 52138,
+  "sha256": "5817213ce2ab37c6a536717565405e448c21380908fa92658e8ce825f5c3c369",
+  "function": "open_native_v6_committed_read",
+  "line_start": 531,
+  "line_end": 541,
+  "normal_unconditional_observation": true,
+  "excerpt": "    /// Authenticate the exact selected graph without minting a durability\n    /// receipt. This has the same enrollment, manifest, ciphertext and gate\n    /// checks as installation, but exposes neither sealing nor a local receipt.\n    pub(crate) fn open_native_v6_committed_read(\n        &self,\n        enrollment: &NativeV6PeerEnrollment,\n        published: &NativeV6PublishedRoot,\n        store: &LocalV6BlobStage,\n        gate: &mut impl FnMut() -> CodecResult<()>,\n    ) -> CodecResult<NativeV6CipherRead> {\n        crate::ha::observe_native_v6_timing(\"codec\", \"open_committed_read\", None, || {\n            self.open_native_v6_committed_read_inner(enrollment, published, store, gate)\n        })\n    }\n",
+  "fixture_body_read": false,
+  "old_candidate_run": false,
+  "conclusion": "The closed parser must admit the exact normal codec/open_committed_read pair. This is source reachability, not a claim that this phase occurred in B01."
+}

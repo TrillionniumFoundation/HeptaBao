@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.b2-stopped-node2-log-observation-assessment.v1",
+  "qualification": "PASS_READ_ONLY_SCOPED",
+  "product_qualification_unchanged": "FAIL_ACTUAL_91_OF_98_EXTRA_0_OF_12",
+  "source_packet": "b9c62aa4ed24fd3788b35554b2c03d5380895f59",
+  "exact_request_blob": "854c6172b62d68ac2b2a80d4f22f978534584992",
+  "admission_blob": "7e556ce30f8f101344a69ca6b6fa070ae264a96b",
+  "job_id": "1a1a97b8e77-fc05-357c",
+  "authority_exit0": true,
+  "stdout_hex_text_whole_equal": true,
+  "stderr_empty": true,
+  "file_metadata_before_after_named_lossless_equal": true,
+  "directory_held_named_binding_verified": true,
+  "all_6_descriptors_closed_once": true,
+  "scope_within_15": true,
+  "no_product_children_network": true,
+  "raw_log_not_received": true,
+  "stdout": {
+    "bytes": 7977,
+    "sha256": "852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4",
+    "blob": "0868b78a56b7c2287264a84d4d5f167933122a9e"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "original_log": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2/process.log",
+    "whole_bytes": 37545,
+    "whole_sha256": "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892",
+    "metadata": {
+      "bytes": 37545,
+      "ctime_ns": "1793843323209252035",
+      "device": 66306,
+      "gid": 1000,
+      "inode": 38844679,
+      "mode": 384,
+      "mtime_ns": "1793843323209252035",
+      "nlink": 1,
+      "type": 32768,
+      "uid": 1000
+    },
+    "named_held_before_after_equal": true,
+    "version_evidence": "raw exact held/named fstat metadata, not a separate connector file_info version",
+    "original_input_bytes_not_retrieved": true
+  },
+  "counts": {
+    "lines": 178,
+    "selected": 6,
+    "unselected": 172,
+    "owned_descriptors": 6,
+    "product_requests": 0,
+    "children": 0,
+    "files_written": 0
+  },
+  "observer_elapsed_seconds_before_publication": 0.0008911040204111487,
+  "new_shared_seconds": 15,
+  "new_supervisor_seconds": 45,
+  "marker_projection": [
+    {
+      "activation": false,
+      "barrier_loaded": true,
+      "line_bytes": 161,
+      "line_number": 20,
+      "line_sha256": "47bbb28db2356f6c019fdbe41e096269a16dba3ff2c0bf55992271ae2a71e3e0",
+      "marker": "HBHA-DIAG-UNSEAL",
+      "original_deadline_present": true,
+      "record_root": true,
+      "recovery_required": false,
+      "route_status": 200,
+      "state_loaded": true
+    },
+    {
+      "code": "read_index_refused",
+      "elapsed_us": "249842",
+      "line_bytes": 260,
+      "line_number": 47,
+      "line_sha256": "dfa26b1416502d477d6b0af8a168664775c3a987259b3add4a0ec829cb217a39",
+      "marker": "HBHA-NATIVE-SYNC-FAIL",
+      "original_deadline_expired": true,
+      "original_remaining_ns": "0",
+      "panicking": false,
+      "reason_sha": "de310767a42dcc4a8c76cc7a9bbac322d397a804a6f5652936ff57f883ccdd9f",
+      "step": "committed_read_index",
+      "step_elapsed_us": "249835"
+    },
+    {
+      "code": "read_index_refused",
+      "elapsed_us": "8001311",
+      "line_bytes": 272,
+      "line_number": 70,
+      "line_sha256": "433651b8fcae89c0374da0d847bec262113d5a3e92e5ffcfa81eab41d369bcb9",
+      "marker": "HBHA-NATIVE-SYNC-FAIL",
+      "original_deadline_expired": false,
+      "original_remaining_ns": "6998637027",
+      "panicking": false,
+      "reason_sha": "de310767a42dcc4a8c76cc7a9bbac322d397a804a6f5652936ff57f883ccdd9f",
+      "step": "committed_read_index",
+      "step_elapsed_us": "8001307"
+    },
+    {
+      "activation": true,
+      "barrier_loaded": true,
+      "line_bytes": 161,
+      "line_number": 104,
+      "line_sha256": "7dd0c0da010883aaddfcbc00d1a6aafdda818b6d5f0db2b3d9c8c58704b3deee",
+      "marker": "HBHA-DIAG-UNSEAL",
+      "original_deadline_present": true,
+      "record_root": false,
+      "recovery_required": false,
+      "route_status": 200,
+      "state_loaded": true
+    },
+    {
+      "activation": true,
+      "barrier_loaded": true,
+      "line_bytes": 161,
+      "line_number": 114,
+      "line_sha256": "7dd0c0da010883aaddfcbc00d1a6aafdda818b6d5f0db2b3d9c8c58704b3deee",
+      "marker": "HBHA-DIAG-UNSEAL",
+      "original_deadline_present": true,
+      "record_root": false,
+      "recovery_required": false,
+      "route_status": 200,
+      "state_loaded": true
+    },
+    {
+      "activation": false,
+      "barrier_loaded": false,
+      "line_bytes": 164,
+      "line_number": 177,
+      "line_sha256": "0e6cea7f79d4b52ad32bf61eceee982157f554da1f7c8bd95afc0d4f0a303a75",
+      "marker": "HBHA-DIAG-UNSEAL",
+      "original_deadline_present": true,
+      "record_root": false,
+      "recovery_required": false,
+      "route_status": 503,
+      "state_loaded": false
+    }
+  ],
+  "observed_final_unseal": {
+    "line": 177,
+    "status": 503,
+    "state_loaded": false,
+    "recovery_required": false,
+    "barrier_loaded": false,
+    "record_root": false,
+    "activation": false,
+    "original_deadline_present": true
+  },
+  "historical_sync_failures": {
+    "lines": [
+      47,
+      70
+    ],
+    "subsequent_successful_unseal_lines": [
+      104,
+      114
+    ],
+    "not_attributed_to_final_failed_request": true
+  },
+  "limitations": [
+    "Only fixed source-derived public markers were transmitted; 172 other lines were not returned.",
+    "Line order and final status are not request-ID correlation.",
+    "The two read_index_refused markers precede two later successful unseal markers; they do not diagnose the final 503.",
+    "No new matching detailed failure marker near the final 503 does not prove any underlying operation succeeded or that logging could not fail.",
+    "Generic local-publication response remains compatible with multiple earlier cold refusal branches.",
+    "No old product operation was resumed, retried or recreated."
+  ],
+  "host_operations_complete": true,
+  "further_runtime_authorized": false
+}

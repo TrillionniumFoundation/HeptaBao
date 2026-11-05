@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.root-mac-owned-qa-metadata-actual-review.v1",
+  "tree": "75ab1634c39c7b5b2ce3d0ded6291fe57a36f4d3",
+  "files": 13,
+  "bytes": 122309,
+  "merkle_trees": 2,
+  "job_id": "1a1a998e315-fc05-363f",
+  "exit_code": 0,
+  "complete": true,
+  "durable": true,
+  "original_sdk_snapshots_exact": 3,
+  "full_stdout_bytes": 10228,
+  "all6_chain_directories_full9field_stable": true,
+  "all6_held_fds_and_iterator_closed": true,
+  "original18_members_all_present_and_162_identity_strings_equal": true,
+  "observed_members": 20,
+  "additional_publicly_unnamed_regular_members": [
+    {
+      "name_sha256": "84e8004701d3e5c723ff17831779e4b5774acad00fee7c7fbaa3b16b854545d7",
+      "bytes": 3405,
+      "identity": [
+        "16777244",
+        "72546533",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3405",
+        "1793835363127778611",
+        "1793835363127784028"
+      ]
+    },
+    {
+      "name_sha256": "1a6a19d097d587641b77579b62487d9131e64bd3ee59c17a9c8f6573a3ee843e",
+      "bytes": 4691,
+      "identity": [
+        "16777244",
+        "72548953",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "4691",
+        "1793838192077754207",
+        "1793838192077762290"
+      ]
+    }
+  ],
+  "qa_full_identity_stable": true,
+  "old18_count_match": false,
+  "old18_set_match": false,
+  "complete_directory_enumeration": true,
+  "metadata_calls": 44,
+  "elapsed_seconds": 0.0004060836508870125,
+  "original5s_met": true,
+  "no_file_body_private_child_network_write_or_guard_change": true,
+  "no_r4_retry": true,
+  "previous_compound_failure_not_reconstructed": true,
+  "runtime_not_qualified": true,
+  "exclusive_diagnostic_window_released": true
+}

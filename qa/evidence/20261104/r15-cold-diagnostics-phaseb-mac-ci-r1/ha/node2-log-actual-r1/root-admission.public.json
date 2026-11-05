@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.root-source-admission.v1",
+  "kind": "fixed-stopped-node2-public-log-projection",
+  "decision": "GO_ONCE_EXACT_REQUEST",
+  "reviewed_at_utc": "2026-11-05 02:12:23 UTC",
+  "source_tree": "b9c62aa4ed24fd3788b35554b2c03d5380895f59",
+  "source_tree_files": 15,
+  "source_blob": "3fbf4d7e7348118018af0e37354c078a2ffeb34c",
+  "source_bytes": 13427,
+  "source_sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+  "request_blob": "854c6172b62d68ac2b2a80d4f22f978534584992",
+  "request_sha256": "453ea2fd047aa0bc7cfc2eb7b8793b0f7a814e52d4b51de6a513037ef11cdf0a",
+  "request_inner_seconds": 15,
+  "request_outer_seconds": 45,
+  "source_full_read": true,
+  "formatter_sources_whole_hash_verified": [
+    "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+    "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+    "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+    "a1de3065d7883b4b1943d794756e182f1a2ce708"
+  ],
+  "static_phase_labels": 32,
+  "static_code_labels": 5,
+  "all_closed_labels_present_in_bound_sources": true,
+  "parser_component_checks": 24,
+  "owned_file_only": true,
+  "no_raw_lines_or_bodies_emitted": true,
+  "no_child_network_or_file_write": true,
+  "all_fd_close_once_required": true,
+  "input_limit_bytes": 2097152,
+  "output_limit_bytes": 65536,
+  "marker_limit": 128,
+  "negative_boundaries": [
+    "generic mapper has multiple reachable call sites; actual inner cause remains unknown",
+    "markers may span append-log process epochs; no request correlation is established",
+    "zero matching markers cannot prove no inner failure",
+    "no product runtime, restart, repair or mutation is admitted"
+  ]
+}

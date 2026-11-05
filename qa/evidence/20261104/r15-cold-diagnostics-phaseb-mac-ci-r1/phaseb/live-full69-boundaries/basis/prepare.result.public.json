@@ -1,0 +1,658 @@
+{
+  "all_owned_stopped": true,
+  "binding_sha256": "778697b6f271762ebeebebb8000fe1a92ec88593f725ea460afb62db2a5f9242",
+  "child_exec_visibility": [],
+  "child_provenance": [
+    {
+      "actual_argc": 9,
+      "actual_cmdline_bytes": 170,
+      "actual_cmdline_sha256": "bcccc0a50be82018896b7ffcbae9073df0426b0ca1735e3d96f2c636b389cdc7",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 12,
+          "equal": true,
+          "expected_bytes": 12,
+          "expected_sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363",
+          "index": 0,
+          "sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 1,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 20,
+          "equal": true,
+          "expected_bytes": 20,
+          "expected_sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87",
+          "index": 2,
+          "sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 3,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 24,
+          "equal": true,
+          "expected_bytes": 24,
+          "expected_sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8",
+          "index": 4,
+          "sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73",
+          "index": 5,
+          "sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73"
+        },
+        {
+          "bytes": 86,
+          "equal": true,
+          "expected_bytes": 86,
+          "expected_sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c",
+          "index": 6,
+          "sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c"
+        },
+        {
+          "bytes": 9,
+          "equal": true,
+          "expected_bytes": 9,
+          "expected_sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472",
+          "index": 7,
+          "sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "b5180223165af3583fd0724209986caf2a62692654b74c525027dda592404330",
+          "index": 8,
+          "sha256": "b5180223165af3583fd0724209986caf2a62692654b74c525027dda592404330"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 9,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/git",
+        "pgid": 371648,
+        "pid": 371648,
+        "ppid": 371453,
+        "start_ticks": 92258245,
+        "state": "R"
+      },
+      "pid": 371648,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 9,
+      "actual_cmdline_bytes": 177,
+      "actual_cmdline_sha256": "2ee200d5cb93407058ffa2edcf0f0b4f32f86848ebde9a271a2d30f7bd0b79cc",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 12,
+          "equal": true,
+          "expected_bytes": 12,
+          "expected_sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363",
+          "index": 0,
+          "sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 1,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 20,
+          "equal": true,
+          "expected_bytes": 20,
+          "expected_sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87",
+          "index": 2,
+          "sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 3,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 24,
+          "equal": true,
+          "expected_bytes": 24,
+          "expected_sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8",
+          "index": 4,
+          "sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73",
+          "index": 5,
+          "sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73"
+        },
+        {
+          "bytes": 86,
+          "equal": true,
+          "expected_bytes": 86,
+          "expected_sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c",
+          "index": 6,
+          "sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c"
+        },
+        {
+          "bytes": 9,
+          "equal": true,
+          "expected_bytes": 9,
+          "expected_sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472",
+          "index": 7,
+          "sha256": "f457914e11eb08c1376bb437fa90ce66f8d670de0966c6036ba45cbe8af9a472"
+        },
+        {
+          "bytes": 11,
+          "equal": true,
+          "expected_bytes": 11,
+          "expected_sha256": "f8503f5b9a8683fd277e01e6877263e90ad4dbed1fef2ccf2afa8b8b72e9d868",
+          "index": 8,
+          "sha256": "f8503f5b9a8683fd277e01e6877263e90ad4dbed1fef2ccf2afa8b8b72e9d868"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 9,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/git",
+        "pgid": 371656,
+        "pid": 371656,
+        "ppid": 371453,
+        "start_ticks": 92258256,
+        "state": "R"
+      },
+      "pid": 371656,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 10,
+      "actual_cmdline_bytes": 196,
+      "actual_cmdline_sha256": "b784b55608c8970a4dc0bcec39b7cdf06f0afd51740238173e6e86382aec96b1",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 12,
+          "equal": true,
+          "expected_bytes": 12,
+          "expected_sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363",
+          "index": 0,
+          "sha256": "106aa88494971ea56c867f371d12746ef6ce5f5bd4f73b857235642caeb88363"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 1,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 20,
+          "equal": true,
+          "expected_bytes": 20,
+          "expected_sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87",
+          "index": 2,
+          "sha256": "548baaf407c4d24fc223554bd8c956373315c4f10a08dc1fa9991cf93cecad87"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85",
+          "index": 3,
+          "sha256": "0c3603e13e24a40b4bf215e3795a9a40d60a8456fb7b63c2d11e81701a231e85"
+        },
+        {
+          "bytes": 24,
+          "equal": true,
+          "expected_bytes": 24,
+          "expected_sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8",
+          "index": 4,
+          "sha256": "c7eccb59ff9174c07e2f17ad8ef86ca9d848f1cbb9323133feb1251545ddc8a8"
+        },
+        {
+          "bytes": 2,
+          "equal": true,
+          "expected_bytes": 2,
+          "expected_sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73",
+          "index": 5,
+          "sha256": "de75ad58228bf5f0ffb99b04dced17644f4cfda7acb7b64e3ade4f52ca496e73"
+        },
+        {
+          "bytes": 86,
+          "equal": true,
+          "expected_bytes": 86,
+          "expected_sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c",
+          "index": 6,
+          "sha256": "e10889a126b5e416d53f64a14193790001e9ae18613c2422a18ad2c9d487004c"
+        },
+        {
+          "bytes": 6,
+          "equal": true,
+          "expected_bytes": 6,
+          "expected_sha256": "073c1634c496cdb649d1afe0a312bbb4b7e1741b271542e4a436c3b8824b1761",
+          "index": 7,
+          "sha256": "073c1634c496cdb649d1afe0a312bbb4b7e1741b271542e4a436c3b8824b1761"
+        },
+        {
+          "bytes": 11,
+          "equal": true,
+          "expected_bytes": 11,
+          "expected_sha256": "99995b429bdc79d181ef1433b732eb66d793543f436f1d4858e72e12b9aeb7ee",
+          "index": 8,
+          "sha256": "99995b429bdc79d181ef1433b732eb66d793543f436f1d4858e72e12b9aeb7ee"
+        },
+        {
+          "bytes": 21,
+          "equal": true,
+          "expected_bytes": 21,
+          "expected_sha256": "fe0e3125fbc3a5c71b45e98fef8e8c74c972e603913eae558498e1c9f434d7ea",
+          "index": 9,
+          "sha256": "fe0e3125fbc3a5c71b45e98fef8e8c74c972e603913eae558498e1c9f434d7ea"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 10,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/git",
+        "pgid": 371657,
+        "pid": 371657,
+        "ppid": 371453,
+        "start_ticks": 92258266,
+        "state": "R"
+      },
+      "pid": 371657,
+      "stage": "exact_executable_and_argv"
+    }
+  ],
+  "cli_snapshot_commands": 0,
+  "failure_code": null,
+  "inputs": {
+    "api_ports": {
+      "1": 48630,
+      "2": 48632,
+      "3": 48634
+    },
+    "archive_and_audit_product_sources": {
+      "crates/heptabao-server/src/ha_native_v6_runtime.rs": {
+        "bytes": 61623,
+        "git_blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+      },
+      "crates/heptabao-server/src/service.rs": {
+        "bytes": 518245,
+        "git_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+      },
+      "crates/heptabao-server/src/service_snapshot_transfer.rs": {
+        "bytes": 50683,
+        "git_blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+        "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"
+      },
+      "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs": {
+        "bytes": 43899,
+        "git_blob": "0a94044292493853c7770cb36aa69544c1488aca",
+        "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff"
+      },
+      "crates/heptabao-server/src/snapshot_archive.rs": {
+        "bytes": 14013,
+        "git_blob": "6828ae88590184830da949001b13abd82a4f9b10",
+        "sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"
+      }
+    },
+    "binding_sha256": "778697b6f271762ebeebebb8000fe1a92ec88593f725ea460afb62db2a5f9242",
+    "budgets": {
+      "action_seconds": 300,
+      "cleanup_kill_seconds": 5,
+      "cleanup_term_seconds": 5,
+      "cli_seconds": 15,
+      "election_seconds": 60,
+      "forward_timeout_ms": 8000,
+      "http_seconds": 15,
+      "peer_timeout_ms": 1500,
+      "readiness_seconds": 45,
+      "stable_leader_seconds": 2.2
+    },
+    "files": {
+      "artifacts": {
+        "combined_tests": {
+          "bytes": 35178,
+          "ctime_ns": 1793843795062472754,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755377,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795062472754,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-tests-result.public.json",
+          "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+          "uid": 1000
+        },
+        "native_receipt": {
+          "bytes": 794,
+          "ctime_ns": 1793843794986475178,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755369,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843794986475178,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/native-build.public.json",
+          "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+          "uid": 1000
+        },
+        "release_receipt": {
+          "bytes": 3200,
+          "ctime_ns": 1793843794996474859,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755370,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843794996474859,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-result.public.json",
+          "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+          "uid": 1000
+        },
+        "server": {
+          "bytes": 109074848,
+          "ctime_ns": 1793843794400493869,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755368,
+          "links": 1,
+          "mode": 320,
+          "mtime_ns": 1793843794400493869,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/heptabao-server",
+          "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+          "uid": 1000
+        },
+        "test_groups": {
+          "bytes": 6249,
+          "ctime_ns": 1793843795053473041,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755376,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795053473041,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/groups.json",
+          "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+          "uid": 1000
+        }
+      },
+      "official_cli": {
+        "bytes": 181760103,
+        "ctime_ns": 1793790896100642664,
+        "device": 2050,
+        "gid": 1000,
+        "inode": 1743983,
+        "links": 1,
+        "mode": 320,
+        "mtime_ns": 1793790894519686913,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+        "uid": 1000
+      },
+      "old_fences": [
+        {
+          "bytes": 270785,
+          "ctime_ns": 1793821513964254885,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 58646100,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793821513964254885,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/result.public.json",
+          "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+          "uid": 1000
+        },
+        {
+          "bytes": 83438,
+          "ctime_ns": 1793805022065189569,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 56653857,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793805022065189569,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3/result.public.json",
+          "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68",
+          "uid": 1000
+        },
+        {
+          "bytes": 19915,
+          "ctime_ns": 1793795620084538316,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 1895206,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793795620084538316,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r3/result.public.json",
+          "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590",
+          "uid": 1000
+        },
+        {
+          "bytes": 109148,
+          "ctime_ns": 1793788570206669891,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 1743475,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793788570206669891,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+          "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+          "uid": 1000
+        },
+        {
+          "bytes": 45176,
+          "ctime_ns": 1793789607265218450,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 1743933,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793789607265218450,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+          "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+          "uid": 1000
+        }
+      ],
+      "qa": {
+        "native_fixture_reference_r8.py": {
+          "bytes": 68149,
+          "ctime_ns": 1793843795033473679,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755374,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795033473679,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/native_fixture_reference_r8.py",
+          "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+          "uid": 1000
+        },
+        "official_cli_reference_r4.py": {
+          "bytes": 46586,
+          "ctime_ns": 1793843795043473360,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755375,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795043473360,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/official_cli_reference_r4.py",
+          "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+          "uid": 1000
+        },
+        "phaseb_binding_r3.py": {
+          "bytes": 23664,
+          "ctime_ns": 1793843795014474285,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755372,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795014474285,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_binding_r3.py",
+          "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+          "uid": 1000
+        },
+        "phaseb_controller_r3.py": {
+          "bytes": 61210,
+          "ctime_ns": 1793843795005474572,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755371,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795005474572,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+          "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+          "uid": 1000
+        },
+        "phaseb_evidence_r3.py": {
+          "bytes": 15201,
+          "ctime_ns": 1793843795024473966,
+          "device": 2050,
+          "gid": 1000,
+          "inode": 4755373,
+          "links": 1,
+          "mode": 384,
+          "mtime_ns": 1793843795024473966,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_evidence_r3.py",
+          "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+          "uid": 1000
+        }
+      },
+      "utilities": {
+        "git": {
+          "bytes": 4066232,
+          "ctime_ns": 1792492455842180909,
+          "device": 2050,
+          "gid": 0,
+          "inode": 36447600,
+          "links": 1,
+          "mode": 493,
+          "mtime_ns": 1792159905000000000,
+          "path": "/usr/bin/git",
+          "sha256": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+          "uid": 0
+        },
+        "openssl": {
+          "bytes": 1005368,
+          "ctime_ns": 1790808084612429583,
+          "device": 2050,
+          "gid": 0,
+          "inode": 36447500,
+          "links": 1,
+          "mode": 493,
+          "mtime_ns": 1789584422000000000,
+          "path": "/usr/bin/openssl",
+          "sha256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+          "uid": 0
+        },
+        "python": {
+          "bytes": 8020928,
+          "ctime_ns": 1789164879262713172,
+          "device": 2050,
+          "gid": 0,
+          "inode": 36451609,
+          "links": 1,
+          "mode": 493,
+          "mtime_ns": 1788171506000000000,
+          "path": "/usr/bin/python3.12",
+          "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+          "uid": 0
+        }
+      }
+    },
+    "host": {
+      "machine": "x86_64",
+      "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+      "system": "Linux",
+      "uid": 1000
+    },
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "raft_ports": {
+      "1": 48631,
+      "2": 48633,
+      "3": 48635
+    },
+    "schema": "heptabao.official271-native-cli-phaseb-r3.inputs.v1",
+    "source": {
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "status": "",
+      "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+    },
+    "whole_replacement_qualification": false
+  },
+  "owned_cleanup": [
+    {
+      "direct_child_reaped": true,
+      "owned_stopped": true,
+      "pid": 371657,
+      "remaining": [],
+      "start_ticks": 92258266,
+      "stop_terminal_captured": true,
+      "wait_returncode": 0
+    },
+    {
+      "direct_child_reaped": true,
+      "owned_stopped": true,
+      "pid": 371656,
+      "remaining": [],
+      "start_ticks": 92258256,
+      "stop_terminal_captured": true,
+      "wait_returncode": 0
+    },
+    {
+      "direct_child_reaped": true,
+      "owned_stopped": true,
+      "pid": 371648,
+      "remaining": [],
+      "start_ticks": 92258245,
+      "stop_terminal_captured": true,
+      "wait_returncode": 0
+    }
+  ],
+  "production_changed": false,
+  "readiness_is_not_runtime_qualification": true,
+  "runtime_started": false,
+  "schema": "heptabao.official271-native-cli-phaseb-r3.prepare.v1",
+  "server_processes": 0,
+  "status": "passed",
+  "terminal_unix_ns": 1793844917971942676
+}

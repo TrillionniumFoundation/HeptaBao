@@ -1,0 +1,284 @@
+{
+  "schema": "heptabao.mac-input-successor-r4.manifest.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "payload_file_count": 39,
+  "payload_bytes": 1875789,
+  "files": [
+    {
+      "path": "source/mac_current_fixture_materializer_r1.py",
+      "mode": "100644",
+      "git_blob": "c22afefd15d026017e99ea47a47c0138ed6b469d",
+      "bytes": 23643,
+      "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+    },
+    {
+      "path": "source/mac_current_capture_entry_r1.py",
+      "mode": "100644",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024"
+    },
+    {
+      "path": "source/mac_owned_launchd_r3.py",
+      "mode": "100644",
+      "git_blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57",
+      "bytes": 35532,
+      "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c"
+    },
+    {
+      "path": "source/mac_current_server_owner_r1.py",
+      "mode": "100644",
+      "git_blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0",
+      "bytes": 13210,
+      "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6"
+    },
+    {
+      "path": "source/mac_current_phase_owner_r2.py",
+      "mode": "100644",
+      "git_blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9",
+      "bytes": 24971,
+      "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+    },
+    {
+      "path": "source/mac_native_process_observer_r1.py",
+      "mode": "100644",
+      "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "source/mac_guarded_current_capture_r3.py",
+      "mode": "100644",
+      "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    },
+    {
+      "path": "source/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "source/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99"
+    },
+    {
+      "path": "source/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r1.py",
+      "mode": "100644",
+      "git_blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r2.py",
+      "mode": "100644",
+      "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+    },
+    {
+      "path": "source/mac_current_cycle_r2.mjs",
+      "mode": "100644",
+      "git_blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769",
+      "bytes": 24007,
+      "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177"
+    },
+    {
+      "path": "source/mac_single_native_r2.mjs",
+      "mode": "100644",
+      "git_blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680",
+      "bytes": 28527,
+      "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c"
+    },
+    {
+      "path": "source/mac_auth_rows_cas_r1.mjs",
+      "mode": "100644",
+      "git_blob": "50cf42a76cd313fb4de889e954bb9abe2e716530",
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd"
+    },
+    {
+      "path": "source/mac_authbus_cache_cas_r1.mjs",
+      "mode": "100644",
+      "git_blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    {
+      "path": "source/mac_current_outer_inputs_r2.py",
+      "mode": "100644",
+      "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603"
+    },
+    {
+      "path": "source/mac_current_outer_r4.py",
+      "mode": "100644",
+      "git_blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1",
+      "bytes": 59462,
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f"
+    },
+    {
+      "path": "control/mac_input_successor_r4_inert.py",
+      "mode": "100644",
+      "git_blob": "7a602befb4032ad1b42c8b3bca24256220c956f6",
+      "bytes": 21483,
+      "sha256": "aece8bec79b525bfb1e0331fdfa8016d9d0ff58380df97161f1ccecb3f42f894"
+    },
+    {
+      "path": "control/inert-payload.public.json",
+      "mode": "100644",
+      "git_blob": "ec2c9b9ec90ab320af8e24b19b13415fb1cf9e6f",
+      "bytes": 635018,
+      "sha256": "e8fe5f984ddab5fc7d8ab0758c8e2b3ba8ded25dfea6e62e04694147c8bb1b68"
+    },
+    {
+      "path": "dispatch/inert-start.public.json",
+      "mode": "100644",
+      "git_blob": "a9a64ceb6b4bbc188acfed52959989f818a3a37c",
+      "bytes": 658018,
+      "sha256": "af9252ca583fa46c7fceb3b04c91bc2e5e517800406a86a27c9b6e05528bfe6e"
+    },
+    {
+      "path": "dispatch/runtime-start.proposed.json",
+      "mode": "100644",
+      "git_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+      "bytes": 4667,
+      "sha256": "a6ba251c51e1d572b4731401967ca0f21162c8a499dd71029dd116d43cbc09cf"
+    },
+    {
+      "path": "candidate-current-manager-r4.public.json",
+      "mode": "100644",
+      "git_blob": "f907235064899ae026027d089b2ec1984ac5d753",
+      "bytes": 3442,
+      "sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825"
+    },
+    {
+      "path": "qa-pins.public.json",
+      "mode": "100644",
+      "git_blob": "1b04aedd15d41aa9d58eb47c994f75c0f93c97ef",
+      "bytes": 1846,
+      "sha256": "1998543d5668f0ef42a71da0b473f831c34f3c3bb0068ddfcabe2b12f51d66b8"
+    },
+    {
+      "path": "integration-contract.public.json",
+      "mode": "100644",
+      "git_blob": "1d7c50da6ba1514f93e632ee2ae4204bdc6aaf67",
+      "bytes": 5137,
+      "sha256": "1151f6d99400aacc5707bfc0d30792800dfed15433df3479c1861e64aa495079"
+    },
+    {
+      "path": "invariance.public.json",
+      "mode": "100644",
+      "git_blob": "686b0cb4b18fd6f391e0c231035c90bf0a920403",
+      "bytes": 6932,
+      "sha256": "81c62d69a5c3bd273c5e540247d0d702a780fa3a9fa2faf5fd02f1e1f3053608"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_blob": "a40b576c38a7477a044fb024e098e493241274ac",
+      "bytes": 5836,
+      "sha256": "7b5ae846a510b0fe7ba5aee988d62ee22709b1cab915f5d034c85e650afc155d"
+    },
+    {
+      "path": "diffs/input-parent-cap.review.diff",
+      "mode": "100644",
+      "git_blob": "3f8a87f50af6b0e2fc73efd0218cd8e24f63a2cd",
+      "bytes": 9093,
+      "sha256": "39e3879d6086b335657ba225ba4c5a51e23faa8ef6621a1c91e3fe10c0e2e2c0"
+    },
+    {
+      "path": "diffs/outer-r3-to-r4.review.diff",
+      "mode": "100644",
+      "git_blob": "d9712be156ba19218bd27f485bec564e192cdbf8",
+      "bytes": 7763,
+      "sha256": "735a3310581ddcfce32e211de6e07c384b0ca63030a32e2aa8be687533d830b6"
+    },
+    {
+      "path": "diffs/inert-r3-to-r4.review.diff",
+      "mode": "100644",
+      "git_blob": "b607d3b7678680b3627edc4dfa13ce8a84a25fb4",
+      "bytes": 14811,
+      "sha256": "b50118be8410e6a8c740217eeaa7fdaefdbb168391a939d3eb62f76edff64931"
+    },
+    {
+      "path": "references/mac_current_outer_r3.py",
+      "mode": "100644",
+      "git_blob": "0948e1dd5b7e49fffb13f7ebb23c0ae00c4de252",
+      "bytes": 59477,
+      "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50"
+    },
+    {
+      "path": "references/mac_current_outer_inputs_r1.py",
+      "mode": "100644",
+      "git_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254"
+    },
+    {
+      "path": "references/complete-inert-r3.py",
+      "mode": "100644",
+      "git_blob": "0c7b7656c4abe0885e0f0ec70ce0729f130a6e13",
+      "bytes": 14892,
+      "sha256": "7e830ba2a0e85c6ba5e2ff7fdf398d18ef7f8964d2aaf706fac57dd9a7487e0c"
+    },
+    {
+      "path": "references/actual-prior-inert.stdout.json",
+      "mode": "100644",
+      "git_blob": "874f00b99728349fcaebd2f89975d31431209993",
+      "bytes": 11589,
+      "sha256": "f91de0fae041b1624f7d7d92479e35845c2c09011d95c902508ce8573729a313"
+    },
+    {
+      "path": "references/actual-runtime-failure.stdout.json",
+      "mode": "100644",
+      "git_blob": "c701fd2847fae23feee0686462a07dfb841c6833",
+      "bytes": 15368,
+      "sha256": "38d5674cb161a83fa52a87f7a533b4cbe7bd4567e718fc48e3bda779be3c3ddb"
+    },
+    {
+      "path": "references/input-scope-peer-review.public.json",
+      "mode": "100644",
+      "git_blob": "84c4a6d07e49e2ac56031ab5ab1643595df52414",
+      "bytes": 5476,
+      "sha256": "32d37a06c0203af05f8c24111adbd2b7c3a463ca9e21d1853472a0c4670fc5c8"
+    },
+    {
+      "path": "validation/ast-verifier.py",
+      "mode": "100644",
+      "git_blob": "1e3be3b8ed716e3d08b3c52c77c11e000bfa0189",
+      "bytes": 2406,
+      "sha256": "48bbf1fc6fc4acc150d0610bec7c71bd0b21a6d7b235f04a661a61fad9d5eaae"
+    },
+    {
+      "path": "validation/ast-executor.public.json",
+      "mode": "100644",
+      "git_blob": "fef08186456fa726f0caf68afb1a0ebc3e21fda9",
+      "bytes": 829,
+      "sha256": "d4df93bb52611d0ebda6b7ffeced4166633538ab95c11fe961553615aa502768"
+    },
+    {
+      "path": "validation/ast.stdout.json",
+      "mode": "100644",
+      "git_blob": "9b7210b35d1a842b75cd73980a7a4a74e11227f4",
+      "bytes": 628,
+      "sha256": "d1704e8989e416ed773808c3f38b1b0860110ef58cdc1c63a6c59b6231b0472b"
+    }
+  ],
+  "parent_review_packet": "522c6ee3bf7802d08b2f0392579d87635a0459cb",
+  "runtime_action_started": false,
+  "production_cutover_qualified": false
+}

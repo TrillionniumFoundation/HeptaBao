@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.mac-public-input-admission-successor.r1",
+  "source_only": true,
+  "base": {
+    "tree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+    "file": "source/mac_current_outer_inputs_r1.py",
+    "bytes": 24973,
+    "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+    "git_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b"
+  },
+  "candidate": {
+    "bytes": 27059,
+    "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+    "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a"
+  },
+  "historical_failure": {
+    "job": "1a1a968c3e6-fc05-3501",
+    "status": "FAIL_INPUT_ADMISSION",
+    "retained_unchanged": true,
+    "private_input_opened": false,
+    "sqlite_opened": false,
+    "consumer_started": false,
+    "service_started": false,
+    "packet_tree": "628b817f6a4a894ea1b444a663bfdf3c3ba748cd"
+  },
+  "observations": {
+    "first_sdk_parent_tree": "28e34a812f5cc81d451362f09f9e3854787e3c9b",
+    "closed40_parent_tree": "b901623f1362a550132c9c4a5bb66f0cb10e19a5",
+    "fixed_public_entries": 40,
+    "unique_parent_paths": 43,
+    "source_content_was_read_by_metadata_diagnostic": false,
+    "source_content_pins_still_required_at_runtime": true,
+    "allowed_parent_identities": {
+      "/opt/homebrew/Cellar": [
+        "16777233",
+        "10827980",
+        "501",
+        "80",
+        "16893",
+        "105",
+        "3360",
+        "1793687928283555715",
+        "1793687928283555715"
+      ],
+      "/opt/homebrew/lib": [
+        "16777233",
+        "10827971",
+        "501",
+        "80",
+        "16893",
+        "459",
+        "14688",
+        "1791866883454202812",
+        "1791866883454202812"
+      ]
+    }
+  },
+  "changes": {
+    "parent_exception_context": "Only pin_code for a path frozen in the original 40 code_allowed records; original source SHA pin, current code_allowed SHA and resolved path must agree; private=False. Added harness paths are excluded.",
+    "parent_custody": "The two observed named parents require exact nine string fields before open, after fstat, and named/fstat after the read. Other parents keep the original six-field custody and permission predicate. Anchor handling is not widened.",
+    "final_verification": "Already admitted base-code records re-enter pin_code so exact original alias and both special parent identities are rechecked; unrelated public receipts and private records retain original direct reads.",
+    "cap_identity": "Only that closed public-code context compares all recorded fields after normalizing the operational cap to the first recorded cap. Path, bytes, SHA256, all nine identity fields, private and any other recorded fields still compare exactly.",
+    "caps": {
+      "hash_per_call": 268435456,
+      "collected_code_per_call": 8388608,
+      "aggregate_input_hash_bytes": 1073741824,
+      "changed": false
+    },
+    "private_and_read_public_equality_changed": false,
+    "private_and_read_public_functions_byte_identical": true,
+    "chmod": false,
+    "symlink_policy_widened": false,
+    "general_homebrew_permission_exception": false,
+    "deadline_or_retry_changes": false
+  },
+  "validation": {
+    "strict_diff_hunks": 9,
+    "strict_diff_whole_exact": true,
+    "local_full_ast_compile_only": true,
+    "selected_components": 16,
+    "passed": 16,
+    "failed": 0,
+    "whole_candidate_module_executed": false,
+    "actual_fd_operations_in_selected_candidate_logic": 0,
+    "actual_children_in_candidate_logic": 0,
+    "network": 0,
+    "sqlite": 0,
+    "physical_host_calls": 0,
+    "initial_harness_nameerror_preserved": true,
+    "initial_harness_fix": "Supply fd=27 to the fake environment of an actual AST-selected fstat condition; candidate source unchanged."
+  },
+  "integration": {
+    "new18_source_bundle_frozen": false,
+    "new_host_generation_created": false,
+    "new_runtime_request_submitted": false,
+    "source_review_not_runtime_qualification": true,
+    "root_review_and_final_exact_derived_pins_required": true
+  }
+}

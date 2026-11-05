@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.r14.root-prepublication-review.v1",
+  "tree": "e9150a39570b1e297b833678d02c0bcf362a760a",
+  "base_commit": "fa489bfbda996dba77744c7387301711e41fcf9e",
+  "base_tree": "57350f1fded0aa2222f5d833814d978a8680a6bd",
+  "merkle": {
+    "root_sha": "e9150a39570b1e297b833678d02c0bcf362a760a",
+    "trees_verified": 996
+  },
+  "existing_blob_leaves": 7430,
+  "existing_unchanged_blob_leaves": 7428,
+  "edited_existing_docs": 2,
+  "new_packet_blob_entries": 596,
+  "new_root_blob_entries": 33,
+  "all_new_blob_entries": 629,
+  "full_tree_blob_leaves": 8059,
+  "all_expected_paths_match": true,
+  "no_other_paths_added_or_deleted": true,
+  "prior_index_fields_preserved": 75,
+  "as_of_utc": "2026-11-05T01:56:28Z",
+  "full_replacement": false,
+  "production_cutover": false,
+  "old_asset_deletion": false,
+  "pr152_head": "e5de554f5dfe99f0de30012122fe3e248fb60532",
+  "pr152_draft_open_unmerged": true
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "38a5c0",
+  "wall_time_seconds": 0.000023516,
+  "exit_code": 1,
+  "original_token_count": 39,
+  "output": "Traceback (most recent call last):\n  File \"<string>\", line 28, in <module>\n  File \"<string>\", line 18, in refused\nAssertionError: fresh_phase_wrong_scope\n"
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "before": "\"\"\"Same fixed stopped synthetic node log; add strict normal timing projection.\"\"\"",
+    "after": "\"\"\"One fixed stopped 3cb Phase B node1 log; exact metadata and normal markers.\"\"\""
+  },
+  {
+    "before": "ROOT = \"/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2\"",
+    "after": "ROOT = \"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/node1\""
+  },
+  {
+    "before": "LEAF = \"process.log\"",
+    "after": "LEAF = \"native-start0.stderr.private.log\""
+  },
+  {
+    "before": "RUN_ID = \"1d2269955b8e0cac332c40625057bb0f\"",
+    "after": "FIXTURE_RESULT_SHA256 = \"15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e\"\nCANDIDATE_COMMIT = \"3cb873919170cc77101b27f6a3ab9e98f41f8d93\"\nRUNTIME_SOURCE_BLOB = \"3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3\""
+  },
+  {
+    "before": "PHASES = frozenset([\"committed_changed_root_recover\",\"committed_enrollment\",\"committed_final_witness\",\"committed_read_entry\",\"committed_read_index\",\"committed_same_root_reopen\",\"install_detached_metadata\",\"install_local_objects\",\"install_local_root_cas\",\"install_local_root_readback\",\"install_locator_batches\",\"install_post_cas_graph\",\"install_pre_cas_graph\",\"install_prepare_root_cas\",\"install_published_local_plan\",\"install_received_graph\",\"install_root_binding\",\"sync_after_migration\",\"sync_changed_root_install\",\"sync_current_local_finish\",\"sync_current_local_graph\",\"sync_current_local_graph_after_repair\",\"sync_current_local_repair\",\"sync_environment\",\"sync_final_environment\",\"sync_local_guard\",\"sync_local_selection\",\"sync_migration_source\",\"sync_predecessor_read_boundary\",\"sync_process_witness\",\"sync_publish_local_state\",\"sync_v5_source\"])",
+    "after": "PHASES = frozenset([\"committed_changed_root_recover\",\"committed_enrollment\",\"committed_final_witness\",\"committed_read_entry\",\"committed_read_index\",\"committed_same_root_reopen\",\"install_detached_metadata\",\"install_local_objects\",\"install_local_root_cas\",\"install_local_root_readback\",\"install_locator_batches\",\"install_post_cas_graph\",\"install_pre_cas_graph\",\"install_prepare_root_cas\",\"install_published_local_plan\",\"install_received_graph\",\"install_root_binding\",\"sync_after_migration\",\"sync_changed_root_install\",\"sync_current_local_finish\",\"sync_current_local_graph\",\"sync_current_local_graph_after_repair\",\"sync_current_local_repair\",\"sync_environment\",\"sync_final_environment\",\"sync_local_guard\",\"sync_local_selection\",\"sync_migration_source\",\"sync_predecessor_read_boundary\",\"sync_process_witness\",\"sync_publish_local_state\",\"sync_v5_source\",\"fresh_ingress_permission\",\"fresh_ingress_runtime\",\"fresh_ingress_storage_operation\",\"fresh_ingress_read_index\",\"fresh_ingress_enrollment\",\"fresh_ingress_same_root_closure\",\"fresh_ingress_original_repair\",\"fresh_ingress_changed_root_recover\",\"fresh_ingress_final_witness\"])"
+  },
+  {
+    "before": "CODES = frozenset([\"changed_root_recover_refused\",\"final_witness_refused\",\"read_index_refused\",\"same_root_reopen_refused\",\"scope_not_completed\"])",
+    "after": "CODES = frozenset([\"changed_root_recover_refused\",\"final_witness_refused\",\"read_index_refused\",\"same_root_reopen_refused\",\"scope_not_completed\",\"fresh_ingress_read_refused\"])"
+  },
+  {
+    "before": "])\nEXPECTED_INPUT_FIELDS = (",
+    "after": "    (\"fresh_ingress_permission\", \"fresh_ingress_permission\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_runtime\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_storage_operation\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_read_index\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_enrollment\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_same_root_closure\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_original_repair\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_changed_root_recover\"),\n    (\"fresh_ingress_permission\", \"fresh_ingress_final_witness\"),\n    (\"fresh_ingress_permission\", \"scope_total\"),\n])\nEXPECTED_INPUT_FIELDS = ("
+  },
+  {
+    "before": "EXPECTED_INPUT_IDENTITY = (\n    \"66306\",\n    \"38844679\",\n    \"1000\",\n    \"1000\",\n    \"384\",\n    \"32768\",\n    \"1\",\n    \"37545\",\n    \"1793843323209252035\",\n    \"1793843323209252035\",\n)",
+    "after": "EXPECTED_INPUT_IDENTITY = (\n    \"2050\",\n    \"4755604\",\n    \"1000\",\n    \"1000\",\n    \"384\",\n    \"32768\",\n    \"1\",\n    \"4577\",\n    \"1793845333664873175\",\n    \"1793845333664873175\",\n)"
+  },
+  {
+    "before": "EXPECTED_INPUT_SHA256 = \"0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892\"",
+    "after": "EXPECTED_INPUT_SHA256 = \"eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201\""
+  },
+  {
+    "before": "PREVIOUS_PROJECTION_SHA256 = \"852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4\"",
+    "after": "METADATA_RECEIPT_SHA256 = \"f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2\""
+  },
+  {
+    "before": "\"schema\": \"heptabao.b2-stopped-node2-public-log-projection.v2\",",
+    "after": "\"schema\": \"heptabao.phaseb-3cb-stopped-native-node1-log-projection.v1\","
+  },
+  {
+    "before": "\"fixture_run_id\": RUN_ID, \"node_id\": 2,",
+    "after": "\"fixture_result_sha256\": FIXTURE_RESULT_SHA256, \"node_id\": 1,\n        \"candidate_commit\": CANDIDATE_COMMIT, \"runtime_source_blob\": RUNTIME_SOURCE_BLOB,"
+  },
+  {
+    "before": "\"previous_projection_sha256\": PREVIOUS_PROJECTION_SHA256,",
+    "after": "\"metadata_receipt_sha256\": METADATA_RECEIPT_SHA256,"
+  },
+  {
+    "before": "\"same_previous_input_binding_verified\": False,",
+    "after": "\"same_metadata_input_binding_verified\": False,"
+  },
+  {
+    "before": "raise Refused(\"log_differs_from_previous_projection_identity\")",
+    "after": "raise Refused(\"log_differs_from_bound_metadata_identity\")"
+  },
+  {
+    "before": "raise Refused(\"log_differs_from_previous_projection_whole_sha\")",
+    "after": "raise Refused(\"log_differs_from_bound_metadata_whole_sha\")"
+  },
+  {
+    "before": "result[\"same_previous_input_binding_verified\"] = True",
+    "after": "result[\"same_metadata_input_binding_verified\"] = True"
+  }
+]

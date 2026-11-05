@@ -1,0 +1,265 @@
+{
+  "schema": "heptabao.mac-closed-public-code-parent-readset.r1",
+  "failed_business_job": "1a1a968c3e6-fc05-3501",
+  "code_constructor_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+  "historical_source_blob": "79471a511eb665193c2dbc05607298e96ac6fa7d",
+  "native_contract_pinned_sha256": "fce8536b33a83b920accd7264991759a13011057cac3502b0ce14fffc075339e",
+  "path_count": 40,
+  "kind_counts": {
+    "utility": 6,
+    "normal_server": 1,
+    "installed_plugin": 8,
+    "installed_sdk": 14,
+    "installed_codex_harness": 6,
+    "native_runtime": 4,
+    "node_alias": 1
+  },
+  "scope": "resolve and parent/alias metadata only for the frozen public code list; no file content, private credential, SQLite or directory enumeration",
+  "hashes_bind_source_selection_but_are_not_rehashed_by_this_metadata_probe": true,
+  "paths": [
+    {
+      "path": "/bin/launchctl",
+      "kind": "utility",
+      "sha256": "b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7"
+    },
+    {
+      "path": "/bin/ps",
+      "kind": "utility",
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    {
+      "path": "/sbin/mount",
+      "kind": "utility",
+      "sha256": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd"
+    },
+    {
+      "path": "/usr/bin/openssl",
+      "kind": "utility",
+      "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7"
+    },
+    {
+      "path": "/usr/bin/sandbox-exec",
+      "kind": "utility",
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    {
+      "path": "/usr/sbin/diskutil",
+      "kind": "utility",
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/artifacts/heptabao-server",
+      "kind": "normal_server",
+      "sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/index.js",
+      "kind": "installed_plugin",
+      "sha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+      "kind": "installed_plugin",
+      "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+      "kind": "installed_plugin",
+      "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+      "kind": "installed_plugin",
+      "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js",
+      "kind": "installed_plugin",
+      "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+      "kind": "installed_plugin",
+      "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+      "kind": "installed_plugin",
+      "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/package.json",
+      "kind": "installed_plugin",
+      "sha256": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/package.json",
+      "kind": "installed_sdk",
+      "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js",
+      "kind": "installed_sdk",
+      "sha256": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/store-DH33UrUj.js",
+      "kind": "installed_sdk",
+      "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/source-check-ZSz5NzGW.js",
+      "kind": "installed_sdk",
+      "sha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/oauth-B4aOCsid.js",
+      "kind": "installed_sdk",
+      "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/order-CeBlX0NH.js",
+      "kind": "installed_sdk",
+      "sha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-auth-CJEm9SNp.js",
+      "kind": "installed_sdk",
+      "sha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/sqlite-wal-Bhk2Ro-u.js",
+      "kind": "installed_sdk",
+      "sha256": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "kind": "installed_sdk",
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-d7xui8oD.js",
+      "kind": "installed_sdk",
+      "sha256": "60625cfb3742d35a39a70df71eacb6160718e4beac0b1b7649dac8fb5d0e2600"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "kind": "installed_sdk",
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+      "kind": "installed_sdk",
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/windows-spawn-C5RDaB22.js",
+      "kind": "installed_sdk",
+      "sha256": "24f856187f26ed4d6ffbddb8ec44f13e01527841a6cac0839064bb4a6dd64549"
+    },
+    {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/windows-spawn.js",
+      "kind": "installed_sdk",
+      "sha256": "d97a1228e01c249bc2d7feabff40987beb8f8419f39c35002643fd05a2c590e4"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js",
+      "kind": "installed_codex_harness",
+      "sha256": "bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/config-CYEDnLJ2.js",
+      "kind": "installed_codex_harness",
+      "sha256": "dd8d2fc434fc538ba8e69ebe0f2aa470eadcfb86c2ef95b19a7570afb51290a0"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/index.js",
+      "kind": "installed_codex_harness",
+      "sha256": "ade01b0285488ab9c9cb2c963c85210cf97720d7188b772ecf9ce423f82c7ca5"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "kind": "installed_codex_harness",
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/openclaw.plugin.json",
+      "kind": "installed_codex_harness",
+      "sha256": "e6121fbc68131d7c320da9a23ece1a41864e51c2ff04fef6b72a1d114353aa8d"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+      "kind": "installed_codex_harness",
+      "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/bin/codex.js",
+      "kind": "native_runtime",
+      "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+      "kind": "native_runtime",
+      "sha256": "718724d7221cf1298071ca92411cb74caa8422809154150cedca7b569a4518e3"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+      "kind": "native_runtime",
+      "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a"
+    },
+    {
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/package.json",
+      "kind": "native_runtime",
+      "sha256": "5d3349fb11db7efea6eab4c1d7efd4eee546ba91e12f7583996bccc9992a3953"
+    },
+    {
+      "path": "/opt/homebrew/bin/node",
+      "kind": "node_alias",
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    }
+  ],
+  "exact_original_volume_anchors": [
+    {
+      "path": "/",
+      "identity": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ]
+    },
+    {
+      "path": "/Volumes",
+      "identity": [
+        "16777233",
+        "18336",
+        "0",
+        "0",
+        "16877",
+        "5",
+        "160",
+        "1793100597756515591",
+        "1793100597756515591"
+      ]
+    },
+    {
+      "path": "/Volumes/T5",
+      "identity": [
+        "16777244",
+        "2",
+        "0",
+        "0",
+        "16893",
+        "12",
+        "384",
+        "1793152973144260495",
+        "1793152973144260495"
+      ]
+    }
+  ]
+}

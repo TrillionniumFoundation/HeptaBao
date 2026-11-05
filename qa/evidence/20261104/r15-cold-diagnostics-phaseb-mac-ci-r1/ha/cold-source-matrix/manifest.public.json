@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.b2-node2-cold-matrix-source-packet.r1",
+  "files": {
+    "EARLY_COLD_MATRIX.public.json": {
+      "bytes": 18937,
+      "sha256": "2aef7d088db91525f98043b83fad98a66c862341cb0658160fa4f700ebea1f11",
+      "blob": "9cc30c5c3563d01775edbff0f4906a829c84120e"
+    },
+    "README.md": {
+      "bytes": 2963,
+      "sha256": "261f66332d94c082ac0cd3225bde4f66fa0b3f3282b720872597f60f9ee5368a",
+      "blob": "44c1024abf6a786d5fd104767c21f71f0ceeb779"
+    }
+  },
+  "source495": {
+    "service.rs": {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    "service_local_unseal.rs": {
+      "path": "crates/heptabao-server/src/service_local_unseal.rs",
+      "bytes": 36264,
+      "sha256": "83ca8b382fa951cbf2619df3ed08a3145406eda460b4bcb3f93466493259988c",
+      "blob": "63da8c0550ac78acb8ec8b394d93ab266d3bb5e1"
+    },
+    "service_native_v6_ha_read.rs": {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "bytes": 26803,
+      "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    },
+    "service_native_v6_ha_install.rs": {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    "ha_native_v6_runtime.rs": {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    "service_recovery_keys.rs": {
+      "bytes": 162112,
+      "sha256": "7cb338f64c5a8b63cf9ed0662b2b9dba3e2447fbe7619263fd8b41ae4f5083f7",
+      "blob": "de29a7578f4b922c553e5317f5b885c5fe710397"
+    },
+    "http.rs": {
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    }
+  },
+  "source3cb": {
+    "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "bytes": 61623,
+    "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+    "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+  },
+  "new_host_requests": 0,
+  "product_mutations": 0
+}

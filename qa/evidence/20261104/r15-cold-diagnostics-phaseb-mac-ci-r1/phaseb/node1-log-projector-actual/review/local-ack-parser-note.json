@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.phaseb-node1-ack-parser-recovery.v1",
+  "host_dispatch_count": 1,
+  "original_ack_saved_before_error": true,
+  "issue": "The first local archive cell tried the absent top-level job_id property, causing a serializable-store rejection. The original ACK has job.id. The cached ACK was parsed correctly without another start call.",
+  "ack_blob": "60ad364a0e091de2d8036915f6e4195d22c26b64",
+  "no_business_replay": true
+}

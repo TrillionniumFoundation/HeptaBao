@@ -1,0 +1,46 @@
+{
+  "action_deadline_monotonic_ns": 923297997786211,
+  "actual_leader_before": 1,
+  "address": "https://127.0.0.1:48630",
+  "before_nodes": [
+    {
+      "node": 1,
+      "pgid": 388087,
+      "pid": 388087,
+      "same_executable": true,
+      "start_ticks": 92298222
+    },
+    {
+      "node": 2,
+      "pgid": 388080,
+      "pid": 388080,
+      "same_executable": true,
+      "start_ticks": 92298221
+    },
+    {
+      "node": 3,
+      "pgid": 388081,
+      "pid": 388081,
+      "same_executable": true,
+      "start_ticks": 92298221
+    }
+  ],
+  "case": "B01",
+  "cli_seconds": 15,
+  "command": "save",
+  "controller_retry_count": 0,
+  "deadline_monotonic_ns": 923014498550536,
+  "default_official_cli_redirect_behavior": true,
+  "input_file": null,
+  "input_source": null,
+  "label": "leader_save_archive_A",
+  "manual_redirect_count": 0,
+  "official_cli_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "path": "/v1/sys/storage/raft/snapshot",
+  "private_credentials": "owned_synthetic_fixture_only",
+  "role_before": "leader",
+  "started_unix_ns": 1793845333506248948,
+  "target_node": 1,
+  "tls_skip_verify": false,
+  "valid_restore_input": false
+}

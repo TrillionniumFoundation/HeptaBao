@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.root-mac-public40-and-minimal-inputs-review.v1",
+  "actual_metadata_packet": "b901623f1362a550132c9c4a5bb66f0cb10e19a5",
+  "actual_job_id": "1a1a9711582-fc05-3542",
+  "all_eight_stream_pages_and_ten_cached_mcp_snapshots_verified": true,
+  "original_stdout_bytes": 115966,
+  "original_stdout_sha256": "dc9674e24a4f36cd4d3db2550cf4e54bc045531144c146ed23ceb2eb61181740",
+  "forty_selected_paths_and_pins_match_frozen_original_readset": true,
+  "all_before_after_nine_field_metadata_unchanged": true,
+  "metadata_only_did_not_rehash_code": true,
+  "exact_two_parent_exceptions": [
+    {
+      "directory": true,
+      "gid": 80,
+      "group_or_other_write": true,
+      "identity": [
+        "16777233",
+        "10827980",
+        "501",
+        "80",
+        "16893",
+        "105",
+        "3360",
+        "1793687928283555715",
+        "1793687928283555715"
+      ],
+      "owner_allowed_by_original": true,
+      "path": "/opt/homebrew/Cellar",
+      "permission_octal": "0o775",
+      "regular": false,
+      "symlink": false,
+      "uid": 501
+    },
+    {
+      "directory": true,
+      "gid": 80,
+      "group_or_other_write": true,
+      "identity": [
+        "16777233",
+        "10827971",
+        "501",
+        "80",
+        "16893",
+        "459",
+        "14688",
+        "1791866883454202812",
+        "1791866883454202812"
+      ],
+      "owner_allowed_by_original": true,
+      "path": "/opt/homebrew/lib",
+      "permission_octal": "0o775",
+      "regular": false,
+      "symlink": false,
+      "uid": 501
+    }
+  ],
+  "source_packet": "522c6ee3bf7802d08b2f0392579d87635a0459cb",
+  "before_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+  "after_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+  "after_sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+  "strict_diff_hunks": 9,
+  "strict_diff_full_bytes_exact": true,
+  "closed_public_context_full_parent_identity_before_open_named_after": true,
+  "read_private_and_read_public_methods_byte_identical": true,
+  "per_call_caps_unchanged_bytes": [
+    8388608,
+    268435456
+  ],
+  "aggregate_cap_unchanged_bytes": 1073741824,
+  "cap_not_file_identity_only_in_original_closed_public_code_context": true,
+  "all_actual_path_size_hash_private_and_nine_identity_fields_still_equal": true,
+  "selected_pure_component_results": {
+    "passed": 16,
+    "failed": 0,
+    "whole_module_run": false
+  },
+  "permission_changes": 0,
+  "host_or_runtime_admitted_by_this_review": false,
+  "next": "Prepare append-only new entry points and exact inert request, preserving original eighteen source files and all prior evidence."
+}

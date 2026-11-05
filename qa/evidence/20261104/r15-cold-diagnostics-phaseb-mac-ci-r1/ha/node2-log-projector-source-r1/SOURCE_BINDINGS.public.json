@@ -1,0 +1,132 @@
+{
+  "schema": "heptabao.b2-log-projector-source-bindings.v1",
+  "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "product_files": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "bytes": 26803,
+      "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    }
+  ],
+  "canonical_ledger": {
+    "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+    "bytes": 9920,
+    "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+    "blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928"
+  },
+  "executed_qa_overlay": {
+    "path": "candidate/deadline_qa/ha_multihost_live.py",
+    "source_tree": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+    "bytes": 79776,
+    "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+    "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+  },
+  "root_binding": {
+    "summary_blob": "dc954e4441278b3bc050db6f77fd7ac7d996c3ee",
+    "summary_sha256": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+    "field": "node_roots.2.root",
+    "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2",
+    "leaf_from_qa": "process.log"
+  },
+  "formatter_fields": {
+    "sync": {
+      "phase": "closed 32 production static labels; test-only entry/work excluded",
+      "code": "closed 5 static labels including default scope_not_completed",
+      "reason_sha": "'-' or 64 lowercase hex chars",
+      "elapsed_us": "Duration::as_micros u128; exact canonical decimal",
+      "step_elapsed_us": "Duration::as_micros u128; exact canonical decimal",
+      "original_remaining_ns": "Duration::as_nanos u128; exact canonical decimal",
+      "original_deadline_expired": "Rust bool true|false",
+      "panicking": "Rust bool true|false"
+    },
+    "unseal": {
+      "route_status": "Response u16 status, restricted to actual HTTP100..599; exact decimal",
+      "booleans": [
+        "state_loaded",
+        "recovery_required",
+        "barrier_loaded",
+        "record_root",
+        "activation",
+        "original_deadline_present"
+      ]
+    },
+    "whole_line": "fullmatch of exact space-delimited original formatter with exactly one trailing LF; no duplicate/extra fields; ≤512 bytes"
+  },
+  "allowlist": {
+    "phases": [
+      "committed_changed_root_recover",
+      "committed_enrollment",
+      "committed_final_witness",
+      "committed_read_entry",
+      "committed_read_index",
+      "committed_same_root_reopen",
+      "install_detached_metadata",
+      "install_local_objects",
+      "install_local_root_cas",
+      "install_local_root_readback",
+      "install_locator_batches",
+      "install_post_cas_graph",
+      "install_pre_cas_graph",
+      "install_prepare_root_cas",
+      "install_published_local_plan",
+      "install_received_graph",
+      "install_root_binding",
+      "sync_after_migration",
+      "sync_changed_root_install",
+      "sync_current_local_finish",
+      "sync_current_local_graph",
+      "sync_current_local_graph_after_repair",
+      "sync_current_local_repair",
+      "sync_environment",
+      "sync_final_environment",
+      "sync_local_guard",
+      "sync_local_selection",
+      "sync_migration_source",
+      "sync_predecessor_read_boundary",
+      "sync_process_witness",
+      "sync_publish_local_state",
+      "sync_v5_source"
+    ],
+    "codes": [
+      "changed_root_recover_refused",
+      "final_witness_refused",
+      "read_index_refused",
+      "same_root_reopen_refused",
+      "scope_not_completed"
+    ],
+    "formatters": [
+      {
+        "name": "service.rs",
+        "line": 4037,
+        "format": "\"HBHA-DIAG-UNSEAL route_status={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={} original_deadline_present={}\""
+      },
+      {
+        "name": "ha_native_v6_runtime.rs",
+        "line": 434,
+        "format": "\"HBHA-NATIVE-SYNC-FAIL step={} code={} reason_sha={} elapsed_us={} step_elapsed_us={} original_deadline_expired={} original_remaining_ns={} panicking={}\""
+      }
+    ]
+  },
+  "cold_scope_limit": "Some cold stage observations are cfg(private-ha-forward-diagnostic) and absent from this normal build; zero selected markers cannot prove no internal failure.",
+  "source_sha256_argument_is_not_self_attestation": "The exact frozen process request and authority bind the executed -c source; the argument alone is not execution evidence."
+}

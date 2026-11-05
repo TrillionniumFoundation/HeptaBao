@@ -1,0 +1,17 @@
+{
+  "body_bytes": 0,
+  "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_class": "none",
+  "deadline_monotonic_ns": 923000250517766,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793845319258223192,
+  "label": "sealed_election",
+  "method": "GET",
+  "node": 2,
+  "parent_deadline_monotonic_ns": 923043312674731,
+  "path": "/v1/sys/health",
+  "redirect_following": false,
+  "sequence": 21,
+  "valid_restore_body": false
+}

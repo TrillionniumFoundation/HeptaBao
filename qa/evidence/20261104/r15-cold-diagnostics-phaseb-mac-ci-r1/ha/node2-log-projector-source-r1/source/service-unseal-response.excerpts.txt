@@ -1,0 +1,100 @@
+LINES 831..848
+831: 
+832: impl Response {
+833:     fn from_engine_error(error: crate::engines::EngineError) -> Self {
+834:         Self::error(error.status, &error.message)
+835:     }
+836:     pub fn error(status: u16, message: &str) -> Self {
+837:         Self {
+838:             status,
+839:             body: json!({"errors":[message]}),
+840:             unwrapped_json: None,
+841:             response_headers: Default::default(),
+842:             consistency_index: None,
+843:         }
+844:     }
+845:     fn ok(body: Value) -> Self {
+846:         Self {
+847:             status: 200,
+848:             body,
+LINES 3989..4050
+3989:         {
+3990:             return response;
+3991:         }
+3992:         if path == "sys/seal-status" && method == "GET" {
+3993:             return self.seal_status();
+3994:         }
+3995:         if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
+3996:             let original_deadline = crate::request_deadline::current();
+3997:             #[cfg(feature = "native-v6-storage")]
+3998:             let fresh_native_transition = self.state.is_none()
+3999:                 && self.native_candidate_profile.is_some()
+4000:                 && self.ha.is_none();
+4001:             #[cfg(not(feature = "native-v6-storage"))]
+4002:             let fresh_native_transition = false;
+4003:             #[cfg(feature = "native-v6-storage")]
+4004:             let mut cold_handoff = None;
+4005:             let mut response = self.unseal_with_cold_handoff(
+4006:                 body,
+4007:                 #[cfg(feature = "native-v6-storage")]
+4008:                 Some(&mut cold_handoff),
+4009:             );
+4010:             #[cfg(feature = "native-v6-storage")]
+4011:             if response.status == 200
+4012:                 && let Some(handoff) = cold_handoff.as_mut()
+4013:                 && let Err(error) = handoff.check_before_policy(self)
+4014:             {
+4015:                 response = error;
+4016:             }
+4017:             if response.status == 200
+4018:                 && let Err(error) = self.complete_default_policy_activation(token_clock)
+4019:             {
+4020:                 #[cfg(feature = "native-v6-storage")]
+4021:                 if cold_handoff.is_some() {
+4022:                     self.fence_cold_unseal_handoff();
+4023:                 }
+4024:                 response = error;
+4025:             }
+4026:             // The completion is bound to the root after active initialization.
+4027:             // An unsuccessful initialization never captures a success owner.
+4028:             self.capture_local_unseal_completion_with_handoff(
+4029:                 &response,
+4030:                 token_clock,
+4031:                 original_deadline,
+4032:                 fresh_native_transition,
+4033:                 #[cfg(feature = "native-v6-storage")]
+4034:                 cold_handoff,
+4035:             );
+4036:             eprintln!(
+4037:                 "HBHA-DIAG-UNSEAL route_status={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={} original_deadline_present={}",
+4038:                 response.status,
+4039:                 self.state.is_some(),
+4040:                 self.recovery_required,
+4041:                 self.barrier_key.is_some(),
+4042:                 self.record_root.is_some(),
+4043:                 self.ha_activation.is_some(),
+4044:                 crate::request_deadline::current().is_some()
+4045:             );
+4046:             return response;
+4047:         }
+4048:         if self.state.is_none() {
+4049:             return Response::error(503, "server is sealed");
+4050:         }
+LINES 9081..9097
+9081:         };
+9082:         #[cfg(feature = "native-v6-ha")]
+9083:         let cold_native = if self.ha.as_ref().is_some_and(|ha| {
+9084:             ha.lock_for_request()
+9085:                 .is_ok_and(|process| process.native_v6_enabled())
+9086:         }) {
+9087:             let original = crate::v6_native_custody::OriginalDeadline::capture()
+9088:                 .map_err(|_| Response::error(503, "native HA unseal requires original deadline"))?;
+9089:             native_v6_ha_install::load_cold_native_ha(self, &mut durable, key, original)?
+9090:                 .map(|cold| (cold.metadata, cold.native, cold.root))
+9091:         } else {
+9092:             cold_native
+9093:         };
+9094:         #[cfg(feature = "native-v6-storage")]
+9095:         let (state, bytes, state_rewrite_required, record_root, native_root) =
+9096:             if let Some((mut metadata, native, root)) = cold_native {
+9097:                 metadata

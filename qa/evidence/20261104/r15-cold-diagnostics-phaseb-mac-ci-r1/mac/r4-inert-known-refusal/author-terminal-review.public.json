@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.mac-input-r4-inert-author-terminal-review.r1",
+  "job_id": "1a1a98ec7b8-fc05-35fb",
+  "status": "KNOWN_FAIL_QA_ADMISSION_BEFORE_WRITES",
+  "authority": {
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false,
+    "terminal_publication_confirmed": true
+  },
+  "error": {
+    "type": "Refused",
+    "code": "exact_qa_members_no_unlisted_entries",
+    "compound_predicate": [
+      "QA directory complete metadata stable across listdir",
+      "observed member count equals exact 18",
+      "observed member set equals exact original 18"
+    ],
+    "which_subpredicate_failed": "not_disclosed_by_original_report"
+  },
+  "evidence": {
+    "request_blob": "a9a64ceb6b4bbc188acfed52959989f818a3a37c",
+    "source_tree": "96a6b844d745653558dbca8f18c7d45ad8326252",
+    "root_source_admission": "39bd83efa48650864a2bfce6d9bba71c60037174",
+    "exact_key": "heptabao-mac-current-inputs-r4-source-inert-c160d359-20261105-r1",
+    "ack": {
+      "bytes": 23697,
+      "sha256": "0eb1bb2abd27f38ce6172f27492989da94e241eb6265d9ee648a7f8279fc4253",
+      "git_blob": "6f64a8353d04923f6ed3a07bede8db53abb8ee1e"
+    },
+    "core": [
+      {
+        "path": "stdout.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "48fee6d9205ff93c9e8731f95f373751626eefe6",
+        "bytes": 4413,
+        "sha256": "0afb006f4f0f0f42b254e37b2d773adc2f7864bb7d987bbb90fe812a3b83f8d5"
+      },
+      {
+        "path": "authority.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bf51cceb2f90d5b07b5d82b8a3c9ecee59d45abd",
+        "bytes": 728,
+        "sha256": "6e20c7feb204f46ce3bafa8edbaf8163db9f06055b75c38ffb02f956a2cd43e3"
+      },
+      {
+        "path": "process-read.sdk-native.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "88ae30e4afdb057015bcbb07a6e4f7b67407d51d",
+        "bytes": 14001,
+        "sha256": "663268ebc839d867e75e133e97f1797782651d13b53ab456eb479fa06a911016"
+      }
+    ],
+    "lossless_hex_equals_text": true,
+    "stdout_bytes": 4413,
+    "stderr_bytes": 0,
+    "both_eof": true
+  },
+  "actual_scope": {
+    "inert_payload_bytes": 635018,
+    "inert_payload_sha256": "e8fe5f984ddab5fc7d8ab0758c8e2b3ba8ded25dfea6e62e04694147c8bb1b68",
+    "python_compiled": 16,
+    "javascript_hash_only": 4,
+    "new_files_published": 0,
+    "candidate_published": false,
+    "old21_identity_checks_reached": false,
+    "runtime_absence_checks_reached": false,
+    "no_qualification_of_current_qa_members": true,
+    "private_or_sqlite_or_consumer_or_service": false
+  },
+  "cleanup": {
+    "owned_diskutil": 1,
+    "exit_zero": true,
+    "direct_child_reaped": true,
+    "all_group_rows_empty_after_reap": true,
+    "post_reap_signal_sent": false,
+    "all_streams_closed": true,
+    "all_held_descriptors_closed": true,
+    "t5_anchor_27_strings_equal": true,
+    "original_deadline_after_closure": true,
+    "elapsed_seconds": 0.2345067081041634,
+    "outcome_unknown": false
+  },
+  "next_scope": {
+    "no_retry_or_replay": true,
+    "no_runtime_request_submitted": true,
+    "guard_not_relaxed": true,
+    "additional_qa_metadata_requires_separate_finite_admission": true
+  },
+  "local_verifier_note": {
+    "kind": "local_verifier",
+    "reason": "The initial author verifier compared JSON object key order for the T5 anchor list instead of individual path and nine identity fields; no review report was emitted and no host operation occurred."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.immutable-evidence-manifest.v1",
+  "scope": "single fixed log observation; no product actions",
+  "files": {
+    "exact-request.public.json": {
+      "bytes": 14583,
+      "sha256": "453ea2fd047aa0bc7cfc2eb7b8793b0f7a814e52d4b51de6a513037ef11cdf0a",
+      "blob": "854c6172b62d68ac2b2a80d4f22f978534584992"
+    },
+    "root-admission.public.json": {
+      "bytes": 1652,
+      "sha256": "c58b0fb7b5714bced1a4f83504925c933e2ddf2ef37272d250285dc6dad365ec",
+      "blob": "7e556ce30f8f101344a69ca6b6fa070ae264a96b"
+    },
+    "intent.public.json": {
+      "bytes": 635,
+      "sha256": "ce0f491c8935e442c9ba1b2a774cede8027ebc7634cc8227119658b3c4fa1cd8",
+      "blob": "ab30b1309cbb59b7175152f848ac6e29d747b5ac"
+    },
+    "ack.public.json": {
+      "bytes": 15355,
+      "sha256": "7555774295448f8fada1d091955343fce92387a8930a14192f2dc4ec9f0a9dc9",
+      "blob": "45c39e22b89fa33266c65d4152d2fe0f1175160a"
+    },
+    "sdk/start-ack.original.json": {
+      "bytes": 16897,
+      "sha256": "7ac8e7362bbaf0757de8ebaa495c036536c3ca670821b7d97f88b4775d249892",
+      "blob": "5466b3c23a4f17ee87c144f11b009c0f9d52ca31"
+    },
+    "source/project_stopped_node2_log_r1.py": {
+      "bytes": 13427,
+      "sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+      "blob": "3fbf4d7e7348118018af0e37354c078a2ffeb34c"
+    },
+    "authority.public.json": {
+      "bytes": 732,
+      "sha256": "a2ebd06dc1545161b85c9e5b6b9b295976a22591ae29878a6c7127dec47702e2",
+      "blob": "3daf02b30fb9d6cf88d8d3afd0e161ca00a1a01b"
+    },
+    "result.public.json": {
+      "bytes": 7977,
+      "sha256": "852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4",
+      "blob": "0868b78a56b7c2287264a84d4d5f167933122a9e"
+    },
+    "terminal.stdout": {
+      "bytes": 7977,
+      "sha256": "852724b997330d366bf79708b9bd8cc063002660a12038431600a752f6ea19d4",
+      "blob": "0868b78a56b7c2287264a84d4d5f167933122a9e"
+    },
+    "terminal.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "sdk/authority.original.json": {
+      "bytes": 912,
+      "sha256": "1e79504941b11c10a3c6a35d833df31c39c9eb5cbbd9099277c923c923c7db08",
+      "blob": "98876c89c2a734c6ca0e0530deced7618f224fb1"
+    },
+    "sdk/terminal.original.json": {
+      "bytes": 26996,
+      "sha256": "43c8bda3a1cf1aba15e265f1f4a4a91b7dc8810de624add68b680be6a91f1e34",
+      "blob": "2dc4e53772542f146fe1ac8f6b237d2c412a3f72"
+    },
+    "assessment.public.json": {
+      "bytes": 5995,
+      "sha256": "8820c4fc2e85721f3ee4b49ae522e19bc789e9d24a32033220857da130823a3b",
+      "blob": "f9caa44fa42fd7cffd6fd268f11165f36f8457dc"
+    }
+  }
+}

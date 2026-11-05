@@ -1,0 +1,38 @@
+{
+  "actual_log_content_used": false,
+  "after_sha256": "213251facd4baf26e1be10c5939d551e7920ea825d3b35a85c37f59ce9fd2cce",
+  "all_function_class_definitions_byte_identical": [
+    "Refused",
+    "on_signal",
+    "remaining",
+    "facts",
+    "same_directory",
+    "same_file",
+    "timing_object_pairs",
+    "timing_integer",
+    "timing_noninteger",
+    "checked_timing_uint",
+    "parse_timing_marker",
+    "parse_marker",
+    "main"
+  ],
+  "before_sha256": "378c6112428d59f3e1f07ce0ff9099190ca7e2b1302d00399284abbe8d895c3c",
+  "candidate_filesystem_called": false,
+  "checks": [
+    "preserved_r1_refuses_normal_codec_pair",
+    "successor_accepts_exact_normal_codec_pair",
+    "codec_phase_under_wrong_scope_refused",
+    "unknown_codec_phase_refused",
+    "duplicate_codec_pair_refused",
+    "duplicate_json_key_refused",
+    "closed_label_counts_41_6_50",
+    "fresh_ingress_original_labels_preserved"
+  ],
+  "checks_count": 8,
+  "inverse_exact": true,
+  "main_called": false,
+  "network_or_child_activity": false,
+  "schema": "heptabao.phaseb-3cb-codec-pair-components.v1",
+  "status": "passed",
+  "target_file_access": false
+}

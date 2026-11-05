@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-live-streams-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a983309e-fc05-35aa",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

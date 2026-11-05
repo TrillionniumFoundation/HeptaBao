@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-live-status0-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a983309e-fc05-35aa"
+    }
+  }
+}

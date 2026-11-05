@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-node1-log-213251fa-stream0-20261105-r2",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a99b05aa-fc05-364b",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

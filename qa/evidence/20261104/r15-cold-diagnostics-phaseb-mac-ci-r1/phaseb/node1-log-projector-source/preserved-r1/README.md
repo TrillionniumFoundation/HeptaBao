@@ -1,0 +1,11 @@
+# New 3cb node1 normal-log projection — source only
+
+This uses the exact stopped fresh PhaseB live-r2 node1 log pinned by the accepted six-file metadata observation, not the 495 post-cold fixture or the old B01 run. Only one 4,577-byte stderr file is a content input. The other nodes and all CLI stderr are outside this proposed invocation.
+
+The retained 22,580-byte HA observer supplies the whole no-follow held-directory/leaf custody, one-shot descriptor cleanup, original 15-second total and post-flush success gate. Seventeen explicit substitutions bind the new input and version, replace the unrelated fixture label by the actual core hash, and add only the nine fresh-ingress phase labels plus their scope-total timing pair. All twelve non-main definitions are byte-identical. A reversed substitution list reconstructs the entire reference.
+
+The exact 3cb runtime source is included. Its native_v6_committed_fresh_ingress_read creates scope fresh_ingress_permission, advances only the nine listed phases, and records fresh_ingress_read_refused on the original Err; its Drop adds scope_total. No new deadline, operation, source authority or success is granted by observing these markers. Normal timing schema, numeric bounds and the existing closed pairs retain the reference parser.
+
+Twenty-four pure parser components ran against selected candidate definitions only. Neither main nor any target filesystem, product, child or network path was invoked. The initial synthetic wrong-scope case incorrectly used scope_total, a legitimate old committed scope pair; that harness-only refusal expectation is preserved and the revised input uses an actual fresh phase. Candidate bytes never changed for that correction.
+
+A process exit 0, complete public output, whole expected file hash and all descriptors closed are jointly required. The source-SHA argument is an external admission binding and is not claimed to self-attest code. The normal markers lack request IDs and the B01-start log offset was not captured, so any association to the lone CLI 503 must be explicitly justified from observed markers and the original audit window. Nothing here replays, repairs or upgrades the failed B01 outcome.

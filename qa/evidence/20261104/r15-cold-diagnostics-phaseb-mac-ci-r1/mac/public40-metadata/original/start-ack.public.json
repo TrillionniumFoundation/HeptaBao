@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "#!/usr/bin/env python3\n\"\"\"Metadata-only audit of a fixed forty-entry public-code set.\"\"\"\nimport hashlib, json, os, stat, sys, time\nfrom pathlib import Path\nSTART=time.monotonic();UNTIL=START+5\nMANIFEST_BYTES=10832;MANIFEST_SHA='a6f6eb77a2949f076e88fcbc4ac281c033c568aa27eb1723e6dc7aee1d212941'\nMAX_EXPLICIT_METADATA=512;MAX_RESOLVES=80;MAX_UNIQUE_PARENTS=128\ncounts={'lstat':0,'readlink':0,'resolve':0}\nreport={'schema':'heptabao.mac-public-code-parent-closed-observation.r1',\n 'status':'failed','new_inner_seconds':5,'new_outer_seconds':60,\n 'disk_file_content_opened':False,'files_written':False,'directory_enumeration':False,\n 'private_inputs_read':False,'sqlite_opened':False,'children_started':False,\n 'network_used':False,'permissions_changed':False,'business_replayed':False,\n 'resolve_internal_metadata_calls_not_individually_counted':True}\ndef need(value,code):\n    if not value:raise RuntimeError(code)\ndef tick(kind):\n    need(time.monotonic()<UNTIL,'original_observation_deadline')\n    counts[kind]+=1\n    need(counts['lstat']+counts['readlink']<=MAX_EXPLICIT_METADATA\n         and counts['resolve']<=MAX_RESOLVES,'fixed_call_bounds')\ndef ident(s):\n    return [str(v) for v in (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,\n             s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)]\ndef observe(path):\n    tick('lstat');s=os.lstat(path)\n    row={'path':str(path),'identity':ident(s),'directory':stat.S_ISDIR(s.st_mode),\n      'regular':stat.S_ISREG(s.st_mode),'symlink':stat.S_ISLNK(s.st_mode),\n      'permission_octal':oct(stat.S_IMODE(s.st_mode)),'uid':s.st_uid,'gid':s.st_gid,\n      'owner_allowed_by_original':s.st_uid in (0,501),\n      'group_or_other_write':bool(stat.S_IMODE(s.st_mode)&0o022)}\n    if row['symlink']:\n        tick('readlink');row['readlink']=os.readlink(path)\n    return row\ndef resolve(path):\n    tick('resolve');return path.resolve(strict=True)\ndef allowed(row,resolved):\n    if row['kind']=='normal_server':return str(resolved)==row['path']\n    if row['kind']=='utility':\n        return any(resolved.is_relative_to(Path(p)) for p in ('/System','/usr','/bin','/sbin'))\n    return any(resolved.is_relative_to(Path(p)) for p in (\n        '/opt/homebrew','/Users/qianqi/.openclaw/extensions/openclaw-authbus',\n        '/Users/qianqi/.openclaw/npm/projects'))\ntry:\n    raw=sys.stdin.buffer.read(MANIFEST_BYTES+1)\n    need(len(raw)==MANIFEST_BYTES and hashlib.sha256(raw).hexdigest()==MANIFEST_SHA,'exact_public_manifest')\n    manifest=json.loads(raw)\n    rows=manifest['paths']\n    need(len(rows)==40 and len({x['path'] for x in rows})==40,'closed_forty')\n    aliases=[];parents=set();targets=set()\n    for row in rows:\n        path=Path(row['path']);before=observe(path);resolved=resolve(path)\n        need(allowed(row,resolved),'original_public_resolved_scope')\n        need(len(resolved.parts)<=24,'bounded_path_depth')\n        aliases.append({'path':str(path),'kind':row['kind'],'pinned_source_sha256':row['sha256'],\n                        'resolved':str(resolved),'before':before})\n        parents.update(str(p) for p in resolved.parents);targets.add(str(resolved))\n    need(len(parents)<=MAX_UNIQUE_PARENTS,'bounded_unique_parent_set')\n    report['aliases']=aliases\n    before={p:observe(Path(p)) for p in sorted(parents|targets)}\n    after={p:observe(Path(p)) for p in sorted(parents|targets,reverse=True)}\n    for row in aliases:\n        path=Path(row['path']);resolved=resolve(path);observed=observe(path)\n        need(str(resolved)==row['resolved'] and observed==row['before'],'public_alias_drift')\n        row['after']=observed\n    need(before==after,'named_public_parent_or_target_drift')\n    anchors={x['path']:tuple(x['identity']) for x in manifest['exact_original_volume_anchors']}\n    failures=[]\n    for p in sorted(parents):\n        row=before[p]\n        ok=(row['directory'] and row['owner_allowed_by_original'] and\n            (tuple(row['identity'])==anchors[p] if p in anchors else not row['group_or_other_write']))\n        if not ok:failures.append(row)\n    report.update({'status':'complete_finite_metadata_observation',\n      'path_count':len(rows),'unique_parent_count':len(parents),\n      'unique_resolved_leaf_count':len(targets),'metadata_before':before,\n      'metadata_after':after,'all_named_metadata_stable':True,\n      'original_parent_predicate_failures':failures,\n      'all_code_hashes_rechecked':False,'guard_relaxed':False})\nexcept BaseException as error:\n    report['error_type']=type(error).__name__\n    report['error_code']=str(error) if type(error) is RuntimeError else None\nreport['counts']=counts\nreport['elapsed_seconds']=time.monotonic()-START\nreport['original_inner_deadline_met']=time.monotonic()<UNTIL\nif not report['original_inner_deadline_met']:report['status']='failed'\nprint(json.dumps(report,sort_keys=True,separators=(',',':')),flush=True)\nraise SystemExit(0 if report['status']=='complete_finite_metadata_observation' and time.monotonic()<UNTIL else 1)\n"
+    ],
+    "created_unix_ms": 1793844123010,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1a9711582-fc05-3542",
+    "idempotency_key": "heptabao-mac-closed40-public-parents-073c5b65-20261105-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1a9711582-fc05-3542",
+    "request_digest": "a4f82380bdfe5b648bb7d557d163aad5335f5f50627a9358d6f579cb23456598",
+    "request_fingerprint": 11887290252294773604,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a9711582-fc05-3542"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 76688,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a9711582-fc05-3542"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

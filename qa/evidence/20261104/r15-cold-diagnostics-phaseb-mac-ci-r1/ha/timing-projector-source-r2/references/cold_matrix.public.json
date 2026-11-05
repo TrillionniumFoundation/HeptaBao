@@ -1,0 +1,324 @@
+{
+  "schema": "heptabao.b2-node2-early-cold-source-matrix.r1",
+  "scope": "Source analysis only; no new host request, product call, retry or deadline change.",
+  "product": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "normal_default_features": true
+  },
+  "actual_evidence": {
+    "core_tree": "93f718b1619991a0bdd50f581d867cc7e54f036a",
+    "boundary_tree": "831be6738354b237c8bcdb6801441df42d43f876",
+    "log_tree": "a6aec3b400d24d6365e24d51e7ceba4f602d908a",
+    "log_root_review": "b1085898c0456bcdf8611e280e56227899fc6aad",
+    "seq49": {
+      "status": 503,
+      "elapsed_ms": 9423.826,
+      "original_budget_seconds": 15,
+      "response_sha256": "f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1"
+    },
+    "last_selected_marker": {
+      "line": 177,
+      "route_status": 503,
+      "state_loaded": false,
+      "recovery_required": false,
+      "barrier_loaded": false,
+      "record_root": false,
+      "activation": false,
+      "original_deadline_present": true
+    },
+    "unknown_log_lines_not_retrieved": 172,
+    "whole_log_bytes": 37545,
+    "whole_log_lines": 178,
+    "whole_log_sha256": "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892"
+  },
+  "constraints": [
+    "The canonical response hash matches the static native-V6-HA-local-publication mapper at install:220–261. This identifies a shared response family, not a unique inner cause.",
+    "The actual marker is a route-local state observation without a request ID. It is not evidence linking the earlier line47/70 ReadIndex failures to seq49. Later successful unseals occur at lines104/114.",
+    "Normal cold activation clears state/activation/roots before load and installs state/barrier only later (service:9001–9266). Post-install synchronize failure sets recovery_required=true; fence_recovery_delivery also sets it true. The last all-false marker is consistent with pre-publication refusal and inconsistent with those specific unrecovered post-publication failure arms.",
+    "capture_local_unseal_completion_with_handoff immediately returns for response.status!=200, so it does not clear state after this route503. Default-policy activation is gated on a prior200; HA does not produce the single-node cold handoff.",
+    "Service recovery_required=false is not durable.recovery_required=false for the still-local cold DurableService. A generic mapper does not prove zero durable staging or zero earlier successful local publication.",
+    "These rows enumerate direct mapper-capable exits and their named helper groups in load_cold_native_ha. They are not a claim of unique reachability across every module or a diagnosis from timing alone."
+  ],
+  "rows": [
+    {
+      "id": "C01",
+      "stage": "Original deadline preflight",
+      "source_sites": "read:98; install:223–225",
+      "mapped_conditions": "live(deadline) maps expired/missing-original-time validation to unavailable.",
+      "normal495_coverage": "No whole-cold normal stage surrounds this guard; timing report can show remaining request time but cannot identify this callsite.",
+      "minimum_evidence": "Need a scoped cold-entry/deadline result; do not infer expiry from a generic 503."
+    },
+    {
+      "id": "C02",
+      "stage": "Durable state acquisition and probe",
+      "source_sites": "read:99–108; install:248–261",
+      "mapped_conditions": "durable.get errors other than the distinct capacity/outcome-unknown variants; missing state; invalid JSON Probe all collapse to unavailable.",
+      "normal495_coverage": "No direct cold-stage marker in normal builds.",
+      "minimum_evidence": "Need a closed code distinguishing read-error/state-absent/probe-invalid, never state bytes."
+    },
+    {
+      "id": "C03",
+      "stage": "Cold environment capture",
+      "source_sites": "read:125–135; install:472–518",
+      "mapped_conditions": "Missing HA handle, missing/invalid seal, owner/profile/wrapper/recovery/audit incompatibility, zero key, seal syntax/custody or deadline checks return this mapper.",
+      "normal495_coverage": "cold_stage_failed(environment) is diagnostic-feature-only.",
+      "minimum_evidence": "Need environment substage and boolean/refusal enum, without key/seal contents."
+    },
+    {
+      "id": "C04",
+      "stage": "HA process lock / runtime eligibility",
+      "source_sites": "read:146–154",
+      "mapped_conditions": "lock_for_request refusal or native_v6_enabled=false.",
+      "normal495_coverage": "No whole-cold normal observation before entering committed read.",
+      "minimum_evidence": "Need process-lock and native-enabled outcome."
+    },
+    {
+      "id": "C05",
+      "stage": "Committed read error or no published root",
+      "source_sites": "read:163–175; runtime:1088–1212",
+      "mapped_conditions": "native_v6_committed_read Err maps any original error to unavailable; Ok(None) also maps to unavailable.",
+      "normal495_coverage": "Normal committed_read_entry observer records steps and scope_total. Failed path can emit SYNC-FAIL; a successful Ok(None) completes the scope without a failure marker. Request timing preserves completed steps.",
+      "minimum_evidence": "Need the existing timing buckets first; an empty committed selection requires a distinct optional-return observation to separate it from a successful selection."
+    },
+    {
+      "id": "C06",
+      "stage": "Initial exact local selection",
+      "source_sites": "read:186–188; install:626–702",
+      "mapped_conditions": "Live ownership, recovery/epoch, four durable resources, decode/source/native active/HA cursor validation, root/cursor/generation consistency, origin epoch or final deadline can return the mapper.",
+      "normal495_coverage": "No normal LocalSelection scope of its own.",
+      "minimum_evidence": "Need local-selection substage enum and, only where safe, exact match booleans or numeric epoch/generation—not resource bytes."
+    },
+    {
+      "id": "C07",
+      "stage": "Local root presence and binding",
+      "source_sites": "read:188–194",
+      "mapped_conditions": "No native root; cluster_id/replay_epoch/floor2 mismatch.",
+      "normal495_coverage": "Only private cold_stage_failed(local_root_binding).",
+      "minimum_evidence": "Need presence plus cluster/epoch/format-match booleans."
+    },
+    {
+      "id": "C08",
+      "stage": "Original cold owner / committed witness / deadline gate",
+      "source_sites": "read:198–208; install:543–561",
+      "mapped_conditions": "Repeated gate collapses cold owner/seal/deadline and verify_native_v6_committed_read to BarrierFailure, then storage_rejected→unavailable.",
+      "normal495_coverage": "Some callers are under committed/install normal scopes; there is no normal fixed discriminator for these three gate arms.",
+      "minimum_evidence": "Need exact gate arm and original remaining time; boolean/fixed code only."
+    },
+    {
+      "id": "C09",
+      "stage": "Local-root identity and immutable source acquisition",
+      "source_sites": "read:209;222–239",
+      "mapped_conditions": "Root identity failure or process.with_native_v6_source outer error.",
+      "normal495_coverage": "Source error occurs outside the inner install observer; no normal cold wrapper.",
+      "minimum_evidence": "Need root identity result / source-acquisition result separately."
+    },
+    {
+      "id": "C10",
+      "stage": "Replica install before root publication",
+      "source_sites": "read:224–246; install:1639–1963",
+      "mapped_conditions": "Inner install can reject received graph/root binding/owner-byte overflow/local stage/detached metadata/protected-floor prerequisites/random operation ID/locator batches/pre-CAS graph/selected generation/cursor construction/root-CAS or gates. These may map to unavailable before root_committed or recovery-required.",
+      "normal495_coverage": "Normal install_received_graph scope steps include graph, root binding, local objects, detached metadata, locator batches, pre-CAS graph, prepare_root_cas, local_root_cas. Bucket output helps locate the last progressed phase.",
+      "minimum_evidence": "Need existing request timing/SYNC-FAIL first. For a chosen phase, fixed inner code may still be needed; no error message or payload."
+    },
+    {
+      "id": "C11",
+      "stage": "Post-install local selection",
+      "source_sites": "read:249–250",
+      "mapped_conditions": "Re-read LocalSelection can fail after an inner successful install. This occurs outside the special result.is_err/published test.",
+      "normal495_coverage": "No separate normal cold-stage wrapper.",
+      "minimum_evidence": "Need installed-local-selection substage. Generic outer error here does not prove nothing was durably published."
+    },
+    {
+      "id": "C12",
+      "stage": "Current root/cursor binding",
+      "source_sites": "read:252–255; install:NativeHaCursor methods",
+      "mapped_conditions": "Missing native/HA cursor bytes, decode error, or matches_current failure.",
+      "normal495_coverage": "Only private current_cursor failure marker.",
+      "minimum_evidence": "Need current cursor presence/decode/current-match fixed outcomes."
+    },
+    {
+      "id": "C13",
+      "stage": "Full local materialization",
+      "source_sites": "read:264–275; install:811–829",
+      "mapped_conditions": "NativeSource construction/context/root identity/materialize_for_service_with_payload_validation can fail. The first error alone is not final: it selects a physical repair attempt.",
+      "normal495_coverage": "No normal full-cold-materialization wrapper; lower-level timing may be available.",
+      "minimum_evidence": "Need first-materialization failure/success and later repair/rematerialization outcomes; do not misreport first error as terminal."
+    },
+    {
+      "id": "C14",
+      "stage": "Repair source and exact-current object repair",
+      "source_sites": "read:286–296; install:867–925",
+      "mapped_conditions": "with_native_v6_source outer error, current-root mismatch, received closure verification, exact selected root bytes, session admission, missing/changed locator, stage no-replace refusal, gate or final selection check can return unavailable.",
+      "normal495_coverage": "No dedicated normal repair scope in load_cold_native_ha; lower-level spans are to be checked against actual caller source.",
+      "minimum_evidence": "Need repair-source/result and a fixed rejection class; no ciphertext, locator strings, archive or key."
+    },
+    {
+      "id": "C15",
+      "stage": "Full rematerialization after repair",
+      "source_sites": "read:307–316; install:811–829",
+      "mapped_conditions": "The second materialization error is returned directly.",
+      "normal495_coverage": "Only private materialize_after_repair failure marker at this level.",
+      "minimum_evidence": "Need explicit after-repair materialization outcome, distinct from C13."
+    },
+    {
+      "id": "C16",
+      "stage": "Final catalog/profile and owner arithmetic",
+      "source_sites": "read:327–332; install:599–608",
+      "mapped_conditions": "Recovery state / namespace catalog profile rejection, or checked owner-byte sum overflow.",
+      "normal495_coverage": "Only private root_namespace marker at this level.",
+      "minimum_evidence": "Need fixed profile/overflow discriminator. The size-limit excess itself returns distinct 507 and is not the observed mapper."
+    },
+    {
+      "id": "C17",
+      "stage": "Final local durable selection/generation",
+      "source_sites": "read:339–342; install:723–743",
+      "mapped_conditions": "Live ownership, generation/epoch or selected four resources changed → storage_rejected→unavailable (apart from distinct variants).",
+      "normal495_coverage": "Only private final_local_generation failure marker.",
+      "minimum_evidence": "Need ownership/generation/epoch/resource-match fixed result; no resource contents."
+    },
+    {
+      "id": "C18",
+      "stage": "Final original cold gate",
+      "source_sites": "read:343; read:198–208",
+      "mapped_conditions": "The final cold-owner/witness/deadline gate can still return unavailable even after full materialization.",
+      "normal495_coverage": "No final whole-cold normal stage; inner completed scopes are insufficient to qualify this terminal gate.",
+      "minimum_evidence": "Need the same original gate-arm discriminator and remaining time; no new deadline."
+    }
+  ],
+  "distinct_exits_not_this_body": [
+    {
+      "site": "read:109–110",
+      "result": "non-V6 storage-format returns Ok(None), not this mapper at that branch"
+    },
+    {
+      "site": "install:248–261",
+      "result": "Capacity errors produce507; OutcomeUnknown has a different503 body and recovery_reference"
+    },
+    {
+      "site": "read:240–245",
+      "result": "Inner install error with published or durable recovery-required produces a different cold-publication-reconciliation503"
+    },
+    {
+      "site": "read:333–337",
+      "result": "Opaque owner size cap produces507"
+    },
+    {
+      "site": "service:9067–9088;9226–9230;9288–9302",
+      "result": "Original-deadline capture / publication deadline / wrapper publication errors have distinct fixed bodies"
+    }
+  ],
+  "existing_timing": {
+    "status": "normal495 source present; actual timing lines not yet projected",
+    "caller": "http.rs:1251–1310 -> service.rs:2264–2312",
+    "class": "health only for sys/health; sys/unseal and other paths are ordinary",
+    "report": "runtime:110–122,174–207: schema heptabao.native-ha.request-failure-timing.v1, response >=500, <=64 static scope/phase buckets",
+    "scope_semantics": "FailureObservation records advanced and completed stages too when attached; success scopes emit no separate SYNC-FAIL line but remain in a failed request's timing report.",
+    "limits": "Thread-local Rc, no cross-thread inheritance; bounded bucket truncation flag; logging may fail silently; no request ID or route string; no assumption that line178 contains the report.",
+    "next_step": "Prepare a new exact source-only passive projector for the same stopped log, retaining original byte/FD/deadline guards and adding only this exact JSON marker with source-derived closed label pairs, strict numeric/schema validation and ordering. Root review before any host request."
+  },
+  "comparison_3cb": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "same3911paths": true,
+    "changed_leaves": [
+      {
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "before": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+        "after": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "size": 61623
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "before": "b4e19637201c04da328fbe4e825edcfa382d1381",
+        "after": "47fc159b1d32b259c784b40f16a463b0739227be",
+        "size": 40170
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+        "before": "0e4cf998b8f6ab5307e9f65d8e637c8026a7e4ca",
+        "after": "a93030cf3b5f4a881ad32f148e1b9afc02a07e0b",
+        "size": 25047
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+        "before": "3c00febef18a26d67376b296d01ee1f483a96f21",
+        "after": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204",
+        "size": 27371
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+        "before": "048b5068df94d0afd2b590c195d89f635199ed19",
+        "after": "e6fc168b8813dfe046fadb446bdc880ffa2d8984",
+        "size": 33157
+      }
+    ],
+    "runtime_pin": {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    },
+    "whole_runtime_restored_by_replacing_only_fresh_ingress_method": true,
+    "normal_new_phases": [
+      "fresh_ingress_permission",
+      "fresh_ingress_runtime",
+      "fresh_ingress_storage_operation",
+      "fresh_ingress_read_index",
+      "fresh_ingress_enrollment",
+      "fresh_ingress_same_root_closure",
+      "fresh_ingress_original_repair",
+      "fresh_ingress_changed_root_recover",
+      "fresh_ingress_final_witness"
+    ],
+    "conclusion": "The new 3cb normal observer surrounds native_v6_committed_fresh_ingress_read; load_cold_native_ha calls native_v6_committed_read. It does not add the missing cold-loader/materialize/repair/final-gate discriminator. Existing normal495 request timing should be read before proposing another product observation."
+  },
+  "source_pins": {
+    "service.rs": {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    "service_local_unseal.rs": {
+      "path": "crates/heptabao-server/src/service_local_unseal.rs",
+      "bytes": 36264,
+      "sha256": "83ca8b382fa951cbf2619df3ed08a3145406eda460b4bcb3f93466493259988c",
+      "blob": "63da8c0550ac78acb8ec8b394d93ab266d3bb5e1"
+    },
+    "service_native_v6_ha_read.rs": {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "bytes": 26803,
+      "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    },
+    "service_native_v6_ha_install.rs": {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    "ha_native_v6_runtime.rs": {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    "service_recovery_keys.rs": {
+      "bytes": 162112,
+      "sha256": "7cb338f64c5a8b63cf9ed0662b2b9dba3e2447fbe7619263fd8b41ae4f5083f7",
+      "blob": "de29a7578f4b922c553e5317f5b885c5fe710397"
+    },
+    "http.rs": {
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    }
+  },
+  "source_site_aliases": {
+    "read": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+    "install": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+    "runtime": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "service": "crates/heptabao-server/src/service.rs"
+  }
+}

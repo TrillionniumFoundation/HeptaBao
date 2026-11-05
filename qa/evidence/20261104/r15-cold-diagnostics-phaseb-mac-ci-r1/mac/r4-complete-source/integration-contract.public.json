@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.mac-current-input-admission-successor-integration.r4",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "fixedRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+  "sourceBaseTree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "minimalInputReviewTree": "522c6ee3bf7802d08b2f0392579d87635a0459cb",
+  "actualFailureTree": "628b817f6a4a894ea1b444a663bfdf3c3ba748cd",
+  "actualPriorInertTree": "1bd9b5b359543acf6c84ec082dfd7e008491d4e8",
+  "publicClosed40ParentTree": "b901623f1362a550132c9c4a5bb66f0cb10e19a5",
+  "inputPeerReviewBlob": "84c4a6d07e49e2ac56031ab5ab1643595df52414",
+  "runtimeSources": {
+    "mac_current_fixture_materializer_r1.py": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f",
+    "mac_current_capture_entry_r1.py": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+    "mac_owned_launchd_r3.py": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+    "mac_current_server_owner_r1.py": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+    "mac_current_phase_owner_r2.py": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+    "mac_t5_volume_guard_r1.py": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "mac_current_cycle_r2.mjs": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+    "mac_single_native_r2.mjs": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+    "mac_auth_rows_cas_r1.mjs": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+    "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+    "mac_current_outer_inputs_r2.py": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+    "mac_current_outer_r4.py": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f"
+  },
+  "candidate": {
+    "bytes": 3442,
+    "sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+    "git_blob": "f907235064899ae026027d089b2ec1984ac5d753"
+  },
+  "inert": {
+    "distribution_sources": 20,
+    "preserved_sources": 18,
+    "preserved_documents": 3,
+    "preserved_full_identity_strings": 189,
+    "new_qa_files": 2,
+    "new_documents": 1,
+    "new_root": false,
+    "new_qa": false,
+    "new_proofs_directory": false,
+    "qa_members_before": 18,
+    "qa_members_after": 20,
+    "qa_inode_first_six_unchanged": true,
+    "runtime_absent": [
+      "outer-r3",
+      "outer-r4",
+      "captures",
+      "launchd",
+      "server",
+      "credentials-consumer",
+      "installed-plugin-copy",
+      "initial",
+      "cold-new-process"
+    ],
+    "two_named_enoent_observations_each_before_and_after": true,
+    "actual_atomic_absence_claimed": false,
+    "inner_seconds": 45,
+    "outer_seconds": 60,
+    "diskutil_seconds": 30,
+    "diskutil_clipped_to_original_deadline": true,
+    "request": {
+      "bytes": 658018,
+      "sha256": "af9252ca583fa46c7fceb3b04c91bc2e5e517800406a86a27c9b6e05528bfe6e",
+      "git_blob": "a9a64ceb6b4bbc188acfed52959989f818a3a37c"
+    },
+    "payload": {
+      "bytes": 635018,
+      "sha256": "e8fe5f984ddab5fc7d8ab0758c8e2b3ba8ded25dfea6e62e04694147c8bb1b68",
+      "git_blob": "ec2c9b9ec90ab320af8e24b19b13415fb1cf9e6f"
+    },
+    "carrier": {
+      "bytes": 21483,
+      "sha256": "aece8bec79b525bfb1e0331fdfa8016d9d0ff58380df97161f1ccecb3f42f894",
+      "git_blob": "7a602befb4032ad1b42c8b3bca24256220c956f6"
+    },
+    "qa_size_and_times_not_claimed_unchanged": true,
+    "qa_membership_observations_are_sequential_not_atomic": true
+  },
+  "runtime": {
+    "request": {
+      "bytes": 4667,
+      "sha256": "a6ba251c51e1d572b4731401967ca0f21162c8a499dd71029dd116d43cbc09cf",
+      "git_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d"
+    },
+    "key": "heptabao-mac-current-five-agent-launchd-r4-6da29c3d-20261105-r1",
+    "source_only_not_submitted": true,
+    "supervisor_seconds": 1080,
+    "outer_seconds": 900,
+    "manager_seconds": 600,
+    "manager_failure_cleanup_seconds": 60,
+    "phase_seconds": 120,
+    "capture_seconds": 45,
+    "native_seconds": [
+      15,
+      8,
+      3
+    ],
+    "http_seconds": 10,
+    "source_custody_parent_and_read_caps_only_semantic_change": true,
+    "private_permission_or_cap_policy_changed": false,
+    "production_service_cutover_authorized": false
+  },
+  "oldRuntimeOrFilesOverwritten": false,
+  "newHostActionSubmitted": false,
+  "noProductionCutoverQualification": true
+}

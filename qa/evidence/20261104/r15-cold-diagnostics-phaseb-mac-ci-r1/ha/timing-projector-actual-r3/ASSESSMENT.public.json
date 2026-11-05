@@ -1,0 +1,434 @@
+{
+  "schema": "heptabao.b2-stopped-node2-timing-projection-assessment.v1",
+  "scope": "One read-only passive projection of the same stopped fixture log. No product retry or business qualification.",
+  "job_id": "1a1a997c484-fc05-3636",
+  "request_blob": "f03a71516326a97baf9236908b433bab593da745",
+  "source_pin": {
+    "bytes": 22618,
+    "sha256": "0630a5ea9aaaa790df935d137ccc337f319187cfaf392366d44bf36ac85d800b",
+    "blob": "7cf15c4fac367a2a556376e26dc40ecb475d04ce"
+  },
+  "source_tree": "6fa38d05d7612b6c4773ca546fb6f033a944b8f4",
+  "intent_blob": "d89a15c3488499b6b8aa83ed8ce812ae8220972d",
+  "admission_blob": "80b80d5569b7192239143f370fcf69528710277a",
+  "actual_start": {
+    "reused": false,
+    "launch_state": "launched",
+    "key": "heptabao-b2-node2-unseal-timing-log-read-r3-0630a5ea",
+    "host": "rog",
+    "request_digest": "2ffecdef85510f2e5e7d8bf79253bec3366c397111da2c99023d5559cef36767"
+  },
+  "terminal": {
+    "exit_code": 0,
+    "state": "succeeded",
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "automatic_retry": false,
+    "stdout_bytes": 50742,
+    "stderr_bytes": 0
+  },
+  "whole_stdout": {
+    "bytes": 50742,
+    "sha256": "1a1cf352b213f4f58e505c736a329b743eb679ad4ef51c182aea20c05589216c",
+    "blob": "52633c5c0cfad1c34216a898e355207177ef19c5"
+  },
+  "read_ranges": [
+    {
+      "offset": 0,
+      "next_offset": 16384,
+      "bytes": 16384,
+      "sha256": "6283078863e6b6c6301c599546366a9584674965207d4f1a7d62d3380a1dfadc",
+      "eof": false
+    },
+    {
+      "offset": 16384,
+      "next_offset": 32768,
+      "bytes": 16384,
+      "sha256": "14fce19e0f61a4b5827a665aa7283eee6cae24b6c867cfd602a42a6092c3970a",
+      "eof": false
+    },
+    {
+      "offset": 32768,
+      "next_offset": 49152,
+      "bytes": 16384,
+      "sha256": "cc7132ae86780562f4e7004ca470eabf3ef1411776f8ac7a90a07bde03ffd839",
+      "eof": false
+    },
+    {
+      "offset": 49152,
+      "next_offset": 50742,
+      "bytes": 1590,
+      "sha256": "572e7bb65cc1e71c6f25f522929f3b9b17e8a1c15618998cf35920ef949d8dc6",
+      "eof": true
+    }
+  ],
+  "all_stream_hex_equal_text": true,
+  "contiguous_zero_to_final_size": true,
+  "final_eof": true,
+  "previous_projection_blob": "0868b78a56b7c2287264a84d4d5f167933122a9e",
+  "input_before": {
+    "bytes": 37545,
+    "ctime_ns": "1793843323209252035",
+    "device": 66306,
+    "gid": 1000,
+    "inode": 38844679,
+    "mode": 384,
+    "mtime_ns": "1793843323209252035",
+    "nlink": 1,
+    "type": 32768,
+    "uid": 1000
+  },
+  "input_after": {
+    "bytes": 37545,
+    "ctime_ns": "1793843323209252035",
+    "device": 66306,
+    "gid": 1000,
+    "inode": 38844679,
+    "mode": 384,
+    "mtime_ns": "1793843323209252035",
+    "nlink": 1,
+    "type": 32768,
+    "uid": 1000
+  },
+  "input_named_after": {
+    "bytes": 37545,
+    "ctime_ns": "1793843323209252035",
+    "device": 66306,
+    "gid": 1000,
+    "inode": 38844679,
+    "mode": 384,
+    "mtime_ns": "1793843323209252035",
+    "nlink": 1,
+    "type": 32768,
+    "uid": 1000
+  },
+  "same_previous_ten_fields_exact": true,
+  "same_previous_whole_sha_exact": true,
+  "input_sha256": "0a8c6eecfb9db148c243a8744a3a6119e9bf9cf2930bf4bcf745989eb4cce892",
+  "input_bytes": 37545,
+  "input_lines": 178,
+  "selected_markers": 105,
+  "unselected_lines": 73,
+  "previous_six_markers_exactly_preserved": true,
+  "timing_marker_count": 99,
+  "timing_class_forwarded_status_counts": {
+    "health/false/503": 96,
+    "ordinary/false/503": 3
+  },
+  "timing_markers_with_nonempty_phases": [
+    {
+      "line": 178,
+      "phases": 6
+    }
+  ],
+  "ordinary_timing_rows": [
+    {
+      "bucket_bound_reached": false,
+      "bucket_limit": 64,
+      "elapsed_us": "8006564",
+      "entry_remaining_ns": "13995356175",
+      "exit_remaining_ns": "5988791638",
+      "forwarded": false,
+      "line_bytes": 285,
+      "line_number": 61,
+      "line_sha256": "82e52b86f5b6d85aba981a1880cfa9f440c509ae0fb07ed90172b513d97a54eb",
+      "marker": "HBHA-REQUEST-TIMING-FAIL",
+      "phases": [],
+      "request_class": "ordinary",
+      "schema": "heptabao.native-ha.request-failure-timing.v1",
+      "status": 503
+    },
+    {
+      "bucket_bound_reached": false,
+      "bucket_limit": 64,
+      "elapsed_us": "6045539",
+      "entry_remaining_ns": "6034053246",
+      "exit_remaining_ns": "0",
+      "forwarded": false,
+      "line_bytes": 275,
+      "line_number": 79,
+      "line_sha256": "e42f578f88fcdd16142757ba72f3233e9f38c19cfb1c677f2965b6ae4c048d14",
+      "marker": "HBHA-REQUEST-TIMING-FAIL",
+      "phases": [],
+      "request_class": "ordinary",
+      "schema": "heptabao.native-ha.request-failure-timing.v1",
+      "status": 503
+    },
+    {
+      "bucket_bound_reached": false,
+      "bucket_limit": 64,
+      "elapsed_us": "9414388",
+      "entry_remaining_ns": "13995385962",
+      "exit_remaining_ns": "4580997890",
+      "forwarded": false,
+      "line_bytes": 2156,
+      "line_number": 178,
+      "line_sha256": "5b40c2909b3465be02ae580138701d000932dacfaeeec2a1a6f2cdd3d1fb9447",
+      "marker": "HBHA-REQUEST-TIMING-FAIL",
+      "phases": [
+        {
+          "advanced": "1",
+          "calls": "1",
+          "completed": "0",
+          "elapsed_us": "2",
+          "failed": "0",
+          "first_entry_remaining_ns": "13984996490",
+          "last_exit_remaining_ns": "13984994026",
+          "maximum_elapsed_us": "2",
+          "minimum_entry_remaining_ns": "13984996490",
+          "minimum_exit_remaining_ns": "13984994026",
+          "phase": "committed_read_entry",
+          "scope": "committed_read_entry"
+        },
+        {
+          "advanced": "1",
+          "calls": "1",
+          "completed": "0",
+          "elapsed_us": "31924",
+          "failed": "0",
+          "first_entry_remaining_ns": "13984994026",
+          "last_exit_remaining_ns": "13953069155",
+          "maximum_elapsed_us": "31924",
+          "minimum_entry_remaining_ns": "13984994026",
+          "minimum_exit_remaining_ns": "13953069155",
+          "phase": "committed_read_index",
+          "scope": "committed_read_entry"
+        },
+        {
+          "advanced": "1",
+          "calls": "1",
+          "completed": "0",
+          "elapsed_us": "5",
+          "failed": "0",
+          "first_entry_remaining_ns": "13953069155",
+          "last_exit_remaining_ns": "13953063805",
+          "maximum_elapsed_us": "5",
+          "minimum_entry_remaining_ns": "13953069155",
+          "minimum_exit_remaining_ns": "13953063805",
+          "phase": "committed_enrollment",
+          "scope": "committed_read_entry"
+        },
+        {
+          "advanced": "1",
+          "calls": "1",
+          "completed": "0",
+          "elapsed_us": "9369972",
+          "failed": "0",
+          "first_entry_remaining_ns": "13953063805",
+          "last_exit_remaining_ns": "4583091550",
+          "maximum_elapsed_us": "9369972",
+          "minimum_entry_remaining_ns": "13953063805",
+          "minimum_exit_remaining_ns": "4583091550",
+          "phase": "committed_changed_root_recover",
+          "scope": "committed_read_entry"
+        },
+        {
+          "advanced": "0",
+          "calls": "1",
+          "completed": "1",
+          "elapsed_us": "26",
+          "failed": "0",
+          "first_entry_remaining_ns": "4583091550",
+          "last_exit_remaining_ns": "4583064660",
+          "maximum_elapsed_us": "26",
+          "minimum_entry_remaining_ns": "4583091550",
+          "minimum_exit_remaining_ns": "4583064660",
+          "phase": "committed_final_witness",
+          "scope": "committed_read_entry"
+        },
+        {
+          "advanced": "0",
+          "calls": "1",
+          "completed": "1",
+          "elapsed_us": "9401931",
+          "failed": "0",
+          "first_entry_remaining_ns": "13984996490",
+          "last_exit_remaining_ns": "4583064660",
+          "maximum_elapsed_us": "9401931",
+          "minimum_entry_remaining_ns": "13984996490",
+          "minimum_exit_remaining_ns": "4583064660",
+          "phase": "scope_total",
+          "scope": "committed_read_entry"
+        }
+      ],
+      "request_class": "ordinary",
+      "schema": "heptabao.native-ha.request-failure-timing.v1",
+      "status": 503
+    }
+  ],
+  "preceding_selected_marker": {
+    "activation": false,
+    "barrier_loaded": false,
+    "line_bytes": 164,
+    "line_number": 177,
+    "line_sha256": "0e6cea7f79d4b52ad32bf61eceee982157f554da1f7c8bd95afc0d4f0a303a75",
+    "marker": "HBHA-DIAG-UNSEAL",
+    "original_deadline_present": true,
+    "record_root": false,
+    "recovery_required": false,
+    "route_status": 503,
+    "state_loaded": false
+  },
+  "last_selected_marker": {
+    "bucket_bound_reached": false,
+    "bucket_limit": 64,
+    "elapsed_us": "9414388",
+    "entry_remaining_ns": "13995385962",
+    "exit_remaining_ns": "4580997890",
+    "forwarded": false,
+    "line_bytes": 2156,
+    "line_number": 178,
+    "line_sha256": "5b40c2909b3465be02ae580138701d000932dacfaeeec2a1a6f2cdd3d1fb9447",
+    "marker": "HBHA-REQUEST-TIMING-FAIL",
+    "phases": [
+      {
+        "advanced": "1",
+        "calls": "1",
+        "completed": "0",
+        "elapsed_us": "2",
+        "failed": "0",
+        "first_entry_remaining_ns": "13984996490",
+        "last_exit_remaining_ns": "13984994026",
+        "maximum_elapsed_us": "2",
+        "minimum_entry_remaining_ns": "13984996490",
+        "minimum_exit_remaining_ns": "13984994026",
+        "phase": "committed_read_entry",
+        "scope": "committed_read_entry"
+      },
+      {
+        "advanced": "1",
+        "calls": "1",
+        "completed": "0",
+        "elapsed_us": "31924",
+        "failed": "0",
+        "first_entry_remaining_ns": "13984994026",
+        "last_exit_remaining_ns": "13953069155",
+        "maximum_elapsed_us": "31924",
+        "minimum_entry_remaining_ns": "13984994026",
+        "minimum_exit_remaining_ns": "13953069155",
+        "phase": "committed_read_index",
+        "scope": "committed_read_entry"
+      },
+      {
+        "advanced": "1",
+        "calls": "1",
+        "completed": "0",
+        "elapsed_us": "5",
+        "failed": "0",
+        "first_entry_remaining_ns": "13953069155",
+        "last_exit_remaining_ns": "13953063805",
+        "maximum_elapsed_us": "5",
+        "minimum_entry_remaining_ns": "13953069155",
+        "minimum_exit_remaining_ns": "13953063805",
+        "phase": "committed_enrollment",
+        "scope": "committed_read_entry"
+      },
+      {
+        "advanced": "1",
+        "calls": "1",
+        "completed": "0",
+        "elapsed_us": "9369972",
+        "failed": "0",
+        "first_entry_remaining_ns": "13953063805",
+        "last_exit_remaining_ns": "4583091550",
+        "maximum_elapsed_us": "9369972",
+        "minimum_entry_remaining_ns": "13953063805",
+        "minimum_exit_remaining_ns": "4583091550",
+        "phase": "committed_changed_root_recover",
+        "scope": "committed_read_entry"
+      },
+      {
+        "advanced": "0",
+        "calls": "1",
+        "completed": "1",
+        "elapsed_us": "26",
+        "failed": "0",
+        "first_entry_remaining_ns": "4583091550",
+        "last_exit_remaining_ns": "4583064660",
+        "maximum_elapsed_us": "26",
+        "minimum_entry_remaining_ns": "4583091550",
+        "minimum_exit_remaining_ns": "4583064660",
+        "phase": "committed_final_witness",
+        "scope": "committed_read_entry"
+      },
+      {
+        "advanced": "0",
+        "calls": "1",
+        "completed": "1",
+        "elapsed_us": "9401931",
+        "failed": "0",
+        "first_entry_remaining_ns": "13984996490",
+        "last_exit_remaining_ns": "4583064660",
+        "maximum_elapsed_us": "9401931",
+        "minimum_entry_remaining_ns": "13984996490",
+        "minimum_exit_remaining_ns": "4583064660",
+        "phase": "scope_total",
+        "scope": "committed_read_entry"
+      }
+    ],
+    "request_class": "ordinary",
+    "schema": "heptabao.native-ha.request-failure-timing.v1",
+    "status": 503
+  },
+  "fd_cleanup": {
+    "ledger": [
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "log"
+      },
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "directory"
+      },
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "directory"
+      },
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "directory"
+      },
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "directory"
+      },
+      {
+        "close_attempted": true,
+        "close_error": false,
+        "closed": true,
+        "kind": "directory"
+      }
+    ],
+    "all_owned_descriptors_closed": true,
+    "descriptor_count": 6
+  },
+  "publication_within_original_deadline": true,
+  "elapsed_seconds_before_publication": 0.0018133360135834664,
+  "effect_counts": {
+    "product_requests": 0,
+    "children_started": 0,
+    "files_written": 0
+  },
+  "unknown_lines_emitted": false,
+  "raw_log_values_emitted": false,
+  "route_request_correlation_proven": false,
+  "interpretation_limits": [
+    "Line178 is an ordinary, nonforwarded503 timing report following line177 unseal503; neither contains a request/correlation ID. Adjacency and similar durations alone do not establish identity with ledger seq49.",
+    "The line178 committed_read_entry scope is recorded completed, with 4.583064660s remaining at that scope exit and4.580997890s remaining at request observation exit. This describes that recorded context only, not a proven unseal failure cause.",
+    "The native changed-root recovery span is advanced, not failed, in that report. No failure bucket from a later local phase is present; absence is not evidence that no internal operation failed.",
+    "The original business run remains FAILED91/98 with extra postcold0/12 and no replay. This observer exit0 only qualifies the passive bounded read.",
+    "Previous ordinary503 records at61 and79 remain separate; old ReadIndex failure markers are not attributed to the final unseal."
+  ]
+}

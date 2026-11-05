@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.b2-timing-codec-source-correction.v1",
+  "source_only": true,
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "supersedes_unexecuted_source_only_tree": "9274740b6507e0086647ea599536da800539863e",
+  "preserved_original_39_source": {
+    "bytes": 22580,
+    "sha256": "5c518fd3411d1c506f9814bb61bcbe2e5e65b6dc2dfe7a748757cb271ac74345",
+    "blob": "07632a3e595d7a44d8f586e95dbb93abcf75a7cb"
+  },
+  "corrected_40_source": {
+    "bytes": 22618,
+    "sha256": "0630a5ea9aaaa790df935d137ccc337f319187cfaf392366d44bf36ac85d800b",
+    "blob": "7cf15c4fac367a2a556376e26dc40ecb475d04ce"
+  },
+  "delta": {
+    "added_pair": [
+      "codec",
+      "open_committed_read"
+    ],
+    "removed_pairs": [],
+    "changed_other_source_bytes": false,
+    "strict_diff_hunks": 1
+  },
+  "normal_build_reachable": true,
+  "cfg_note": "The codec wrapper and the common object-reader call have no private feature or test gate. The nearby install NativeHaPhaseTimer is feature-gated, while the object-reader invocation is not.",
+  "cold_paths": [
+    [
+      "load_cold_native_ha",
+      "install_native_v6_replica_inner_with_payload_validation",
+      "open_native_v6_ha_objects_with_payload_validation",
+      "open_native_v6_ha_objects_inner",
+      "open_native_v6_committed_read"
+    ],
+    [
+      "load_cold_native_ha",
+      "repair_current_local_objects",
+      "open_native_v6_ha_objects",
+      "open_native_v6_ha_objects_inner",
+      "open_native_v6_committed_read"
+    ]
+  ],
+  "members": [
+    {
+      "path": "crates/heptabao-server/src/ha_v6_native_codec.rs",
+      "bytes": 52138,
+      "sha256": "5817213ce2ab37c6a536717565405e448c21380908fa92658e8ce825f5c3c369",
+      "blob": "98e2ab5e8132d7c33dd313bef54366c05636a291",
+      "canonical_member": {
+        "path": "crates/heptabao-server/src/ha_v6_native_codec.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "98e2ab5e8132d7c33dd313bef54366c05636a291",
+        "size": 52138,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/98e2ab5e8132d7c33dd313bef54366c05636a291"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_objects.rs",
+      "bytes": 20214,
+      "sha256": "316fe75f33a5eb5438e1e9bd5d31161d9be87752966fe81698ab94309586e92f",
+      "blob": "0593818bc986a7d57c1814b0ca2e026437d6fc13",
+      "canonical_member": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_objects.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0593818bc986a7d57c1814b0ca2e026437d6fc13",
+        "size": 20214,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/0593818bc986a7d57c1814b0ca2e026437d6fc13"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 86397,
+      "sha256": "ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+      "canonical_member": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+        "size": 86397,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "bytes": 26803,
+      "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708",
+      "canonical_member": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1de3065d7883b4b1943d794756e182f1a2ce708",
+        "size": 26803,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/a1de3065d7883b4b1943d794756e182f1a2ce708"
+      }
+    }
+  ],
+  "callsites": [
+    {
+      "role": "normal codec timing declaration",
+      "source": "ha_v6_native_codec.rs",
+      "start_line": 528,
+      "end_line": 541,
+      "text": "    /// Authenticate the exact selected graph without minting a durability\n    /// receipt. This has the same enrollment, manifest, ciphertext and gate\n    /// checks as installation, but exposes neither sealing nor a local receipt.\n    pub(crate) fn open_native_v6_committed_read(\n        &self,\n        enrollment: &NativeV6PeerEnrollment,\n        published: &NativeV6PublishedRoot,\n        store: &LocalV6BlobStage,\n        gate: &mut impl FnMut() -> CodecResult<()>,\n    ) -> CodecResult<NativeV6CipherRead> {\n        crate::ha::observe_native_v6_timing(\"codec\", \"open_committed_read\", None, || {\n            self.open_native_v6_committed_read_inner(enrollment, published, store, gate)\n        })\n    }\n"
+    },
+    {
+      "role": "both object readers reach the common inner",
+      "source": "service_native_v6_ha_objects.rs",
+      "start_line": 371,
+      "end_line": 427,
+      "text": "pub(super) fn open_native_v6_ha_objects(\n    codec: &ClusterStateCodec,\n    enrollment: &NativeV6PeerEnrollment,\n    published: &NativeV6PublishedRoot,\n    store: &LocalV6BlobStage,\n    context: ReadContext<'_>,\n    deadline: OriginalDeadline,\n    original_actor: &mut impl FnMut() -> CodecResult<()>,\n) -> CodecResult<ReceivedNativeV6HaObjects> {\n    open_native_v6_ha_objects_inner(\n        NativeV6ObjectStorage { codec, store },\n        enrollment,\n        published,\n        context,\n        deadline,\n        original_actor,\n        None,\n    )\n}\n\npub(super) fn open_native_v6_ha_objects_with_payload_validation(\n    storage: NativeV6ObjectStorage<'_>,\n    enrollment: &NativeV6PeerEnrollment,\n    published: &NativeV6PublishedRoot,\n    context: ReadContext<'_>,\n    deadline: OriginalDeadline,\n    original_actor: &mut impl FnMut() -> CodecResult<()>,\n    payload_validation: &RefCell<PagedPayloadValidationMemo>,\n) -> CodecResult<ReceivedNativeV6HaObjects> {\n    open_native_v6_ha_objects_inner(\n        storage,\n        enrollment,\n        published,\n        context,\n        deadline,\n        original_actor,\n        Some(payload_validation),\n    )\n}\n\nfn open_native_v6_ha_objects_inner(\n    storage: NativeV6ObjectStorage<'_>,\n    enrollment: &NativeV6PeerEnrollment,\n    published: &NativeV6PublishedRoot,\n    context: ReadContext<'_>,\n    deadline: OriginalDeadline,\n    original_actor: &mut impl FnMut() -> CodecResult<()>,\n    payload_validation: Option<&RefCell<PagedPayloadValidationMemo>>,\n) -> CodecResult<ReceivedNativeV6HaObjects> {\n    let NativeV6ObjectStorage { codec, store } = storage;\n    let gate = RefCell::new(OriginalGate {\n        deadline,\n        actor: original_actor,\n    });\n    check(&gate)?;\n    let closure =\n        codec.open_native_v6_committed_read(enrollment, published, store, &mut || check(&gate))?;\n"
+    },
+    {
+      "role": "cold changed-root replica install call",
+      "source": "service_native_v6_ha_read.rs",
+      "start_line": 222,
+      "end_line": 239,
+      "text": "        let result = process\n            .with_native_v6_source(&committed, |codec, store| {\n                service.install_native_v6_replica_inner_with_payload_validation(\n                    durable,\n                    &selected,\n                    &committed,\n                    LocalInstallSource {\n                        storage: NativeV6ObjectStorage { codec, store },\n                        payload_validation: &payload_validation,\n                    },\n                    &mut gate,\n                    &published,\n                )\n            })\n            .map_err(|_| {\n                cold_stage_failed(\"replica_source\");\n                unavailable()\n            })?;\n"
+    },
+    {
+      "role": "actual replica install calls payload-validating object reader",
+      "source": "service_native_v6_ha_install.rs",
+      "start_line": 1686,
+      "end_line": 1704,
+      "text": "            // The codec obtains the canonical root from the committed small seal.\n            // Its closure/full typed reader rejects missing, extra and wrong-domain data.\n            let received = open_native_v6_ha_objects_with_payload_validation(\n                NativeV6ObjectStorage { codec, store },\n                read.enrollment(),\n                read.published(),\n                ReadContext {\n                    expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),\n                    cluster_id: &selected.source.cluster_id,\n                    replay_epoch: read.enrollment().epoch(),\n                    minimum_state_schema: selected.source.state_schema,\n                    maximum_state_schema: MAX_SUPPORTED_STATE_SCHEMA,\n                    reader_format: crate::state_record_root_v6::READER_FORMAT,\n                },\n                deadline,\n                &mut || codec_gate(),\n                payload_validation,\n            )\n            .map_err(|_| unavailable())?;\n"
+    },
+    {
+      "role": "cold repair calls current-local repair",
+      "source": "service_native_v6_ha_read.rs",
+      "start_line": 286,
+      "end_line": 296,
+      "text": "            process\n                .with_native_v6_source(&committed, |codec, store| {\n                    repair_current_local_objects(\n                        durable, &selected, &committed, codec, store, &mut gate,\n                    )\n                })\n                .map_err(|_| {\n                    cold_stage_failed(\"repair_source\");\n                    unavailable()\n                })?\n                .inspect_err(|_| cold_stage_failed(\"physical_repair\"))?;\n"
+    },
+    {
+      "role": "current-local repair calls common object reader",
+      "source": "service_native_v6_ha_install.rs",
+      "start_line": 867,
+      "end_line": 893,
+      "text": "fn repair_current_local_objects(\n    durable: &mut DurableService<AeadBarrier>,\n    selected: &LocalSelection,\n    read: &CommittedNativeV6Read,\n    codec: &ClusterStateCodec,\n    store: &LocalV6BlobStage,\n    gate: &mut impl FnMut() -> Result<(), ServiceError>,\n) -> Result<(), Response> {\n    use crate::ha_state::native_v6::NativeV6CodecError;\n    let root = selected.native.as_ref().ok_or_else(unavailable)?;\n    if root.identity().map_err(|_| unavailable())?.digest() != read.published().root_digest() {\n        return Err(unavailable());\n    }\n    let shared = RefCell::new(gate);\n    let mut original = || (shared.borrow_mut())().map_err(|_| NativeV6CodecError::Gate);\n    let received = open_native_v6_ha_objects(\n        codec,\n        read.enrollment(),\n        read.published(),\n        store,\n        context(root)?,\n        read.deadline(),\n        &mut original,\n    )\n    .map_err(|_| unavailable())?;\n    if received.root_bytes() != selected.root_bytes.expose() {\n        return Err(unavailable());\n"
+    }
+  ],
+  "previous_contract_blob": "32dd19cb98fc688961c5d90e21b11fde4511d576",
+  "unchanged_contract": "Original strict JSON shape, field types/order, numeric bounds, static labels other than the one added pair, input ten-field plus whole-SHA binding, marker/input/output caps, FD identity/cleanup and 15s inner/45s outer all unchanged.",
+  "qualification_limits": [
+    "Reachability is source evidence; it does not prove the fixed stopped log contains this pair.",
+    "No raw log was read by these components; no request identity/correlation or failure cause is inferred.",
+    "The 40 pairs are a closed reviewed set, not a repository-wide exhaustive whitelist.",
+    "The original 46 selected parser checks remain their own source-bound historical result; this successor has eight actual targeted checks.",
+    "Any eventual runtime requires this exact new source/request admission and authoritative full terminal/FD cleanup; it has not been submitted."
+  ],
+  "components": {
+    "passed": 8,
+    "failed": 0,
+    "main_executed": false,
+    "physical_host_requests": 0,
+    "actual_log_accessed": false
+  },
+  "request": {
+    "pin": {
+      "bytes": 24437,
+      "sha256": "5ddae71ff619f52feaf1cf0da2d18e3a3299bf0d87fd030df90e9c5bb2368872",
+      "blob": "f03a71516326a97baf9236908b433bab593da745"
+    },
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "source_sha256_argument": "0630a5ea9aaaa790df935d137ccc337f319187cfaf392366d44bf36ac85d800b",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 45,
+    "idempotency_key": "heptabao-b2-node2-unseal-timing-log-read-r3-0630a5ea",
+    "submitted": false
+  }
+}

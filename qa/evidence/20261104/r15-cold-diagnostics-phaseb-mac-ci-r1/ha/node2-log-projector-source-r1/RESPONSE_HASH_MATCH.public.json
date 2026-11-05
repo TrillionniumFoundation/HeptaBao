@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.source-response-canonical-hash-match.v1",
+  "actual_outcome_blob": "3942beee49a71460e9d1a617ba5acca0ff89e5f7",
+  "actual_outcome_sha256": "1f50252db71e6ee1ae90580877b28209528b080bce323773f168b75bb95c2648",
+  "method": "Response::error body shape and exact ledger canonical JSON of fixed public source literal",
+  "matches": [
+    {
+      "file": "service_native_v6_ha_install.rs",
+      "line": 221,
+      "status": 503,
+      "message": "native V6 HA local publication is unavailable",
+      "canonical": "{\"errors\":[\"native V6 HA local publication is unavailable\"]}",
+      "sha256": "f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1"
+    }
+  ],
+  "raw_response_body_read": false,
+  "unique_among_initial_static_candidates": 426,
+  "not_whole_repository_unique_claim": true,
+  "inner_failure_cause_still_unproven": true
+}

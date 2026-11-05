@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.b2-node2-log-read-intent.v1",
+  "effect": "one fixed read-only stopped-node log projection",
+  "key": "heptabao-b2-node2-unseal-public-log-read-r1-cfed5493",
+  "request_blob": "854c6172b62d68ac2b2a80d4f22f978534584992",
+  "source_sha256": "cfed549385a0ef1054abde45f54a6e410cad98cc0d8e2c0271adb6227d76c329",
+  "source_tree": "b9c62aa4ed24fd3788b35554b2c03d5380895f59",
+  "admission_blob": "7e556ce30f8f101344a69ca6b6fa070ae264a96b",
+  "host": "rog",
+  "inner_seconds": 15,
+  "outer_seconds": 45,
+  "product_calls": 0,
+  "children": 0,
+  "files_written": 0,
+  "unknown_not_replayed": true,
+  "submitted": false
+}

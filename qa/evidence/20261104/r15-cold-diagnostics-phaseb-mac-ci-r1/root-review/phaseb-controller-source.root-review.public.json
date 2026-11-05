@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.phaseb3cb-root-complete-source-review.v1",
+  "source_tree": "01c2ef7e0ac1d210eff8dad50f0ae59deb9719d3",
+  "status": "SOURCE_REVIEW_PASS_ACTUAL_STAGE_BINDING_REQUIRED_BEFORE_PREPARE",
+  "controller": {
+    "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+    "bytes": 61210,
+    "whole_text_read": true
+  },
+  "binding": {
+    "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a",
+    "bytes": 23664,
+    "whole_text_read": true
+  },
+  "evidence": {
+    "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+    "bytes": 15201,
+    "whole_text_read": true
+  },
+  "unchanged_reference_sources": {
+    "native_blob": "7e465b3ea72814726ed2e01355ab91412190a747",
+    "cli_blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+    "exact_frozen_sizes_and_hashes": true,
+    "new_use_reviewed": [
+      "import guards and top-level declarations",
+      "owned start-child registration and actual proc argv/executable",
+      "read-only private stdout capture and original timeout behavior",
+      "normal_v5_seed_then_native_v6_activate",
+      "readiness and stable real election",
+      "single HTTP exchange framing and no redirect",
+      "role and retained-state observations"
+    ],
+    "original_reference_global_business_entrypoints_not_invoked": true
+  },
+  "prepare_scope": {
+    "binding_fields_exact": true,
+    "whole_source_build_44_plus_separate7_fences": true,
+    "host_and_utility_full_hashes": true,
+    "three_readonly_local_git_commands": true,
+    "ports": "six fixed loopback bind observations only",
+    "fresh_prepare_and_work_required": true,
+    "product_or_cli_snapshot_started": false,
+    "original_action_seconds": 300
+  },
+  "live_scope": {
+    "five_cases": [
+      "B01_leader_save_A",
+      "B02_leader_restore_A",
+      "B03_leader_save_B",
+      "B04_default_standby_save",
+      "B05_default_standby_restore_B"
+    ],
+    "fresh_synthetic_owned_fixture": true,
+    "actual_B01_B03_archive_envelope_and_clear_checksum_required": true,
+    "archive_observer_decryption_or_sealed_checksum_authentication": false,
+    "restore_positive_needs_all_node_actual_API_values_metadata_and_cold_restart": true,
+    "CLI_exit_zero_alone_never_restore_success": true,
+    "unknown_boundary_forbids_future_mutation_CLI_restart": true,
+    "single_cleanup_budget_per_original_owned_child": true,
+    "synthetic_secrets_redacted_before_publication": true,
+    "normal_default_features": true,
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "production_changed": false
+  },
+  "deadlines": {
+    "http": 15,
+    "cli": 15,
+    "action": 300,
+    "readiness": 45,
+    "election": 60,
+    "peer_ms": 1500,
+    "forward_ms": 8000,
+    "cleanup_term": 5,
+    "cleanup_kill": 5,
+    "original_reference_emergency_wait": 5
+  },
+  "actual_binding_sha_required": true,
+  "actual_prepared_sha_required": true,
+  "prepare_runtime_admitted": false,
+  "live_runtime_admitted": false,
+  "full_replacement": false
+}

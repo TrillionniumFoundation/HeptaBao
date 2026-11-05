@@ -1,0 +1,7 @@
+{
+  "chunk_id": "356b3c",
+  "wall_time_seconds": 0.32680099,
+  "exit_code": 0,
+  "original_token_count": 157,
+  "output": "{\n  \"candidate_children\": 0,\n  \"candidate_host_calls\": 0,\n  \"candidate_modules_executed\": false,\n  \"candidate_sqlite_calls\": 0,\n  \"full_python_ast_compiled\": [\n    \"after.py\",\n    \"outer_r3.py\",\n    \"outer_r4.py\",\n    \"inert_r3.py\",\n    \"inert_r4.py\"\n  ],\n  \"inert_shared_top_level_functions_byte_identical\": [\n    \"critical\",\n    \"encode\",\n    \"load_definition_module\",\n    \"need\",\n    \"on_signal\",\n    \"remaining\",\n    \"sha\",\n    \"stdin_once\"\n  ],\n  \"outer_original_source_artifacts_anchor_profile_caps_and_deadlines_unchanged\": true,\n  \"schema\": \"heptabao.mac-input-successor-r4.source-ast-review.r1\",\n  \"status\": \"passed\"\n}\n"
+}

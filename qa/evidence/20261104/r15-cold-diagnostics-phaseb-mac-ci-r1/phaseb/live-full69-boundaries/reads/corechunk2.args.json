@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-3cb-live-corechunk2-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/result.public.json",
+      "expected_version": "2050:4756300:278829:1793845340825312226:1793845340825312226",
+      "offset": 131072,
+      "limit": 65536
+    }
+  }
+}

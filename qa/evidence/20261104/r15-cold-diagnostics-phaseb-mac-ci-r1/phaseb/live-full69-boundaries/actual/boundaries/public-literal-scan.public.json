@@ -1,0 +1,9 @@
+{
+  "encoding_variants": 129,
+  "hits": 0,
+  "literal_inputs": 9,
+  "members": 150,
+  "members_sha256": "31314bedc657d51fca8e045be296f4cab1b54cd946ac46d4f25d9b908b11c840",
+  "scope": "actual_fixture_literals_and_captured_encoding_variants",
+  "universal_secret_detection_claimed": false
+}
