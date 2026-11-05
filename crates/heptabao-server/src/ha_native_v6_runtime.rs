@@ -704,9 +704,7 @@ impl HaProcess {
                 .begin_native_operation()
                 .map_err(|e| e.to_string())?;
             failure.step("fresh_ingress_read_index");
-            let selected = self
-                .runtime
-                .block_on(node.native_v6_committed_root_read(deadline.instant()))
+            let selected = self.block_on_observed(node.native_v6_committed_root_read(deadline.instant()))
                 .map_err(|e| e.to_string())?;
             let Some(selected) = selected else {
                 return Ok(None);
@@ -837,6 +835,13 @@ impl CommittedNativeV6Read {
     pub(crate) fn published(&self) -> &NativeV6PublishedRoot {
         self.selected.root()
     }
+    pub(crate) fn read_observation_identity(&self)
+        -> Option<heptabao_raft_runtime::read_index_observation::ReadIdentity> {
+        self.selected.read_observation_identity()
+    }
+    pub(crate) fn observe_payload_proof_checked(&self) {
+        self.selected.observe_service_payload_proof_checked();
+    }
     pub(crate) fn deadline(&self) -> OriginalDeadline {
         self.deadline
     }
@@ -942,17 +947,14 @@ impl HaProcess {
             .filter(|native| native.enabled())
             .ok_or("native HA was not explicitly enabled")?;
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
-        let selected = self
-            .runtime
-            .block_on(node.native_v6_committed_root_read(deadline.instant()))
+        let selected = self.block_on_observed(node.native_v6_committed_root_read(deadline.instant()))
             .map_err(|error| error.to_string())?;
         let Some(selected) = selected else {
             deadline.check().map_err(|error| error.to_string())?;
             return Ok(None);
         };
         native.validate_enrollment(&self.codec, selected.enrollment())?;
-        self.runtime
-            .block_on(heptabao_raft_runtime::with_read_index_deadline(
+        self.block_on_observed(heptabao_raft_runtime::with_read_index_deadline(
                 deadline.instant(),
                 node.verify_native_v6_committed_root_read(&selected),
             ))
@@ -1121,7 +1123,7 @@ impl HaProcess {
         failure.step("committed_read_index");
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let read_started = Instant::now();
-        let selected = self.runtime.block_on(async {
+        let selected = self.block_on_observed(async {
             match recapture {
                 Some(NativeV6ReadRecapture::ApplicationProgress(previous)) => node
                     .native_v6_same_root_progress_read(previous)
@@ -1236,8 +1238,7 @@ impl HaProcess {
         }
         native.validate_enrollment(&self.codec, read.enrollment())?;
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
-        self.runtime
-            .block_on(heptabao_raft_runtime::with_read_index_deadline(
+        self.block_on_observed(heptabao_raft_runtime::with_read_index_deadline(
                 read.deadline.instant(),
                 node.verify_native_v6_committed_root_read(&read.selected),
             ))
@@ -1258,7 +1259,9 @@ impl HaProcess {
                 }
                 error.to_string()
             })?;
-        read.deadline.check().map_err(|error| error.to_string())
+        let result=read.deadline.check().map_err(|error| error.to_string());
+        if result.is_ok() { read.selected.observe_service_read_verified(); }
+        result
     }
 
     /// The caller keeps the same HaProcess borrow for gates inside the closure.

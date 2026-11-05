@@ -123,6 +123,10 @@ impl Service {
                     && request.wrap_ttl_seconds.is_none()
                     && let Some(completed) = completed
                 {
+                    if response.status==200 {
+                        crate::http::read_index_observation::record_native_payload(
+                            proof.read_observation_identity(),&response);
+                    }
                     crate::ha_forward_completion::native_data_read_completed(completed, &response);
                 }
                 response

@@ -140,6 +140,7 @@ impl NativeReply {
                     .checked_add(target.as_str().len())
                     .and_then(|size| size.checked_add(namespace.len()))
                     .and_then(|size| size.checked_add(512))
+                    .and_then(|size| size.checked_add(super::read_index_observation::header_allowance()))
                     // Local routing may retain at most four original numeric
                     // quota fields, each with a value of at most twenty digits.
                     .and_then(|size| size.checked_add(if headers.is_empty() { 0 } else { 512 }))

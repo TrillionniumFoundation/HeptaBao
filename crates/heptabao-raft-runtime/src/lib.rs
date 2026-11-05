@@ -13,6 +13,7 @@
 mod cluster;
 mod network;
 mod process;
+pub mod read_index_observation;
 mod records;
 mod replication_bounds;
 mod state_machine;

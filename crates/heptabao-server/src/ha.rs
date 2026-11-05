@@ -1355,7 +1355,7 @@ impl HaProcess {
         ) else {
             return false;
         };
-        let observed = match self.runtime.block_on(node.membership_observation()) {
+        let observed = match self.block_on_observed(node.membership_observation()) {
             Ok(observed) => observed,
             Err(_) => return false,
         };
@@ -1728,7 +1728,7 @@ impl HaProcess {
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        Ok(self.runtime.block_on(node.current_leader()))
+        Ok(self.block_on_observed(node.current_leader()))
     }
 
     pub fn is_leader(&self) -> Result<bool, String> {
@@ -1745,12 +1745,10 @@ impl HaProcess {
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
         let local = node.id();
-        if self.runtime.block_on(node.current_leader()) != Some(local) {
+        if self.block_on_observed(node.current_leader()) != Some(local) {
             return Err("HA step-down requires the current leader".into());
         }
-        let membership = self
-            .runtime
-            .block_on(node.membership_observation())
+        let membership = self.block_on_observed(node.membership_observation())
             .map_err(|_| "membership unavailable")?;
         let targets: Vec<u64> = membership
             .voters
@@ -1762,7 +1760,7 @@ impl HaProcess {
             return Err("HA cluster has no alternate voter".into());
         }
         let original_deadline = crate::request_deadline::current();
-        self.runtime.block_on(async {
+        self.block_on_observed(async {
             for target in targets {
                 let deadline = original_deadline
                     .map(tokio::time::Instant::from_std)
@@ -1803,8 +1801,7 @@ impl HaProcess {
     pub fn membership(&self) -> Result<heptabao_raft_runtime::MembershipObservation, String> {
         let node = self.node.as_ref().ok_or("HA stopped")?;
         self.ensure_linearizable()?;
-        self.runtime
-            .block_on(node.membership_observation())
+        self.block_on_observed(node.membership_observation())
             .map_err(|_| "membership observation failed".into())
     }
     pub fn modify_membership(
@@ -1830,6 +1827,16 @@ impl HaProcess {
     // completion (including response audit). HTTP separately keeps its original
     // reply-write reserve. Only async read gates get this earlier bound; this
     // neither extends the parent nor cancels surrounding writes/maintenance.
+    // This carries only the explicit HTTP diagnostic scope over the original
+    // future. The future, its deadline and every retry/quarter-bound stay intact.
+    fn block_on_observed<F: std::future::Future>(&self, operation:F)->F::Output {
+        match heptabao_raft_runtime::read_index_observation::capture_collector() {
+            Some(collector)=>self.runtime.block_on(
+                heptabao_raft_runtime::read_index_observation::scope(Some(collector),operation)),
+            None=>self.runtime.block_on(operation),
+        }
+    }
+
     fn block_on_read<F: std::future::Future>(&self, operation: F) -> F::Output {
         match crate::request_deadline::current() {
             Some(deadline) => {
@@ -1837,12 +1844,11 @@ impl HaProcess {
                 let deadline = deadline
                     .checked_duration_since(now)
                     .map_or(deadline, |remaining| deadline - remaining / 4);
-                self.runtime
-                    .block_on(heptabao_raft_runtime::with_read_index_deadline(
+                self.block_on_observed(heptabao_raft_runtime::with_read_index_deadline(
                         deadline, operation,
                     ))
             }
-            None => self.runtime.block_on(operation),
+            None => self.block_on_observed(operation),
         }
     }
 
@@ -1898,9 +1904,7 @@ impl HaProcess {
             return Err("HA record root has not been committed".into());
         };
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
-        let committed = self
-            .runtime
-            .block_on(node.latest_envelope())
+        let committed = self.block_on_observed(node.latest_envelope())
             .map_err(|error| error.to_string())?
             .ok_or("HA application state has not been committed")?;
         let descriptor = self
@@ -2007,18 +2011,14 @@ impl HaProcess {
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
         let local_id = node.id();
-        let leader = self
-            .runtime
-            .block_on(node.current_leader())
+        let leader = self.block_on_observed(node.current_leader())
             .ok_or_else(|| "HA cluster has no elected leader".to_owned())?;
         if leader != local_id {
             return Err(format!("HA write requires current leader node {leader}"));
         }
         self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())?;
-        let latest = self
-            .runtime
-            .block_on(node.latest_envelope())
+        let latest = self.block_on_observed(node.latest_envelope())
             .map_err(|error| error.to_string())?;
         if let Some(envelope) = latest.as_ref()
             && envelope.digest() != expected_base_digest
@@ -2065,9 +2065,7 @@ impl HaProcess {
         for plan in plans {
             let reference = plan.reference.clone();
             if plan.reused {
-                let staged = self
-                    .runtime
-                    .block_on(node.application_chunk_envelope(reference.index, reference.slot))
+                let staged = self.block_on_observed(node.application_chunk_envelope(reference.index, reference.slot))
                     .map_err(|error| error.to_string())?
                     .ok_or_else(|| "HA committed manifest references a missing chunk".to_owned())?;
                 if staged.digest() != reference.digest {
@@ -2107,13 +2105,9 @@ impl HaProcess {
                     proposal.sealed().to_vec(),
                 )
                 .map_err(|error| error.to_string())?;
-                let serial = self
-                    .runtime
-                    .block_on(node.next_production_client_serial())
+                let serial = self.block_on_observed(node.next_production_client_serial())
                     .map_err(|error| error.to_string())?;
-                let receipt = self
-                    .runtime
-                    .block_on(node.replicate_application_chunk(
+                let receipt = self.block_on_observed(node.replicate_application_chunk(
                         reference.index,
                         reference.slot,
                         serial,
@@ -2150,13 +2144,9 @@ impl HaProcess {
             proposal.sealed().to_vec(),
         )
         .map_err(|error| error.to_string())?;
-        let serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(|error| error.to_string())?;
-        let receipt = self
-            .runtime
-            .block_on(node.replicate(serial, &envelope))
+        let receipt = self.block_on_observed(node.replicate(serial, &envelope))
             .map_err(|error| error.to_string())?;
         if receipt.leader_id != local_id || receipt.envelope_digest != proposal.digest() {
             return Err("HA commit receipt did not bind the submitted application manifest".into());
@@ -2397,16 +2387,14 @@ impl HaProcess {
                     .map_err(|error| error.to_string())
             },
             || {
-                self.runtime
-                    .block_on(node.latest_envelope_at_generation())
+                self.block_on_observed(node.latest_envelope_at_generation())
                     .map_err(|error| error.to_string())
             },
             |index, slot| {
-                self.runtime
-                    .block_on(node.application_chunk_envelope(index, slot))
+                self.block_on_observed(node.application_chunk_envelope(index, slot))
                     .map_err(|error| error.to_string())
             },
-            || self.runtime.block_on(node.application_state_generation()),
+            || self.block_on_observed(node.application_state_generation()),
         )
     }
 }

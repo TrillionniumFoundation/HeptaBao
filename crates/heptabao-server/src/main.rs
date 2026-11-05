@@ -72,10 +72,14 @@ fn run() -> Result<(), String> {
         if arguments.len() != 2 {
             return Err("native Service candidate requires standalone root namespace".into());
         }
+        heptabao_raft_runtime::read_index_observation::initialize_from_environment()
+            .map_err(str::to_owned)?;
         return heptabao_server::http::serve_native_v6_candidate(config);
     }
     if arguments.len() == 2 {
         heptabao_server::configuration::validate_storage(&config, None)?;
+        heptabao_raft_runtime::read_index_observation::initialize_from_environment()
+            .map_err(str::to_owned)?;
         return heptabao_server::http::serve(config);
     }
 
@@ -85,6 +89,8 @@ fn run() -> Result<(), String> {
     // Reject path, seal/backend and enrolled peer mismatches before startup
     // can create or reopen any durable Raft owner or bind a peer listener.
     heptabao_server::configuration::validate_storage(&config, Some(&ha_config))?;
+    heptabao_raft_runtime::read_index_observation::initialize_from_environment()
+        .map_err(str::to_owned)?;
     #[cfg(not(feature = "experimental-native-v6-ha"))]
     let process = heptabao_server::ha::HaProcess::start_with_storage(ha_config, &config)?;
     #[cfg(feature = "experimental-native-v6-ha")]

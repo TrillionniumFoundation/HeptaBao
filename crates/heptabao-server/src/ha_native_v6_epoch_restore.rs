@@ -170,10 +170,7 @@ impl PendingOwner<'_> {
             .node
             .as_ref()
             .ok_or("HA process is shut down")?;
-        let fresh = self
-            .process
-            .runtime
-            .block_on(node.native_v6_epoch_restore_read(
+        let fresh = self.process.block_on_observed(node.native_v6_epoch_restore_read(
                 self.initial.operation_digest(),
                 self.deadline.instant(),
             ))
@@ -181,9 +178,7 @@ impl PendingOwner<'_> {
         if !self.initial.same_transition(&fresh) || fresh.leader_id() != node.id() {
             return Err("native epoch restore original pending operation changed".into());
         }
-        self.process
-            .runtime
-            .block_on(node.verify_native_v6_epoch_restore_read(&fresh))
+        self.process.block_on_observed(node.verify_native_v6_epoch_restore_read(&fresh))
             .map_err(|error| error.to_string())?;
         self.deadline.check().map_err(|error| error.to_string())?;
         Ok(fresh)
@@ -202,9 +197,7 @@ impl PendingOwner<'_> {
             self.active = Some(self.fresh_same().map_err(|_| NativeV6CodecError::Gate)?);
         }
         let node = self.process.node.as_ref().ok_or(NativeV6CodecError::Gate)?;
-        self.process
-            .runtime
-            .block_on(
+        self.process.block_on_observed(
                 node.verify_native_v6_epoch_restore_read(
                     self.active.as_ref().unwrap_or(&self.initial),
                 ),
@@ -247,9 +240,7 @@ impl HaProcess {
             .fresh_for_epoch_restore(self)
             .map_err(|error| stopped(error.to_string()))?;
         let (selected, outcome) = if operation.is_none() {
-            let pending = self
-                .runtime
-                .block_on(node.native_v6_pending_epoch_restore_operation(&selected))
+            let pending = self.block_on_observed(node.native_v6_pending_epoch_restore_operation(&selected))
                 .map_err(|error| stopped(error.to_string()))?;
             let outcome = match pending {
                 Some(operation) => NativeHaPendingRestoreOutcome::Pending(operation),
@@ -263,9 +254,7 @@ impl HaProcess {
         {
             (selected, NativeHaPendingRestoreOutcome::Committed)
         } else {
-            match self
-                .runtime
-                .block_on(node.native_v6_pending_epoch_restore_operation(&selected))
+            match self.block_on_observed(node.native_v6_pending_epoch_restore_operation(&selected))
                 .map_err(|error| stopped(error.to_string()))?
             {
                 None => (selected, NativeHaPendingRestoreOutcome::NotPending),
@@ -274,8 +263,7 @@ impl HaProcess {
                 }
                 Some(pending_operation) => {
                     let pending =
-                        self.runtime
-                            .block_on(node.native_v6_epoch_restore_read(
+                        self.block_on_observed(node.native_v6_epoch_restore_read(
                                 pending_operation,
                                 deadline.instant(),
                             ))
@@ -290,23 +278,18 @@ impl HaProcess {
                             "pending cancellation changed original source custody".into(),
                         ));
                     }
-                    let serial = self
-                        .runtime
-                        .block_on(node.next_production_client_serial())
+                    let serial = self.block_on_observed(node.next_production_client_serial())
                         .map_err(|error| stopped(error.to_string()))?;
                     original(deadline, original_gate)
                         .map_err(|error| stopped(error.to_string()))?;
-                    self.runtime
-                        .block_on(node.cancel_native_v6_epoch_restore(serial, &pending))
+                    self.block_on_observed(node.cancel_native_v6_epoch_restore(serial, &pending))
                         .map_err(|error| stopped(error.to_string()))?;
                     original(deadline, original_gate)
                         .map_err(|error| stopped(error.to_string()))?;
                     // Own cancellation changes applied generation. Retire both
                     // old witnesses; only a new actual read of the unchanged
                     // complete source under the original leader/term may pass.
-                    let fresh = self
-                        .runtime
-                        .block_on(node.native_v6_committed_root_read(deadline.instant()))
+                    let fresh = self.block_on_observed(node.native_v6_committed_root_read(deadline.instant()))
                         .map_err(|error| stopped(error.to_string()))?
                         .ok_or_else(|| {
                             stopped("native source absent after pending cancellation".into())
@@ -321,9 +304,7 @@ impl HaProcess {
                             "native source changed after pending cancellation".into(),
                         ));
                     }
-                    if self
-                        .runtime
-                        .block_on(node.native_v6_pending_epoch_restore_operation(&fresh))
+                    if self.block_on_observed(node.native_v6_pending_epoch_restore_operation(&fresh))
                         .map_err(|error| stopped(error.to_string()))?
                         .is_some()
                     {
@@ -356,9 +337,7 @@ impl HaProcess {
     ) -> Result<Option<[u8; 32]>, String> {
         self.verify_native_v6_committed_read(read)?;
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
-        let operation = self
-            .runtime
-            .block_on(node.native_v6_pending_epoch_restore_operation(&read.selected))
+        let operation = self.block_on_observed(node.native_v6_pending_epoch_restore_operation(&read.selected))
             .map_err(|error| error.to_string())?;
         self.verify_native_v6_committed_read(read)?;
         Ok(operation)
@@ -427,14 +406,10 @@ impl HaProcess {
         };
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let phase = EpochRestorePhaseTimer::start("historical_epoch_begin", deadline);
-        let begin_serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let begin_serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(|error| before(error.to_string()))?;
         original(deadline, original_gate).map_err(|error| before(error.to_string()))?;
-        let pending = self
-            .runtime
-            .block_on(node.begin_native_v6_epoch_restore(
+        let pending = self.block_on_observed(node.begin_native_v6_epoch_restore(
                 begin_serial,
                 &selected,
                 operation,
@@ -555,18 +530,14 @@ impl HaProcess {
                     .check()
             })
             .map_err(|error| stopped(error.to_string()))?;
-        let serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(|error| stopped(error.to_string()))?;
         original(deadline, original_gate).map_err(|error| stopped(error.to_string()))?;
         owner
             .borrow_mut()
             .check()
             .map_err(|error| stopped(error.to_string()))?;
-        let intent_receipt = self
-            .runtime
-            .block_on(with_read_index_deadline(deadline.instant(), async {
+        let intent_receipt = self.block_on_observed(with_read_index_deadline(deadline.instant(), async {
                 tokio::time::timeout_at(
                     tokio::time::Instant::from_std(deadline.instant()),
                     node.stage_application_object(serial, &object),
@@ -588,8 +559,7 @@ impl HaProcess {
                 "native restore Stage original provenance differs".into(),
             ));
         }
-        self.runtime
-            .block_on(with_read_index_deadline(
+        self.block_on_observed(with_read_index_deadline(
                 deadline.instant(),
                 node.reconcile_exact_staged_v6_intent(&intent, &intent_receipt),
             ))
@@ -635,12 +605,9 @@ impl HaProcess {
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let phase = EpochRestorePhaseTimer::start("historical_epoch_pre_root_proof", deadline);
         let selected_pending = owner.borrow().fresh_same().map_err(stopped)?;
-        let root_serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let root_serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(|error| stopped(error.to_string()))?;
-        self.runtime
-            .block_on(with_read_index_deadline(
+        self.block_on_observed(with_read_index_deadline(
                 deadline.instant(),
                 quorum.verify_for_publication(node),
             ))
@@ -656,9 +623,7 @@ impl HaProcess {
         // Never retry an attempted epoch/root CAS, including engine rejection.
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let phase = EpochRestorePhaseTimer::start("historical_epoch_root_cas", deadline);
-        let published = self
-            .runtime
-            .block_on(node.publish_native_v6_epoch_restore(
+        let published = self.block_on_observed(node.publish_native_v6_epoch_restore(
                 root_serial,
                 &selected_pending,
                 &intent_receipt,

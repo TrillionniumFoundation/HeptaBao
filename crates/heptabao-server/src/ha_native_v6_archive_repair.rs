@@ -79,9 +79,7 @@ impl NativeV6ArchiveRootAnchor {
         if !Arc::ptr_eq(&self.instance, &native.identity) {
             return Err(NativeV6ArchiveError::WrongSelection);
         }
-        let fresh = process
-            .runtime
-            .block_on(node.native_v6_committed_root_read(self.deadline.instant()))
+        let fresh = process.block_on_observed(node.native_v6_committed_root_read(self.deadline.instant()))
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
         if !fresh.same_selection(&self.selected)
@@ -93,9 +91,7 @@ impl NativeV6ArchiveRootAnchor {
         native
             .validate_enrollment(&process.codec, fresh.enrollment())
             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
-        process
-            .runtime
-            .block_on(node.verify_native_v6_committed_root_read(&fresh))
+        process.block_on_observed(node.verify_native_v6_committed_root_read(&fresh))
             .map_err(|_| NativeV6ArchiveError::Gate)?;
         original_operation(self.deadline)?;
         Ok(fresh)
@@ -139,10 +135,7 @@ impl<G: FnMut(&NativeV6PeerEnrollment, &NativeV6PublishedRoot) -> ArchiveResult<
             .node
             .as_ref()
             .ok_or(NativeV6ArchiveError::Gate)?;
-        let fresh = self
-            .process
-            .runtime
-            .block_on(node.native_v6_committed_root_read(self.deadline.instant()))
+        let fresh = self.process.block_on_observed(node.native_v6_committed_root_read(self.deadline.instant()))
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
         if !fresh.same_selection(&self.initial)
@@ -153,9 +146,7 @@ impl<G: FnMut(&NativeV6PeerEnrollment, &NativeV6PublishedRoot) -> ArchiveResult<
         self.native
             .validate_enrollment(&self.process.codec, fresh.enrollment())
             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
-        self.process
-            .runtime
-            .block_on(node.verify_native_v6_committed_root_read(&fresh))
+        self.process.block_on_observed(node.verify_native_v6_committed_root_read(&fresh))
             .map_err(|_| NativeV6ArchiveError::Gate)?;
         self.owner()?;
         Ok(fresh)
@@ -187,9 +178,7 @@ impl<G: FnMut(&NativeV6PeerEnrollment, &NativeV6PublishedRoot) -> ArchiveResult<
             .node
             .as_ref()
             .ok_or(NativeV6ArchiveError::Gate)?;
-        self.process
-            .runtime
-            .block_on(node.verify_native_v6_committed_root_read(selected))
+        self.process.block_on_observed(node.verify_native_v6_committed_root_read(selected))
             .map_err(|_| NativeV6ArchiveError::Gate)?;
         self.owner()
     }
@@ -237,9 +226,7 @@ impl HaProcess {
             .filter(|native| native.enabled())
             .ok_or(NativeV6ArchiveError::Gate)?;
         let node = self.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
-        let initial = self
-            .runtime
-            .block_on(node.native_v6_committed_root_read(deadline.instant()))
+        let initial = self.block_on_observed(node.native_v6_committed_root_read(deadline.instant()))
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
         native
@@ -346,9 +333,7 @@ impl HaProcess {
             .filter(|native| native.enabled())
             .ok_or(NativeV6ArchiveError::Gate)?;
         let node = self.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
-        let initial = self
-            .runtime
-            .block_on(node.native_v6_committed_root_read(deadline.instant()))
+        let initial = self.block_on_observed(node.native_v6_committed_root_read(deadline.instant()))
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
         if initial.operation_deadline() != deadline.instant() {

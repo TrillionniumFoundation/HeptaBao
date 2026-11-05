@@ -127,6 +127,7 @@ impl RemoteNetworkFactory {
         leader: u64,
         term: u64,
         remaining: Duration,
+        observation: &mut Option<crate::read_index_observation::Attempt>,
     ) -> Result<super::follower_read::ReadIndexWitness, RemoteRaftError> {
         use super::follower_read::{ReadIndexFailure, ReadIndexRequest, ReadIndexWitness};
         if leader == self.local_id || !self.peers.contains(&leader) || remaining.is_zero() {
@@ -138,6 +139,9 @@ impl RemoteNetworkFactory {
                 value.checked_add(1)
             })
             .map_err(|_| RemoteRaftError::InvalidRpc)?;
+        if let Some(observation)=observation.as_mut() {
+            observation.rpc(self.local_id,leader,request_id);
+        }
         let budget_ms =
             u64::try_from(remaining.as_millis()).map_err(|_| RemoteRaftError::InvalidRpc)?;
         if budget_ms == 0 {
@@ -161,14 +165,35 @@ impl RemoteNetworkFactory {
                 payload,
                 remaining,
             )
-            .await?;
+            .await.map_err(|error| {
+                if let Some(observation)=observation.as_mut() {
+                    observation.failure_stage(crate::read_index_observation::Outcome::RpcTransport);
+                }
+                error
+            })?;
         if response.is_empty() || response.len() > 4096 {
+            if let Some(observation)=observation.as_mut() {
+                observation.failure_stage(crate::read_index_observation::Outcome::RpcDecode);
+            }
             return Err(RemoteRaftError::InvalidRpc);
         }
         let witness: Result<ReadIndexWitness, ReadIndexFailure> =
-            serde_json::from_slice(&response).map_err(|_| RemoteRaftError::InvalidRpc)?;
-        let witness = witness.map_err(ReadIndexFailure::remote)?;
+            serde_json::from_slice(&response).map_err(|_| {
+                if let Some(observation)=observation.as_mut() {
+                    observation.failure_stage(crate::read_index_observation::Outcome::RpcDecode);
+                }
+                RemoteRaftError::InvalidRpc
+            })?;
+        let witness = witness.map_err(|failure| {
+            if let Some(observation)=observation.as_mut() {
+                observation.failure_stage(failure.observation());
+            }
+            failure.remote()
+        })?;
         if witness.request_id != request_id || witness.leader != leader || witness.term != term {
+            if let Some(observation)=observation.as_mut() {
+                observation.failure_stage(crate::read_index_observation::Outcome::RpcDecode);
+            }
             return Err(RemoteRaftError::InvalidRpc);
         }
         Ok(witness)
@@ -492,7 +517,7 @@ impl RaftRpcService {
             return Err(RemoteRaftError::InvalidRpc);
         }
         match kind {
-            RaftRpcKind::ReadIndex => self.handle_read_index(payload).await,
+            RaftRpcKind::ReadIndex => self.handle_read_index(source, payload).await,
             RaftRpcKind::AppendEntries => {
                 let request =
                     serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;

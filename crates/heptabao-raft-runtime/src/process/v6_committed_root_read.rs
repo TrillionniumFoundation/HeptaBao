@@ -26,6 +26,23 @@ impl std::fmt::Debug for NativeV6CommittedRootRead {
 }
 
 impl NativeV6CommittedRootRead {
+    fn observe_selected(&self,stage:u8) {
+        if let Some(observation)=self.witness.observation_id.as_ref() {
+            observation.selected(self.witness.generation,self.witness.applied_log,
+                Some((self.root.generation(),self.enrollment.epoch(),self.root.publication_log_id())),stage);
+        }
+    }
+    /// Diagnostic side effect only; called after the server's original final
+    /// closure/witness/deadline verification, never used as read authority.
+    pub fn observe_service_read_verified(&self) { self.observe_selected(4); }
+    /// Diagnostic side effect only; the original native local-root proof must
+    /// have already passed its existing warm owner/cursor/consensus checks.
+    pub fn observe_service_payload_proof_checked(&self) { self.observe_selected(8); }
+    /// An opaque, nonpersistent correlation reference. It cannot be compared,
+    /// serialized, or supplied to any application authority API.
+    pub fn read_observation_identity(&self)->Option<crate::read_index_observation::ReadIdentity> {
+        self.witness.observation_id.clone()
+    }
     pub fn enrollment(&self) -> &NativeV6PeerEnrollment {
         &self.enrollment
     }
@@ -264,11 +281,13 @@ impl ProcessRaftNode {
         &self,
         selected: &NativeV6CommittedRootRead,
     ) -> Result<(), RemoteRaftError> {
-        super::super::with_read_index_deadline(selected.operation_deadline, async {
+        let result=super::super::with_read_index_deadline(selected.operation_deadline, async {
             self.verify_application_read_witness(&selected.witness)
                 .await
         })
-        .await
+        .await;
+        if result.is_ok() { selected.observe_selected(2); }
+        result
     }
 
     /// Return the retained V5 predecessor selected by this exact native root.

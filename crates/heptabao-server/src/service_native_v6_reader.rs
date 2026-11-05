@@ -411,6 +411,14 @@ pub(super) enum NativeProof {
     Ha(Box<super::native_v6_ha_install::NativeHaReadProof>),
 }
 impl NativeProof {
+    pub(super) fn read_observation_identity(&self)
+        -> Option<heptabao_raft_runtime::read_index_observation::ReadIdentity> {
+        match self {
+            Self::Single(_)=>None,
+            #[cfg(feature="native-v6-ha")]
+            Self::Ha(proof)=>proof.read_observation_identity(),
+        }
+    }
     pub(super) fn is_cold_handoff(&self) -> bool {
         match self {
             Self::Single(proof) => proof.permit.handoff_source_session.is_some(),

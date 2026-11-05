@@ -32,9 +32,7 @@ impl HaProcess {
     ) -> Result<NativeV6MigrationSource<'a>, String> {
         self.verify_native_v6_committed_read(selected)?;
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
-        let published = self
-            .runtime
-            .block_on(node.native_v6_retained_migration_source(&selected.selected))
+        let published = self.block_on_observed(node.native_v6_retained_migration_source(&selected.selected))
             .map_err(|error| error.to_string())?;
         let envelope = published.envelope();
         let CommittedStateDescriptor::RecordsV5(decoded) = self

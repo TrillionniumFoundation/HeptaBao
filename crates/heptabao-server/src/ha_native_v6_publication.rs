@@ -221,8 +221,7 @@ impl HaProcess {
             .as_ref()
             .filter(|native| native.enabled())
             .ok_or("native HA was not explicitly enabled")?;
-        self.runtime
-            .block_on(with_read_index_deadline(deadline.instant(), async {
+        self.block_on_observed(with_read_index_deadline(deadline.instant(), async {
                 let (witness, enrollment, root) = node
                     .native_v6_application_read_witness(deadline.instant())
                     .await
@@ -459,15 +458,11 @@ impl HaProcess {
             Some(enrollment) => enrollment,
             None if matches!(source, PublicationSource::V5 { .. }) => {
                 original(deadline, original_gate).map_err(before)?;
-                let serial = self
-                    .runtime
-                    .block_on(node.next_production_client_serial())
+                let serial = self.block_on_observed(node.next_production_client_serial())
                     .map_err(before)?;
                 // A partial first enrollment is an explicit pre-root failure.
                 // It is never replayed internally under a fresh serial.
-                let enrollment = self
-                    .runtime
-                    .block_on(with_read_index_deadline(
+                let enrollment = self.block_on_observed(with_read_index_deadline(
                         deadline.instant(),
                         node.enroll_native_v6_peers(
                             serial,
@@ -596,14 +591,10 @@ impl HaProcess {
         original(deadline, original_gate).map_err(before)?;
         self.check_native_publication_source(expected, epoch, deadline, &source, &enrollment, term)
             .map_err(before)?;
-        let serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(before)?;
         original(deadline, original_gate).map_err(before)?;
-        let intent_receipt = self
-            .runtime
-            .block_on(with_read_index_deadline(deadline.instant(), async {
+        let intent_receipt = self.block_on_observed(with_read_index_deadline(deadline.instant(), async {
                 tokio::time::timeout_at(
                     tokio::time::Instant::from_std(deadline.instant()),
                     node.stage_application_object(serial, &object),
@@ -640,15 +631,12 @@ impl HaProcess {
         let admission_until = after_stage
             .checkpoint_read_until
             .unwrap_or(deadline.instant());
-        self.runtime
-            .block_on(with_read_index_deadline(
+        self.block_on_observed(with_read_index_deadline(
                 admission_until,
                 node.reconcile_exact_staged_v6_intent(&intent, &intent_receipt),
             ))
             .map_err(before)?;
-        let admission = self
-            .runtime
-            .block_on(with_read_index_deadline(
+        let admission = self.block_on_observed(with_read_index_deadline(
                 admission_until,
                 node.admit_native_v6_closure(&intent, admission_until),
             ))
@@ -699,12 +687,9 @@ impl HaProcess {
         }
         self.check_native_publication_source(expected, epoch, deadline, &source, &enrollment, term)
             .map_err(before)?;
-        let root_serial = self
-            .runtime
-            .block_on(node.next_production_client_serial())
+        let root_serial = self.block_on_observed(node.next_production_client_serial())
             .map_err(before)?;
-        self.runtime
-            .block_on(with_read_index_deadline(
+        self.block_on_observed(with_read_index_deadline(
                 deadline.instant(),
                 quorum.verify_for_publication(node),
             ))
@@ -733,7 +718,7 @@ impl HaProcess {
         );
         #[cfg(test)]
         checkpoint_reselection_probe::record_root_call(self).map_err(before)?;
-        let published = match self.runtime.block_on(node.publish_native_v6_root(
+        let published = match self.block_on_observed(node.publish_native_v6_root(
             root_serial,
             recovery.intent(),
             &recovery.intent_receipt,

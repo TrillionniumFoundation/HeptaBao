@@ -4,6 +4,7 @@
 use super::network::{RaftRpcService, RemoteRaftError};
 use super::node::{MAX_READ_INDEX_WAIT, ProcessRaftNode, READ_INDEX_TIMEOUT};
 use crate::network::DurableRaft;
+use crate::read_index_observation::{Attempt, Outcome};
 use crate::state_machine::TypeConfig;
 use openraft::async_runtime::WatchReceiver;
 use openraft::raft::linearizable_read::{Linearizer, ReadLogId};
@@ -30,6 +31,8 @@ pub(super) struct ReadIndexWitness {
     pub request_id: u64,
     pub read_log_id: LogIdOf<TypeConfig>,
     pub leader_applied: LogIdOf<TypeConfig>,
+    #[serde(skip)]
+    pub observation_id: Option<crate::read_index_observation::ReadIdentity>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -40,6 +43,13 @@ pub(super) enum ReadIndexFailure {
 }
 
 impl ReadIndexFailure {
+    pub(super) fn observation(&self) -> Outcome {
+        match self {
+            Self::NotLeader => Outcome::NotLeader,
+            Self::Deadline => Outcome::Deadline,
+            Self::Unavailable => Outcome::Unavailable,
+        }
+    }
     pub(super) fn remote(self) -> RemoteRaftError {
         RemoteRaftError::Consensus(
             match self {
@@ -95,6 +105,22 @@ async fn leader_witness(
     raft: &DurableRaft,
     request: &ReadIndexRequest,
     deadline: Instant,
+    observation: &mut Option<Attempt>,
+) -> Result<ReadIndexWitness, ReadIndexFailure> {
+    let result=leader_witness_inner(raft,request,deadline,observation).await;
+    if let Err(failure)=&result
+        && let Some(observation)=observation.as_mut()
+    {
+        observation.failure_stage(failure.observation());
+    }
+    result
+}
+
+async fn leader_witness_inner(
+    raft: &DurableRaft,
+    request: &ReadIndexRequest,
+    deadline: Instant,
+    observation: &mut Option<Attempt>,
 ) -> Result<ReadIndexWitness, ReadIndexFailure> {
     if !bound(raft, request.leader, request.term, true) {
         return Err(ReadIndexFailure::NotLeader);
@@ -102,9 +128,11 @@ async fn leader_witness(
     loop {
         #[cfg(test)]
         record_leader_read("first-api-before", raft);
-        let result =
-            tokio::time::timeout_at(deadline, raft.ensure_linearizable(ReadPolicy::ReadIndex))
-                .await;
+        let result = tokio::time::timeout_at(deadline, async {
+            // Count only when this original future is actually polled.
+            if let Some(observation)=observation.as_mut() { observation.policy_entered(); }
+            raft.ensure_linearizable(ReadPolicy::ReadIndex).await
+        }).await;
         #[cfg(test)]
         {
             record_leader_read("first-api-after", raft);
@@ -190,6 +218,7 @@ async fn leader_witness(
                     request_id: request.request_id,
                     read_log_id: log,
                     leader_applied: applied,
+        observation_id: None,
                 });
             }
             Ok(Err(openraft::errors::RaftError::APIError(
@@ -211,6 +240,7 @@ async fn leader_witness(
 impl RaftRpcService {
     pub(super) async fn handle_read_index(
         &self,
+        source: u64,
         payload: Vec<u8>,
     ) -> Result<Vec<u8>, RemoteRaftError> {
         if payload.len() > 4096 {
@@ -228,7 +258,23 @@ impl RaftRpcService {
         let deadline = Instant::now() + Duration::from_millis(request.budget_ms);
         let deadline = super::read_deadline::current()
             .map_or(deadline, |outer| deadline.min(Instant::from_std(outer)));
-        let result = leader_witness(&self.raft, &request, deadline).await;
+        // network::handle already admitted this authenticated member source.
+        // No wire field, retry or deadline is added by this diagnostic.
+        let mut observation=Attempt::peer(self.local_id,source,deadline.into_std());
+        if let Some(observation)=observation.as_mut() {
+            observation.bind(request.leader,request.term);
+            observation.rpc(source,self.local_id,request.request_id);
+        }
+        let result = leader_witness(&self.raft, &request, deadline,&mut observation).await;
+        if let Some(observation)=observation.as_mut() {
+            match &result {
+                Ok(witness)=>{
+                    observation.applied(witness.read_log_id,witness.leader_applied,witness.leader_applied,None);
+                    observation.finish(Outcome::Success);
+                }
+                Err(failure)=>observation.finish_error(failure.observation()),
+            }
+        }
         serde_json::to_vec(&result).map_err(|_| RemoteRaftError::InvalidRpc)
     }
 }
@@ -240,17 +286,47 @@ pub(super) async fn ensure_node_read(
     ensure_node_read_witness(node, deadline).await.map(|_| ())
 }
 
-pub(super) async fn ensure_node_read_witness(
+pub(super) fn ensure_node_read_witness(
     node: &ProcessRaftNode,
     deadline: Instant,
+) -> impl std::future::Future<Output=Result<ReadIndexWitness,RemoteRaftError>> + '_ {
+    // Capture at this actual gate call, including synchronous Handle::block_on
+    // closure recovery; the resulting future retains only this HTTP scope.
+    let collector=crate::read_index_observation::capture_collector();
+    crate::read_index_observation::scope(collector,async move {
+        let mut observation=Attempt::local(node.id,deadline.into_std());
+        let mut result=ensure_node_read_witness_inner(node,deadline,&mut observation).await;
+        if let Some(observation)=observation.as_mut() {
+            if let Ok(witness)=result.as_mut() {
+                witness.observation_id=observation.identity();
+                observation.finish(Outcome::Success);
+            } else if Instant::now()>=deadline {
+                observation.finish(Outcome::Deadline);
+            } else {
+                observation.finish_error(Outcome::Unavailable);
+            }
+        }
+        result
+    })
+}
+
+async fn ensure_node_read_witness_inner(
+    node: &ProcessRaftNode,
+    deadline: Instant,
+    observation:&mut Option<Attempt>,
 ) -> Result<ReadIndexWitness, RemoteRaftError> {
     let receiver = node.raft.metrics();
     let (leader, term) = {
         let metrics = receiver.borrow_watched();
         (metrics.current_leader, metrics.current_term)
     };
-    let leader = leader.ok_or_else(|| ReadIndexFailure::NotLeader.remote())?;
+    let leader = leader.ok_or_else(|| {
+        if let Some(observation)=observation.as_mut() { observation.failure_stage(Outcome::NotLeader); }
+        ReadIndexFailure::NotLeader.remote()
+    })?;
+    if let Some(observation)=observation.as_mut() { observation.bind(leader,term); }
     if !bound(&node.raft, leader, term, leader == node.id) {
+        if let Some(observation)=observation.as_mut() { observation.failure_stage(Outcome::NotLeader); }
         return Err(ReadIndexFailure::NotLeader.remote());
     }
     if leader == node.id {
@@ -260,9 +336,13 @@ pub(super) async fn ensure_node_read_witness(
             request_id: 0,
             budget_ms: 8000,
         };
-        leader_witness(&node.raft, &request, deadline)
+        let witness=leader_witness(&node.raft, &request, deadline,observation)
             .await
-            .map_err(ReadIndexFailure::remote)
+            .map_err(ReadIndexFailure::remote)?;
+        if let Some(observation)=observation.as_mut() {
+            observation.applied(witness.read_log_id,witness.leader_applied,witness.leader_applied,None);
+        }
+        Ok(witness)
     } else {
         let operation = async {
             let remaining = deadline
@@ -270,13 +350,14 @@ pub(super) async fn ensure_node_read_witness(
                 .ok_or_else(|| ReadIndexFailure::Deadline.remote())?;
             let witness = node
                 .peer_network
-                .read_index(leader, term, remaining.min(MAX_READ_INDEX_WAIT))
+                .read_index(leader, term, remaining.min(MAX_READ_INDEX_WAIT), observation)
                 .await?;
             if !bound(&node.raft, leader, term, false)
                 || witness.read_log_id.committed_leader_id().node_id != leader
                 || witness.read_log_id.committed_leader_id().term != term
                 || witness.leader_applied < witness.read_log_id
             {
+                if let Some(observation)=observation.as_mut() { observation.failure_stage(Outcome::NotLeader); }
                 return Err(ReadIndexFailure::NotLeader.remote());
             }
             // Never use the remote applied value for local readiness. OpenRaft
@@ -294,10 +375,21 @@ pub(super) async fn ensure_node_read_witness(
                 || local.read_log_id().log_id() != &witness.read_log_id
                 || local.applied() < Some(&witness.read_log_id)
                 || !bound(&node.raft, leader, term, false)
-                || node.state_machine.last_applied_log_index().await
-                    < Some(witness.read_log_id.index())
             {
+                if let Some(observation)=observation.as_mut() { observation.failure_stage(Outcome::NotLeader); }
                 return Err(ReadIndexFailure::NotLeader.remote());
+            }
+            // Preserve the original short-circuit order and the same single
+            // state-machine observation; this is not an extra readiness read.
+            let state_applied=node.state_machine.last_applied_log_index().await;
+            if state_applied < Some(witness.read_log_id.index()) {
+                if let Some(observation)=observation.as_mut() { observation.failure_stage(Outcome::NotLeader); }
+                return Err(ReadIndexFailure::NotLeader.remote());
+            }
+            if let Some(observation)=observation.as_mut()
+                && let Some(applied)=local.applied()
+            {
+                observation.applied(witness.read_log_id,witness.leader_applied,*applied,state_applied);
             }
             Ok(witness)
         };

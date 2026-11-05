@@ -512,6 +512,10 @@ impl<'a> BorrowedNativeHaReadProof<'a> {
 }
 
 impl NativeHaReadProof {
+    pub(in crate::service) fn read_observation_identity(&self)
+        -> Option<heptabao_raft_runtime::read_index_observation::ReadIdentity> {
+        self.committed.read_observation_identity()
+    }
     pub(crate) fn generation(&self) -> u64 {
         self.selected.initial_generation
     }
@@ -593,7 +597,9 @@ impl NativeHaReadProof {
         process
             .verify_native_v6_committed_read(&self.committed)
             .map_err(|_| unavailable())?;
-        self.check_instance(service)
+        let result=self.check_instance(service);
+        if result.is_ok() { self.committed.observe_payload_proof_checked(); }
+        result
     }
     pub(in crate::service) fn check_with(
         &self,

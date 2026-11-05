@@ -70,6 +70,8 @@ pub struct ApplicationReadWitness {
     term: u64,
     read_log: openraft::type_config::alias::LogIdOf<crate::state_machine::TypeConfig>,
     applied_log: openraft::type_config::alias::LogIdOf<crate::state_machine::TypeConfig>,
+    // Diagnostic-only weak reference; excluded from every existing authority relation.
+    observation_id: Option<crate::read_index_observation::ReadIdentity>,
 }
 
 /// An authenticated application's completed snapshot belongs to this actual
@@ -1002,8 +1004,13 @@ impl ProcessRaftNode {
                 term: read.term,
                 read_log: read.read_log_id,
                 applied_log: applied,
+                observation_id: read.observation_id,
             };
             self.verify_application_read_witness(&witness).await?;
+            if let Some(observation)=witness.observation_id.as_ref() {
+                observation.selected(generation,applied,root.as_ref().map(|root|
+                    (root.generation(),root.intent().epoch,root.publication_log_id())),1);
+            }
             Ok((witness, enrollment, root))
         })
         .await
@@ -1217,10 +1224,14 @@ impl ProcessRaftNode {
             term: read.term,
             read_log: read.read_log_id,
             applied_log: applied,
+            observation_id: read.observation_id,
         };
         // An activation/apply after the atomic selection invalidates this same
         // generation. Callers retain their existing final witness recheck too.
         self.verify_application_read_witness(&witness).await?;
+        if let Some(observation)=witness.observation_id.as_ref() {
+            observation.selected(generation,applied,None,1);
+        }
         Ok((witness, envelope, root))
     }
 
@@ -1228,6 +1239,17 @@ impl ProcessRaftNode {
     /// ReadIndex bound. Validate its same live store, generation and term under
     /// that bound, even if the application has entered a later request scope.
     pub async fn verify_application_read_witness(
+        &self,
+        witness: &ApplicationReadWitness,
+    ) -> Result<(), RemoteRaftError> {
+        let result=self.verify_application_read_witness_unobserved(witness).await;
+        if let Some(observation)=witness.observation_id.as_ref() {
+            observation.verified(witness.generation,witness.applied_log,result.is_ok());
+        }
+        result
+    }
+
+    async fn verify_application_read_witness_unobserved(
         &self,
         witness: &ApplicationReadWitness,
     ) -> Result<(), RemoteRaftError> {

@@ -148,9 +148,13 @@ async fn exchange(
 ) -> Result<(), ()> {
     let (parts, mut body) = request.into_parts();
     let attempt = crypto::random::<16>().map_err(|_| ())?;
+    let read_observation=read_index_observation::Owner::new(&attempt,"http2",deadline);
+    let observation=read_observation.handle();
     if limited {
         let service = Arc::clone(&context.service);
+        let worker_observation=observation.clone();
         let response = tokio::task::spawn_blocking(move || {
+            let _scope=worker_observation.enter_thread();
             audited_wire_rejection(
                 &service,
                 &attempt,
@@ -168,6 +172,7 @@ async fn exchange(
             false,
             "",
             deadline,
+            &observation,
         )
         .await;
     }
@@ -177,7 +182,9 @@ async fn exchange(
     // before reading any DATA rather than expanding that unauthenticated cap.
     if path == "/v1/sys/migration/openbao/kv2/native-large" {
         let service = Arc::clone(&context.service);
+        let worker_observation=observation.clone();
         let response = tokio::task::spawn_blocking(move || {
+            let _scope=worker_observation.enter_thread();
             audited_wire_rejection(
                 &service,
                 &attempt,
@@ -195,6 +202,7 @@ async fn exchange(
             false,
             "",
             deadline,
+            &observation,
         )
         .await;
     }
@@ -222,7 +230,9 @@ async fn exchange(
             .is_none_or(|size| size > maximum)
         {
             let service = Arc::clone(&context.service);
+            let worker_observation=observation.clone();
             let response = tokio::task::spawn_blocking(move || {
+                let _scope=worker_observation.enter_thread();
                 audited_wire_rejection(
                     &service,
                     &attempt,
@@ -240,6 +250,7 @@ async fn exchange(
                 false,
                 "",
                 deadline,
+                &observation,
             )
             .await;
         }
@@ -249,8 +260,10 @@ async fn exchange(
             .map_err(|_| ())?;
     }
     let wire = request_wire(&parts, &payload);
+    let worker_observation=observation.clone();
     let reply = tokio::task::spawn_blocking(move || {
         run_unentered_service_worker(deadline, move || {
+            let _scope=worker_observation.enter_thread();
             let (wire, rejection) = match wire {
                 Ok(wire) => (wire, None),
                 Err(error) => (Zeroizing::new(Vec::new()), Some(error)),
@@ -280,7 +293,7 @@ async fn exchange(
     })
     .await
     .map_err(|_| ())??;
-    send_reply(sender, reply.0, reply.1, &reply.2, deadline).await
+    send_reply(sender, reply.0, reply.1, &reply.2, deadline, &observation).await
 }
 
 fn request_wire(
@@ -359,41 +372,41 @@ async fn send_reply(
     head: bool,
     namespace: &str,
     deadline: Instant,
+    observation: &read_index_observation::Handle,
 ) -> Result<(), ()> {
-    if Instant::now() >= deadline {
-        return Err(());
-    }
-    let mut wire = Zeroizing::new(Vec::new());
-    reply
-        .write_with_namespace(&mut *wire, head, namespace)
-        .map_err(|_| ())?;
-    let (response, payload) = response_frames(wire)?;
-    let mut output = sender
-        .send_response(response, payload.is_empty())
-        .map_err(|_| ())?;
-    let bytes = Bytes::from_owner(payload);
-    let mut offset = 0;
-    while offset < bytes.len() {
-        if Instant::now() >= deadline {
-            return Err(());
+    let mut status=None;
+    let mut accepted=0_u64;
+    let result=async {
+        if Instant::now() >= deadline { return Err(()); }
+        let (response,payload)={
+            // The same HTTP/1 encoder accounts for the checked 12-KiB header
+            // allowance. Retire this thread-bound guard before any await.
+            let _scope=observation.enter_thread();
+            let mut wire=Zeroizing::new(Vec::new());
+            reply.write_with_namespace(&mut *wire,head,namespace).map_err(|_|())?;
+            response_frames(wire)?
+        };
+        status=Some(response.status().as_u16());
+        let mut output=sender.send_response(response,payload.is_empty()).map_err(|_|())?;
+        let bytes=Bytes::from_owner(payload);
+        let mut offset=0;
+        while offset<bytes.len() {
+            if Instant::now()>=deadline { return Err(()); }
+            let requested=DATA_CHUNK.min(bytes.len()-offset);
+            output.reserve_capacity(requested);
+            let capacity=poll_fn(|cx|output.poll_capacity(cx)).await.ok_or(())?.map_err(|_|())?;
+            if capacity==0 { continue; }
+            let count=requested.min(capacity);
+            let end=offset+count;
+            output.send_data(bytes.slice(offset..end),end==bytes.len()).map_err(|_|())?;
+            offset=end;
+            accepted=offset as u64;
         }
-        let requested = DATA_CHUNK.min(bytes.len() - offset);
-        output.reserve_capacity(requested);
-        let capacity = poll_fn(|cx| output.poll_capacity(cx))
-            .await
-            .ok_or(())?
-            .map_err(|_| ())?;
-        if capacity == 0 {
-            continue;
-        }
-        let count = requested.min(capacity);
-        let end = offset + count;
-        output
-            .send_data(bytes.slice(offset..end), end == bytes.len())
-            .map_err(|_| ())?;
-        offset = end;
-    }
-    Ok(())
+        Ok(())
+    }.await;
+    // These are accepted H2 DATA bytes, not TLS delivery or a client ACK.
+    observation.finish(if result.is_ok() {"complete"} else {"failed"},status,accepted,false);
+    result
 }
 
 fn response_frames(

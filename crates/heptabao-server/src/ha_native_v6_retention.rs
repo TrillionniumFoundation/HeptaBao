@@ -125,9 +125,7 @@ impl NativeHaPreparedIntentRetirement<'_> {
         {
             return Err(denied());
         }
-        self.process
-            .runtime
-            .block_on(node.verify_native_v6_prepared_intent_retirement(&self.prepared))
+        self.process.block_on_observed(node.verify_native_v6_prepared_intent_retirement(&self.prepared))
             .map_err(|_| denied())?;
         self.deadline.check().map_err(|_| denied())
     }
@@ -143,10 +141,7 @@ impl<'a> NativeHaPreparedIntentRetirement<'a> {
         let data = self.prepared.recovery().clone(); // DATA, never a reconstructed submission owner
         let expected_digest = data.command_digest().map_err(|_| denied())?;
         let node = self.process.node.as_ref().ok_or_else(denied)?;
-        let receipt = self
-            .process
-            .runtime
-            .block_on(node.submit_native_v6_prepared_intent_retirement(self.prepared))
+        let receipt = self.process.block_on_observed(node.submit_native_v6_prepared_intent_retirement(self.prepared))
             .map_err(|_| denied())?;
         original().map_err(|_| denied())?;
         if receipt.envelope_digest != expected_digest {
@@ -193,9 +188,7 @@ impl NativeHaIntentReadObservation<'_> {
             return Err(denied());
         }
         native.validate_enrollment(&self.process.codec, self.observed.current_enrollment())?;
-        self.process
-            .runtime
-            .block_on(node.verify_native_v6_intent_retirement_observation(&self.observed))
+        self.process.block_on_observed(node.verify_native_v6_intent_retirement_observation(&self.observed))
             .map_err(|_| denied())?;
         self.deadline.check().map_err(|_| denied())
     }
@@ -370,12 +363,8 @@ impl HaProcess {
             ..
         } = read;
         let prepared = match preparation {
-            MetadataPreparation::RetireIntents => self
-                .runtime
-                .block_on(node.prepare_native_v6_intent_retirement(selected, 32)),
-            MetadataPreparation::ActivateRetainedRoots => self
-                .runtime
-                .block_on(node.prepare_native_v6_retained_root_activation(selected)),
+            MetadataPreparation::RetireIntents => self.block_on_observed(node.prepare_native_v6_intent_retirement(selected, 32)),
+            MetadataPreparation::ActivateRetainedRoots => self.block_on_observed(node.prepare_native_v6_retained_root_activation(selected)),
         }
         .map_err(|_| denied())?;
         let owner = NativeHaPreparedIntentRetirement {
@@ -413,9 +402,7 @@ impl HaProcess {
             selected,
             ..
         } = read;
-        let observed = self
-            .runtime
-            .block_on(node.observe_native_v6_intent_retirement(selected, previous))
+        let observed = self.block_on_observed(node.observe_native_v6_intent_retirement(selected, previous))
             .map_err(|_| denied())?;
         let result = NativeHaIntentReadObservation {
             process: self,
@@ -521,9 +508,7 @@ impl HaProcess {
         drop(_operation);
         original().map_err(|_| denied())?;
         let exclusive = store.try_native_quiescence().map_err(|_| denied())?;
-        let retained = self
-            .runtime
-            .block_on(node.native_v6_retention_guard(&selected))
+        let retained = self.block_on_observed(node.native_v6_retention_guard(&selected))
             .map_err(|_| denied())?;
         // From here the actual Raft writers are held. Calling another Raft
         // read would self-deadlock; the opaque retention guard independently
@@ -578,9 +563,7 @@ impl HaProcess {
         drop(_operation);
         original().map_err(|_| denied())?;
         let exclusive = store.try_native_quiescence().map_err(|_| denied())?;
-        let retained = self
-            .runtime
-            .block_on(node.native_v6_retention_guard(&selected))
+        let retained = self.block_on_observed(node.native_v6_retention_guard(&selected))
             .map_err(|_| denied())?;
         let catalog = retained.retained_root_catalog().map_err(|_| denied())?;
         let marked = crate::service::native_v6_ha_objects::mark_native_v6_retained_roots(
@@ -673,9 +656,7 @@ impl HaProcess {
         drop(_operation);
         original().map_err(|_| denied())?;
         let exclusive = store.try_native_quiescence().map_err(|_| denied())?;
-        let retained = self
-            .runtime
-            .block_on(node.native_v6_retention_guard(&selected))
+        let retained = self.block_on_observed(node.native_v6_retention_guard(&selected))
             .map_err(|_| denied())?;
         let catalog = retained.retained_root_catalog().map_err(|_| denied())?;
         let marked = crate::service::native_v6_ha_objects::mark_native_v6_retained_roots(

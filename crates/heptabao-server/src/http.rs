@@ -36,6 +36,8 @@ mod h2_transport;
 mod logical;
 #[path = "http_mutation_profile.rs"]
 mod mutation_profile;
+#[path = "http_read_index_observation.rs"]
+pub(crate) mod read_index_observation;
 #[cfg(test)]
 #[path = "http_no_forward_tests.rs"]
 pub(crate) mod no_forward_tests;
@@ -930,6 +932,8 @@ fn serve_inner(
                     Ok(value) => value,
                     Err(_) => return,
                 };
+                let read_observation=read_index_observation::Owner::new(&attempt_id,"http1",deadline);
+                let _read_observation_scope=read_observation.enter_thread();
                 if rate_limited {
                     let response = audited_wire_rejection(
                         &service,
@@ -1443,10 +1447,12 @@ struct ResponseWriteObservation<'a, W> {
     writer: &'a mut W,
     accepted_plaintext_bytes: usize,
     flush_attempted: bool,
+    status: Option<read_index_observation::StatusLine>,
 }
 impl<W: Write> Write for ResponseWriteObservation<'_, W> {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
         let count = self.writer.write(bytes)?;
+        if let Some(status)=self.status.as_mut() { status.accepted(&bytes[..count]); }
         self.accepted_plaintext_bytes = self.accepted_plaintext_bytes.saturating_add(count);
         Ok(count)
     }
@@ -1469,8 +1475,10 @@ fn write_http1_reply(
         writer,
         accepted_plaintext_bytes: 0,
         flush_attempted: false,
+        status: read_index_observation::active().then(read_index_observation::StatusLine::new),
     };
-    if let Err(error) = reply.write_with_namespace(&mut observation, head, namespace) {
+    let result=reply.write_with_namespace(&mut observation, head, namespace);
+    if let Err(error) = &result {
         // Error text can carry peer/provider bytes. Only closed error kinds and
         // counters are emitted; no path, token, headers, body or parser line.
         eprintln!(
@@ -1493,6 +1501,10 @@ fn write_http1_reply(
             Instant::now() >= deadline
         );
     }
+    read_index_observation::finish_current(
+        result.is_ok(), observation.status.as_ref().and_then(read_index_observation::StatusLine::status),
+        observation.accepted_plaintext_bytes, observation.flush_attempted,
+    );
 }
 
 struct DeadlineStream {
@@ -2926,6 +2938,7 @@ fn write_standard_headers_with_date(
         write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
     }
     mutation_profile::write_header(writer)?;
+    read_index_observation::write_header(writer)?;
     Ok(())
 }
 
@@ -3177,6 +3190,8 @@ fn write_response_with_namespace(
     } else {
         admitted_http_status
     };
+    read_index_observation::bind_final_wire_payload(response,status,head,
+        fixed_raw_body || content_type!="application/json",&bytes);
     // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
         100 => "Continue",
@@ -3277,6 +3292,7 @@ fn write_response_with_namespace(
         .checked_add(content_type.len())
         .and_then(|size| size.checked_add(index.len()))
         .and_then(|size| size.checked_add(32 * 1024 + 1024))
+        .and_then(|size| size.checked_add(read_index_observation::header_allowance()))
         .and_then(|size| size.checked_add(if coalesced_body { bytes.len() } else { 0 }))
         .ok_or_else(|| {
             io::Error::new(
