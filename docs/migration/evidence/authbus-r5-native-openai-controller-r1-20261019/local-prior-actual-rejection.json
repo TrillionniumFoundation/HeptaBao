@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a3d373",
+  "wall_time_seconds": 0.000028193,
+  "exit_code": 0,
+  "original_token_count": 156,
+  "output": "{\"schema\": \"authbus.native-openai.historical-noninheritance.local.v1\", \"ok\": true, \"actualCombinedExecution\": false, \"checks\": [{\"source\": \"authbus-r5-native-cold-r2-20261019/actual-main-r1/public-receipt.json\", \"sha256\": \"5aa42c6784de70206467a9212c53169690928131697b0a10768d996f3f021541\", \"oldOk\": true, \"oldChecks\": 120, \"newCombinedQualificationRejected\": true}, {\"source\": \"authbus-r5-openai-r4-controller-r1-20261019/actual-main-r1/fixture/public-receipt.json\", \"sha256\": \"0cb912e1158bab75576cfda71e0a9f9a576951d51741e9a8251c577a26b3b769\", \"oldOk\": true, \"oldChecks\": 432, \"newCombinedQualificationRejected\": true}]}\n"
+}

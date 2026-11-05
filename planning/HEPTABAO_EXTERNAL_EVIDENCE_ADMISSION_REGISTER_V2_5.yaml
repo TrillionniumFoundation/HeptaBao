@@ -115,3 +115,15 @@ admission_gates:
       - independent-cache-root
       - independent-signing-root
       - exact-output-reproduction
+  - id: HB-BLK-EXT-008
+    state: OPEN_EXTERNAL_EVIDENCE_REQUIRED
+    owner_role: independent-plugin-provider-board
+    evidence_denominator:
+      - linux-sandbox-provider
+      - macos-sandbox-provider
+      - windows-sandbox-provider
+      - process-tree-termination
+      - authenticated-multiplexed-transport
+      - provider-connectors
+      - rolling-plugin-upgrade
+      - destructive-provider-qualification

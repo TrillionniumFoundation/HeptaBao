@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.local-artifact-projector-tests.v1",
+  "finished_utc": "2026-10-19T05:43:40.480633+00:00",
+  "exit_code": 0,
+  "log_sha256": "11518c98e9939cfacdb2b9756e5baed29a1a18f7860e5ecb094ab4965897ba09",
+  "driver_sha256": "39ea2c6c4414b57cf0b9aa662905db1d3e829108e883fe62435401ed184bc0f0",
+  "tests_sha256": "0a97c852db95a33e5bec46aeef0687e2cfa2bcf703910c476306af6dd9c5d0f9",
+  "scope": "local synthetic metadata and artifact custody; no actual producer binary or LAN execution",
+  "native_tests_passed_by_this_run": 0,
+  "actual_x230_execution": false
+}

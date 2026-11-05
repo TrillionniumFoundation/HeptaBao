@@ -1,0 +1,134 @@
+{
+  "kind": "independent maintained SDK public synthetic test vectors; all source keys deliberately public repeated0x51, not vendor random/private material",
+  "source_formula_authenticated_against_real_vendor_R05": "d4dd4e3eb3bc019d8723ef3446a9a92d09040247f86f0cdfaa528595942b1adf",
+  "vectors": [
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExB4eQMHHmMHY71CbydoP2gTKcDDWbL6X0pYDuNGh0yurxJPj5IyKRSt9/8vBh0TULRLvUK7j5AXVc",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 0,
+      "kind": "aes128-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "zxf5pcS72f6RJjXuwnPqfA=="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExjlhTDy50FR+/TxkNThODH1fo6lEm7XxMcJLVo8E9NyAWpUWC6li4NlbUxo3My0Rg7y1Osdmfm0Vd",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 0,
+      "kind": "aes128-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "r6rfxGH+qSS5ksEDrDB2EQ=="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExNun79YIy+FFRCpH8MSugzbXt6bG9c+mNikADAek8u2SY0Y+j3n2r7e/tdaSNezhDtBNGw8XqINpw",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 0,
+      "kind": "aes256-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "0nl0jQHdUHMCZ8BpP2h+UkWZERsMydg3F85Yntt7m6Y="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExR7yemrZDSO/b6jkuxz0tm4beNDwTn7X40j52pbWIf2asLWkUwBuPvIxiHdtL7VOHmBpGLYV4TYKj",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 0,
+      "kind": "aes256-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "17PRrgyudzT/xgYQCxXLANS07cL0IECyUgnVzNoiCw0="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExqaoteVvgbTrF/LwvjlqMZbHGmEqWDEhA+2QCb9zYVdR7C74n9849AHhg53yZAXd2iEh+iRLGecwg",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 0,
+      "kind": "chacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "0nl0jQHdUHMCZ8BpP2h+UkWZERsMydg3F85Yntt7m6Y="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExN8KrlI/jJw/l5W59uMNRdypPSvBSMjIjjWqhktbCqRLOTNmOpqNx2mR9uXL1ua/NawEyq8bQ7siF",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 0,
+      "kind": "chacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "17PRrgyudzT/xgYQCxXLANS07cL0IECyUgnVzNoiCw0="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExMTExMTExMTExMTExjzZrlzrCd/h9VymvUeyruOeQAqvX3pfSGyM6eNsCy2e+bI1IQlm+5jUz0ECUXXVsrhqnBGs2S4Gf",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 0,
+      "kind": "xchacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "0nl0jQHdUHMCZ8BpP2h+UkWZERsMydg3F85Yntt7m6Y="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExMTExMTExMTExMTExoffrmf4UI6p0G7OM2G+lGd5kCEljkJcQrPTSxOAMRuCS0Fo0GFPGp4Ddx+7Rb4fCI/OQ4MX7sSoL",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 0,
+      "kind": "xchacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "17PRrgyudzT/xgYQCxXLANS07cL0IECyUgnVzNoiCw0="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExAEYqZq6f7SmaDamTDgG7NfCI5gM/NYBHiasEwuz8yE8R3qs7S30La8ODQs4kJzc/3TGq4rDqoory",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 1,
+      "kind": "aes128-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "lW/k1e8XSw+24QRgpqMv+g=="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExGBGyirCgyUx26PQFvzrGvD3dd67V49ymWZiMeOLUkd041iPl8aGIBYaroNiniji46F8Ygcn10PUu",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 1,
+      "kind": "aes128-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "Nip2/lNs1Jru8+R65iDa1Q=="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTEx0ENZ2ieX0AZ8dRXY/juVz/gtaEtXKy/jljVqcbr/83AeuU2ZG3yE2Jh11CM2GVMz/D/8zOQ4q3RI",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 1,
+      "kind": "aes256-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "Qo8p3QTp9kVMhm1NdEWey3FiBfQl6JFDqkFa9Gm1WhY="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExSoKQfMuJ5gJh0i52yj2obGhhLpd/ULiwjyg2G6ZfpxvwsYHZkics/0ulYmfQjOCcOPy7VLhCZShm",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 1,
+      "kind": "aes256-gcm96",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "yBudknkNS4lmksVD6akwoMNQmAnU0Bhkoiq66SNgO0Q="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTEx+tPah7UO3QT4uHk0K8eyy+Yw7dqpuXSfg8TjBIvsvBvykYMoW8x1OGVSEmLzpmQYU44H2BaoEliK",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 1,
+      "kind": "chacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "Qo8p3QTp9kVMhm1NdEWey3FiBfQl6JFDqkFa9Gm1WhY="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExA8eXyLwuUBDuBssWtRVcmYjKJuPFCUjlVSZ7uXIt2S+2BH2ACvL3rQ6EFQb0RKvCGCaRSxz03cXw",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 1,
+      "kind": "chacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "yBudknkNS4lmksVD6akwoMNQmAnU0Bhkoiq66SNgO0Q="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExMTExMTExMTExMTExXBQm59nfCj04e8aT2M8MUhaKXPqpqaznsGqGAKZminb5ED3EqrH3ecGSdDHLXe6cvxrPxeFEemWN",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYQ==",
+      "kdf": 1,
+      "kind": "xchacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "Qo8p3QTp9kVMhm1NdEWey3FiBfQl6JFDqkFa9Gm1WhY="
+    },
+    {
+      "ciphertext": "vault:v1:MTExMTExMTExMTExMTExMTExMTExMTEx6MW+xle4jwXTA7LOOUglDusPvHdnM68x7zfF6kCtoxO2v9Cqioqa/LHBFs7xXUKUBgTS4y4zStbf",
+      "context": "c3ludGhldGljLWluZGVwZW5kZW50LWNvbnRleHQtYg==",
+      "kdf": 1,
+      "kind": "xchacha20-poly1305",
+      "message": "c3ludGhldGljLWluZGVwZW5kZW50LVRyYW5zaXQtU0RLLWZpeHR1cmU=",
+      "synthetic_public_known_derived_key": "yBudknkNS4lmksVD6akwoMNQmAnU0Bhkoiq66SNgO0Q="
+    }
+  ]
+}

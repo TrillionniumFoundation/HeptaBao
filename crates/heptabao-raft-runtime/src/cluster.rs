@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::state_machine::StateMachine as MemStoreStateMachine;
 #[cfg(test)]
 use openraft::LogIdOptionExt;
 #[cfg(test)]
@@ -12,7 +13,7 @@ use openraft::async_runtime::WatchReceiver;
 use openraft::errors::decompose::DecomposeResult;
 use openraft::errors::{ClientWriteError, LinearizableReadError};
 use openraft::{Config, ReadPolicy, SnapshotPolicy};
-use openraft_memstore::{ClientRequest, MemStoreStateMachine};
+use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 use tokio::time::{sleep, timeout};
 
@@ -274,11 +275,14 @@ impl DurableCluster {
                 .ok_or_else(|| format!("durable write target node is unavailable: {candidate}"))?;
             match node
                 .raft
-                .client_write(ClientRequest {
-                    client: "heptabao-h02-durable".to_owned(),
-                    serial,
-                    status: status.clone(),
-                })
+                .client_write(
+                    ClientRequest {
+                        client: "heptabao-h02-durable".to_owned(),
+                        serial,
+                        status: status.clone(),
+                    }
+                    .into(),
+                )
                 .await
                 .decompose()
             {
@@ -479,11 +483,14 @@ impl DurableCluster {
         self.router.pause(leader).await;
         let result = timeout(
             Duration::from_millis(700),
-            self.nodes[&leader].raft.client_write(ClientRequest {
-                client: "heptabao-h02-durable".to_owned(),
-                serial: 999_001,
-                status: "isolated-writer-must-not-commit".to_owned(),
-            }),
+            self.nodes[&leader].raft.client_write(
+                ClientRequest {
+                    client: "heptabao-h02-durable".to_owned(),
+                    serial: 999_001,
+                    status: "isolated-writer-must-not-commit".to_owned(),
+                }
+                .into(),
+            ),
         )
         .await;
         let rejected = !matches!(result, Ok(Ok(_)));

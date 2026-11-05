@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.native-linux-artifact-cli-template.v1",
+  "controller_source_identity": {
+    "actual_driver_sha256": "d4206c72bded887e807563b85de45568a60b319f035097291d622160d91c3620",
+    "driver_git_commit": null,
+    "driver_git_tree": null,
+    "binary_product_cohort_is_separate": true
+  },
+  "pack": {
+    "actual_host": "qian-qi",
+    "prefix": [
+      "python3",
+      "-B",
+      null,
+      "pack"
+    ],
+    "argv": [
+      "--source",
+      null,
+      "--manifest",
+      null,
+      "--source-commit",
+      "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+      "--source-tree",
+      "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+      "--producer-runner-sha256",
+      "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+      "--summary",
+      "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/summary.json",
+      "--summary-sha256",
+      "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+      "--target-dir",
+      "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019",
+      "--output",
+      null
+    ],
+    "actual_source_path": "/home/qian-qi/heptabao-next-gates-20261017/source-0f1c",
+    "required_original_manifest_sha256": "907f00844a01412f1779466b62888f5651ee0ab34f6fef6ff9914acd7d9f06a3"
+  },
+  "execute": {
+    "observed_prior_hostname": "qian-ThinkPad-X230",
+    "hostname_requires_fresh_confirmation": true,
+    "prefix": [
+      "python3",
+      "-B",
+      null,
+      "execute"
+    ],
+    "argv": [
+      "--source",
+      null,
+      "--manifest",
+      null,
+      "--source-commit",
+      "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+      "--source-tree",
+      "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+      "--producer-runner-sha256",
+      "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+      "--capsule",
+      null,
+      "--capsule-sha256",
+      null,
+      "--expected-executor-hostname",
+      "qian-ThinkPad-X230",
+      "--output",
+      null
+    ],
+    "known_materialized_source_path": "/home/qian/heptabao-continuation-20261019/source-0f1c",
+    "compiler_invocations": 0,
+    "required_test_count": 55,
+    "required_group_count": 17,
+    "command_timeout_seconds": 1800
+  },
+  "known_actual_producer_artifacts": {
+    "server": {
+      "path": "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_server-c2b13f8f8869a962",
+      "bytes": 1086680200,
+      "sha256": "ba8316997f9cc015e466a74d8d05896aacd7f59d52f5386bbd8ac8f5680fb4b0"
+    },
+    "peer": {
+      "path": "/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577",
+      "bytes": null,
+      "sha256": null
+    },
+    "server-bin": {
+      "path": "/home/qian-qi/heptabao-next-gates-20261017/native-full55-0f1c-main-r1/heptabao-server",
+      "bytes": 776397280,
+      "sha256": "a45ebe3e4d7b845ca5392431bdae9ba8348e16d2fe88489c3347049a07a7b8d2"
+    }
+  },
+  "all_null_fields_are_unresolved_not_safe_defaults": true,
+  "automatic_submission_or_remote_transport": false,
+  "new_owned_roots_only": true
+}

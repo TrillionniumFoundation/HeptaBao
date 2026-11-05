@@ -1,0 +1,201 @@
+{
+  "binary_sha256": "6c056d15e54b9790de4d6c0c329dd12a85a34165c88248f464b508869a3cebaf",
+  "checks": [
+    {
+      "case": "official_271_pins_and_live_identity",
+      "passed": true
+    },
+    {
+      "case": "two_distinct_owned_processes",
+      "passed": true
+    },
+    {
+      "case": "source_retained_deleted_destroyed_seeded",
+      "passed": false
+    },
+    {
+      "case": "source_and_binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "case": "report_excludes_runtime_credentials",
+      "passed": true
+    }
+  ],
+  "failure": "source_retained_deleted_destroyed_seeded",
+  "full34_qualified": false,
+  "full_compatibility_claim": false,
+  "live_payload_bytes": 8192,
+  "migration_invocations": [],
+  "missing_checks": [
+    "data_cas_denied_without_effect",
+    "destroyed_payload_remains_absent",
+    "exported_soft_deleted_payload_preserved",
+    "metadata_cas_denied_without_effect",
+    "metadata_cas_success_counter_exact",
+    "post_snapshot_mutation_once",
+    "restored_cold_history_exact",
+    "snapshot_download",
+    "snapshot_restore_once",
+    "soft_deleted_payload_undelete_exact",
+    "source_cold_restart_exact",
+    "source_export_once",
+    "source_metadata_cas_seeded",
+    "source_retained_deleted_destroyed_seeded",
+    "source_unchanged_after_export",
+    "source_unchanged_after_target_mutations",
+    "target_active_native_v6",
+    "target_cold_restart_exact",
+    "target_full_history_exact",
+    "target_import_once",
+    "target_pristine_before_import"
+  ],
+  "mutations": [
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/init",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "target",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/unseal",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "sys/mounts/secret",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/config",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/data/history",
+      "retried": false,
+      "status": 200
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/metadata/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/delete/history",
+      "retried": false,
+      "status": 204
+    },
+    {
+      "endpoint": "source",
+      "method": "POST",
+      "outcome": "response_received",
+      "owned_leaf_wait_completed": true,
+      "path": "secret/destroy/history",
+      "retried": false,
+      "status": 204
+    }
+  ],
+  "native_before_import": true,
+  "official_identity": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+    "binary_sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+    "cluster_id": "87c695d0-54ca-5f6a-d20a-0517ffae3893",
+    "endpoint": "https://127.0.0.1:57049",
+    "launcher_source_sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "official_version": "2.7.1",
+  "owned_roots": {
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-22c-f43-mac-20261019-r1/official-openbao-2.7.1-_ersn0yj",
+    "target": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/kv2-native-small-22c-f43-mac-20261019-r1/candidate"
+  },
+  "production_authority": false,
+  "profile": "native-small",
+  "replacement_authority": false,
+  "retained_live_versions": 2,
+  "schema": "heptabao.openbao271-kv2-lossless-native-live.v1",
+  "source_commit": "22caf746ab271bc00fee22a79cd87d34fd82ab4b",
+  "source_content_sha256": "c272c38328884f8fd3cf45c24c2e15deae703075636d588c06a7f2a126bc9e8d",
+  "source_dirty": false,
+  "source_tree": "642163d30c761f0a2c3373da1aef2cb0f0821f17",
+  "status": "failed",
+  "synthetic_only": true,
+  "tls_verified": true,
+  "v6_ha_qualified": false
+}

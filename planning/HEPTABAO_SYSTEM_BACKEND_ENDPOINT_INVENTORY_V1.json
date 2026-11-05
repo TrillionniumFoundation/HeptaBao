@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.system-backend-endpoints.v1",
+  "surface_id": "HB-SURFACE-SYSTEM-BACKEND",
+  "routes": [
+    {
+      "path": "sys/health",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "fields": [],
+      "auth": "public",
+      "sealed": "observable"
+    },
+    {
+      "path": "sys/init",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "fields": [
+        "secret_shares",
+        "secret_threshold",
+        "recovery_nonce"
+      ],
+      "auth": "root_namespace_bootstrap",
+      "sealed": "allowed"
+    },
+    {
+      "path": "sys/unseal",
+      "methods": [
+        "POST",
+        "PUT"
+      ],
+      "fields": [
+        "key"
+      ],
+      "auth": "share_threshold",
+      "sealed": "required"
+    },
+    {
+      "path": "sys/seal-status",
+      "methods": [
+        "GET"
+      ],
+      "fields": [],
+      "auth": "public",
+      "sealed": "observable"
+    },
+    {
+      "path": "sys/seal",
+      "methods": [
+        "POST",
+        "PUT"
+      ],
+      "fields": [],
+      "auth": "root",
+      "sealed": "active_only"
+    },
+    {
+      "path": "sys/rekey/init",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "fields": [
+        "secret_shares",
+        "secret_threshold",
+        "require_verification"
+      ],
+      "auth": "root",
+      "sealed": "active_only"
+    },
+    {
+      "path": "sys/rekey/update",
+      "methods": [
+        "POST",
+        "PUT"
+      ],
+      "fields": [
+        "nonce",
+        "key"
+      ],
+      "auth": "root",
+      "sealed": "active_only"
+    }
+  ],
+  "error_precedence": [
+    "invalid initialization namespace/shape before state creation",
+    "sealed denial before authenticated active-only dispatch",
+    "root authorization before seal/rekey mutation",
+    "rekey nonce/share validation before seal generation publication"
+  ],
+  "behavior_anchors": [
+    "initialization_recovery_survives_response_loss_and_requires_root_ack",
+    "shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key",
+    "verified_rekey_survives_response_loss_restart_and_cancel",
+    "system_backend_health_seal_and_error_precedence_are_executable"
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.native-ha-cold-readindex-setup-r1.v1",
+  "base_commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+  "base_tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+  "manifest_sha256": "9e167d20256e2d59c9ce57c73b90a0976403cf7a20db3e1d6b5de011c9d3cb0c",
+  "status": "source_review_complete_rust_compile_and_fresh_readindex_regression_execution_pending",
+  "base_sources": [
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/v6_committed_root_read.rs",
+      "bytes": 7167,
+      "git_blob": "1d2db03a43c20cf9cb6ef5e29afc21874ed6d04f",
+      "sha256": "aed1aac147bd41236951a85f67ddafd9b15c3c2a3ed14f38722ca40962212971"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "bytes": 155764,
+      "git_blob": "f61ca7f15a84ba5f35700bcd93e5db32f9340ec8",
+      "sha256": "1ab63bcade9d5309f662c5597ce2fe9c78b7a18a251afcc28236828df90a5221"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 14989,
+      "git_blob": "b47635bfdc97166d42a2c851742c80d6b0c5e6a5",
+      "sha256": "750159f11f190cdd8911a17b66b0cf0b27b87d2f2f942e61dd68096535b32a6a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "bytes": 49987,
+      "git_blob": "745de97f5415bacde24703b770ab7bede95db1af",
+      "sha256": "4e27c0f2392032feb0904ec83bf86e2aa886025deffe238b9563eb0ceed4a140"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "bytes": 31092,
+      "git_blob": "15758a894c6646db92c206a5229452cc8d796fcb",
+      "sha256": "aac78a296d05f5f00b92d996e1c32b7600af7e6609a86267eacf5ea21ab19df0"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "bytes": 17754,
+      "git_blob": "766987f29ace50e4e8e749e9b17bb185f0200791",
+      "sha256": "a5d9fbcea3c09732806271eb9ce88d1069b26d6d12c1fffdc3a163caa75f6498"
+    }
+  ],
+  "raw_failures": [
+    {
+      "copied_as": "mac-snapshot-service.log",
+      "original_path": "continuation-20261019/ci-9770-actual-r1/mac/snapshot-service.log",
+      "bytes": 11116,
+      "sha256": "7d0138dd52013bd914aa5c7fe2896c878b6e5d8df971d38d7e1c86dde6f0e833",
+      "git_blob": "c424d0785139c81bca2251457030f9435a5fb5fc"
+    },
+    {
+      "copied_as": "mac-verdict.json",
+      "original_path": "continuation-20261019/ci-9770-actual-r1/mac/verdict.json",
+      "bytes": 492,
+      "sha256": "e4998add59959e6104eb58ebe0ba3da3a29d852352e536fe2410e656d57d0338",
+      "git_blob": "3d17ae1de82a1e01d9cbadaf8eeb2a0a2f27849b"
+    },
+    {
+      "copied_as": "x230-snapshot-service.log",
+      "original_path": "continuation-20261019/native-linux-artifact-cleanup-r2/actual-x230-9770-r1/snapshot-service.log",
+      "bytes": 9331,
+      "sha256": "2f3f90d51457c8ea6c60ade3d8714001c31b6fd1e353bf41b1b000128a88aa87",
+      "git_blob": "1f07c5ac9b617de090cb38ee2a4249b6b5066b5e"
+    },
+    {
+      "copied_as": "x230-summary.json",
+      "original_path": "continuation-20261019/native-linux-artifact-cleanup-r2/actual-x230-9770-r1/summary.json",
+      "bytes": 91418,
+      "sha256": "67d2d42b445831c0394cddbcc30e639c4f3582c9c641e5637c6021e9708d8e20",
+      "git_blob": "f74a92c833d9d8d5e7fe7a3a1c8ebc3aa41f0491"
+    }
+  ],
+  "observed_failure_scope": {
+    "mac_ci": "54/55; snapshot group 6/7; cold unseal 503: quorum or applied witness unavailable",
+    "x230": "54/55; snapshot group 6/7; cold unseal 503: leadership changed",
+    "same_exact_failed_case": "service::native_v6_ha_pipeline_tests::snapshot_repair_tests::native_ha_snapshot_repair_all_donors_missing_preserves_four_conditions_and_cold_reopens"
+  },
+  "unchanged_counts": {
+    "repair_tests": 4,
+    "snapshot_group": 7,
+    "original_full_runner": 55,
+    "new_test_functions": 0,
+    "cold_unseal_calls_in_target_case": 1,
+    "cold_process_starts_in_target_case": 1,
+    "cold_process_stops_in_target_case": 1
+  },
+  "budgets": {
+    "shared_failover_and_target_readiness_seconds": 8,
+    "original_unseal_request_seconds": 15,
+    "additional_retry_of_unseal_or_archive": false
+  },
+  "local_static_checks": {
+    "all_cached_source_git_blobs_match_exact_9770": true,
+    "production_runtime_unchanged_after_removing_cfg_test_observer": true,
+    "all_original_assertion_lines_present": true,
+    "four_original_test_names_unchanged": true,
+    "cold_readiness_contains_no_Service_mutation_or_materialization_call": true,
+    "all_missing_assertion_follows_direct_Raft_only_observer": true,
+    "all_raw_failure_hashes_preserved": true
+  },
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": "b47635bfdc97166d42a2c851742c80d6b0c5e6a5",
+      "base_sha256": "750159f11f190cdd8911a17b66b0cf0b27b87d2f2f942e61dd68096535b32a6a",
+      "sha": "c56a19c191d2f885bfc43f09fdaa30a31c77ec19",
+      "sha256": "b7612cf081a2aebacf12c99dc8c27174a1f8a0cc6997669bdedaa3fa21967780"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": "766987f29ace50e4e8e749e9b17bb185f0200791",
+      "base_sha256": "a5d9fbcea3c09732806271eb9ce88d1069b26d6d12c1fffdc3a163caa75f6498",
+      "sha": "ff67c0ad7731146aef1b1af56835eed7aacd1141",
+      "sha256": "203639404c932f6d671da1f35fc18177129e72a313ddb6d241b6248567f56d4a"
+    }
+  ]
+}

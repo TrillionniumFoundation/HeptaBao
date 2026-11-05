@@ -1,0 +1,33 @@
+--- a/index.js
++++ b/index.js
+@@ -518,24 +518,14 @@
+ 
+ async function saveStrictLeaseOrder(agentDir, provider, store, profileId) {
+   if (profileId) return await saveManagedOrder(agentDir, provider, store, [profileId], profileId);
+-  // An empty stored order is significant to OpenClaw: it resolves to no auth
+-  // candidate instead of falling back to every credential in the local store.
+-  const fallback = loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-  const orderKey = findProviderKey(fallback.order, provider) ?? provider;
+-  const lastGoodKey = findProviderKey(fallback.lastGood, provider);
+-  fallback.order = { ...(fallback.order ?? {}), [orderKey]: [] };
+-  if (lastGoodKey) {
+-    fallback.lastGood = { ...(fallback.lastGood ?? {}) };
+-    delete fallback.lastGood[lastGoodKey];
+-    if (Object.keys(fallback.lastGood).length === 0) fallback.lastGood = undefined;
+-  }
+-  saveAuthProfileStore(fallback, agentDir, {
+-    filterExternalAuthProfiles: false,
+-    syncExternalCli: false,
+-    preserveOrderProfileIds: [],
++  // The candidate SDK owns an explicit deny in its existing SQLite write
++  // transaction. Legacy SDKs ignore this option, so verify the persisted key
++  // and never accept their clear/fallback behavior as a successful deny.
++  const saved = await setAuthProfileOrder({
++    agentDir, provider: resolveProviderIdForAuth(provider), order: [], explicitDeny: true,
+   });
++  if (!saved) return false;
+   const verified = loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-  // Missing order means fallback in some SDKs; it is not an explicit deny.
+   const verifiedOrderKey = findProviderKey(verified.order, provider);
+   return Boolean(verifiedOrderKey) && sameOrder(verified.order[verifiedOrderKey], []) &&
+     !findProviderLastGood(verified, provider);

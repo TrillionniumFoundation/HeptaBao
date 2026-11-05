@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.controller-witness-source-local-validation.v1",
+  "started_utc": "2026-10-19T04:30:12.797243+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/915e5e680008/continuation-20261019/numeric-integration-host-r1/work/qa/openbao-acceptance/tests",
+    "-p",
+    "test_kv2_271_lossless_native_live.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/915e5e680008/continuation-20261019/numeric-integration-host-r1/work",
+  "exit_code": 0,
+  "elapsed_seconds": 0.990227,
+  "log_sha256": "4810bae839f961931460d5be1ea86bbf6182bce1f349fdc56e8fe70dec95ab28",
+  "source_sha256": {
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "83d9436f321b380f44504829c426ccf5d3e52830b223f584a84d5237b9c2323d",
+    "qa/openbao-acceptance/tests/test_kv2_271_lossless_native_live.py": "9c0e51c2a5e122b1eececaf1af955915b64f7213124054d95a937884a9817e06"
+  },
+  "source_unchanged": true,
+  "local_synthetic_loopback_tls": true,
+  "actual_openbao_process": false,
+  "actual_heptabao_process": false,
+  "physical_migration_qualified": false
+}

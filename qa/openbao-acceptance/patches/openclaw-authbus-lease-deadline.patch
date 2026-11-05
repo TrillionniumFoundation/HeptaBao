@@ -1,0 +1,162 @@
+--- a/index.js
++++ b/index.js
+@@ -512,7 +512,8 @@
+ function sameLeaseEpoch(left, right) {
+   return left?.epoch === right?.epoch && left?.status === right?.status &&
+     left?.leaseId === right?.leaseId && left?.profileId === right?.profileId &&
+-    left?.digest === right?.digest && left?.model === right?.model;
++    left?.digest === right?.digest && left?.model === right?.model &&
++    left?.expiresAt === right?.expiresAt && left?.mode === right?.mode;
+ }
+ 
+ async function saveStrictLeaseOrder(agentDir, provider, store, profileId) {
+@@ -534,7 +535,47 @@
+     preserveOrderProfileIds: [],
+   });
+   const verified = loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-  return sameOrder(findProviderOrder(verified, provider), []) && !findProviderLastGood(verified, provider);
++  // Missing order means fallback in some SDKs; it is not an explicit deny.
++  const verifiedOrderKey = findProviderKey(verified.order, provider);
++  return Boolean(verifiedOrderKey) && sameOrder(verified.order[verifiedOrderKey], []) &&
++    !findProviderLastGood(verified, provider);
++}
++
++/** Clear only locally remembered grants that no longer authorize use.
++ * The deadline belongs to the accepted grant: a stale control document cannot
++ * extend it. Legacy records without a deadline fail closed until a higher epoch
++ * supplies a complete grant. This is also called before any network request.
++ */
++async function expireKnownLeaseOrders(agentDirs, config, leaseEpochs, now = Date.now()) {
++  const result = { changedOrders: 0, changedEpochs: 0, expired: 0, expiredKeys: new Set() };
++  if (config.schedulerMode !== "enforce") return result;
++  const dirsByAgent = new Map(agentDirs.map((agentDir) => [path.basename(path.dirname(agentDir)), agentDir]));
++  for (const [epochKey, known] of leaseEpochs) {
++    const separator = epochKey.indexOf("\u0000");
++    if (separator < 1) continue;
++    const provider = epochKey.slice(0, separator);
++    const agentDir = dirsByAgent.get(epochKey.slice(separator + 1));
++    if (!agentDir) continue;
++    const grant = known.grant;
++    const expired = known.status === "EXPIRED" || (grant?.status === "ASSIGNED"
++      ? !Number.isFinite(grant.expiresAt) || grant.expiresAt <= now
++      : !grant && known.status === "ASSIGNED");
++    if (!expired) continue;
++    result.expiredKeys.add(epochKey);
++    const store = loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
++    if (!findProviderKey(store.order, provider) || findProviderOrder(store, provider).length > 0 || findProviderLastGood(store, provider)) {
++      if (!await saveStrictLeaseOrder(agentDir, provider, store, null)) {
++        throw new Error("AuthBus expired lease order could not be cleared");
++      }
++      result.changedOrders += 1;
++    }
++    if (known.status !== "EXPIRED" || known.profileId || known.digest || known.leaseId) {
++      leaseEpochs.set(epochKey, { ...known, status: "EXPIRED", profileId: null, digest: null, leaseId: null });
++      result.changedEpochs += 1;
++      result.expired += 1;
++    }
++  }
++  return result;
+ }
+ 
+ function strictPolicyScopes(policy, hostId) {
+@@ -563,6 +604,7 @@
+  * OpenClaw to drift back to a shared candidate pool.
+  */
+ async function applyLeaseAssignments(agentDirs, rawAssignments, config, leaseEpochs, policy, now = Date.now()) {
++  const localExpiry = await expireKnownLeaseOrders(agentDirs, config, leaseEpochs, now);
+   const document = normalizeLeaseAssignments(rawAssignments, { hostId: config.hostId, now });
+   const scopeByKey = new Map(document.scopes.map((scope) => [`${scope.provider}\u0000${scope.model}`, scope]));
+   for (const scope of strictPolicyScopes(policy, config.hostId)) {
+@@ -573,10 +615,10 @@
+   const scopes = [...scopeByKey.values()];
+   const result = {
+     generation: document.generation,
+-    changedOrders: 0,
++    changedOrders: localExpiry.changedOrders,
+     appliedAssignments: 0,
+     unassigned: 0,
+-    expired: 0,
++    expired: localExpiry.expired,
+     shadowAssignments: 0,
+     staleAssignments: 0,
+     materializationMissing: 0,
+@@ -605,10 +647,13 @@
+       }
+       const epochKey = leaseEpochKey(scope.provider, agentId);
+       const known = leaseEpochs.get(epochKey);
++      // Compare the wire grant, not its time-dependent EXPIRED projection.
++      const grant = document.assignments.get(`${scope.provider}\u0000${agentId}`) ?? null;
+       const candidateEpoch = Number.isFinite(assignment.epoch) ? Number(assignment.epoch) : null;
+       const stale = known && (
+         candidateEpoch !== null && (candidateEpoch < Number(known.epoch) ||
+-          (candidateEpoch === Number(known.epoch) && !sameLeaseEpoch(known, assignment)))
++          (candidateEpoch === Number(known.epoch) && (!known.grant || !sameLeaseEpoch(known.grant, grant) ||
++            (known.status === "EXPIRED" && assignment.status === "ASSIGNED"))))
+       );
+       if (stale) {
+         result.staleAssignments += 1;
+@@ -617,8 +662,8 @@
+           model: scope.model,
+           agentId,
+           epoch: candidateEpoch ?? (Number(known?.epoch) || 0),
+-          status: "STALE",
+-          leaseId: assignment.leaseId ?? null,
++          status: known.status === "EXPIRED" ? "EXPIRED" : "STALE",
++          leaseId: known.status === "EXPIRED" ? null : assignment.leaseId ?? null,
+         });
+         continue;
+       }
+@@ -637,7 +682,7 @@
+       }
+       const store = loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+       let profileId = assignment.status === "ASSIGNED" ? assignment.profileId : null;
+-      if (assignment.status === "EXPIRED") result.expired += 1;
++      if (assignment.status === "EXPIRED" && !localExpiry.expiredKeys.has(epochKey)) result.expired += 1;
+       if (profileId) {
+         const credential = store.profiles?.[profileId];
+         if (!credential || credentialDigest(credential) !== assignment.digest) {
+@@ -662,7 +707,8 @@
+         digest: profileId ? assignment.digest : null,
+         model: scope.model,
+       };
+-      if (candidateEpoch !== null) leaseEpochs.set(epochKey, accepted);
++      // Keep wire grant metadata in local fencing state, not agent reports.
++      if (candidateEpoch !== null) leaseEpochs.set(epochKey, { ...accepted, grant: grant ? { ...grant } : null });
+       result.observations.push({ provider: scope.provider, model: scope.model, agentId, ...accepted });
+     }
+   }
+@@ -1008,8 +1054,8 @@
+         observations: [],
+       };
+       let runtimeRecycle = null;
++      let localLeaseExpiry = { changedOrders: 0, expired: 0 };
+       try {
+-        bao ??= new BaoClient(config);
+         const agentDirs = discoverAgentDirs(ctx.stateDir);
+         if (agentDirs.length === 0) throw new Error("No local OpenClaw agent databases found");
+         if (!appliedLoaded) {
+@@ -1018,6 +1064,14 @@
+         }
+         ensureBadRefreshQuarantineLoaded(ctx.stateDir);
+         ensureLeaseEpochsLoaded(ctx.stateDir);
++        // A failed manifest/auth/TLS request must not bypass local expiration.
++        localLeaseExpiry = await expireKnownLeaseOrders(agentDirs, config, leaseEpochs);
++        if (localLeaseExpiry.changedEpochs) writeLeaseEpochs(ctx.stateDir, leaseEpochs);
++        if (localLeaseExpiry.changedOrders) {
++          clearRuntimeAuthProfileStoreSnapshots();
++          runtimeRecycle = retireSharedCodexAppServerClients();
++        }
++        bao ??= new BaoClient(config);
+         if (config.leader && !refreshBackoffLoaded) {
+           refreshBackoff = readRefreshBackoff(ctx.stateDir);
+           refreshBackoffLoaded = true;
+@@ -1245,7 +1299,8 @@
+           schedulerAssignmentGeneration: leaseResult.generation,
+           strictLeaseAssignments: leaseResult.appliedAssignments,
+           strictLeaseUnassigned: leaseResult.unassigned,
+-          strictLeaseExpired: leaseResult.expired,
++          strictLeaseExpired: leaseResult.expired + localLeaseExpiry.expired,
++          strictLeaseLocalExpiryChangedOrders: localLeaseExpiry.changedOrders,
+           strictLeaseShadow: leaseResult.shadowAssignments,
+           strictLeaseStale: leaseResult.staleAssignments,
+           strictLeaseMaterializationMissing: leaseResult.materializationMissing,

@@ -1,0 +1,275 @@
+{
+  "schema": "heptabao.native-snapshot-json-accept-http-review.v1",
+  "source_commit": "9770bdd4ca77aa832ec8083a054760637e92cfa1",
+  "source_tree": "f32f1acf9a794844719b6df225df3d23f2389e02",
+  "source_manifest_sha256": "9e167d20256e2d59c9ce57c73b90a0976403cf7a20db3e1d6b5de011c9d3cb0c",
+  "manifest_files": 2979,
+  "status": "source_review_complete_rust_compile_and_actual_https_execution_pending",
+  "base_sources": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 219392,
+      "git_blob": "6d6a52bc87f4a8c954e71391b9638ce73e390d8e",
+      "sha256": "3d108326a722936ef5c81d57d98547acd619368ce8900c57ef7023eb036087e4"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_api_alpn_tests.rs",
+      "bytes": 9265,
+      "git_blob": "11a5b60d76c30defd42c394a87ae2fa7111443c0",
+      "sha256": "5f4387c59325f31eff42f2c9fe5496470bf540d034474fb815fbb63212f34dd7"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "bytes": 13415,
+      "git_blob": "6ec729b935e75c16cb01f3e5fdec2c549faa7a2e",
+      "sha256": "0a158f95d8cb80f9e030fa18db4c52ecc7f789f00a112af22fdfc67a968d00b1"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 21038,
+      "git_blob": "b801da57ad951b2242e212297074847f7a51e107",
+      "sha256": "fff6691fed17a8e86d71c2d03fb6f96ca4f657357e32645c55ed72004bdd9785"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 447014,
+      "git_blob": "c8836ee2cada4e9f4446002b0cd75335adc1586f",
+      "sha256": "a4d52f60d40b2af314f3f3aaafd13695f85778086e56cdd4feced641ad64184a"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 45970,
+      "git_blob": "c6a7766de9ad93c1c4f96b212bfbbbee336c54e8",
+      "sha256": "b50d25352e295b2f1934125bc510109d526a4a04d1c82d78bb12d3b17eb30289"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "bytes": 25972,
+      "git_blob": "b110d0cf97ba98ccf7d886e0c88176a183b7f67f",
+      "sha256": "6004b2bcad64878d0250d6c2a8ac0635dd940bc2934e8e7d52d37a52b7c1ce81"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+      "bytes": 16145,
+      "git_blob": "98edaf9a98e445b5a94ac98349865e1dd864fd63",
+      "sha256": "0fb9189f4a130f26acf4e748ea3d5cb6b35830d2fdbbafec190792c898479d83"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_archive.rs",
+      "bytes": 14202,
+      "git_blob": "4944daeef54952bfeb49eadc27f1a875050ac30f",
+      "sha256": "8b913dcd98da504f3fa7213c91a650765fb22134544241ee5b10c09a4480a49a"
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "bytes": 10692,
+      "git_blob": "1689ae5226876bf520dde731939623ddf29d1314",
+      "sha256": "8392307ea1af3e6b077f249c7b87adc8cb966db7981ece4a785f1876e0473a49"
+    },
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "bytes": 47375,
+      "git_blob": "769f4d86c7b30d7e014177fbf06cc82213f51391",
+      "sha256": "83d9436f321b380f44504829c426ccf5d3e52830b223f584a84d5237b9c2323d"
+    }
+  ],
+  "official_openbao": {
+    "tag": "v2.7.1",
+    "commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "sources": [
+      {
+        "path": "internal/http/sys_raft.go",
+        "bytes": 3251,
+        "git_blob": "e0e07aafb680d7419a2170c749fb2d7d02c35792",
+        "sha256": "5579f8c20548f33ca1c7e5fb8ff8a099fb1d541ed53ea9a3f0c2fc53c637d1af",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/sys_raft.go"
+      },
+      {
+        "path": "internal/vault/logical_system_raft.go",
+        "bytes": 27234,
+        "git_blob": "d18d66bc0ec259093e4b757f8d23e81be109d26b",
+        "sha256": "31a6d3eb5a8ae09b73628fad4be064e8fac49028fa00969715643da94383358b",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system_raft.go"
+      },
+      {
+        "path": "website/content/docs/api/system/storage/raft.mdx",
+        "bytes": 12057,
+        "git_blob": "99bf5294b90b4f044e3244b7b19263e093c3fb43",
+        "sha256": "4eef874e6ca02639317a39590b808e40f9b4a76481255ad0d27d486d5ae9c7de",
+        "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/website/content/docs/api/system/storage/raft.mdx"
+      }
+    ]
+  },
+  "actual_original_failure": {
+    "path": "continuation-20261019/official271-full34-9770-mac-r1-actual/summary.json",
+    "bytes": 69757,
+    "sha256": "102ccd9df282c81fda246d42234eff2d9f1379630e3a627087d7afb5ee77e413",
+    "binary_sha256": "5d10aec72d0dcce2a7a78ba0a209d264fb173b739531d76231e3011b7d0f33aa",
+    "checks_passed": 20,
+    "checks_observed": 21,
+    "required_total": 31,
+    "required_not_attempted": 10,
+    "failed_check": "snapshot_download",
+    "snapshot_errors": [
+      "native candidate supports root ordinary KV and local seal observations"
+    ],
+    "all_checks": [
+      {
+        "case": "official_271_pins_and_live_identity",
+        "passed": true
+      },
+      {
+        "case": "two_distinct_owned_processes",
+        "passed": true
+      },
+      {
+        "case": "source_api_oracle_captured",
+        "passed": true
+      },
+      {
+        "case": "source_retained_deleted_destroyed_seeded",
+        "passed": true
+      },
+      {
+        "case": "source_metadata_cas_seeded",
+        "passed": true
+      },
+      {
+        "case": "source_cold_restart_exact",
+        "passed": true
+      },
+      {
+        "case": "target_pristine_before_import",
+        "passed": true
+      },
+      {
+        "case": "source_export_once",
+        "passed": true
+      },
+      {
+        "case": "source_raw_history_exact",
+        "passed": true
+      },
+      {
+        "case": "exported_soft_deleted_payload_preserved",
+        "passed": true
+      },
+      {
+        "case": "source_unchanged_after_export",
+        "passed": true
+      },
+      {
+        "case": "target_import_once",
+        "passed": true
+      },
+      {
+        "case": "target_active_native_v6",
+        "passed": true
+      },
+      {
+        "case": "target_full_history_exact",
+        "passed": true
+      },
+      {
+        "case": "target_storage_full_history_exact",
+        "passed": true
+      },
+      {
+        "case": "target_cold_restart_exact",
+        "passed": true
+      },
+      {
+        "case": "target_storage_cold_history_exact",
+        "passed": true
+      },
+      {
+        "case": "snapshot_download",
+        "passed": false
+      },
+      {
+        "case": "source_and_binary_unchanged",
+        "passed": true
+      },
+      {
+        "case": "owned_processes_stopped",
+        "passed": true
+      },
+      {
+        "case": "report_excludes_runtime_credentials",
+        "passed": true
+      }
+    ],
+    "missing_checks": [
+      "data_cas_denied_without_effect",
+      "destroyed_payload_remains_absent",
+      "metadata_cas_denied_without_effect",
+      "metadata_cas_success_counter_exact",
+      "post_snapshot_mutation_once",
+      "restored_cold_history_exact",
+      "restored_storage_history_exact",
+      "snapshot_download",
+      "snapshot_restore_once",
+      "soft_deleted_payload_undelete_exact",
+      "source_unchanged_after_target_mutations"
+    ],
+    "full34_qualified": false,
+    "target_storage_precision_qualified": false
+  },
+  "unchanged_original_rust_cases": 55,
+  "new_https_cases": 2,
+  "separately_selected_existing_framing_cases": 1,
+  "separate_exact_test_selectors": [
+    "http::snapshot_accept_tests::native_snapshot_https_json_accept_download_restore_and_cold_keep_exact_history",
+    "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+    "http::snapshot::tests::binary_route_only_supports_chunking_and_snapshot_accept_remains_binary"
+  ],
+  "unchanged_driver_sha256": "83d9436f321b380f44504829c426ccf5d3e52830b223f584a84d5237b9c2323d",
+  "request_deadline_seconds": 15,
+  "framing_parser_seconds": 1,
+  "local_static_checks": {
+    "all_cached_base_blobs_match_exact_9770_tree": true,
+    "changed_rust_files_exactly_four": true,
+    "new_test_functions_exactly_two": true,
+    "original_55_selectors_not_extended": true,
+    "driver_and_service_fences_byte_identical": true,
+    "actual_failure_raw_hash_unchanged": true
+  },
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": "6d6a52bc87f4a8c954e71391b9638ce73e390d8e",
+      "base_sha256": "3d108326a722936ef5c81d57d98547acd619368ce8900c57ef7023eb036087e4",
+      "sha": "d110703974462f46fc21798a53c15773cddac828",
+      "sha256": "1abb8c8541838c5a257f26b0ac560338fd4fb267a56a555ea59fe40635d8c1a4"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_api_alpn_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": "11a5b60d76c30defd42c394a87ae2fa7111443c0",
+      "base_sha256": "5f4387c59325f31eff42f2c9fe5496470bf540d034474fb815fbb63212f34dd7",
+      "sha": "693e2c26895eef457ec3518cba81fb601e7b8423",
+      "sha256": "a69638571064e583690e7f33ca7f58e9e832e58993a07d5b455687aeddae3d8e"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": "b801da57ad951b2242e212297074847f7a51e107",
+      "base_sha256": "fff6691fed17a8e86d71c2d03fb6f96ca4f657357e32645c55ed72004bdd9785",
+      "sha": "7fd28cba626a2fa182b1bc38346d5467b61ba089",
+      "sha256": "0e075a8affabe5eeca3b70228cb9702b6e7e801d343d339916908bb9898c92ce"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "expected_base_git_blob": null,
+      "base_sha256": null,
+      "sha": "2306e832e0a4b930a88c80d31aa87fdaa3380dc0",
+      "sha256": "65c9c7bbb8fcb4df7c7041252aa5345efde5383975d95ac69bce5d3743ca1540"
+    }
+  ]
+}
