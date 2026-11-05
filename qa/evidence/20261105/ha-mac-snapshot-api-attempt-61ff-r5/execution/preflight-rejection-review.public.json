@@ -1,0 +1,118 @@
+{
+  "schema": "heptabao.mac-snapshot-r5-preflight-rejection-review.v1",
+  "job_id": "1a1a90d2733-fc05-30d1",
+  "created_utc": "2026-11-05T00:12:53.939Z",
+  "request_sha256": "a0be07c3bed0fe95691e502342357da7ae44d3d0ebb5cefc7323758313f31993",
+  "authoritative_state": "failed",
+  "exit_code": 1,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "result_sha256": "2a7d38cc298f0007a0afd62981e149b3213134fa1d12372d552eb5acd6674a9c",
+  "result_bytes": 17544,
+  "failure_code": "external_compiler_or_product_process_present",
+  "elapsed_seconds": 0.3499723747372627,
+  "input_source": {
+    "commit": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+    "status": "",
+    "tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec"
+  },
+  "validated_prior": {
+    "result_sha256": "a90a6abf56405d3f006171554ebac16ffe89b8bf20240526a38dc7fc1f0ef508",
+    "tests": 14,
+    "passed": 5,
+    "failed": 9
+  },
+  "read_only_commands": [
+    {
+      "label": "input-head",
+      "exit_code": 0,
+      "timed_out": false,
+      "remaining": [],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 12394,
+        "remaining": [],
+        "returncode": 0
+      },
+      "stdout_sha256": "fc1fbc8f7fae792aafd735c163bbf6d24b6f48187fb4bf828b8ccc5c0824a673",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "input-tree",
+      "exit_code": 0,
+      "timed_out": false,
+      "remaining": [],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 12397,
+        "remaining": [],
+        "returncode": 0
+      },
+      "stdout_sha256": "2e314b275c520b161f6701f907fc3ff73209df8cb9ce2f3db53e65c317298daf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "input-clean",
+      "exit_code": 0,
+      "timed_out": false,
+      "remaining": [],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 12401,
+        "remaining": [],
+        "returncode": 0
+      },
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "preparation-process-snapshot",
+      "exit_code": 0,
+      "timed_out": false,
+      "remaining": [],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 12413,
+        "remaining": [],
+        "returncode": 0
+      },
+      "stdout_sha256": "90941a5bef6ab244d1fd84ede9485c4bfff21669606944e30f79e36d5f3e34ea",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "blockers": [
+    {
+      "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/heptabao-server",
+      "pgid": 12062,
+      "pid": 12062,
+      "ppid": 12059
+    }
+  ],
+  "source_patch_applied": false,
+  "strict_clippy_executed": false,
+  "test_compile_executed": false,
+  "named_tests_executed": 0,
+  "named_tests_planned": 14,
+  "production_link_executed": false,
+  "product_service_started": false,
+  "real_credentials_used": false,
+  "production_changed": false,
+  "qualification": "preflight rejected; no new source/build/test/runtime qualification",
+  "action_after_rejection": "stopped this attempt; original guard retained; metadata-only ownership investigation authorized; no signal/retry/alternate execution",
+  "pure_v5_error_precedence_branch_qualified": false,
+  "full_replacement_qualified": false
+}
