@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.r30-checkpoint-narrow-peer.r1",
+  "verdict": "PASS_REQUESTED_CURRENT_SCOPE_NO_NEW_BLOCKER",
+  "reviewer": "/root/authbus_migration",
+  "drafts": {
+    "intro": {
+      "blob": "ebf8d2df0e16d0f3a06c6f012ef7e9401dca138c",
+      "bytes": 9844,
+      "sha256": "723612162d24ac7e10a5bf2b39df6ac4e03eb45c405fb6bd723a772bf06efeaf"
+    },
+    "state": {
+      "blob": "3dbaea662d2fa7dcb5b567fb50ad4faa5cb81ed8",
+      "bytes": 94910,
+      "sha256": "469f4db0bc9e1955dba61f0b35be2808387ab25f2e7d09f868dc302b77ecc757"
+    }
+  },
+  "scope": [
+    "Current R30 introduction",
+    "r30_progress",
+    "runtime_connection current lanes",
+    "overall"
+  ],
+  "findings": [],
+  "confirmed": [
+    "Auth public bodies are 3 completed original operations, 5718 + 4255 + 3596 = 13569 bytes. The draft exact requests, actual packet and root review match archived whole-body and closed-operation bindings.",
+    "The next three import-derived metadata requests remain 0 submitted. Their bodies and SDK execution remain unauthorized. The original closed 3/13569 readset is not represented as unused budget; new and cumulative body allocations remain unset.",
+    "Catalog metadata and public source retrieval do not establish selected owner, loader/supports execution, credential issuance, or production admission. The original namespace rejection is retained.",
+    "Desktop importer exit 0 and the terminal report are explicitly separated from independent core qualification and the full 21-command archive. The first lost-ACK observation future remains UNKNOWN_PRESERVED.",
+    "X230 inert exit 0 is separated from independent four-file/read closure. Its relay is unsubmitted and import qualification is false. The introduction retains the old relay UNKNOWN without treating the effect fence as process termination.",
+    "Current lanes are HA on A and Compat on B; Auth remains pure source and root Runtime count is 0. The draft keeps the previous R29 lane description under an explicit historical key.",
+    "Source-review and binding check counts are described as review checks, not product tests. Overall replacement, production cutover, old-service cleanup and full client/backup migration remain false."
+  ],
+  "known_pending_not_new_findings": [
+    "Parent has already identified and is correcting inherited X230.current_source, remaining.AuthBus and next_required current labels while preserving the R29 originals.",
+    "Final evidence counts and as-of time remain draft values, as instructed."
+  ],
+  "verification": {
+    "selected_pure_data_checks": 21,
+    "passed": 21,
+    "checks": {
+      "blob": "3561758645a87a905abdf8a0f729d3e0e87b4871",
+      "bytes": 3191,
+      "sha256": "bb90128f95cea6aec4b5b09fbe329dd27491dd20142bc913889b74a2b447b240"
+    },
+    "manual_current_intro_read": true,
+    "full_original_body_retrieval_repeated": false
+  },
+  "limits": [
+    "This peer covers the two exact draft blobs above, not an unseen final revision.",
+    "Historical R29 evidence and final assembled suffix preservation were not re-audited.",
+    "No Runtime, SDK import, fixture, provider, credential or product execution occurred; no source or guard was edited.",
+    "This peer grants no metadata/body/SDK execution permission and does not alter any prior UNKNOWN."
+  ]
+}

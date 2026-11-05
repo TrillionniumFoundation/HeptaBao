@@ -1,0 +1,13 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 360,
+  "idempotency_key": "heptabao-4e808-source-carrier-relay-r1-b1a9a177"
+}

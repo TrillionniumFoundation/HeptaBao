@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"IjIwNTA6NzM2MTYzNToxMjAwNDoxNzkzODk4OTAyOTgyMzM5ODg4OjE3OTM4OTg5MDI5ODIzMzk4ODhcIn0ifV0sImlzRXJyb3IiOmZhbHNlfQ==\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":16466,\"offset\":16384,\"operation_id\":\"102d08adf116beedae4492816e9c59428fbebf7b75abb1b5fc3c1b3df4a619c5\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"755c8ac469c651b3b4712d25cacede54d6698d5ac6a3d39fafb0e3f24ddc4ae1\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":16466}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

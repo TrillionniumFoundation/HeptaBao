@@ -1,0 +1,11 @@
+--- a/sender.prebind.py
++++ b/sender.ready.py
+@@ -5,7 +5,7 @@
+ UNTIL=START+90
+ HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+ TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+-BINDING_READY=False
++BINDING_READY=True
+ FILES=[
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",

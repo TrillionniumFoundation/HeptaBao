@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-catalog-64333afe-py314-r3-streams-00000-20261105",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1acb902f1-fc05-5693",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.root-three-public-source-bodies-actual-info-binding.r30.v1",
+  "status": "PASS_EXACT_SOURCE_READ_BINDINGS",
+  "checks_passed": 35,
+  "checks": [
+    "harness-policy:ACK:SDK-not-error",
+    "harness-policy:ACK:one-native-text",
+    "harness-policy:status:SDK-not-error",
+    "harness-policy:status:one-native-text",
+    "harness-policy:payload:SDK-not-error",
+    "harness-policy:payload:one-native-text",
+    "harness-policy:original-file-info-closed",
+    "harness-policy:whole-native-payload-exact",
+    "harness-policy:exact-original-fixed-path",
+    "harness-policy:actual-whole-bound-table",
+    "harness-policy:frozen-body-request-exact",
+    "support-context:ACK:SDK-not-error",
+    "support-context:ACK:one-native-text",
+    "support-context:status:SDK-not-error",
+    "support-context:status:one-native-text",
+    "support-context:payload:SDK-not-error",
+    "support-context:payload:one-native-text",
+    "support-context:original-file-info-closed",
+    "support-context:whole-native-payload-exact",
+    "support-context:exact-original-fixed-path",
+    "support-context:actual-whole-bound-table",
+    "support-context:frozen-body-request-exact",
+    "codex-harness:ACK:SDK-not-error",
+    "codex-harness:ACK:one-native-text",
+    "codex-harness:status:SDK-not-error",
+    "codex-harness:status:one-native-text",
+    "codex-harness:payload:SDK-not-error",
+    "codex-harness:payload:one-native-text",
+    "codex-harness:original-file-info-closed",
+    "codex-harness:whole-native-payload-exact",
+    "codex-harness:exact-original-fixed-path",
+    "codex-harness:actual-whole-bound-table",
+    "codex-harness:frozen-body-request-exact",
+    "Codex_matches_original_WAL_full9_and_hash",
+    "three_bodies13569_within_original_caps"
+  ],
+  "proposal": "56158dc9a4a6ab7d67daa079a1bc523ba8342aaa",
+  "source_paths_originally_admitted": true,
+  "actual_catalog_projection_root_review": "612a1a78d26cbc6d834f8d609c81fac622dcf41c",
+  "inputs": [
+    {
+      "id": "harness-policy",
+      "request_blob": "36429e0ad1e2e28d9139e96a068ff6f9a7daf090",
+      "request_bytes": 421,
+      "request_sha256": "d3d446f82c39a22f930f5c11715e3bab595544a1c027d1c0ad6c87ebb83c5e15",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-harness-policy-fc493813-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+            "expected_version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+            "offset": 0,
+            "limit": 5718
+          }
+        }
+      },
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+      "bytes": 5718,
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+      "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+      "full9_decimal": [
+        "16777233",
+        "405236880",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "5718",
+        "1784843458052100717",
+        "1784843458052100717"
+      ],
+      "original_info_operation": "661570f23f929faef057586749a3b43c672b07c0d55251f4ab2654c1d78b6946"
+    },
+    {
+      "id": "support-context",
+      "request_blob": "26d25048517e308b569a12ba60e24bc65cc581a2",
+      "request_bytes": 422,
+      "request_sha256": "8322a35b720bac13b1965790387b9b438168293bbed0441e9087f8acaedd1566",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-support-context-ac75c6ed-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+            "expected_version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+            "offset": 0,
+            "limit": 4255
+          }
+        }
+      },
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+      "bytes": 4255,
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+      "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+      "full9_decimal": [
+        "16777233",
+        "405240067",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "4255",
+        "1784843465103099904",
+        "1784843465103099904"
+      ],
+      "original_info_operation": "11477d7ac2065d31d4da358a6c236429e1a70303c327856c7ddff63e5cd57229"
+    },
+    {
+      "id": "codex-harness",
+      "request_blob": "9721b70e08f96471ae6400d7d45fc51ae1f2068b",
+      "request_bytes": 495,
+      "request_sha256": "83f7123e521cdfae88f9f252a99533970c3f922541279f5712f4505ca968a1b4",
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-codex-harness-8919eefc-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+            "expected_version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+            "offset": 0,
+            "limit": 3596
+          }
+        }
+      },
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "bytes": 3596,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+      "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+      "full9_decimal": [
+        "16777233",
+        "405276634",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "3596",
+        "1784844051297089646",
+        "1784844051297089646"
+      ],
+      "original_info_operation": "d4717cee7bd80b41173e7e9c83e5b3db32164dc0076414e9748ee1f68896f993"
+    }
+  ],
+  "total_body_bytes": 13569,
+  "body_operations": 3,
+  "root_Runtime_calls": 0,
+  "SDK_execution_authorized": false,
+  "Google_new_paths_authorized": false,
+  "selected_owner_proven": false
+}

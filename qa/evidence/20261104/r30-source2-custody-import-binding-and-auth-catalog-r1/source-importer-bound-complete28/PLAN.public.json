@@ -1,0 +1,56 @@
+{
+  "after_authorized_submit": [
+    "unique process_start",
+    "save original ACK before parse",
+    "observe only original job and immutable results",
+    "preserve unknown without replay"
+  ],
+  "argument_count": 6,
+  "argument_shape": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "exact full candidate text",
+    "SHA256(exact full candidate text)"
+  ],
+  "budgets": {
+    "Git": 60,
+    "KILL": 5,
+    "TERM": 5,
+    "clone": 90,
+    "controller": 300,
+    "outer": 330
+  },
+  "candidate": {
+    "blob": "e19892771c202552ca73905b78455ffeeaf26d7d",
+    "bytes": 33093,
+    "sha256": "2e8e0e44dd54523a2710022fbb2ee86461f2f7fc5e9b9d20753a1ec34fe182ce"
+  },
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "exact_request": {
+    "blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "bytes": 34190,
+    "sha256": "adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d"
+  },
+  "executable": "/usr/bin/python3",
+  "host": "desktop",
+  "idempotency_key": "heptabao-4e808-standalone-source-import-2e8e0e44-20261105-r1",
+  "new_inert_or_prepare_layer": false,
+  "new_owned_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1",
+  "new_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+  "planned_not_actual": {
+    "X230_import_qualified": false,
+    "product_run": false,
+    "source_import_qualified": false
+  },
+  "product_tests": 0,
+  "requires_before_submit": [
+    "root acceptance of this exact candidate and request",
+    "explicit Runtime line handoff",
+    "durable external execution intent in a separate completed call"
+  ],
+  "root_and_source_create_only": true,
+  "schema": "heptabao.current4e808.standalone-import-bound-plan.v1",
+  "status": "source-only-awaiting-root-review-and-runtime-line"
+}

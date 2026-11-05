@@ -1,0 +1,194 @@
+{
+  "schema": "heptabao.mac-captured-catalog-actual-limited-review.r3",
+  "status": "PASS_CAPTURED_CATALOG_OBSERVATION_ONLY",
+  "checks": [
+    {
+      "case": "original_stream_job",
+      "passed": true
+    },
+    {
+      "case": "stdout_hex_shape",
+      "passed": true
+    },
+    {
+      "case": "stdout_hex_text_lossless",
+      "passed": true
+    },
+    {
+      "case": "stdout_whole_eof_authority",
+      "passed": true
+    },
+    {
+      "case": "stderr_hex_shape",
+      "passed": true
+    },
+    {
+      "case": "stderr_hex_text_lossless",
+      "passed": true
+    },
+    {
+      "case": "stderr_whole_eof_authority",
+      "passed": true
+    },
+    {
+      "case": "stdout_original_cap",
+      "passed": true
+    },
+    {
+      "case": "stderr_empty",
+      "passed": true
+    },
+    {
+      "case": "schema",
+      "passed": true
+    },
+    {
+      "case": "observation_known_complete",
+      "passed": true
+    },
+    {
+      "case": "deadline_and_handlers",
+      "passed": true
+    },
+    {
+      "case": "same_fixed_capsule",
+      "passed": true
+    },
+    {
+      "case": "original_counts",
+      "passed": true
+    },
+    {
+      "case": "descriptor_closure",
+      "passed": true
+    },
+    {
+      "case": "exact_nine_paths",
+      "passed": true
+    },
+    {
+      "case": "exact_parent_count",
+      "passed": true
+    },
+    {
+      "case": "anchor_full9_/",
+      "passed": true
+    },
+    {
+      "case": "anchor_full9_/Volumes",
+      "passed": true
+    },
+    {
+      "case": "anchor_full9_/Volumes/T5",
+      "passed": true
+    },
+    {
+      "case": "owned_t5_parent_/Volumes/T5/hepta-vnext-recovery-20261013",
+      "passed": true
+    },
+    {
+      "case": "owned_t5_parent_/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1",
+      "passed": true
+    },
+    {
+      "case": "owned_t5_parent_/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures",
+      "passed": true
+    },
+    {
+      "case": "owned_t5_parent_/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before",
+      "passed": true
+    },
+    {
+      "case": "owned_t5_parent_/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/output",
+      "passed": true
+    },
+    {
+      "case": "no_new_effects",
+      "passed": true
+    },
+    {
+      "case": "same_captured_registry_denominator",
+      "passed": true
+    },
+    {
+      "case": "record_hashes_22",
+      "passed": true
+    },
+    {
+      "case": "record_id_value_hash_22",
+      "passed": true
+    },
+    {
+      "case": "record_root_value_hash_22",
+      "passed": true
+    },
+    {
+      "case": "record_no_selected_claim_22",
+      "passed": true
+    },
+    {
+      "case": "record_hashes_68",
+      "passed": true
+    },
+    {
+      "case": "record_id_value_hash_68",
+      "passed": true
+    },
+    {
+      "case": "record_root_value_hash_68",
+      "passed": true
+    },
+    {
+      "case": "record_no_selected_claim_68",
+      "passed": true
+    },
+    {
+      "case": "all_old_projection_values_unchanged",
+      "passed": true
+    },
+    {
+      "case": "original_namespace_refusal_preserved",
+      "passed": true
+    },
+    {
+      "case": "five_models_unchanged_and_not_selected",
+      "passed": true
+    },
+    {
+      "case": "two_original_observers_closed",
+      "passed": true
+    },
+    {
+      "case": "no_pending_runtime",
+      "passed": true
+    }
+  ],
+  "checkCount": 40,
+  "job": "1a1acb902f1-fc05-5693",
+  "authority": "df33e4e55db99a52648d63365149cbb42396bce5",
+  "stdout": {
+    "blob": "3bb40bfd21237fba2b4eaeaffb81388e5e8b3ebf",
+    "bytes": 8971,
+    "sha256": "de59ba0d07c886c20330af232f734480758205cc9f0c0d4b7d41eb73d21d1265"
+  },
+  "stderr": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+  "originalObservers": {
+    "authority-01": {
+      "operation_id": "1e914890f45a5dc223785d7f86aa00a636298f479e532a4be2a9027e2a911391",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "originalPayload": "d67b7f75e6cfe4a4f1ec2ea67e0ee89d5f085838"
+    },
+    "streams-00000": {
+      "operation_id": "ed6681a5a5b00953fa5f2ffa3ddbd013959baf2e41e198fc9cd9d6784433f29f",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "originalPayload": "4bd472ddc22f478e7d5b81d9831197bfbe4efc5c"
+    }
+  },
+  "actualPrivateCapsuleRead": true,
+  "currentCaptureReplayed": false,
+  "actualSelectedOwnerProven": false,
+  "sourceOrRootAdmission": false,
+  "newInfosSubmitted": 0
+}

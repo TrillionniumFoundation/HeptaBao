@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.immutable-evidence-packet.whole-validation.v1",
+  "manifest": {
+    "blob": "2df01c3c68b4925fe459d92094dca065689b595c",
+    "bytes": 20990,
+    "sha256": "f4b3d9fdc77218399e5777736c7944b22593d415e20c9daff4d312c59542dd08"
+  },
+  "validatedLeafCount": 85,
+  "validatedLeafBytes": 334743,
+  "method": "Each preserved raw UTF-8 original was rehashed for SHA-256 and Git blob identity against its immutable external pin. External archiving used whole readback before acceptance. Tree path and Merkle validation follows below in the separately stored packet result.",
+  "runtimeReadsPerformed": 0,
+  "bodyProposalStatus": "UNSUBMITTED_AWAIT_ROOT_GO",
+  "allFiveOriginalObserverPayloadsComplete": true,
+  "noPendingNativeFuture": true,
+  "historicalFailuresAndUnknownsUnmodified": true
+}

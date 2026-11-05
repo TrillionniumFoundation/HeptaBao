@@ -1,0 +1,72 @@
+[
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/intent.public.json",
+    "bytes": 3869,
+    "sha256": "bf957c8bd7d1b426648a9bf92209b20f1cd1eb9b5600a865365f105b56f98a77",
+    "version": "2050:7361555:3869:1793898901571558599:1793898901571558599",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/ssh-preflight.public.json",
+    "bytes": 990,
+    "sha256": "5d6a3e0bc62db7f528641b0cb0c56c116441e27bdaa953851cb8f4e3715fbd3a",
+    "version": "2050:7361590:990:1793898901650947940:1793898901650947940",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.public.json",
+    "bytes": 213,
+    "sha256": "b7d0f6a734ebfcbb8d00b5e86ebb74c18cb546a62ebd0a0c9bef6dba94d29812",
+    "version": "2050:7361581:213:1793898901638322591:1793898901638322591",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stdout",
+    "bytes": 4313,
+    "sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+    "version": "2050:7361576:4313:1793898901590899565:1793898901590899565",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "version": "2050:7361560:0:1793898901583899767:1793898901583899767",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.public.json",
+    "bytes": 197,
+    "sha256": "267e0d6e3321f66f1ea4a6be22a8d94c417183ad8b9cc99dd477ab56ba0f8ee7",
+    "version": "2050:7361620:197:1793898902524520885:1793898902524520885",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.stderr",
+    "bytes": 1866,
+    "sha256": "4acbf1d28f084f7d4b6fb39cd029587e0043cd53505e80f17dcd640ed8fe6f16",
+    "version": "2050:7361605:1866:1793898902432875221:1793898902432875221",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.public.json",
+    "bytes": 204,
+    "sha256": "54d837cd994f765b9ac54231534de227c0793949f561da00c1418fda306be1e4",
+    "version": "2050:7361630:204:1793898902886862095:1793898902886862095",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "version": "2050:7361593:0:1793898901662897483:1793898901662897483",
+    "eof": true
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stderr",
+    "bytes": 1819,
+    "sha256": "e1ba3018b673dcca21e89ec812986ad9edf045e7963e6328f95597051d14e243",
+    "version": "2050:7361592:1819:1793898902789864899:1793898902789864899",
+    "eof": true
+  }
+]

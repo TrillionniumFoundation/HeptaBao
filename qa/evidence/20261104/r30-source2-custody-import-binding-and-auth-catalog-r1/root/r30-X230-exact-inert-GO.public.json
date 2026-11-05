@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root-X230-exact-create-only-inert-go.r30.v1",
+  "status": "GO_ONCE_EXACT_INERT_ONLY",
+  "lane": "B",
+  "owner": "/root/compatibility_audit",
+  "line_handoff": {
+    "name": "r30-line-B-Auth-bodies-closed-to-X230-handoff.public.json",
+    "blob": "c1a042c455fbd73cf3e4b2b9f8bed2e9b8df4829",
+    "bytes": 1726,
+    "sha256": "4b3ef58140e7c13838b168f7b571233a15d51079f057f67f051016daf2c6af85"
+  },
+  "root_source_review": {
+    "name": "r30-X230-ready-seven-inputs-source-contract-root-review.public.json",
+    "blob": "b756d80da641089063b4020d50174653afe4fa43",
+    "bytes": 10319,
+    "sha256": "0e07052d48d19b53090529e8815fbe9da4e01a66eb49cc600adeba7758e3764d"
+  },
+  "request": {
+    "path": "dispatch/inert.exact-request.json",
+    "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+    "bytes": 92929,
+    "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084",
+    "mode": "100644"
+  },
+  "stdin": {
+    "path": "dispatch/inert.stdin.json",
+    "blob": "4850e99f54932e5d79478ec6caa1be0a71de55f5",
+    "bytes": 87425,
+    "sha256": "9ec08836dc95d551037c8a84052ed931a363ccc4b1ad2abb0dc6141f2c3a0c02",
+    "mode": "100644"
+  },
+  "source": {
+    "path": "candidate/inert.py",
+    "blob": "4df7eb29d3b6913aa641ba139550d5475f00bdaf",
+    "bytes": 5043,
+    "sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512",
+    "mode": "100644"
+  },
+  "exact_process_start": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_shape": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact inert source bytes from named request; no rewrite"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-4e808-x230-controls-inert-r1-f6f06d56",
+    "request_digest_sha256": "7930f93456c68043e31c4ce19f5f35858bea1d8f4e626edc83fbdf32e798bee6",
+    "request_fingerprint_decimal": "8732753680660856899"
+  },
+  "scope": {
+    "create_only_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1",
+    "publish_only": [
+      "sender.py",
+      "receiver.py",
+      "relay.py",
+      "inert-stage.result.public.json"
+    ],
+    "compile_source_only": true,
+    "no_sender_receiver_relay_execution": true,
+    "no_git_compile_server_or_credential_action": true,
+    "no_production_cutover": true
+  },
+  "submission_protocol": [
+    "Complete external exact intent first.",
+    "Exactly one process_start using original full request bytes, including exact stdin; keep original 60s.",
+    "Save original SDK ACK whole externally before parsing, inspect isError first, and retain unsafe integer fields losslessly.",
+    "Missing ACK or error: preserve evidence, stop new admissions, no process replay/key/root change.",
+    "Use only original returned job/operation IDs; one Runtime tool call and one owned native future at a time."
+  ],
+  "authorized_finite_observation_plan": {
+    "original_job_authority_and_streams": true,
+    "require_exit0_full_durable_confirmed_not_timeout_not_cancelled": true,
+    "expected_files": [
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/sender.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/receiver.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/inert-stage.result.public.json"
+    ],
+    "independent_fixed_file_infos": 4,
+    "whole_version_bound_body_reads": 4,
+    "body_max_each_bytes": 65536,
+    "total_body_max_bytes": 131072,
+    "require_uid": 1000,
+    "require_regular_nlink1_mode": "0600",
+    "sources_match_exact_ready_source_whole": true,
+    "receipt_must_match_original_stdin_and_three_full9": true,
+    "receipt_own_full9_from_independent_info_not_self_asserted": true,
+    "original_SDK_native_pages_whole_and_all_known_observers_closed": true
+  },
+  "next_gate": "Return whole actual inert packet and four independent identities. Relay request 9241a86d71e9703259aed6e3d6f711c7568bcf39 is not authorized by this GO; root accepts actual inert evidence then separately binds it. Do not add another publisher/control/prepare layer.",
+  "historical_unknown_preserved": "Old X230 relay remains UNKNOWN; do not remove or rewrite the original effect fence.",
+  "runtime_qualification": false,
+  "root_Runtime_calls": 0
+}

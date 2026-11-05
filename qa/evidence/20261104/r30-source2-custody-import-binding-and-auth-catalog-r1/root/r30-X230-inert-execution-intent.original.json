@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.current4e808.x230-inert-execution-intent.v1",
+  "status": "INTENT_DURABLE_BEFORE_UNIQUE_SUBMIT",
+  "recorded_utc": "2026-11-05T18:01:56.742Z",
+  "owner": "/root/compatibility_audit",
+  "lane": "B",
+  "root_go": {
+    "blob": "247a9f4b56bec7251f2fbcaff0fab536bd29288a",
+    "bytes": 4577,
+    "sha256": "63f3e1182481c62a68847916902fd360e154ba83c2c7ade30bbf9b3a906ba63a"
+  },
+  "handoff": {
+    "blob": "c1a042c455fbd73cf3e4b2b9f8bed2e9b8df4829",
+    "sha256": "4b3ef58140e7c13838b168f7b571233a15d51079f057f67f051016daf2c6af85"
+  },
+  "source_packet": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2",
+  "request": {
+    "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+    "bytes": 92929,
+    "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084"
+  },
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 60,
+  "idempotency_key": "heptabao-4e808-x230-controls-inert-r1-f6f06d56",
+  "request_digest": "7930f93456c68043e31c4ce19f5f35858bea1d8f4e626edc83fbdf32e798bee6",
+  "request_fingerprint_decimal": "8732753680660856899",
+  "request_binding_reference": "TrillionniumFoundation/hepta-runtime blob fc559bec715e95fee000b65c54c083f4fdd43450 lines 1673-1731 (reference only, not a deployed-version assertion)",
+  "request_binding_precheck_correction": {
+    "first_local_check": "Failed before intent publication and before any Runtime: used env:null for omitted env.",
+    "source_supported_correction": "RequestBinding.env is BTreeMap; omitted env serializes as {}. Corrected only local derivation; request bytes unchanged.",
+    "process_submissions_during_correction": 0
+  },
+  "stdin_bytes": 87425,
+  "stdin_sha256": "9ec08836dc95d551037c8a84052ed931a363ccc4b1ad2abb0dc6141f2c3a0c02",
+  "code_bytes": 5043,
+  "code_sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512",
+  "process_start_submissions_before_this_intent": 0,
+  "scope": "Only create-only compile/publish sender.py, receiver.py, relay.py and inert receipt. No relay execution.",
+  "old_X230_relay_state": "UNKNOWN preserved",
+  "observation": "Original job authority and streams, then four fixed independent infos and four version-bound whole bodies; one native future at a time.",
+  "on_unknown": "Preserve original evidence and stop new admissions; no business replay/new key."
+}

@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"node_id\":\"C_kwDOUGncwNoAKDVlNDAxYTQ0YzFhMmZlZTJhNTEzYTBmNjFkMGM4YzQzODZmYWMzMmM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T17:26:21Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T17:26:21Z\"},\"tree\":{\"sha\":\"1c5de99c488986f6326d3d5a05730d284c746ba1\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/1c5de99c488986f6326d3d5a05730d284c746ba1\"},\"message\":\"docs(validation): record current Mac full34 pass and R29 source custody\\n\\nRecord original Mac 31/31 against official OpenBao 2.7.1, whole read closure, LAN9 and export81 completion, SDK13, and bounded source/Auth continuation. Preserve all prior failures and UNKNOWNs; full replacement, production cutover and cleanup remain unqualified.\",\"parents\":[{\"sha\":\"eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eeeb22dc2804cf5452852ab6caa309df0f67a335\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+    "display_title": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+    "structuredContent": {
+      "title": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+      "content": "{\"sha\":\"5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"node_id\":\"C_kwDOUGncwNoAKDVlNDAxYTQ0YzFhMmZlZTJhNTEzYTBmNjFkMGM4YzQzODZmYWMzMmM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T17:26:21Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T17:26:21Z\"},\"tree\":{\"sha\":\"1c5de99c488986f6326d3d5a05730d284c746ba1\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/1c5de99c488986f6326d3d5a05730d284c746ba1\"},\"message\":\"docs(validation): record current Mac full34 pass and R29 source custody\\n\\nRecord original Mac 31/31 against official OpenBao 2.7.1, whole read closure, LAN9 and export81 completion, SDK13, and bounded source/Auth continuation. Preserve all prior failures and UNKNOWNs; full replacement, production cutover and cleanup remain unqualified.\",\"parents\":[{\"sha\":\"eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eeeb22dc2804cf5452852ab6caa309df0f67a335\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/5e401a44c1a2fee2a513a0f61d0c8c4386fac32c"
+    }
+  },
+  "isError": false
+}

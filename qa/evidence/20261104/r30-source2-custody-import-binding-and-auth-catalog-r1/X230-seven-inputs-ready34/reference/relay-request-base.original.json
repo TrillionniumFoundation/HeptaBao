@@ -1,0 +1,1 @@
+{"host":"desktop","executable":"/usr/bin/python3","args":["-I","-S","-B","/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py"],"cwd":"/home/qian-qi/heptabao-ha-closure-20261103-r1","timeout_seconds":360,"idempotency_key":"heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7"}

@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.mac-captured-catalog-following-public-info.intent.r3",
+  "label": "info-03-codex-harness",
+  "rootGo": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+  "lineBHandoff": "386b56b456ce6db89631d4d6bf887e7e29a5c0c8",
+  "catalogActualReview": "d28ff11a58600b6ddacb31cf462fce3c110b5f4c",
+  "request": {
+    "blob": "1166c5856452cc10bb5f4011f03f0e9513263eb8",
+    "bytes": 351,
+    "sha256": "88feb5b689a434a88b5a8a1adad002474887922de5b62c12caeb4e85165f98fa",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-info-codex-harness-20261105-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js"
+        }
+      }
+    }
+  },
+  "fixedPublicPath": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+  "ordinal": 3,
+  "previousInfoClosedAndWhole": "4a95c0dd3dcb18ec45883e4a47cb43876c4900c9",
+  "submitted": false,
+  "oneOriginalOperation": true,
+  "bodyReadOrSdkExecutionAuthorized": false,
+  "stopOnErrorOrUnknown": true
+}

@@ -1,0 +1,115 @@
+{
+  "source_packet": "6116305e15768546bd3f06ef38db865134b05190",
+  "actual_readback_tree": "6a8b6b46d8f68826bce01782b649512eb03374e9",
+  "root_actual_review": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+  "sources": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+      "bytes": 16310,
+      "sha256": "e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f",
+      "blob": "d2fc9a7d79240a32a026f8cd096b7e3d37a9bc23",
+      "version": "2050:7360872:16310:1793888506021093169:1793888506085272244",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "bytes": 13225,
+      "sha256": "62be0f577ace2ce3a7754b10d310dfc3f7cc6aa667f566b883c8575d320366b5",
+      "blob": "3dd0dbfccd0f0522a106ea2a77659d49f4a4b411",
+      "version": "2050:7360897:13225:1793888506121029176:1793888506185417741",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+      "bytes": 72753,
+      "sha256": "7ee5ee8218b50b7edc3cc010bdd1306f6d03b3301f00811034425b591ad76754",
+      "blob": "c87a051609f0e0a8049367e6df27618c8931c784",
+      "version": "2050:7360908:72753:1793888506264430789:1793888506295937755",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "bytes": 25879,
+      "sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92",
+      "blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+      "version": "2050:7360919:25879:1793888506331235190:1793888506363151955",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 4,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97",
+      "version": "2050:7360930:79776:1793888506395995184:1793888506426876587",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 5,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b",
+      "version": "2050:7360941:41618:1793888506459247366:1793888506489395876",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 6,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a",
+      "version": "2050:7360952:14046:1793888506519885835:1793888506551413772",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 7,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+      "version": "2050:7360959:87254:1793888506582798081:1793888506612478013",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    },
+    {
+      "index": 8,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a",
+      "version": "2050:7360974:6445:1793888506643882607:1793888506684002898",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1
+    }
+  ]
+}

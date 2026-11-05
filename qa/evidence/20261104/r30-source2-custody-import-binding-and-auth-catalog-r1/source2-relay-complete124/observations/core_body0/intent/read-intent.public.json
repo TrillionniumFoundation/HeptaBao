@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.source-carrier.relay.fixed-read-intent.v1",
+  "root_GO": "51d5cc8b40d3563d9f1e471aaadb3d41d7b1838a",
+  "original_job_id": "1a1acb4e995-fc05-567a",
+  "observation_name": "core_body0",
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-source-carrier-relay-readback-b1a9a177-r1-core-body0",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/result.public.json",
+        "offset": 0,
+        "limit": 16384,
+        "expected_version": "2050:7361635:12004:1793898902982339888:1793898902982339888"
+      }
+    }
+  },
+  "original_business_submit_once": true,
+  "new_business_or_product": false,
+  "original_SDK_external_before_parse": true,
+  "same_returned_ID_status_and_immutable_pages_only": true,
+  "on_error": "Stop new admissions; preserve original; no implicit retry or alternate key."
+}

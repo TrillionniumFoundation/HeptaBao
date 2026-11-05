@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-public-source-body-codex-harness-8919eefc-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "expected_version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+      "offset": 0,
+      "limit": 3596
+    }
+  }
+}

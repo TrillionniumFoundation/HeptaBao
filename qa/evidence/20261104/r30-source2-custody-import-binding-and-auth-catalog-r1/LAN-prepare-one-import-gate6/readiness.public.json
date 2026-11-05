@@ -1,0 +1,167 @@
+{
+  "schema": "heptabao.current4e808.LAN98-plus12.prepare-readiness.v1",
+  "status": "EXACT_EXISTING_PREPARE_WAITING_ONLY_FOR_ROOT_CLOSED_CURRENT_CANONICAL_IMPORT_AND_SEPARATE_PREPARE_GO",
+  "source_only": true,
+  "Runtime_calls": 0,
+  "new_candidate_sources": 0,
+  "existing_prepare_request": {
+    "blob": "483231efe2016a8bd72b8aa205fb589b13513f6e",
+    "bytes": 480,
+    "sha256": "4a1aa367dca92a9b4438c690b4db971e0ac8efe71af9d3dd4847ae34a4ea7baa"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-postcold-prepare-r1-57cb2b31-7ee5ee82"
+  },
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "leaves": 3914,
+    "history_commits": 3763,
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74"
+  },
+  "existing_controls": {
+    "source_packet": "6116305e15768546bd3f06ef38db865134b05190",
+    "root_source_review": "da34eedd281b7a39de558d93efb4569544570b1b",
+    "actual_nine_source_readback": "6a8b6b46d8f68826bce01782b649512eb03374e9",
+    "root_actual_source_review": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+    "launcher_blob": "6634b9f6c5b8a971bffe4bd7338545b2e238fd44",
+    "launcher_sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92",
+    "already_published_and_independently_verified": true,
+    "republish_required": false
+  },
+  "remaining_import_dependency": {
+    "canonical_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "expected_import_receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/result.public.json",
+    "expected_receipt_schema": "heptabao.same-root-publication-4e808.desktop-standalone-source-import.v1",
+    "actual_complete_import_sha256": null,
+    "actual_complete_import_blob": null,
+    "complete_root_review_blob": null,
+    "qualification_complete": false,
+    "receipt_hash_role": "External root qualification evidence; not a new launcher argument or source constant.",
+    "requires": [
+      "Exact bound inline importer and trailing self-SHA admission from Compat's source; original300/Git60/clone90/outer330.",
+      "Original authority exit0/full/durable/confirmed and original post-publication terminal fields; no replay on unknown.",
+      "Whole independently version-bound receipt; canonical_proof commit/tree/sole parent/root/history and full fsck; materialized3914 tree/index/whole Git blobs and source_after freeze.",
+      "All original commands, held inputs and created-source-directory closure; within original deadline; root complete actual review."
+    ],
+    "import_prerequisites_already_closed": {
+      "export81_root": "1ee2dc78e17e938ff9d3c4111d3483c6d654ce95",
+      "source2_relay_actual": "454524327d4477828b6b6d2940d60b31c546a50d",
+      "source2_root": "89c073151239ed359cb2eb69ccb9b91fe4f1898d"
+    }
+  },
+  "normal_evidence": {
+    "both_platforms_original60_plus_independent_ABA1_passed": true,
+    "linux_root": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+    "mac_root": "1c5ebf2bea9cabb6c64deb3810b56f977e103e05",
+    "all10_frozen_hashes": {
+      "linux": {
+        "abi": "x86_64-unknown-linux-gnu",
+        "actual_native_build_host": "rog",
+        "alias": "rog-ts",
+        "build": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1",
+        "source": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source",
+        "python": "/usr/bin/python3",
+        "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build_driver_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+        "files": {
+          "artifacts/heptabao-seed": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+          "artifacts/heptabao-server": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+          "normal-release-build.stdout": "064a4de5bc8a6dd76faddd9bcac7e444b27c1f7128000fdf9638695e6ecc9e24",
+          "native-build.public.json": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+          "normal-release-result.public.json": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+        }
+      },
+      "mac": {
+        "abi": "aarch64-apple-darwin",
+        "actual_native_build_host": "mac",
+        "alias": "mac-ts",
+        "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
+        "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+        "python": "/opt/homebrew/bin/python3",
+        "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "build_driver_sha256": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+        "files": {
+          "artifacts/heptabao-seed": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+          "artifacts/heptabao-server": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+          "normal-release-build.stdout": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+          "native-build.public.json": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+          "normal-release-result.public.json": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571"
+        }
+      }
+    },
+    "desktop_normal5_actual": "e049198ac8e32db82bedbd1ebc1a1f88eec3c71d",
+    "desktop_normal5_root": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+    "desktop_normal5_role": "Closed current product transport for other consumers; existing LAN argv still uses the original ROG/Mac retained binary paths.",
+    "full_large_log_archive_claimed": false
+  },
+  "prepare_behavior": {
+    "same_existing_source": true,
+    "product_servers_started": false,
+    "source_QA_hashes": 5,
+    "old_evidence_fences": 36,
+    "remote_build_probes": [
+      "rog-ts",
+      "mac-ts"
+    ],
+    "contract_describe": true,
+    "expected_outputs": [
+      "linux-native-build.public.json",
+      "linux-normal-release-result.public.json",
+      "mac-native-build.public.json",
+      "mac-normal-release-result.public.json",
+      "prepared.public.json"
+    ],
+    "prepared_sha256": null,
+    "prepare_submitted": false,
+    "prepare_GO": false
+  },
+  "live_gate": {
+    "live_request_manufactured": false,
+    "prepared_whole_SHA_required": true,
+    "root_separate_GO_required": true,
+    "exclusive_physical_window_required": true,
+    "original_checks": 98,
+    "separate_postcold_checks": [
+      "postcold.inputs_and_history_bound",
+      "postcold.all_three_owned_processes_stopped",
+      "postcold.mac_persisted_frontier_retained",
+      "postcold.same_recovered_cipher_reference_retained",
+      "postcold.new_processes_sealed",
+      "postcold.real_sealed_leader_elected",
+      "postcold.all_three_unsealed_once",
+      "postcold.all_local_frontiers_retained",
+      "postcold.leader_retained_history_exact",
+      "postcold.all_metadata_and_retired_states_exact",
+      "postcold.all_hosts_small_readindex",
+      "postcold.shared_deadline_completed"
+    ],
+    "outer_seconds": 3000,
+    "original_controller_seconds": 2400,
+    "postcold_seconds_clipped_to_original": 300,
+    "role_prepare_seconds": 60,
+    "sealed_election_seconds": 60,
+    "HTTP_seconds": 15,
+    "native_admission_seconds": 8,
+    "old_evidence_fences": 36,
+    "natural_election_and_owned_cleanup_unchanged": true,
+    "live_submitted": false,
+    "live_GO": false
+  },
+  "historical_boundaries": {
+    "df026_LAN91_of98_and0_of12_failure_preserved": true,
+    "failed1c665_Mac_ABA_test_preserved": true,
+    "source3_original_lost_ACK_read_UNKNOWN_preserved": true
+  }
+}

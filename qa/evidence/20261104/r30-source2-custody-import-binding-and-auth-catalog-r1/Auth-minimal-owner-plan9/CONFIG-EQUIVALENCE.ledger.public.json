@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.mac-owner-public-configuration-equivalence-ledger.proposal.r1",
+  "status": "SOURCE_ONLY_EQUIVALENCE_NOT_PROVEN",
+  "actualConfigurationReadForThisPlan": false,
+  "existingPrivateCapsuleReopened": false,
+  "observerSourceUnchanged": "7a246176115ce675242fd5e0d413b91683a4c61d",
+  "rows": [
+    {
+      "input": "provider/modelId/agentId",
+      "consumer": "original worker lines 340-341; selector lines 15255+",
+      "known": "Five actual public model bindings already recorded; preserve exact provider/model and each agent ID.",
+      "rule": "Exact preserve; no runtime override.",
+      "unresolved": false
+    },
+    {
+      "input": "model/provider/agent/session runtime policy fields",
+      "consumer": "policy lines 9-18 delegates resolveModelRuntimePolicy",
+      "known": "Delegation and arguments only; imported field precedence unknown.",
+      "rule": "Enumerate exact JSON pointers after actual whole dependency read; do not replace with model-only config.",
+      "unresolved": true
+    },
+    {
+      "input": "OpenAI implicit runtime routing fields",
+      "consumer": "policy lines 19-30 delegates openAIProviderUsesCodexRuntimeByDefault",
+      "known": "Conditional Codex branch is visible; predicate implementation unavailable.",
+      "rule": "No provider=openai shortcut or forced result.",
+      "unresolved": true
+    },
+    {
+      "input": "config.models.providers provider-key lookup",
+      "consumer": "support lines 8-10 via findNormalizedProviderValue",
+      "known": "Lookup result controls provider configuration and model selection.",
+      "rule": "Preserve resolved key/value semantics; normalization implementation remains missing.",
+      "unresolved": true
+    },
+    {
+      "input": "providerConfig.api / selected modelConfig.api",
+      "consumer": "support line 15",
+      "known": "model API overrides provider API; nullish fallback is openai-responses.",
+      "rule": "Typed, bounded, approved public values only. Preserve missing/null distinctions where any consumer can distinguish them; do not invent a fallback value in source data.",
+      "unresolved": true
+    },
+    {
+      "input": "providerConfig.baseUrl / selected modelConfig.baseUrl",
+      "consumer": "support line 16 and unread routing logic",
+      "known": "Selected base URL is passed to support context.",
+      "rule": "No redaction claimed equivalent without exact consumer proof. Credential-bearing/userinfo/query/free-text values are not automatically public or admitted to Node.",
+      "unresolved": true
+    },
+    {
+      "input": "model/provider params.azureApiVersion",
+      "consumer": "support line 17 and readStringParam lines 45-46",
+      "known": "model nullish-precedence over provider; only trimmed nonempty string returned.",
+      "rule": "Preserve actual relevant value only under an explicit bounded public type/allowlist; no private value is read by this plan.",
+      "unresolved": true
+    },
+    {
+      "input": "providerConfig.request",
+      "consumer": "support line 18",
+      "known": "The entire value is forwarded; it may contain arbitrary request configuration.",
+      "rule": "Never publish or forward arbitrary raw request/header/token data. Prove which fields are consumed and whether removal is behaviorally equivalent; otherwise remain blocked.",
+      "unresolved": true
+    },
+    {
+      "input": "providerOwnership status/plugin IDs",
+      "consumer": "selector lines 15280-15283 / 15336-15339; support lines 21-24",
+      "known": "Actual imported resolver supplies this object.",
+      "rule": "Use actual resolver in future admitted diagnostic; do not inject unowned/empty IDs to alter a supports result.",
+      "unresolved": true
+    },
+    {
+      "input": "plugin activation, registration options, runtime environment and workspace",
+      "consumer": "loader lines 69-112, load-context and loadOpenClawPlugins imports",
+      "known": "Complete original onlyPluginIds and scope are known, but context/registration option semantics are not.",
+      "rule": "Preserve original flags and equivalent workspace/environment; a fresh empty HOME/workspace is not assumed equivalent. Do not filter enabled Google or bypass registration.",
+      "unresolved": true
+    },
+    {
+      "input": "public JSON shape, property presence and ordering",
+      "consumer": "all future qualified loader/selector/support dependencies",
+      "known": "Existing observer canonicalizes for hashing, which alone proves neither semantic equivalence nor ordered-map behavior.",
+      "rule": "Preserve consumed absence/null/types/array and object iteration order where relevant. Record source-backed erasure proofs for excluded secret fields. No arbitrary spread.",
+      "unresolved": true
+    }
+  ],
+  "requiredBeforeProjectionPublication": [
+    "Every consumed pointer has an exact source/line and a public-versus-private classification.",
+    "Exact preserved public values are bound to the approved captured source and canonical bytes; no current config read or raw capsule is given to Node.",
+    "Any proposed erasure/redaction is justified against all relevant consumer branches; unresolved secret-dependent behavior prevents SDK admission.",
+    "A separate precise existing-capsule projector source, strict output field/type/byte allowlist, file pins and one-read request must be reviewed if new private-derived values are needed; old catalog GO is not reused.",
+    "Independent OS sandbox denial proof and retained worker/FD closure remain required; source analysis alone is not runtime evidence."
+  ],
+  "bodyBudget": "0539ddf130372839c45a451675c9f40061fe8d88",
+  "sdkExecution": false,
+  "actualSelectedOwner": false,
+  "currentConsumerQualification": false
+}

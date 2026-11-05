@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.r29-published-checkpoint-proof.v1",
+  "published": true,
+  "commit": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+  "tree": "1c5de99c488986f6326d3d5a05730d284c746ba1",
+  "sole_parent": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+  "branch": "codex/heptabao-validation-20261104",
+  "freeze_utc": "2026-11-05T17:23:16Z",
+  "force": false,
+  "expected_parent_compare_and_set": true,
+  "final_branch_reread_equal": true,
+  "files_new": 1530,
+  "prior_nondocument_leaves_unchanged": 19598,
+  "documents_modified": 2,
+  "deleted": 0,
+  "leaves_total": 21130
+}

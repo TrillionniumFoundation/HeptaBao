@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.root-original-current4e808-importer-ACK-review.r30.v1",
+  "status": "PASS_ORIGINAL_ACK_ONLY",
+  "checks_passed": 8,
+  "checks": [
+    "originalSDK-no-error",
+    "originalSDK-one-native-text",
+    "whole-request-exact-original",
+    "original-job-host-key",
+    "original-executable-cwd-args",
+    "exact-typed-digest",
+    "lossless-unsigned-fingerprint",
+    "one-launched-no-error"
+  ],
+  "job": "desktop/1a1acd0d62d-fc05-571a",
+  "request": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+  "request_digest": "d9b3e1ad9fa0b4ff96149b8eb26ccb122e83a66c5a537038d0a9ea26316ec4f8",
+  "request_fingerprint": "15687130062885270783",
+  "original_intent_packet": "2507d77fe689e5a54ef7c191f2e57433f7b78864",
+  "original_ACK_packet": "a37a3a1a50f414abe04fde5e797be3f5fcca6a9b",
+  "GO": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+  "actual_import_result_not_reviewed_here": true,
+  "root_Runtime_calls": 0,
+  "source_import_qualified": false,
+  "full_replacement_qualified": false
+}

@@ -1,0 +1,155 @@
+{
+  "automatic_retry": false,
+  "compiler_started": false,
+  "controller": {
+    "bytes": 15541,
+    "identity": [
+      2050,
+      7361535,
+      1000,
+      1000,
+      33152,
+      1,
+      15541,
+      1793897883826244575,
+      1793897883835843877
+    ],
+    "sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284"
+  },
+  "destination_create_only": true,
+  "destination_host": "desktop",
+  "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1",
+  "endpoint_seconds": 90,
+  "files": [
+    {
+      "bytes": 22320862,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+    },
+    {
+      "bytes": 39692,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+    }
+  ],
+  "git_operations": 0,
+  "helpers": {
+    "receiver.py": {
+      "bytes": 8857,
+      "identity": [
+        2050,
+        7361526,
+        1000,
+        1000,
+        33152,
+        1,
+        8857,
+        1793897883774949872,
+        1793897883780526579
+      ],
+      "sha256": "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e"
+    },
+    "sender.py": {
+      "bytes": 6430,
+      "identity": [
+        2050,
+        7361525,
+        1000,
+        1000,
+        33152,
+        1,
+        6430,
+        1793897883715794912,
+        1793897883764199707
+      ],
+      "sha256": "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56"
+    }
+  },
+  "original_ha_controller": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "overall_seconds": 300,
+  "production_changed": false,
+  "runtime_qualification": false,
+  "schema": "heptabao.same-root-publication-4e808.public-source-carrier-relay.v1",
+  "server_started": false,
+  "source_alias": "rog-ts",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "ssh_argv_prefix": [
+    "/usr/bin/ssh",
+    "-T",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=10",
+    "-o",
+    "ConnectionAttempts=1",
+    "-o",
+    "ClearAllForwardings=yes",
+    "-o",
+    "ForwardAgent=no",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none"
+  ],
+  "ssh_child_seconds": 90,
+  "status": "failed",
+  "trust_before": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  }
+}

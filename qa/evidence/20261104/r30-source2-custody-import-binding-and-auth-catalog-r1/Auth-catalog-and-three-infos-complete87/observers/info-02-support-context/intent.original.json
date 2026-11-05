@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.mac-captured-catalog-following-public-info.intent.r3",
+  "label": "info-02-support-context",
+  "rootGo": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+  "lineBHandoff": "386b56b456ce6db89631d4d6bf887e7e29a5c0c8",
+  "catalogActualReview": "d28ff11a58600b6ddacb31cf462fce3c110b5f4c",
+  "request": {
+    "blob": "faef9a3144129b1bd5cc9636c222bc8be8bc7f34",
+    "bytes": 278,
+    "sha256": "7e8293b2bbf451a445817dffafaf903b20af3dde11bde3e2ea9f8bc50dbb6f1f",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-info-support-context-20261105-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js"
+        }
+      }
+    }
+  },
+  "fixedPublicPath": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+  "ordinal": 2,
+  "previousInfoClosedAndWhole": "2fa4b5e9987e5fce12ac35f83ec14a0ba74f3f68",
+  "submitted": false,
+  "oneOriginalOperation": true,
+  "bodyReadOrSdkExecutionAuthorized": false,
+  "stopOnErrorOrUnknown": true
+}

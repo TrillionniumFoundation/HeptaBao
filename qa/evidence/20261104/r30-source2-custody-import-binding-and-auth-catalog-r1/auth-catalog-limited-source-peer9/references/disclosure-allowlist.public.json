@@ -1,0 +1,194 @@
+{
+  "schema": "heptabao.mac-captured-public-harness-catalog.disclosure-allowlist.r2",
+  "status": "SOURCE_ONLY_NO_GO",
+  "inputClassification": "EXISTING_PRIVATE_CAPSULE_READ",
+  "source": {
+    "bytes": 21877,
+    "sha256": "64333afe4e0fa56d5bca9e47070c84c02b59db185cff8c2959438c986756d129",
+    "blob": "ce7b983c88ae53833ffe285b924470e14a450bba"
+  },
+  "capsule": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/output/capsule.private.json",
+    "bytes": 195155,
+    "sha256": "f4e4f83ced4229302b85231628ebc1a797474389265e2005e44be0ae4aafae04",
+    "identity": [
+      "16777244",
+      "72635869",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "195155",
+      "1793881838780757114",
+      "1793881838780765364"
+    ]
+  },
+  "sourceDocument": {
+    "schema": "heptabao.mac-guarded-current-inputs.private.r1",
+    "configSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "agentIds": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "registryColumns": 13,
+    "pluginsColumn": "plugins_json",
+    "maxPlugins": 128,
+    "originalEnabledCountRange": [
+      1,
+      8
+    ],
+    "observedEnabledCount": 2
+  },
+  "capturedRecordHashes": {
+    "22": [
+      "7d0eacef0de836233bf69fc88fcab76ae6d5d1b4bd19982d683eeec79da0cefa",
+      "1307e12ae383395e3455a480c653b122b6898856f1e525e8c809945d83e0a691",
+      "d03c7cc032377784613c1f21d72403bd681658d324226d713fa756bbfdb022eb"
+    ],
+    "68": [
+      "08f6b585592467d20717e8abd8dd02b9fb430ba65eb4b745c373ce3001ef5dae",
+      "b7d3dd983a296b81381c241b131cfabc4e3a56a9a656f9d197743a16917aeeec",
+      "e25eaf648dc7039953915d93cac78cc23b21b780b60f562ff1aaa53086f25364"
+    ]
+  },
+  "aggregateAdmission": [
+    {
+      "condition": "exact original capsule whole SHA/bytes/full-nine plus original three anchors",
+      "lines": [
+        12,
+        147
+      ]
+    },
+    {
+      "condition": "original enabled set and original ID/path/normalization/namespace predicates preserved verbatim",
+      "lines": [
+        246,
+        252,
+        259
+      ]
+    },
+    {
+      "condition": "disclosure only if original record ordinal and ID/root/startup hashes equal one of the two original public triples",
+      "lines": [
+        20,
+        262,
+        263
+      ]
+    },
+    {
+      "condition": "additional output gate: raw path equals canonical Path string, ASCII path alphabet only, <=4096 UTF8 bytes, known Codex root or fixed public SDK tree",
+      "lines": [
+        265,
+        266,
+        267
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "field": "predicateProjection.enabledHarnessOwners[].publicCatalogPluginId",
+      "type": "string|null",
+      "origin": "capsule.registry.row[indexOf(\"plugins_json\")] JSON plugin.pluginId",
+      "constraints": "original regex [a-z0-9][a-z0-9_.-]{0,79}; exact original value hash; only when catalog_public",
+      "line": 282
+    },
+    {
+      "field": "predicateProjection.enabledHarnessOwners[].publicCatalogCodeRoot",
+      "type": "ASCII absolute normalized string|null",
+      "origin": "same exact original plugin.rootDir only; never a config/argv/token value",
+      "constraints": "canonical raw identity; 2..4096 bytes; exact original value hash; either exact pre-pinned Codex root or descendant/equal of /opt/homebrew/lib/node_modules/openclaw",
+      "line": 283
+    },
+    {
+      "field": "predicateProjection.enabledHarnessOwners[].publicCatalogScope",
+      "type": "enum|null",
+      "allowed": [
+        "already_pinned_codex",
+        "fixed_public_sdk_tree",
+        null
+      ],
+      "origin": "program literals derived from bounded path predicates",
+      "line": 284
+    },
+    {
+      "field": "predicateProjection.enabledHarnessOwners[].catalogMetadataOnlyNotCodeAdmission",
+      "type": "literal true",
+      "origin": "program literal; cannot qualify file contents or actual selected owner",
+      "line": 285
+    },
+    {
+      "field": "predicateProjection.pluginIdsPublished",
+      "type": "boolean",
+      "origin": "any accepted publicCatalogPluginId; replaces old literal false",
+      "line": 314
+    },
+    {
+      "field": "predicateProjection.unknownCodePathsPublished",
+      "type": "boolean",
+      "origin": "any accepted fixed_public_sdk_tree disclosure; replaces old literal false",
+      "line": 315
+    },
+    {
+      "field": "predicateProjection.publicCatalogDisclosureScope",
+      "type": "fixed array[2] of enum",
+      "origin": "two fixed program strings, not captured text",
+      "line": 316
+    },
+    {
+      "field": "predicateProjection.newFilesystemPathsRead",
+      "type": "literal false",
+      "origin": "no newly referenced code path is opened; only old capsule input/parents",
+      "line": 317
+    },
+    {
+      "field": "predicateProjection.sdkOrLoaderExecuted",
+      "type": "literal false",
+      "origin": "no SDK import or execution",
+      "line": 317
+    },
+    {
+      "field": "predicateProjection.originalNativeWorkerContract",
+      "type": "fixed program string",
+      "origin": "corrects old descriptive loader.r typo to actual original worker loader.t; old stdout preserved",
+      "line": 312
+    }
+  ],
+  "noAdditionalOutputFields": "Original record/model/closure/public-output fields are AST identical except the declared schema, constant description and two aggregate booleans. New fields are constructed explicitly; no dict spreading from capsule.",
+  "neverPublished": [
+    "private capsule body",
+    "auth/profile/raw rows",
+    "cache contents",
+    "access/refresh/token values",
+    "RoleID/SecretID",
+    "registry other twelve column values",
+    "plugin config/env/argv/description/free text",
+    "startup.agentHarnesses value (original SHA only)",
+    "unapproved ID/path",
+    "unobserved actual selection"
+  ],
+  "noNewReads": [
+    "publicCatalogCodeRoot is output only",
+    "no lookup/stat/resolve of projected code paths",
+    "no registry/SQL/current configuration reread"
+  ],
+  "missingOrOutOfScope": "A record outside both public output scopes or without the exact original hash triple stays null+original hashes. It is not deleted from the enabled set and does not become unused. Such a result keeps SDK diagnostic unbound.",
+  "originalCaps": {
+    "softSeconds": 5,
+    "outerSeconds": 60,
+    "maxFDs": 9,
+    "plannedMetadata": 72,
+    "maxMetadata": 80,
+    "maxReadCalls": 4,
+    "maxReadBytes": 195156,
+    "maxOutputBytes": 16384
+  },
+  "execution": {
+    "runtimeSubmitted": false,
+    "privateCapsuleRead": false,
+    "sdkExecuted": false,
+    "sourceOnly": true
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "Runtime_calls": 0,
+  "inert": {
+    "argv_shape": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact publisher text"
+    ],
+    "host": "desktop",
+    "no_source_import_or_execution": true,
+    "only_three_public_controls": true,
+    "outer_seconds": 60,
+    "publisher": {
+      "blob": "4df7eb29d3b6913aa641ba139550d5475f00bdaf",
+      "bytes": 5043,
+      "sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512"
+    },
+    "request": {
+      "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+      "bytes": 92929,
+      "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084"
+    },
+    "stdin": {
+      "blob": "4850e99f54932e5d79478ec6caa1be0a71de55f5",
+      "bytes": 87425,
+      "sha256": "9ec08836dc95d551037c8a84052ed931a363ccc4b1ad2abb0dc6141f2c3a0c02"
+    },
+    "stdin_maximum": 262144
+  },
+  "inert_executed": false,
+  "old_relay_state": "UNKNOWN",
+  "old_relay_termination_proven": false,
+  "readiness_scope": "All seven historical actual input pins present; code binding is ready, but neither request is authorized or submitted by this packet.",
+  "receiver": {
+    "Git_seconds": 60,
+    "clone_seconds": 90,
+    "missing_wrong_extra_rejected": true,
+    "original_five_statements_selected_executed": true,
+    "remote_argv_shape": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact receiver text",
+      "SHA256(exact receiver text)"
+    ],
+    "seconds": 300,
+    "source": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    }
+  },
+  "relay": {
+    "argv_guard_added": false,
+    "exact": {
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "executable": "/usr/bin/python3",
+      "host": "desktop",
+      "idempotency_key": "heptabao-4e808-x230-source-artifacts-relay-r1-cc5a9ed3",
+      "timeout_seconds": 360
+    },
+    "file_self_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+    "original_parent_seconds": 300,
+    "request": {
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+    }
+  },
+  "relay_executed": false,
+  "schema": "heptabao.current4e808.x230-ready-exact-dispatch-contract.v1",
+  "sender": {
+    "local_argv_shape": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "exact sender text"
+    ],
+    "seconds": 90,
+    "source": {
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    },
+    "trailing_self_sha_required": false
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "schema": "heptabao.current-x230-seven-actual-inputs-binding.v1",
+  "source_only": true,
+  "binding_ready": false,
+  "normal5_bound_indices": [
+    0,
+    1,
+    2,
+    5,
+    6
+  ],
+  "source2_bound_indices": [
+    3,
+    4
+  ],
+  "unbound_indices": [],
+  "files": [
+    {
+      "index": 0,
+      "role": "heptabao-server",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/heptabao-server",
+      "source_mode_octal": "0500",
+      "target_mode_octal": "0500",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "desktop_expected_version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "path": "destination/0-heptabao-server/file-info.native.json",
+        "blob": "c99fe8b91521f78687afe4a5839ea64b98af69d8",
+        "bytes": 513,
+        "sha256": "2b57bcec4ed2832205fc4c539d1ddab89bbcfb90f1c4f8123dc1be1a9fe1dadb"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361480",
+        "1000",
+        "1000",
+        "33088",
+        "1",
+        "110219600",
+        "1793892019496540722",
+        "1793892019496540722"
+      ]
+    },
+    {
+      "index": 1,
+      "role": "native-build.public.json",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/native-build.public.json",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "desktop_expected_version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "path": "destination/1-native-build.public.json/file-info.native.json",
+        "blob": "6cf6e8a79b93d196851a1e552c6279144ba7cf13",
+        "bytes": 510,
+        "sha256": "d99c41aece261814eac2d77a5ec54d2277831adfd7231caeb38db095a6ddd32e"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361482",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "786",
+        "1793892021124514009",
+        "1793892021124514009"
+      ]
+    },
+    {
+      "index": 2,
+      "role": "result.public.json",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/result.public.json",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "desktop_expected_version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "path": "destination/2-normal-release-result.public.json/file-info.native.json",
+        "blob": "b588f7da60d8d92fdff0336f59df1bf21d3973f7",
+        "bytes": 521,
+        "sha256": "bfd1d001e42d3d6bc405ab3c136900137fc62233eb0f4d2231f455deb12b57fe"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361483",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "3192",
+        "1793892021131513894",
+        "1793892021131513894"
+      ]
+    },
+    {
+      "index": 3,
+      "role": "canonical-4e808-full.bundle",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/canonical-4e808-full.bundle",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "desktop_expected_version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "blob": "2e72839bfdfde535b07e3316e203b01dcd930479",
+        "bytes": 521,
+        "sha256": "da5e78637df203662236604ae9b7e3d989c5359a477d9955ca57b3bcc7b6dfc5"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361612",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "22320862",
+        "1793898902432875221",
+        "1793898902432875221"
+      ]
+    },
+    {
+      "index": 4,
+      "role": "source-export.result.public.json",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/source-export.result.public.json",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "desktop_expected_version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "blob": "d4c8d21a290aeae17021f8a852571b2ed7cb232a",
+        "bytes": 520,
+        "sha256": "c22fe6062925533efb38d709e9bdab6a60f8af5d3daa5dd795b8047251da5648"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361625",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "39692",
+        "1793898902726866721",
+        "1793898902726866721"
+      ]
+    },
+    {
+      "index": 5,
+      "role": "normal61-result.public.json",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/normal61-result.public.json",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "desktop_expected_version": "2050:7361495:57532:1793892021140513746:1793892021140513746",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "path": "destination/3-normal-release-tests-result.public.json/file-info.native.json",
+        "blob": "d69083ad6a618db79aaf7412912a6c3ba3961696",
+        "bytes": 529,
+        "sha256": "49d5598e7afceff1f84ef1372e930e8017b43a75d470f697af178e98098ac7eb"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361495",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "57532",
+        "1793892021140513746",
+        "1793892021140513746"
+      ]
+    },
+    {
+      "index": 6,
+      "role": "groups.json",
+      "desktop_source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+      "x230_target_path": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/artifacts/groups.json",
+      "source_mode_octal": "0400",
+      "target_mode_octal": "0400",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "desktop_expected_version": "2050:7361500:6249:1793892021148513615:1793892021148513615",
+      "bound_from_actual_independent_info": true,
+      "independent_info": {
+        "path": "destination/4-groups.json/file-info.native.json",
+        "blob": "cac17a20d63d32888c52622a6c65f10529beed8a",
+        "bytes": 499,
+        "sha256": "88465ece2aac846c3b73a47269ee99a2e1f5c000c51b58a0e20597f853fa1ad5"
+      },
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "full9_decimal_strings": [
+        "2050",
+        "7361500",
+        "1000",
+        "1000",
+        "33024",
+        "1",
+        "6249",
+        "1793892021148513615",
+        "1793892021148513615"
+      ]
+    }
+  ]
+}

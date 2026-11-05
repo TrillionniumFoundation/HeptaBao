@@ -1,0 +1,20 @@
+--- a/relay.prebind.py
++++ b/relay.ready.py
+@@ -14,7 +14,7 @@
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+ HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+ TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+-BINDING_READY=False
++BINDING_READY=True
+ FILES=[
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+@@ -80,7 +80,7 @@
+     "version": "2050:7361500:6249:1793892021148513615:1793892021148513615"
+   }
+ ]
+-HELPERS={"sender.py":"36e43cd870f220f9a8e834ef8c0c67eb0cd452a2eb1604c2900c7350c014e4d4","receiver.py":"e19b7c150f8301483c107456960851b07afa827a4574f8d0088f1104f4afb62f"}
++HELPERS={"sender.py":"aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663","receiver.py":"8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',

@@ -1,0 +1,28 @@
+function verifyCatalogOriginalChains(data,H){
+const {lossless,u,bs,s256,unb64}=H,r=data.raw,c=[],ops=[];const job="1a1acb902f1-fc05-5693",names=["authority-01","streams-00000","info-01-harness-policy","info-02-support-context","info-03-codex-harness"],tools=["process_status","process_read","file_info","file_info","file_info"];
+function ok(n,v){if(!v)throw Error(n);c.push(n);}function hash(t){return s256(bs(u(t)));}function eq(a,b){return JSON.stringify(a)===JSON.stringify(b);}
+function nat(t,n){const x=lossless(t);ok(n+":SDK-not-error",x.isError!==true);const a=x.content?.filter(y=>y.type==="text");ok(n+":one-text",a?.length===1);return{text:a[0].text,v:lossless(a[0].text)};}
+const sum=lossless(r["SUMMARY.public.json"]);
+ok("five-original-observers-no-inflight",sum.observers.length===5&&eq(sum.observers.map(x=>x.label),names)&&sum.activeRuntimeCalls===0&&sum.activeNativeFutures===0&&new Set(sum.observers.map(x=>x.operationId)).size===5);
+ok("original-catalog-start-request-and-ACK",r["catalog/request.original.json"]===data.request&&r["catalog/ack.sdk.original.json"]===data.ack&&r["catalog/intent.original.json"]===data.intent);
+for(let i=0;i<5;i++){const n=names[i],e=sum.observers[i],p="observers/"+n,req=lossless(r[p+"/request.original.json"]),intent=lossless(r[p+"/intent.original.json"]),ack=nat(r[p+"/ack.sdk.original.json"],n+":ACK"),st=nat(r[p+"/status-01.sdk.original.json"],n+":status"),sq=lossless(r[p+"/status-01.request.json"]);
+ok(n+":exact-external-intent",eq(intent.request.value,req)&&intent.submitted===false&&intent.oneOriginalOperation===true&&req.operation.tool===tools[i]&&req.operation.arguments.host==="mac");
+ok(n+":original-admission-ID",ack.text===r[p+"/ack.native.original.txt"]&&ack.v.operation_id===e.operationId&&ack.v.tool_name===tools[i]&&ack.v.reused===false&&ack.v.idempotency_binding_retained===true);
+ok(n+":original-status-closed",sq.operation_id===e.operationId&&st.text===r[p+"/status-01.native.original.txt"]&&st.v.operation_id===e.operationId&&st.v.async_state==="completed"&&st.v.result_state==="stored_observed"&&st.v.owned_future_active===false&&st.v.payload_available===true);
+const payload=r[p+"/payload.sdk.original.txt"],bytes=u(payload),digest=hash(payload);let offset=0,parts=[];
+for(const no of e.pageOffsets){const prefix=p+"/page-"+String(no).padStart(8,"0"),rq=lossless(r[prefix+".request.json"]),pg=nat(r[prefix+".sdk.original.json"],n+":page"+no),v=pg.v,b=unb64(v.data_base64);
+ok(n+":page"+no+":same-ID-exact-request",rq.operation_id===e.operationId&&v.operation_id===e.operationId&&rq.offset===offset&&v.offset===offset&&no===offset&&rq.limit===16384&&pg.text===r[prefix+".native.original.txt"]);
+ok(n+":page"+no+":immutable-exact-range",v.immutable_snapshot===true&&v.payload_kind==="native_result"&&v.total_bytes===bytes.length&&v.result_sha256===digest&&b.length<=16384&&v.next_offset===offset+b.length&&v.eof===(v.next_offset===bytes.length));offset=v.next_offset;parts.push(...b);}
+ok(n+":whole-original-payload",offset===bytes.length&&bs(parts)===bs(bytes)&&e.pageCount===e.pageOffsets.length);
+const actual=nat(payload,n+":payload");ok(n+":native-original-exact",actual.text===r[p+"/payload.native.original.txt"]);
+if(i<2)ok(n+":only-original-job",req.operation.arguments.job_id===job);
+else ok(n+":exact-already-root35-info-and-request",r[p+"/request.original.json"]===data.infoRequests[i-2]&&r[p+"/payload.native.original.txt"]===data.infos[i-2]);
+ops.push({name:n,operation_id:e.operationId,pages:e.pageCount,payload_bytes:bytes.length,payload_sha256:digest,completed:true,owned_future_active:false});}
+const au=lossless(r["actual/catalog.authority.original.json"]),streams=lossless(r["observers/streams-00000/payload.native.original.txt"]);
+ok("same-root21-inputs",r["actual/catalog.stdout.original.txt"]===data.stdout&&r["actual/catalog.authority.original.json"]===data.authority&&r["actual/catalog.stderr.original.txt"]==="");
+ok("authoritative0-full-durable",au.job_id===job&&au.state==="succeeded"&&au.exit_code===0&&au.output_complete===true&&au.output_durable===true&&au.terminal_publication_confirmed===true&&!au.timed_out&&!au.cancelled);
+for(const[s,size]of[["stdout",8971],["stderr",0]]){const t=r["actual/catalog."+s+".original.txt"],x=streams[s];ok(s+":full-authority-and-original-hex",streams.job_id===job&&u(t).length===size&&x.text===t&&x.bytes_hex===u(t).map(x=>x.toString(16).padStart(2,"0")).join("")&&x.offset===0&&x.size===size&&x.next_offset===size&&x.eof===true&&au.log_bytes[s].stored===size&&au.log_bytes[s].seen===size&&au.log_synced[s]===true&&!au.log_truncated[s]&&au.log_errors[s]===null);}
+ok("six-original-pages",ops.reduce((n,x)=>n+x.pages,0)===6);
+ok("exact-three-body-proposals-still-no-execution-in-this-packet",r["proposed-body/readset.public.json"]===data.proposal&&sum.unsubmittedBodyRequests===3&&sum.sdkExecutionAuthorization===false&&sum.actualSourceAdmissionOrSelectedOwnerProven===false);
+return {schema:"heptabao.root-actual-catalog-and-info-original-chain-closure.r30.v1",status:"PASS_ORIGINAL_FIVE_OBSERVERS_AND_WHOLE_CATALOG_STREAM",checks_passed:c.length,checks:c,packet:"b17603266b3cda2f0c362561dd31eefabee15435",packet_files:87,packet_bytes:356538,merkle_trees:13,job:"mac/"+job,closed_original_observers:ops,immutable_pages:6,original_stdout_bytes:8971,original_stderr_bytes:0,root_projection_review:"612a1a78d26cbc6d834f8d609c81fac622dcf41c",root_projection_checks:21,root_body_binding_review:"b8d0006aadad3e257f0dd4f01874b4e8d3917c9a",root_body_binding_checks:35,private_capsule_read:true,private_body_disclosed:false,original_namespace_rejection_preserved:true,SDK_executed:false,selected_owner_proven:false,credential_runtime_qualified:false,full_replacement_qualified:false,root_Runtime_calls:0};
+}

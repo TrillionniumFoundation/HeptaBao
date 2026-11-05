@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.root-line-B-auth-public-bodies-to-X230-handoff.r30.v1",
+  "status": "HANDOFF_EXPLICIT",
+  "from": "/root/authbus_migration",
+  "to": "/root/compatibility_audit",
+  "lane": "B",
+  "prior_actual_packet": "5e2ace606153a5f45cb56c7a0255f2d0cdb3023c",
+  "prior_agent_release_receipt": "12ee57e5374e16ee0f0241a8893f87af10d2bcde",
+  "root_original_chain_review": {
+    "name": "r30-auth-three-public-body-chain-root-review.public.json",
+    "blob": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+    "bytes": 6467,
+    "sha256": "21617c0515458c5ccb013c584ce05465ebe280d4c9b919d19af132b9a6dfa1e3"
+  },
+  "closed_original_operations": [
+    {
+      "operation_id": "70f674551e07f9eb20d585b9f97dc2510e1ceda79fd9ae3472376b41827efb0b",
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "operation_id": "c046c711b00b2f5ae81bdee2f91b78d6be681a06431987cf4e58a9b8a2174d79",
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "operation_id": "13588a1820aad905c189ab2fa4e3ed493cfcbb49caf4b0897a27eb85cbae01ad",
+      "completed": true,
+      "owned_future_active": false
+    }
+  ],
+  "prior_known_calls_in_flight": 0,
+  "prior_known_owned_futures_active": 0,
+  "remaining_historical_unknowns_not_erased": [
+    "X230 old relay desktop/1a1aa57458d-fc05-4156; effect fence conditional on stable namespace, not remote termination proof"
+  ],
+  "allowed_next_action": "Only separately exact GO for X230 create-only inert publication. No AuthBus metadata/body/SDK action remains authorized on this lane.",
+  "root_Runtime_calls": 0,
+  "other_lane": "A remains exclusively /root/ha_validation on original source importer read reconciliation; root makes no Runtime call."
+}

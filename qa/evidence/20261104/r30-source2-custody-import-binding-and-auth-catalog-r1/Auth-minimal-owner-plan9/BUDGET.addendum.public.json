@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.mac-owner-dependency-read-budget-addendum.r2",
+  "status": "SOURCE_ONLY_NO_RUNTIME_GO",
+  "correctsUnsubmittedDraft": "9585848245f08b49da3298f736233e287a3ae729",
+  "correction": "No reuse/reset of the completed original readset's admission or unused ceilings. New body budgets remain unset until exact metadata is available.",
+  "oldClosedReadset": {
+    "proposal": "56158dc9a4a6ab7d67daa079a1bc523ba8342aaa",
+    "exactGo": "4c0fe97527293fe4999ecc5097683e38e6c00431",
+    "actualPacket": "5e2ace606153a5f45cb56c7a0255f2d0cdb3023c",
+    "originalMaximumOperations": 5,
+    "originalMaximumWholeBodyBytes": 265740,
+    "originalMaximumChunkBytes": 65536,
+    "actualCompletedOperations": 3,
+    "actualWholeBodyBytes": 13569,
+    "allClosed": true,
+    "newReadAuthorizationFromUnusedCeilings": false
+  },
+  "newIndependentMetadataProposal": {
+    "blob": "9d64664ed990d2d6a10287de0c4d09dd9d157395",
+    "sourceTree": "427532d11a020d95e52eb181911746a84e125afe",
+    "maximumOperations": 3,
+    "submitted": 0,
+    "go": false,
+    "requests": [
+      {
+        "id": "runtime-policy",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+        "origin": {
+          "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+          "line": 4,
+          "import": "import { t as resolveModelRuntimePolicy } from \"./model-runtime-policy-Ca791C2-.js\";"
+        },
+        "request": {
+          "idempotency_key": "heptabao-mac-harness-dependency-info-runtime-policy-20261105-r1",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "mac",
+              "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js"
+            }
+          }
+        },
+        "actualFile": null
+      },
+      {
+        "id": "openai-routing",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+        "origin": {
+          "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+          "line": 5,
+          "import": "import { o as openAIProviderUsesCodexRuntimeByDefault } from \"./openai-routing-DXJmS9CT.js\";"
+        },
+        "request": {
+          "idempotency_key": "heptabao-mac-harness-dependency-info-openai-routing-20261105-r1",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "mac",
+              "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js"
+            }
+          }
+        },
+        "actualFile": null
+      },
+      {
+        "id": "plugin-loader",
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+        "origin": {
+          "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+          "line": 5,
+          "import": "import { s as loadOpenClawPlugins } from \"./loader-D8d2EvVh.js\";"
+        },
+        "request": {
+          "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-loader-20261105-r1",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "mac",
+              "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js"
+            }
+          }
+        },
+        "actualFile": null
+      }
+    ],
+    "hashWorkByteCap": null,
+    "hashWorkMeaning": "The file_info tool performs a whole-file hash and exposes no byte-ceiling argument. A future body ceiling does not bound that work.",
+    "toolTimeoutFieldAdded": false,
+    "operatorPolicyChanged": false
+  },
+  "futureNewBodies": {
+    "status": "NOT_FROZEN_NOT_AUTHORIZED",
+    "actualInputSizes": null,
+    "actualVersions": null,
+    "actualWholeHashes": null,
+    "newOperationCount": null,
+    "newBodyBytes": null,
+    "cumulativeBodyOperationCount": null,
+    "cumulativeBodyBytes": null,
+    "closedApiChunkTechnicalMaximum": 65536,
+    "proposalMethod": "After actual metadata, freeze exactly one complete-file version-bound sequence per approved path with offset/limit <=65536. Compute new N=sum(ceil(size/65536)), new B=sum(size); list original 3/13569, new N/B, and cumulative 3+N / 13569+B. Obtain separate exact GO for this new readset; no implicit authorization, cap increase, partial-as-whole reading or retry.",
+    "oldReadsetUnmodified": true
+  },
+  "sameInstanceDiagnosticBudgetProposalUnchanged": {
+    "sharedSeconds": 45,
+    "supervisorSeconds": 60,
+    "oneAbsoluteDeadlineAcrossFiveFreshWorkers": true,
+    "perAgentReset": false,
+    "sleep": false,
+    "retry": false,
+    "executionGo": false
+  },
+  "currentFixtureBudgetsUnmodified": {
+    "capture": 45,
+    "registryQuery": 3,
+    "registryWalBytes": 5969912,
+    "rowBytes": 1048576,
+    "aggregateBytes": 8388608,
+    "privateCapsuleBytes": 4194304,
+    "outer": 900,
+    "manager": 600,
+    "phase": 120,
+    "http": 10,
+    "ready": 30,
+    "cleanup": 60,
+    "supervisor": 1080,
+    "native": [
+      15,
+      8,
+      3
+    ]
+  },
+  "guardSourceUnchanged": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+  "workerSourceUnchanged": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+  "observerSourceUnchanged": "7a246176115ce675242fd5e0d413b91683a4c61d",
+  "oldFailuresAndUnknownsPreserved": true,
+  "newRuntimeCalls": 0
+}

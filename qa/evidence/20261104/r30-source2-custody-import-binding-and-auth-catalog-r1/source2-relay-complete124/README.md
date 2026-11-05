@@ -1,0 +1,7 @@
+# Current 4e808 public source transport: actual complete
+
+One exact source relay copied the standalone canonical bundle and original source-export receipt to the fresh fixed desktop incoming directory. The original job returned exit 0 with complete durable output within the original 300-second relay and 360-second supervisor budgets. Both endpoints returned completion within their unchanged 90-second bounds. All three original children exited 0, were reaped, and had empty process groups.
+
+The source before/after identities, stream hashes, same-FD receiver hashes, create-only modes and fsync outcomes match. Independent file_info observations subsequently match every receiver identity field, including nanosecond versions. Trust and controller/helper pins match the actual inert publication and remain unchanged. The ten original public evidence files include three command records, five actual saved streams, intent and SSH preflight. Sender stdout was a binary pipe and is not invented as a saved artifact.
+
+All seven observer operations, eleven immutable pages, original SDKs and complete native payloads are retained. Source import, Git operations, Cargo and product/server execution did not occur and are not qualified by this transport packet. Historical UNKNOWN observations remain unchanged. Limits on available FD reporting and the corrected local authority selector are recorded in state and verification.

@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.mac-fixed-public-info.actual-binding.r1",
+  "status": "PASS_METADATA_ONLY",
+  "ordinal": 2,
+  "id": "support-context",
+  "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+  "bytes": 4255,
+  "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+  "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+  "identity": [
+    "16777233",
+    "405240067",
+    "501",
+    "80",
+    "33188",
+    "1",
+    "4255",
+    "1784843465103099904",
+    "1784843465103099904"
+  ],
+  "regularNonSymlinkEvidence": "successful original file_info; advertised closed native API rejects symlinks and special files",
+  "fileInfoHashWorkIsNotBodyRead": true,
+  "bodyMaxBytes": 131072,
+  "bodyReadAuthorized": false,
+  "originalNative": "a202452e80887cf3e378fb5734fbba8e324c13d5",
+  "originalPayload": "8a127cf6561258d428d9ebdd93add9c02f6631eb",
+  "operationId": "11477d7ac2065d31d4da358a6c236429e1a70303c327856c7ddff63e5cd57229",
+  "completedInactiveAndWhole": true
+}

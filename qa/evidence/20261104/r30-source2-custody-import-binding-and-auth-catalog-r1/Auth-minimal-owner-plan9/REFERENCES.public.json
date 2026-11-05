@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.mac-owner-plan-supplement.references.r1",
+  "actualBodiesTree": "5e2ace606153a5f45cb56c7a0255f2d0cdb3023c",
+  "actualBodiesClosure": "12ee57e5374e16ee0f0241a8893f87af10d2bcde",
+  "sourceReadingTree": "427532d11a020d95e52eb181911746a84e125afe",
+  "originalCatalogActual": "3bb40bfd21237fba2b4eaeaffb81388e5e8b3ebf",
+  "rootActualBodyReview": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+  "rootDependencySourceReview": "27dcc230245b4e293452359d025d94e46a9881b2",
+  "oldUnsubmittedDraftsPreserved": {
+    "budget": "9585848245f08b49da3298f736233e287a3ae729",
+    "instancePlan": "40c258c720f74335b31fb9ff95c9bdf806b7e323"
+  },
+  "draftClarification": "Old budget draft did not submit any read; final budget explicitly separates the closed original readset, new metadata proposal, and future exact new/cumulative body budgets. The instance plan now names the actual provider-ownership import from full selector line 42.",
+  "allCurrentProgramSourcesUnmodified": true,
+  "currentGuard": "7f4802e5225b73af247f371f3dc5c197c6e4425c",
+  "currentWorker": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+  "actualRuntimeCalls": 0,
+  "sdkExecuted": false,
+  "newMetadataSubmitted": 0,
+  "newBodiesSubmitted": 0
+}

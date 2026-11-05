@@ -1,0 +1,559 @@
+{
+  "Runtime_calls": 0,
+  "all_seven_actual_input_rows_unchanged": true,
+  "candidate_pins": {
+    "receiver": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "relay": {
+      "blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f"
+    },
+    "sender": {
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    }
+  },
+  "check_count": 122,
+  "checks": [
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "sender:prebind-ready-false",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:sender.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:sender.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "whole-inverse:1",
+      "passed": true
+    },
+    {
+      "check": "sender:all-definitions-byte-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "sender:seven-actual-rows-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "sender:ready-true",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "sender:selected-ready-guard-passes",
+      "passed": true
+    },
+    {
+      "check": "sender:selected-unready-rejected",
+      "passed": true
+    },
+    {
+      "check": "sender:strict-whole-diff",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "receiver:prebind-ready-false",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:receiver.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:receiver.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "whole-inverse:1",
+      "passed": true
+    },
+    {
+      "check": "receiver:all-definitions-byte-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "receiver:seven-actual-rows-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "receiver:ready-true",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "receiver:selected-ready-guard-passes",
+      "passed": true
+    },
+    {
+      "check": "receiver:selected-unready-rejected",
+      "passed": true
+    },
+    {
+      "check": "receiver:strict-whole-diff",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "relay:prebind-ready-false",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:HELPERS",
+      "passed": true
+    },
+    {
+      "check": "old-helper:sender",
+      "passed": true
+    },
+    {
+      "check": "old-helper:receiver",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:relay.HELPERS.receiver",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:relay.HELPERS.sender",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:relay.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:relay.HELPERS.receiver",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:relay.HELPERS.sender",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:relay.BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "whole-inverse:3",
+      "passed": true
+    },
+    {
+      "check": "relay:all-definitions-byte-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "relay:seven-actual-rows-identical",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BINDING_READY",
+      "passed": true
+    },
+    {
+      "check": "relay:ready-true",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "relay:selected-ready-guard-passes",
+      "passed": true
+    },
+    {
+      "check": "relay:selected-unready-rejected",
+      "passed": true
+    },
+    {
+      "check": "relay:strict-whole-diff",
+      "passed": true
+    },
+    {
+      "check": "exact-five-control-literals",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:FILES",
+      "passed": true
+    },
+    {
+      "check": "exact-seven-rows-all-roles",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:inert-base",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:inert-request-base",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:payload-base",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:relay-request-base",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:caller-contract-base",
+      "passed": true
+    },
+    {
+      "check": "prior-whole:plan-base",
+      "passed": true
+    },
+    {
+      "check": "old-inert-request-exact-source",
+      "passed": true
+    },
+    {
+      "check": "old-inert-request-exact-stdin",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:PINS",
+      "passed": true
+    },
+    {
+      "check": "prior-carried-pin:sender.py",
+      "passed": true
+    },
+    {
+      "check": "prior-carried-pin:receiver.py",
+      "passed": true
+    },
+    {
+      "check": "prior-carried-pin:relay.py",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:BASE",
+      "passed": true
+    },
+    {
+      "check": "publisher-base-expression",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:PINS",
+      "passed": true
+    },
+    {
+      "check": "two-publisher-schema-literals",
+      "passed": true
+    },
+    {
+      "check": "publisher-nine-literals",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.schema.heptabao.df026-x230-normal7-inputs.v1",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.schema.heptabao.df026-x230-normal7-inert-carrier.v1",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.relay.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.relay.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.receiver.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.receiver.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.sender.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.PINS.sender.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-exact:publisher.BASE",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.schema.heptabao.df026-x230-normal7-inputs.v1",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.schema.heptabao.df026-x230-normal7-inert-carrier.v1",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.relay.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.relay.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.receiver.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.receiver.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.sender.py.sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.PINS.sender.py.bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse-literal:publisher.BASE",
+      "passed": true
+    },
+    {
+      "check": "whole-inverse:9",
+      "passed": true
+    },
+    {
+      "check": "publisher-five-definitions-identical",
+      "passed": true
+    },
+    {
+      "check": "publisher-strict-whole",
+      "passed": true
+    },
+    {
+      "check": "same-input-cap",
+      "passed": true
+    },
+    {
+      "check": "single-assignment:PINS",
+      "passed": true
+    },
+    {
+      "check": "new-exact-carried:sender.py",
+      "passed": true
+    },
+    {
+      "check": "new-exact-carried:receiver.py",
+      "passed": true
+    },
+    {
+      "check": "new-exact-carried:relay.py",
+      "passed": true
+    },
+    {
+      "check": "receiver-exact-inline-shape",
+      "passed": true
+    },
+    {
+      "check": "receiver-entry-five-selected-nodes",
+      "passed": true
+    },
+    {
+      "check": "receiver-original-entry-accepts",
+      "passed": true
+    },
+    {
+      "check": "receiver-original-entry-rejects:missing",
+      "passed": true
+    },
+    {
+      "check": "receiver-original-entry-rejects:wrong",
+      "passed": true
+    },
+    {
+      "check": "receiver-original-entry-rejects:extra",
+      "passed": true
+    },
+    {
+      "check": "inert-original-request-fields",
+      "passed": true
+    },
+    {
+      "check": "inert-unchanged:host",
+      "passed": true
+    },
+    {
+      "check": "inert-unchanged:executable",
+      "passed": true
+    },
+    {
+      "check": "inert-unchanged:cwd",
+      "passed": true
+    },
+    {
+      "check": "inert-unchanged:timeout_seconds",
+      "passed": true
+    },
+    {
+      "check": "inert-exact-original-shape",
+      "passed": true
+    },
+    {
+      "check": "relay-original-fields",
+      "passed": true
+    },
+    {
+      "check": "relay-unchanged:host",
+      "passed": true
+    },
+    {
+      "check": "relay-unchanged:executable",
+      "passed": true
+    },
+    {
+      "check": "relay-unchanged:cwd",
+      "passed": true
+    },
+    {
+      "check": "relay-unchanged:timeout_seconds",
+      "passed": true
+    },
+    {
+      "check": "relay-fresh-key",
+      "passed": true
+    },
+    {
+      "check": "relay-original-360",
+      "passed": true
+    }
+  ],
+  "effect_fence_byte_identical": true,
+  "old_UNKNOWN_preserved": true,
+  "original_definition_counts": {
+    "receiver": 28,
+    "relay": 22,
+    "sender": 11
+  },
+  "original_function_definitions_all_byte_identical": true,
+  "payload": {
+    "blob": "4850e99f54932e5d79478ec6caa1be0a71de55f5",
+    "bytes": 87425,
+    "sha256": "9ec08836dc95d551037c8a84052ed931a363ccc4b1ad2abb0dc6141f2c3a0c02"
+  },
+  "prebind_control_literal_changes": 5,
+  "publisher": {
+    "blob": "4df7eb29d3b6913aa641ba139550d5475f00bdaf",
+    "bytes": 5043,
+    "sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512"
+  },
+  "publisher_definitions": 5,
+  "publisher_literal_changes": 9,
+  "requests": {
+    "inert": {
+      "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+      "bytes": 92929,
+      "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084"
+    },
+    "relay": {
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+    }
+  },
+  "schema": "heptabao.current-x230-ready-source-review.v1",
+  "selected_pure_functions": [
+    "binding_ready",
+    "remote_command"
+  ],
+  "selected_receiver_entry_statements": 5,
+  "status": "PASS_SOURCE_ONLY",
+  "strict_diff_hunks": {
+    "publisher": 3,
+    "receiver": 1,
+    "relay": 2,
+    "sender": 1
+  },
+  "whole_source_modules_executed": 0
+}

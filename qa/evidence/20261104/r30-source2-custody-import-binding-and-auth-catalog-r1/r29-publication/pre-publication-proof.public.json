@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.checkpoint-publication-preflight.r29.v1",
+  "status": "PASS",
+  "previous_commit": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+  "previous_tree": "78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37",
+  "previous_leaves": 19600,
+  "retained_non_document_leaves": 19598,
+  "changed_documents": 2,
+  "removed_leaves": 0,
+  "new_evidence_leaves": 1530,
+  "total_leaves": 21130,
+  "expected_tree": "1c5de99c488986f6326d3d5a05730d284c746ba1",
+  "packets": 16,
+  "root_leaves": 80,
+  "all_previous_nondocument_bytes_and_modes_preserved": true,
+  "complete_previous_document_suffix_preserved": true,
+  "publication_pending": true
+}

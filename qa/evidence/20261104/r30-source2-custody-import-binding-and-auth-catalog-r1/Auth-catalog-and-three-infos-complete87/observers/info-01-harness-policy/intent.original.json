@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.mac-captured-catalog-following-public-info.intent.r3",
+  "label": "info-01-harness-policy",
+  "rootGo": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+  "lineBHandoff": "386b56b456ce6db89631d4d6bf887e7e29a5c0c8",
+  "catalogActualReview": "d28ff11a58600b6ddacb31cf462fce3c110b5f4c",
+  "request": {
+    "blob": "43a1e87d357c6b77633e9aa83c2b6a7d2da86e2a",
+    "bytes": 277,
+    "sha256": "3204d434e5bb95620cb58a32a324de87c84de80500824bd8de93e5317222bcd4",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-info-harness-policy-20261105-r1",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "mac",
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js"
+        }
+      }
+    }
+  },
+  "fixedPublicPath": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+  "ordinal": 1,
+  "previousOriginalObserversClosed": true,
+  "submitted": false,
+  "oneOriginalOperation": true,
+  "bodyReadOrSdkExecutionAuthorized": false,
+  "stopOnErrorOrUnknown": true
+}

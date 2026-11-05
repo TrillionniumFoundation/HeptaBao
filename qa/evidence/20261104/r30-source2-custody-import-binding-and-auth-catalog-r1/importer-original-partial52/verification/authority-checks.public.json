@@ -1,0 +1,11 @@
+{
+  "same_job": true,
+  "succeeded": true,
+  "full": true,
+  "durable": true,
+  "confirmed": true,
+  "no_timeout": true,
+  "no_cancel": true,
+  "no_retry": true,
+  "streams": true
+}

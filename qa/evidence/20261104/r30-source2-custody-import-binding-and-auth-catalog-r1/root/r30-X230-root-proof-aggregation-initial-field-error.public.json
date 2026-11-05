@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root-X230-proof-aggregation-field-selector-error.r30.v1",
+  "error": "AST absent or not passed sender",
+  "operation": "Metadata aggregation asserted review.source_executed===false, but original role reviews may use candidate_executed instead. No AST verifier rerun and no candidate/Runtime execution; inspect exact original output then select correct existing field.",
+  "input_review_saved": {
+    "name": "r30-X230-seven-actual-input-binding-root-review.public.json",
+    "blob": "0ceb26f56f51ac0315a3fa0a650869873d136240",
+    "bytes": 5646,
+    "sha256": "e21b404d6b13685b4f1839ad143eb8a35dc62c1d4af29d780f55ca9073f63553"
+  },
+  "runtime_calls": 0
+}

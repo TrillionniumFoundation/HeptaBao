@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1ffd66",
+  "wall_time_seconds": 0.353957411,
+  "exit_code": 0,
+  "original_token_count": 161,
+  "output": "{\"candidate_pins\": {\"receiver\": {\"blob\": \"f5e93db0eaa5ece44c78c3a8615f78f6bf9f71a8\", \"bytes\": 30792, \"sha256\": \"e19b7c150f8301483c107456960851b07afa827a4574f8d0088f1104f4afb62f\"}, \"relay\": {\"blob\": \"3266577264d3f64cea79cdcbdc7a60c3b04ef8e7\", \"bytes\": 25714, \"sha256\": \"22535250116d094500fced629a6d343a4a1b3932096e5f153b54cae6855ba07b\"}, \"sender\": {\"blob\": \"22027b9d8ae620d112cd7fa59880e5616d6bc65d\", \"bytes\": 8961, \"sha256\": \"36e43cd870f220f9a8e834ef8c0c67eb0cd452a2eb1604c2900c7350c014e4d4\"}}, \"checks_passed\": 729, \"counts\": {\"receiver\": 28, \"relay\": 22, \"sender\": 11}, \"packet_files\": 38, \"status\": \"PASS_FULL_7_SOURCE_ONLY_NOT_EXECUTABLE\"}\n"
+}

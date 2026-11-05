@@ -1,0 +1,14 @@
+{
+  "host": true,
+  "key": true,
+  "argv": true,
+  "cwd": true,
+  "executable": true,
+  "empty_env": true,
+  "digest": true,
+  "fingerprint": true,
+  "id": true,
+  "launched": true,
+  "no_launch_error": true,
+  "not_reused": true
+}

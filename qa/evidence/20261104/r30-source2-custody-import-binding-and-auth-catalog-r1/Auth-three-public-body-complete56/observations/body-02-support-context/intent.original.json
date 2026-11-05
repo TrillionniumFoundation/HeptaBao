@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.mac-selected-owner-public-body.intent.r1",
+  "label": "body-02-support-context",
+  "rootExactGo": "4c0fe97527293fe4999ecc5097683e38e6c00431",
+  "priorCatalogAndInfosTree": "b17603266b3cda2f0c362561dd31eefabee15435",
+  "ordinal": 2,
+  "request": {
+    "blob": "26d25048517e308b569a12ba60e24bc65cc581a2",
+    "bytes": 422,
+    "sha256": "8322a35b720bac13b1965790387b9b438168293bbed0441e9087f8acaedd1566",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-body-support-context-ac75c6ed-20261105-r1",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "mac",
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+          "expected_version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+          "offset": 0,
+          "limit": 4255
+        }
+      }
+    }
+  },
+  "expectedWhole": {
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+    "bytes": 4255,
+    "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+    "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+    "identity": [
+      "16777233",
+      "405240067",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "4255",
+      "1784843465103099904",
+      "1784843465103099904"
+    ]
+  },
+  "previousBodyClosedAndWhole": "5e79c4e195e5fc1b07741e3ae0639e2c6fc94bba",
+  "submitted": false,
+  "singleOperation": true,
+  "errorStopsFurtherAdmissions": true,
+  "noSdkOrAdditionalDependencyRead": true
+}

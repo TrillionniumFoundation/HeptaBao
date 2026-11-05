@@ -1,0 +1,197 @@
+{
+  "schema": "heptabao.catalog-peer.source-checks.v1",
+  "checks": [
+    {
+      "name": "same eleven top-level definition names",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged Refused",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged Cancelled",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged need",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged identity",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged sha",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged encoded",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged exact_json",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged Signals",
+      "pass": true
+    },
+    {
+      "name": "whole original definition unchanged FixedReader",
+      "pass": true
+    },
+    {
+      "name": "main including entry body exact except one schema literal",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap CAPSULE",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap EXPECTED_ANCHORS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap PARENT_PATHS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap AGENTS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap LIVE",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap KNOWN_CODEX_ROOT",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap PUBLIC_EXPECTED_MODEL",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap CONFIG_SHA256",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap SOURCE_RUNTIME_JOB",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap SOURCE_RUNTIME_STDOUT_SHA256",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap SOURCE_ENTRY_SHA256",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap NEW_SOFT_SECONDS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap MAX_METADATA_CALLS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap MAX_DESCRIPTORS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap MAX_READ_CALLS",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap MAX_READ_BYTES",
+      "pass": true
+    },
+    {
+      "name": "unchanged fixed binding or cap MAX_OUTPUT_BYTES",
+      "pass": true
+    },
+    {
+      "name": "exact ordinal22/68 triples equal original public actual",
+      "pass": true
+    },
+    {
+      "name": "allowlist source binding exact",
+      "pass": true
+    },
+    {
+      "name": "allowlist captured triples match candidate",
+      "pass": true
+    },
+    {
+      "name": "whole original enabled selection expression unchanged",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field namespace = bool(root is not None and root.is_relative_to(LIVE/\"npm/projects\"))",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"originalCompositePredicate\":bool(id_matches and root_constructible and absolute and normalized and namespace)",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"actualSelectedForCurrentAgents\":None",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"selectionEvidence\":\"NOT_OBSERVED_NO_NATIVE_WORKER_RAN\"",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"enabledDoesNotMeanSelected\":True",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"unselectedHarnessClaimed\":False",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"actualSelectedHarnessSetKnown\":False",
+      "pass": true
+    },
+    {
+      "name": "preserved original predicate or unknown field \"actualSelectedHarness\":None, \"selectorExecuted\":False",
+      "pass": true
+    },
+    {
+      "name": "no newly added filesystem network execution or import calls",
+      "pass": true
+    },
+    {
+      "name": "literal two-scope disclosure and exact raw canonical gate",
+      "pass": true
+    },
+    {
+      "name": "original close and final post-flush deadline unchanged",
+      "pass": true
+    }
+  ],
+  "strict_diff": {
+    "forward_exact": true,
+    "reverse_exact": true,
+    "hunks": 6
+  },
+  "unchanged_definition_blocks": [
+    "Refused",
+    "Cancelled",
+    "need",
+    "identity",
+    "sha",
+    "encoded",
+    "exact_json",
+    "Signals",
+    "FixedReader"
+  ],
+  "Python_module_executed": false,
+  "components_executed": false,
+  "private_capsule_body_read": false,
+  "Runtime_calls": 0
+}

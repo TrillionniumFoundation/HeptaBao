@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.authbus-peer.x230-ready-only-static-checks.r1",
+  "status": "PASS_NARROW_SOURCE_ONLY",
+  "checks": [
+    {
+      "case": "sender_strict_forward",
+      "passed": true
+    },
+    {
+      "case": "sender_strict_inverse",
+      "passed": true
+    },
+    {
+      "case": "receiver_strict_forward",
+      "passed": true
+    },
+    {
+      "case": "receiver_strict_inverse",
+      "passed": true
+    },
+    {
+      "case": "relay_strict_forward",
+      "passed": true
+    },
+    {
+      "case": "relay_strict_inverse",
+      "passed": true
+    },
+    {
+      "case": "inert_strict_forward",
+      "passed": true
+    },
+    {
+      "case": "inert_strict_inverse",
+      "passed": true
+    },
+    {
+      "case": "sender_only_readiness_literal",
+      "passed": true
+    },
+    {
+      "case": "receiver_only_readiness_literal",
+      "passed": true
+    },
+    {
+      "case": "relay_only_readiness_and_two_derived_hashes",
+      "passed": true
+    },
+    {
+      "case": "three_seven_input_tables_equal",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_0",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_1",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_2",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_3",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_4",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_5",
+      "passed": true
+    },
+    {
+      "case": "seven_actual_binding_6",
+      "passed": true
+    },
+    {
+      "case": "derived_helpers_exact",
+      "passed": true
+    },
+    {
+      "case": "inert_three_names_exact",
+      "passed": true
+    },
+    {
+      "case": "inert_whole_payload_sender",
+      "passed": true
+    },
+    {
+      "case": "inert_whole_payload_receiver",
+      "passed": true
+    },
+    {
+      "case": "inert_whole_payload_relay",
+      "passed": true
+    },
+    {
+      "case": "inert_whole_source_argv",
+      "passed": true
+    },
+    {
+      "case": "inert_exact_stdin",
+      "passed": true
+    },
+    {
+      "case": "inert_fixed_host_exe_cwd_outer",
+      "passed": true
+    },
+    {
+      "case": "relay_request_exact_contract",
+      "passed": true
+    },
+    {
+      "case": "receiver_remote_has_exact_trailing_digest",
+      "passed": true
+    },
+    {
+      "case": "sender_keeps_no_extra_self_sha",
+      "passed": true
+    },
+    {
+      "case": "receiver_original_argv_guard_unmodified",
+      "passed": true
+    },
+    {
+      "case": "all_original_top_level_definition_names_preserved",
+      "passed": true
+    }
+  ],
+  "count": 32,
+  "hunks": {
+    "sender": 1,
+    "receiver": 1,
+    "relay": 2,
+    "inert": 3
+  },
+  "sourceObjectsWholeRead": 21,
+  "noHostCalls": true,
+  "noCandidateCodeExecuted": true,
+  "noRepeat122Components": true,
+  "noNewRuntimeQualification": true,
+  "oldRelayRemainsUnknown": true,
+  "topLevelFunctionCounts": {
+    "sender": 10,
+    "receiver": 27,
+    "relay": 21,
+    "inert": 5
+  },
+  "topLevelClassCounts": {
+    "sender": 1,
+    "receiver": 1,
+    "relay": 1,
+    "inert": 0
+  }
+}

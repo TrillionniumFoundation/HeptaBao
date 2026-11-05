@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-mac-catalog-64333afe-py314-r3-authority-01-20261105",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1acb902f1-fc05-5693"
+    }
+  }
+}

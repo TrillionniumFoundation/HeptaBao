@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XG4gIFwiYXRfdW5peF9tc1wiOiAxNzkzODk4OTAzMTI3LFxuICBcImF1ZGl0X3JlY29yZGVkXCI6IHRydWUsXG4gIFwiYXV0b21hdGljX3JldHJ5XCI6IGZhbHNlLFxuICBcImNhbmNlbGxlZFwiOiBmYWxzZSxcbiAgXCJleGl0X2NvZGVcIjogMCxcbiAgXCJqb2JfaWRcIjogXCIxYTFhY2I0ZTk5NS1mYzA1LTU2N2FcIixcbiAgXCJsYXVuY2hfbm9uY2VcIjogXCI5ZWY3NTI0ZjAwNGRhMWU4NGEyZTY5NjYzMzU5ZDc4NVwiLFxuICBcImxvZ19ieXRlc1wiOiB7XG4gICAgXCJzdGRlcnJcIjoge1xuICAgICAgXCJzZWVuXCI6IDAsXG4gICAgICBcInN0b3JlZFwiOiAwXG4gICAgfSxcbiAgICBcInN0ZG91dFwiOiB7XG4gICAgICBcInNlZW5cIjogMzYzLFxuICAgICAgXCJzdG9yZWRcIjogMzYzXG4gICAgfVxuICB9LFxuICBcImxvZ19lcnJvcnNcIjoge1xuICAgIFwic3RkZXJyXCI6IG51bGwsXG4gICAgXCJzdGRvdXRcIjogbnVsbFxuICB9LFxuICBcImxvZ19zeW5jZWRcIjoge1xuICAgIFwic3RkZXJyXCI6IHRydWUsXG4gICAgXCJzdGRvdXRcIjogdHJ1ZVxuICB9LFxuICBcImxvZ190cnVuY2F0ZWRcIjoge1xuICAgIFwic3RkZXJyXCI6IGZhbHNlLFxuICAgIFwic3Rkb3V0XCI6IGZhbHNlXG4gIH0sXG4gIFwib3V0cHV0X2NvbXBsZXRlXCI6IHRydWUsXG4gIFwib3V0cHV0X2R1cmFibGVcIjogdHJ1ZSxcbiAgXCJzdGF0ZVwiOiBcInN1Y2NlZWRlZFwiLFxuICBcInRlcm1pbmFsX3B1YmxpY2F0aW9uX2NvbmZpcm1lZFwiOiB0cnVlLFxuICBcInRlcm1pbmFsX3B1YmxpY2F0aW9uX3Byb3RvY29sXCI6IDEsXG4gIFwidGltZWRfb3V0XCI6IGZhbHNlXG59In1dLCJpc0Vycm9yIjpmYWxzZX0=\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":908,\"offset\":0,\"operation_id\":\"72d0d22637932a7c8e45c327952d6e0d8bb7e11b07f4850b0d8a2f74eab562f2\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"fdc5e8cdb4924c59f9d8ab05609b338e2d6a9b21b30c36a3ddfee35eca1dd66d\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":908}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

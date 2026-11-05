@@ -1,0 +1,8 @@
+{
+  "original_native_payload_unchanged": true,
+  "local_first_selector": "incorrectly looked for nested authoritative_terminal; current native returns authority fields directly",
+  "initial_console_not_yet_terminal_label_retracted": true,
+  "correct_native_state": "succeeded",
+  "original_job_exit_code": 0,
+  "extra_runtime_calls": 0
+}

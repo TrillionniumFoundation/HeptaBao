@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root-next-three-public-dependency-metadata-source-review.r30.v1",
+  "status": "PASS_FIXED_READ_ONLY_SOURCE_PROPOSAL_NO_LANE_GO",
+  "checks_passed": 18,
+  "checks": [
+    "exact-three-fixed-unsubmitted-metadata",
+    "runtime-policy:actual-parent-whole-blob",
+    "runtime-policy:exact-source-import-line",
+    "runtime-policy:one-literal-local-import",
+    "runtime-policy:lexical-path-only",
+    "runtime-policy:exact-readonly-shape",
+    "openai-routing:actual-parent-whole-blob",
+    "openai-routing:exact-source-import-line",
+    "openai-routing:one-literal-local-import",
+    "openai-routing:lexical-path-only",
+    "openai-routing:exact-readonly-shape",
+    "plugin-loader:actual-parent-whole-blob",
+    "plugin-loader:exact-source-import-line",
+    "plugin-loader:one-literal-local-import",
+    "plugin-loader:lexical-path-only",
+    "plugin-loader:exact-readonly-shape",
+    "no-guessed-Google-manifest",
+    "finite-no-automatic-read-or-traversal"
+  ],
+  "source_packet": "427532d11a020d95e52eb181911746a84e125afe",
+  "bindings": [
+    {
+      "id": "runtime-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js",
+      "origin": {
+        "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+        "line": 4,
+        "import": "import { t as resolveModelRuntimePolicy } from \"./model-runtime-policy-Ca791C2-.js\";"
+      },
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-runtime-policy-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-runtime-policy-Ca791C2-.js"
+          }
+        }
+      },
+      "actual_file": null
+    },
+    {
+      "id": "openai-routing",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js",
+      "origin": {
+        "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+        "line": 5,
+        "import": "import { o as openAIProviderUsesCodexRuntimeByDefault } from \"./openai-routing-DXJmS9CT.js\";"
+      },
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-openai-routing-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/openai-routing-DXJmS9CT.js"
+          }
+        }
+      },
+      "actual_file": null
+    },
+    {
+      "id": "plugin-loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js",
+      "origin": {
+        "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+        "line": 5,
+        "import": "import { s as loadOpenClawPlugins } from \"./loader-D8d2EvVh.js\";"
+      },
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-dependency-info-plugin-loader-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/loader-D8d2EvVh.js"
+          }
+        }
+      },
+      "actual_file": null
+    }
+  ],
+  "metadata_work_limit": "file_info computes its whole-file digest internally; no byte limit exists on that hashing API. This review does not confuse any later body cap with a metadata hash-work cap.",
+  "body_reads_authorized": false,
+  "SDK_execution_authorized": false,
+  "all_transitive_dependencies_qualified": false,
+  "actual_selection_or_owner_proven": false,
+  "configuration_equivalence_proven": false,
+  "available_Runtime_lane": null,
+  "root_Runtime_calls": 0
+}

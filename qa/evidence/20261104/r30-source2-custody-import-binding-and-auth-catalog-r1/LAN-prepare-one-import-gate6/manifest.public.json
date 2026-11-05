@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.whole-packet-manifest.v1",
+  "files": [
+    {
+      "path": "PREPARE.EXACT.REVIEW-ONLY.request.json",
+      "bytes": 480,
+      "sha256": "4a1aa367dca92a9b4438c690b4db971e0ac8efe71af9d3dd4847ae34a4ea7baa",
+      "blob": "483231efe2016a8bd72b8aa205fb589b13513f6e"
+    },
+    {
+      "path": "readiness.public.json",
+      "bytes": 8284,
+      "sha256": "8fe64642d5e339ba91599de9f5e0fb9965e122f284076d29d5ee396dbe7b888a",
+      "blob": "db801efc4f7e5909c88fcf5436203164a1b1a24f"
+    },
+    {
+      "path": "immutable-sources.public.json",
+      "bytes": 4995,
+      "sha256": "6ebae17b03db349116b0c86c671ceebb6b04be28de16243b9205923bbe023310",
+      "blob": "403a5bdcc984e180cc73335f963b248a1f2a19ea"
+    },
+    {
+      "path": "verification/source-contract-checks.public.json",
+      "bytes": 1556,
+      "sha256": "a4173f62903a90183aa8f37b0c3e8de4e0dbbeee472ad0ab4a96b11b0cfc0792",
+      "blob": "42608aac8efcf4f088465c75dd65c18b22536009"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2018,
+      "sha256": "da7aa3d321074811872e430a308356f25ea3df0d5712b753f91b323f11b7cb09",
+      "blob": "29549e1dbbcfda44589c81597ec9678ce95ea427"
+    }
+  ]
+}

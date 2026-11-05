@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.root-pure-review-failure-preserved.r30.v1",
+  "original_verifier": {
+    "name": "r30-auth-three-public-body-chain-root-verifier.js",
+    "blob": "0419aa92b2a5bf33c42b8cbb8785dd6f91c755b0",
+    "bytes": 5226,
+    "sha256": "b1d0154f172418b42a4e074acf49d3deb9046afdb35f1aaead0e06891bc3119f"
+  },
+  "error": {
+    "error": "Error: body-02-support-context:exact-prior-intent",
+    "stack": "Error: body-02-support-context:exact-prior-intent\n    at ok (eval at <anonymous> (exec_main.mjs:39:15), <anonymous>:3:30)\n    at verifyThreePublicBodyChains (eval at <anonymous> (exec_main.mjs:39:15), <anonymous>:13:2)\n    at exec_main.mjs:39:58"
+  },
+  "candidate_or_Runtime_executed": false,
+  "scope": "Original packet remains unchanged; inspect literal intent evidence before correcting root reviewer only."
+}

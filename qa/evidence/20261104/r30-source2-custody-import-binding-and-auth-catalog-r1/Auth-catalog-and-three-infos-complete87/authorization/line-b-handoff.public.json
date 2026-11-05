@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root-Mac31-lineB-release-and-Auth-read-handoff.r29.v1",
+  "status": "LINE_B_HANDED_TO_AUTH_FOR_EXACT_GO_4596_ONLY",
+  "checks_passed": 20,
+  "checks": [
+    "authority-01:whole-status-pin",
+    "authority-01:original-returned-future-closed",
+    "streams:whole-status-pin",
+    "streams:original-returned-future-closed",
+    "core-small:whole-status-pin",
+    "core-small:original-returned-future-closed",
+    "summary-info:whole-status-pin",
+    "summary-info:original-returned-future-closed",
+    "summary-chunk-000000:whole-status-pin",
+    "summary-chunk-000000:original-returned-future-closed",
+    "summary-chunk-065536:whole-status-pin",
+    "summary-chunk-065536:original-returned-future-closed",
+    "driver-stdout-info:whole-status-pin",
+    "driver-stdout-info:original-returned-future-closed",
+    "driver-stdout-body:whole-status-pin",
+    "driver-stdout-body:original-returned-future-closed",
+    "eight-unique-operations",
+    "line-has-no-current-call-or-future",
+    "exact-original-job-and-report",
+    "actual-owned-processes-stopped"
+  ],
+  "Mac_job": "mac/1a1ac9bd07c-fc05-55cf",
+  "Mac_root_runtime_contract_review": "4fbf398eb5d7eb45e43c8a80746c98f153148cb7",
+  "Mac_root_runtime_contract_checks": 177,
+  "closed_handoff_receipt": "7ed0c2b2af09063dd8a9eb7d296af8daba808729",
+  "independently_whole_original_statuses": [
+    {
+      "name": "authority-01",
+      "operation_id": "aea35e44f262a6b47f104b1fc71335820a4ce04c54f910105500baf6923f2a3e",
+      "status_blob": "44c5c41b633210f002fa484fb89a0f19d25c11a1",
+      "status_sha256": "cc09f071914784d3b41e57d7f0432cbb1b28d196b961c3ea01a1f84cf3faf96e"
+    },
+    {
+      "name": "streams",
+      "operation_id": "aa1c8e99f503a4bfb1e6722ce95eacdb06aa0e1f85dfaebb280c546fade4f030",
+      "status_blob": "aabbb453defbd7f16e3ca4c97416fa73c3a45ec8",
+      "status_sha256": "40034bdd5846a28cd65ae01dfecd65c6bda259e1255b942a5eb5bc090bf60f59"
+    },
+    {
+      "name": "core-small",
+      "operation_id": "4b3a4ff2a9ff72d3d61e46da87f8f7b68cccbfe0e35b7c3c099864fb0f1c336b",
+      "status_blob": "9325d2f1672673a7e6830c42175dc178e7dcc7b9",
+      "status_sha256": "b09e51745804111441ec92fd1207045c09f195920d2e543e7c1cd69de3c1e834"
+    },
+    {
+      "name": "summary-info",
+      "operation_id": "a4c750b0ba81b37c9d4b8057a8fddfcf577cf0d8ea076f9874b0bb3f7cd9e752",
+      "status_blob": "c7ece266232dbe083a93a949e44be4f2b040c8e3",
+      "status_sha256": "5129c825e7e1d75f0e89021e98520bedbac82ea8c1245f68c746f42ea14a04e5"
+    },
+    {
+      "name": "summary-chunk-000000",
+      "operation_id": "1c2d08a7f3d873e554bf11a62516037fbef745b6ddb3c160e8623e98145af34b",
+      "status_blob": "265750fcbfebebab091f1fb9536ce9c629163e10",
+      "status_sha256": "507128474a87ac98cec77223664e3908db86d7a6968d3580eeb4cf6fba86a635"
+    },
+    {
+      "name": "summary-chunk-065536",
+      "operation_id": "91f340459893cb68a334c335d1d4e855beb2369ad575976f202af721cba8827f",
+      "status_blob": "cadb44c405d34c28a187cdca9e8f93257a4e2227",
+      "status_sha256": "24e402ad5cab1ad298dbb0ebc5fbc97164f9b1766c87c9934b293801198bbab9"
+    },
+    {
+      "name": "driver-stdout-info",
+      "operation_id": "c95d09e9bd32c58033e43c5f5a9bebdf3703d1d0ba1e9926faef1805e75021ec",
+      "status_blob": "f180d6c6ddfd0e36e8db00b997b865cd184a621f",
+      "status_sha256": "6ecb9288b2d4278d4e603fbbaec201a90892ee8c0cd08dfde32ffb0e0b5339e0"
+    },
+    {
+      "name": "driver-stdout-body",
+      "operation_id": "3ea0c44eeb83cda878ad0d45af20218b434419ea5643745d02f46b321152cdb5",
+      "status_blob": "f00c6758ffbf56eea8586a95f3dffa5eb430bfa2",
+      "status_sha256": "dbe965ef42dd5964b837da6e9c6dccdbe3c11b8f464e33b8d539b91b57691a5a"
+    }
+  ],
+  "remaining_Mac_work": "Pure local/Git final packet upload and independent complete original chain review; no Runtime requests reserved.",
+  "next_lane_owner": "/root/authbus_migration",
+  "exact_conditional_GO_now_active": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+  "max_line_Runtime_calls": 1,
+  "max_owned_native_futures": 1,
+  "root_Runtime_calls": 0,
+  "no_SDK_execution_authorized": true
+}

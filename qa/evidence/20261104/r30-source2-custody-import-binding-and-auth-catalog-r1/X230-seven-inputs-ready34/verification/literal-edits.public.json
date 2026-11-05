@@ -1,0 +1,136 @@
+{
+  "publisher": [
+    {
+      "after": "'normal-same-root-publication-x230-transfer-controls-r1'",
+      "before": "'normal-cold-h2-x230-transfer-controls-r1'",
+      "end": 333,
+      "label": "publisher.BASE",
+      "new_end": 347,
+      "new_start": 291,
+      "start": 291
+    },
+    {
+      "after": "8960",
+      "before": "8862",
+      "end": 445,
+      "label": "publisher.PINS.sender.py.bytes",
+      "new_end": 459,
+      "new_start": 455,
+      "start": 441
+    },
+    {
+      "after": "\"aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663\"",
+      "before": "\"c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742\"",
+      "end": 521,
+      "label": "publisher.PINS.sender.py.sha256",
+      "new_end": 535,
+      "new_start": 469,
+      "start": 455
+    },
+    {
+      "after": "30791",
+      "before": "29900",
+      "end": 563,
+      "label": "publisher.PINS.receiver.py.bytes",
+      "new_end": 577,
+      "new_start": 572,
+      "start": 558
+    },
+    {
+      "after": "\"8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471\"",
+      "before": "\"fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d\"",
+      "end": 639,
+      "label": "publisher.PINS.receiver.py.sha256",
+      "new_end": 653,
+      "new_start": 587,
+      "start": 573
+    },
+    {
+      "after": "25713",
+      "before": "21085",
+      "end": 678,
+      "label": "publisher.PINS.relay.py.bytes",
+      "new_end": 692,
+      "new_start": 687,
+      "start": 673
+    },
+    {
+      "after": "\"cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f\"",
+      "before": "\"732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f\"",
+      "end": 754,
+      "label": "publisher.PINS.relay.py.sha256",
+      "new_end": 768,
+      "new_start": 702,
+      "start": 688
+    },
+    {
+      "after": "'heptabao.4e808-x230-normal7-inert-carrier.v1'",
+      "before": "'heptabao.df026-x230-normal7-inert-carrier.v1'",
+      "end": 3445,
+      "label": "publisher.schema.heptabao.df026-x230-normal7-inert-carrier.v1",
+      "new_end": 3459,
+      "new_start": 3413,
+      "start": 3399
+    },
+    {
+      "after": "'heptabao.4e808-x230-normal7-inputs.v1'",
+      "before": "'heptabao.df026-x230-normal7-inputs.v1'",
+      "end": 3941,
+      "label": "publisher.schema.heptabao.df026-x230-normal7-inputs.v1",
+      "new_end": 3955,
+      "new_start": 3916,
+      "start": 3902
+    }
+  ],
+  "receiver": [
+    {
+      "after": "True",
+      "before": "False",
+      "end": 845,
+      "label": "receiver.BINDING_READY",
+      "new_end": 844,
+      "new_start": 840,
+      "start": 840
+    }
+  ],
+  "relay": [
+    {
+      "after": "True",
+      "before": "False",
+      "end": 859,
+      "label": "relay.BINDING_READY",
+      "new_end": 858,
+      "new_start": 854,
+      "start": 854
+    },
+    {
+      "after": "\"aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663\"",
+      "before": "\"36e43cd870f220f9a8e834ef8c0c67eb0cd452a2eb1604c2900c7350c014e4d4\"",
+      "end": 3890,
+      "label": "relay.HELPERS.sender",
+      "new_end": 3889,
+      "new_start": 3823,
+      "start": 3824
+    },
+    {
+      "after": "\"8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471\"",
+      "before": "\"e19b7c150f8301483c107456960851b07afa827a4574f8d0088f1104f4afb62f\"",
+      "end": 3971,
+      "label": "relay.HELPERS.receiver",
+      "new_end": 3970,
+      "new_start": 3904,
+      "start": 3905
+    }
+  ],
+  "sender": [
+    {
+      "after": "True",
+      "before": "False",
+      "end": 265,
+      "label": "sender.BINDING_READY",
+      "new_end": 264,
+      "new_start": 260,
+      "start": 260
+    }
+  ]
+}

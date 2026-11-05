@@ -1,0 +1,753 @@
+{
+  "Git_commands_executed_by_candidate": 0,
+  "Runtime_calls": 0,
+  "base": {
+    "blob": "f162a3e7976ede50439526c8a806b2253e1e6dd3",
+    "bytes": 32296,
+    "sha256": "a9fd588525c87733bdec6e98d278617d94d5aa431b9052a8a19d96dee5337909"
+  },
+  "budgets": {
+    "Git": 60,
+    "KILL": 5,
+    "TERM": 5,
+    "clone": 90,
+    "controller": 300,
+    "outer": 330
+  },
+  "byte_identical_definitions": 29,
+  "candidate": {
+    "blob": "e19892771c202552ca73905b78455ffeeaf26d7d",
+    "bytes": 33093,
+    "sha256": "2e8e0e44dd54523a2710022fbb2ee86461f2f7fc5e9b9d20753a1ec34fe182ce"
+  },
+  "check_count": 174,
+  "checks": [
+    {
+      "check": "whole-reference:source2-binding",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-core",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:bundle-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:export-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:importer-base",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:importer-dispatch-contract",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-core-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-sender",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-receiver",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-relay",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-sender-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-receiver-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-relay-info",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source-export-original",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:root-source2-review",
+      "passed": true
+    },
+    {
+      "check": "whole-reference:source2-authority",
+      "passed": true
+    },
+    {
+      "check": "exact-unbound-base",
+      "passed": true
+    },
+    {
+      "check": "received-canonical",
+      "passed": true
+    },
+    {
+      "check": "received-job",
+      "passed": true
+    },
+    {
+      "check": "source2-authority-zero",
+      "passed": true
+    },
+    {
+      "check": "source2-status",
+      "passed": true
+    },
+    {
+      "check": "source2-owned",
+      "passed": true
+    },
+    {
+      "check": "source2-no-unknown",
+      "passed": true
+    },
+    {
+      "check": "source2-three-cleanup",
+      "passed": true
+    },
+    {
+      "check": "base-ready-false",
+      "passed": true
+    },
+    {
+      "check": "version:bundle-info",
+      "passed": true
+    },
+    {
+      "check": "size:bundle-info",
+      "passed": true
+    },
+    {
+      "check": "mode:bundle-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:bundle-info",
+      "passed": true
+    },
+    {
+      "check": "version:export-info",
+      "passed": true
+    },
+    {
+      "check": "size:export-info",
+      "passed": true
+    },
+    {
+      "check": "mode:export-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:export-info",
+      "passed": true
+    },
+    {
+      "check": "version:source2-core-info",
+      "passed": true
+    },
+    {
+      "check": "size:source2-core-info",
+      "passed": true
+    },
+    {
+      "check": "mode:source2-core-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:source2-core-info",
+      "passed": true
+    },
+    {
+      "check": "transfer-raw-whole",
+      "passed": true
+    },
+    {
+      "check": "source-shape-0",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-0-bytes",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-0-bytes",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-0-sha256",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-0-sha256",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-0-version",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-0-version",
+      "passed": true
+    },
+    {
+      "check": "dest-path-mode-0",
+      "passed": true
+    },
+    {
+      "check": "cross-source-content-0",
+      "passed": true
+    },
+    {
+      "check": "dest-table-0",
+      "passed": true
+    },
+    {
+      "check": "full9-table-0",
+      "passed": true
+    },
+    {
+      "check": "full9-receiver-0",
+      "passed": true
+    },
+    {
+      "check": "source-shape-1",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-1-bytes",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-1-bytes",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-1-sha256",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-1-sha256",
+      "passed": true
+    },
+    {
+      "check": "unbound-source-1-version",
+      "passed": true
+    },
+    {
+      "check": "unbound-dest-1-version",
+      "passed": true
+    },
+    {
+      "check": "dest-path-mode-1",
+      "passed": true
+    },
+    {
+      "check": "cross-source-content-1",
+      "passed": true
+    },
+    {
+      "check": "dest-table-1",
+      "passed": true
+    },
+    {
+      "check": "full9-table-1",
+      "passed": true
+    },
+    {
+      "check": "full9-receiver-1",
+      "passed": true
+    },
+    {
+      "check": "transfer-path-mode",
+      "passed": true
+    },
+    {
+      "check": "unbound-transfer:bytes",
+      "passed": true
+    },
+    {
+      "check": "unbound-transfer:sha256",
+      "passed": true
+    },
+    {
+      "check": "unbound-transfer:version",
+      "passed": true
+    },
+    {
+      "check": "export-raw-dest",
+      "passed": true
+    },
+    {
+      "check": "version:source2-sender-info",
+      "passed": true
+    },
+    {
+      "check": "size:source2-sender-info",
+      "passed": true
+    },
+    {
+      "check": "mode:source2-sender-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:source2-sender-info",
+      "passed": true
+    },
+    {
+      "check": "control-source:sender.py",
+      "passed": true
+    },
+    {
+      "check": "control-info:sender.py",
+      "passed": true
+    },
+    {
+      "check": "control-identity:sender.py",
+      "passed": true
+    },
+    {
+      "check": "version:source2-receiver-info",
+      "passed": true
+    },
+    {
+      "check": "size:source2-receiver-info",
+      "passed": true
+    },
+    {
+      "check": "mode:source2-receiver-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:source2-receiver-info",
+      "passed": true
+    },
+    {
+      "check": "control-source:receiver.py",
+      "passed": true
+    },
+    {
+      "check": "control-info:receiver.py",
+      "passed": true
+    },
+    {
+      "check": "control-identity:receiver.py",
+      "passed": true
+    },
+    {
+      "check": "version:source2-relay-info",
+      "passed": true
+    },
+    {
+      "check": "size:source2-relay-info",
+      "passed": true
+    },
+    {
+      "check": "mode:source2-relay-info",
+      "passed": true
+    },
+    {
+      "check": "owner-link:source2-relay-info",
+      "passed": true
+    },
+    {
+      "check": "control-source:relay.py",
+      "passed": true
+    },
+    {
+      "check": "control-info:relay.py",
+      "passed": true
+    },
+    {
+      "check": "control-identity:relay.py",
+      "passed": true
+    },
+    {
+      "check": "literal-before:ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[0].bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[0].sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[0].version",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[1].bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[1].sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-before:SOURCE_FILES[1].version",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[0].bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[0].sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[0].version",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[1].bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[1].sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-before:FILES[1].version",
+      "passed": true
+    },
+    {
+      "check": "literal-before:TRANSFER.bytes",
+      "passed": true
+    },
+    {
+      "check": "literal-before:TRANSFER.sha256",
+      "passed": true
+    },
+    {
+      "check": "literal-before:TRANSFER.version",
+      "passed": true
+    },
+    {
+      "check": "equality:transported['controller']['bytes']",
+      "passed": true
+    },
+    {
+      "check": "literal-before:transported['controller']['bytes']",
+      "passed": true
+    },
+    {
+      "check": "equality:transported['controller']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "literal-before:transported['controller']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "equality:transported['helpers']['sender.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "literal-before:transported['helpers']['sender.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "equality:transported['helpers']['receiver.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "literal-before:transported['helpers']['receiver.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "four-pins",
+      "passed": true
+    },
+    {
+      "check": "twenty-literals",
+      "passed": true
+    },
+    {
+      "check": "inverse:transported['helpers']['receiver.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "inverse:transported['helpers']['sender.py']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "inverse:transported['controller']['sha256']",
+      "passed": true
+    },
+    {
+      "check": "inverse:transported['controller']['bytes']",
+      "passed": true
+    },
+    {
+      "check": "inverse:TRANSFER.version",
+      "passed": true
+    },
+    {
+      "check": "inverse:TRANSFER.sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse:TRANSFER.bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[1].version",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[1].sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[1].bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[0].version",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[0].sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse:FILES[0].bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[1].version",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[1].sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[1].bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[0].version",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[0].sha256",
+      "passed": true
+    },
+    {
+      "check": "inverse:SOURCE_FILES[0].bytes",
+      "passed": true
+    },
+    {
+      "check": "inverse:ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "check": "inverse-whole",
+      "passed": true
+    },
+    {
+      "check": "compile-only",
+      "passed": true
+    },
+    {
+      "check": "same-definitions",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:Cancelled",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:on_signal",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:digest",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:identity",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:remaining",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:stable",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:fsync_dir",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:create",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:public",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:process_snapshot",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:group_members",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:stop_active",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:stop_owned",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:persist_command",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:owned_argv",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:owned",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:git",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:freeze",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:read_file",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:directory_key",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:hold_input_directories",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:check_input_directories",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:hold_fixed_inputs",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:recheck_held_inputs",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:create_source_directory",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:check_source_directory",
+      "passed": true
+    },
+    {
+      "check": "receipt-only-four-literals",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:bundle_header",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:prove_canonical",
+      "passed": true
+    },
+    {
+      "check": "definition-byte-identical:verify_materialized_and_fsync",
+      "passed": true
+    },
+    {
+      "check": "main-whole-byte-identical",
+      "passed": true
+    },
+    {
+      "check": "exact-request-original-five-statements",
+      "passed": true
+    },
+    {
+      "check": "original-guard-rejects:missing-tail",
+      "passed": true
+    },
+    {
+      "check": "original-guard-rejects:wrong-tail",
+      "passed": true
+    },
+    {
+      "check": "selected-actual-receipt-predicate",
+      "passed": true
+    },
+    {
+      "check": "original-deadlines",
+      "passed": true
+    },
+    {
+      "check": "strict-whole-diff",
+      "passed": true
+    }
+  ],
+  "definitions": 30,
+  "diff": {
+    "blob": "cbd5b6e49de2582ff4fc4d3290febbbf3959802c",
+    "bytes": 3652,
+    "sha256": "915eaabfaab6dca864c12221dec3f3d5e285848fe8d190e83531969ed2e04a1d"
+  },
+  "four_literal_only_definition": "verify_receipts",
+  "host_io": false,
+  "hunks": 2,
+  "literal_changes": 20,
+  "main_body_byte_identical": true,
+  "nanoseconds": "Original raw texts use Python integers; proof full9 arrays are decimal strings.",
+  "not_claimed": [
+    "current filesystem stat after archived observation",
+    "fresh roots absent now",
+    "source import executed",
+    "desktop checkout qualified",
+    "product qualification"
+  ],
+  "original_five_argv_statements_selected_executed": true,
+  "passed": true,
+  "product_started": false,
+  "request": {
+    "blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "bytes": 34190,
+    "sha256": "adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d"
+  },
+  "schema": "heptabao.current4e808.standalone-import-source-review.v1",
+  "scope": "offline literal binding and selected original predicates only",
+  "selected_actual_receipt_predicate_executed": true,
+  "whole_module_executed": false
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.root-X230-inert-original-ACK-review.r30.v1",
+  "status": "PASS_ORIGINAL_ACK_ONLY",
+  "checks_passed": 8,
+  "checks": [
+    "original-SDK-not-error",
+    "original-native-byte-exact",
+    "original-job-launched-without-reuse",
+    "exact-host-executable-cwd",
+    "exact-five-args-including-whole-publisher",
+    "exact-key-and-empty-env",
+    "digest-and-lossless-fingerprint-match-exact-request",
+    "observed-systemd-launch"
+  ],
+  "job": "desktop/1a1ace08ffa-fc05-576b",
+  "SDK": {
+    "blob": "9bda739a72b8e2cc8ae3445d3b1b3616b635ff40",
+    "bytes": 6642,
+    "sha256": "2822115f08aafd4c6ddeb41322cb4071c5e4e7347b28176cc71029e4cdac67e2"
+  },
+  "native": {
+    "blob": "f45e032149b73fd3d1d8cd73971134e8453441ff",
+    "bytes": 6235,
+    "sha256": "20fad4a213da7a7f34d806e057f0e2bb78d73e2be531a312549375874778b8a7"
+  },
+  "intent": "3060358dd9ae85e72e8621113e078a4a2c503efc",
+  "original_submissions": 1,
+  "request_digest": "7930f93456c68043e31c4ce19f5f35858bea1d8f4e626edc83fbdf32e798bee6",
+  "request_fingerprint_decimal": "8732753680660856899",
+  "terminal_or_file_qualification": false,
+  "root_Runtime_calls": 0
+}

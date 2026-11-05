@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.mac-catalog-original-observer-intent.r3",
+  "label": "streams-00000",
+  "rootGo": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+  "lineBHandoff": "386b56b456ce6db89631d4d6bf887e7e29a5c0c8",
+  "originalProcessRequest": "19b9a25626b2c7b7c270283646bd91fbee818ca1",
+  "originalProcessAck": "26a253a0a01e8765e7b39a9afe782e011b4cdab6",
+  "priorAuthority": "df33e4e55db99a52648d63365149cbb42396bce5",
+  "previousObserverFullyClosed": true,
+  "request": {
+    "blob": "d33164a5add7068210b1e39b994a2938f472340c",
+    "bytes": 299,
+    "sha256": "013b92b236986aeb939c0bfe248686b7e70f0f8937e10ebfe85621aca8a10e3e",
+    "value": {
+      "idempotency_key": "heptabao-mac-catalog-64333afe-py314-r3-streams-00000-20261105",
+      "operation": {
+        "tool": "process_read",
+        "arguments": {
+          "host": "mac",
+          "job_id": "1a1acb902f1-fc05-5693",
+          "stdout_offset": 0,
+          "stderr_offset": 0,
+          "limit": 16384
+        }
+      }
+    }
+  },
+  "oneOriginalOperation": true,
+  "submitted": false,
+  "noBusinessReplay": true
+}

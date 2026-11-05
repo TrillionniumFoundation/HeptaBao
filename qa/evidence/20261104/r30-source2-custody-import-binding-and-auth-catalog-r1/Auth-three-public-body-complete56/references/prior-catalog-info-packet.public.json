@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-catalog-and-three-info.packet-readback.r3",
+  "status": "WHOLE_AND_MERKLE_PASS",
+  "tree": "b17603266b3cda2f0c362561dd31eefabee15435",
+  "fileCount": 87,
+  "totalBytes": 356538,
+  "merkleNodes": 13,
+  "manifest": "2df01c3c68b4925fe459d92094dca065689b595c",
+  "whole": "8942cd4bf3f831ffdca6fdf0bd00433a6a68fa6c",
+  "allCachedRawOriginalsRehashed": true,
+  "externalWholeReadbackBeforePinAcceptance": true,
+  "recursiveActualTreeAllPathsAndSizesMatched": true,
+  "noHostReadOrDispatchDuringPackaging": true,
+  "catalogReview": "d28ff11a58600b6ddacb31cf462fce3c110b5f4c",
+  "summary": "ea1a5ac6d3b68f8eda72517744de9523acabeb46",
+  "proposedBodies": "56158dc9a4a6ab7d67daa079a1bc523ba8342aaa",
+  "bodiesSubmitted": 0,
+  "activeRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "authorityExitCode": 0,
+  "originalObserversComplete": 5
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-actual-captured-public-catalog-review.r30.v1",
+  "status": "PASS_BOUNDED_EXISTING_PRIVATE_CAPSULE_PUBLIC_PROJECTION_ONLY",
+  "checks_passed": 21,
+  "checks": [
+    "authoritative_original_job_exit0_full_durable",
+    "actual_original_stdout8971_stderr0",
+    "reader_complete_no_error_and_original_deadline",
+    "same_original_private_capsule",
+    "all9_owned_FDs_once_closed",
+    "actual_original72_metadata4reads195155bytes",
+    "original75_registry_two_enabled_retained",
+    "ordinal22:all_original_fields_unchanged",
+    "ordinal22:exact_prior_hashes",
+    "ordinal22:new_values_match_JSON_value_hashes",
+    "ordinal22:explicit_metadata_not_selection",
+    "ordinal68:all_original_fields_unchanged",
+    "ordinal68:exact_prior_hashes",
+    "ordinal68:new_values_match_JSON_value_hashes",
+    "ordinal68:explicit_metadata_not_selection",
+    "actual_google_only_fixed_public_scope",
+    "actual_codex_same_already_pinned_root",
+    "original_global_namespace_rejection_preserved",
+    "all_five_original_models_retained_no_selection",
+    "no_replay_SDK_network_provider_current_inputs_or_write",
+    "no_private_body_or_runtime_qualification_export"
+  ],
+  "job": "mac/1a1acb902f1-fc05-5693",
+  "source": "ce7b983c88ae53833ffe285b924470e14a450bba",
+  "stdout": {
+    "blob": "3bb40bfd21237fba2b4eaeaffb81388e5e8b3ebf",
+    "bytes": 8971,
+    "sha256": "de59ba0d07c886c20330af232f734480758205cc9f0c0d4b7d41eb73d21d1265"
+  },
+  "authority": "df33e4e55db99a52648d63365149cbb42396bce5",
+  "private_capsule_read": true,
+  "private_capsule_bytes": 195155,
+  "elapsed_seconds": 0.007028250023722649,
+  "metadata_calls": 72,
+  "read_calls": 4,
+  "descriptors_closed": 9,
+  "catalog": [
+    {
+      "registryOrdinal": 22,
+      "pluginId": "google",
+      "root": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+      "scope": "fixed_public_sdk_tree",
+      "identifierValueSha256": "7d0eacef0de836233bf69fc88fcab76ae6d5d1b4bd19982d683eeec79da0cefa",
+      "rootValueSha256": "1307e12ae383395e3455a480c653b122b6898856f1e525e8c809945d83e0a691",
+      "startupHash": "d03c7cc032377784613c1f21d72403bd681658d324226d713fa756bbfdb022eb",
+      "originalCompositePredicate": false,
+      "actualSelectedForCurrentAgents": null
+    },
+    {
+      "registryOrdinal": 68,
+      "pluginId": "codex",
+      "root": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex",
+      "scope": "already_pinned_codex",
+      "identifierValueSha256": "08f6b585592467d20717e8abd8dd02b9fb430ba65eb4b745c373ce3001ef5dae",
+      "rootValueSha256": "b7d3dd983a296b81381c241b131cfabc4e3a56a9a656f9d197743a16917aeeec",
+      "startupHash": "e25eaf648dc7039953915d93cac78cc23b21b780b60f562ff1aaa53086f25364",
+      "originalCompositePredicate": true,
+      "actualSelectedForCurrentAgents": null
+    }
+  ],
+  "whole_original_observer_chain_packet_pending": true,
+  "new_code_or_current_path_admission": false,
+  "actual_selected_owner_proven": false,
+  "SDK_executed": false,
+  "AuthBus_credential_runtime_qualified": false,
+  "full_replacement_qualified": false,
+  "root_Runtime_calls": 0
+}

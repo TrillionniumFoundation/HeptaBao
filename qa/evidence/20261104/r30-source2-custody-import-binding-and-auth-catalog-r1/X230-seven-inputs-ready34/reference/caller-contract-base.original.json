@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.df026.x230-normal7-fixed-dispatch-contract.r1",
+  "inert": {
+    "request": {
+      "bytes": 85331,
+      "sha256": "7468b8649a32a598f97bd700b44182ca5ac143e98b9c28b17e235c70ec70294a",
+      "blob": "ef73a2cd818c08bbc7d50112101d5d42b5536396"
+    },
+    "argv_prefix": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "carrier": {
+      "bytes": 5029,
+      "sha256": "0eeac473e4cce47f6596a7c54380a0b3b0125256478d53bfe529b3d381cf8c0a",
+      "blob": "0f2da42f4f9d6e508146b18c53e3d0623586c024"
+    },
+    "stdin": {
+      "bytes": 79906,
+      "sha256": "dd2d6e8ebaf98d1425a1ae24049328b44d57f35116e4e05650c0162dd3e78e82",
+      "blob": "577005369cc2d3f0e113b38450ae4e79807fa088"
+    },
+    "outer_seconds": 60,
+    "only_three_public_control_sources": true,
+    "source_modules_imported_or_executed": false
+  },
+  "relay": {
+    "request": {
+      "bytes": 324,
+      "sha256": "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280",
+      "blob": "125f37cd526d3cdb9b4a5513b6e9c033fec45935"
+    },
+    "exact": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "timeout_seconds": 360,
+      "idempotency_key": "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7"
+    },
+    "file_self_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1/relay.py",
+    "additional_relay_sys_argv_guard": false,
+    "parent_seconds": 300
+  },
+  "sender": {
+    "transport": "local child /usr/bin/python3 -I -S -B -c <exact sender text>",
+    "source": {
+      "bytes": 8862,
+      "sha256": "c649d82d09c52519a4b6f240ecd02d987941ad8bb8ab3f74f490afa9301fd742",
+      "blob": "5fe51ddedcfe02f5e1b69714e6de8fe61dff9ab4"
+    },
+    "no_trailing_self_sha_contract": true,
+    "seconds": 90
+  },
+  "receiver": {
+    "transport": "unchanged strict x230-ts SSH and remote_command('/usr/bin/python3', exact receiver text)",
+    "source": {
+      "bytes": 29900,
+      "sha256": "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d",
+      "blob": "4a302b89c1de1473844b4e364cb44e51d1310a1a"
+    },
+    "remote_orig_argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "<the exact receiver.py text>",
+      "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d"
+    ],
+    "sys_argv": [
+      "-c",
+      "fefacf7be6b9785e4be7de94584ec60245ddec87573f6404739730b97546275d"
+    ],
+    "all_four_original_argv_asserts_evaluated_offline": true,
+    "missing_wrong_or_extra_self_sha_rejected": true,
+    "receiver_seconds": 300,
+    "git_seconds": 60,
+    "clone_seconds": 90
+  },
+  "runtime_go": false
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.public-source-body-packet.whole.v1",
+  "manifest": {
+    "blob": "84627085f6e3d951a4dacaf9c5ce0683de17a3f2",
+    "bytes": 13619,
+    "sha256": "c0c476f581262ff69ab69bf5ef7a32ff5eb394fb8d2f5a1fabf4db06dd3ad224"
+  },
+  "originalLeafCount": 54,
+  "originalLeafBytes": 152230,
+  "sourceBodies": [
+    {
+      "ordinal": 1,
+      "id": "harness-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+      "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+      "bytes": 5718,
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+      "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+      "operationId": "70f674551e07f9eb20d585b9f97dc2510e1ceda79fd9ae3472376b41827efb0b",
+      "originalPayload": "d845442a684dbc1a9e96f727fc82c2b129a79598",
+      "originalNative": "13f3b6db5a32361d5b7df725dc9044ea80666878",
+      "originalClosedFull": true,
+      "offset": 0,
+      "nextOffset": 5718,
+      "eof": true,
+      "chunkShaEqualsWhole": true,
+      "sdkExecuted": false
+    },
+    {
+      "ordinal": 2,
+      "id": "support-context",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+      "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+      "bytes": 4255,
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+      "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+      "operationId": "c046c711b00b2f5ae81bdee2f91b78d6be681a06431987cf4e58a9b8a2174d79",
+      "originalPayload": "48de55d5a3f571739618aef02cfc2232fe1990e6",
+      "originalNative": "5daace5132c6623e3d609d15a2417e31ce9ff3f9",
+      "originalClosedFull": true,
+      "offset": 0,
+      "nextOffset": 4255,
+      "eof": true,
+      "chunkShaEqualsWhole": true,
+      "sdkExecuted": false
+    },
+    {
+      "ordinal": 3,
+      "id": "codex-harness",
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+      "bytes": 3596,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+      "blob": "39b49d3be2df87cde0af1f592a049cb49013c57d",
+      "operationId": "13588a1820aad905c189ab2fa4e3ed493cfcbb49caf4b0897a27eb85cbae01ad",
+      "originalPayload": "5a62c2d33910711e58cb853cc11fb81a65775666",
+      "originalNative": "8efc2c24d7d93d44819008b15488319ac27d83b3",
+      "originalClosedFull": true,
+      "offset": 0,
+      "nextOffset": 3596,
+      "eof": true,
+      "chunkShaEqualsWhole": true,
+      "sdkExecuted": false
+    }
+  ],
+  "allRawSdkNativePayloadsPreserved": true,
+  "externalArchivingRequiredWholeReadback": true,
+  "noHostReadDuringPacketAssembly": true,
+  "lineBReleasedToRoot": true,
+  "sdkExecution": false
+}

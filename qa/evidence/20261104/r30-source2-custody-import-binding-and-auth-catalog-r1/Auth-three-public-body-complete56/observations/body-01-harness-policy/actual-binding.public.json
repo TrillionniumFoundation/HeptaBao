@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac-fixed-public-body.actual-binding.r1",
+  "status": "PASS_WHOLE_CODE_RETRIEVAL_ONLY",
+  "ordinal": 1,
+  "id": "harness-policy",
+  "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+  "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+  "bytes": 5718,
+  "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+  "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+  "operationId": "70f674551e07f9eb20d585b9f97dc2510e1ceda79fd9ae3472376b41827efb0b",
+  "originalPayload": "d845442a684dbc1a9e96f727fc82c2b129a79598",
+  "originalNative": "13f3b6db5a32361d5b7df725dc9044ea80666878",
+  "originalClosedFull": true,
+  "offset": 0,
+  "nextOffset": 5718,
+  "eof": true,
+  "chunkShaEqualsWhole": true,
+  "sdkExecuted": false
+}

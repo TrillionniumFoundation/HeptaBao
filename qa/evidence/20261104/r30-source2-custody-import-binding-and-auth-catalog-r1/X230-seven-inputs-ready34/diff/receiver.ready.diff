@@ -1,0 +1,11 @@
+--- a/receiver.prebind.py
++++ b/receiver.ready.py
+@@ -22,7 +22,7 @@
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-BINDING_READY=False
++BINDING_READY=True
+ FILES=[
+   {
+     "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",

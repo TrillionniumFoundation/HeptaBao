@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.r30-checkpoint-narrow-peer.selected-checks.r1",
+  "scope": "R30 intro, r30_progress, current Runtime lanes and overall only",
+  "inputs": [
+    {
+      "kind": "intro",
+      "blob": "ebf8d2df0e16d0f3a06c6f012ef7e9401dca138c",
+      "bytes": 9844,
+      "sha256": "723612162d24ac7e10a5bf2b39df6ac4e03eb45c405fb6bd723a772bf06efeaf"
+    },
+    {
+      "kind": "state",
+      "blob": "3dbaea662d2fa7dcb5b567fb50ad4faa5cb81ed8",
+      "bytes": 94910,
+      "sha256": "469f4db0bc9e1955dba61f0b35be2808387ab25f2e7d09f868dc302b77ecc757"
+    }
+  ],
+  "checks": [
+    {
+      "name": "intro_whole_bytes_sha256_git",
+      "passed": true
+    },
+    {
+      "name": "state_whole_bytes_sha256_git",
+      "passed": true
+    },
+    {
+      "name": "actual_public_body_count_three",
+      "passed": true
+    },
+    {
+      "name": "actual_public_body_bytes_13569",
+      "passed": true
+    },
+    {
+      "name": "actual_three_original_operations_closed_full_eof",
+      "passed": true
+    },
+    {
+      "name": "r30_body_count_and_bytes_match_actual",
+      "passed": true
+    },
+    {
+      "name": "r30_exact_body_requests_match_archived",
+      "passed": true
+    },
+    {
+      "name": "r30_body_packet_and_root_review_match",
+      "passed": true
+    },
+    {
+      "name": "next_three_metadata_unsubmitted",
+      "passed": true
+    },
+    {
+      "name": "future_bodies_sdk_not_authorized",
+      "passed": true
+    },
+    {
+      "name": "closed_budget_not_reused",
+      "passed": true
+    },
+    {
+      "name": "catalog_and_bodies_no_selected_owner_or_sdk_claim",
+      "passed": true
+    },
+    {
+      "name": "original_namespace_guard_retained",
+      "passed": true
+    },
+    {
+      "name": "terminal_import_report_not_complete_import",
+      "passed": true
+    },
+    {
+      "name": "lost_ack_unknown_not_reclassified",
+      "passed": true
+    },
+    {
+      "name": "x230_inert_terminal_not_independent_qualification",
+      "passed": true
+    },
+    {
+      "name": "source_relay_not_import_qualification",
+      "passed": true
+    },
+    {
+      "name": "root_zero_runtime_correct_line_owners",
+      "passed": true
+    },
+    {
+      "name": "current_auth_source_only_production_paused",
+      "passed": true
+    },
+    {
+      "name": "r29_window_explicitly_historical",
+      "passed": true
+    },
+    {
+      "name": "overall_replacement_cutover_cleanup_migration_false",
+      "passed": true
+    }
+  ],
+  "passed": 21,
+  "total": 21,
+  "product_test_count": 0,
+  "runtime_calls": 0,
+  "sdk_executions": 0,
+  "source_or_state_mutations": 0,
+  "inspection_note": {
+    "stage": "cached_read_only_inspection",
+    "error": "TypeError: load(...)?.map is not a function",
+    "cause": "operations cache is an object rather than an array",
+    "effect": "No Runtime call, source mutation, or qualification occurred."
+  },
+  "limitations": [
+    "These are finite pure-data checkpoint consistency checks, not product tests.",
+    "R29 historical sections, final evidence totals/as-of, and parent-announced inherited-field corrections were not re-audited.",
+    "No final assembled R29 suffix byte-preservation claim is made from the intro-only draft."
+  ]
+}

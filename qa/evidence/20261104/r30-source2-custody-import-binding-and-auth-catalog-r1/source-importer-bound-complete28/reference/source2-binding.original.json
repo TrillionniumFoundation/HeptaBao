@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.current4e808.source-carrier.received-files.v1",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "source_export_complete_tree": "f5af874eee6ec59d2afccb90898fcdb69251dffd",
+  "relay_job_id": "1a1acb4e995-fc05-567a",
+  "relay_actual_core": {
+    "bytes": 12004,
+    "sha256": "fc629c875328d1c4dce236417280c9b92989c8f94c4b75d8c09d913722d2ce65",
+    "blob": "1775fb1b27f8715447efdca47b5c0c27199d83d8"
+  },
+  "observed_files": [
+    {
+      "index": 0,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 256,
+      "nlink": 1,
+      "receiver_full9": [
+        2050,
+        7361612,
+        1000,
+        1000,
+        33024,
+        1,
+        22320862,
+        "1793898902432875221",
+        "1793898902432875221"
+      ],
+      "same_fd_receiver_whole": {
+        "bytes": 22320862,
+        "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+      },
+      "independent_info_blob": "2e72839bfdfde535b07e3316e203b01dcd930479",
+      "independent_info_bytes": 521,
+      "independent_info_sha256": "da5e78637df203662236604ae9b7e3d989c5359a477d9955ca57b3bcc7b6dfc5",
+      "operation_id": "20d8e74b12290f63c2fce80ecf6a8b78aa70527c12706d21c99b025487969591",
+      "whole_source_qualification_preserved": true,
+      "current_stat_not_claimed_after_observation": true
+    },
+    {
+      "index": 1,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 256,
+      "nlink": 1,
+      "receiver_full9": [
+        2050,
+        7361625,
+        1000,
+        1000,
+        33024,
+        1,
+        39692,
+        "1793898902726866721",
+        "1793898902726866721"
+      ],
+      "same_fd_receiver_whole": {
+        "bytes": 39692,
+        "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+      },
+      "independent_info_blob": "d4c8d21a290aeae17021f8a852571b2ed7cb232a",
+      "independent_info_bytes": 520,
+      "independent_info_sha256": "c22fe6062925533efb38d709e9bdab6a60f8af5d3daa5dd795b8047251da5648",
+      "operation_id": "5a15350a2d10a0a8df3ed43e3c80ae173a60052f8115e03b04ef42cc56f89f28",
+      "whole_source_qualification_preserved": true,
+      "current_stat_not_claimed_after_observation": true
+    }
+  ],
+  "import_executed": false,
+  "Git_operations": 0,
+  "source_import_qualified": false
+}

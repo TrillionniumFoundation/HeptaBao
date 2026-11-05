@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-public-source-body-harness-policy-fc493813-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+      "expected_version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+      "offset": 0,
+      "limit": 5718
+    }
+  }
+}

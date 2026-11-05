@@ -1,0 +1,17 @@
+# X230 ready-only successor: independent narrow source peer
+
+Result: no new blocking source finding in the reviewed readiness, publisher binding and dispatch delta. This is not runtime admission or an assertion that the old relay terminated.
+
+Reviewed immutable tree: `4fdb7848257d917b8efdd4dd1bed296ae5c40dd2`. I whole-read and checked Git identities/byte counts for 21 relevant objects: four before/after source pairs, all four diffs, caller contracts, plan references, exact inert request/stdin, exact relay request and the already-bound seven-input table. The review did not fetch fresh host metadata, execute Python modules, run SDK/transport, or repeat the author's 122 components.
+
+## Exact changes and retained contracts
+
+- Sender and receiver each reconstruct exactly from one hunk: `BINDING_READY=False` becomes `True` and nothing else. Relay reconstructs from two hunks: the same readiness literal and the two derived whole helper SHA values. Reversing all three diffs reconstructs the prebind sources byte-for-byte. Thus their existing function/class bodies, seven input arrays, source bindings, held fence, deadline and cleanup code are unchanged.
+- The publisher reconstructs exactly from three hunks against original `0f2da42f4f9d6e508146b18c53e3d0623586c024`: new controls BASE, six length/hash values and two schema strings. Its five original definitions and create-only/publication behavior are unchanged. The encoded stdin contains exactly three controls and decodes byte-for-byte to current sender/receiver/relay; it remains below the original 262,144-byte input ceiling.
+- All three `FILES` arrays are equal and preserve the seven historical actual path/name/size/SHA/version rows in `ca7829e15be4b78839b576617b3ca7516e5fc9f8`. This is a source-binding comparison to existing evidence, not a new observation that those paths still match or that X230 received them.
+- Inert request `af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb` embeds the exact 5,043-byte publisher and exact 87,425-byte stdin. Host desktop, `/usr/bin/python3 -I -S -B -c`, original cwd and outer 60 are matched. Relay request `9241a86d71e9703259aed6e3d6f711c7568bcf39` matches the explicit contract and new fixed source path with outer 360.
+- The actual relay caller still starts the sender with exactly `python -I -S -B -c <source>` and no trailing digest. Its receiver remote command still adds the digest of the exact ASCII receiver source. Receiver's original `sys.argv`, `sys.orig_argv` length/prefix and source-hash assertions are unchanged. There is no new caller/receiver identity mismatch in this delta.
+
+The retained 90/300/clone90/Git60/TERM5/KILL5 budgets and the prior effect-fence code were not rewritten. The narrow mechanical checks passed 32/32. Function counts are 10/27/21 plus one existing class each, and publisher five functions; this agrees with the author's 11/28/22 function-plus-class count. No candidate function was invoked by these checks.
+
+The plan separately retains `dispatch_authorized=false`, unqualified desktop/X230 import and old relay `UNKNOWN`. The readiness literal means the seven inputs are bound for proposed execution; it is not process completion, runtime GO, production qualification, or permission to replay the old relay. Actual inert and any later transport still require root's exact admission and original terminal/whole output/independent destination/owned closure evidence.

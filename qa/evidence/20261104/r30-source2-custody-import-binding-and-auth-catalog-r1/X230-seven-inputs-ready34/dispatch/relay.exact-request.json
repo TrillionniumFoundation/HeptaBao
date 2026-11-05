@@ -1,0 +1,13 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "executable": "/usr/bin/python3",
+  "host": "desktop",
+  "idempotency_key": "heptabao-4e808-x230-source-artifacts-relay-r1-cc5a9ed3",
+  "timeout_seconds": 360
+}

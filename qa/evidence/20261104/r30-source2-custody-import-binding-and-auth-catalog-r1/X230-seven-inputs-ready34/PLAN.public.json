@@ -1,0 +1,134 @@
+{
+  "Runtime_calls": 0,
+  "X230_fresh_receiver_import_expected_only": {
+    "role": "Receiver materializes this standalone bundle independently after all seven artifacts pass receipt checks. It does not consume an existing desktop checkout.",
+    "root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+    "source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source"
+  },
+  "actual_source36": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+  "binding_ready": true,
+  "budgets": {
+    "cleanup_kill_seconds": 5,
+    "cleanup_term_seconds": 5,
+    "clone_seconds": 90,
+    "comparison69_original_modules": 13,
+    "full34_http_seconds": 15,
+    "full34_migration_seconds": 360,
+    "git_seconds": 60,
+    "outer_seconds": 360,
+    "receiver_seconds": 300,
+    "relay_seconds": 300,
+    "sender_seconds": 90
+  },
+  "candidate_pins": {
+    "receiver": {
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471"
+    },
+    "relay": {
+      "blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f"
+    },
+    "sender": {
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663"
+    }
+  },
+  "canonical_expected": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "history_count": 3763,
+    "index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "tracked_files": 3914,
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "desktop_canonical_import_qualified": false,
+  "dispatch_authorized": false,
+  "effect_fence": {
+    "marker_blob": "57e60bde940b51814c47af72fd3b1880cc8cb41e",
+    "metadata_blob": "f57a98ee20a392f0646a10cfdf12c6945c967b7c",
+    "root_review": "5c08a1afd96a020c69b73bf71189017356100c7c"
+  },
+  "executable_dispatch_present": true,
+  "held_fence": {
+    "all_work_clipped_to_original_relay300": true,
+    "checks": [
+      "before_new_relay_root_creation",
+      "before_endpoint_dispatch",
+      "after_owned_child_cleanup"
+    ],
+    "close_failure_never_success": true,
+    "close_once_ledger": true,
+    "held_until_final_cleanup": true,
+    "marker_full9_from_original_R3_and_independent_metadata": true,
+    "marker_reads_bounded_to_2710": true,
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "marker_whole_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "new_readonly_descriptors": 3,
+    "not_atomic_continuous_namespace_observation": true,
+    "root_full9_from_original_R3": true,
+    "shared_base_identity_first5": true,
+    "stable_namespace_condition": true
+  },
+  "no_runtime_dispatch": false,
+  "normal5_actual_table_blob": "795c92856119c5a2f8c73130f5772d82f3dfc295",
+  "normal5_complete_packet": "e049198ac8e32db82bedbd1ebc1a1f88eec3c71d",
+  "normal5_input_indices_bound": [
+    0,
+    1,
+    2,
+    5,
+    6
+  ],
+  "normal5_root_review": "7cfa7703c5f22a18ac668cb0c48b1786e5df7d29",
+  "old_relay": {
+    "job_id": "1a1aa57458d-fc05-4156",
+    "replay": false,
+    "state": "UNKNOWN"
+  },
+  "prebind_tree": "8943abd4eed0dd03215eb0a665b6cc3c1b431143",
+  "publisher_pin": {
+    "blob": "4df7eb29d3b6913aa641ba139550d5475f00bdaf",
+    "bytes": 5043,
+    "sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512"
+  },
+  "remaining_admission_steps": [
+    "Root accepts these exact ready sources, publisher, payload and requests.",
+    "Authorized unique create-only inert; authority, complete original streams, three controls and receipt independently observed.",
+    "Separate root relay authorization under the original held effect fence and exact historical input pins.",
+    "Actual X230 receiver clone/fsck/history/tracked files, destination proofs and owned closure before full34/comparison69 binding."
+  ],
+  "remaining_inputs": [],
+  "remaining_unbound_input_indices": [],
+  "requests": {
+    "inert": {
+      "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+      "bytes": 92929,
+      "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084"
+    },
+    "relay": {
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+    }
+  },
+  "schema": "heptabao.current4e808.x230-ready-source-plan.v1",
+  "scope_limits": [
+    "The old relay remains UNKNOWN. Its R3 effect fence constrains effects under the retained stable-namespace condition; it does not establish old process termination.",
+    "All seven desktop input identities are historical actual observations; no current stat or X230 delivery/import/restart/migration/full34 pass is claimed.",
+    "ROG source versions remain provenance; desktop received versions alone populate the seven sender input slots.",
+    "Desktop standalone import is separately proposed, not executed. This transport has no semantic dependency on that separate checkout."
+  ],
+  "source2_actual_packet": "454524327d4477828b6b6d2940d60b31c546a50d",
+  "source2_input_indices_bound": [
+    3,
+    4
+  ],
+  "source2_root_review": "89c073151239ed359cb2eb69ccb9b91fe4f1898d",
+  "source_only": true,
+  "status": "SOURCE_READY_REQUESTS_FROZEN_NOT_SUBMITTED",
+  "x230_canonical_import_qualified": false
+}

@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.mac-selected-owner-public-body.intent.r1",
+  "label": "body-03-codex-harness",
+  "rootExactGo": "4c0fe97527293fe4999ecc5097683e38e6c00431",
+  "priorCatalogAndInfosTree": "b17603266b3cda2f0c362561dd31eefabee15435",
+  "ordinal": 3,
+  "request": {
+    "blob": "9721b70e08f96471ae6400d7d45fc51ae1f2068b",
+    "bytes": 495,
+    "sha256": "83f7123e521cdfae88f9f252a99533970c3f922541279f5712f4505ca968a1b4",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-body-codex-harness-8919eefc-20261105-r1",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "mac",
+          "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+          "expected_version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+          "offset": 0,
+          "limit": 3596
+        }
+      }
+    }
+  },
+  "expectedWhole": {
+    "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+    "bytes": 3596,
+    "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+    "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+    "identity": [
+      "16777233",
+      "405276634",
+      "501",
+      "20",
+      "33188",
+      "1",
+      "3596",
+      "1784844051297089646",
+      "1784844051297089646"
+    ]
+  },
+  "previousBodyClosedAndWhole": "effa8a3763753196a731cf619e380543ba48b251",
+  "submitted": false,
+  "singleOperation": true,
+  "errorStopsFurtherAdmissions": true,
+  "noSdkOrAdditionalDependencyRead": true
+}

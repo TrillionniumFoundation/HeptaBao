@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.current4e808-x230-unbound-source-plan.v1",
+  "source_only": true,
+  "binding_ready": false,
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "history_count": 3763,
+    "tracked_files": 3914,
+    "index_sha256": "4bdd85122123e7c8ddfe7e82220688ba23fecd263bb245cfdfc176d08226e092"
+  },
+  "desktop_base": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1",
+  "relay_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-r1",
+  "x230_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "normal_incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming",
+  "source_incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming",
+  "actual7_file_info": null,
+  "old_relay": {
+    "job_id": "1a1aa57458d-fc05-4156",
+    "state": "UNKNOWN",
+    "replay": false
+  },
+  "effect_fence": {
+    "marker_blob": "57e60bde940b51814c47af72fd3b1880cc8cb41e",
+    "metadata_blob": "f57a98ee20a392f0646a10cfdf12c6945c967b7c",
+    "root_review": "5c08a1afd96a020c69b73bf71189017356100c7c"
+  },
+  "fence_check_proposal": "Revalidate exact R3 reserved-root identity and fixed marker full identity/whole SHA before any children and at final closure, without changing or cleaning old ROOT; no original-process termination claim.",
+  "unresolved_design_note": "Source and selected fake-OS components are now frozen; actual seven desktop inputs and all X230 outputs remain unresolved. Root SOURCE review and later literal binding are required before exact requests can be admitted.",
+  "source_incoming_source_tree": "66308ebc25cce838ac5c5f5b92b13a090ccec138",
+  "status": "SOURCE_ONLY_NOT_ADMITTED",
+  "source_pins": {
+    "sender": {
+      "bytes": 8122,
+      "sha256": "bf47da29ced855947c8b0a11724e8b436a6e0f137b68d41a13046018f03a86f7",
+      "blob": "9ecb50a0021837fd5494fb114c6530df8a5f2d40"
+    },
+    "receiver": {
+      "bytes": 29953,
+      "sha256": "422715319339b3650886cf24623e4ee3693f1d08a7314df2c2fe552ff4c3db1d",
+      "blob": "7263d22729e646f25841b247051886f43bdf5ee6"
+    },
+    "relay": {
+      "bytes": 24875,
+      "sha256": "d230a0fddaa18d1feb05cac8d598111ee43b1383e67885d0c95044b8d39689ac",
+      "blob": "d60bed4f99d11be06ed1395b35dbf4480fb53621"
+    },
+    "full34": {
+      "bytes": 9833,
+      "sha256": "adc3117c8ff7e27e3e88bed13793c38c9e6037665f2e63b363e7692dd1dfa38b",
+      "blob": "2ad457fd40fc30154934671868e347898150b59e"
+    },
+    "comparison69": {
+      "bytes": 11407,
+      "sha256": "eaa93bfd0f802f92b43efce9f07a92f2078208133b2e1a155da4af947f97a40b",
+      "blob": "06a56edbdff787f0a7c89c019f84b1f6b6b882d8"
+    }
+  },
+  "base_transport_tree": "d5460c30c762171eec0b4abb8e5387d6504c33a9",
+  "base_wrapper_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+  "source2_owner": "compatibility_audit",
+  "normal5_owner": "ha_validation",
+  "budgets": {
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "relay_seconds": 300,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5,
+    "outer_seconds": 360,
+    "full34_http_seconds": 15,
+    "full34_migration_seconds": 360,
+    "comparison69_original_modules": 13
+  },
+  "held_fence": {
+    "new_readonly_descriptors": 3,
+    "held_until_final_cleanup": true,
+    "checks": [
+      "before_new_relay_root_creation",
+      "before_endpoint_dispatch",
+      "after_owned_child_cleanup"
+    ],
+    "root_full9_from_original_R3": true,
+    "marker_full9_from_original_R3_and_independent_metadata": true,
+    "shared_base_identity_first5": true,
+    "marker_whole_sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+    "marker_version": "2050:7237359:2709:1793876790283098805:1793876790283098805",
+    "marker_reads_bounded_to_2710": true,
+    "close_once_ledger": true,
+    "close_failure_never_success": true,
+    "all_work_clipped_to_original_relay300": true,
+    "stable_namespace_condition": true,
+    "not_atomic_continuous_namespace_observation": true
+  },
+  "source_qualification": {
+    "actual_original60_and_extra1_kept_separate": true,
+    "source_manifest_is_current4e808": true,
+    "old_instrument_df026_is_not_product_qualification": true
+  },
+  "future_runtime": {
+    "original_full34_checks": 31,
+    "original_comparison_cases_per_side": 69,
+    "drivers_and_business_assertions_unchanged": true,
+    "explicit_product_restart_outcomes_unobserved": true,
+    "actual_X230_source_or_products_not_claimed": true
+  },
+  "verification": {
+    "checks": 70,
+    "actual_native_descriptors": 0,
+    "fake_os": true,
+    "host_requests": 0,
+    "product_requests": 0,
+    "candidate_modules_executed": 0
+  },
+  "exact_requests_frozen": false,
+  "dispatch_authorized": false
+}

@@ -1,0 +1,213 @@
+{
+  "schema": "heptabao.mac-selected-owner-diagnostic.source-contract.r1",
+  "status": "UNBOUND_SOURCE_ONLY_NO_GO",
+  "actualRuntimeCalls": 0,
+  "actualSdkExecuted": false,
+  "actualOwnerSelected": false,
+  "oldInputGuardModified": false,
+  "oldWalSourceModified": false,
+  "rootProposal": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-harness-selected-owner-public-r1",
+  "proposedRootObserved": false,
+  "rootPolicy": "Fresh create-only; exact parent/volume/anchor proof and absence must be admitted later. This pathname is a proposed owned artifact destination, not an assertion of an existing source path.",
+  "sourceComponent": {
+    "bytes": 11128,
+    "sha256": "b76fb72808ab0fe13b28272a11951eecc123df02b29b591b217d8e93b4c9ef8e",
+    "blob": "7a246176115ce675242fd5e0d413b91683a4c61d"
+  },
+  "originalCallsite": {
+    "path": "sources/mac_single_native_r2.mjs",
+    "bytes": 28533,
+    "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+    "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+    "lines": [
+      338,
+      343
+    ]
+  },
+  "publicModels": {
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "provider": "openai",
+    "id": "gpt-5.6-sol",
+    "sourceConfigSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "declaredModelSha256": "8c19b031ba91d45f4eb2dec6fc9453cbcb69aaf8c151a4219f3a84fc0a8849d1"
+  },
+  "preserve": [
+    "all original enabled startup.agentHarnesses records",
+    "same onlyPluginIds derivation including original openai entry",
+    "scope all",
+    "same original loader.t/selector.o/registry.r exports",
+    "no runtime override",
+    "same original provider/modelId/agentId",
+    "all selector-consumed flags and configuration semantics",
+    "natural registry reuse and order/support comparator",
+    "original Codex and unsupported-native guards in any later fixture"
+  ],
+  "actualSelectionEvidenceRequired": [
+    "one real namespace import of each pinned installed source within each fresh worker",
+    "actual loader.t invocation with complete original candidate set",
+    "actual selector.o result",
+    "registry.r(selected.id).harness === selected as strict same-instance observation",
+    "separate record.ownerPluginId and selected.pluginId fields",
+    "exact owner id to captured catalog value hashes",
+    "actual owner root, manifest, entry and whole admitted source pins before/after",
+    "real OS denial controls and known child/FD closure"
+  ],
+  "noAuthorizationFrom": [
+    "pluginId equal codex",
+    "ordinal 22 excluded",
+    "registry enabled true",
+    "public path under SDK",
+    "old historical source pins alone",
+    "supports not actually invoked",
+    "a plan-provided proof string",
+    "Node --check",
+    "a ready/public receipt without authority"
+  ],
+  "inputs": {
+    "privateCapsule": "Only the separate fixed reader may read the existing private capsule; it is never a Node input.",
+    "catalog": "Public field allowlist output plus later held/root/code identities, each exactly mapped to original record ordinal and JSON-value hashes.",
+    "configuration": "A new exact public JSON representation must first be justified against every consumed loader/selector/support field. It cannot be a blind redaction or a model-only object. No raw current config or private capsule accepted by Node.",
+    "workspace": "Must preserve selector-relevant workspace semantics. Redirecting to a new empty workspace is not presumed equivalent.",
+    "runtime": {
+      "bytes": 68384,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "path": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "private": false,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    },
+    "directSdkSources": {
+      "loader": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+        "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+        "bytes": 6047,
+        "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+        "version": "16777233:405239125:6047:1784843462897326061:1784843462897326061"
+      },
+      "selector": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+        "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+        "bytes": 673468,
+        "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+        "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779"
+      },
+      "registry": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+        "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+        "bytes": 3135,
+        "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+        "version": "16777233:405238784:3135:1784843461892399454:1784843461892399454"
+      }
+    },
+    "missing": {
+      "publicConfigurationBytesSha256": null,
+      "publicConfigurationEquivalenceReview": null,
+      "completeCapturedCandidateCatalogSha256": null,
+      "everyLoadableOwnerManifestAndEntryPins": null,
+      "samePolicyKernelDenialProof": null,
+      "completeOwnedParentAndWorkerBinding": null
+    }
+  },
+  "ownershipAndDeadlines": {
+    "proposalSharedSeconds": 45,
+    "proposalSupervisorSeconds": 60,
+    "oneAbsoluteDeadlineAcrossFiveFreshWorkers": true,
+    "newDiagnosticBudgetNotRuntimeQualification": true,
+    "perAgentDeadlineReset": false,
+    "sleep": false,
+    "applicationRetry": false,
+    "currentFixtureBudgetsUnchanged": {
+      "capture": 45,
+      "registryQuery": 3,
+      "registryWalBytes": 5969912,
+      "rowBytes": 1048576,
+      "aggregateBytes": 8388608,
+      "privateCapsuleBytes": 4194304,
+      "outer": 900,
+      "manager": 600,
+      "phase": 120,
+      "http": 10,
+      "ready": 30,
+      "cleanup": 60,
+      "supervisor": 1080,
+      "native": [
+        15,
+        8,
+        3
+      ]
+    },
+    "retainedOwner": "Later full parent must use the exact reviewed native numeric projection + waitid WNOWAIT direct-child custody; verify before signal, reap only after owned group cleanup, and preserve typed unknown. No numeric PGID action after reap.",
+    "controllerSourceCompleted": false,
+    "parentRuntimeRequest": null
+  },
+  "sandbox": {
+    "installedPolicyUsability": "NOT_OBSERVED_FOR_THIS_DIAGNOSTIC",
+    "policySource": null,
+    "policyDiff": null,
+    "requirements": [
+      "deny all outbound/inbound network including loopback",
+      "deny all writes outside fresh owned diagnostic root",
+      "deny production credential/auth/cache/capsule/config filesystem reads by Node",
+      "deny unapproved child exec/factory/native subprocesses",
+      "admit only explicitly pinned public code/dependencies and approved public configuration/workspace inputs",
+      "no no-sandbox fallback, no copied or re-signed system tools"
+    ],
+    "fixedKernelControlsBeforeSdk": [
+      "owned denied secret-shaped read target",
+      "outside-owned write denial",
+      "loopback and non-loopback network denial",
+      "unapproved child exec denial"
+    ],
+    "limitations": [
+      "Existing capture policy is not automatically adequate: it allowed broader process and selected private input reads.",
+      "Public code load may execute side effects or imports; supports may execute plugin code. No claim of zero syscall attempts.",
+      "Node code guards cannot substitute for actual OS sandbox denials.",
+      "If a correct equivalent public configuration/module environment cannot run under these limits, remain unbound and propose exact missing source/permission review; never relax silently."
+    ]
+  },
+  "observerOutputs": {
+    "model": "two fixed public strings only",
+    "ids": "bounded regex ids or null",
+    "sourcePins": "explicit path/bytes/sha256/nine decimal identity strings only",
+    "arbitraryInputSpread": false,
+    "privateConfigOutput": false,
+    "selectedReasonNotInvented": true,
+    "registryStability": "observed before/after only; sequential, not atomic",
+    "rootCodePins": "declared pins remain separate from actual parent-held verification",
+    "consumerQualified": false,
+    "productionQualified": false
+  },
+  "stopConditions": [
+    "missing complete candidate catalog",
+    "unproved configuration equivalence",
+    "unread or mismatched owner code",
+    "sandbox failure or unavailable denied-control",
+    "deadline or cancellation",
+    "SDK exception/unsupported harness",
+    "unknown closure",
+    "natural selection fails original Codex/native guard"
+  ],
+  "historicalUnknownsUnchanged": [
+    "PID 11754 historical custody",
+    "old X230 relay",
+    "earlier failed/current captures",
+    "old SDK transport errors retained separately"
+  ],
+  "laterAction": "After separate root approvals for exact public reads and catalog projection, bind inputs and full parent/policy source. Only actual same-instance owner proof may support a narrow subsequent original admission repair; this packet changes no original caller."
+}

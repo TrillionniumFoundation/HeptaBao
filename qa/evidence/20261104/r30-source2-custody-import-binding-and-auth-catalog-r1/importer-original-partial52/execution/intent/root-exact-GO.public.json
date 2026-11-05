@@ -1,0 +1,166 @@
+{
+  "schema": "heptabao.root-current4e808-desktop-source-import-exact-GO.r30.v1",
+  "status": "EXACT_GO_ONE_ORIGINAL_SOURCE_IMPORT",
+  "scope": "One local create-only import of the two already transferred public source files into the fixed fresh desktop repository. Original inline controller and self-SHA interface only.",
+  "line": "A",
+  "line_owner": "/root/ha_validation",
+  "max_runtime_calls_inflight": 1,
+  "max_owned_native_futures": 1,
+  "root_Runtime_calls": 0,
+  "prerequisites": {
+    "source_packet": "6d0930af9a38361fe6ab2740bb54452f556ef560",
+    "source_packet_files": 28,
+    "source_packet_bytes": 410524,
+    "whole_merkle_trees": 7,
+    "original_unbound_source_prior_root_review": "7d6cb5c53926931f5ada9f040161883b1daaf891",
+    "original_unbound_source_root_checks": 138,
+    "actual_carrier_packet": "454524327d4477828b6b6d2940d60b31c546a50d",
+    "actual_carrier_root_review": "89c073151239ed359cb2eb69ccb9b91fe4f1898d",
+    "actual_carrier_root_checks": 174,
+    "all_seven_original_carrier_observers_closed": true,
+    "actual_export81_root_review": "1ee2dc78e17e938ff9d3c4111d3483c6d654ce95",
+    "actual_export81_root_checks": 411,
+    "binding_AST_root_review": "f14c49382a55ead634d71291c92ebba2e0ec5b98",
+    "binding_AST_root_checks": 69,
+    "only20_literals_bound": true,
+    "unchanged_complete_definitions": 29,
+    "receipt_function_only_four_literal_pins": true,
+    "main_try_and_final_exit_byte_identical": true
+  },
+  "exact_request": {
+    "blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "bytes": 34190,
+    "sha256": "adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "argument_shape": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "EXACT_33093_BYTE_REVIEWED_SOURCE",
+      "2e8e0e44dd54523a2710022fbb2ee86461f2f7fc5e9b9d20753a1ec34fe182ce"
+    ],
+    "key": "heptabao-4e808-standalone-source-import-2e8e0e44-20261105-r1",
+    "request_digest": "d9b3e1ad9fa0b4ff96149b8eb26ccb122e83a66c5a537038d0a9ea26316ec4f8",
+    "request_fingerprint_decimal": "15687130062885270783",
+    "outer_seconds": 330,
+    "source_blob": "e19892771c202552ca73905b78455ffeeaf26d7d",
+    "source_bytes": 33093,
+    "source_sha256": "2e8e0e44dd54523a2710022fbb2ee86461f2f7fc5e9b9d20753a1ec34fe182ce"
+  },
+  "inputs": {
+    "source_files": [
+      {
+        "bytes": 22320862,
+        "name": "canonical-4e808-full.bundle",
+        "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+        "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+        "source_mode": 384,
+        "target_mode": 256,
+        "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+      },
+      {
+        "bytes": 39692,
+        "name": "source-export.result.public.json",
+        "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+        "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+        "source_mode": 384,
+        "target_mode": 256,
+        "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+      }
+    ],
+    "destination_files": [
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+        "bytes": 22320862,
+        "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+        "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+        "full9_decimal": [
+          "2050",
+          "7361612",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "22320862",
+          "1793898902432875221",
+          "1793898902432875221"
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+        "bytes": 39692,
+        "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+        "version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+        "full9_decimal": [
+          "2050",
+          "7361625",
+          "1000",
+          "1000",
+          "33024",
+          "1",
+          "39692",
+          "1793898902726866721",
+          "1793898902726866721"
+        ]
+      }
+    ],
+    "transfer_core": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/result.public.json",
+      "bytes": 12004,
+      "sha256": "fc629c875328d1c4dce236417280c9b92989c8f94c4b75d8c09d913722d2ce65",
+      "version": "2050:7361635:12004:1793898902982339888:1793898902982339888"
+    }
+  },
+  "fixed_destinations": {
+    "owned_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1",
+    "repository": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "new_create_only": true,
+    "partial_roots_retained_on_failure": true
+  },
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "full_commit_count": 3763,
+    "tracked_files": 3914,
+    "no_bundle_prerequisites": true
+  },
+  "original_budgets": {
+    "overall_seconds": 300,
+    "git_command_seconds": 60,
+    "clone_seconds": 90,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5,
+    "max_bundle_bytes": 67108864,
+    "no_reset_or_widening": true
+  },
+  "protocol": [
+    "Complete a separate external exact execution intent and whole readback before one process_start submission of the exact frozen request.",
+    "Persist and whole-verify the original SDK ACK before isError or native parse. Preserve int64 tokens and match the exact digest/fingerprint; do not reconstruct an ACK.",
+    "Observe only the original returned job, authoritative terminal state and all actual stdout/stderr bytes. Use native observer start/status/immutable result pages sequentially with external exact read intents and original-ID closure.",
+    "On missing ACK, launch ambiguity, refusal, error, timeout or UNKNOWN, stop new admissions and preserve original evidence. No business replay, replacement key, deadline reset, destination reuse or deletion.",
+    "After terminal0/full/durable, independently bind and fully read the fixed CONTROL/result.public.json and saved original intent/controller/receipts. Freeze a finite plan for actual command records and saved streams emitted by this source under its fixed CONTROL directory before body reads; no root scans or new commands.",
+    "Require canonical full commit/tree/parent/count, independent clean materialized source, full fsck, 3914 actual tracked files, input before/after identity, raw receipt equality, all owned child groups reaped, all opened input/created directory FDs positively closed, and final publication inside the original deadline.",
+    "Publish the whole actual archive and provide its original command/raw stream closure and actual import core SHA for root review. Subsequent LAN prepare remains a separate exact GO; no new wrapper/inert/prepare layer is required for this import."
+  ],
+  "not_authorized": [
+    "compiler or product/test execution",
+    "LAN prepare/live",
+    "X230 transfer or runtime",
+    "AuthBus or credential reads",
+    "network Git protocols or upstream fetch",
+    "old source use or mutation",
+    "production service change/cutover/deletion",
+    "old UNKNOWN replay or cleanup"
+  ],
+  "qualification": {
+    "source_import_qualified_before_actual_result": false,
+    "physical_HA_qualified": false,
+    "X230_qualified": false,
+    "full_replacement_qualified": false
+  }
+}

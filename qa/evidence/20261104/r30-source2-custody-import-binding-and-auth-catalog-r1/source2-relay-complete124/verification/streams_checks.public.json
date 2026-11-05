@@ -1,0 +1,34 @@
+[
+  {
+    "name": "original job",
+    "pass": true
+  },
+  {
+    "name": "stdout whole hex text sizes",
+    "pass": true
+  },
+  {
+    "name": "stdout durable unclipped",
+    "pass": true
+  },
+  {
+    "name": "stderr whole hex text sizes",
+    "pass": true
+  },
+  {
+    "name": "stderr durable unclipped",
+    "pass": true
+  },
+  {
+    "name": "empty stderr",
+    "pass": true
+  },
+  {
+    "name": "terminal transferred stopped deadline",
+    "pass": true
+  },
+  {
+    "name": "fixed receipt and no product",
+    "pass": true
+  }
+]

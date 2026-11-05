@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.root-auth-lineB-catalog-and-public-info-GO.r29.v1",
+  "status": "CONDITIONAL_EXACT_GO_AFTER_ROOT_LINE_B_HANDOFF",
+  "root_Runtime_calls": 0,
+  "scope": "One fixed existing-private-capsule catalog projection, followed only after its authoritative closure by three fixed public file_info observations. SDK execution and public body admissions are not included.",
+  "prerequisites": {
+    "source_packet": "67278f5e4ea494d1394f5eb8185e3af64f93aa76",
+    "source_packet_whole_merkle_verified": true,
+    "source_AST_review": "580b5e9d79050db6878661e28b5b6d9eed7bf531",
+    "source_AST_checks": 30,
+    "exact_binding_review": "16d33e6836fad77b0da1b143d80c6a3a2458659a",
+    "exact_binding_checks": 16,
+    "Mac_live_observers_reported_closed": 8,
+    "Mac_live_immutable_pages_reported_closed": 16,
+    "root_explicit_line_B_handoff_required": true
+  },
+  "lane": {
+    "owner": "/root/authbus_migration",
+    "name": "B",
+    "max_simultaneous_Runtime_calls": 1,
+    "max_owned_native_futures": 1,
+    "root_new_Runtime_calls": 0
+  },
+  "catalog": {
+    "request": "19b9a25626b2c7b7c270283646bd91fbee818ca1",
+    "bytes": 23435,
+    "sha256": "2df83173f4b330bd043e570334c53598f20cc376c33b5c5f674358c43de3be7d",
+    "host": "mac",
+    "key": "heptabao-mac-captured-public-harness-catalog-64333afe-py314-20261105-r3",
+    "request_digest": "10080341f55a01d7c13d26178bb7fe33c6a9504f3a82045b797e357e67e16902",
+    "fingerprint_decimal": "1155176886244606423",
+    "source": "ce7b983c88ae53833ffe285b924470e14a450bba",
+    "source_sha256": "64333afe4e0fa56d5bca9e47070c84c02b59db185cff8c2959438c986756d129",
+    "private_capsule_path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/output/capsule.private.json",
+    "private_capsule_bytes": 195155,
+    "private_capsule_sha256": "f4e4f83ced4229302b85231628ebc1a797474389265e2005e44be0ae4aafae04",
+    "full9_pins_unchanged": true,
+    "disclosure_allowlist": "05d6ca38277d1336ee51615e46ee6c5dea75be0f",
+    "inner_seconds": 5,
+    "outer_seconds": 60,
+    "max_FDs": 9,
+    "planned_metadata_calls": 72,
+    "max_metadata_calls": 80,
+    "max_reads": 4,
+    "max_read_bytes": 195156,
+    "max_public_stdout_bytes": 16384,
+    "submit_exactly_once": true,
+    "alias_request_d58_remains_unsubmitted": true
+  },
+  "public_infos": {
+    "readset": "8457a24c7ba9ecf7dd14b621672ab8cd225a2a90",
+    "ordered_exact_requests": [
+      "43a1e87d357c6b77633e9aa83c2b6a7d2da86e2a",
+      "faef9a3144129b1bd5cc9636c222bc8be8bc7f34",
+      "1166c5856452cc10bb5f4011f03f0e9513263eb8"
+    ],
+    "fixed_paths_only": 3,
+    "info_internal_whole_SHA_has_no_separate_byte_cap": true,
+    "counting_note": "36bb52ab660c3e62afdfb2f1befaf1433626c712",
+    "new_helper_infos_must_be_regular_and_finite": true,
+    "Codex_info_requires_original_size_SHA_full9": true,
+    "on_oversize_helper": "Preserve actual metadata and stop; do not admit body or claim that completed metadata hashing was bounded by the proposed body cap.",
+    "body_reads_authorized": false,
+    "next_step": "After three infos close, freeze exact version-bound body requests; maximum5 operations, <=65536 each, total accepted whole bodies <=265740. Present actual bindings to root for body GO."
+  },
+  "execution_protocol": [
+    "Complete a separate external execution intent containing the exact catalog request before submitting it once.",
+    "Save and verify the original SDK ACK externally in full before examining isError or parsing native text. Preserve unsafe integers losslessly.",
+    "Use only the returned original job for terminal authority and original stream reads; wait <=30 seconds, immutable pages only for each original observer.",
+    "Require exit0, no timeout/cancel, output_complete/output_durable/terminal_publication_confirmed and whole public stdout+stderr; projection guards and exact private input hash remain authoritative.",
+    "Only after all original catalog observers are completed/stored/inactive may the first public info be submitted. For each info, external exact intent first, one original request, full original SDK before parsing, original-ID closure and all immutable pages before the next.",
+    "Any error, missing ACK, guard refusal, timeout or UNKNOWN stops further admissions. Preserve original response; no implicit retry, new business key, reset, alias fallback, widened deadline, new fixture or provider call."
+  ],
+  "not_authorized": [
+    "SDK import/loader/supports/factory execution",
+    "new private capsule/current DB/config/auth/cache reads",
+    "token/provider/model/refresh/quota changes",
+    "J3160",
+    "root scans or following new imports",
+    "body requests before root reviews actual versions",
+    "original credential fixture replay",
+    "production service changes/cutover/deletion"
+  ],
+  "qualification": {
+    "catalog_only_public_metadata": true,
+    "public_root_name_not_code_admission": true,
+    "actual_selected_owner_proven": false,
+    "real_AuthBus_qualified": false,
+    "full_replacement_qualified": false
+  }
+}

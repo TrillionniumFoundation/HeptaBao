@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f2df1a",
+  "wall_time_seconds": 0.322659935,
+  "exit_code": 1,
+  "original_token_count": 133,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/f86faac821c4/x230_current_ready_source_r1/generate.py\", line 130, in <module>\n    main=next(n for n in receivertree.body if isinstance(n,ast.Try) and n.body and isinstance(n.body[0],ast.Assert) and 'sys.argv' in ast.get_source_segment(outputs['receiver'],n.body[0]))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nStopIteration\n"
+}

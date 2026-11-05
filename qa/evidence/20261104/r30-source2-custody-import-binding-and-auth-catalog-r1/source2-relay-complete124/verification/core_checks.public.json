@@ -1,0 +1,138 @@
+[
+  {
+    "name": "known whole core and original authority",
+    "pass": true
+  },
+  {
+    "name": "schema and current canonical",
+    "pass": true
+  },
+  {
+    "name": "transferred within unchanged 300/90 caps",
+    "pass": true
+  },
+  {
+    "name": "all local and endpoint closure without unknown",
+    "pass": true
+  },
+  {
+    "name": "fixed destination and source alias",
+    "pass": true
+  },
+  {
+    "name": "no Git compiler server product qualification or retry",
+    "pass": true
+  },
+  {
+    "name": "two exact input descriptors",
+    "pass": true
+  },
+  {
+    "name": "sender endpoint schema identity and status",
+    "pass": true
+  },
+  {
+    "name": "sender original deadline closure and no product",
+    "pass": true
+  },
+  {
+    "name": "sender exactly two files",
+    "pass": true
+  },
+  {
+    "name": "receiver endpoint schema identity and status",
+    "pass": true
+  },
+  {
+    "name": "receiver original deadline closure and no product",
+    "pass": true
+  },
+  {
+    "name": "receiver exactly two files",
+    "pass": true
+  },
+  {
+    "name": "receiver create-only fsync mode provenance",
+    "pass": true
+  },
+  {
+    "name": "source0 exact path name version",
+    "pass": true
+  },
+  {
+    "name": "source0 full9 before after stable and source metadata",
+    "pass": true
+  },
+  {
+    "name": "file0 source whole stream and same-FD destination hashes",
+    "pass": true
+  },
+  {
+    "name": "destination0 exact create-only fixed path and mode",
+    "pass": true
+  },
+  {
+    "name": "source1 exact path name version",
+    "pass": true
+  },
+  {
+    "name": "source1 full9 before after stable and source metadata",
+    "pass": true
+  },
+  {
+    "name": "file1 source whole stream and same-FD destination hashes",
+    "pass": true
+  },
+  {
+    "name": "destination1 exact create-only fixed path and mode",
+    "pass": true
+  },
+  {
+    "name": "sender.py same reviewed whole and independent actual publication identity",
+    "pass": true
+  },
+  {
+    "name": "receiver.py same reviewed whole and independent actual publication identity",
+    "pass": true
+  },
+  {
+    "name": "relay.py same reviewed whole and independent actual publication identity",
+    "pass": true
+  },
+  {
+    "name": "original HA controller whole before after retained",
+    "pass": true
+  },
+  {
+    "name": "trust full before after unchanged",
+    "pass": true
+  },
+  {
+    "name": "exact fixed trust paths and hashes",
+    "pass": true
+  },
+  {
+    "name": "strict SSH expected endpoint and connection settings",
+    "pass": true
+  },
+  {
+    "name": "preflight known_hosts same trust actual",
+    "pass": true
+  },
+  {
+    "name": "exact three command and cleanup labels",
+    "pass": true
+  },
+  {
+    "name": "rog-ts-effective-config original command exit0 deadline and retained cleanup identity",
+    "pass": true
+  },
+  {
+    "name": "send-rog original command exit0 deadline and retained cleanup identity",
+    "pass": true
+  },
+  {
+    "name": "receive-desktop original command exit0 deadline and retained cleanup identity",
+    "pass": true
+  }
+]

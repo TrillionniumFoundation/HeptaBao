@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.current-x230-ready-offline-selector-correction.v1",
+  "kind": "author-local-verifier-selection-error",
+  "original_error": "StopIteration",
+  "original_reason": "Selector required receiver try first node to be sys.argv assertion; original main first runs binding_ready and platform/BASE checks. The original five argument nodes occur at 495-499.",
+  "correction": "Select the existing try by its len(sys.argv) assertion, then select exactly its five contiguous original argument-check nodes.",
+  "candidate_code_or_runtime_changed": false,
+  "host_calls": 0,
+  "initial_source_key": "current_x230_ready_generator_initial_raw",
+  "initial_executor_key": "current_x230_ready_generator_initial_executor_original",
+  "source_before": "main=next(n for n in receivertree.body if isinstance(n,ast.Try) and n.body and isinstance(n.body[0],ast.Assert) and 'sys.argv' in ast.get_source_segment(outputs['receiver'],n.body[0]))\nguard=compile(ast.fix_missing_locations(ast.Module(body=copy.deepcopy(main.body[:5]),type_ignores=[])),'selected-receiver-entry','exec')",
+  "source_after": "main=next(n for n in receivertree.body if isinstance(n,ast.Try) and any(isinstance(s,ast.Assert) and 'len(sys.argv)' in ast.get_source_segment(outputs['receiver'],s) for s in n.body))\nentry_start=next(i for i,s in enumerate(main.body) if isinstance(s,ast.Assert) and 'len(sys.argv)' in ast.get_source_segment(outputs['receiver'],s))\nentry=main.body[entry_start:entry_start+5]\ncheck('receiver-entry-five-selected-nodes',len(entry)==5 and sum(isinstance(n,ast.Assert) for n in entry)==4 and isinstance(entry[3],ast.Assign))\nguard=compile(ast.fix_missing_locations(ast.Module(body=copy.deepcopy(entry),type_ignores=[])),'selected-receiver-entry','exec')"
+}

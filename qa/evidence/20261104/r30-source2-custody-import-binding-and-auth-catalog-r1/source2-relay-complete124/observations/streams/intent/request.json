@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-source-carrier-relay-readback-b1a9a177-r1-streams",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1acb4e995-fc05-567a",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

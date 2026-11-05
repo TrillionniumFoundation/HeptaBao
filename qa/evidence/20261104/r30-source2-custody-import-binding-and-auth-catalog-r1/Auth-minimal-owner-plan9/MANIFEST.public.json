@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.mac-owner-plan-supplement.manifest.r1",
+  "files": [
+    {
+      "path": "BUDGET.addendum.public.json",
+      "blob": "0539ddf130372839c45a451675c9f40061fe8d88",
+      "bytes": 5275,
+      "sha256": "9dd5cc1fe47b364ecf4773e5c0e279c3a83e30e9d68b04ff77cfd5f235f85081"
+    },
+    {
+      "path": "SAME-INSTANCE.plan.public.json",
+      "blob": "2dbe70ccdc3debe722713f54bde267ce449523e1",
+      "bytes": 8886,
+      "sha256": "3d062a867127e38076da51e1f4c4cc9e748bf4522a06caadc531e65e125ee1c5"
+    },
+    {
+      "path": "CONFIG-EQUIVALENCE.ledger.public.json",
+      "blob": "f75ba7c10eafce53efcd272e63e4ca0734eb4359",
+      "bytes": 5748,
+      "sha256": "d819a6613c16ea6d4476d6989e73ba0bb44c7fe01266cea0632748a5969f8be9"
+    },
+    {
+      "path": "reference/unchanged-unbound-observer.mjs",
+      "blob": "7a246176115ce675242fd5e0d413b91683a4c61d",
+      "bytes": 11128,
+      "sha256": "b76fb72808ab0fe13b28272a11951eecc123df02b29b591b217d8e93b4c9ef8e"
+    },
+    {
+      "path": "reference/unchanged-unbound-contract.public.json",
+      "blob": "d6c5509d1e903aaf512941bf8dc78cdb55063885",
+      "bytes": 9277,
+      "sha256": "066643b210ad334cade6ed1c80db8c00e7d1d6d1fae4505875dbb53f6c66d55d"
+    },
+    {
+      "path": "reference/unsubmitted-three-metadata.proposal.json",
+      "blob": "9d64664ed990d2d6a10287de0c4d09dd9d157395",
+      "bytes": 4171,
+      "sha256": "86ae41caebe2b7404e1bd73bfdb170889ea3b745aee9ae0cc35726e016ab7719"
+    },
+    {
+      "path": "REFERENCES.public.json",
+      "blob": "26e50c1aaa1641fd02704b3228c8400bcd640bcd",
+      "bytes": 1221,
+      "sha256": "9e1c7c1ced8ed6ffa16676090bc4d7214bc32748f2c19954ee172768a7056134"
+    },
+    {
+      "path": "README.md",
+      "blob": "b0a6c2d5393cab1d3084a3d7fe30e27add3328fa",
+      "bytes": 1628,
+      "sha256": "3da4d7a2ce465d14acd052b7c2472164ca1ce2b17d40f4ff6e1d4ecb9d97de94"
+    }
+  ],
+  "fileCount": 8,
+  "totalBytes": 47334,
+  "allWholePinsChecked": true,
+  "noRuntime": true,
+  "noSourceExecution": true
+}

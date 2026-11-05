@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.4e808-source-carrier-import-unresolved-dispatch-contract.v1",
+  "actual_inputs_ready": false,
+  "contains_executable_dispatch": false,
+  "inert": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "code_file": "candidate/inert.py",
+    "stdin_file": "payload/unbound-controls.json",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 60,
+    "idempotency_key": null,
+    "requires": "Bind two actual export file rows, rederive endpoint/relay pins and publisher payload before freezing any executable request."
+  },
+  "transfer": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 360,
+    "idempotency_key": null,
+    "requires": "Root acceptance of bound source and actual inert."
+  },
+  "importer": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "argv_contract": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "<exact fully bound importer UTF8 source>",
+      "<SHA256 of that exact full source>"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 330,
+    "idempotency_key": null,
+    "requires": "Two actual destination file identities, actual transfer receipt identity, source table mirror, final relay bytes/SHA and both endpoint SHA, all set before readiness true. Freeze new exact source/selfSHA/request and obtain GO."
+  }
+}

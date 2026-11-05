@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.mac-owner-static-reading.manifest.r1",
+  "scope": "whole public source reading and unsubmitted metadata proposal only",
+  "files": [
+    {
+      "path": "SOURCE-REVIEW.md",
+      "blob": "cf9c27b50775ec535f9070b27744d7e689b8251d",
+      "bytes": 4681,
+      "sha256": "aa54839760bd14e704d4a0d2c2d9c2991085bce2db3d2c434a3b87f5ed34e206"
+    },
+    {
+      "path": "REFERENCES.public.json",
+      "blob": "37b669b7d7be9979d4253c8510b7cd5343a7b5a0",
+      "bytes": 1589,
+      "sha256": "fe51c193ce5c9b2b7227db3090180148a4f3af106e8afbe3e33a55269be31f3a"
+    },
+    {
+      "path": "NEXT-METADATA.proposal.json",
+      "blob": "9d64664ed990d2d6a10287de0c4d09dd9d157395",
+      "bytes": 4171,
+      "sha256": "86ae41caebe2b7404e1bd73bfdb170889ea3b745aee9ae0cc35726e016ab7719"
+    },
+    {
+      "path": "sources/harness-policy.original.js",
+      "blob": "4c2a270a3a9e21ccf86032131700daf685157388",
+      "bytes": 5718,
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43"
+    },
+    {
+      "path": "sources/support-context.original.js",
+      "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+      "bytes": 4255,
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6"
+    },
+    {
+      "path": "sources/codex-harness.original.js",
+      "blob": "39b49d3be2df87cde0af1f592a049cb49013c57d",
+      "bytes": 3596,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+    },
+    {
+      "path": "references/runtime-registry-loader.original.js",
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb"
+    },
+    {
+      "path": "references/registry.original.js",
+      "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+    }
+  ],
+  "fileCount": 8,
+  "totalBytes": 33192,
+  "allWholeSourcePinsMatched": true,
+  "noSdkExecution": true,
+  "noRuntimeCalls": true
+}

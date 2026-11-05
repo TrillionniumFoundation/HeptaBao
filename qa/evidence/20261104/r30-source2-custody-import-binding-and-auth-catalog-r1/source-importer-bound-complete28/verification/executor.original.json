@@ -1,0 +1,7 @@
+{
+  "chunk_id": "49ddf2",
+  "wall_time_seconds": 0.219165879,
+  "exit_code": 0,
+  "original_token_count": 150,
+  "output": "{\n  \"candidate\": {\n    \"blob\": \"e19892771c202552ca73905b78455ffeeaf26d7d\",\n    \"bytes\": 33093,\n    \"sha256\": \"2e8e0e44dd54523a2710022fbb2ee86461f2f7fc5e9b9d20753a1ec34fe182ce\"\n  },\n  \"checks\": 174,\n  \"definitions\": 30,\n  \"files_before_executor_manifest\": 26,\n  \"hunks\": 2,\n  \"key\": \"heptabao-4e808-standalone-source-import-2e8e0e44-20261105-r1\",\n  \"literal_changes\": 20,\n  \"passed\": true,\n  \"request\": {\n    \"blob\": \"ad2972fce00ad6db96ef7eb8653921c37ef0cc80\",\n    \"bytes\": 34190,\n    \"sha256\": \"adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d\"\n  },\n  \"unchanged_definitions\": 29\n}\n"
+}

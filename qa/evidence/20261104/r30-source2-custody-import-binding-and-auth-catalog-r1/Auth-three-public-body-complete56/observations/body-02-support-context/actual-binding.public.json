@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac-fixed-public-body.actual-binding.r1",
+  "status": "PASS_WHOLE_CODE_RETRIEVAL_ONLY",
+  "ordinal": 2,
+  "id": "support-context",
+  "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+  "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+  "bytes": 4255,
+  "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+  "blob": "f216481adbe96bcba9f138a95c2ced5d25b11d4b",
+  "operationId": "c046c711b00b2f5ae81bdee2f91b78d6be681a06431987cf4e58a9b8a2174d79",
+  "originalPayload": "48de55d5a3f571739618aef02cfc2232fe1990e6",
+  "originalNative": "5daace5132c6623e3d609d15a2417e31ce9ff3f9",
+  "originalClosedFull": true,
+  "offset": 0,
+  "nextOffset": 4255,
+  "eof": true,
+  "chunkShaEqualsWhole": true,
+  "sdkExecuted": false
+}

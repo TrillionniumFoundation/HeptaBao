@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.source-carrier.relay.fixed-read-intent.v1",
+  "root_GO": "51d5cc8b40d3563d9f1e471aaadb3d41d7b1838a",
+  "original_job_id": "1a1acb4e995-fc05-567a",
+  "observation_name": "streams",
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-source-carrier-relay-readback-b1a9a177-r1-streams",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1acb4e995-fc05-567a",
+        "stdout_offset": 0,
+        "stderr_offset": 0,
+        "limit": 16384
+      }
+    }
+  },
+  "original_business_submit_once": true,
+  "new_business_or_product": false,
+  "original_SDK_external_before_parse": true,
+  "same_returned_ID_status_and_immutable_pages_only": true,
+  "on_error": "Stop new admissions; preserve original; no implicit retry or alternate key."
+}

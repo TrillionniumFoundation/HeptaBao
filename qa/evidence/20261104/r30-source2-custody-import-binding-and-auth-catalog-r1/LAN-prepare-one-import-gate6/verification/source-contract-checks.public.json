@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "name": "original prepare whole unchanged",
+      "pass": true
+    },
+    {
+      "name": "existing immutable launcher exact",
+      "pass": true
+    },
+    {
+      "name": "exact five prepare argv elements",
+      "pass": true
+    },
+    {
+      "name": "exact host executable cwd original outer",
+      "pass": true
+    },
+    {
+      "name": "original stable prepare key",
+      "pass": true
+    },
+    {
+      "name": "all nine sources original readback complete",
+      "pass": true
+    },
+    {
+      "name": "all ten normal artifact hashes same bound original launcher",
+      "pass": true
+    },
+    {
+      "name": "original36 old evidence fences retained",
+      "pass": true
+    },
+    {
+      "name": "separate 12 postcold names retained",
+      "pass": true
+    },
+    {
+      "name": "same canonical source root exact",
+      "pass": true
+    },
+    {
+      "name": "one unresolved external import SHA",
+      "pass": true
+    },
+    {
+      "name": "existing remote retained binary paths retained",
+      "pass": true
+    },
+    {
+      "name": "prior controller/postcold caps unchanged",
+      "pass": true
+    },
+    {
+      "name": "prior role/election HTTP/native admission caps unchanged",
+      "pass": true
+    },
+    {
+      "name": "live requires actual prepared SHA and original exact args",
+      "pass": true
+    },
+    {
+      "name": "nine exact immutable source byte pins",
+      "pass": true
+    }
+  ],
+  "whole_existing_launcher_unchanged": true,
+  "module_execution": false,
+  "host_calls": 0
+}

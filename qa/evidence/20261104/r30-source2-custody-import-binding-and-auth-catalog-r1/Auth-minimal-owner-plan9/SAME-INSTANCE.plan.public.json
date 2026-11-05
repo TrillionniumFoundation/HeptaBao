@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.mac-actual-owner-same-instance-minimal-proof-plan.r2",
+  "status": "SOURCE_ONLY_UNBOUND_NOT_EXECUTED",
+  "existingComponent": {
+    "blob": "7a246176115ce675242fd5e0d413b91683a4c61d",
+    "bytes": 11128,
+    "sha256": "b76fb72808ab0fe13b28272a11951eecc123df02b29b591b217d8e93b4c9ef8e",
+    "changed": false,
+    "entryPoint": null,
+    "dispatch": null,
+    "bindingReady": false
+  },
+  "fixedInputs": {
+    "agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "model": {
+      "provider": "openai",
+      "id": "gpt-5.6-sol"
+    },
+    "configSourceSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "declaredModelSha256": "8c19b031ba91d45f4eb2dec6fc9453cbcb69aaf8c151a4219f3a84fc0a8849d1",
+    "catalogOriginalCount": 2,
+    "catalogActualStdout": "3bb40bfd21237fba2b4eaeaffb81388e5e8b3ebf",
+    "enabledOwners": [
+      {
+        "registryOrdinal": 22,
+        "pluginId": "google",
+        "codeRoot": "/opt/homebrew/lib/node_modules/openclaw/dist/extensions/google",
+        "identifierValueSha256": "7d0eacef0de836233bf69fc88fcab76ae6d5d1b4bd19982d683eeec79da0cefa",
+        "rootValueSha256": "1307e12ae383395e3455a480c653b122b6898856f1e525e8c809945d83e0a691",
+        "originalCompositePredicate": false,
+        "actualSelected": null
+      },
+      {
+        "registryOrdinal": 68,
+        "pluginId": "codex",
+        "codeRoot": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex",
+        "identifierValueSha256": "08f6b585592467d20717e8abd8dd02b9fb430ba65eb4b745c373ce3001ef5dae",
+        "rootValueSha256": "b7d3dd983a296b81381c241b131cfabc4e3a56a9a656f9d197743a16917aeeec",
+        "originalCompositePredicate": true,
+        "actualSelected": null
+      }
+    ],
+    "onlyPluginIdsDerivation": "sorted unique set of original 'openai' plus every enabled captured owner; no record exclusion",
+    "originalFlagsOrModelsChanged": false
+  },
+  "minimumObservations": [
+    {
+      "step": "bound-public-inputs",
+      "require": "Exact source-reviewed credential-free configuration and workspace equivalence, complete two-record catalog, each actual owner root/manifest/entry/dependency pin and parent/leaf before-after identity. Current public model strings alone are insufficient."
+    },
+    {
+      "step": "kernel-before-sdk",
+      "require": "Separate fresh owned worker and same actual OS policy must first prove denial of current/private reads, network, non-owned writes and unapproved exec. Node wrappers or historical capture-policy proof are not substitutes."
+    },
+    {
+      "step": "fresh-registry",
+      "require": "One fresh retained Node process per agent; snapshot registry.i before load. Do not clear, replace, filter or inject a registry entry."
+    },
+    {
+      "step": "actual-loader",
+      "require": "Call original loader.t with scope all, same equivalent config and activationSourceConfig, equivalent workspace and original complete onlyPluginIds. Snapshot actual registrations after load."
+    },
+    {
+      "step": "actual-selector",
+      "require": "Call original selector.o with the actual fixed provider/modelId/agentId and equivalent config, without runtime override or mocked supports/comparator."
+    },
+    {
+      "step": "same-instance",
+      "require": "Read registry.r(selected.id) and compare record.harness === selected by JS reference identity. Read record.ownerPluginId and selected.pluginId separately; do not infer either from selected.id or equate them by convention."
+    },
+    {
+      "step": "owner-binding",
+      "require": "Require one actual owner ID to map to one complete captured catalog row with original JSON-value hashes; keep all required owner source pins held and verified. A declared pin list alone is insufficient."
+    },
+    {
+      "step": "after-and-closure",
+      "require": "Re-snapshot actual registry and compare object references/metadata before and after selection; verify public config unchanged, original absolute deadline, all held FD closures and retained child/group cleanup, then exact stdout + actual exit. Sequential checks are not continuous atomic custody."
+    }
+  ],
+  "originalCodexPredicates": {
+    "selectedIdEqualsCodex": "selected?.id === 'codex'",
+    "sameOriginalRegisteredInstance": "registry.r('codex')?.harness === selected",
+    "combineOnlyWithRealObservation": true,
+    "noExpectedWinnerInjection": true,
+    "ifNaturalWinnerOther": "Record the observed result. The original native-worker guard remains unsatisfied; do not force or filter to obtain codex."
+  },
+  "remainingUncovered": [
+    {
+      "area": "configuration precedence and implicit routing",
+      "source": "model-runtime-policy-Ca791C2-.js and openai-routing-DXJmS9CT.js",
+      "status": "metadata proposal only; body and exact behavior unobserved"
+    },
+    {
+      "area": "root/manifest/registration options",
+      "source": "loader-D8d2EvVh.js and its source-derived resolver dependencies",
+      "status": "metadata proposal only; no Google manifest filename or actual constructor options established"
+    },
+    {
+      "area": "normalization/default IDs",
+      "source": "agent-runtime-id-DiL2DId7.js and current-plugin-metadata-snapshot-CmOpmveB.js",
+      "status": "import references only; no automatic read permitted"
+    },
+    {
+      "area": "provider identity and ownership",
+      "source": "provider-id-Dq06Bcx6.js and providers-y2Lns8fh.js",
+      "status": "exact literal imports observed in support line 1 and selector line 42; implementations and source pins unresolved, no additional read authorized"
+    },
+    {
+      "area": "active registry/load options",
+      "source": "active-runtime-registry-CpOG6JKj.js, load-context-BlqO0SBV.js and transitive load implementation",
+      "status": "import references only; two newly proposed policy files do not cover these"
+    },
+    {
+      "area": "all dynamic module reads and load-time side effects",
+      "source": "complete installed loader/owner dependency closure",
+      "status": "not qualified by three file bodies, metadata path scope, or syntax checks"
+    },
+    {
+      "area": "credential-free configuration projection",
+      "source": "source-equivalent typed projection and explicit public output allowlist",
+      "status": "not available; no new private-capsule reader or private values admitted"
+    },
+    {
+      "area": "exact parent and OS sandbox caller",
+      "source": "new fully bound source + owned controls",
+      "status": "not completed or executed; legacy capture policy not automatically adequate"
+    },
+    {
+      "area": "CLI runtime alias fallback",
+      "source": "model-runtime-aliases-w4oRlOM0.js",
+      "status": "literal import observed in full selector; helper behavior not read and no new request added"
+    }
+  ],
+  "budgets": {
+    "proposalSharedSeconds": 45,
+    "proposalSupervisorSeconds": 60,
+    "oneAbsoluteDeadlineAcrossFiveFreshWorkers": true,
+    "newDiagnosticBudgetNotRuntimeQualification": true,
+    "perAgentDeadlineReset": false,
+    "sleep": false,
+    "applicationRetry": false,
+    "currentFixtureBudgetsUnchanged": {
+      "capture": 45,
+      "registryQuery": 3,
+      "registryWalBytes": 5969912,
+      "rowBytes": 1048576,
+      "aggregateBytes": 8388608,
+      "privateCapsuleBytes": 4194304,
+      "outer": 900,
+      "manager": 600,
+      "phase": 120,
+      "http": 10,
+      "ready": 30,
+      "cleanup": 60,
+      "supervisor": 1080,
+      "native": [
+        15,
+        8,
+        3
+      ]
+    },
+    "retainedOwner": "Later full parent must use the exact reviewed native numeric projection + waitid WNOWAIT direct-child custody; verify before signal, reap only after owned group cleanup, and preserve typed unknown. No numeric PGID action after reap.",
+    "controllerSourceCompleted": false,
+    "parentRuntimeRequest": null
+  },
+  "forbidden": [
+    "SDK execution under this source proposal",
+    "native-client factory or runAttempt invocation by observer",
+    "provider/credential/refresh/quota calls",
+    "current DB/auth/cache/config reads by Node",
+    "Google or other source path reads outside a separately approved exact set",
+    "original fixture replay or changes to old admission guards"
+  ],
+  "qualification": {
+    "actualSelectedOwner": false,
+    "currentConsumer": false,
+    "production": false
+  },
+  "supersedesUnsubmittedDraft": "40c258c720f74335b31fb9ff95c9bdf806b7e323",
+  "sourceReadBudgetAddendum": "0539ddf130372839c45a451675c9f40061fe8d88",
+  "ownerFieldComparisonRule": "Record ownerPluginId and harness.pluginId separately. Observe equality or mismatch; do not assume equality, collapse absent to a guessed owner, or treat harness ID as owner ID. Same object reference is a separate necessary observation."
+}

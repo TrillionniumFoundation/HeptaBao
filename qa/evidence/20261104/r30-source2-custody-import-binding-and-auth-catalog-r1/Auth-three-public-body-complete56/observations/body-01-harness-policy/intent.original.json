@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.mac-selected-owner-public-body.intent.r1",
+  "label": "body-01-harness-policy",
+  "rootExactGo": "4c0fe97527293fe4999ecc5097683e38e6c00431",
+  "priorCatalogAndInfosTree": "b17603266b3cda2f0c362561dd31eefabee15435",
+  "ordinal": 1,
+  "request": {
+    "blob": "36429e0ad1e2e28d9139e96a068ff6f9a7daf090",
+    "bytes": 421,
+    "sha256": "d3d446f82c39a22f930f5c11715e3bab595544a1c027d1c0ad6c87ebb83c5e15",
+    "value": {
+      "idempotency_key": "heptabao-mac-harness-public-source-body-harness-policy-fc493813-20261105-r1",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "mac",
+          "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+          "expected_version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+          "offset": 0,
+          "limit": 5718
+        }
+      }
+    }
+  },
+  "expectedWhole": {
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+    "bytes": 5718,
+    "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+    "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+    "identity": [
+      "16777233",
+      "405236880",
+      "501",
+      "80",
+      "33188",
+      "1",
+      "5718",
+      "1784843458052100717",
+      "1784843458052100717"
+    ]
+  },
+  "previousAllOriginalsClosed": true,
+  "submitted": false,
+  "singleOperation": true,
+  "errorStopsFurtherAdmissions": true,
+  "noSdkOrAdditionalDependencyRead": true
+}

@@ -1,0 +1,223 @@
+{
+  "schema": "heptabao.mac-captured-catalog-and-three-infos.actual-summary.r3",
+  "status": "PASS_BOUNDED_OBSERVATIONS_ONLY",
+  "scope": "one existing-private-capsule metadata projector; 3 fixed public file_info operations",
+  "job": {
+    "host": "mac",
+    "jobId": "1a1acb902f1-fc05-5693",
+    "authority": "df33e4e55db99a52648d63365149cbb42396bce5",
+    "exitCode": 0,
+    "stdoutBytes": 8971,
+    "stderrBytes": 0,
+    "outputComplete": true,
+    "outputDurable": true
+  },
+  "catalog": {
+    "stdout": "3bb40bfd21237fba2b4eaeaffb81388e5e8b3ebf",
+    "privateCapturedBytes": 195155,
+    "metadataOperations": 72,
+    "readOperations": 4,
+    "ownedDescriptors": 9,
+    "allDescriptorsClosed": true,
+    "originalEnabledHarnessOrdinals": [
+      22,
+      68
+    ],
+    "observedPublicIds": [
+      "google",
+      "codex"
+    ],
+    "originalCompositeResults": [
+      false,
+      true
+    ],
+    "actualSelected": null,
+    "originalNamespaceGuardModified": false,
+    "previousFailureRewritten": false,
+    "actualReview": "d28ff11a58600b6ddacb31cf462fce3c110b5f4c"
+  },
+  "observers": [
+    {
+      "label": "authority-01",
+      "operationId": "1e914890f45a5dc223785d7f86aa00a636298f479e532a4be2a9027e2a911391",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "status": "closed_full_original_payload",
+      "request": "4a6b31176976d4901fc157dc62c831959a8226a9",
+      "intent": "bf84c4f68c809cb20c723ae7d4c79319769139ae",
+      "ack": "7ff222c974ccac2acf209e8750186d00efd13211",
+      "payload": "d67b7f75e6cfe4a4f1ec2ea67e0ee89d5f085838",
+      "native": "df33e4e55db99a52648d63365149cbb42396bce5",
+      "pageOffsets": [
+        0
+      ],
+      "pageCount": 1
+    },
+    {
+      "label": "streams-00000",
+      "operationId": "ed6681a5a5b00953fa5f2ffa3ddbd013959baf2e41e198fc9cd9d6784433f29f",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "status": "closed_full_original_payload",
+      "request": "d33164a5add7068210b1e39b994a2938f472340c",
+      "intent": "be5085a017728c9751a713f264e5ffdd2ef64844",
+      "ack": "e6137575c4c3153bfc550e6c1cb6d5458ede980d",
+      "payload": "4bd472ddc22f478e7d5b81d9831197bfbe4efc5c",
+      "native": "40cf9212736e8af127a1eb68d9be15a1ddf002c2",
+      "pageOffsets": [
+        0,
+        16384
+      ],
+      "pageCount": 2
+    },
+    {
+      "label": "info-01-harness-policy",
+      "operationId": "661570f23f929faef057586749a3b43c672b07c0d55251f4ab2654c1d78b6946",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "status": "closed_full_original_payload",
+      "request": "43a1e87d357c6b77633e9aa83c2b6a7d2da86e2a",
+      "intent": "24a4343a51b45d2963efe8b38da06929ea59e3ec",
+      "ack": "8e1c6be1ed976c3996b7bc8464d918641f1f08e6",
+      "payload": "9e05f839983c69cc57ad798c67d1cfbface2105e",
+      "native": "1ddf35e79759004f732574508a1d3bdf4f077131",
+      "pageOffsets": [
+        0
+      ],
+      "pageCount": 1
+    },
+    {
+      "label": "info-02-support-context",
+      "operationId": "11477d7ac2065d31d4da358a6c236429e1a70303c327856c7ddff63e5cd57229",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "status": "closed_full_original_payload",
+      "request": "faef9a3144129b1bd5cc9636c222bc8be8bc7f34",
+      "intent": "44bc5ee34fb9448843fcc39c82d690a3cd94bedb",
+      "ack": "d3559f584cf8a99cef075e8a85a30a1728cf1ad8",
+      "payload": "8a127cf6561258d428d9ebdd93add9c02f6631eb",
+      "native": "a202452e80887cf3e378fb5734fbba8e324c13d5",
+      "pageOffsets": [
+        0
+      ],
+      "pageCount": 1
+    },
+    {
+      "label": "info-03-codex-harness",
+      "operationId": "d4717cee7bd80b41173e7e9c83e5b3db32164dc0076414e9748ee1f68896f993",
+      "nativeClosed": true,
+      "wholePayloadVerified": true,
+      "status": "closed_full_original_payload",
+      "request": "1166c5856452cc10bb5f4011f03f0e9513263eb8",
+      "intent": "58987fa7327b2ac417a313fd4746b1e16986b5b9",
+      "ack": "9a5a833451056e434856f8573fb3dcfc17453365",
+      "payload": "de4b3eb93a2e377af18b775b22ba0823b613fdf1",
+      "native": "1b55f2e140bf2df39e37e66a31de2e7b749491d0",
+      "pageOffsets": [
+        0
+      ],
+      "pageCount": 1
+    }
+  ],
+  "metadata": [
+    {
+      "ordinal": 1,
+      "id": "harness-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+      "bytes": 5718,
+      "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+      "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+      "identity": [
+        "16777233",
+        "405236880",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "5718",
+        "1784843458052100717",
+        "1784843458052100717"
+      ],
+      "regularNonSymlinkEvidence": "successful original file_info; advertised closed native API rejects symlinks and special files",
+      "fileInfoHashWorkIsNotBodyRead": true,
+      "bodyMaxBytes": 131072,
+      "bodyReadAuthorized": false,
+      "originalNative": "1ddf35e79759004f732574508a1d3bdf4f077131",
+      "originalPayload": "9e05f839983c69cc57ad798c67d1cfbface2105e",
+      "operationId": "661570f23f929faef057586749a3b43c672b07c0d55251f4ab2654c1d78b6946",
+      "completedInactiveAndWhole": true
+    },
+    {
+      "ordinal": 2,
+      "id": "support-context",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+      "bytes": 4255,
+      "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+      "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+      "identity": [
+        "16777233",
+        "405240067",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "4255",
+        "1784843465103099904",
+        "1784843465103099904"
+      ],
+      "regularNonSymlinkEvidence": "successful original file_info; advertised closed native API rejects symlinks and special files",
+      "fileInfoHashWorkIsNotBodyRead": true,
+      "bodyMaxBytes": 131072,
+      "bodyReadAuthorized": false,
+      "originalNative": "a202452e80887cf3e378fb5734fbba8e324c13d5",
+      "originalPayload": "8a127cf6561258d428d9ebdd93add9c02f6631eb",
+      "operationId": "11477d7ac2065d31d4da358a6c236429e1a70303c327856c7ddff63e5cd57229",
+      "completedInactiveAndWhole": true
+    },
+    {
+      "ordinal": 3,
+      "id": "codex-harness",
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "bytes": 3596,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+      "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+      "identity": [
+        "16777233",
+        "405276634",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "3596",
+        "1784844051297089646",
+        "1784844051297089646"
+      ],
+      "regularNonSymlinkEvidence": "successful original file_info; advertised closed native API rejects symlinks and special files",
+      "fileInfoHashWorkIsNotBodyRead": true,
+      "bodyMaxBytes": 3596,
+      "bodyReadAuthorized": false,
+      "originalNative": "1b55f2e140bf2df39e37e66a31de2e7b749491d0",
+      "originalPayload": "de4b3eb93a2e377af18b775b22ba0823b613fdf1",
+      "operationId": "d4717cee7bd80b41173e7e9c83e5b3db32164dc0076414e9748ee1f68896f993",
+      "completedInactiveAndWhole": true
+    }
+  ],
+  "activeRuntimeCalls": 0,
+  "activeNativeFutures": 0,
+  "unsubmittedBodyRequests": 3,
+  "bodyProposal": "56158dc9a4a6ab7d67daa079a1bc523ba8342aaa",
+  "sourceReadAuthorization": false,
+  "sdkExecutionAuthorization": false,
+  "actualSourceAdmissionOrSelectedOwnerProven": false,
+  "noCurrentCaptureFixtureReplay": true,
+  "noCredentialProviderProductionAction": true,
+  "historicalUnknownsPreserved": true,
+  "sourceAndPeerReferences": {
+    "sourcePacketTree": "67278f5e4ea494d1394f5eb8185e3af64f93aa76",
+    "catalogSource": "ce7b983c88ae53833ffe285b924470e14a450bba",
+    "rootSourceReview": "16d33e6836fad77b0da1b143d80c6a3a2458659a",
+    "haNarrowPeer": "7679006cc38b70c2f04be97c417d45a617a1e8b1",
+    "haNarrowPeerTree": "0456714d334d90b7dd4e75ecc4443b6c905444db"
+  },
+  "checkpoint": "Catalog original ACK entered R29 at 17:23:16Z; subsequent observations belong to R30; no rewrite of R29."
+}

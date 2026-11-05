@@ -1,0 +1,722 @@
+{
+  "schema": "heptabao.immutable-checkpoint-manifest.r30.v1",
+  "as_of_utc": "2026-11-05T18:15:55Z",
+  "previous_commit": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+  "prefix": "qa/evidence/20261104/r30-source2-custody-import-binding-and-auth-catalog-r1",
+  "packets": [
+    {
+      "tree": "454524327d4477828b6b6d2940d60b31c546a50d",
+      "key": "r30_source2_relay_complete124",
+      "name": "source2-relay-complete124",
+      "files": 124,
+      "bytes": 342811,
+      "merkle_trees": 56,
+      "path": "source2-relay-complete124"
+    },
+    {
+      "tree": "0456714d334d90b7dd4e75ecc4443b6c905444db",
+      "key": "r30_auth_catalog_narrow_peer9",
+      "name": "auth-catalog-limited-source-peer9",
+      "files": 9,
+      "bytes": 76043,
+      "merkle_trees": 3,
+      "path": "auth-catalog-limited-source-peer9"
+    },
+    {
+      "tree": "6d0930af9a38361fe6ab2740bb54452f556ef560",
+      "key": "r30_importer_bound_full28",
+      "name": "source-importer-bound-complete28",
+      "files": 28,
+      "bytes": 410524,
+      "merkle_trees": 7,
+      "path": "source-importer-bound-complete28"
+    },
+    {
+      "tree": "1dbbea7e07dbe338943b55654469fef3cf273886",
+      "key": "r30_LAN_prepare_readiness6",
+      "name": "LAN-prepare-one-import-gate6",
+      "files": 6,
+      "bytes": 18510,
+      "merkle_trees": 2,
+      "path": "LAN-prepare-one-import-gate6"
+    },
+    {
+      "tree": "b17603266b3cda2f0c362561dd31eefabee15435",
+      "key": "r30_auth_catalog_and_infos87",
+      "name": "Auth-catalog-and-three-infos-complete87",
+      "files": 87,
+      "bytes": 356538,
+      "merkle_trees": 13,
+      "path": "Auth-catalog-and-three-infos-complete87"
+    },
+    {
+      "tree": "2507d77fe689e5a54ef7c191f2e57433f7b78864",
+      "key": "r30_importer_original_intent6",
+      "name": "importer-original-execution-intent6",
+      "files": 6,
+      "bytes": 116299,
+      "merkle_trees": 2,
+      "path": "importer-original-execution-intent6"
+    },
+    {
+      "tree": "a37a3a1a50f414abe04fde5e797be3f5fcca6a9b",
+      "key": "r30_importer_original_ACK2",
+      "name": "importer-original-ACK2",
+      "files": 2,
+      "bytes": 70236,
+      "merkle_trees": 1,
+      "path": "importer-original-ACK2"
+    },
+    {
+      "name": "X230-seven-inputs-prebind33",
+      "key": "r30_X230_bound7_prebind33",
+      "tree": "8943abd4eed0dd03215eb0a665b6cc3c1b431143",
+      "files": 33,
+      "bytes": 399768,
+      "merkle_trees": 8,
+      "path": "X230-seven-inputs-prebind33"
+    },
+    {
+      "name": "X230-seven-inputs-ready34",
+      "key": "r30_X230_ready_source34",
+      "tree": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2",
+      "files": 34,
+      "bytes": 856642,
+      "merkle_trees": 6,
+      "path": "X230-seven-inputs-ready34"
+    },
+    {
+      "name": "Auth-three-public-body-complete56",
+      "key": "r30_auth_body3_complete56",
+      "tree": "5e2ace606153a5f45cb56c7a0255f2d0cdb3023c",
+      "files": 56,
+      "bytes": 168799,
+      "merkle_trees": 10,
+      "path": "Auth-three-public-body-complete56"
+    },
+    {
+      "name": "Auth-next-dependencies-source9",
+      "key": "r30_auth_next_source9",
+      "tree": "427532d11a020d95e52eb181911746a84e125afe",
+      "files": 9,
+      "bytes": 35272,
+      "merkle_trees": 3,
+      "path": "Auth-next-dependencies-source9"
+    },
+    {
+      "name": "importer-streams1-original-error2",
+      "key": "r30_importer_streams1_error2",
+      "tree": "e013e8ed1854f76b35084a4aa9df7e07aaec05ac",
+      "files": 2,
+      "bytes": 536,
+      "merkle_trees": 1,
+      "path": "importer-streams1-original-error2"
+    },
+    {
+      "name": "importer-original-partial52",
+      "key": "r30_importer_partial52",
+      "tree": "9c56aee3c866244b0644a336d8be22c81584e0bc",
+      "files": 52,
+      "bytes": 420335,
+      "merkle_trees": 27,
+      "path": "importer-original-partial52"
+    },
+    {
+      "name": "importer-streams1-reconcile-ACK2",
+      "key": "r30_importer_streams1_reconcile_ACK2",
+      "tree": "3c1565bdd01722dea0153561fd2abd610517a072",
+      "files": 2,
+      "bytes": 996,
+      "merkle_trees": 1,
+      "path": "importer-streams1-reconcile-ACK2"
+    },
+    {
+      "name": "X230-ready-narrow-peer3",
+      "key": "r30_X230_peer3",
+      "tree": "cf0fe168969c10599c0ae97188eb5b2e0f6893ff",
+      "files": 3,
+      "bytes": 11322,
+      "merkle_trees": 1,
+      "path": "X230-ready-narrow-peer3"
+    },
+    {
+      "name": "importer-terminal-scope5",
+      "key": "r30_importer_terminal5",
+      "tree": "597a9a23ed83d8886fd9ae5704b34b88953613c4",
+      "files": 5,
+      "bytes": 30325,
+      "merkle_trees": 1,
+      "path": "importer-terminal-scope5"
+    },
+    {
+      "name": "Auth-minimal-owner-plan9",
+      "key": "r30_auth_minimal_plan9",
+      "tree": "d79e504a8506b64cb20e8f924ccb4a24308ad1cd",
+      "files": 9,
+      "bytes": 49346,
+      "merkle_trees": 2,
+      "path": "Auth-minimal-owner-plan9"
+    },
+    {
+      "name": "importer-core-info-original-page0-error2",
+      "key": "r30_importer_core_info_page0_error2",
+      "tree": "f245856be1cba4966b3026d923eec8a250753cdd",
+      "files": 2,
+      "bytes": 369,
+      "merkle_trees": 1,
+      "path": "importer-core-info-original-page0-error2"
+    },
+    {
+      "name": "X230-inert-original-streams-status-error11",
+      "key": "r30_X230_inert_streams_status_error11",
+      "tree": "47b4d231011e90c18c316327d080cdac5c53c813",
+      "files": 11,
+      "bytes": 19371,
+      "merkle_trees": 5,
+      "path": "X230-inert-original-streams-status-error11"
+    },
+    {
+      "name": "R30-current-narrow-peer2",
+      "key": "r30_checkpoint_narrow_peer2",
+      "tree": "76ebc1d4b7db147577c024171aca64114b75922c",
+      "files": 2,
+      "bytes": 6488,
+      "merkle_trees": 1,
+      "path": "R30-current-narrow-peer2"
+    }
+  ],
+  "packet_files": 482,
+  "packet_bytes": 3390530,
+  "packet_merkle_trees": 151,
+  "root_files_including_state_and_manifest": 61,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r29-pre-publication-tree-proof.public.json",
+      "blob": "2eb6ed90fb7e5edfde7ac3db12a51db87571b270",
+      "bytes": 638,
+      "sha256": "b19c6254238cf22bb7c8ec5ae7670d90e5c99be1f840891568030f3ccaf0b839",
+      "path": "r29-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-create-tree.sdk.json",
+      "blob": "2457cc4e34aeab93ab0217218e05a520cb037f0a",
+      "bytes": 195,
+      "sha256": "ffbc50226c3c26788781098ec716c26be2b25b0b62cf1ee16969c91cf4164edd",
+      "path": "r29-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-root-tree-read.sdk.json",
+      "blob": "40ffae463efe5652480b7df0ced90e679eb31747",
+      "bytes": 13939,
+      "sha256": "2f6e2d966cb804f39a1c4a1b76e3e1b1737a428142d1877c7ec2f0bbad821d97",
+      "path": "r29-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-create-commit.sdk.json",
+      "blob": "187fb0094456416be17f31ba274c4f70b8482196",
+      "bytes": 195,
+      "sha256": "ce783022e33407c1ce7a5e6a7debba7360d21350c2d1962f010df0c57a73c253",
+      "path": "r29-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-commit-read.sdk.json",
+      "blob": "ff90f0f58dc8a6a27eba1dda071bbe3d575073c6",
+      "bytes": 4083,
+      "sha256": "db22e150d41a412a88339c07e354cc5721a76747fa9b35cb3a226612899eaba7",
+      "path": "r29-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-update-ref.sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e",
+      "path": "r29-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-branch-after-publish.sdk.json",
+      "blob": "39c1459affe861fd1bee322dce7a518dc1e1765d",
+      "bytes": 1753,
+      "sha256": "124c4b21c95787fac2b2b5c46481f4c9642118835ed8ceb75c4fbe8d11a7f4b3",
+      "path": "r29-publication/branch-after-publish.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-checkpoint-publication-proof.public.json",
+      "blob": "ffff02d5091009eeb3ebdb56634f0edc0ce2f065",
+      "bytes": 577,
+      "sha256": "ee0b629cecf598c4c801a85f4db9d0a4174e81a1b5c9314cada3384e608bf624",
+      "path": "r29-publication/publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-source2-relay-root-verifier.js",
+      "blob": "cff5a9a9412b3a98ad43295d87513d1509f37176",
+      "bytes": 14384,
+      "sha256": "e9893fe01f20a1dc5cf71eeb18c49d614a0f736d7151c4cddb54326aba7e66a5",
+      "path": "root/r30-source2-relay-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-source2-relay-root-review.public.json",
+      "blob": "89c073151239ed359cb2eb69ccb9b91fe4f1898d",
+      "bytes": 13221,
+      "sha256": "dcd63420b81f128a595e8e9cfb53e796b6c01b238f460f9f494ad93951210c98",
+      "path": "root/r30-source2-relay-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-root-original-AST-executor.json",
+      "blob": "464c815959c8dd6a4c3c39a50fa9295da2a34cea",
+      "bytes": 4337,
+      "sha256": "71f560c7a9cc9e73669b6677d97118da75a7100ff18011e50bda913457fd0eca",
+      "path": "root/r30-importer-root-original-AST-executor.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-root-AST-review.public.json",
+      "blob": "f14c49382a55ead634d71291c92ebba2e0ec5b98",
+      "bytes": 4349,
+      "sha256": "93ac412c67ab65901e52062760b85c50997072186c847fa1c6e689bab8492298",
+      "path": "root/r30-importer-root-AST-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-root-AST-with-public-inputs.py",
+      "blob": "9d65e35590e46558f6c0de7cb7185760c89ec6a7",
+      "bytes": 99905,
+      "sha256": "976aaee340fdd9506230c42384566464396fbde797e7d7d8693dda1a246f1cff",
+      "path": "root/r30-importer-root-AST-with-public-inputs.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-current4e808-desktop-source-import-exact-GO.public.json",
+      "blob": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+      "bytes": 7994,
+      "sha256": "17eee1e5be097d785ec50b2e6837f0f04b997cf666319444f13d55f3f124bd5b",
+      "path": "root/r30-current4e808-desktop-source-import-exact-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-actual-catalog-root-projection-review.public.json",
+      "blob": "612a1a78d26cbc6d834f8d609c81fac622dcf41c",
+      "bytes": 3191,
+      "sha256": "854134853378ca0eab35a0a007e32b97644a58441a723eb258b5844eef80d942",
+      "path": "root/r30-auth-actual-catalog-root-projection-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-public3-actual-info-body-bindings-root-review.public.json",
+      "blob": "b8d0006aadad3e257f0dd4f01874b4e8d3917c9a",
+      "bytes": 6310,
+      "sha256": "617336331b8520ce0a673ae30227d33d5d0f6cb2a852d93f27978ec898277828",
+      "path": "root/r30-auth-public3-actual-info-body-bindings-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-public-bodies-exact-GO.public.json",
+      "blob": "4c0fe97527293fe4999ecc5097683e38e6c00431",
+      "bytes": 6689,
+      "sha256": "0de5b36e29e1443c811785d83e3cc6fc4d519b14fcc09d9afcda312dd42bd0cf",
+      "path": "root/r30-auth-three-public-bodies-exact-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-original-ACK-root-review.public.json",
+      "blob": "833c60410871eeef886c6af1381c12c90cdb3525",
+      "bytes": 996,
+      "sha256": "225fdb9303e6c38318a7dd47cb16374107a9d45eb646bc78ce8e15ddb38d4a30",
+      "path": "root/r30-importer-original-ACK-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-catalog-info-original-chain-root-verifier.js",
+      "blob": "676b05efa17e8e1eba6c06d64c2a77dbf4c79836",
+      "bytes": 5738,
+      "sha256": "74adb34ff4c534015d929bfe1ca025ac76b7ab23d77e28056276b53367de1659",
+      "path": "root/r30-auth-catalog-info-original-chain-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-catalog-info-original-chain-root-review.public.json",
+      "blob": "d9857520fc11dd76ca5e1afec3814ee3f5f278a3",
+      "bytes": 6990,
+      "sha256": "85dbc07087edd38f2a845d00b84d7010b516f081e49cf16ab761855b5224fb0a",
+      "path": "root/r30-auth-catalog-info-original-chain-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-streams1-exact-read-reconciliation-go.public.json",
+      "blob": "86c17bb7cab6fbf5e45ec1475759fb283e86d204",
+      "bytes": 2307,
+      "sha256": "d43ad7aaa1bc6306fb3c25093e5496985461dc96d68ea569760955d23b2b0897",
+      "path": "root/r30-importer-streams1-exact-read-reconciliation-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-public-body-chain-root-verifier.js",
+      "blob": "0419aa92b2a5bf33c42b8cbb8785dd6f91c755b0",
+      "bytes": 5226,
+      "sha256": "b1d0154f172418b42a4e074acf49d3deb9046afdb35f1aaead0e06891bc3119f",
+      "path": "root/r30-auth-three-public-body-chain-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-body-chain-initial-root-selector-error.public.json",
+      "blob": "318336112f023886d38c972386f27e9e3c058507",
+      "bytes": 829,
+      "sha256": "67759d9d77965e4cd397e5c2b38842efa39c10d582ef6056e56d59da26422780",
+      "path": "root/r30-auth-three-body-chain-initial-root-selector-error.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-public-body-chain-root-verifier-corrected.js",
+      "blob": "b01627a2507b1ed5d1050b0e7eca70472be12d12",
+      "bytes": 5523,
+      "sha256": "a4a4c0f7a0a45b2cadc13067378873cf7c8036cdb99395fcaa7ac191fa2529b5",
+      "path": "root/r30-auth-three-public-body-chain-root-verifier-corrected.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-public-body-chain-root-review.public.json",
+      "blob": "bc7c5ce6cffa11a33ec63ed98bd0f6d4db4c5441",
+      "bytes": 6467,
+      "sha256": "21617c0515458c5ccb013c584ce05465ebe280d4c9b919d19af132b9a6dfa1e3",
+      "path": "root/r30-auth-three-public-body-chain-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-root-proof-aggregation-initial-field-error.public.json",
+      "blob": "35588a285c16b185f6927c74fa384d2b4b642021",
+      "bytes": 679,
+      "sha256": "d98b557dc856fed149e470e30450a1282a34ba70a30768e99b294d7caeddd1c9",
+      "path": "root/r30-X230-root-proof-aggregation-initial-field-error.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-seven-actual-input-binding-root-review.public.json",
+      "blob": "0ceb26f56f51ac0315a3fa0a650869873d136240",
+      "bytes": 5646,
+      "sha256": "e21b404d6b13685b4f1839ad143eb8a35dc62c1d4af29d780f55ca9073f63553",
+      "path": "root/r30-X230-seven-actual-input-binding-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-sender-root-AST-with-public-inputs.py",
+      "blob": "f2a9e35545dd90ad82bb29571c5aa7b967c7a0cf",
+      "bytes": 32432,
+      "sha256": "cd6e2128f6a58a10d51f0124a03e85f62c44e3b2ceaec6dd975d2299f5f070bc",
+      "path": "root/r30-X230-sender-root-AST-with-public-inputs.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-sender-root-AST-executor.original.json",
+      "blob": "a87f4f390f36004e1a55da8f882fd64bce8587d0",
+      "bytes": 2370,
+      "sha256": "87d3d646df1b6de9064e79f3cdfa14e64040fc011bfd96264e098e843b0e1a2c",
+      "path": "root/r30-X230-sender-root-AST-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-sender-root-AST-review.public.json",
+      "blob": "e28f74ec023829bc2094b0c7881087ffbd7290a5",
+      "bytes": 2317,
+      "sha256": "9c7fd6844f85188a5c6e29ec42a59ed888e90ef2aeea35d76ef8bd196103ef3b",
+      "path": "root/r30-X230-sender-root-AST-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-receiver-root-AST-with-public-inputs.py",
+      "blob": "fb10b22094b28ebff77a1704ba150ae12f5231e3",
+      "bytes": 91772,
+      "sha256": "65ca0f95ec6bed80fe1afd0145d19d5d0503caaa1d4daff6db1a21d08cca686a",
+      "path": "root/r30-X230-receiver-root-AST-with-public-inputs.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-receiver-root-AST-executor.original.json",
+      "blob": "73ce33bd11053fce70d6baf84c467c65ecdd5947",
+      "bytes": 3287,
+      "sha256": "d16d56591313f27ab579420e045165812ce2e02779776b60bb0db4ce55b12a8f",
+      "path": "root/r30-X230-receiver-root-AST-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-receiver-root-AST-review.public.json",
+      "blob": "0b17bf493118dd8525e9686c73b2ead833a3aa72",
+      "bytes": 3268,
+      "sha256": "1139ec1b1b0ade539913fe3c24c1b9e1938c846a5d9a8451dea90ee24f336d8f",
+      "path": "root/r30-X230-receiver-root-AST-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-relay-root-AST-with-public-inputs.py",
+      "blob": "97e2bc8e376906e0f023d0e276bfd609b0587367",
+      "bytes": 77836,
+      "sha256": "eafb47f60b09866cc6e4d12ad1bd5a2f7e81f88236c974be78dbabc5a243120d",
+      "path": "root/r30-X230-relay-root-AST-with-public-inputs.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-relay-root-AST-executor.original.json",
+      "blob": "145520a7c2c53a8d7562cbc5d8ead0c227e4dc52",
+      "bytes": 3090,
+      "sha256": "d833854d496ea2d2ae67ade5fa6f06c394955b2d49db94c9fde98bc140a2fcd8",
+      "path": "root/r30-X230-relay-root-AST-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-relay-root-AST-review.public.json",
+      "blob": "c57a8ee504bd6b12ab945b5a2de1a20153c3334d",
+      "bytes": 3065,
+      "sha256": "f3f581cb83e67759e2b1ae56bd454b68173d2ae532d02f7c2579ccf04629b5d5",
+      "path": "root/r30-X230-relay-root-AST-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-publisher-root-AST-with-public-inputs.py",
+      "blob": "78b1e47c944805c5d045b4825d1b512cf35ad736",
+      "bytes": 16637,
+      "sha256": "8adf881809dfe29138cbdba7c0364d9131825cdeb3dfb73ebc5f6b109a600e3e",
+      "path": "root/r30-X230-inert-publisher-root-AST-with-public-inputs.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-publisher-root-AST-executor.original.json",
+      "blob": "8f6920ffe444524d62f3a2952b138789a7fa11cd",
+      "bytes": 1169,
+      "sha256": "b35eafb4b440c445f3fd3db2adecdfd5187691591dc82a1c55dab8ce3c779fa6",
+      "path": "root/r30-X230-publisher-root-AST-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-publisher-root-AST-review.public.json",
+      "blob": "e56b81d9ed8d4e57772ad55e4af7464ac45abdc2",
+      "bytes": 1102,
+      "sha256": "9f4c948ab768e757e9b0178bd47f020fdd014852807fba15eeb9c721bab737a8",
+      "path": "root/r30-X230-publisher-root-AST-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-ready-seven-inputs-source-contract-root-review.public.json",
+      "blob": "b756d80da641089063b4020d50174653afe4fa43",
+      "bytes": 10319,
+      "sha256": "0e07052d48d19b53090529e8815fbe9da4e01a66eb49cc600adeba7758e3764d",
+      "path": "root/r30-X230-ready-seven-inputs-source-contract-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-line-B-Auth-bodies-closed-to-X230-handoff.public.json",
+      "blob": "c1a042c455fbd73cf3e4b2b9f8bed2e9b8df4829",
+      "bytes": 1726,
+      "sha256": "4b3ef58140e7c13838b168f7b571233a15d51079f057f67f051016daf2c6af85",
+      "path": "root/r30-line-B-Auth-bodies-closed-to-X230-handoff.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-exact-inert-GO.public.json",
+      "blob": "247a9f4b56bec7251f2fbcaff0fab536bd29288a",
+      "bytes": 4577,
+      "sha256": "63f3e1182481c62a68847916902fd360e154ba83c2c7ade30bbf9b3a906ba63a",
+      "path": "root/r30-X230-exact-inert-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-next-three-dependency-metadata-source-root-review.public.json",
+      "blob": "27dcc230245b4e293452359d025d94e46a9881b2",
+      "bytes": 3671,
+      "sha256": "bdc30b80708d6c506ec12332b09ec88da84e6d9711b0a849bba43f2cc8484ded",
+      "path": "root/r30-auth-next-three-dependency-metadata-source-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-execution-intent.original.json",
+      "blob": "3060358dd9ae85e72e8621113e078a4a2c503efc",
+      "bytes": 2395,
+      "sha256": "2ada6f7428ab6f7dbad2532a0dbb18141ecc0a4ff2ce493eee3f38b7c6547c13",
+      "path": "root/r30-X230-inert-execution-intent.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-CLI-H2-minimal-consumer-gaps.public.json",
+      "blob": "41e7764764c256596ea078a28aa0a591349c4586",
+      "bytes": 9187,
+      "sha256": "56d9fd5af470928e7ecc14e26c1993631f2c38b6185f526a99425dffec474332",
+      "path": "root/r30-CLI-H2-minimal-consumer-gaps.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-auth-three-bodies-agent-closed-receipt.public.json",
+      "blob": "12ee57e5374e16ee0f0241a8893f87af10d2bcde",
+      "bytes": 3086,
+      "sha256": "97d76cd59658dac3e52b84237639d46cac0f8f4d4c806617c45a04fc932a5ace",
+      "path": "root/r30-auth-three-bodies-agent-closed-receipt.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-original-ACK-root-review.public.json",
+      "blob": "16a2cbd4e43830de230ee3dca5e799f3398ff4ff",
+      "bytes": 1146,
+      "sha256": "4902df43eab1744844819d9d15087bca4746a47ebbcdc822602f543439fe07c0",
+      "path": "root/r30-X230-inert-original-ACK-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-ACK.sdk.original.json",
+      "blob": "9bda739a72b8e2cc8ae3445d3b1b3616b635ff40",
+      "bytes": 6642,
+      "sha256": "2822115f08aafd4c6ddeb41322cb4071c5e4e7347b28176cc71029e4cdac67e2",
+      "path": "root/r30-X230-inert-ACK.sdk.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-ACK.native.original.txt",
+      "blob": "f45e032149b73fd3d1d8cd73971134e8453441ff",
+      "bytes": 6235,
+      "sha256": "20fad4a213da7a7f34d806e057f0e2bb78d73e2be531a312549375874778b8a7",
+      "path": "root/r30-X230-inert-ACK.native.original.txt",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-authority-before-four-file-closure.public.json",
+      "blob": "0a23cc88cd30e96854ccd3f3e1516213e2f17394",
+      "bytes": 731,
+      "sha256": "af7a2f04c5f45a7775f9df3608af16ce0c0e18ca8eedb3b60df53e10888a0a99",
+      "path": "root/r30-X230-inert-authority-before-four-file-closure.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-preflight-branch.sdk.original.json",
+      "blob": "39c1459affe861fd1bee322dce7a518dc1e1765d",
+      "bytes": 1753,
+      "sha256": "124c4b21c95787fac2b2b5c46481f4c9642118835ed8ceb75c4fbe8d11a7f4b3",
+      "path": "root/r30-preflight-branch.sdk.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-importer-core-info-original-page0-recovery-GO.public.json",
+      "blob": "c5c343caee651e0025c1317fd81c6b615eac241d",
+      "bytes": 1478,
+      "sha256": "467898d1d00adb802ec913cbe2c3abb0ff8b9764150ef6cd29ec286e1a8f778c",
+      "path": "root/r30-importer-core-info-original-page0-recovery-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-original-streams-status-recovery-GO.public.json",
+      "blob": "45520f0274ef96844ab797dc01ca5227393d3bdd",
+      "bytes": 1719,
+      "sha256": "58c269c4574db4daa8070ea27b732e806f0884c36183f8b62a52e6debc18afec",
+      "path": "root/r30-X230-original-streams-status-recovery-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-status-payload-limited-root-review.public.json",
+      "blob": "c09e3dd314f8cfa38c0f46b2cf69c20fb9965ae2",
+      "bytes": 1161,
+      "sha256": "296372f5735e8c934976622132c4048cd0e40537f96d386f530a702d58e8a274",
+      "path": "root/r30-X230-inert-status-payload-limited-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-checkpoint-intro-review-draft.md",
+      "blob": "ebf8d2df0e16d0f3a06c6f012ef7e9401dca138c",
+      "bytes": 9844,
+      "sha256": "723612162d24ac7e10a5bf2b39df6ac4e03eb45c405fb6bd723a772bf06efeaf",
+      "path": "root/r30-checkpoint-intro-review-draft.md",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-checkpoint-state-review-draft.public.json",
+      "blob": "3dbaea662d2fa7dcb5b567fb50ad4faa5cb81ed8",
+      "bytes": 94910,
+      "sha256": "469f4db0bc9e1955dba61f0b35be2808387ab25f2e7d09f868dc302b77ecc757",
+      "path": "root/r30-checkpoint-state-review-draft.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-streams-recovered-status.original.json",
+      "blob": "348a6c3175da3b84e13b3a5b579ffcb7de729aac",
+      "bytes": 803,
+      "sha256": "be78dd587db5606c394f9a368b0e5fbb35aaa4e92c1f2966b2cc1534c0e50144",
+      "path": "root/r30-X230-inert-streams-recovered-status.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-streams-recovered-payload.original.json",
+      "blob": "7d4ad48dc8203dbd2255b20d5082ff79a3b3eafe",
+      "bytes": 5283,
+      "sha256": "a7d5d1e2af12a1b65c122e156d9c2fd551f8cb426ac330d414fc216100c071ef",
+      "path": "root/r30-X230-inert-streams-recovered-payload.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-X230-inert-stdout.original.txt",
+      "blob": "b5639291eb98b15f19926b8d814328e7e69fd15e",
+      "bytes": 1514,
+      "sha256": "32392728191aa16144b8eb198b6c00d13019951562c6dd68ff8ade4511ed6788",
+      "path": "root/r30-X230-inert-stdout.original.txt",
+      "mode": "100644"
+    },
+    {
+      "name": "r30-state.public.json",
+      "blob": "9cc8dae2b9e202e66e381d1e8e1b82c459668fc3",
+      "bytes": 98270,
+      "sha256": "5295a93624674247cdbc5ba5548c7a1df43a1461d988ccc1a6704ff051beea2c",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "name": "r30-checkpoint.md",
+      "blob": "d27e5de2bb4065b1680b4407c85809bc7539f90d",
+      "bytes": 295573,
+      "sha256": "4970c1375af762017956263d2b1d1bc930670a5fa1db41d982cf7df9c5bbb492",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "ca3f5bfada83716a8d3f3c133bdee551f7af5c90"
+    },
+    {
+      "name": "r30-checkpoint-index.public.json",
+      "blob": "ba23a377a930ea9867f39cbeee6f43ad7698fed4",
+      "bytes": 753968,
+      "sha256": "0878eef8e0616971be1a45e531df1b2984430a8e988da7b96c56db21f3239360",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "bc2d9f6362cee738bd93d3e72a2ffd72f3440888"
+    }
+  ],
+  "freeze_checks": [
+    "all_integer_values_safe_or_preserved_strings",
+    "R29_whole_document_exact_suffix",
+    "all92_prior_index_keys_preserved_except_first_asof",
+    "all13_intro_links_resolve_to_frozen_packet_or_root",
+    "20_exact_whole_packets",
+    "59_unique_root_artifacts_before_state_manifest",
+    "source2_transfer_qualified_only",
+    "desktop_import_terminal_scope_not_complete_import",
+    "X230_inert_terminal_not_four_file_or_transfer_qualification",
+    "Auth_three_bodies3_13569_original_closure_only",
+    "Auth_next3metadata_unsubmitted_SDK_owner_unqualified",
+    "all_replacement_cutover_cleanup_migration_flags_false",
+    "original_errors_UNKNOWNs_and_pure_check_corrections_retained"
+  ],
+  "integrity": {
+    "whole_blob_bytes_sha256_git_object_verified": true,
+    "all_packet_merkle_subtrees_verified": true,
+    "all_prior_non_document_leaves_preserved": true,
+    "whole_previous_document_preserved": true,
+    "original_index_raw_bytes_preserved_except_first_asof_and_new_append": true,
+    "original_int64_tokens_not_reserialized": true,
+    "no_business_or_unknown_replay": true,
+    "no_production_cutover_or_legacy_deletion": true,
+    "complete_packet_integrity_does_not_grant_runtime_qualification": true,
+    "freeze_includes_only_listed_immutable_packets": true,
+    "later_actual_results_belong_to": "R31"
+  }
+}

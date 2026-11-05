@@ -1,0 +1,34 @@
+{
+  "Runtime_calls": 0,
+  "checks": [
+    "same_five_definition_names",
+    "sha_whole_definition_byte_identical",
+    "ident_whole_definition_byte_identical",
+    "sync_dir_whole_definition_byte_identical",
+    "exact_whole_definition_byte_identical",
+    "publish_whole_definition_byte_identical",
+    "exact_three_ready_source_pins",
+    "same_top_level_assignment_names",
+    "BASE_exact_fixed_namespace",
+    "same_AST_constant_count_after_pin_base_reversal",
+    "schema_literal_change_only",
+    "schema_literal_change_only",
+    "two_inert_input_schema_literals",
+    "whole_AST_exact_after_declared_literals"
+  ],
+  "checks_passed": 14,
+  "schema": "heptabao.root-X230-inert-publisher-AST.r30.v1",
+  "schema_literal_changes": [
+    {
+      "after": "heptabao.4e808-x230-normal7-inert-carrier.v1",
+      "before": "heptabao.df026-x230-normal7-inert-carrier.v1"
+    },
+    {
+      "after": "heptabao.4e808-x230-normal7-inputs.v1",
+      "before": "heptabao.df026-x230-normal7-inputs.v1"
+    }
+  ],
+  "source_executed": false,
+  "status": "PASS_SOURCE_ONLY",
+  "whole_unchanged_definitions": 5
+}

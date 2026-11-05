@@ -1,0 +1,10 @@
+{
+  "job": true,
+  "exit": true,
+  "complete": true,
+  "durable": true,
+  "confirmed": true,
+  "no_timeout": true,
+  "no_cancel": true,
+  "state": true
+}

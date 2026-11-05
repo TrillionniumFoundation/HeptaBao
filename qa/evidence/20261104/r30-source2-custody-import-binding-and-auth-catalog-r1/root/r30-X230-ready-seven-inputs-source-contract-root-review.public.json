@@ -1,0 +1,251 @@
+{
+  "schema": "heptabao.root-X230-ready-seven-inputs-source-contract.r30.v1",
+  "status": "PASS_SOURCE_AND_EXACT_INERT_REQUEST_ONLY",
+  "source_packets": {
+    "original36": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+    "prebind33": "8943abd4eed0dd03215eb0a665b6cc3c1b431143",
+    "ready34": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2"
+  },
+  "actual_inputs_and_two_stage_diff": {
+    "name": "r30-X230-seven-actual-input-binding-root-review.public.json",
+    "blob": "0ceb26f56f51ac0315a3fa0a650869873d136240",
+    "bytes": 5646,
+    "sha256": "e21b404d6b13685b4f1839ad143eb8a35dc62c1d4af29d780f55ca9073f63553"
+  },
+  "AST": [
+    {
+      "role": "sender",
+      "checks": 39,
+      "definitions": 11,
+      "code": {
+        "name": "r30-X230-sender-root-AST-with-public-inputs.py",
+        "blob": "f2a9e35545dd90ad82bb29571c5aa7b967c7a0cf",
+        "bytes": 32432,
+        "sha256": "cd6e2128f6a58a10d51f0124a03e85f62c44e3b2ceaec6dd975d2299f5f070bc"
+      },
+      "executor": {
+        "name": "r30-X230-sender-root-AST-executor.original.json",
+        "blob": "a87f4f390f36004e1a55da8f882fd64bce8587d0",
+        "bytes": 2370,
+        "sha256": "87d3d646df1b6de9064e79f3cdfa14e64040fc011bfd96264e098e843b0e1a2c"
+      },
+      "review": {
+        "name": "r30-X230-sender-root-AST-review.public.json",
+        "blob": "e28f74ec023829bc2094b0c7881087ffbd7290a5",
+        "bytes": 2317,
+        "sha256": "9c7fd6844f85188a5c6e29ec42a59ed888e90ef2aeea35d76ef8bd196103ef3b"
+      }
+    },
+    {
+      "role": "receiver",
+      "checks": 56,
+      "definitions": 28,
+      "code": {
+        "name": "r30-X230-receiver-root-AST-with-public-inputs.py",
+        "blob": "fb10b22094b28ebff77a1704ba150ae12f5231e3",
+        "bytes": 91772,
+        "sha256": "65ca0f95ec6bed80fe1afd0145d19d5d0503caaa1d4daff6db1a21d08cca686a"
+      },
+      "executor": {
+        "name": "r30-X230-receiver-root-AST-executor.original.json",
+        "blob": "73ce33bd11053fce70d6baf84c467c65ecdd5947",
+        "bytes": 3287,
+        "sha256": "d16d56591313f27ab579420e045165812ce2e02779776b60bb0db4ce55b12a8f"
+      },
+      "review": {
+        "name": "r30-X230-receiver-root-AST-review.public.json",
+        "blob": "0b17bf493118dd8525e9686c73b2ead833a3aa72",
+        "bytes": 3268,
+        "sha256": "1139ec1b1b0ade539913fe3c24c1b9e1938c846a5d9a8451dea90ee24f336d8f"
+      }
+    },
+    {
+      "role": "relay",
+      "checks": 53,
+      "definitions": 22,
+      "code": {
+        "name": "r30-X230-relay-root-AST-with-public-inputs.py",
+        "blob": "97e2bc8e376906e0f023d0e276bfd609b0587367",
+        "bytes": 77836,
+        "sha256": "eafb47f60b09866cc6e4d12ad1bd5a2f7e81f88236c974be78dbabc5a243120d"
+      },
+      "executor": {
+        "name": "r30-X230-relay-root-AST-executor.original.json",
+        "blob": "145520a7c2c53a8d7562cbc5d8ead0c227e4dc52",
+        "bytes": 3090,
+        "sha256": "d833854d496ea2d2ae67ade5fa6f06c394955b2d49db94c9fde98bc140a2fcd8"
+      },
+      "review": {
+        "name": "r30-X230-relay-root-AST-review.public.json",
+        "blob": "c57a8ee504bd6b12ab945b5a2de1a20153c3334d",
+        "bytes": 3065,
+        "sha256": "f3f581cb83e67759e2b1ae56bd454b68173d2ae532d02f7c2579ccf04629b5d5"
+      }
+    },
+    {
+      "role": "publisher",
+      "checks": 14,
+      "definitions": 5,
+      "code": {
+        "name": "r30-X230-inert-publisher-root-AST-with-public-inputs.py",
+        "blob": "78b1e47c944805c5d045b4825d1b512cf35ad736",
+        "bytes": 16637,
+        "sha256": "8adf881809dfe29138cbdba7c0364d9131825cdeb3dfb73ebc5f6b109a600e3e"
+      },
+      "executor": {
+        "name": "r30-X230-publisher-root-AST-executor.original.json",
+        "blob": "8f6920ffe444524d62f3a2952b138789a7fa11cd",
+        "bytes": 1169,
+        "sha256": "b35eafb4b440c445f3fd3db2adecdfd5187691591dc82a1c55dab8ce3c779fa6"
+      },
+      "review": {
+        "name": "r30-X230-publisher-root-AST-review.public.json",
+        "blob": "e56b81d9ed8d4e57772ad55e4af7464ac45abdc2",
+        "bytes": 1102,
+        "sha256": "9f4c948ab768e757e9b0178bd47f020fdd014852807fba15eeb9c721bab737a8"
+      }
+    }
+  ],
+  "request_geometry_checks": [
+    "inert-exact-code-and-stdin",
+    "relay-exact-four-argv",
+    "payload-shape",
+    "sender:payload-exact-ready-bytes",
+    "receiver:payload-exact-ready-bytes",
+    "relay:payload-exact-ready-bytes"
+  ],
+  "checks_passed": 189,
+  "complete_unchanged_definitions": 66,
+  "seven_actual_inputs": [
+    {
+      "reference": "reference/actual-info/heptabao-server.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "version": "2050:7361480:110219600:1793892019496540722:1793892019496540722",
+      "mode": 320
+    },
+    {
+      "reference": "reference/actual-info/native-build.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "version": "2050:7361482:786:1793892021124514009:1793892021124514009",
+      "mode": 256
+    },
+    {
+      "reference": "reference/actual-info/normal-release-result.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "version": "2050:7361483:3192:1793892021131513894:1793892021131513894",
+      "mode": 256
+    },
+    {
+      "reference": "reference/source2/bundle-info.original.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "bytes": 22320862,
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "version": "2050:7361612:22320862:1793898902432875221:1793898902432875221",
+      "mode": 256
+    },
+    {
+      "reference": "reference/source2/export-info.original.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "bytes": 39692,
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "version": "2050:7361625:39692:1793898902726866721:1793898902726866721",
+      "mode": 256
+    },
+    {
+      "reference": "reference/actual-info/normal-release-tests-result.public.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "version": "2050:7361495:57532:1793892021140513746:1793892021140513746",
+      "mode": 256
+    },
+    {
+      "reference": "reference/actual-info/groups.json.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "version": "2050:7361500:6249:1793892021148513615:1793892021148513615",
+      "mode": 256
+    }
+  ],
+  "ready_requests": [
+    {
+      "path": "dispatch/inert.exact-request.json",
+      "blob": "af6bcaafa3b8368a98a9f49f4ceb9f1028c43eeb",
+      "bytes": 92929,
+      "sha256": "9931738e4db739b2da1eb180b0099fc27fadfc2d1422ada3d1a874c73c822084",
+      "mode": "100644"
+    },
+    {
+      "path": "dispatch/inert.stdin.json",
+      "blob": "4850e99f54932e5d79478ec6caa1be0a71de55f5",
+      "bytes": 87425,
+      "sha256": "9ec08836dc95d551037c8a84052ed931a363ccc4b1ad2abb0dc6141f2c3a0c02",
+      "mode": "100644"
+    },
+    {
+      "path": "dispatch/relay.exact-request.json",
+      "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+      "bytes": 386,
+      "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3",
+      "mode": "100644"
+    }
+  ],
+  "inert_publisher": {
+    "path": "candidate/inert.py",
+    "blob": "4df7eb29d3b6913aa641ba139550d5475f00bdaf",
+    "bytes": 5043,
+    "sha256": "f6f06d560974938e8ff429f69f9e48fb2b2b775878066145be6cb05545ef0512",
+    "mode": "100644"
+  },
+  "bound_sources": [
+    {
+      "path": "candidate/receiver.py",
+      "blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+      "mode": "100644"
+    },
+    {
+      "path": "candidate/relay.py",
+      "blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f",
+      "mode": "100644"
+    },
+    {
+      "path": "candidate/sender.py",
+      "blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663",
+      "mode": "100644"
+    }
+  ],
+  "preserved_contracts": {
+    "source_old_UNKNOWN": "desktop/1a1aa57458d-fc05-4156 remains UNKNOWN; no remote termination proof",
+    "original_effect_fence": "57e60bde940b51814c47af72fd3b1880cc8cb41e",
+    "old_namespace_fence_is_conditional_and_not_atomic_termination_proof": true,
+    "old_fence_acquire_rechecks_and_close_once_ledger_byte_unchanged": true,
+    "source_inputs_full9_and_same_FD_hashing_byte_unchanged": true,
+    "original_deadlines_cleanup_and_maxima_unchanged": true,
+    "actual_receiver_git_import_independent_of_desktop_checkout": true,
+    "no_compiler_or_server_started_by_transport": true
+  },
+  "proof_aggregation_error_retained": {
+    "name": "r30-X230-root-proof-aggregation-initial-field-error.public.json",
+    "blob": "35588a285c16b185f6927c74fa384d2b4b642021",
+    "bytes": 679,
+    "sha256": "d98b557dc856fed149e470e30450a1282a34ba70a30768e99b294d7caeddd1c9"
+  },
+  "source_execution_during_root_review": false,
+  "Runtime_calls": 0,
+  "X230_import_qualified": false,
+  "X230_full34_qualified": false,
+  "full_replacement_qualified": false
+}

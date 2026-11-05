@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac-fixed-public-body.actual-binding.r1",
+  "status": "PASS_WHOLE_CODE_RETRIEVAL_ONLY",
+  "ordinal": 3,
+  "id": "codex-harness",
+  "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+  "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+  "bytes": 3596,
+  "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+  "blob": "39b49d3be2df87cde0af1f592a049cb49013c57d",
+  "operationId": "13588a1820aad905c189ab2fa4e3ed493cfcbb49caf4b0897a27eb85cbae01ad",
+  "originalPayload": "5a62c2d33910711e58cb853cc11fb81a65775666",
+  "originalNative": "8efc2c24d7d93d44819008b15488319ac27d83b3",
+  "originalClosedFull": true,
+  "offset": 0,
+  "nextOffset": 3596,
+  "eof": true,
+  "chunkShaEqualsWhole": true,
+  "sdkExecuted": false
+}

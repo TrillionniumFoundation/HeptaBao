@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root-X230-original-streams-status-recovery.r30.v1",
+  "status": "GO_ONCE_ORIGINAL_STATUS_THEN_ORIGINAL_IMMUTABLE_PAGES",
+  "lane": "B",
+  "owner": "/root/compatibility_audit",
+  "original_error_packet": "47b4d231011e90c18c316327d080cdac5c53c813",
+  "original_status_request_blob": "a7bdaeee66363bb756d59a901272f2fa0c40447e",
+  "exact_status_request": {
+    "operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59"
+  },
+  "original_process_job": "desktop/1a1ace08ffa-fc05-576b",
+  "original_process_read_request": {
+    "idempotency_key": "heptabao-4e808-x230-inert-observe-streams-r1",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1ace08ffa-fc05-576b",
+        "limit": 16384,
+        "stdout_offset": 0,
+        "stderr_offset": 0
+      }
+    }
+  },
+  "scope": {
+    "one_exact_operation_status_call": true,
+    "external_completed_intent_first": true,
+    "original_SDK_whole_before_parse": true,
+    "original_result_pages_only_if_returned_status_completed_stored_inactive": true,
+    "no_new_operation_start_or_process_read": true,
+    "no_process_start_replay": true,
+    "no_key_path_or_native_budget_change": true,
+    "repeat_error_stop_no_loop": true
+  },
+  "after_closed": "Continue only existing GO247a9 fixed four file infos and four version-bound whole bodies, one original future at a time; relay still requires separate actual gate.",
+  "unknown_interpretation": "Current status failure means original read future closure is not yet observed; retain this error even after a successful later original status. No inference of cancellation from timeout.",
+  "root_Runtime_calls": 0
+}

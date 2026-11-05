@@ -1,0 +1,23 @@
+{
+  "idempotency_key": "heptabao-4e808-source-carrier-relay-readback-b1a9a177-r1-command-logs",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/intent.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/ssh-preflight.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stdout",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stderr",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.stderr",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stdout",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stderr"
+      ],
+      "max_file_bytes": 32768,
+      "max_response_bytes": 131072
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-source-import-authority-r1-20261105",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1acd0d62d-fc05-571a"
+    }
+  }
+}

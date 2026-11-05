@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.root-three-public-source-body-reads-exact-GO.r30.v1",
+  "status": "EXACT_GO_THREE_ORDERED_READONLY_BODIES",
+  "line": "B",
+  "line_owner": "/root/authbus_migration",
+  "max_runtime_calls_inflight": 1,
+  "max_owned_native_futures": 1,
+  "root_Runtime_calls": 0,
+  "prerequisites": {
+    "actual_catalog_and_three_info_packet": "b17603266b3cda2f0c362561dd31eefabee15435",
+    "packet_files": 87,
+    "packet_bytes": 356538,
+    "merkle_trees": 13,
+    "catalog_projection_root_review": "612a1a78d26cbc6d834f8d609c81fac622dcf41c",
+    "catalog_projection_root_checks": 21,
+    "exact_body_binding_root_review": "b8d0006aadad3e257f0dd4f01874b4e8d3917c9a",
+    "body_binding_root_checks": 35,
+    "three_original_info_statuses_completed_inactive_and_payloads_whole": true
+  },
+  "exact_ordered_requests": [
+    {
+      "id": "harness-policy",
+      "blob": "36429e0ad1e2e28d9139e96a068ff6f9a7daf090",
+      "bytes": 421,
+      "sha256": "d3d446f82c39a22f930f5c11715e3bab595544a1c027d1c0ad6c87ebb83c5e15",
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-harness-policy-fc493813-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+            "expected_version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+            "offset": 0,
+            "limit": 5718
+          }
+        }
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+        "bytes": 5718,
+        "sha256": "fc4938132774953cb0337d1b9f5fd715e3f062a987eedb45b7c1bb582077db43",
+        "version": "16777233:405236880:5718:1784843458052100717:1784843458052100717",
+        "full9_decimal": [
+          "16777233",
+          "405236880",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "5718",
+          "1784843458052100717",
+          "1784843458052100717"
+        ]
+      }
+    },
+    {
+      "id": "support-context",
+      "blob": "26d25048517e308b569a12ba60e24bc65cc581a2",
+      "bytes": 422,
+      "sha256": "8322a35b720bac13b1965790387b9b438168293bbed0441e9087f8acaedd1566",
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-support-context-ac75c6ed-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+            "expected_version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+            "offset": 0,
+            "limit": 4255
+          }
+        }
+      },
+      "expected_whole": {
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+        "bytes": 4255,
+        "sha256": "ac75c6ed8c7ff564a189b3ca43c40f3bdbdf9c7b607254bf49a63940859f89f6",
+        "version": "16777233:405240067:4255:1784843465103099904:1784843465103099904",
+        "full9_decimal": [
+          "16777233",
+          "405240067",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "4255",
+          "1784843465103099904",
+          "1784843465103099904"
+        ]
+      }
+    },
+    {
+      "id": "codex-harness",
+      "blob": "9721b70e08f96471ae6400d7d45fc51ae1f2068b",
+      "bytes": 495,
+      "sha256": "83f7123e521cdfae88f9f252a99533970c3f922541279f5712f4505ca968a1b4",
+      "value": {
+        "idempotency_key": "heptabao-mac-harness-public-source-body-codex-harness-8919eefc-20261105-r1",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "mac",
+            "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+            "expected_version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+            "offset": 0,
+            "limit": 3596
+          }
+        }
+      },
+      "expected_whole": {
+        "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+        "bytes": 3596,
+        "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72",
+        "version": "16777233:405276634:3596:1784844051297089646:1784844051297089646",
+        "full9_decimal": [
+          "16777233",
+          "405276634",
+          "501",
+          "20",
+          "33188",
+          "1",
+          "3596",
+          "1784844051297089646",
+          "1784844051297089646"
+        ]
+      }
+    }
+  ],
+  "limits": {
+    "native_operations": 3,
+    "total_body_bytes": 13569,
+    "max_native_chunk": 65536,
+    "actual_limits": [
+      5718,
+      4255,
+      3596
+    ],
+    "offsets": [
+      0,
+      0,
+      0
+    ],
+    "original_max_operations": 5,
+    "original_max_whole_body_bytes": 265740,
+    "no_metadata_info_reread": true
+  },
+  "protocol": [
+    "For each exact request in original order, separately complete and verify an external intent before the sole native operation_start submission.",
+    "Save/verify original SDK in full before isError and native parse. Use only its original returned operation ID for status and immutable pages; all pages must reconstruct the full original SDK/native result.",
+    "Require original status completed/stored_observed/inactive, exact expected_version, offset0, exact whole byte count, chunk/whole SHA and EOF; complete all original pages before admitting the next body.",
+    "Any error, missing ACK, size/version/hash mismatch or UNKNOWN stops further admissions. No implicit retry, new key, changed path/version or fallback.",
+    "After all three close, whole-publish the source and original observation packet, report 0 Runtime/0 future and release lineB for root reallocation. Continue source analysis without host calls; do not reserve the window while uploading Git archives."
+  ],
+  "not_authorized": [
+    "SDK import/loader/supports/factory execution",
+    "Google root or additional dependency reads",
+    "root listing/scan or automatic following of imports",
+    "new private-capsule read/current DB/config/auth/cache access",
+    "credential/provider/J3160 request or config changes",
+    "production changes or original fixture replay"
+  ],
+  "qualification": {
+    "code_content_retrieval_only": true,
+    "actual_selected_owner_proven": false,
+    "AuthBus_credential_qualified": false,
+    "full_replacement_qualified": false
+  }
+}

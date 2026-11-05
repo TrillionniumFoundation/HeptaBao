@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.root-X230-inert-original-status-and-payload-scope.r30.v1",
+  "status": "PASS_LIMITED_STATUS_AND_WHOLE_PAYLOAD_ONLY",
+  "checks_passed": 11,
+  "checks": [
+    "same-original-113c-ID-closed",
+    "same-original-process-job",
+    "stdout:whole-text-and-hex",
+    "stdout:whole-range-and-authority",
+    "stderr:whole-text-and-hex",
+    "stderr:whole-range-and-authority",
+    "prepared-compile-only-no-product",
+    "three-current-source-files-and-exact-stdin",
+    "sender:reported-whole-source-and-created",
+    "receiver:reported-whole-source-and-created",
+    "relay:reported-whole-source-and-created"
+  ],
+  "original_job": "1a1ace08ffa-fc05-576b",
+  "original_read_operation": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+  "original_timeout_preserved": "0cede4881f37869cfd279b69b738c87eb62b4889",
+  "original_read_replayed": false,
+  "process_replayed": false,
+  "stdout_bytes": 1514,
+  "stderr_bytes": 0,
+  "independent_four_infos_and_bodies_complete": false,
+  "full_original_observer_archive_in_this_scope": false,
+  "inert_qualified": false,
+  "X230_transfer_qualified": false,
+  "root_Runtime_calls": 0
+}

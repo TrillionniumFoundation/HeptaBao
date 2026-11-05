@@ -1,0 +1,546 @@
+[
+  {
+    "name": "closed read complete independent snapshot",
+    "pass": true
+  },
+  {
+    "name": "ten fixed original files no missing extras",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/intent.public.json full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/intent.public.json fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/ssh-preflight.public.json full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/ssh-preflight.public.json fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.public.json full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.public.json fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stdout full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stdout fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stderr full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/rog-ts-effective-config.stderr fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.public.json full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.public.json fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.stderr full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/send-rog.stderr fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.public.json full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.public.json fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stdout full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stdout fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stderr full byte/hash EOF",
+    "pass": true
+  },
+  {
+    "name": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/receive-desktop.stderr fixed stored version decimal size",
+    "pass": true
+  },
+  {
+    "name": "rog-ts-effective-config original record exact core",
+    "pass": true
+  },
+  {
+    "name": "send-rog original record exact core",
+    "pass": true
+  },
+  {
+    "name": "receive-desktop original record exact core",
+    "pass": true
+  },
+  {
+    "name": "five actual saved streams only; no sender stdout file",
+    "pass": true
+  },
+  {
+    "name": "sender stderr original exact core endpoint",
+    "pass": true
+  },
+  {
+    "name": "receiver stderr original exact core endpoint",
+    "pass": true
+  },
+  {
+    "name": "expected two empty streams",
+    "pass": true
+  },
+  {
+    "name": "effective config original full SHA",
+    "pass": true
+  },
+  {
+    "name": "saved SSH preflight exact core",
+    "pass": true
+  },
+  {
+    "name": "original intent canonical schema destination and source descriptors",
+    "pass": true
+  },
+  {
+    "name": "original intent three source and trust full pins",
+    "pass": true
+  },
+  {
+    "name": "original intent old budgets and create-only zero product",
+    "pass": true
+  },
+  {
+    "name": "original strict SSH exact frozen argv",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config line key value",
+    "pass": true
+  },
+  {
+    "name": "config projection batchmode",
+    "pass": true
+  },
+  {
+    "name": "config projection clearallforwardings",
+    "pass": true
+  },
+  {
+    "name": "config projection connectionattempts",
+    "pass": true
+  },
+  {
+    "name": "config projection connecttimeout",
+    "pass": true
+  },
+  {
+    "name": "config projection controlmaster",
+    "pass": true
+  },
+  {
+    "name": "config projection controlpath",
+    "pass": true
+  },
+  {
+    "name": "config projection forwardagent",
+    "pass": true
+  },
+  {
+    "name": "config projection host",
+    "pass": true
+  },
+  {
+    "name": "config projection hostkeyalias",
+    "pass": true
+  },
+  {
+    "name": "config projection hostname",
+    "pass": true
+  },
+  {
+    "name": "config projection port",
+    "pass": true
+  },
+  {
+    "name": "config projection stricthostkeychecking",
+    "pass": true
+  },
+  {
+    "name": "config projection updatehostkeys",
+    "pass": true
+  },
+  {
+    "name": "config projection user",
+    "pass": true
+  },
+  {
+    "name": "original export input received hash preserved",
+    "pass": true
+  }
+]
