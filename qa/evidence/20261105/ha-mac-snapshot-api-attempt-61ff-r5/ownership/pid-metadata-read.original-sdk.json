@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/pids.log\",\"sha256\":\"3ba868ee98cec77fc4ef1b79f64d5fcde7aaa4e12f42b15a7c00e23ec84bbb0d\",\"size\":713,\"text\":\"1793837362.11761 9393 started\\n1793837364.938549 9393 stopped\\n1793837378.7630231 9618 started 13e983be1ad83d1ece9b03b8536719cd\\n1793837476.302575 9618 stopped 13e983be1ad83d1ece9b03b8536719cd\\n1793837495.9892821 11400 started c1126087e2668d48caa9ec136b586126\\n1793837504.563095 11400 stopped c1126087e2668d48caa9ec136b586126\\n1793837530.222625 11833 started 8d9917303d30b2fdbb2a8c01c16495d1\\n1793837548.177887 11833 stopped 8d9917303d30b2fdbb2a8c01c16495d1\\n1793837553.432153 12062 started fd9d1c35650ca868bcdd8f9403fb5736\\n1793837580.440369 12062 stopped fd9d1c35650ca868bcdd8f9403fb5736\\n1793837582.1196759 12531 started 4271539909f9d4924e8d5a7e2ecd9b1a\\n1793837651.2434912 12531 stopped 4271539909f9d4924e8d5a7e2ecd9b1a\\n\",\"version\":\"16777244:72546639:713:1793837651243512402:1793837651243512402\"},{\"eof\":true,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1/direct-peer-preflight-manifest.json\",\"sha256\":\"699270f990e80884197049a662141c5e0d637fe5199e05694c8c419e82276e48\",\"size\":124,\"text\":\"{\\\"allow_production\\\":false,\\\"cluster_id\\\":\\\"6b2193b8-223d-0437-4fe0-93bc50b23196\\\",\\\"synthetic_only\\\":true,\\\"v6_ha_admitted\\\":false}\\n\",\"version\":\"16777244:72546680:124:1793837385000000000:1793837386405717948\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
