@@ -1,0 +1,14 @@
+--- before-format/crates/heptabao-server/src/service_snapshot_transfer_tests.rs
++++ candidate/crates/heptabao-server/src/service_snapshot_transfer_tests.rs
+@@ -442,7 +442,10 @@
+             let (result, file) = plan.execute_snapshot_transfer(&mut archive);
+             assert!(file.is_none());
+             assert!(
+-                matches!(&result, ExternalEffectResult::SnapshotTransfer(Ok(Observation::Upload(_)))),
++                matches!(
++                    &result,
++                    ExternalEffectResult::SnapshotTransfer(Ok(Observation::Upload(_)))
++                ),
+                 "the outer parser must finish before the real seal refusal"
+             );
+             let rejected = service.finish_external_request(*plan, result);

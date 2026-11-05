@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.snapshot-outer-unexecuted-cases.v1",
+  "all_product_execution_results": "not_run",
+  "cases": [
+    {
+      "id": "strict-default",
+      "state": "authored_not_run",
+      "requirement": "Strict import accepts normal archive and rejects footer truncation, A||B and raw trailing bytes; no state mutation and spool empty."
+    },
+    {
+      "id": "public-first-archive",
+      "state": "authored_not_run",
+      "requirement": "Both public paths: normal, last-footer-byte truncation and A||B restore A via real finalizer, replace live marker, preserve seal, empty spool, then drop/reopen/unseal still reads A."
+    },
+    {
+      "id": "required-container-integrity",
+      "state": "authored_not_run",
+      "requirement": "Both public paths reject compressed corruption, non-gzip, nonzero gzip flags, missing state body, missing/nonzero tar terminator, state hash mismatch and badA||goodB; retain generation/root/activation/live marker and empty spool."
+    },
+    {
+      "id": "sealed-checksum",
+      "state": "authored_not_run",
+      "requirement": "Both public paths: actual re-exported archive with damaged sealed checksum ciphertext; normal/truncated/concatenated forms must parse to Upload, then real finalizer rejects checksum authentication and preserves state/spool."
+    },
+    {
+      "id": "plain-sums-recomputed-with-old-seal",
+      "state": "required_not_added",
+      "requirement": "Change metadata/state and recompute unsealed sums while retaining old sealed sums; reject before installation."
+    },
+    {
+      "id": "metadata-and-seal-binding",
+      "state": "required_existing_or_future_gate_not_run",
+      "requirement": "Missing/unknown/null seal binding, generation/state-format mismatch, wrong seal and force cross-seal remain refused."
+    },
+    {
+      "id": "authenticated-inner-hbb2-corruption",
+      "state": "required_not_added",
+      "requirement": "Under valid outer authenticated sums, reject invalid HBB2 internal EOF/checkpoint/generation/ciphertext; preserve precommit state."
+    },
+    {
+      "id": "authenticated-inner-v6-corruption",
+      "state": "required_not_added",
+      "requirement": "Under valid outer authenticated sums, reject bad per-object AAD/AEAD, pack footer, internal EOF, missing graph blocks/owner digest/payload digest."
+    },
+    {
+      "id": "ha-source-and-publication",
+      "state": "required_existing_or_future_gate_not_run",
+      "requirement": "Reject wrong HA lineage/cluster/epoch/cursor/transcript and late source or quorum changes; preserve original actor/source gates and recovery fences."
+    },
+    {
+      "id": "strict-real-repair-route",
+      "state": "required_existing_or_future_gate_not_run",
+      "requirement": "Use a genuinely admitted HA repair request to prove strict footer/append refusal; source dispatch is statically strict, but this candidate adds no synthetic bypass of repair admission."
+    },
+    {
+      "id": "http-framing-size-and-deadline",
+      "state": "required_existing_or_future_gate_not_run",
+      "requirement": "Valid tar prefix cannot rescue incomplete HTTP framing, compressed suffix beyond MAX_NATIVE_ARCHIVE, per-format state bound, slow suffix or expired original deadline."
+    },
+    {
+      "id": "post-tar-grammar-boundary",
+      "state": "required_not_added",
+      "requirement": "Independently characterize ignored post-tar bytes, CRC/ISIZE-only mutations and gzip members split before the required tar end against fixed official oracle; never scan a second member as fallback."
+    },
+    {
+      "id": "wire-status",
+      "state": "independent_unfixed_difference",
+      "requirement": "Separate real HTTP acceptance of current success 200 and official 204; do not infer wire parity from the new Service-level status 200 assertions."
+    }
+  ]
+}
