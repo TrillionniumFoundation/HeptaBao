@@ -1,0 +1,119 @@
+{
+  "cleanup_qualified": false,
+  "formal_business_kv2_qualified": false,
+  "package_bytes": 1304647,
+  "package_count": 7,
+  "package_files": 141,
+  "packages": [
+    {
+      "bytes": 220050,
+      "files": 21,
+      "manifest": {
+        "bytes": 3686,
+        "git_blob_sha1": "993fafcab406d7852189f6bd4e34a882223dca38",
+        "path": "MANIFEST.public.json",
+        "sha256": "168f6e3e269cdb5ca0388f6ff14ca7bc447575d46038b36090bc7587f503d64a"
+      },
+      "name": "mac--data-protection-inputs-r1",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/data-protection-inputs-r1",
+      "tree": "7d31048afe7883deaa2c281248a4882da0751365",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 40843,
+      "files": 15,
+      "manifest": {
+        "bytes": 2593,
+        "git_blob_sha1": "f5f82ab768fb5b8292f5539cea5d2a3a0105b4be",
+        "path": "MANIFEST.public.json",
+        "sha256": "01fbd19cc97311f885eb0d8acdedff95bb30235eb3fddd424970866c0443a429"
+      },
+      "name": "mac--data-protection-r1-failure-and-diagnosis",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/data-protection-r1-failure-and-diagnosis",
+      "tree": "1a3f9428e26905117023d45982b2a5579f7cf9d6",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 671198,
+      "files": 30,
+      "manifest": {
+        "bytes": 7938,
+        "git_blob_sha1": "770af92e306aeb889f744434a797b5f3fb0f8810",
+        "path": "MANIFEST.public.json",
+        "sha256": "f12c9ca46230f5ebca5c59160618d0817f61625b57183ad9acc16a4e3d9b7dd3"
+      },
+      "name": "mac--formatter",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/formatter",
+      "tree": "dbba85f2e865d80569169520366026cc88c1f8bd",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 4455,
+      "files": 2,
+      "manifest": {
+        "bytes": 292,
+        "git_blob_sha1": "61f945cb7d63176deb175571f2508b56833f6698",
+        "path": "MANIFEST.public.json",
+        "sha256": "b7c2c32f99cc030ed000cae9184a35ac43abd6a98d9303cf5f6d561a616ee195"
+      },
+      "name": "mac--outer900-static-review",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/outer900-static-review",
+      "tree": "497196042ace26cd495970bd29c8b2b8d7f0832a",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 39347,
+      "files": 14,
+      "manifest": {
+        "bytes": 2965,
+        "git_blob_sha1": "77ef28eae58aebaf3fa77553966f1ae0a69557f8",
+        "path": "MANIFEST.public.json",
+        "sha256": "c0660915940eb9605eef9626d3dcdb8f5dd30d4acb80832244fb983a9f636e21"
+      },
+      "name": "mac--plan-stage",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/plan-stage",
+      "tree": "ebcaf2efa392bf3f5da675f1fe43c75399573b5f",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 272234,
+      "files": 20,
+      "manifest": {
+        "bytes": 6299,
+        "git_blob_sha1": "0f4ccfc92fc15569d0f55e0f0318fd5b39982b22",
+        "path": "MANIFEST.public.json",
+        "sha256": "72fc229250288d1fbca0d3a2e9c8f108110457b77e0a6bef781c6248f25dd996"
+      },
+      "name": "rog--diagnostic-r12-failure",
+      "original_manifest_bytes_preserved": true,
+      "path": "rog/diagnostic-r12-failure",
+      "tree": "5c9bbedb2594ad37bb8352526637e8b64a70ca6b",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 56520,
+      "files": 39,
+      "manifest": {
+        "bytes": 12267,
+        "git_blob_sha1": "0f587d49c598f82a62cefba19d414e7795a9663e",
+        "path": "MANIFEST.public.json",
+        "sha256": "78be67da6817d726e29345100875b39aee69ea2fc36323af5cb84b01be9cf2d9"
+      },
+      "name": "rog--diagnostic-r12-prep",
+      "original_manifest_bytes_preserved": true,
+      "path": "rog/diagnostic-r12-prep",
+      "tree": "ee6a87d6f8be7898a72d6cc5b7c2138590f1aa74",
+      "tree_independently_recomputed": true
+    }
+  ],
+  "physical_ha_qualified": false,
+  "previous_commit": "cfb6b8164aabc86e3f582736bdb72609be6383f6",
+  "schema": "heptabao.evidence-r6-package-bindings.v1",
+  "traffic_cutover_qualified": false,
+  "trusted_authbus_qualified": false
+}

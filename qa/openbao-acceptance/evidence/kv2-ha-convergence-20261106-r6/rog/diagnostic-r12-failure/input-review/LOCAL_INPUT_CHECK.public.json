@@ -1,0 +1,15 @@
+{
+  "bundle_exactly_embedded": true,
+  "collector_bad_json_rejected": true,
+  "collector_missing_and_static_report_handled": true,
+  "controller_sha256": "0d87410a2f73fced9dc7311e882bb68de020e7c7fb2ee2581d34a9e1303f2479",
+  "expected_25_legacy_gate": true,
+  "extra_missing_and_wrong_error_rejected": true,
+  "no_product_or_remote_execution": true,
+  "schema": "heptabao.ci-diagnostic-local-input-check.v1",
+  "selection_sha256": "6c4231db98cf39a5f388b15d8c1a459c96a8a3eb3498da1f88b0c9b475d4c63c",
+  "selection_unique_count": 11,
+  "single_original_case_argv_exact": true,
+  "source_input_parse": true,
+  "source_prep_sha256": "3069a3e909a2648753e75cc7fd8d53e9ec8c3d6a32382f6d5a4fd08d0155f216"
+}

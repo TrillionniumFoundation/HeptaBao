@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.current-data-protection-input-stage-start.safe.v1",
+  "job_id": "1a1b1f38125-fc05-7bad",
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+  "idempotency_key": "heptabao-mac-current-data-protection-outer900-input-stage-20261106-r1",
+  "launch_state": "launched",
+  "launch_error": null,
+  "launch_backend": "detached",
+  "launched": true,
+  "reused": false,
+  "local_record_pending": false,
+  "original_mixed_request_and_digest_withheld": true
+}

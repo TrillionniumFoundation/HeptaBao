@@ -1,0 +1,150 @@
+{
+  "admission_cap_within_original_work_seconds": 60,
+  "all_bound_inputs_and_artifacts_unchanged": false,
+  "all_clients_and_backups_migrated": false,
+  "all_known_writers_fenced": false,
+  "authbus_qualified": false,
+  "automatic_retry": false,
+  "business_source_values_or_fingerprints_published": false,
+  "capture_backup_and_fresh_restore_completed": false,
+  "cleanup_and_receipt_reserve_seconds": 60,
+  "cross_database_atomic_snapshot_qualified": false,
+  "current_credential_validity_qualified": false,
+  "data_protection_only": true,
+  "deadline_fired": false,
+  "deadline_renewed": false,
+  "directory_handle_close_is_runtime_terminal_dependent": true,
+  "durable_completion_authority": "separate_original_runtime_terminal_with_900_second_cap",
+  "elapsed_observation_before_receipt_publication": true,
+  "elapsed_observation_before_receipt_publication_seconds": 1.1169051248580217,
+  "failure_code": "final_owned_custody_incomplete",
+  "forbidden_effect_attempt_count": 0,
+  "formal_kv2_qualified": false,
+  "fresh_current_plan_and_independent_native_file_pins_bound": true,
+  "full_workspace_product_qualification": false,
+  "ha_qualified": false,
+  "installed_public_package_files_equal_fixed_wheels": {
+    "cffi": 29,
+    "cryptography": 119,
+    "pip": 512,
+    "pycparser": 22
+  },
+  "interrupted": false,
+  "known_product_ci": {
+    "head_clippy_failure": "native_snapshot_peer.rs:54 manual_contains",
+    "head_job_id": 127931720823,
+    "head_source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "head_workspace_failed": 0,
+    "head_workspace_ignored": 8,
+    "head_workspace_passed": 3752,
+    "merge_failed_case": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown",
+    "merge_job_id": 127931720502,
+    "merge_source_commit": "6ed25e0d1f229483050a25f18750b7ceb14ee1c5",
+    "merge_workspace_failed": 1,
+    "merge_workspace_ignored": 8,
+    "merge_workspace_passed": 3751,
+    "product_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "qualification_resolved_by_data_protection": false,
+    "run_id": 42229582001
+  },
+  "known_product_ci_failures_remain_unresolved_by_this_work": true,
+  "old_assets_removed": false,
+  "original_directory_paths_and_handles_preserved": false,
+  "owned_directory_handle_count": 9,
+  "owned_native_metadata_processes": {
+    "children": [
+      {
+        "birth": {
+          "pgid": 2922,
+          "pid": 2922,
+          "ppid": 2918,
+          "sid": 2922,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gap_count": 0,
+        "index": 0,
+        "members_at_leader_exit": [
+          {
+            "pgid": 2922,
+            "pid": 2922,
+            "ppid": 2918,
+            "sid": 2922,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 2922,
+            "pid": 2922,
+            "ppid": 2918,
+            "sid": 2922,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 2922,
+        "returncode": 0
+      }
+    ],
+    "escaped_session_containment_claim": false,
+    "failed": true,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 1,
+    "passed_process_custody": false
+  },
+  "partial_owned_outputs_retained": true,
+  "phase_caps_seconds": {
+    "backup": 300,
+    "capture": 300,
+    "restore_verify": 300
+  },
+  "previous_bounded_evidence": {
+    "actual_darwin_controls": 18,
+    "control_original_writers": 1,
+    "dr_original_processes": 700,
+    "environment_original_processes": 3,
+    "fresh_directory_dr_cases": 25,
+    "full34_cases": 31,
+    "grants_product_qualification": false,
+    "independent_dr_gates": 26,
+    "normal_rust_tests": 107
+  },
+  "private_closure_binding_scope": "fsynced_original_workflow_closeout_private_record",
+  "private_closure_file_identity": {
+    "bytes": 58646,
+    "ctime_ns": 1793987143809193179,
+    "dev": 16777244,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 72748124,
+    "mode": 384,
+    "mtime_ns": 1793987143809193179,
+    "nlink": 1,
+    "uid": 501
+  },
+  "private_plan_or_config_hashes_published": false,
+  "product_or_sdk_executed": false,
+  "production_service_started": false,
+  "provider_or_j3160_called": false,
+  "public_output_is_explicit_safe_projection": true,
+  "resume_after_failed_phase_supported": false,
+  "runtime_cap_seconds": 900,
+  "schema": "heptabao.current-sqlite-data-protection-outer.v1",
+  "service_or_client_configuration_changed": false,
+  "source_code_unchanged": false,
+  "source_data_write_invoked": false,
+  "source_device_loss_recovery_qualified": false,
+  "source_freshness_after_capture_qualified": false,
+  "source_native_sqlite_sidecar_writes_excluded": false,
+  "status": "failed",
+  "traffic_cutover_performed": false,
+  "work_cap_seconds_from_original_entry": 840,
+  "workflow_invoked": false
+}

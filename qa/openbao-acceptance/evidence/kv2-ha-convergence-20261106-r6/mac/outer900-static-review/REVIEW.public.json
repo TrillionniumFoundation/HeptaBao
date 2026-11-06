@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.independent-outer900-source-review.public.v1",
+  "reviewer": "host_evidence",
+  "status": "source_review_no_new_blocker",
+  "source": {
+    "filename": "mac_current_sqlite_data_protection_outer.py",
+    "bytes": 53236,
+    "sha256": "211df45b2763fc0c3d1a747dcc44e46442e66bf988117aab930ba9f3bb0e6e74"
+  },
+  "scope": [
+    "load_private_plan",
+    "validate_private_pin",
+    "verify_volumes",
+    "private_stdio",
+    "safe_workflow_projection",
+    "invoke_workflow",
+    "postflight",
+    "final_directory_and_process_custody"
+  ],
+  "findings": [
+    {
+      "id": "fresh_private_plan_chain",
+      "result": "verified_in_source",
+      "detail": "Original successful stage public identity rows and terminal are fixed public inputs; independent native full hash/version pins remain private and are checked against exact current private plan and binding. The plan hash, original file identity, current config fingerprint, five agents, nine families and parent identities cross-bind inside the host."
+    },
+    {
+      "id": "no_historical_private_assumption",
+      "result": "verified_in_source",
+      "detail": "The stage explicitly refuses to assert that its old private admission input was unchanged. Current plan admission uses the newly reconstructed baseline and its newly fixed output identities."
+    },
+    {
+      "id": "original_budget",
+      "result": "verified_in_source",
+      "detail": "ENTRY fixes the 900-second original ceiling and 840-second work deadline. The 60-second preflight consumes that work budget. The unchanged capture core receives run_workflow(start=ENTRY), with each phase capped at 300 seconds. Failure cleanup may use only the original total ceiling."
+    },
+    {
+      "id": "actual_filesystem_and_space",
+      "result": "verified_in_source",
+      "detail": "Two bounded diskutil observations are owned through the fixed custody helper. Volume directory identity and selected diskutil fields must match the fresh private binding. Data and T5 space are compared against the fixed complete lifecycle requirements."
+    },
+    {
+      "id": "private_output_boundary",
+      "result": "verified_in_source",
+      "detail": "Both native descriptors 1 and 2 are redirected to private create-only outputs during the workflow. Public workflow projection permits only fixed phases, statuses, typed counts and enumerated errors; no source configuration, database values, private filenames or content fingerprints are copied into public output."
+    },
+    {
+      "id": "owned_cleanup",
+      "result": "verified_in_source",
+      "detail": "All original metadata children must be admitted, waited exactly once and have no live members or gaps. All retained directory paths are checked against their original descriptors. Partial outputs are retained after failure; there is no delete or retry path."
+    },
+    {
+      "id": "effect_boundary",
+      "result": "verified_in_source",
+      "detail": "The audit hook rejects network and shell effects, allows child processes only within the fixed metadata phase, and allows SQLite connections only within the unchanged qualified capture workflow."
+    },
+    {
+      "id": "qualification_boundaries",
+      "result": "verified_in_source",
+      "detail": "Known product CI failures, missing writer fencing, cross-database atomicity, current credential validity, whole source-device loss, service/HA/AuthBus and client migration qualifications remain ungranted."
+    }
+  ],
+  "limits": [
+    {
+      "id": "terminal_required",
+      "detail": "The fsynced public result file precedes final closure of the output directory descriptor. The source explicitly labels this terminal-dependent. Use the separate original Runtime success and final stdout to qualify complete cleanup; the result file alone is insufficient."
+    },
+    {
+      "id": "source_review_only",
+      "detail": "This review executed no product, capture, provider, service or remote probe. It does not establish an actual business capture result."
+    }
+  ],
+  "new_tests_run": 0,
+  "remote_actions_performed": 0,
+  "stage_safe_evidence_tree": "ebcaf2efa392bf3f5da675f1fe43c75399573b5f"
+}

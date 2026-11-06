@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.ci-publication-preflight-failure-evidence.v1",
+  "job_id": "1a1b1f14810-fc05-7b9e",
+  "state": "failed",
+  "failure": "other_compiler_present",
+  "compiler_started": false,
+  "actual_executed_cases": 0,
+  "required_diagnostic_cases": 11,
+  "legacy_preservation": false,
+  "machine_acceptance": "HOLD",
+  "original_ci_failure_unresolved": true,
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "files": [
+    {
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "bytes": 4102,
+      "sha256": "a18aa6da25eb10d74bcf008b125550db24cb353f536b3c7883e3e80971cc8a5a",
+      "git_blob_sha1": "baddb11597c3aa77f8e4aa33a39a91e41c51de56",
+      "origin": "Independent derived summary of the authoritative failed attempt and exact before/after bindings"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1745,
+      "sha256": "165403d3daa31cf7daad936434b0a766f45de7c81935bb242a31db38e1d34f39",
+      "git_blob_sha1": "4ea41e4a50332478598c7b02ce5952c63731e22c",
+      "origin": "New derived scope note; not original runtime output"
+    },
+    {
+      "path": "input-review/INDEPENDENT_BINDINGS.public.json",
+      "bytes": 944,
+      "sha256": "72fc62d020c754acf9c22d247e7900fdb3609a978cfd25e0f242a2feded5588a",
+      "git_blob_sha1": "654a02db6093c58b451ff4ada191ab6b3c739b35",
+      "origin": "Independent exact old21+new4 input comparison and actual previous enumeration membership"
+    },
+    {
+      "path": "input-review/INPUT_REVIEW.public.json",
+      "bytes": 2107,
+      "sha256": "2a0a2f6484232413e9b4a36b956d09698f225c203d4a88d2698f89b408815452",
+      "git_blob_sha1": "f600f6146718fd21ef3204477538064bb3f53666",
+      "origin": "Local derived review; not actual Rust execution evidence"
+    },
+    {
+      "path": "input-review/LOCAL_INPUT_CHECK.public.json",
+      "bytes": 696,
+      "sha256": "a77772228f79ea17e0f49f181cbe26be67ff631af9b4814d169c7e49bde308bc",
+      "git_blob_sha1": "14ae9b9ea46fe1a9d264bd665d5e1ffc56b34009",
+      "origin": "Local derived review; not actual Rust execution evidence"
+    },
+    {
+      "path": "input-review/controller.review.patch",
+      "bytes": 14619,
+      "sha256": "5a132669be0dc62b61c495fcb70a7b69832fa64d5f093b922f083849425d5ea9",
+      "git_blob_sha1": "124c15d41292c42da0796b6914786e9bb4030878",
+      "origin": "Local derived review; not actual Rust execution evidence"
+    },
+    {
+      "path": "inputs/bootstrap.py",
+      "bytes": 70311,
+      "sha256": "a83111775bbb9623cf5c0c7375981b15a672c8cce14fb8c450462526a29dd31b",
+      "git_blob_sha1": "916482c3abc9d0713e5bb9619ed38ef9eeca7197",
+      "origin": "Exact frozen reviewed execution input"
+    },
+    {
+      "path": "inputs/candidate.bundle.base64",
+      "bytes": 4513,
+      "sha256": "3077f9d002f4f652134ab79074275d8360376f95695988546ff2e8c4ad9a477a",
+      "git_blob_sha1": "614fe224f371654d140befeed3829e84e6583fbc",
+      "origin": "Lossless base64 representation of the exact binary Git bundle; decoded3383B/SHA9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"
+    },
+    {
+      "path": "inputs/controller.py",
+      "bytes": 29547,
+      "sha256": "0d87410a2f73fced9dc7311e882bb68de020e7c7fb2ee2581d34a9e1303f2479",
+      "git_blob_sha1": "c8d3078a8b19a6070790059302ad4c0880b579d6",
+      "origin": "Exact frozen reviewed execution input"
+    },
+    {
+      "path": "inputs/test-selection.public.json",
+      "bytes": 18971,
+      "sha256": "ad7642bab8218200941ccb09675934b222189c47f6f740708566b19a8f7c57c9",
+      "git_blob_sha1": "de95e84bf1b7e1d447be490aa09d046a33439d5e",
+      "origin": "Exact frozen reviewed execution input"
+    },
+    {
+      "path": "result.native-file-info.original.json",
+      "bytes": 486,
+      "sha256": "da6ce25e7c2757b669910c3d2cf7a830319fd06036dec6765c7f31f708b33461",
+      "git_blob_sha1": "e7ef6bd8dd51ce7be6e7cb756a2f624baf9f4126",
+      "origin": "Exact independent native file_info"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 34946,
+      "sha256": "2b8d85d39c2759615f40bec8ee5b4cb630a7c257a8b352b776dbbbc0a115b7d7",
+      "git_blob_sha1": "f63d707773aeb020b655ace2a9ab6674dbbdd261",
+      "origin": "Exact failed controller result34946B"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 70659,
+      "sha256": "8191c8ab5de4c33dc86b63fdf6ad83e9fa179c9388558da0b88fb30f1adacee0",
+      "git_blob_sha1": "599fbd71ed427824d19b644910f9156329139b4e",
+      "origin": "Serialized exact process_start argument object retained before launch"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1024,
+      "sha256": "2852030261179a50c2106a4064e19c7736a4573e9d14d68a095a2f20c2a3bef8",
+      "git_blob_sha1": "31779c8861f4ad63eaa9732d2c9d09e48f31395e",
+      "origin": "Exact process_start MCP response"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 726,
+      "sha256": "ff3625b1ed6cbab46a5ef436591906e852d8d123b164ad1d631fe8cf5d54bb93",
+      "git_blob_sha1": "9b1473670e16672b50cbe8d478e349646726605c",
+      "origin": "Exact authoritative terminal: failed before compiler"
+    },
+    {
+      "path": "runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "origin": "Complete Runtime stderr"
+    },
+    {
+      "path": "runtime.stdout.original",
+      "bytes": 515,
+      "sha256": "b30faec76cba3abedad67187732765137c384a2dc69faa945743e903d782d38d",
+      "git_blob_sha1": "740a860db9a311721cc86e4a8af4a0b849b522d2",
+      "origin": "Complete Runtime stdout"
+    },
+    {
+      "path": "source-prep/result.public.json",
+      "bytes": 9293,
+      "sha256": "75cff158677c595a61ec2bbecbec8de1b9602dc7cac181645bceebdd361137bf",
+      "git_blob_sha1": "9e6c309a732433d5123403d119726cdb95c9cb1a",
+      "origin": "Exact completed source-preparation result"
+    },
+    {
+      "path": "source-prep/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "ccca6f7dc402061fe54d3f7acdbfaa1435fcdf0d42eb6c2f1405e604c7391bcb",
+      "git_blob_sha1": "664cf590eb36cfb83adba4c71f7ece7ee331d1f1",
+      "origin": "Exact authoritative preparation terminal"
+    }
+  ]
+}

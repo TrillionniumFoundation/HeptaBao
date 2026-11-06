@@ -1,0 +1,2 @@
+Previous HEAD position was 4bde9aee0 test(auth): bind native JWT role actors to effective default policies
+HEAD is now at 9c68b95b1 fix(ci): repair snapshot lint and observe failed publication test

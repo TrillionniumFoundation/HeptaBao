@@ -1,0 +1,35 @@
+{
+  "parent": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "base_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "expected_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "files": [
+    {
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+      "bytes": 23010,
+      "sha256": "413dffc40e136e00cbd4d91e4c15eff72762134046804d8e7889d98eacb6dec4",
+      "git_blob_sha1": "f052278475541b568731521c9d70a8443dccad36"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+      "bytes": 34129,
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "git_blob_sha1": "a6a4f96c0426b7b2c8d6e358704049c494f63192"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_published_plan_tests.rs",
+      "bytes": 11308,
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "git_blob_sha1": "8b600d4976ae3bc54534be292b1381def9debbff"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_writer.rs",
+      "bytes": 19810,
+      "sha256": "a72933db9c1daa946ded24dd55c38967b2511e6a87df22568c2b0660c4b5ff20",
+      "git_blob_sha1": "8092a0f5cad23e65d8efd3282fe75efdb1a5def8"
+    }
+  ],
+  "semantic_publication_failure_fixed": false,
+  "original_ci_failure_retained": true,
+  "rust_compile_or_test_already_proven": false,
+  "actual_mac_rustfmt_job": "1a1b1dc9905-fc05-7b2f"
+}

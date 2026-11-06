@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.current-data-protection-input-stage-request.safe.v1",
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+  "timeout_seconds": 60,
+  "nice": 5,
+  "idempotency_key": "heptabao-mac-current-data-protection-outer900-input-stage-20261106-r1",
+  "work_seconds": 52,
+  "stdin_contains_private_integrity_pins": true,
+  "stdin_and_its_content_hash_withheld": true,
+  "template": {
+    "bytes": 9889,
+    "sha256": "e2c6a9477ff0c81efee43832f048682603d04f754b9e0aed1bb67e82b7ffb73d"
+  },
+  "staged_input_count": 19,
+  "public_input_count": 18,
+  "private_input_count": 1,
+  "public_inputs": [
+    {
+      "name": "controls18-owned-one.public.json",
+      "bytes": 2500,
+      "sha256": "81d7018749b5b8a97fa647dc428eaadd65a76aa52b8d7508b8eadf12f9f00aee"
+    },
+    {
+      "name": "controls18-result.public.json",
+      "bytes": 9753,
+      "sha256": "0c0a6f5f12a1d2bb5a1f3de7a70194ac1ed226eeac9816d5495f1ad18a961914"
+    },
+    {
+      "name": "controls18-runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "7cb397897cb7275f04524229b2ab90447385c22b0ee2b353a3900c9692d98f5f"
+    },
+    {
+      "name": "dr2-result.public.json",
+      "bytes": 1437,
+      "sha256": "22a0c151ad3c1a075d6763f0b3d7037eed12a21d19e84d9b94fadd91ff44fc9f"
+    },
+    {
+      "name": "dr2-runtime-terminal.original.json",
+      "bytes": 729,
+      "sha256": "bfc16319788ed2dfb35419920407c9246e55c442f0af7edcfab3549195db9a1a"
+    },
+    {
+      "name": "dr26-runtime-terminal.original.json",
+      "bytes": 735,
+      "sha256": "55d380208276b62f2a1e65f7e71706714eb0b1fe2b71e9268c95574633edf710"
+    },
+    {
+      "name": "dr26-runtime.stdout.original",
+      "bytes": 147183,
+      "sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e"
+    },
+    {
+      "name": "environment-owned-three.public.json",
+      "bytes": 5511,
+      "sha256": "c0b30e13cb169cf7f213848b7a2be3c709c1abcca8ad393613cb15c847329b88"
+    },
+    {
+      "name": "environment-result.public.json",
+      "bytes": 3886,
+      "sha256": "fabe693cfc1764f4686abaff7a5425ea0e5067c2bd036fa26e22fec7dfd6e1bb"
+    },
+    {
+      "name": "environment-runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "b64376669e1cf91017a374010f353187db2fa17950c7719ad783bb2a5b884c6f"
+    },
+    {
+      "name": "known-product-ci-original-bindings.public.json",
+      "bytes": 1827,
+      "sha256": "a06a0d633e171b9f52ae6a0119db0be81c1fcf0eb24b6b5ec533f0d43d792c32"
+    },
+    {
+      "name": "mac107-result.public.json",
+      "bytes": 181226,
+      "sha256": "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6"
+    },
+    {
+      "name": "mac107-runtime-terminal.original.json",
+      "bytes": 734,
+      "sha256": "f8e6a055c1f68eb63094964f7623155de44202a70bfb6da36fa8fc7eb09f821c"
+    },
+    {
+      "name": "mac107-selection.public.json",
+      "bytes": 46133,
+      "sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595"
+    },
+    {
+      "name": "plan-stage-result.public.json",
+      "bytes": 5922,
+      "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f"
+    },
+    {
+      "name": "plan-stage-runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df"
+    },
+    {
+      "name": "mac_current_sqlite_data_protection_outer.py",
+      "bytes": 55776,
+      "sha256": "4ac1110cb3a065f06a1f408b9b5b0b17565a3e0517a322d380307ab11b5ff88d"
+    },
+    {
+      "name": "fixed-inputs.public.json",
+      "bytes": 5386,
+      "sha256": "413027c61091eae87f17ab247930a48a0d7a3f20b105432b15d2826c8dbb337b"
+    }
+  ],
+  "actual_workflow_launched": false
+}

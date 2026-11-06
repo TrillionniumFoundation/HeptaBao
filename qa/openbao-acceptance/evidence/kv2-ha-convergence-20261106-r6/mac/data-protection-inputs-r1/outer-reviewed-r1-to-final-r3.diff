@@ -1,0 +1,75 @@
+--- reviewed-211df45-r1
++++ final-same-generation-closure-r3
+@@ -296,10 +296,20 @@
+             stream.write(raw)
+             stream.flush()
+             os.fsync(fd)
++        st = os.fstat(fd)
++        ident = file_identity(st)
++        need(stat.S_ISREG(st.st_mode) and st.st_uid == UID and st.st_nlink == 1
++             and stat.S_IMODE(st.st_mode) == 0o600 and st.st_size == len(raw),
++             "owned_output_file_custody")
++        need(ident == file_identity(os.stat(name, dir_fd=CONTROL["fd"], follow_symlinks=False)),
++             "owned_output_file_path_handle_identity")
+     finally:
+         os.close(fd)
+     os.fsync(CONTROL["fd"])
+     verify_directories()
++    need(ident == file_identity(os.stat(name, dir_fd=CONTROL["fd"], follow_symlinks=False)),
++         "owned_output_file_changed_after_fsync")
++    return ident
+ 
+ 
+ def create_output():
+@@ -613,6 +623,8 @@
+          and Path(sys.prefix) == ENVIRONMENT / "venv"
+          and Path(sys.executable) == ENVIRONMENT / "venv/bin/python3", "actual_fixed_isolated_darwin_runtime")
+     read_file(Path(sys.executable), MIB, private=False, pin=inputs["python"], remember=True)
++    read_file(ENVIRONMENT / "venv/pyvenv.cfg", 4096, private=False,
++              pin=inputs["venv_configuration"], remember=True)
+     raw, _ = read_file(ENV_INPUT / "fixed-wheel-plan.json", 65536, pin=inputs["environment_plan"], remember=True)
+     plan = json.loads(raw, object_pairs_hook=unique)
+     site = ENVIRONMENT / "venv/lib/python3.14/site-packages"
+@@ -865,6 +877,31 @@
+     report = invoke_workflow(plan)
+     PRIVATE["qualified_core_public_result"] = report
+     PUBLIC["workflow"] = report
++    # Bind the actual generation observed at this successful workflow's
++    # closeout. This is not a claim about inode history before this observation.
++    check(WORK_END)
++    actual_roots = {role: hold_directory(path)["pin"] for role, path in paths.items()}
++    PRIVATE["actual_attempt_root_identities_at_workflow_closeout"] = actual_roots
++    PUBLIC["actual_attempt_roots_at_workflow_closeout"] = [
++        {"role": role, "identity": {key: pin[key] for key in ("dev", "inode", "uid", "gid", "mode")}}
++        for role, pin in actual_roots.items()
++    ]
++    PUBLIC["actual_root_identity_observation_scope"] = "original_workflow_successful_closeout_not_earlier_inode_history"
++    closure_files = (
++        ("capture_manifest", paths["capture"] / "capture.private.json", CORE.MAX_META),
++        ("capture_binding", paths["capture"] / "capture-binding.private.json", CORE.MAX_META),
++        ("archive_manifest", paths["archive"] / "manifest.fernet", CORE.MAX_META * 2),
++        ("recovery_key", paths["key"] / "recovery.key", 44),
++        ("restore_capture_manifest", paths["restore"] / "capture.private.json", CORE.MAX_META),
++    )
++    PRIVATE["completed_file_pins_at_workflow_closeout"] = {}
++    for role, path, maximum in closure_files:
++        raw, ident = read_file(path, maximum, remember=True)
++        need(role != "recovery_key" or len(raw) == 44, "original_recovery_key_length")
++        PRIVATE["completed_file_pins_at_workflow_closeout"][role] = {
++            "path": str(path), "identity": ident, "sha256": hashlib.sha256(raw).hexdigest(),
++        }
++    PUBLIC["completed_private_closure_file_count"] = len(closure_files)
+     # Only the declared safe per-phase receipts are re-opened here; no source
+     # credential or private database/archive manifest is exported.
+     for role, phase in (("capture", "capture"), ("archive", "backup"), ("restore", "restore-verify")):
+@@ -949,7 +986,9 @@
+         PRIVATE["public_result_before_publication"] = dict(PUBLIC)
+         if CONTROL is not None:
+             try:
+-                control_write("outer.private.json", encoded(PRIVATE))
++                private_identity = control_write("outer.private.json", encoded(PRIVATE))
++                PUBLIC["private_closure_file_identity"] = private_identity
++                PUBLIC["private_closure_binding_scope"] = "fsynced_original_workflow_closeout_private_record"
+                 if FIRED or INTERRUPTED:
+                     PUBLIC.update(status="failed", failure_code="interrupted_during_private_publication")
+                     exit_code = 1

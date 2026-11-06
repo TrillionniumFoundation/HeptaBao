@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.current-whole-data-protection-runtime-request.prepared.v1",
+  "execution_status": "prepared_only_not_submitted",
+  "request": {
+    "host": "mac",
+    "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-data-protection-inputs-r1/mac_current_sqlite_data_protection_outer.py",
+      "--inputs-sha256",
+      "413027c61091eae87f17ab247930a48a0d7a3f20b105432b15d2826c8dbb337b",
+      "--controller-sha256",
+      "4ac1110cb3a065f06a1f408b9b5b0b17565a3e0517a322d380307ab11b5ff88d"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-data-protection-inputs-r1",
+    "timeout_seconds": 900,
+    "nice": 5,
+    "idempotency_key": "heptabao-mac-current-sqlite-whole-data-protection-20261106-r1"
+  },
+  "scope": "data_protection_only",
+  "product_ci_qualification_held": true,
+  "formal_kv2_qualified": false,
+  "unchanged_core_sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972",
+  "same_original_runtime_start_required": true,
+  "work_seconds": 840,
+  "admission_within_work_seconds": 60,
+  "phase_seconds": 300,
+  "cleanup_receipt_reserve_seconds": 60
+}

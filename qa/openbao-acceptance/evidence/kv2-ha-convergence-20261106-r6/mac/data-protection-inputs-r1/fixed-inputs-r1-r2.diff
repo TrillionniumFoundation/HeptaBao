@@ -1,0 +1,12 @@
+--- reviewed-r1
++++ final-r2
+@@ -134,5 +134,9 @@
+     "environment-runtime-terminal.original.json": "1a1b1c05955-fc05-7aa0",
+     "mac107-runtime-terminal.original.json": "1a1b116ba98-fc05-75a6",
+     "plan-stage-runtime-terminal.original.json": "1a1b1dca238-fc05-7b30"
++  },
++  "venv_configuration": {
++    "bytes": 424,
++    "sha256": "b6229612749d7d4ba76ba83f0b65c4b80ebd88dfa82eac845d1e65dd1ef83851"
+   }
+ }

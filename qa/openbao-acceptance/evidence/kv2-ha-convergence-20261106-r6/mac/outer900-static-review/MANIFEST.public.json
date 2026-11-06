@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.safe-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "REVIEW.public.json",
+      "bytes": 4163,
+      "sha256": "119c97415960cb832f3ef3d1df178974f5e9fc5e00b79d435d0f6823bfd19e01"
+    }
+  ],
+  "scope": "Independent source review only; no business execution."
+}

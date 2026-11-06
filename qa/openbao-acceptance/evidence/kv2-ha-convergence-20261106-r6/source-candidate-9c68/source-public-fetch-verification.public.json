@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.ci-observation-source-public-fetch-verification.v1",
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "parent": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "public_fetch_completed": true,
+  "exact_frozen_working_tree_equal_to_published_commit": true,
+  "changed_files": 4,
+  "working_tree_clean": true,
+  "ordinary_checkout_refused_before_non_destructive_index_alignment": true,
+  "working_bytes_independently_reverified_before_index_alignment": true,
+  "working_files_changed_by_index_alignment": false,
+  "original_ci_failure_retained": true,
+  "protocol_repair_qualified": false
+}

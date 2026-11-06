@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.runtime-start.safe.v1",
+  "job_id": "1a1b1fd3eb3-fc05-7be8",
+  "host": "mac",
+  "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/current-sqlite-data-protection-execution-r1",
+  "idempotency_key": "heptabao-mac-current-data-protection-failed-admission-metadata-20261106-r1",
+  "launch_state": "launched",
+  "reused": false,
+  "launch_error": null,
+  "local_record_pending": false,
+  "worker_account_paths_and_opaque_request_digests_withheld": true
+}

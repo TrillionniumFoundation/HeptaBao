@@ -1,0 +1,77 @@
+{
+  "actual_execution_started": false,
+  "added_functions_or_classes": [
+    "collect_case_observation"
+  ],
+  "changed_existing_functions_or_classes": [
+    "diagnostic_layout",
+    "diagnostic_legacy_condition",
+    "execute_group",
+    "main",
+    "retain_artifact"
+  ],
+  "ci_dev_test_profile_opt1_debug2_default_features": true,
+  "cold_target_no_release_cache_copy": true,
+  "exact_missing_required": 3,
+  "expected_old_artifact_count": 25,
+  "files": [
+    {
+      "bytes": 29547,
+      "path": "controller.py",
+      "sha256": "0d87410a2f73fced9dc7311e882bb68de020e7c7fb2ee2581d34a9e1303f2479"
+    },
+    {
+      "bytes": 11605,
+      "path": "source-prep.py",
+      "sha256": "3069a3e909a2648753e75cc7fd8d53e9ec8c3d6a32382f6d5a4fd08d0155f216"
+    },
+    {
+      "bytes": 18494,
+      "path": "test-selection.pending.public.json",
+      "sha256": "6c4231db98cf39a5f388b15d8c1a459c96a8a3eb3498da1f88b0c9b475d4c63c"
+    },
+    {
+      "bytes": 3383,
+      "path": "candidate.bundle",
+      "sha256": "9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"
+    },
+    {
+      "bytes": 14619,
+      "path": "controller.review.patch",
+      "sha256": "5a132669be0dc62b61c495fcb70a7b69832fa64d5f093b922f083849425d5ea9"
+    },
+    {
+      "bytes": 10045,
+      "path": "source-prep.review.patch",
+      "sha256": "d5507813548c4bf7457275e2cdecd510db03a0bb6b8bc74d12360ed416398bb8"
+    }
+  ],
+  "identical_existing_functions_or_classes": [
+    "Failed",
+    "Interrupted",
+    "checkpoint",
+    "clean_owned_group",
+    "diagnostic_directories",
+    "digest",
+    "git",
+    "interrupted",
+    "listed",
+    "need",
+    "old_artifacts",
+    "owned_directory",
+    "process_group",
+    "publish",
+    "resources",
+    "run_step",
+    "test_summary"
+  ],
+  "legacy_preservation": false,
+  "machine_acceptance": "HOLD",
+  "matching_required": 22,
+  "old_ci_failure_root_cause_proven": false,
+  "original_case_attempts": 1,
+  "original_request_seconds": 15,
+  "original_server_libtest_build_seconds": 3600,
+  "runtime_seconds": 4200,
+  "schema": "heptabao.ci-publication-diagnostic-input-review.v1"
+}

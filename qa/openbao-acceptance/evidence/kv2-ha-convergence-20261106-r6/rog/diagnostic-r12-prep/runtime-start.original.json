@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793986592529,
+    "cwd": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b1eeff11-fc05-7b8f",
+    "idempotency_key": "heptabao-rog-ci422-9c68-r12-source-prep-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b1eeff11-fc05-7b8f",
+    "request_digest": "9cfbf2332c6b5d8aa6b9a242c5fdeb5ef51430899b755ffd269ffc9b19735dca",
+    "request_fingerprint": 11311901190673620362,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1eeff11-fc05-7b8f"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b1eeff11-fc05-7b8f"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,143 @@
+{
+  "schema": "heptabao.ci-publication-observation-diagnostic.v1",
+  "status": "failed",
+  "failure": "other_compiler_present",
+  "elapsed_seconds": 4.9592,
+  "steps": 0,
+  "groups": 0,
+  "passed": 0,
+  "not_executed": 11,
+  "preflight": {
+    "compiler_processes": [
+      {
+        "comm": "cargo",
+        "pid": 1419419
+      }
+    ],
+    "disk_free_bytes": 113849556992,
+    "load_average": [
+      1.568359375,
+      1.26318359375,
+      1.0517578125
+    ],
+    "mem_available_kib": 28731700,
+    "swap_free_kib": 112
+  },
+  "postflight": {
+    "compiler_processes": [
+      {
+        "comm": "cargo",
+        "pid": 1419419
+      }
+    ],
+    "disk_free_bytes": 113849524224,
+    "load_average": [
+      1.568359375,
+      1.26318359375,
+      1.0517578125
+    ],
+    "mem_available_kib": 28704496,
+    "swap_free_kib": 112
+  },
+  "legacy_before": {
+    "all_25_expected_artifacts_present": false,
+    "diagnostic_condition_met": true,
+    "expected_absent_names": [
+      "heptabao-seed",
+      "heptabao-server",
+      "server_libtest"
+    ],
+    "expected_legacy_count": 25,
+    "expected_pin_set_unchanged": true,
+    "legacy_preservation": false,
+    "machine_acceptance": "HOLD",
+    "observed_absent_names": [
+      "heptabao-seed",
+      "heptabao-server",
+      "server_libtest"
+    ],
+    "retained_matching_count": 22,
+    "retained_matching_names": [
+      "r11_4bde9_heptabao-ha-service-libtest",
+      "r11_4bde9_heptabao-seed",
+      "r11_4bde9_heptabao-server",
+      "r11_4bde9_heptabao-server-libtest",
+      "r7_868_heptabao-ha-service-libtest",
+      "r7_868_heptabao-seed",
+      "r7_868_heptabao-server",
+      "r7_868_heptabao-server-libtest",
+      "r8_09c14_heptabao-ha-service-libtest",
+      "r8_09c14_heptabao-seed",
+      "r8_09c14_heptabao-server",
+      "r8_09c14_heptabao-server-libtest",
+      "retained_r2_heptabao-seed",
+      "retained_r2_heptabao-server",
+      "retained_r4_heptabao-ha-service-libtest",
+      "retained_r4_heptabao-seed",
+      "retained_r4_heptabao-server",
+      "retained_r4_heptabao-server-libtest",
+      "retained_r5_heptabao-ha-service-libtest",
+      "retained_r5_heptabao-seed",
+      "retained_r5_heptabao-server",
+      "retained_r5_heptabao-server-libtest"
+    ],
+    "unexpected_names": []
+  },
+  "legacy_after": {
+    "all_25_expected_artifacts_present": false,
+    "diagnostic_condition_met": true,
+    "expected_absent_names": [
+      "heptabao-seed",
+      "heptabao-server",
+      "server_libtest"
+    ],
+    "expected_legacy_count": 25,
+    "expected_pin_set_unchanged": true,
+    "legacy_preservation": false,
+    "machine_acceptance": "HOLD",
+    "observed_absent_names": [
+      "heptabao-seed",
+      "heptabao-server",
+      "server_libtest"
+    ],
+    "retained_matching_count": 22,
+    "retained_matching_names": [
+      "r11_4bde9_heptabao-ha-service-libtest",
+      "r11_4bde9_heptabao-seed",
+      "r11_4bde9_heptabao-server",
+      "r11_4bde9_heptabao-server-libtest",
+      "r7_868_heptabao-ha-service-libtest",
+      "r7_868_heptabao-seed",
+      "r7_868_heptabao-server",
+      "r7_868_heptabao-server-libtest",
+      "r8_09c14_heptabao-ha-service-libtest",
+      "r8_09c14_heptabao-seed",
+      "r8_09c14_heptabao-server",
+      "r8_09c14_heptabao-server-libtest",
+      "retained_r2_heptabao-seed",
+      "retained_r2_heptabao-server",
+      "retained_r4_heptabao-ha-service-libtest",
+      "retained_r4_heptabao-seed",
+      "retained_r4_heptabao-server",
+      "retained_r4_heptabao-server-libtest",
+      "retained_r5_heptabao-ha-service-libtest",
+      "retained_r5_heptabao-seed",
+      "retained_r5_heptabao-server",
+      "retained_r5_heptabao-server-libtest"
+    ],
+    "unexpected_names": []
+  },
+  "old_artifacts_exactly_unchanged": true,
+  "directory_identity_unchanged": true,
+  "case_observation": {
+    "case_invoked": false,
+    "request_timing_report_count": 0
+  },
+  "receipt": {
+    "bytes": 34946,
+    "sha256": "2b8d85d39c2759615f40bec8ee5b4cb630a7c257a8b352b776dbbbc0a115b7d7"
+  },
+  "machine_acceptance": "HOLD",
+  "legacy_preservation": false,
+  "old_ci_failure_unresolved": true
+}

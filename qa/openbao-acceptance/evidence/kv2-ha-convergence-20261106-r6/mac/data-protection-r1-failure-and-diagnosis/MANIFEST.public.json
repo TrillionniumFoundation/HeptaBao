@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.current-data-protection-r1-failure-checkpoint.v1",
+  "original_failed_job_id": "1a1b1f76336-fc05-7bc7",
+  "later_readonly_job_id": "1a1b1fd3eb3-fc05-7be8",
+  "files": [
+    {
+      "path": "actual900-r1/runtime-terminal.original.json",
+      "bytes": 728,
+      "sha256": "baea0ab56ba79ecbcb88cc26c8be6773d5f6d83dad7224225a15aacd61391905"
+    },
+    {
+      "path": "actual900-r1/runtime.stdout.original",
+      "bytes": 4220,
+      "sha256": "3b7b06f5149aa28fec52ffdd781a7e32abae9bd60ef857d0fe5aa371fd65ceaa"
+    },
+    {
+      "path": "actual900-r1/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "actual900-r1/result.public.json",
+      "bytes": 5109,
+      "sha256": "c57baaa47b723ed073d09f8297b9e058bd45a4dc9e4741a8a436bd598bc15050"
+    },
+    {
+      "path": "actual900-r1/runtime-request.original.json",
+      "bytes": 870,
+      "sha256": "934baf0b305209f1597816201d4071633b2ed24299c0885d5838595922e435cc"
+    },
+    {
+      "path": "actual900-r1/runtime-start.safe.json",
+      "bytes": 1088,
+      "sha256": "c8c74c13af4a282196a2104ac296c7258365b5820e8c31140147855d184912a3"
+    },
+    {
+      "path": "diagnostic-r1/diagnose_outer_failure_metadata_r1.py",
+      "bytes": 8639,
+      "sha256": "c5806f2f44396758c5c9bbf4ecd1feefa3f31c92c7c27041173b43902abbea95"
+    },
+    {
+      "path": "diagnostic-r1/runtime-request.original.json",
+      "bytes": 9353,
+      "sha256": "23bb8f6beba0843c6fa3b5acd92267de6a96f48b33087243b41881ba4c556b1c"
+    },
+    {
+      "path": "diagnostic-r1/runtime-start.safe.json",
+      "bytes": 733,
+      "sha256": "d80943b73a96233f0be728174fc457f2c74d10cd6320bf3581ae9c4d527e7c68"
+    },
+    {
+      "path": "diagnostic-r1/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "55fe6a0dcf157b7afa26acf20f741ef08d8370a80028e9b0b745637040419557"
+    },
+    {
+      "path": "diagnostic-r1/runtime.stdout.original",
+      "bytes": 2214,
+      "sha256": "c002bafc90a5a41c1710f8cbd8739ec897e23b0767c6f5f4bcdf0a5eaa194038"
+    },
+    {
+      "path": "diagnostic-r1/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "OBSERVATION.public.json",
+      "bytes": 2520,
+      "sha256": "71746b10f54deb67d2ff0d80b0eae0882ca1dd78bf7d85fe843d2442706c6de2"
+    },
+    {
+      "path": "CHECKPOINT_SCOPE.md",
+      "bytes": 2045,
+      "sha256": "b90686fc987c26620d4f04122165fad4aaa67382e26b33690c43cd01053f480a"
+    }
+  ]
+}

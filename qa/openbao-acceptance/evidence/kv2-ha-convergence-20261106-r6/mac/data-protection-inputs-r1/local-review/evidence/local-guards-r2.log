@@ -1,0 +1,13 @@
+test_all_fixed_actual_public_qualification_denominators_validate (test_outer_admission.OuterAdmissionGuards.test_all_fixed_actual_public_qualification_denominators_validate) ... ok
+test_failure_cleanup_or_sticky_interrupt_cannot_become_pass (test_outer_admission.OuterAdmissionGuards.test_failure_cleanup_or_sticky_interrupt_cannot_become_pass) ... ok
+test_missing_actual_case_or_unreaped_original_is_rejected (test_outer_admission.OuterAdmissionGuards.test_missing_actual_case_or_unreaped_original_is_rejected) ... ok
+test_native_stdio_partial_setup_failure_restores_both_original_descriptors (test_outer_admission.OuterAdmissionGuards.test_native_stdio_partial_setup_failure_restores_both_original_descriptors) ... ok
+test_preflight_time_cannot_create_a_fresh_840_second_budget (test_outer_admission.OuterAdmissionGuards.test_preflight_time_cannot_create_a_fresh_840_second_budget) ... ok
+test_private_native_nanosecond_identity_and_payload_both_bind (test_outer_admission.OuterAdmissionGuards.test_private_native_nanosecond_identity_and_payload_both_bind) ... ok
+test_private_output_and_alphanumeric_exception_payload_are_not_projected (test_outer_admission.OuterAdmissionGuards.test_private_output_and_alphanumeric_exception_payload_are_not_projected) ... ok
+test_qualified_core_receives_the_original_outer_entry (test_outer_admission.OuterAdmissionGuards.test_qualified_core_receives_the_original_outer_entry) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.019s
+
+OK

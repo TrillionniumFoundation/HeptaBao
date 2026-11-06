@@ -1,0 +1,243 @@
+--- r11/controller
++++ r12/controller
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Isolated ROG product diagnosis. Legacy preservation and machine acceptance stay HOLD."""
++"""One CI-profile diagnostic: original case once plus existing timing guards. No qualification."""
+ import fcntl
+ import hashlib
+ import json
+@@ -15,28 +15,28 @@
+ 
+ os.umask(0o077)
+ ROOT = Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1')
+-SOURCE = ROOT / 'source-4bde9-diagnostic-r11'
+-OUT = ROOT / 'build-test-4bde9-diagnostic-r11'
+-COMMIT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+-TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+-PARENT = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'
+-OLD_HEAD = '4bde9aee03fcd27c59e13607e529b1cee594b249'
++SOURCE = ROOT / 'source-ci422-9c68-r12'
++OUT = ROOT / 'build-test-ci422-9c68-r12'
++COMMIT = '9c68b95b152a468ab378b68730e9e3f04e6a7100'
++TREE = '7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb'
++PARENT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
++OLD_HEAD = '9c68b95b152a468ab378b68730e9e3f04e6a7100'
+ FORMAT_PATCH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+-BUNDLE_SHA = '9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd'
++BUNDLE_SHA = '9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7'
+ TOOLCHAIN = Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin')
+ PINS = {
+     'cargo': 'ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24',
+     'rustc': '3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2',
+     'rustfmt': '5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877',
+ }
+-TARGET = ROOT / 'target-4bde9-diagnostic-r11'
+-PREP_RECEIPT = ROOT / 'control/source-4bde9-diagnostic-r11-prep/result.public.json'
++TARGET = ROOT / 'target-ci422-9c68-test-r12'
++PREP_RECEIPT = ROOT / 'control/source-ci422-9c68-r12-prep/result.public.json'
+ CARGO_HOME = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home')
+ EXACT_ABSENT = frozenset(('heptabao-seed', 'heptabao-server', 'server_libtest'))
+-EXPECTED_OLD_PINS_SHA256 = '1c21715a8157542e5205dfea92437f172a86619120de8d34769f0075a4ba5b73'
+-DIAGNOSTIC_SUCCESS = 'diagnostic_passed_legacy_hold'
++EXPECTED_OLD_PINS_SHA256 = '3aa8506fe3a129e15b31c47e6da1f235563a5c845cd1a4fef3b7115d9d0e05d5'
++DIAGNOSTIC_SUCCESS = 'diagnostic_selected11_passed_original_ci_failure_unresolved'
+ START = time.monotonic()
+-DEADLINE = START + 12000
++DEADLINE = START + 4200
+ MANIFEST = json.loads((OUT / 'test-selection.public.json').read_text())
+ ENV = {key: os.environ[key] for key in ('HOME', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'TMPDIR', 'TZ')
+        if key in os.environ}
+@@ -45,10 +45,10 @@
+            RUSTC_WRAPPER='', RUSTC_WORKSPACE_WRAPPER='',
+            CARGO_BUILD_RUSTC_WRAPPER='', CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER='')
+ REPORT = {
+-    'schema': 'heptabao.convergence-normal-diagnostic-build-tests.v1',
++    'schema': 'heptabao.ci-publication-observation-diagnostic.v1',
+     'status': 'running', 'source_commit': COMMIT, 'source_tree': TREE,
+     'source_parent': PARENT, 'created_at_unix': time.time(),
+-    'outer_budget_seconds': 12000, 'deadline_renewed': False,
++    'outer_budget_seconds': 4200, 'deadline_renewed': False,
+     'toolchain_pins': PINS, 'build_environment_overrides': MANIFEST['diagnostic_build_environment'],
+     'expected_denominators': MANIFEST['denominators'],
+     'steps': [], 'artifacts': {}, 'groups': [], 'enumeration': {},
+@@ -60,6 +60,9 @@
+     'rollback_qualified': False, 'dr_qualified': False, 'cutover_qualified': False,
+     'production_cutover_qualified': False, 'machine_qualified_cases': 0,
+     'original_r10_preservation_failure_remains': True,
++    'original_ci_failure_unresolved': True, 'original_ci_failure_reclassified': False,
++    'diagnostic_single_case_only': True, 'full_original_107_reexecution': False,
++    'ci_test_profile': MANIFEST['ci_profile'],
+     'compilation_performance_comparison_qualified': False,
+     'cold_target_changes_cache_state': True,
+     'expected_legacy_artifacts': MANIFEST['old_retained_artifacts'],
+@@ -256,7 +259,7 @@
+     expected_features = (['default', 'native-v6-peer-ingress'] if package == 'heptabao-ha-service'
+                          else ['default', 'native-v6-ha', 'native-v6-storage'])
+     need(sorted(item.get('features', [])) == sorted(expected_features), label + '_normal_features')
+-    expected_profile = {'opt_level': '3', 'debuginfo': 0, 'debug_assertions': True,
++    expected_profile = {'opt_level': '1', 'debuginfo': 2, 'debug_assertions': True,
+                         'overflow_checks': True, 'test': test}
+     need(all(item.get('profile', {}).get(k) == v for k, v in expected_profile.items()),
+          label + '_normal_profile')
+@@ -281,7 +284,7 @@
+         'cargo_features': item.get('features'), 'cargo_profile': item.get('profile'),
+         'cargo_fresh': item.get('fresh'), 'cargo_artifact_path': str(source),
+         'cargo_source_entry': item['target']['src_path'], 'cargo_package_id': item['package_id'],
+-        'normal_features_profile_and_source_verified': True,
++        'ci_test_features_profile_and_source_verified': True,
+     }
+     checkpoint()
+     return target
+@@ -310,7 +313,7 @@
+     started = time.monotonic()
+     end = min(DEADLINE, started + group['runtime_seconds'])
+     row = {'label': group['label'], 'crate': group['crate'], 'expected_count': group['expected_count'],
+-           'original_group_budget_seconds': group['runtime_seconds'], 'budget_renewed_per_case': False,
++           'fixed_diagnostic_group_budget_seconds': group['runtime_seconds'], 'budget_renewed_per_case': False,
+            'tests': group['tests'], 'passed': 0, 'results': [], 'status': 'running'}
+     REPORT['groups'].append(row); checkpoint()
+     suffixes = group.get('argv_suffixes', [group.get('argv_suffix')])
+@@ -344,7 +347,7 @@
+ 
+ 
+ def diagnostic_layout():
+-    need(MANIFEST.get('schema') == 'heptabao.normal-rust-diagnostic-selection.v1',
++    need(MANIFEST.get('schema') == 'heptabao.ci-publication-diagnostic-selection.v1',
+          'diagnostic_selection_schema_required')
+     binding = MANIFEST.get('fresh_diagnostic_source', {})
+     expected_sha = binding.get('preparation_result_sha256')
+@@ -367,7 +370,7 @@
+          and prepared.get('legacy_preservation') is False
+          and prepared.get('machine_acceptance') == 'HOLD',
+          'diagnostic_preparation_scope_or_identity')
+-    expected_env = dict(MANIFEST['original_build']['env'])
++    expected_env = dict(MANIFEST['ci_build_environment'])
+     expected_env['CARGO_TARGET_DIR'] = str(TARGET)
+     need(MANIFEST['diagnostic_build_environment'] == expected_env
+          and ENV['CARGO_TARGET_DIR'] == str(TARGET) and ENV['CARGO_HOME'] == str(CARGO_HOME),
+@@ -386,7 +389,7 @@
+     expected = MANIFEST['old_retained_artifacts']
+     expected_sha = hashlib.sha256(json.dumps(expected, sort_keys=True,
+                                             separators=(',', ':')).encode()).hexdigest()
+-    pin_set_matches = (len(expected) == 21 and EXACT_ABSENT.issubset(expected)
++    pin_set_matches = (len(expected) == 25 and EXACT_ABSENT.issubset(expected)
+                        and expected_sha == EXPECTED_OLD_PINS_SHA256)
+     matching, absent, unexpected = [], [], []
+     for name, pin in expected.items():
+@@ -404,28 +407,29 @@
+                         and actual.get('bytes') == pin['bytes'] and 'error_type' not in actual)
+             (matching if accepted else unexpected).append(name)
+     exact = (pin_set_matches and set(observed) == set(expected)
+-             and set(absent) == EXACT_ABSENT and len(matching) == 18 and not unexpected)
++             and set(absent) == EXACT_ABSENT and len(matching) == 22 and not unexpected)
+     return {'diagnostic_condition_met': exact, 'expected_pin_set_unchanged': pin_set_matches,
+-            'expected_legacy_count': 21, 'expected_absent_names': sorted(EXACT_ABSENT),
++            'expected_legacy_count': 25, 'expected_absent_names': sorted(EXACT_ABSENT),
+             'observed_absent_names': sorted(absent), 'retained_matching_names': sorted(matching),
+             'retained_matching_count': len(matching), 'unexpected_names': sorted(unexpected),
+             'legacy_preservation': False, 'machine_acceptance': 'HOLD',
+-            'original_all_21_preservation_gate_passed': (len(observed) == 21
++            'all_25_expected_artifacts_present': (len(observed) == 25
+                 and all(value.get('matches_original') is True for value in observed.values()))}
+ 
+ 
+ def main():
+     need(MANIFEST['execution_source_commit'] == COMMIT, 'selection_source_binding')
+-    groups = MANIFEST['legacy_groups'] + MANIFEST['legacy_additional_groups'] + MANIFEST['added_groups']
++    groups = MANIFEST['diagnostic_groups']
+     names = [name for group in groups for name in group['tests']]
+-    need(len(names) == len(set(names)) == 107, '107_unique_selected_names')
+-    need(sum(len(g['tests']) for g in groups if g['crate'] == 'heptabao-server') == 90, 'server90')
++    need(len(names) == len(set(names)) == 11, '11_unique_diagnostic_names')
++    need(sum(len(g['tests']) for g in groups if g['crate'] == 'heptabao-server') == 11, 'server11')
++    need([g['expected_count'] for g in groups] == [10, 1], 'timing10_then_original_case_once')
+     for name, sha in PINS.items():
+         need(digest(TOOLCHAIN / name) == sha, 'toolchain_pin_' + name)
+     REPORT['old_retained_artifacts_before'] = old_artifacts()
+     REPORT['diagnostic_legacy_before'] = diagnostic_legacy_condition(REPORT['old_retained_artifacts_before'])
+     need(REPORT['diagnostic_legacy_before']['diagnostic_condition_met'],
+-         'diagnostic_exact_3_absent_18_matching_preflight_required')
++         'diagnostic_exact_3_absent_22_matching_preflight_required')
+     REPORT['preflight'] = resources(); checkpoint()
+     need(not REPORT['preflight']['compiler_processes'], 'other_compiler_present')
+     need(REPORT['preflight']['disk_free_bytes'] >= 8 * 1024**3, 'build_disk_headroom')
+@@ -446,14 +450,9 @@
+     git('11-fsck', ['fsck', '--full', '--strict'], 60)
+     run_step('12-format-check', [str(TOOLCHAIN / 'cargo'), 'fmt', '--all', '--', '--check'], 60)
+     (OUT / 'artifacts').mkdir(mode=0o700)
+-    build = run_step('13-normal-release-build', MANIFEST['build_examples']['server_release'], 1800)
+-    retain_artifact(build, 'heptabao-server', 'heptabao-server', False)
+-    retain_artifact(build, 'heptabao-seed', 'heptabao-seed', False)
+     test_build = run_step('14-server-libtest-build', MANIFEST['build_examples']['server_libtest'], 3600)
+     server_tests = retain_artifact(test_build, 'heptabao-server-libtest', 'heptabao_server', True)
+-    peer_build = run_step('15-peer-libtest-build', MANIFEST['build_examples']['peer_libtest'], 3600)
+-    peer_tests = retain_artifact(peer_build, 'heptabao-ha-service-libtest', 'heptabao_ha_service', True)
+-    binaries = {'heptabao-server': server_tests, 'heptabao-ha-service': peer_tests}
++    binaries = {'heptabao-server': server_tests}
+     all_names = {crate: listed(crate, binary) for crate, binary in binaries.items()}
+     for group in groups:
+         expected = set(group['tests']); available = all_names[group['crate']]
+@@ -468,13 +467,13 @@
+     checkpoint()
+     for index, group in enumerate(groups):
+         execute_group(index, group, binaries[group['crate']])
+-    need(sum(g['passed'] for g in REPORT['groups']) == 107, 'final107')
++    need(sum(g['passed'] for g in REPORT['groups']) == 11, 'diagnostic_final11')
+     need(git('99-final-source-head', ['rev-parse', 'HEAD']) == COMMIT, 'source_head_changed')
+     need(not git('99-final-source-clean', ['status', '--porcelain']), 'source_dirty_after_execution')
+     for artifact in REPORT['artifacts'].values():
+         need(digest(artifact['path']) == artifact['sha256'], 'retained_artifact_changed')
+     REPORT['source_and_artifacts_unchanged'] = True
+-    REPORT['passed_cases'] = 107
++    REPORT['passed_cases'] = 11
+     need(time.monotonic() < DEADLINE, 'original_outer_deadline_expired')
+     REPORT['status'] = DIAGNOSTIC_SUCCESS
+ 
+@@ -491,6 +490,25 @@
+             result[name] = {'path': str(path), 'matches_original': False,
+                             'error_type': type(error).__name__}
+     return result
++
++
++def collect_case_observation():
++    path = OUT / 'test-01-original-cipher-case1-00.stderr'
++    if not path.exists():
++        return {'case_invoked': False, 'request_timing_report_count': 0}
++    need(path.is_file() and not path.is_symlink() and path.stat().st_size <= 1024 * 1024,
++         'case_diagnostic_log_shape_or_bound')
++    reports = []
++    for line in path.read_text().splitlines():
++        prefix = 'HBHA-REQUEST-TIMING-FAIL '
++        if line.startswith(prefix):
++            row = json.loads(line[len(prefix):])
++            if row.get('request_class') == 'published_plan_corrupt_cipher_test':
++                reports.append(row)
++    return {'case_invoked': True, 'request_timing_report_count': len(reports),
++            'request_timing_reports': reports,
++            'http_503_can_be_expected_by_a_passing_test': True,
++            'original_ci_failure_root_cause_proven': False}
+ 
+ 
+ if __name__ == '__main__':
+@@ -522,11 +540,19 @@
+             REPORT['failure'] = REPORT['failure'] or (str(error) if isinstance(error, Failed) else type(error).__name__)
+         if time.monotonic() >= DEADLINE:
+             REPORT['status'] = 'failed'; REPORT['failure'] = REPORT['failure'] or 'original_outer_deadline_expired'
++        try:
++            REPORT['case_observation'] = collect_case_observation()
++            if REPORT['status'] == DIAGNOSTIC_SUCCESS:
++                need(REPORT['case_observation']['request_timing_report_count'] == 1,
++                     'same_original_case_one_timing_report_required')
++        except BaseException as error:
++            REPORT['status'] = 'failed'
++            REPORT['failure'] = REPORT['failure'] or (str(error) if isinstance(error, Failed) else type(error).__name__)
+         REPORT['elapsed_seconds'] = round(time.monotonic() - START, 6)
+         REPORT['finished_at_unix'] = time.time()
+         REPORT['postflight'] = resources()
+         REPORT['executed_passed_cases'] = sum(g['passed'] for g in REPORT['groups'])
+-        REPORT['not_qualified_cases'] = 107 - REPORT['executed_passed_cases']
++        REPORT['not_executed_or_failed_diagnostic_cases'] = 11 - REPORT['executed_passed_cases']
+         publish(OUT / 'result.public.json', REPORT)
+         checkpoint()
+         print(json.dumps({'event': 'terminal', 'status': REPORT['status'], 'failure': REPORT['failure'],

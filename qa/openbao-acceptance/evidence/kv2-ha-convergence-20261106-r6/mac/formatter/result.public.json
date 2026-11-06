@@ -1,0 +1,572 @@
+{
+  "build_run": false,
+  "control_parent_before": {
+    "dev": 16777244,
+    "inode": 72671467,
+    "mode": 448,
+    "uid": 501
+  },
+  "deadline_fired": false,
+  "edition": "2024",
+  "existing_source_written": false,
+  "formatter_before": {
+    "bytes": 4453976,
+    "ctime_ns": 1787806090359981584,
+    "dev": 16777233,
+    "inode": 553102051,
+    "links": 1,
+    "mode": 448,
+    "mtime_ns": 1787806090259446610,
+    "sha256": "ca9cbe15a4add6baf62d8ce177015c9c48f209ebcf4364416b1953142e8701f8",
+    "uid": 501
+  },
+  "input_pins": {
+    "ha_native_v6_checkpoint_reselection_probe.rs": {
+      "bytes": 16167,
+      "ctime_ns": 1793985389336585722,
+      "dev": 16777244,
+      "inode": 72748010,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389336585722,
+      "sha256": "8a50949f154c8047d4c1d91958520cd69fa90accd5c02afdda68071956f7cb48",
+      "uid": 501
+    },
+    "ha_native_v6_publication.rs": {
+      "bytes": 34129,
+      "ctime_ns": 1793985389332096184,
+      "dev": 16777244,
+      "inode": 72748004,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389332096184,
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "uid": 501
+    },
+    "kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "ctime_ns": 1793985389337123175,
+      "dev": 16777244,
+      "inode": 72748012,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389337123175,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "uid": 501
+    },
+    "owned_process.py": {
+      "bytes": 28442,
+      "ctime_ns": 1793985389337426297,
+      "dev": 16777244,
+      "inode": 72748013,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389337426297,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "uid": 501
+    },
+    "service_native_v6_ha_published_plan_tests.rs": {
+      "bytes": 11308,
+      "ctime_ns": 1793985389336081144,
+      "dev": 16777244,
+      "inode": 72748008,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389336081144,
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "uid": 501
+    },
+    "service_native_v6_ha_writer.rs": {
+      "bytes": 19764,
+      "ctime_ns": 1793985389335531525,
+      "dev": 16777244,
+      "inode": 72748006,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389335531525,
+      "sha256": "7d5344ac029d9400e7c5b1e08e6edb6a1ce66dcfa270981bdbc18a5021b58c85",
+      "uid": 501
+    }
+  },
+  "inputs_and_tool_unchanged": true,
+  "interpreter_before": {
+    "bytes": 34640,
+    "ctime_ns": 1793798038915695047,
+    "dev": 16777233,
+    "inode": 587518380,
+    "links": 1,
+    "mode": 493,
+    "mtime_ns": 1793798038915516382,
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+    "uid": 501
+  },
+  "old_ci_failure_retained": true,
+  "output_pins": {
+    "ha_native_v6_checkpoint_reselection_probe.rs": {
+      "bytes": 16167,
+      "ctime_ns": 1793985389336846345,
+      "dev": 16777244,
+      "inode": 72748011,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389336846345,
+      "sha256": "8a50949f154c8047d4c1d91958520cd69fa90accd5c02afdda68071956f7cb48",
+      "uid": 501
+    },
+    "ha_native_v6_publication.rs": {
+      "bytes": 34129,
+      "ctime_ns": 1793985389335234694,
+      "dev": 16777244,
+      "inode": 72748005,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389335234694,
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "uid": 501
+    },
+    "service_native_v6_ha_published_plan_tests.rs": {
+      "bytes": 11308,
+      "ctime_ns": 1793985389336334058,
+      "dev": 16777244,
+      "inode": 72748009,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389336334058,
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "uid": 501
+    },
+    "service_native_v6_ha_writer.rs": {
+      "bytes": 19810,
+      "ctime_ns": 1793985389460484569,
+      "dev": 16777244,
+      "inode": 72748007,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389460484569,
+      "sha256": "a72933db9c1daa946ded24dd55c38967b2511e6a87df22568c2b0660c4b5ff20",
+      "uid": 501
+    }
+  },
+  "process_custody": {
+    "children": [
+      {
+        "argv_sha256": "2aef4859295d124cb7f4408532cdb2d0bf0d8bcfbc9cf764b8f3bfc7f6aef670",
+        "birth": {
+          "pgid": 90863,
+          "pid": 90863,
+          "ppid": 90858,
+          "sid": 90863,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 90863,
+            "pid": 90863,
+            "ppid": 90858,
+            "sid": 90863,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 90863,
+            "pid": 90863,
+            "ppid": 90858,
+            "sid": 90863,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 90863,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 90863,
+            "pid": 90863,
+            "ppid": 90858,
+            "sid": 90863,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 90863,
+            "pid": 90863,
+            "ppid": 90858,
+            "sid": 90863,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 90863,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "8c2666145aa4cf557e915433cde204e8dde2592683287a42516c0f9268483752",
+        "birth": {
+          "pgid": 90870,
+          "pid": 90870,
+          "ppid": 90858,
+          "sid": 90870,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 90870,
+            "pid": 90870,
+            "ppid": 90858,
+            "sid": 90870,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 90870,
+            "pid": 90870,
+            "ppid": 90858,
+            "sid": 90870,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 90870,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 90870,
+            "pid": 90870,
+            "ppid": 90858,
+            "sid": 90870,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 90870,
+            "pid": 90870,
+            "ppid": 90858,
+            "sid": 90870,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 90870,
+        "returncode": 0,
+        "signals": []
+      },
+      {
+        "argv_sha256": "9ac9f2180c2bacf2c701049538c0fecaa9d9722c33d5d643e07d8c889f25130b",
+        "birth": {
+          "pgid": 90877,
+          "pid": 90877,
+          "ppid": 90858,
+          "sid": 90877,
+          "state": "R",
+          "uid": 501
+        },
+        "darwin_waitable_zombie_anchor": {
+          "live_birth": {
+            "pgid": 90877,
+            "pid": 90877,
+            "ppid": 90858,
+            "sid": 90877,
+            "state": "R",
+            "uid": 501
+          },
+          "observed": {
+            "pgid": 90877,
+            "pid": 90877,
+            "ppid": 90858,
+            "sid": 90877,
+            "sid_basis": "admitted_immutable_unreaped_session_leader",
+            "state": "Z",
+            "uid": 501
+          },
+          "waitid": {
+            "si_code": 1,
+            "si_pid": 90877,
+            "si_signo": 20,
+            "si_status": 0,
+            "si_uid": 0,
+            "si_uid_used_as_authority": false
+          }
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 90877,
+            "pid": 90877,
+            "ppid": 90858,
+            "sid": 90877,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 90877,
+            "pid": 90877,
+            "ppid": 90858,
+            "sid": 90877,
+            "sid_basis": "zombie_in_original_anchored_group",
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 90877,
+        "returncode": 0,
+        "signals": []
+      }
+    ],
+    "controls": [],
+    "escaped_session_containment_claim": false,
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "original_count": 3,
+    "passed_process_custody": true,
+    "platform": "darwin",
+    "schema": "heptabao.dr-original-process-custody.v1",
+    "storage_or_production_authority": false,
+    "unreaped_original_is_signal_anchor": true
+  },
+  "product_run": false,
+  "receipt_reserve_seconds": 8,
+  "retained_step_streams": {
+    "01-rustfmt-version.stderr": {
+      "bytes": 0,
+      "ctime_ns": 1793985389348835100,
+      "dev": 16777244,
+      "inode": 72748021,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389348800434,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 501
+    },
+    "01-rustfmt-version.stdout": {
+      "bytes": 45,
+      "ctime_ns": 1793985389380272370,
+      "dev": 16777244,
+      "inode": 72748020,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389380272370,
+      "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "uid": 501
+    },
+    "02-rustfmt-format.stderr": {
+      "bytes": 0,
+      "ctime_ns": 1793985389416970212,
+      "dev": 16777244,
+      "inode": 72748027,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389416942962,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 501
+    },
+    "02-rustfmt-format.stdout": {
+      "bytes": 0,
+      "ctime_ns": 1793985389416963837,
+      "dev": 16777244,
+      "inode": 72748026,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389416904296,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 501
+    },
+    "03-rustfmt-check.stderr": {
+      "bytes": 0,
+      "ctime_ns": 1793985389499388598,
+      "dev": 16777244,
+      "inode": 72748034,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389499352390,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 501
+    },
+    "03-rustfmt-check.stdout": {
+      "bytes": 0,
+      "ctime_ns": 1793985389499381556,
+      "dev": 16777244,
+      "inode": 72748033,
+      "links": 1,
+      "mode": 384,
+      "mtime_ns": 1793985389499290349,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 501
+    }
+  },
+  "retry_or_time_extension": false,
+  "root_before": {
+    "dev": 16777244,
+    "inode": 72671466,
+    "mode": 448,
+    "uid": 501
+  },
+  "runtime_seconds": 60,
+  "runtime_terminal_remains_authoritative": true,
+  "schema": "heptabao.ci-publication-test-rustfmt.v1",
+  "semantic_failure_fixed": false,
+  "source_base_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_base_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "stage_identity": {
+    "dev": 16777244,
+    "inode": 72748000,
+    "mode": 448,
+    "uid": 501
+  },
+  "status": "passed",
+  "steps": [
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--version"
+      ],
+      "elapsed_seconds": 0.06780804228037596,
+      "label": "01-rustfmt-version",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "ctime_ns": 1793985389348835100,
+        "dev": 16777244,
+        "inode": 72748021,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389348800434,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 45,
+        "ctime_ns": 1793985389380272370,
+        "dev": 16777244,
+        "inode": 72748020,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389380272370,
+        "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+        "uid": 501
+      },
+      "timeout_seconds": 5
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config-path",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/rustfmt.toml",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/ha_native_v6_publication.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/service_native_v6_ha_writer.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/service_native_v6_ha_published_plan_tests.rs"
+      ],
+      "elapsed_seconds": 0.08223391696810722,
+      "label": "02-rustfmt-format",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "ctime_ns": 1793985389416970212,
+        "dev": 16777244,
+        "inode": 72748027,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389416942962,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 0,
+        "ctime_ns": 1793985389416963837,
+        "dev": 16777244,
+        "inode": 72748026,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389416904296,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "timeout_seconds": 15
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--config-path",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/rustfmt.toml",
+        "--check",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/ha_native_v6_publication.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/service_native_v6_ha_writer.rs",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/ci42229582001-test-publication-format-r1/output/service_native_v6_ha_published_plan_tests.rs"
+      ],
+      "elapsed_seconds": 0.0862713330425322,
+      "label": "03-rustfmt-check",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "ctime_ns": 1793985389499388598,
+        "dev": 16777244,
+        "inode": 72748034,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389499352390,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "stdout": {
+        "bytes": 0,
+        "ctime_ns": 1793985389499381556,
+        "dev": 16777244,
+        "inode": 72748033,
+        "links": 1,
+        "mode": 384,
+        "mtime_ns": 1793985389499290349,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uid": 501
+      },
+      "timeout_seconds": 15
+    }
+  ],
+  "work_elapsed_seconds": 0.2662008749321103,
+  "work_seconds": 52
+}

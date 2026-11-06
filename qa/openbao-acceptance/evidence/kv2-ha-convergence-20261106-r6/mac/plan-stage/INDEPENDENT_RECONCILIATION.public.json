@@ -1,0 +1,80 @@
+{
+  "all_checks_passed": true,
+  "candidate_parent_count": 4,
+  "checks": {
+    "all_nine_held_directories_retired": true,
+    "authoritative_original_terminal_succeeded_zero": true,
+    "current_volume_space_and_root_identity_reverified": true,
+    "fixed_database_bounds_preserved": true,
+    "four_attempts_still_absent": true,
+    "four_parents_three_intermediates_exact": true,
+    "fresh_complete_five_agents_nine_families_seven_safety": true,
+    "fresh_scope_config_capacity_rebuilt": true,
+    "historical_private_immutability_not_claimed_or_consumed": true,
+    "no_capture_provider_service_or_cutover": true,
+    "no_database_safety_or_key_contents_read": true,
+    "no_production_or_whole_source_device_loss_claim": true,
+    "original_stage_budget_observed": true,
+    "original_terminal_complete_durable_confirmed": true,
+    "original_terminal_stored_lengths_exact": true,
+    "private_plan_readback_and_identity_binding": true,
+    "public_and_stdout_equal_with_exact_python_integers": true,
+    "public_native_file_bytes_and_sha_exact": true,
+    "single_fixed_key_reconcile_identity": true,
+    "stage_status_and_complete": true,
+    "stderr_original_empty_complete": true,
+    "stdout_original_hex_bytes_exact": true,
+    "two_owned_diskutil_children_full_retirement": true,
+    "workflow_original_bounds_unchanged": true,
+    "workflow_plan_binding_independent_native_full_identity_exact": true,
+    "workflow_plan_independent_native_full_identity_exact": true
+  },
+  "checks_count": 26,
+  "checks_passed": 26,
+  "child_denominator": 2,
+  "child_rows": [
+    {
+      "exec_admitted": true,
+      "gap_count": 0,
+      "index": 0,
+      "no_live_members_before_reap": true,
+      "original_wait_completed": true,
+      "original_wait_count": 1,
+      "returncode": 0
+    },
+    {
+      "exec_admitted": true,
+      "gap_count": 0,
+      "index": 1,
+      "no_live_members_before_reap": true,
+      "original_wait_completed": true,
+      "original_wait_count": 1,
+      "returncode": 0
+    }
+  ],
+  "directory_created_count": 7,
+  "directory_handle_count": 9,
+  "historical_private_unchanged_since_admission_proven": false,
+  "intermediate_created_count": 3,
+  "job_id": "1a1b1dca238-fc05-7b30",
+  "private_output_native_observations": [
+    {
+      "full_identity_match": true,
+      "nanosecond_fields_parsed_from_original_bytes_with_python_int": true,
+      "owned_private_regular_single_link": true,
+      "role": "workflow_plan",
+      "sha256_observed_privately_not_published": true
+    },
+    {
+      "full_identity_match": true,
+      "nanosecond_fields_parsed_from_original_bytes_with_python_int": true,
+      "owned_private_regular_single_link": true,
+      "role": "workflow_plan_binding",
+      "sha256_observed_privately_not_published": true
+    }
+  ],
+  "schema": "heptabao.current-plan-stage-independent-reconciliation.public.v1",
+  "scope": "Create-only parents and fresh private workflow plan; no business data capture or service qualification.",
+  "timestamp_precision": "All JSON and native version nanosecond fields independently parsed directly from original file bytes by Python int; no JS Number roundtrip.",
+  "transport_statement": "First start returned MCP request timed out; exact original key/request reconcile returned reused=false and one known durable job. No new key or second attempt was issued."
+}

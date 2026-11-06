@@ -1,0 +1,48 @@
+{
+  "base_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "base_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "comparison": "exact source bytes after removing precisely the new test observation hooks and substituting the separately reviewed original phase-timer definitions; not a generic Rust AST proof",
+  "files": [
+    {
+      "base_bytes": 32623,
+      "base_sha256": "f5d2c007574e0c6d7391965551fdb081c1747b7e47a9651ebc2239475a1fc7fe",
+      "bytes": 34129,
+      "non_observation_source_bytes_exact": true,
+      "path": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "test_function_names_unchanged": null
+    },
+    {
+      "base_bytes": 16718,
+      "base_sha256": "0979ad8748e33030d42a24f02aca34f96cb09f17ef62f6920e8875959ce4165c",
+      "bytes": 19764,
+      "non_observation_source_bytes_exact": true,
+      "path": "crates/heptabao-server/src/service_native_v6_ha_writer.rs",
+      "sha256": "7d5344ac029d9400e7c5b1e08e6edb6a1ce66dcfa270981bdbc18a5021b58c85",
+      "test_function_names_unchanged": null
+    },
+    {
+      "base_bytes": 10966,
+      "base_sha256": "ed516cf7bce9915245f0ba9b870125149df3a047d7cc88ce192de97f1a3e57ab",
+      "bytes": 11308,
+      "non_observation_source_bytes_exact": true,
+      "path": "crates/heptabao-server/src/service_native_v6_ha_published_plan_tests.rs",
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "test_function_names_unchanged": true
+    }
+  ],
+  "fixed_case_not_in_original_107": true,
+  "new_public_observations": "fixed static labels, completion counts, time quantities; no reason bytes, reason hash, credential, ciphertext or source digest",
+  "normal_response_or_authorization_rules_changed": false,
+  "original_negative_assertions_unchanged": true,
+  "original_request_budget_seconds": 15,
+  "patch": {
+    "bytes": 18880,
+    "path": "test-publication-observation.patch",
+    "sha256": "4e5e2040cddf4ea8258a2a4ee1798b8ea645e7d6c53a5480e43eed7ba7311c9d"
+  },
+  "purpose": "preserve actual phase of unchanged one-shot failing test; failure root cause remains unproven",
+  "requests_or_tests_retried": false,
+  "schema": "heptabao.ci-publication-test-observation-source-review.v1",
+  "tests_or_rustfmt_executed": false
+}

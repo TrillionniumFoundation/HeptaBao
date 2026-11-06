@@ -1,0 +1,12 @@
+{
+  "historical_private_unchanged_since_admission_proven": false,
+  "native_nice": 5,
+  "original_runtime_seconds": 60,
+  "original_work_seconds": 52,
+  "root_final_review_before_launch": true,
+  "schema": "heptabao.fixed-stage-review-admissions.v1",
+  "scope": "Only create controlled parents and a fresh private workflow plan; no product or business capture.",
+  "script_bytes": 59371,
+  "script_sha256": "7723486c5b738c176e8a3a74b7222af5ec4baa2fc192d2886756e7ffe9c88054",
+  "source_audit_final_review_before_launch": true
+}

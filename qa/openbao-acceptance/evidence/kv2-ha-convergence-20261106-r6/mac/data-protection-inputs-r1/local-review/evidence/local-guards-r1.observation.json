@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.outer-controller-local-guard-observation.v1",
+  "source_sha256": "a9f9ed044a34cf26542aa1ab7144efed5ba95da8cf7c3527fea3033ec26fe497",
+  "source_bytes": 53124,
+  "tests": 8,
+  "passed": 7,
+  "errors": 1,
+  "failures": 0,
+  "skipped": 0,
+  "unittest_elapsed_seconds": 0.011,
+  "exit_code": 1,
+  "observation_source": "complete exec_command tool output, not a previously redirected process log",
+  "failure": "actual normal107 legacy7/9 execution order differs from sorted dynamic enumeration; no product or business execution",
+  "product_executed": false,
+  "business_source_opened": false
+}

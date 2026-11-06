@@ -1,0 +1,31 @@
+{
+  "code_and_request_original_bytes_retained_privately": true,
+  "files": [
+    {
+      "bytes": 59371,
+      "path": "mac_current_kv2_plan_stage.py",
+      "sha256": "7723486c5b738c176e8a3a74b7222af5ec4baa2fc192d2886756e7ffe9c88054"
+    },
+    {
+      "bytes": 4299,
+      "path": "fixed-inputs.prepared.private.json",
+      "sha256": "c51856ea902654cafee563c303fb4607b12d804926c1268756891e786ac05a17"
+    },
+    {
+      "bytes": 62995,
+      "path": "runtime-request.prepared.private.json",
+      "sha256": "8bab1a3c8ae7216c0e8bfed64c7fe36b777dec1bd5115613a6bab4dc081e25cf"
+    },
+    {
+      "bytes": 21574,
+      "path": "r1-to-r2-final-fresh-current.diff",
+      "sha256": "c3b6134023907c73d4c06dc251bcedc168753c16b8ba31f3b06ae071b26fd7d9"
+    }
+  ],
+  "prior_draft_change_reason": "Fresh current scope revalidation replaces unsupported historical private immutability assertion. New plan identity metadata is public; content fingerprints remain private.",
+  "prior_draft_not_executed": true,
+  "private_file_content_sha256_not_in_public_package": true,
+  "private_file_contents_never_retrieved_to_cloud": true,
+  "remote_private_file_metadata_originals_retained_privately": true,
+  "schema": "heptabao.plan-stage-code-request-binding.public.v1"
+}

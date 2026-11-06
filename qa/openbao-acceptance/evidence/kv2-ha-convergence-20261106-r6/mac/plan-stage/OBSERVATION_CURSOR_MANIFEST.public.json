@@ -1,0 +1,31 @@
+{
+  "full_integer_verification": "Python JSON from original bytes and native version strings; no JavaScript numeric roundtrip.",
+  "job_id": "1a1b1dca238-fc05-7b30",
+  "private_file_contents_read_by_tools": false,
+  "private_file_info_count": 2,
+  "private_file_infos_full_metadata_and_sha_retained_privately": true,
+  "process_read_count": 1,
+  "public_file_read": {
+    "eof": true,
+    "expected_version": "16777244:72748047:5922:1793985389660381783:1793985389660381783",
+    "next_offset": 5922,
+    "offset": 0,
+    "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f",
+    "size": 5922
+  },
+  "schema": "heptabao.plan-stage-original-cursors.public.v1",
+  "streams": {
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0
+    },
+    "stdout": {
+      "eof": true,
+      "next_offset": 5010,
+      "offset": 0,
+      "size": 5010
+    }
+  }
+}

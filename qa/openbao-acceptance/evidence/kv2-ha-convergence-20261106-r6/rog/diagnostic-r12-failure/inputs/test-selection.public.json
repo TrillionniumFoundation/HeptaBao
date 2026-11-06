@@ -1,0 +1,419 @@
+{
+  "build_examples": {
+    "server_libtest": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ]
+  },
+  "cache_policy": {
+    "cargo_home_dependency_cache_reused": true,
+    "new_empty_target": true,
+    "original_release_target_not_reused": true,
+    "performance_comparison_qualified": false,
+    "target": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/target-ci422-9c68-test-r12",
+    "target_copy_performed": false
+  },
+  "candidate_bundle": {
+    "bytes": 3383,
+    "head": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+    "head_ref": "HEAD",
+    "prerequisite": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "sha256": "9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"
+  },
+  "ci_build_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/target-ci422-9c68-test-r12",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "ci_profile": {
+    "base_workflow": "codex-openbao-replacement-ci.yml",
+    "cargo_profile_environment_overrides": {},
+    "current_features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "current_jobs": 1,
+    "expected_cargo_artifact_profile": {
+      "debug_assertions": true,
+      "debuginfo": 2,
+      "opt_level": "1",
+      "overflow_checks": true,
+      "test": true
+    },
+    "original_command": [
+      "cargo",
+      "+1.98.0",
+      "test",
+      "--locked",
+      "--workspace",
+      "--all-targets",
+      "--no-fail-fast",
+      "--",
+      "--test-threads=1"
+    ],
+    "original_head_job": 127931720823,
+    "original_jobs": 1,
+    "original_merge_job": 127931720502,
+    "original_run_id": 42229582001,
+    "platform_difference": "ROG x86_64 Linux operator host; original GitHub Ubuntu runner differs; no performance comparison",
+    "root_profile_dev": {
+      "debug_assertions": true,
+      "opt_level": 1,
+      "overflow_checks": true
+    },
+    "same_test_dev_profile": true
+  },
+  "denominators": {
+    "existing_request_timing_cases": 10,
+    "full_original_selected107_reexecution": false,
+    "full_workspace_reexecution": false,
+    "original_failure_case": 1,
+    "peer": 0,
+    "server": 11,
+    "total_unique_cases": 11
+  },
+  "diagnostic_build_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/target-ci422-9c68-test-r12",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "diagnostic_groups": [
+    {
+      "argv_suffix": [
+        "ha::native_v6_runtime::request_timing_tests::",
+        "--test-threads=1"
+      ],
+      "crate": "heptabao-server",
+      "exact": false,
+      "expected_count": 10,
+      "filter": "ha::native_v6_runtime::request_timing_tests::",
+      "label": "existing-request-timing10",
+      "runtime_seconds": 60,
+      "tests": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_detached_spans_never_follow_a_new_request",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_nested_requests_restore_only_their_own_context",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_out_of_order_drop_cannot_revive_a_closed_request",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_success_and_external_leave_no_report_or_context",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_thread_local_context_is_not_inherited",
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_unwinding_restores_the_previous_scope"
+      ]
+    },
+    {
+      "argv_suffix": [
+        "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "crate": "heptabao-server",
+      "exact": true,
+      "expected_count": 1,
+      "filter": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown",
+      "label": "original-cipher-case1",
+      "runtime_seconds": 60,
+      "tests": [
+        "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+      ]
+    }
+  ],
+  "execution_scheduling": {
+    "args": [
+      "-B",
+      "-"
+    ],
+    "automatic_retry": false,
+    "cpu_quota_percent": null,
+    "executable": "/usr/bin/python3",
+    "memory_max_bytes": null,
+    "only_exact_idempotency_reconciliation": true,
+    "runtime_native_nice": 5
+  },
+  "execution_source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "execution_source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "expected_old_pin_set_sha256": "3aa8506fe3a129e15b31c47e6da1f235563a5c845cd1a4fef3b7115d9d0e05d5",
+  "fixed_diagnostic_budgets": {
+    "case_attempts": 1,
+    "deadline_renewed": false,
+    "group_seconds": 60,
+    "groups": 2,
+    "runtime_seconds": 4200
+  },
+  "fresh_diagnostic_source": {
+    "output": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r12",
+    "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-ci422-9c68-r12",
+    "preparation_result_bytes": 9293,
+    "preparation_result_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-ci422-9c68-r12-prep/result.public.json",
+    "preparation_result_sha256": "75cff158677c595a61ec2bbecbec8de1b9602dc7cac181645bceebdd361137bf",
+    "source_preparation_executed": true,
+    "target": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/target-ci422-9c68-test-r12",
+    "preparation_runtime_terminal": {
+      "job_id": "1a1b1eeff11-fc05-7b8f",
+      "state": "succeeded",
+      "exit_code": 0,
+      "timed_out": false,
+      "cancelled": false,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "original_bytes": 731,
+      "original_sha256": "ccca6f7dc402061fe54d3f7acdbfaa1435fcdf0d42eb6c2f1405e604c7391bcb"
+    }
+  },
+  "old_retained_artifacts": {
+    "heptabao-seed": {
+      "bytes": 102145376,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6"
+    },
+    "heptabao-server": {
+      "bytes": 110219600,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+    },
+    "r11_4bde9_heptabao-ha-service-libtest": {
+      "bytes": 19785944,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-ha-service-libtest",
+      "sha256": "841bffc35a1df27f7fe5bcc409b62f15289d340a41d2f4c9757b33325b7e669a"
+    },
+    "r11_4bde9_heptabao-seed": {
+      "bytes": 102187192,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-seed",
+      "sha256": "a251cdc44c8bec9289ef62cfb919573bd456d72f9ae31ddc3f2adee160351218"
+    },
+    "r11_4bde9_heptabao-server": {
+      "bytes": 110758152,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server",
+      "sha256": "52e558ba01593c4a8a5c457298503075bcae80995a16e07d52662f03ca3e8fc5"
+    },
+    "r11_4bde9_heptabao-server-libtest": {
+      "bytes": 191839984,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+      "sha256": "44e787b4116845eb598b469e56b074ffd69e4c078b40f2fc1bf0d728880724d7"
+    },
+    "r7_868_heptabao-ha-service-libtest": {
+      "bytes": 19785944,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r7/artifacts/heptabao-ha-service-libtest",
+      "sha256": "841bffc35a1df27f7fe5bcc409b62f15289d340a41d2f4c9757b33325b7e669a",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "r7_868_heptabao-seed": {
+      "bytes": 102187192,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r7/artifacts/heptabao-seed",
+      "sha256": "a251cdc44c8bec9289ef62cfb919573bd456d72f9ae31ddc3f2adee160351218",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "r7_868_heptabao-server": {
+      "bytes": 110758152,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r7/artifacts/heptabao-server",
+      "sha256": "52e558ba01593c4a8a5c457298503075bcae80995a16e07d52662f03ca3e8fc5",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "r7_868_heptabao-server-libtest": {
+      "bytes": 191802664,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r7/artifacts/heptabao-server-libtest",
+      "sha256": "67b971020c7a680773fc5aee1984cf0bc3c54dafe9d99d9e89b98f558eb3e90b",
+      "source_commit": "868439e6df9f12291842898763ccba581e346bfb",
+      "source_tree": "c211d66343235fbb8a220744f3e97768559007c8"
+    },
+    "r8_09c14_heptabao-ha-service-libtest": {
+      "bytes": 19785944,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/artifacts/heptabao-ha-service-libtest",
+      "sha256": "841bffc35a1df27f7fe5bcc409b62f15289d340a41d2f4c9757b33325b7e669a",
+      "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+    },
+    "r8_09c14_heptabao-seed": {
+      "bytes": 102187192,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/artifacts/heptabao-seed",
+      "sha256": "a251cdc44c8bec9289ef62cfb919573bd456d72f9ae31ddc3f2adee160351218",
+      "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+    },
+    "r8_09c14_heptabao-server": {
+      "bytes": 110758152,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/artifacts/heptabao-server",
+      "sha256": "52e558ba01593c4a8a5c457298503075bcae80995a16e07d52662f03ca3e8fc5",
+      "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+    },
+    "r8_09c14_heptabao-server-libtest": {
+      "bytes": 191825616,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r8/artifacts/heptabao-server-libtest",
+      "sha256": "3e8e5ab200f80913dede50c03641f52acfef888408934b2ac0f87ce41e139071",
+      "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+      "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab"
+    },
+    "retained_r2_heptabao-seed": {
+      "bytes": 102187048,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r2/artifacts/heptabao-seed",
+      "sha256": "34c9394886bcfa68bceb8a82656425a457aa8c687f0e594083486fb291b73cfd",
+      "source_commit": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+      "source_tree": "cae7f371ee07d90f7ac9d50d1c205ca77bfd3902"
+    },
+    "retained_r2_heptabao-server": {
+      "bytes": 110757808,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r2/artifacts/heptabao-server",
+      "sha256": "ee6cfd7283021ad206b9b5e9fa6b9abf84ecc2eea480b88592208df8277ff035",
+      "source_commit": "1d63ec98ce0fc5cbc7d74a37f6307be148dd5aeb",
+      "source_tree": "cae7f371ee07d90f7ac9d50d1c205ca77bfd3902"
+    },
+    "retained_r4_heptabao-ha-service-libtest": {
+      "bytes": 19785944,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r4/artifacts/heptabao-ha-service-libtest",
+      "sha256": "841bffc35a1df27f7fe5bcc409b62f15289d340a41d2f4c9757b33325b7e669a",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    },
+    "retained_r4_heptabao-seed": {
+      "bytes": 102187048,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r4/artifacts/heptabao-seed",
+      "sha256": "34c9394886bcfa68bceb8a82656425a457aa8c687f0e594083486fb291b73cfd",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    },
+    "retained_r4_heptabao-server": {
+      "bytes": 110757808,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r4/artifacts/heptabao-server",
+      "sha256": "ee6cfd7283021ad206b9b5e9fa6b9abf84ecc2eea480b88592208df8277ff035",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    },
+    "retained_r4_heptabao-server-libtest": {
+      "bytes": 192393208,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r4/artifacts/heptabao-server-libtest",
+      "sha256": "53ca4667e1c051fca8d8c3a4310792926ae144a2c4360da696ec1a5e24a9b763",
+      "source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+      "source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a"
+    },
+    "retained_r5_heptabao-ha-service-libtest": {
+      "bytes": 19785944,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/artifacts/heptabao-ha-service-libtest",
+      "sha256": "841bffc35a1df27f7fe5bcc409b62f15289d340a41d2f4c9757b33325b7e669a",
+      "source_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+      "source_tree": "1a27a26315eaf20df11792f74305160f7a3b89b6"
+    },
+    "retained_r5_heptabao-seed": {
+      "bytes": 102187048,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/artifacts/heptabao-seed",
+      "sha256": "34c9394886bcfa68bceb8a82656425a457aa8c687f0e594083486fb291b73cfd",
+      "source_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+      "source_tree": "1a27a26315eaf20df11792f74305160f7a3b89b6"
+    },
+    "retained_r5_heptabao-server": {
+      "bytes": 110757808,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/artifacts/heptabao-server",
+      "sha256": "ee6cfd7283021ad206b9b5e9fa6b9abf84ecc2eea480b88592208df8277ff035",
+      "source_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+      "source_tree": "1a27a26315eaf20df11792f74305160f7a3b89b6"
+    },
+    "retained_r5_heptabao-server-libtest": {
+      "bytes": 192395168,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r5/artifacts/heptabao-server-libtest",
+      "sha256": "5e636643d643399e31ac2f8f82d3d3198e0bdafca6887dfb0ad3b13a6d7962fb",
+      "source_commit": "f301a0f391096a2a8daf149f16bbbbd5bbf7a9e3",
+      "source_tree": "1a27a26315eaf20df11792f74305160f7a3b89b6"
+    },
+    "server_libtest": {
+      "bytes": 187839640,
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": true
+      },
+      "sha256": "7ea0be2f071a9bfe562c5a1d6a2cedf225cfdae23363a039be80fb7a42198725"
+    }
+  },
+  "original_budgets": {
+    "original_fixture_request_seconds": 15,
+    "server_libtest_build_seconds": 3600,
+    "source_prepare_runtime_seconds": 180,
+    "source_prepare_work_seconds": 150
+  },
+  "permanent_scope": {
+    "authbus_migration_qualified": false,
+    "cutover_qualified": false,
+    "dr_qualified": false,
+    "formal_kv2_qualified": false,
+    "full_replacement_qualified": false,
+    "legacy_preservation": false,
+    "machine_acceptance": "HOLD",
+    "machine_qualified_cases": 0,
+    "original_ci_failure_reclassified": false,
+    "original_ci_failure_root_cause_proven": false,
+    "physical_ha_qualified": false,
+    "production_cutover_qualified": false,
+    "rollback_qualified": false
+  },
+  "prior_evidence": {
+    "original_case_absent_from_selected107": true,
+    "original_ci_failure_unresolved": true,
+    "original_legacy_missing_count": 3,
+    "original_legacy_preservation_gate_failed": true,
+    "r11_result": {
+      "actual_selected107_passed": true,
+      "bytes": 129750,
+      "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/result.public.json",
+      "sha256": "63d5f3a5d88140bfc926012b4e6c02ae30a4c82592d221ba40dc8114fdbce88b",
+      "status": "diagnostic_passed_legacy_hold"
+    }
+  },
+  "schema": "heptabao.ci-publication-diagnostic-selection.v1",
+  "source_parent": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "status": "prepared_not_executed"
+}

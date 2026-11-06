@@ -1,0 +1,184 @@
+{
+  "schema": "heptabao.ci-publication-test-rustfmt-evidence.v1",
+  "job_id": "1a1b1dc9905-fc05-7b2f",
+  "public_scope": "fixed public code, tool and process metadata, formatter output only; no business data or credentials",
+  "source_base_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "old_ci_failure_retained": true,
+  "diagnostic_not_semantic_fix": true,
+  "files": [
+    {
+      "path": "01-rustfmt-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "01-rustfmt-version.stdout",
+      "bytes": 45,
+      "sha256": "f0e7a732a40b95640a1d26e3f12b8260eab948c6b5cf346eb4ec8eeac6c48bfe",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "02-rustfmt-format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "02-rustfmt-format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "03-rustfmt-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "03-rustfmt-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "controller.fixed.input.py",
+      "bytes": 194560,
+      "sha256": "f7d737ea1854b7948ae74c9948b0aa018692982934b59c77d5d6406d9a460f41",
+      "origin": "exact submitted Runtime stdin, fixed before launch"
+    },
+    {
+      "path": "controller.template.py",
+      "bytes": 12482,
+      "sha256": "7a8530bf476bb0f6aa93f19c8a9af2dfe275a011bc155c3af0073875555fea93",
+      "origin": "reviewed template; fixed differs only embedded INPUTS literal"
+    },
+    {
+      "path": "INDEPENDENT_VERIFICATION.public.json",
+      "bytes": 1354,
+      "sha256": "6b208d610aa299726a47404767a9dbb32553f1b4ea9ef6ff81d01e403cfb66a3",
+      "origin": "derived independent original receipt and file verification"
+    },
+    {
+      "path": "input/ha_native_v6_checkpoint_reselection_probe.rs",
+      "bytes": 16167,
+      "sha256": "8a50949f154c8047d4c1d91958520cd69fa90accd5c02afdda68071956f7cb48",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "input/ha_native_v6_publication.rs",
+      "bytes": 34129,
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "input/kv2_dr_process_custody.py",
+      "bytes": 26131,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "input/owned_process.py",
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "input/service_native_v6_ha_published_plan_tests.rs",
+      "bytes": 11308,
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "input/service_native_v6_ha_writer.rs",
+      "bytes": 19764,
+      "sha256": "7d5344ac029d9400e7c5b1e08e6edb6a1ce66dcfa270981bdbc18a5021b58c85",
+      "origin": "fixed submitted source bytes; actual input pins and postcheck unchanged in original receipt"
+    },
+    {
+      "path": "output/ha_native_v6_checkpoint_reselection_probe.rs",
+      "bytes": 16167,
+      "sha256": "8a50949f154c8047d4c1d91958520cd69fa90accd5c02afdda68071956f7cb48",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "output/ha_native_v6_publication.rs",
+      "bytes": 34129,
+      "sha256": "cefebddf1921baf2af15a66de76ce61d9cf09b52defbddad41a05b9bf9a60df2",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "output/service_native_v6_ha_published_plan_tests.rs",
+      "bytes": 11308,
+      "sha256": "37a2529f2c2a9998d656e6d3ec8063eac14474dbe90777bbab8b55280bba2a44",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "output/service_native_v6_ha_writer.rs",
+      "bytes": 19810,
+      "sha256": "a72933db9c1daa946ded24dd55c38967b2511e6a87df22568c2b0660c4b5ff20",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 17217,
+      "sha256": "631623490b67cda2e750c47550dc57bf23eba9ce4f912ccb5ab47dc744e73403",
+      "origin": "complete postterminal native file read, whole SHA and byte count independently verified"
+    },
+    {
+      "path": "runtime-read.original.json",
+      "bytes": 1094,
+      "sha256": "575555e8dde50f89ca7e2c753fd4a95f730a5a80701ccffbdc2c58445b5383c8",
+      "origin": "original complete Runtime stream read tool text"
+    },
+    {
+      "path": "runtime-request.prepared.json",
+      "bytes": 195256,
+      "sha256": "fa4fe7b32f9c0397ac5a540c03b23d6eabe2d9a75504f8c2bd65fab15501a0f5",
+      "origin": "exact prepared request fields; generated serialization, not tool response"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1180,
+      "sha256": "ba2ba3fd4e6a9346fda6f1bf564382810d58b28c47200fbd3582353206a7fba1",
+      "origin": "original Runtime process_start tool text"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 729,
+      "sha256": "eb362f1145032c88b00c0ffe6b840201e1b7749d741c9fa7c4c92618a49062f9",
+      "origin": "original authoritative Runtime terminal tool text"
+    },
+    {
+      "path": "runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "complete original Runtime stderr"
+    },
+    {
+      "path": "runtime.stdout.original",
+      "bytes": 252,
+      "sha256": "fc21f088aa6077a9a613c29c9bd9b1a6eda02031cf4822fcac05b1d01ff816b6",
+      "origin": "complete original Runtime stdout"
+    },
+    {
+      "path": "rustfmt.native-file-info.original.json",
+      "bytes": 466,
+      "sha256": "877fc37d0d2d9efc8056a636ab89a0b785fa0997f551c552e3e498917f3e7ff8",
+      "origin": "independent native file_info before execution"
+    },
+    {
+      "path": "SOURCE_REVIEW.before-format.public.json",
+      "bytes": 2340,
+      "sha256": "272ee551ee2d8f5ffeaf2d9095813386bd81bca1ea94e52edd17519bd0416a2b",
+      "origin": "derived initial source review; original preformatter inputs intentionally retained"
+    },
+    {
+      "path": "test-publication-observation.formatted.patch",
+      "bytes": 18930,
+      "sha256": "556cc4cfcd28805c2dbe9ec0346b7490dbca29e0f0cdb4b0b31e11597358ab8a",
+      "origin": "derived final diff against base4bde including actual fixed rustfmt output"
+    }
+  ]
+}

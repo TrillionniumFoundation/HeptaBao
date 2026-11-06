@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.outer-controller-local-guard-observation.v1",
+  "source_bytes": 53236,
+  "source_sha256": "211df45b2763fc0c3d1a747dcc44e46442e66bf988117aab930ba9f3bb0e6e74",
+  "tests_source_bytes": 8791,
+  "tests_source_sha256": "a56434a31416c658a22958d855ec2b5155b55838404aeb979d5c8dda68575109",
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "expected_failures": 0,
+  "unexpected_successes": 0,
+  "passed": true,
+  "elapsed_seconds": 0.01954650599964225,
+  "original_log_bytes": 1520,
+  "original_log_sha256": "9dd8060f86f72426b81b941ef4ae001896de3da4caff4c82e7347fbe233c2f58",
+  "product_executed": false,
+  "business_source_opened": false,
+  "remote_execution": false
+}

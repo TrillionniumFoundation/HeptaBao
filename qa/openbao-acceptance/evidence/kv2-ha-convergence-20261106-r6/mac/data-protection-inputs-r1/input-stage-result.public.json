@@ -1,0 +1,239 @@
+{
+  "all_input_bytes_and_modes_exact": true,
+  "all_original_directories_preserved": true,
+  "automatic_retry": false,
+  "business_source_opened": false,
+  "deadline_fired": false,
+  "durable_completion_authority": "separate_original_runtime_terminal_with_60_second_cap",
+  "elapsed_observation_before_receipt_publication_seconds": 0.017175916582345963,
+  "existing_inputs_replaced": false,
+  "formal_kv2_qualified": false,
+  "input_root_created": true,
+  "input_root_identity": [
+    16777244,
+    72748097,
+    501,
+    20,
+    448
+  ],
+  "inputs": [
+    {
+      "bytes": 2500,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "controls18-owned-one.public.json",
+      "sha256": "81d7018749b5b8a97fa647dc428eaadd65a76aa52b8d7508b8eadf12f9f00aee",
+      "uid": 501
+    },
+    {
+      "bytes": 9753,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "controls18-result.public.json",
+      "sha256": "0c0a6f5f12a1d2bb5a1f3de7a70194ac1ed226eeac9816d5495f1ad18a961914",
+      "uid": 501
+    },
+    {
+      "bytes": 731,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "controls18-runtime-terminal.original.json",
+      "sha256": "7cb397897cb7275f04524229b2ab90447385c22b0ee2b353a3900c9692d98f5f",
+      "uid": 501
+    },
+    {
+      "bytes": 1437,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "dr2-result.public.json",
+      "sha256": "22a0c151ad3c1a075d6763f0b3d7037eed12a21d19e84d9b94fadd91ff44fc9f",
+      "uid": 501
+    },
+    {
+      "bytes": 729,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "dr2-runtime-terminal.original.json",
+      "sha256": "bfc16319788ed2dfb35419920407c9246e55c442f0af7edcfab3549195db9a1a",
+      "uid": 501
+    },
+    {
+      "bytes": 735,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "dr26-runtime-terminal.original.json",
+      "sha256": "55d380208276b62f2a1e65f7e71706714eb0b1fe2b71e9268c95574633edf710",
+      "uid": 501
+    },
+    {
+      "bytes": 147183,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "dr26-runtime.stdout.original",
+      "sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e",
+      "uid": 501
+    },
+    {
+      "bytes": 5511,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "environment-owned-three.public.json",
+      "sha256": "c0b30e13cb169cf7f213848b7a2be3c709c1abcca8ad393613cb15c847329b88",
+      "uid": 501
+    },
+    {
+      "bytes": 3886,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "environment-result.public.json",
+      "sha256": "fabe693cfc1764f4686abaff7a5425ea0e5067c2bd036fa26e22fec7dfd6e1bb",
+      "uid": 501
+    },
+    {
+      "bytes": 731,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "environment-runtime-terminal.original.json",
+      "sha256": "b64376669e1cf91017a374010f353187db2fa17950c7719ad783bb2a5b884c6f",
+      "uid": 501
+    },
+    {
+      "bytes": 1827,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "known-product-ci-original-bindings.public.json",
+      "sha256": "a06a0d633e171b9f52ae6a0119db0be81c1fcf0eb24b6b5ec533f0d43d792c32",
+      "uid": 501
+    },
+    {
+      "bytes": 181226,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "mac107-result.public.json",
+      "sha256": "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6",
+      "uid": 501
+    },
+    {
+      "bytes": 734,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "mac107-runtime-terminal.original.json",
+      "sha256": "f8e6a055c1f68eb63094964f7623155de44202a70bfb6da36fa8fc7eb09f821c",
+      "uid": 501
+    },
+    {
+      "bytes": 46133,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "mac107-selection.public.json",
+      "sha256": "7da0b1e3efe257b66d31d50af7c1327a4d320c512c1c8f82df30020898c66595",
+      "uid": 501
+    },
+    {
+      "bytes": 5922,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "plan-stage-result.public.json",
+      "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f",
+      "uid": 501
+    },
+    {
+      "bytes": 731,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "plan-stage-runtime-terminal.original.json",
+      "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df",
+      "uid": 501
+    },
+    {
+      "bytes": 55776,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "mac_current_sqlite_data_protection_outer.py",
+      "sha256": "4ac1110cb3a065f06a1f408b9b5b0b17565a3e0517a322d380307ab11b5ff88d",
+      "uid": 501
+    },
+    {
+      "bytes": 5386,
+      "exact_readback": true,
+      "mode": 384,
+      "nlink": 1,
+      "private": false,
+      "role": "fixed-inputs.public.json",
+      "sha256": "413027c61091eae87f17ab247930a48a0d7a3f20b105432b15d2826c8dbb337b",
+      "uid": 501
+    },
+    {
+      "bytes": 882,
+      "exact_readback": true,
+      "identity": {
+        "bytes": 882,
+        "ctime_ns": 1793986893425189888,
+        "dev": 16777244,
+        "file_type": 32768,
+        "gid": 20,
+        "inode": 72748116,
+        "mode": 384,
+        "mtime_ns": 1793986893425189888,
+        "nlink": 1,
+        "uid": 501
+      },
+      "mode": 384,
+      "nlink": 1,
+      "private": true,
+      "role": "independent_private_pins",
+      "uid": 501
+    }
+  ],
+  "interrupted": false,
+  "original_count": 0,
+  "original_plan_or_binding_modified": false,
+  "partial_new_inputs_retained": false,
+  "private_content_or_fingerprints_published": false,
+  "product_or_sdk_executed": false,
+  "provider_or_j3160_called": false,
+  "runtime_seconds": 60,
+  "schema": "heptabao.current-data-protection-input-stage.v1",
+  "service_modified": false,
+  "staged_inputs": 19,
+  "staged_private_inputs": 1,
+  "staged_public_inputs": 18,
+  "status": "passed",
+  "subprocesses_started": false,
+  "work_seconds": 52,
+  "workflow_executed": false
+}

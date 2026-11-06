@@ -1,0 +1,2 @@
+{"event": "controller_installed", "controller_sha256": "0d87410a2f73fced9dc7311e882bb68de020e7c7fb2ee2581d34a9e1303f2479", "selection_sha256": "ad7642bab8218200941ccb09675934b222189c47f6f740708566b19a8f7c57c9", "bundle_sha256": "9e0dcb3676ad12f7a91235769963e34d7c7159906dcda1b129b20e58b95a7ab7"}
+{"event": "terminal", "status": "failed", "failure": "other_compiler_present", "executed_passed_cases": 0, "result": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-ci422-9c68-r12/result.public.json"}

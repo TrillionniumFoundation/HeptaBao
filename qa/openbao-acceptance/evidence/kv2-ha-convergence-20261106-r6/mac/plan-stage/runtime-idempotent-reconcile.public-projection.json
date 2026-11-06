@@ -1,0 +1,22 @@
+{
+  "audit_recorded": true,
+  "exact_same_key_and_request_used_for_reconciliation": true,
+  "job": {
+    "created_unix_ms": 1793985389112,
+    "host": "mac",
+    "id": "1a1b1dca238-fc05-7b30",
+    "idempotency_key": "heptabao-mac-current-kv2-private-plan-stage-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "request_digest": "2842cd9eee0eeb085e16c3204ffafe55de0cdfc7cd010b5536d445c0d4ca06a8",
+    "request_fingerprint": 2901107192462502664
+  },
+  "new_attempt_or_key_after_terminal_failure": false,
+  "not_original_json": true,
+  "original_raw_receipt_retained_privately": true,
+  "original_raw_receipt_sha256": "e349c260ded77d94ada86c6e22217ae686c263377526834d1354c5fe8943756e",
+  "projection_omits_account_paths_and_ssh_target": true,
+  "reused": false,
+  "schema": "heptabao.runtime-start-safe-projection.v1",
+  "transport_first_start_error_is_not_process_failure": true
+}

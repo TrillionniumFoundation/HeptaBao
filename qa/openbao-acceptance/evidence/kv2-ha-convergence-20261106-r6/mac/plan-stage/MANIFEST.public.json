@@ -1,0 +1,82 @@
+{
+  "files": [
+    {
+      "bytes": 149,
+      "path": "runtime-first-start-error.original.txt",
+      "sha256": "8845000a53997e48da4b59132ab907c8766d451096e077ed4e72c69bd64922b4"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.original.json",
+      "sha256": "8f8a2b35f4e89b7445eeb0789e02bc9307afd1a55fa20b1cb26ae195920ce3df"
+    },
+    {
+      "bytes": 15648,
+      "path": "runtime-read.original.json",
+      "sha256": "67ee7cfee23028d2549dc3b1f84dd624d4dc4a6e25f7fd2e2394f4a1dbc1988d"
+    },
+    {
+      "bytes": 5010,
+      "path": "runtime.stdout.original",
+      "sha256": "7fe2ad8d95484b675f86673342033e6d39f559489805c3ae43eaabecfafd9d95"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5922,
+      "path": "result.public.json",
+      "sha256": "6aba2656581d2485b9375ddf9435984b8ec11e2ca954940a840d5a1fc7d66a6f"
+    },
+    {
+      "bytes": 529,
+      "path": "public-result.native-file-info.original.json",
+      "sha256": "6e94c8e9cd174dce334b2c4821ae016ee3ae88ce27ca6d8b6dd819409a299efb"
+    },
+    {
+      "bytes": 3350,
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "38ca11ae7a5093580b82709b70e5bdf1c9da046720784fa37819d247a138aaae"
+    },
+    {
+      "bytes": 906,
+      "path": "runtime-idempotent-reconcile.public-projection.json",
+      "sha256": "8ed70ac4e21abe8c79bf138dd85cf21383a82fb04e31d007c9aba4f2ae7424f7"
+    },
+    {
+      "bytes": 1254,
+      "path": "CODE_AND_REQUEST_BINDING.public.json",
+      "sha256": "ce7001db7abe99b549b634ea4609c5f0409aa93967574e0614933435e2c3f9c1"
+    },
+    {
+      "bytes": 527,
+      "path": "SOURCE_REVIEW_ADMISSIONS.public.json",
+      "sha256": "2389aa50ae0748ef5e053da2607593da1345ac95731e7c2948357464cfcb2bd9"
+    },
+    {
+      "bytes": 1445,
+      "path": "PREPARED_SCOPE.public.json",
+      "sha256": "7d8c8301f9803b5a2ab37ec68243598af26c3cb39bb365c9aff8302c46fd2dac"
+    },
+    {
+      "bytes": 911,
+      "path": "OBSERVATION_CURSOR_MANIFEST.public.json",
+      "sha256": "69baf8f7b96d051f5cce65b1ce149dbc7a19c6d16dfe963f0c837e88d9399743"
+    }
+  ],
+  "job_id": "1a1b1dca238-fc05-7b30",
+  "package": "mac-current-kv2-plan-stage-20261106-r1",
+  "private_configuration_or_agent_names_or_credential_fingerprints_included": false,
+  "public_private_output_file_identities_only": true,
+  "schema": "heptabao.safe-evidence-manifest.v1",
+  "scope": "Data protection preparation only; not formal KV2 service, physical HA, AuthBus or replacement qualification.",
+  "status": "actual_stage_succeeded_capture_not_executed",
+  "withheld": [
+    "Full static account-bearing controller and request",
+    "Original start response account path and SSH target",
+    "Two native private-file full metadata receipts including content fingerprints",
+    "Private plan, private binding and business configuration or database contents"
+  ]
+}
