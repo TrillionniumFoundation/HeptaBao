@@ -1,0 +1,14 @@
+{
+  "has_more": true,
+  "next_after_pid": 32527,
+  "processes": [
+    {
+      "identity": "ps:Fri Nov  6 20:49:39 2026",
+      "name": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pid": 32527,
+      "uid": 501
+    }
+  ],
+  "sampled_at_unix_ms": 1793970417156,
+  "snapshot_atomic": false
+}

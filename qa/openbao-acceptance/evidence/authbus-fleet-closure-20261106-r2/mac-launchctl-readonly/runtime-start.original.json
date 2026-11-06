@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "python3 -I -S -B - <<'PY'\nimport subprocess,json,time,re\nlabel='gui/501/org.heptabao.qa.mac-authbus-4e808-home-r2.server'\nstarted=time.monotonic()\ntry:\n p=subprocess.run(['/bin/launchctl','print',label],capture_output=True,timeout=8)\n data=p.stdout.decode('utf-8','strict')\n fields={}\n allowed={'state','pid','runs','last exit code','last terminating signal','active count','execution context'}\n for line in data.splitlines():\n  if not line.startswith('\\t') or line.startswith('\\t\\t'): continue\n  m=re.fullmatch(r'\\t([^=]+?) = (.{0,128})',line)\n  if m and m.group(1) in allowed:\n   key=m.group(1)\n   if key in fields: raise ValueError('duplicate_selected_field')\n   fields[key]=m.group(2)\n print(json.dumps({'schema':'heptabao.launchctl-safe-state.v1','target':label,'returncode':p.returncode,'stdout_bytes':len(p.stdout),'stderr_bytes':len(p.stderr),'fields':fields,'source_header_matches':data.startswith(label+' = {'),'elapsed_seconds':time.monotonic()-started,'raw_argv_environment_or_stderr_exported':False,'service_mutation':False}))\nexcept Exception as e:\n print(json.dumps({'schema':'heptabao.launchctl-safe-state.v1','target':label,'error_type':type(e).__name__,'elapsed_seconds':time.monotonic()-started,'service_mutation':False}))\n raise SystemExit(1)\nPY"
+    ],
+    "created_unix_ms": 1793970303241,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/bin/sh",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b0f67109-fc05-7466",
+    "idempotency_key": "heptabao-authbus-r2-readonly-launchctl-state-c9fe-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b0f67109-fc05-7466",
+    "request_digest": "a797fe665ead1fda8447d55637c66dc40fb8f57cd099d2961bd92c7359b125f0",
+    "request_fingerprint": 12076400641445797850,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b0f67109-fc05-7466"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 47292,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b0f67109-fc05-7466"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

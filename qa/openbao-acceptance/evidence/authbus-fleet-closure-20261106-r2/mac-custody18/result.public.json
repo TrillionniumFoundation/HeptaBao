@@ -1,0 +1,121 @@
+{
+  "automatic_retry": false,
+  "descendant_cleanup_scope": "existing tests assert their original process-group retirement; no hostile escape containment claim",
+  "elapsed_seconds": 1.2284524580463767,
+  "errors": 0,
+  "exact_names_matched": true,
+  "expected_count": 18,
+  "expected_failures": 0,
+  "failed": 0,
+  "formal_storage_or_physical_ha_qualified": false,
+  "host": "mac",
+  "inputs": [
+    {
+      "bytes": 26131,
+      "relative": "kv2_dr_process_custody.py",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 17148,
+      "relative": "tests/test_kv2_dr_process_custody.py",
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    {
+      "bytes": 28442,
+      "relative": "owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  ],
+  "no_additional_cleanup_signal_sent": true,
+  "no_direct_children_after_tests": true,
+  "original_hooks_and_handlers_restored": true,
+  "original_test_child_timeouts_unchanged": true,
+  "outcomes": [
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_live_esrch_never_uses_a_zombie_anchor_or_grants_retirement"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_waitable_zombie_requires_original_waitid_and_exact_retained_ps_identity"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_live_owned_group_routes_once_and_restores_global_hook"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_unknown_group_is_refused_without_touching_foreign_process"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_nested_owner_and_finished_owner_do_not_create_new_originals"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals"
+    },
+    {
+      "outcome": "passed",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it"
+    }
+  ],
+  "outer_seconds": 60,
+  "passed": 18,
+  "platform": "darwin",
+  "product107_or_dr_executed": false,
+  "production_changed": false,
+  "python_sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+  "schema": "heptabao.mac-final-custody18-result.v1",
+  "skipped": 0,
+  "source_and_copied_inputs_unchanged": true,
+  "source_commit": "09c14eae7a3b52dee8ce3af3175dad5900ac59ec",
+  "source_tree": "dfb0df97a2c74b1c0154f45342f3debb0ce438ab",
+  "status": "passed",
+  "tests_run": 18,
+  "unexpected_successes": 0
+}
