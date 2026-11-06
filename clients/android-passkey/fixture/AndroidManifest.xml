@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="@@PACKAGE@@">
+    <uses-sdk android:minSdkVersion="34" android:targetSdkVersion="34"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <queries><package android:name="org.heptabao.passkey.preview"/></queries>
+    <application android:label="@@LABEL@@" android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:allowBackup="false" android:fullBackupContent="false" android:debuggable="false"
+        android:usesCleartextTraffic="false" android:networkSecurityConfig="@xml/network_security_config">
+        <activity android:name="org.heptabao.passkey.fixture.FixtureActivity" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>

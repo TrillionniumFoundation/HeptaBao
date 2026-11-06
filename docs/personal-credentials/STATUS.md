@@ -17,8 +17,8 @@ from implementation in progress.
 | P1: agent/developer use | Executable Rust CLI/SDK, local socket broker, exact-operation owner grants, controlled loopback API use, SSHSIG and actual `git commit -S` followed by `git verify-commit`: **11 integration tests**. Durable unknown outcomes are never automatically retried. | Task/run labels are owner-issued, not attested HeptaRuntime identities. Current runtime aliases use the same trusted OS account. External HTTPS APIs and SSH login are unsupported. |
 | P2: personal vault | Encrypted login/note/API entries, password generation, RFC-vector TOTP, local health, bounded sessions, offline CLI, encrypted backup/recovery, explicit JSON import/export and password change. Independent process and actual SIGKILL recovery observed. | Linux/Unix private local filesystem, trusted owner account; no hostile-owner isolation, hardware anti-rollback, third-party import or independent security review. |
 | P3: daily clients | Real headed Chromium/native-host login and rejection profile: **26/26**. Physical two-device opaque synchronization: **14 stages and 18 authenticated transfers** across ai395 and ROG retained conflicting edits and restored both histories. Native backpressure fix: **8/8**. | Target Android Autofill qualification is in progress. Browser observation covers the fixed Chrome 157 Linux combination. Sync is an explicit CLI workflow, not an automatic daemon or field merger. |
-| P4: extended vault | Android native Passkey provider and real CredentialManager fixture are being implemented, with independent RP verification. | No completed platform create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
-| P5: production adoption | Narrow synthetic CI, immutable evidence archive, runtime trust analysis and an operations/recovery procedure. | CI has not yet run on this published candidate. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
+| P4: extended vault | Android native Passkey provider and CredentialManager fixture implemented. Frozen r4 host cryptography/format profile: **10/10**, including separate JVMs, latest-backup recovery, restart and stale-counter rejection. Independent RP: **68/68** per tested backend and **21/21** real loopback HTTP/restart cases. | Host and RP observations do not exercise Android CredentialManager. No completed phone create/login/recovery evidence yet. Credential exchange, sharing, device revocation, additional browsers/platforms remain unsupported. |
+| P5: production adoption | Published `a38dab7` passed synthetic-core CI and the workflow-trust checks for both its exact head and prospective merge. Immutable evidence, runtime trust analysis and an operations/recovery procedure are available. | Newer `0a0bed8` CI remains queued/pending at the last observation. No result is inherited across heads. Independent review, measured long-term stability, signed releases, tested upgrade/rollback and operational support are not complete. |
 
 These are separate acceptance boundaries. For example, a real local Git signing
 test does not establish a malicious same-account agent cannot read owner files;
@@ -39,6 +39,13 @@ handles and artifact digests. A named-ref Git bundle preserves the original
 tested local commit objects and requires the public PR #160 base. Publishing
 the same source through an API that supplies different commit metadata does not
 change the original receipts or authorize relabeling them to a new commit.
+
+Run `python3 -B qa/personal_credentials/verify_evidence.py` to check the archive's
+bounded index, unique names, exact lengths and SHA-256 values. Its 24 synthetic
+self-tests include tampering, unsafe paths, missing/extra files and independent
+CLI exit-status checks. This verifies archive integrity only. Receipt contents
+and test outcomes are opaque to it; a retained failed receipt can correctly
+pass an integrity check. It grants no authenticity or qualification authority.
 
 | Observed artifact | SHA-256 |
 | --- | --- |
@@ -89,11 +96,100 @@ for this scope, not a claim that every port carries its own document ID.
 The worker has 64 deterministic scheduling tests. These use mocked Chrome APIs
 and remain separate from the 26-case actual-browser observation.
 
+## Android candidates and independent observations
+
+The Autofill target is one owned Motorola XT2551-3 running Android 16/API 36.
+The provider accepts only the exact synthetic native fixture package, signing
+certificate, activity and native view mapping. It has no Internet permission,
+is not debuggable and disables Android backup. Filling requires a fresh local
+unlock and explicit approval; the result is an ephemeral authenticated dataset.
+
+Autofill candidate 4 passed 12 Rust-to-Java format checks but did not complete
+its phone profile. The five original phone reports remain archived: r1 completed
+0 of 12 cases, and r2 through r5 each completed 1 of 12. These runs exposed
+driver foreground/task-stack problems and an authentication activity that did
+not remain visible after choosing the system candidate. The later diagnostic
+activity may itself change lifecycle state, so it does not prove the original
+failure's cause. Every run restored its original Autofill setting and removed
+only its own installed packages; a separate final probe confirmed the release.
+
+Candidate 5 changes the handling of `TRIM_MEMORY_UI_HIDDEN` and adds bounded
+authentication-entry diagnostics while preserving request cancellation,
+background invalidation, timers and final caller/target checks. Its 18 source
+files match its build receipt exactly, and its new Rust-to-Java profile is
+12/12. The old phone results do not qualify this new APK; its own complete
+12-case device run is still required. Both original source archives and build
+receipts are retained.
+
+Passkey candidate r4 has 28 source files matching its original build inventory.
+It implements a separate Android credential provider for one pinned native
+fixture and relying-party ID. Its password-protected `.hbv` store preserves the
+Rust format and recovery wrapper. The ordinary app uses local Storage Access
+Framework documents for bounded encrypted import/export and fresh private
+stores for restore; these UI paths require their own phone observation.
+
+The r4 host profile passed 10 top-level checks. Its two nested format/negative
+groups passed 17 and 18 checks respectively. Separate Java processes created a
+credential and produced signatures verified by the independent RP, advanced
+the counter, restored the latest backup into a fresh directory, and reopened
+both RP and authenticator state. An older backup whose counter had already
+been exceeded was refused. The profile explicitly records
+`android_device_exercised=false` and `credential_manager_exercised=false`.
+
+A separate Rust process then restored the final Java ciphertext with the
+recovery key into a new private root and reopened it with the password. It
+confirmed revision 5, one passkey record, counter 4, backup state and the same
+SPKI public-key digest as the independent RP. This is actual cross-language
+format/recovery evidence, still separate from the Android system UI profile.
+The seed and this first read-back used local binary
+`9269c070399493f634055bc9e002ea141988f1368cce8358fcc05bbf98d9bfb1`.
+Its independent build provenance has not been established. These observations
+must not be attributed to the separately qualified `b0cccc3c` core binary;
+the original reports retain their actual identities.
+
+| Frozen mobile artifact | SHA-256 | Current evidence boundary |
+| --- | --- | --- |
+| Autofill candidate 5 provider APK | `5c643afa5a08c6e8dd0baf751fe56dadf0f66947284d119d2da7051f4ab88ff8` | Build/decoded manifest and 12 host format checks; device profile pending. |
+| Passkey r4 provider APK | `e96218bc0ab1c228120471d5168a336e6b526bfd5e39e1a0a533335300d7c6e8` | Build/decoded manifest and 10 host checks; CredentialManager/SAF profile pending. |
+
+All mobile material is synthetic. The device QA driver enters synthetic
+passwords through real EditText controls, with a temporary value in the
+innermost ADB input argv. This is explicitly not evidence of an end-to-end
+argv-free production credential path. Neither provider exposes a QA password
+Intent, debug endpoint or password-file bypass.
+
+## Published CI observations
+
+The first published source, `e6d7871`, passed
+[synthetic-core run 42179078591](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42179078591).
+Its workflow-trust run rejected an unregistered artifact-upload action, and its
+full qualification stopped at the missing documentation/closure records for
+the three new crates. Those failures remain failures; neither reached a passing
+full replacement result.
+
+The artifact-upload action was removed without changing the workflow trust
+registry. Three bounded public receipts are instead emitted to the job log.
+On published source `a38dab74508e6898bea64560cd090932ba1e3706`,
+[synthetic-core run 42179532002](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42179532002)
+and both source combinations of
+[workflow-trust run 42179531970](https://github.com/TrillionniumFoundation/HeptaBao/actions/runs/42179531970)
+completed successfully. The three original core receipts were reconstructed
+from those log envelopes and checked byte-for-byte against their original
+SHA-256 values before archival.
+
+The later source `0a0bed8cb98e0e80fe3130bf43c43358ebbaad19` adds the missing
+module guides, closure records and updated 52-module inventory. Its new runs
+were still queued/pending at the last observation on 2026-11-06 07:49 UTC.
+The older core and trust results do not qualify that newer source, and a queued
+run is not a passing gate. This draft remains unmerged.
+
 ## Actual supported entry points
 
 - [Credential broker and Git signing](../../crates/heptabao-credential-broker/README.md): trusted-owner issuance, narrow API execution and exact Git payload binding.
 - [Personal vault CLI](../../crates/heptabao-personal-vault/README.md), [API](../../crates/heptabao-personal-vault/API.md) and [format design](../../crates/heptabao-personal-vault/DESIGN.md).
 - [Chromium/native-host and opaque store](../../crates/heptabao-personal-edge/README.md): explicit fill, exact origin/document checks, timed locking and conflict-preserving publication.
+- [Android Autofill preview](../../clients/android/README.md): one exact signed native fixture, fresh authorization and ephemeral datasets.
+- [Android Passkey preview](../../clients/android-passkey/README.md): native CredentialManager, encrypted counters, local document import/export and explicit recovery limits.
 - [Runtime identity analysis](RUNTIME_IDENTITY.md): what current operator jobs prove, what they do not prove and the required separate-principal boundary.
 - [Operations and recovery](OPERATIONS.md): evidence checks, clean staging, unknown outcomes and backup/restore procedures.
 

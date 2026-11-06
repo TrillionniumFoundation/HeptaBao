@@ -16,6 +16,60 @@
       "transformation": "none; byte-identical original public receipt"
     },
     {
+      "file": "android-c4-build.public.json",
+      "sha256": "3dbf8fd47edea4342e92dfac309d0d9ccae47796fc255166e5a612c4555db135",
+      "bytes": 56499,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "android-c4-phone-r1.public.json",
+      "sha256": "c2a2e1bd171d1b274b88e0af82a012c0fc7955b1215e0f141bc8a3f943f0ca6b",
+      "bytes": 2637,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r2.public.json",
+      "sha256": "4e2de7ecb9d8919a74d2ab46103435570ceec5f3def0afc6763d67ee84cbcf71",
+      "bytes": 2693,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r3.public.json",
+      "sha256": "c2e28f2b61fc393e805e1607695fb8b10bc131b049aed7e665595505f43d0630",
+      "bytes": 3035,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r4.public.json",
+      "sha256": "ab5731144c26f87f3a3f530512f113e2462e419cfef275ae424b51366a7e6fa4",
+      "bytes": 3095,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-phone-r5.public.json",
+      "sha256": "bcbed79b08d191e1cf93525538c4d4d88057a651add81a6766df8b7475767d1c",
+      "bytes": 3118,
+      "transformation": "none; byte-identical original failed device receipt"
+    },
+    {
+      "file": "android-c4-release-r5.public.json",
+      "sha256": "458f0c9bc8ab6ba6d5544ea456c35cef9fd4367cc898990c24bff42eac8ec087",
+      "bytes": 490,
+      "transformation": "byte-identical reconstruction from public transport envelope, verified against original file SHA-256"
+    },
+    {
+      "file": "android-c4-to-c5-source-difference.public.json",
+      "sha256": "114ba2b7314837e03e0a5c8b1b1771661d64ea9d5bf87039e2bb4b7123956283",
+      "bytes": 1396,
+      "transformation": "derived comparison of original build source inventories; does not grant device qualification"
+    },
+    {
+      "file": "android-c5-build.public.json",
+      "sha256": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
+      "bytes": 56499,
+      "transformation": "none; byte-identical original public receipt"
+    },
+    {
       "file": "browser-headed-driver-r10.public.json",
       "sha256": "4a17028cd0683d0bca13c000af42a8425f7098f0ec201691a3fa696698cce99b",
       "bytes": 1125,
@@ -100,6 +154,30 @@
       "transformation": "none; byte-identical original public receipt"
     },
     {
+      "file": "github-ci-a38dab7-build.public.json",
+      "sha256": "56f7b0e58575a0da37918025759ac33d8fcf1b457736f7284e833422bfbe635a",
+      "bytes": 1846,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
+      "file": "github-ci-a38dab7-native-backpressure.public.json",
+      "sha256": "f952564292df5e82b90e5517e6a30cc8904b33dadb14e7b9a3fce99b7fccade4",
+      "bytes": 1925,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
+      "file": "github-ci-a38dab7-result.public.json",
+      "sha256": "a51ea609a45f0da534e403923cd618e0b8ae59590b16aa9a6d8c3a76c8e2bec2",
+      "bytes": 1913,
+      "transformation": "byte-identical reconstruction from bounded CI log envelope, verified against original file SHA-256",
+      "github_run_id": 42179532002,
+      "github_job_id": 127765661138
+    },
+    {
       "file": "github-ci-e6d7871-build.public.json",
       "sha256": "bb5bb7c2b31e3df77bc5d1bc97226c053ba29b5e4d37b691eebc2919ea8dadb4",
       "bytes": 1846,
@@ -122,6 +200,24 @@
       "sha256": "7b3ccd812f2446b081e9cf91589ab259ee0c32c427c63e078feeda6a2416dbde",
       "bytes": 1922,
       "transformation": "none; byte-identical original public receipt"
+    },
+    {
+      "file": "passkey-r4-build.public.json",
+      "sha256": "c7f84bd9ff3dcde9adf1bf7b24c641f393bb1274cb27e3b860f41845b98d107c",
+      "bytes": 59119,
+      "transformation": "none; byte-identical original public build receipt"
+    },
+    {
+      "file": "passkey-r4-host.public.json",
+      "sha256": "660e3213270540a5c79c55007ac6d770bd04c96cd70cefc4007289c5c6581cb5",
+      "bytes": 16154,
+      "transformation": "none; byte-identical original public host-only receipt"
+    },
+    {
+      "file": "passkey-r4-rust-reopen.public.json",
+      "sha256": "f3b724612b8bc216ded8c0b161be5d6ffab175ae32ae81a70f6f1ebf54112638",
+      "bytes": 592,
+      "transformation": "none; byte-identical original public Rust recovery/read-back receipt"
     },
     {
       "file": "passkey-rp-http-21-r2.public.json",
@@ -191,11 +287,29 @@
       "source_commit": "a1b6ff4506f52082a0893b7167fafb4ff95610be"
     },
     {
+      "file": "source-android-c4.tar.gz",
+      "sha256": "9146b0e7d82db43c1eb557dc4e6e75128612491eef8d5d221dfc84562fd92521",
+      "bytes": 31433,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
+      "file": "source-android-c5.tar.gz",
+      "sha256": "f465fc3230fdfbe144f31b95baa3e4964997884d314ef0724ea77074384cf256",
+      "bytes": 27122,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
+    },
+    {
       "file": "source-browser-802c57c.bundle",
       "sha256": "e521c19a4886ff0631d6491f73830000e7d897980e8683c75b0353e50c2cbedb",
       "bytes": 14581,
       "base_required": "a1b6ff4506f52082a0893b7167fafb4ff95610be",
       "source_commit": "802c57cdf386e2dbfb4da9c20dbdd37700343197"
+    },
+    {
+      "file": "source-passkey-r4.tar.gz",
+      "sha256": "1b7af164b251f7075a1d54e3f950b96dc0581b5d2e14899d1857209a6e3118b0",
+      "bytes": 64367,
+      "transformation": "none; original public source archive, exact entry and source digest allowlist verified"
     },
     {
       "file": "two-device-sync-r4.public.json",

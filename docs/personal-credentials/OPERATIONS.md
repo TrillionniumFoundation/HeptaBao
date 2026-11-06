@@ -25,6 +25,14 @@ are documented in the individual components.
 5. Run the scope's positive control, rejection, expiry, lock/revoke, independent
    restart and recovery cases. Retain original failures and count missing cases.
 
+The physical Android qualification driver enters newly generated synthetic
+passwords through the real password field. Its innermost `adb input text`
+process temporarily has that synthetic value in argv. The driver retains the
+value privately and excludes it from public receipts, but this test is not
+evidence of an end-to-end argv-free secret path. It is not an installation or
+input procedure for real credentials. The provider has no password-bearing
+Intent, debug endpoint or QA-file input bypass.
+
 The untrusted-agent boundary requires a different OS principal or equivalent
 independently enforced protection. Current owner-level HeptaRuntime job labels
 and environment variables do not provide it. A bearer grant cannot compensate
@@ -107,10 +115,14 @@ pairing protocol. Do not deploy the store as an unauthenticated network endpoint
    value matches the expected prior value. Retain the prior path/configuration
    and a private restoration record. Compare again before any rollback so an
    unrelated concurrent user change is preserved.
-5. Roll back executable/configuration paths only after verifying the prior
-   executable can read the current format. Do not overwrite newer ciphertext
-   with an older backup: that can discard valid writes. Restore old state into
-   another root and perform an explicit reconciliation if needed.
+5. Before rolling back executable/configuration paths, clone the current state
+   into a new private root and exercise the prior executable there. Verify
+   reading and writing, authorization denials and revocation, and preservation
+   of revisions, operation receipts and passkey counters wherever applicable.
+   Being able to parse the current format is insufficient. Refuse rollback on
+   any incompatible behavior and retain the newer state. Do not overwrite
+   newer ciphertext with an older backup: that can discard valid writes.
+   Restore old state into another root and explicitly reconcile it if needed.
 
 This is the required procedure, not a completed upgrade/rollback rehearsal.
 Cross-version format migration, signed release distribution and automated

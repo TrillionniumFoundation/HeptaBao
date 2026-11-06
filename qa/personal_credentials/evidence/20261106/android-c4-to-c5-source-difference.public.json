@@ -1,0 +1,28 @@
+{
+  "build_script_sha256": "138cd26f224f65b31871c2ab3da1c95b83717d883dfa56c6cf9417d3c95f4273",
+  "candidate4_receipt_sha256": "3dbf8fd47edea4342e92dfac309d0d9ccae47796fc255166e5a612c4555db135",
+  "candidate5_local_source_matches": true,
+  "candidate5_receipt_sha256": "e9fa9d9d12ad9e02433799528d8ffeb0165d5db5ddb0545ede4b3f67e2fe7047",
+  "changes": [
+    {
+      "candidate4_sha256": "7cce26ef65b2c09cff7cf87e372f85de295566bbd83684d4d5c58f2ecb384fdb",
+      "candidate5_sha256": "41a36bc12712f007fc5b8d61ddeb1eeeae91d6ef55430867d8ef3d2f79939f25",
+      "path": "clients/android/README.md"
+    },
+    {
+      "candidate4_sha256": "57f5ea38054136a8b16f29d6ad65296870951a768bb46d46dcb47ab193fcfbeb",
+      "candidate5_sha256": "e5b4a687208968dfaf62e3c3091a7bee509f3e04320ccffc53053df91144c4cf",
+      "path": "clients/android/provider/java/org/heptabao/preview/AuthActivity.java"
+    },
+    {
+      "candidate4_sha256": "4e4477be56ddbd01b2ba83e38c158c9b25c163f7320036ef67f500048b4f761c",
+      "candidate5_sha256": "863c3d0937627285206deba2d4f4cd242c518ae2c01e1ea5a0c9b4627217bf08",
+      "path": "clients/android/provider/java/org/heptabao/preview/VaultApplication.java"
+    }
+  ],
+  "phone_qualification": "pending_new_artifacts_not_run",
+  "prepare_script_sha256": "d2053615ad116fc3111093f567451e81f73fd0969b5776d6194d0b657a7134ec",
+  "schema": 1,
+  "source_files": 18,
+  "unchanged_count": 15
+}
