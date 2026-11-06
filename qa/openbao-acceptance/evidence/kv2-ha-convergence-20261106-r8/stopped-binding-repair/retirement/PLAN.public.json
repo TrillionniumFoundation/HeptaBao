@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.failed-new-candidate-retirement-plan.v1",
+  "status": "prepared_not_executed",
+  "candidate": "org.heptabao.kv2",
+  "domain": "gui/501",
+  "original_failed_job": "1a1b27bfa3f-fc05-7e3a",
+  "original_init_attempted": false,
+  "required_completed_readonly_r2": true,
+  "per_step_runtime_seconds": 15,
+  "new_workflow_maximum_runtime_seconds": 45,
+  "automatic_retry": false,
+  "strict_sequential_steps": [
+    {
+      "path": "before-query.request.public.json",
+      "bytes": 269,
+      "sha256": "00176ca2e247ed60bc02f9afdb49d705eedb5f328064223bb67779098a352f24"
+    },
+    {
+      "path": "exact-bootout.request.public.json",
+      "bytes": 266,
+      "sha256": "8e2e37e3e1e266c0963ff6b443e8274e031f50f644f3657eaba73d8930db689a"
+    },
+    {
+      "path": "after-query.request.public.json",
+      "bytes": 268,
+      "sha256": "2d298f95bcaa10ed3d23f90c9a68dbe42700379de7661392adf00a577d949b8a"
+    }
+  ],
+  "before_query_required": {
+    "returncode": 0,
+    "exact_label": "org.heptabao.kv2",
+    "exact_domain": "gui/501",
+    "registered_original_installed_plist_bytes_unchanged": true,
+    "registered_program_arguments_cwd_stdout_stderr_equal_original": true,
+    "state": "spawn scheduled",
+    "active_count": 0,
+    "pid_field_absent": true,
+    "last_exit_code": 78
+  },
+  "bootout_required": {
+    "returncode": 0,
+    "exact_argv": [
+      "/bin/launchctl",
+      "bootout",
+      "gui/501/org.heptabao.kv2"
+    ],
+    "unknown_outcome_requires_separate_readonly_reconciliation": true
+  },
+  "after_query_required": {
+    "returncode": 113,
+    "stdout_bytes": 0,
+    "stderr_exact": "Bad request.\nCould not find service \"org.heptabao.kv2\" in domain for user gui: 501\n"
+  },
+  "preserved": {
+    "all_original_files": true,
+    "installed_plist": true,
+    "data": true,
+    "failed_evidence": true,
+    "old_services_untouched": true
+  },
+  "claims": {
+    "old_asset_cleanup": false,
+    "long_server_original_waitpid": false,
+    "pid_signal_used": false,
+    "service_restart": false,
+    "initialization": false,
+    "tcc_permission_modified": false,
+    "formal_kv2_qualified": false
+  },
+  "native_output_handling": "Full native query output may include inherited environment; retain privately and publish only fixed typed state/identity-equality projection. Require each original terminal complete/durable/non-timeout and full stdout/stderr; no response-only or command rc0-only success."
+}

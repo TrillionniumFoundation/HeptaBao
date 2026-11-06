@@ -1,0 +1,3 @@
+2026-11-06T19:57:40.7335508Z test service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_finite_actor_terminal_clock_keeps_affine_successor ... ok
+2026-11-06T19:57:51.7708763Z HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"snapshot_test","forwarded":false,"status":503,"elapsed_us":2107497,"entry_remaining_ns":14999999910,"exit_remaining_ns":12892502113,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+2026-11-06T19:57:51.9667464Z test service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold ... FAILED

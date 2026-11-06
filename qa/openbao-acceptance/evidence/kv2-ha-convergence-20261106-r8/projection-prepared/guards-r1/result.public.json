@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.projection-draft-boundary-guards.v1",
+  "expected_tests": 2,
+  "returncode": 0,
+  "status": "passed",
+  "elapsed_seconds": 0.16478299000118568,
+  "inputs": {
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 33953,
+      "sha256": "576ba0254eb6ac4af12cee78450fbca3cfffdd781bb4267a4adbd1d345bb0977"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/test_projection_boundaries.py": {
+      "bytes": 4199,
+      "sha256": "41f2de9f8e954f8e9cda0182180bfbb0cdbe5367b18ff22e387b808f7a606746"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r1/formal_kv2_protocol.py": {
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    }
+  },
+  "inputs_unchanged": true,
+  "original_streams": {
+    "stderr.original": {
+      "bytes": 480,
+      "sha256": "a93a3537e1a5870f2607657293232368154aebe0fb15ad46e60d0c04ecbfd2aa"
+    },
+    "stdout.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "real_user_data_or_service_or_network": false
+}

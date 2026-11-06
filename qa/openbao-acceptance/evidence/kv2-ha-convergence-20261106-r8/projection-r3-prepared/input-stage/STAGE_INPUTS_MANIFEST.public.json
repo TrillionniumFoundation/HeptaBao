@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.formal-kv2-allrows-projection-r3-stage-prepared.v1",
+  "status": "prepared_not_executed",
+  "template": {
+    "bytes": 12924,
+    "sha256": "575b116dabfc4bd51514919bc0834300cd3f7c334324b2e3a325e7c06d0e1352"
+  },
+  "all_stage_functions_and_classes_unchanged": true,
+  "stage_change_only_fresh_OUT_r3_constant": true,
+  "public_inputs": [
+    {
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "bytes": 44838,
+      "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+    },
+    {
+      "name": "formal_kv2_protocol.py",
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    },
+    {
+      "name": "readback-result.public.json",
+      "bytes": 10944,
+      "sha256": "f0db2d9807b73fa7723b1030ddc9c4d70dd7fbb077855cafe560988d0dfff397"
+    },
+    {
+      "name": "readback-terminal.original.json",
+      "bytes": 731,
+      "sha256": "b2f396467eed32d27d71a3cf13de64341152f4bf980cae4e6d738d4a81a8fd51"
+    },
+    {
+      "name": "readback-stdout.original",
+      "bytes": 8569,
+      "sha256": "b096dd4d4faa34eeb7e73af5036ca0e28aff209c58f03c53c0b5da3f15a76bcb"
+    }
+  ],
+  "private_name": "fixed-inputs.private.json",
+  "private_original_bytes_not_reencoded": true,
+  "private_plan_fingerprint_published": false,
+  "work_seconds": 52,
+  "runtime_seconds": 60,
+  "nice": 5,
+  "stage_key": "heptabao-mac-formal-kv2-allrows-projection-input-stage-20261106-r3",
+  "projection_key": "heptabao-mac-current-kv2-allrows-projection-20261106-r3",
+  "fresh_remote_input": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-allrows-projection-inputs-r3",
+  "actual_stage_or_projection_executed": false
+}

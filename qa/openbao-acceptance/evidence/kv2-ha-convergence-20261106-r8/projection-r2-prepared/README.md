@@ -1,0 +1,11 @@
+# Allrows projection r2 — prepared after the actual r1 cold-import failure
+
+The actual r1 projection failed before any generation closure or database was read. A distinct Mac code-only diagnostic reproduced the unchanged audit rejecting the first standard-library `__future__` file open during pure-function extraction. The original r1 directories, source and failed receipts remain untouched.
+
+The r2 controller adds only an explicit top-level `import __future__` before the restrictive audit starts and assigns new r2 input, output and private projection directories. Every function and class AST, including the audit, allrows validation, raw SQLite handling, resource registry and deadline logic, is identical to r1. The original 52-second work and 60-second Runtime budget and nice 5 remain fixed.
+
+Ten focused local guards passed: the original eight resource/projection guards plus two genuinely fresh isolated-process cases. The old source must reproduce the cold import refusal; the new source must extract successfully while the original audit still rejects an undeclared file read and SQLite connection. Original child stdout/stderr and the complete unittest log are retained in `guards-r1`. These are local controller guards, not an actual r2 projection.
+
+`private-inputs/STAGE_REQUEST.private.json` and `private-inputs/RUNTIME_REQUEST.private.json` are the complete one-shot native requests for root review and execution. The private plan is an exact byte copy of the actual r1 staged plan. All six original local input sizes and SHA256 values were compared with the retained original native file_info results before the new plan was produced. Private integer text was not regenerated, and the private plan and generation fingerprints are excluded from public evidence. The fixed protocol input remains the original f937 pure-extraction source; the network wire is not imported or executed.
+
+The r2 stage remains create-only, with six exact inputs and no dynamic JSON rewrite. Its template changes only the output-directory constant from r1 to r2. Root must independently close actual staging, six native file pins and the actual projection terminal/full stdout/resource denominator. No formal storage, AuthBus, HA, live-source freshness, cutover or old-asset cleanup qualification follows from staging or these guards.

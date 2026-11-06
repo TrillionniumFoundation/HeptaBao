@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.safe-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "r1/controller.public.template.py",
+      "bytes": 15952,
+      "sha256": "1e6fdf479d91b8d8d9d5a5260a7ae579618d2a57f400f068afb84469eed4f9b0"
+    },
+    {
+      "path": "r1/runtime-terminal.original.json",
+      "bytes": 728,
+      "sha256": "1ed6f72a3c608474aa5c680daa75b0633d126b30c112307c1fb62708ce4e2d36"
+    },
+    {
+      "path": "r1/runtime.stdout.original",
+      "bytes": 1150,
+      "sha256": "4accdc847a0a45ff6b11d4d517c42fdf9de348b54f196d7ef9eb71955edf6dd4"
+    },
+    {
+      "path": "r1/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r1/launch.safe-field-projection.public.json",
+      "bytes": 1185,
+      "sha256": "13d33aee1b55dd403cdca2133d4accdc661698cda8df5424bb13d9d684c1a672"
+    },
+    {
+      "path": "r2/controller.public.template.py",
+      "bytes": 17188,
+      "sha256": "4a4d4ee4a17438eb540825aa44420d5424a3b81d70cacab6c0df39e81c196d40"
+    },
+    {
+      "path": "r2/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "ec23684b60666f6749adc4a043b563dfe6aa36ff57890a485dc481f18896e365"
+    },
+    {
+      "path": "r2/runtime.stdout.original",
+      "bytes": 3176,
+      "sha256": "3ea06d9688ddb9f3f867c27f6f60679d0ee0782aa6de1e2349df275713ca74de"
+    },
+    {
+      "path": "r2/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r2/result.public.json",
+      "bytes": 3002,
+      "sha256": "d32cf16fbd29ccf160fe5b796ef9be29dee2404491969d9e2f997b292fdcf516"
+    },
+    {
+      "path": "r2/r1-to-r2.diff",
+      "bytes": 2926,
+      "sha256": "06e3cf193cd554e2146af9c7057c2438aaabe9bd6fb7cb88c090bbb05f4d8c9f"
+    },
+    {
+      "path": "r2/launch.safe-field-projection.public.json",
+      "bytes": 1185,
+      "sha256": "bbe78b8702038c229abb62a6ea4b8e12d2c9a78ba07c6ad4e75fb16e478b94fb"
+    },
+    {
+      "path": "CHECKPOINT_SCOPE.md",
+      "bytes": 1985,
+      "sha256": "998279ccb9180405dd86fda167e8431bf5773001c9587175a8bf20a7692a0ded"
+    }
+  ]
+}

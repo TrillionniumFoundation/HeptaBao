@@ -1,0 +1,24 @@
+{
+  "actual_tcc_permission_hold_still_active": true,
+  "actual_terminal_shape_fix_diff_read": true,
+  "embedded_full_original_retirement_texts_identical_to_root_native_records": true,
+  "embedded_readonly_terminal_final_stdout_identical_to_root_native_records": true,
+  "full_previous_template_and_helper_read": true,
+  "helper": {
+    "bytes": 7540,
+    "sha256": "b21dba79cc64af09b429214204ec49238ccdacd9757bf058265f36ebe19784bd"
+  },
+  "masked_two_transport_assignments_whole_ast_equal": true,
+  "no_restart_init_or_tcc_change": true,
+  "repair_executed": false,
+  "retained_initial_originals_preserved": true,
+  "root_native_readonly_private_file_full_pin_exact": true,
+  "runtime_seconds": 60,
+  "schema": "heptabao.root-stopped-binding-repair-preexecution-review.public.v1",
+  "single_current_binding_files_python_change_only": true,
+  "template": {
+    "bytes": 19194,
+    "sha256": "e5418e8b5a1d16bdf60ba5e736903966a32e167e990820cfce701ac77cc72f78"
+  },
+  "work_seconds": 52
+}

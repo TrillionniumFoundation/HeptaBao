@@ -1,0 +1,1 @@
+{"events":[{"event":"open","future_module":false},{"event":"sqlite3.connect","future_module":false}],"future_cached_before_extraction":true,"new_cold_extraction_succeeded":true,"undeclared_read_and_connection_still_refused":true}

@@ -1,0 +1,47 @@
+{
+  "all_four_original_waits_once_no_live_groups": true,
+  "bootstrap_command_zero_is_not_server_success": true,
+  "cleanup_failure_codes": [],
+  "elapsed_seconds": 15.392575209029019,
+  "fd_closed": 79,
+  "file_absence_independent_reconciliation_pending": true,
+  "followup_default_log_job_id": "1a1b280829b-fc05-7e4c",
+  "followup_default_log_specific_cause_found": false,
+  "followup_gui_state": {
+    "active_count": 0,
+    "code": "EX_CONFIG",
+    "each_run_is_launchd_KeepAlive_attempt_not_repeated_controller_bootstrap": true,
+    "job_id": "1a1b27f81dd-fc05-7e48",
+    "last_exit_code": 78,
+    "observed_runs": 8,
+    "pid_field_present": false,
+    "state": "spawn scheduled"
+  },
+  "formal_kv2_qualified": false,
+  "http_connections_closed": 140,
+  "init_request_not_attempted": true,
+  "job_id": "1a1b27bfa3f-fc05-7e3a",
+  "native_complete_durable_exit": 1,
+  "old_assets_removed": false,
+  "phase_label_is_attempted_phase_not_endpoint_observation": true,
+  "primary_failure_code": "fixed_endpoint_readiness_deadline",
+  "public_result": {
+    "bytes": 5687,
+    "sha256": "15f2676d4aae1d9db9c88fe19f2adc57be6fa871f82c602e9df6328c31ec6fad"
+  },
+  "root_token_nonce_or_shares_not_reached_by_code": true,
+  "schema": "heptabao.root-actual-manager-failure-review.public.v1",
+  "service_running_qualified": false,
+  "short_command_returncodes": [
+    113,
+    113,
+    113,
+    0
+  ],
+  "status": "failed_preserved",
+  "traffic_cutover_performed": false,
+  "whole_stdout": {
+    "bytes": 4189,
+    "sha256": "ad191c325e74cd7cb2708e92d9103c7d00cf598ff051bbb2dfb498a87ea08f1f"
+  }
+}

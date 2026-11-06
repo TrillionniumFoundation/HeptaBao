@@ -1,0 +1,20 @@
+{
+  "authbus_qualified": false,
+  "created_directory_total": 8,
+  "formal_kv2_qualified": false,
+  "hosts": [
+    "rog",
+    "pocket4"
+  ],
+  "old_asset_cleanup_authorized": false,
+  "original_directory_handles_closed_total": 14,
+  "originals_not_overwritten": true,
+  "physical_ha_qualified": false,
+  "restricted_transport_and_private_native_fingerprints_published": false,
+  "rules_file_is_prepared_review_criteria_not_transfer_evidence": true,
+  "schema": "heptabao.actual-manager-followup-public-scope.v1",
+  "scope": "two_actual_create_only_empty_receiver_preparations",
+  "share_or_archive_delivery_performed": false,
+  "traffic_cutover_performed": false,
+  "tree_scope": "new no-base Git object only; no commit or reference change"
+}

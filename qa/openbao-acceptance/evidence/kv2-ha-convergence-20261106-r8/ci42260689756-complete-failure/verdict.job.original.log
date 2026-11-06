@@ -1,0 +1,46 @@
+﻿2026-11-06T20:39:56.6398336Z Current runner version: '2.338.2'
+2026-11-06T20:39:56.6419279Z ##[group]Runner Image Provisioner
+2026-11-06T20:39:56.6420035Z Hosted Compute Agent
+2026-11-06T20:39:56.6420591Z Version: 20261028.624
+2026-11-06T20:39:56.6421148Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-06T20:39:56.6421815Z Build Date: 2026-10-28T21:51:42Z
+2026-11-06T20:39:56.6422414Z Worker ID: {cf0364ac-2bb9-4ca7-b565-b62bdbd7b9c6}
+2026-11-06T20:39:56.6423032Z Region: westus3
+2026-11-06T20:39:56.6423864Z Cloud: Azure
+2026-11-06T20:39:56.6424326Z ##[endgroup]
+2026-11-06T20:39:56.6425793Z ##[group]Operating System
+2026-11-06T20:39:56.6426325Z Ubuntu
+2026-11-06T20:39:56.6426763Z 24.04.5
+2026-11-06T20:39:56.6427312Z LTS
+2026-11-06T20:39:56.6427826Z ##[endgroup]
+2026-11-06T20:39:56.6428336Z ##[group]Runner Image
+2026-11-06T20:39:56.6428847Z Image: ubuntu-24.04
+2026-11-06T20:39:56.6429320Z Version: 20261101.360.1
+2026-11-06T20:39:56.6430464Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-06T20:39:56.6431747Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-06T20:39:56.6432547Z ##[endgroup]
+2026-11-06T20:39:56.6433848Z ##[group]GITHUB_TOKEN Permissions
+2026-11-06T20:39:56.6435685Z Contents: read
+2026-11-06T20:39:56.6436193Z Metadata: read
+2026-11-06T20:39:56.6436768Z ##[endgroup]
+2026-11-06T20:39:56.6438453Z Secret source: Actions
+2026-11-06T20:39:56.6439360Z Cache mode: write
+2026-11-06T20:39:56.6440211Z Prepare workflow directory
+2026-11-06T20:39:56.6706315Z Prepare all required actions
+2026-11-06T20:39:56.6818133Z Complete job name: OpenBao replacement / exact-head-and-merge verdict
+2026-11-06T20:39:56.7708608Z ##[group]Run set -euo pipefail
+2026-11-06T20:39:56.7709326Z [36;1mset -euo pipefail[0m
+2026-11-06T20:39:56.7710000Z [36;1mtest "$QUALIFY_RESULT" = success[0m
+2026-11-06T20:39:56.7710985Z [36;1mif test "$GITHUB_EVENT_NAME" = pull_request; then[0m
+2026-11-06T20:39:56.7712082Z [36;1m  [[ "$PR_HEAD" =~ ^[0-9a-f]{40}$ ]][0m
+2026-11-06T20:39:56.7712920Z [36;1m  [[ "$EXPECTED_SOURCE" =~ ^[0-9a-f]{40}$ ]][0m
+2026-11-06T20:39:56.7713997Z [36;1mfi[0m
+2026-11-06T20:39:56.7715143Z [36;1mprintf 'qualification_matrix_result=%s event=%s\n' "$QUALIFY_RESULT" "$GITHUB_EVENT_NAME"[0m
+2026-11-06T20:39:56.8291832Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T20:39:56.8293027Z env:
+2026-11-06T20:39:56.8293719Z   QUALIFY_RESULT: failure
+2026-11-06T20:39:56.8294420Z   PR_HEAD: 9c68b95b152a468ab378b68730e9e3f04e6a7100
+2026-11-06T20:39:56.8295303Z   EXPECTED_SOURCE: 80a14a873bcabef425aa6891ffaa79fd080c5fde
+2026-11-06T20:39:56.8296118Z ##[endgroup]
+2026-11-06T20:39:56.8505435Z ##[error]Process completed with exit code 1.
+2026-11-06T20:39:56.8707489Z Cleaning up orphan processes

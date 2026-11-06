@@ -1,0 +1,15 @@
+{
+  "base_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "diff_check_passed": true,
+  "exact_new_file_reconstruction": "original_prefix + original_production_suffix + LF + original_observer_block_without_terminal_LF + LF",
+  "ha_bug_fixed_claimed": false,
+  "moved_block_bytes_without_terminal_lf": 3163,
+  "moved_block_sha256": "c1fcd9d26ed3cd0d64547d3a0225137cabfdc32b20154d5d70fb58288d1e86d4",
+  "observer_unchanged_at_final_file_end": true,
+  "one_changed_file": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+  "original_production_prefix_and_suffix_bytes_preserved_in_order": true,
+  "runtime_or_clippy_executed": false,
+  "schema": "heptabao.root-observer-order-review.v1",
+  "separator_rule": "The original two LFs after the observer are replaced by one LF before and one LF after its moved block. Direct block removal alone does not produce byte-identical remainders.",
+  "whole_new_file_sha256": "a516ac803d42d7a23a0f957bc93b7c9d34d0477f9f504cfc381b4c56feec4189"
+}

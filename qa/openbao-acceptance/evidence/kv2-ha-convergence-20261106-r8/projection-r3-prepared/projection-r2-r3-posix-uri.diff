@@ -1,0 +1,29 @@
+--- r2/mac_formal_kv2_allrows_projection.py
++++ r3/mac_formal_kv2_allrows_projection.py
+@@ -33,10 +33,10 @@
+ WORK_END, TOTAL_END = ENTRY + 52, ENTRY + 60
+ MIB, UID = 1024 * 1024, 501
+ ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+-INPUT = ROOT / 'control/formal-kv2-allrows-projection-inputs-r2'
+-OUT = ROOT / 'control/formal-kv2-allrows-projection-execution-r2'
++INPUT = ROOT / 'control/formal-kv2-allrows-projection-inputs-r3'
++OUT = ROOT / 'control/formal-kv2-allrows-projection-execution-r3'
+ CURRENT = Path('/Users/qianqi/heptabao-formal-kv2-current-20261106-r1')
+-DEST = CURRENT / 'projections/formal-kv2-current-r2'
++DEST = CURRENT / 'projections/formal-kv2-current-r3'
+ READBACK = ROOT / 'control/current-sqlite-independent-readback-execution-r1'
+ CURRENT_ID = {'dev': 16777233, 'inode': 593473266, 'uid': 501, 'gid': 20, 'mode': 0o700}
+ PROTOCOL_PIN = {'bytes': 91070, 'sha256': 'f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20'}
+@@ -551,7 +551,11 @@
+ 
+ 
+ def cold_database(path, row):
+-    uri = path.as_uri() + '?mode=ro&immutable=1'
++    # Fixed Mac/POSIX scope: encode the filesystem bytes directly. Path.as_uri
++    # in Python 3.14 lazily imports urllib.request, which this audit forbids.
++    need(os.name == 'posix' and isinstance(path, Path) and path.anchor == '/',
++         'fixed_absolute_posix_database_uri')
++    uri = 'file://' + urllib.parse.quote_from_bytes(os.fsencode(path), safe='/') + '?mode=ro&immutable=1'
+     ALLOWED_URIS.add(uri)
+     connection = None
+     try:

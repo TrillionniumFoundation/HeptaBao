@@ -1,0 +1,62 @@
+{
+  "authoritative_terminal_success_complete_durable_confirmed": true,
+  "directory_fds_closed": 2,
+  "entire_stdout_and_stderr_verified": true,
+  "file_fds_closed": 20,
+  "formal_kv2_qualified": false,
+  "inputs": [
+    {
+      "bytes": 44838,
+      "content_fingerprint_published": true,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    },
+    {
+      "bytes": 91070,
+      "content_fingerprint_published": true,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "formal_kv2_protocol.py",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    },
+    {
+      "bytes": 10944,
+      "content_fingerprint_published": true,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "readback-result.public.json",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    },
+    {
+      "bytes": 731,
+      "content_fingerprint_published": true,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "readback-terminal.original.json",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    },
+    {
+      "bytes": 8569,
+      "content_fingerprint_published": true,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "readback-stdout.original",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    },
+    {
+      "bytes": 1482,
+      "content_fingerprint_published": false,
+      "mode_uid_gid_link_count_exact": true,
+      "name": "fixed-inputs.private.json",
+      "native_full_file_pin_matches": true,
+      "native_version_and_entire_stage_identity_match": true
+    }
+  ],
+  "job_id": "1a1b2b619df-fc05-7f6c",
+  "private_fixed_input_original_bytes_unchanged": true,
+  "private_hashes_not_published": true,
+  "public_result_agrees_with_final_stdout": true,
+  "schema": "heptabao.independent-actual-projection-r3-stage-review.v1"
+}

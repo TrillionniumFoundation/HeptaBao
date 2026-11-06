@@ -1,0 +1,109 @@
+--- stage_manager_inputs.template.original.py
++++ stage_projection_inputs.template.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create-only manager/init inputs; never runs the manager or initialization."""
++"""Create-only allrows projection inputs; never runs projection or any service."""
+ import time
+ ENTRY = time.monotonic()
+ import base64
+@@ -13,16 +13,13 @@
+ import sys
+ 
+ PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control')
+-OUT = PARENT / 'formal-kv2-manager-init-inputs-r1'
++OUT = PARENT / 'formal-kv2-allrows-projection-inputs-r1'
+ EXPECTED_NAMES = {
+-    'manager_start_init.py', 'manager_runtime.py', 'manager_launch_binding.py',
+-    'launch_guard.py', 'init_delivery.py', 'kv2_dr_process_custody.py', 'owned_process.py',
+-    'preparation-result.public.json', 'preparation-runtime-terminal.original.json',
+-    'preparation-runtime.stdout.original', 'preparation.native-envelope.private.json',
+-    'fixed-inputs.public.json',
++    'mac_formal_kv2_allrows_projection.py', 'formal_kv2_protocol.py',
++    'readback-result.public.json', 'readback-terminal.original.json',
++    'readback-stdout.original', 'fixed-inputs.private.json',
+ }
+-PRIVATE_NAME = 'preparation.native-envelope.private.json'
+-FIXED_NAME = 'fixed-inputs.public.json'
++PRIVATE_NAME = 'fixed-inputs.private.json'
+ 
+ END = ENTRY + 52
+ PENDING = None
+@@ -37,9 +34,9 @@
+ FILE_OPENED = 0
+ FILE_CLOSED = 0
+ PUBLIC = {
+-    'schema': 'heptabao.normal-kv2-manager-init-input-stage.v1', 'status': 'failed',
++    'schema': 'heptabao.formal-kv2-allrows-projection-input-stage.v1', 'status': 'failed',
+     'work_seconds': 52, 'runtime_seconds': 60, 'preparation_executed': False,
+-    'private_key_created': False, 'manager_init_executed': False, 'private_content_hash_published': False, 'service_started': False, 'business_source_opened': False,
++    'private_key_created': False, 'projection_executed': False, 'private_content_hash_published': False, 'service_started': False, 'business_source_opened': False,
+     'provider_or_j3160_called': False, 'product_or_sdk_executed': False,
+     'old_assets_or_inputs_replaced': False, 'subprocesses_started': False,
+     'original_count': 0, 'automatic_retry': False, 'formal_kv2_qualified': False,
+@@ -191,8 +188,8 @@
+              and before == filepin(os.fstat(fd)) == filepin(python.lstat()), 'fixed_python_bytes_and_identity')
+     finally:
+         close_owned(fd)
+-    need(type(items) is list and len(items) == 12 and {x['name'] for x in items} == EXPECTED_NAMES,
+-         'exact_twelve_inputs_required')
++    need(type(items) is list and len(items) == 6 and {x['name'] for x in items} == EXPECTED_NAMES,
++         'exact_six_inputs_required')
+     need(sum(x['bytes'] for x in items) <= 400000, 'input_total_cap')
+     for item in items:
+         need(set(item) == {'name', 'bytes', 'sha256', 'text'}
+@@ -218,15 +215,11 @@
+     PUBLIC['input_root_created'] = True
+     PUBLIC['input_root_identity'] = OUT_PIN
+     rows = []
+-    fixed = next(x for x in items if x['name'] == FIXED_NAME)
+-    template = json.loads(fixed['text'])
+-    need(template['private_input_identity'] is None, 'only_unbound_private_identity_template')
+-    PUBLIC['fixed_input_template_bytes'] = fixed['bytes']
+-    PUBLIC['fixed_input_template_sha256'] = fixed['sha256']
+-    ordered = [x for x in items if x['name'] != FIXED_NAME]
+     private_identity = None
+-    for item in ordered:
++    for item in items:
+         check()
++        # Every input is written as its exact original UTF-8 bytes. The private
++        # JSON is never decoded/reencoded and no dynamic identity is inserted.
+         create(item['name'], item['text'].encode('utf-8'))
+         ident = readback(item)
+         row = {'name': item['name'], 'bytes': item['bytes'], 'identity': ident, 'exact_readback': True}
+@@ -236,23 +229,15 @@
+         else:
+             row['sha256'] = item['sha256']
+         rows.append(row)
+-    need(private_identity is not None, 'original_private_envelope_created_and_read_back')
+-    template['private_input_identity'] = private_identity
+-    raw = (json.dumps(template, indent=2, sort_keys=True, allow_nan=False) + '\n').encode()
+-    actual_fixed = {'name': FIXED_NAME, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+-                    'text': raw.decode('utf-8')}
+-    create(FIXED_NAME, raw)
+-    fixed_identity = readback(actual_fixed)
+-    rows.append({'name': FIXED_NAME, 'bytes': len(raw), 'sha256': actual_fixed['sha256'],
+-                 'identity': fixed_identity, 'exact_readback': True})
+-    for item in [*ordered, actual_fixed]:
++    need(private_identity is not None, 'original_private_plan_created_and_read_back')
++    for item in items:
+         need(readback(item) == next(x['identity'] for x in rows if x['name'] == item['name']),
+              'second_original_input_readback_changed')
+     directories_unchanged()
+     check()
+-    PUBLIC.update(status='passed', staged_inputs=12, staged_public_inputs=11, staged_private_inputs=1,
++    PUBLIC.update(status='passed', staged_inputs=6, staged_public_inputs=5, staged_private_inputs=1,
+                   all_input_bytes_modes_and_original_identities_exact=True,
+-                  fixed_input_identity_bound_to_original_staged_private_file=True,
++                  fixed_private_plan_bytes_preserved_without_rewriting=True,
+                   all_original_directories_preserved=True, inputs=rows)
+ 
+ 
+@@ -329,5 +314,5 @@
+     return 0 if PUBLIC['status'] == 'passed' else 1
+ 
+ 
+-# The twelve inputs are appended as one restricted transport literal.
+-# It includes one private metadata envelope: never publish the request/payload hash.
++# The six inputs are appended as one restricted transport literal.
++# It includes one private generation plan: never publish the request/payload hash.

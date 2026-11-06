@@ -1,0 +1,21 @@
+{
+  "actual_job": "1a1b27bfa3f-fc05-7e3a",
+  "authbus_qualified": false,
+  "authoritative_streams": "manager-streams-observation-2.native.json",
+  "authoritative_terminal": "manager-status-observation-2.native.json",
+  "bootstrap_command_zero_is_not_service_success": true,
+  "formal_kv2_qualified": false,
+  "initial_early_status_and_stream_observations_retained": true,
+  "long_launchd_service_state_not_proven_by_short_child_cleanup": true,
+  "new_plist_and_initial_guard_bindings_remain_installed": true,
+  "old_asset_cleanup_authorized": false,
+  "originals_not_overwritten": true,
+  "physical_ha_qualified": false,
+  "restricted_transport_and_private_native_fingerprints_published": false,
+  "schema": "heptabao.actual-manager-followup-public-scope.v1",
+  "scope": "first_actual_manager_init_failed_readiness_before_nonce_init",
+  "source_nonce_root_shares_not_created_by_failed_control_flow": true,
+  "status": "failed_exit1_complete_durable",
+  "traffic_cutover_performed": false,
+  "tree_scope": "new no-base Git object only; no commit or reference change"
+}

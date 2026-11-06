@@ -1,0 +1,164 @@
+{
+  "at_most_initial_custody_conclusion": "two exact remote share copies independently read back on specified hosts",
+  "exact_two_transfers": [
+    {
+      "expected_before": "absent",
+      "expected_gid": 1000,
+      "expected_mode_integer": 384,
+      "expected_nlink": 1,
+      "expected_uid": 1000,
+      "host": "rog",
+      "original_receiver_receipt": {
+        "bytes": 1766,
+        "sha256": "b50cc1d8e36de387b1e1aa1890d8455d85b031aa0ebf42004df96d7c01897b42"
+      },
+      "receiver_root": {
+        "identity": {
+          "dev": 66306,
+          "gid": 1000,
+          "inode": 28477336,
+          "kind": "directory",
+          "mode": 448,
+          "uid": 1000
+        },
+        "path": "/home/qian-qi/heptabao-formal-kv2-custody-20261106-r1"
+      },
+      "receiver_share_directory": {
+        "identity": {
+          "dev": 66306,
+          "gid": 1000,
+          "inode": 28477771,
+          "kind": "directory",
+          "mode": 448,
+          "uid": 1000
+        },
+        "path": "/home/qian-qi/heptabao-formal-kv2-custody-20261106-r1/unseal-share"
+      },
+      "role": "share-2",
+      "target": "/home/qian-qi/heptabao-formal-kv2-custody-20261106-r1/unseal-share/unseal.share"
+    },
+    {
+      "expected_before": "absent",
+      "expected_gid": 1000,
+      "expected_mode_integer": 384,
+      "expected_nlink": 1,
+      "expected_uid": 1000,
+      "host": "pocket4",
+      "original_receiver_receipt": {
+        "bytes": 1755,
+        "sha256": "6a7a5d3fc955f48222e26e40c78cb1efa972ef9e26ae07fa70806698b41a120f"
+      },
+      "receiver_root": {
+        "identity": {
+          "dev": 66306,
+          "gid": 1000,
+          "inode": 38930942,
+          "kind": "directory",
+          "mode": 448,
+          "uid": 1000
+        },
+        "path": "/home/alex/heptabao-formal-kv2-custody-20261106-r1"
+      },
+      "receiver_share_directory": {
+        "identity": {
+          "dev": 66306,
+          "gid": 1000,
+          "inode": 38931095,
+          "kind": "directory",
+          "mode": 448,
+          "uid": 1000
+        },
+        "path": "/home/alex/heptabao-formal-kv2-custody-20261106-r1/unseal-share"
+      },
+      "role": "share-3",
+      "target": "/home/alex/heptabao-formal-kv2-custody-20261106-r1/unseal-share/unseal.share"
+    }
+  ],
+  "forbidden_actions": [
+    "no share retrieval or remote job by this review",
+    "no init/unseal/ack/seed/provider requests",
+    "no removal of pending source shares or nonce",
+    "no root token or share1 transfer"
+  ],
+  "identity_rules": {
+    "directory_fields": [
+      "dev",
+      "inode",
+      "uid",
+      "gid",
+      "mode"
+    ],
+    "file_fields": [
+      "dev",
+      "inode",
+      "uid",
+      "gid",
+      "mode",
+      "nlink",
+      "bytes",
+      "mtime_ns",
+      "ctime_ns",
+      "file_type"
+    ],
+    "mode": "accept actual native int; explicit string only parsed as octal; never stringify private pins into a public record",
+    "native_version": "parse original dev:inode:bytes:mtime_ns:ctime_ns using Python exact ints"
+  },
+  "independent_review_input": "only original metadata receipts and private pin envelopes; share bytes are not re-read by the reviewer",
+  "not_proven_by_transfer": [
+    "remote service HA",
+    "actual threshold unseal or third-share recovery",
+    "exclusive 3-host custody while Mac pending copies remain",
+    "durable unattended reboot recovery",
+    "encrypted private storage or complete device-loss recovery",
+    "formal KV2 or AuthBus migration",
+    "safe retirement of source pending copies or init nonce/capsule"
+  ],
+  "public_projection": {
+    "allowed": [
+      "fixed host and share-role labels",
+      "expected and actual file count",
+      "original Runtime job identifiers",
+      "safe path/owner/mode and complete native observation booleans",
+      "source/current/destination whole-byte and identity equality booleans",
+      "complete ACL/xattr observation and expected-policy booleans",
+      "old source copies retained boolean",
+      "separate payload transfer count and completed readback count"
+    ],
+    "forbidden": [
+      "share payload, raw or encoded",
+      "any secret-derived SHA, argv-derived share fingerprint or private closure content SHA",
+      "filled binary read/write request or raw response containing encoded share",
+      "root token or recovery nonce values",
+      "unqualified claims of exclusive share separation or disk-loss recovery"
+    ]
+  },
+  "required_per_transfer_evidence": [
+    "current receiver root and unseal-share directory full identity match their original successful preparation; target is currently absent",
+    "source role path is from actual initialized private closure, no caller-selected alternate",
+    "original source native file_info before read equals actual init private pin; real regular file uid501 gid20 mode0600 nlink1",
+    "binary_read is version-bound offset0 through exact whole file EOF with full length; decode payload only inside function memory",
+    "independently hash full source payload in memory and compare to both private init pin and native source full SHA",
+    "source native file_info after read retains exact version identity bytes and SHA",
+    "destination binary_write is create-only expected_version absent with exact intended0600 and full SHA; no overwrite or retries after unknown mutation",
+    "destination native file_info version/size/full SHA equals successful write receipt and exact source bytes; uid1000 gid1000 mode0600 nlink1 regular nonsymlink",
+    "destination ACL and xattr observation is complete; no extra ACL or xattrs beyond the explicitly accepted empty baseline",
+    "destination binary_read binds the committed original version, reads whole EOF, and independently matches every payload byte/fullSHA in function memory",
+    "destination native file_info after readback remains exact same original version/fullidentity/bytes/SHA",
+    "receiver root and share directory identity after transfer remains original dev/inode/uid/gid/mode",
+    "temporary payload references are discarded after each single-share transfer; no combined plaintext multi-share file, request dump or archive is persisted"
+  ],
+  "requires_actual_init_success": {
+    "job_id": "1a1b27bfa3f-fc05-7e3a",
+    "private_closure": "full independent native version/identity/bytes/SHA pinned to actual initialized public closure identity",
+    "result_and_final_stdout": "initialized_sealed_held,3shares,threshold2,matching source/data generation and complete original FD/short-process cleanup",
+    "terminal": "succeeded exit0 non-timeout non-cancel complete durable confirmed"
+  },
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-share-transfer-evidence-rules.v1",
+  "source_roles": {
+    "share-2": "pending-share-2/unseal.share",
+    "share-3": "pending-share-3/unseal.share"
+  },
+  "status": "prepared_no_share_read_or_transfer_performed",
+  "unknown_mutation_rule": "hold original operation; reconcile same target/version/readback through read-only native observations; never rewrite or replace a target to produce success"
+}

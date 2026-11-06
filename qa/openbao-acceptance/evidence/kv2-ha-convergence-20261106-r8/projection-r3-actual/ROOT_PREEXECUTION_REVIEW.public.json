@@ -1,0 +1,46 @@
+{
+  "actual_r2_uri_code_only_diagnostic_job": "1a1b2abac6e-fc05-7f3b",
+  "cold_database_after_uri_setup_ast_unchanged": true,
+  "local_guard_original_result_and_stderr_verified": true,
+  "local_guards_count": 11,
+  "new_controller_bytes": 44838,
+  "new_controller_sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02",
+  "original_audit_unchanged": true,
+  "private_fingerprints_published": false,
+  "private_plan_exact_r1_r2_original_bytes": true,
+  "public_inputs": [
+    {
+      "bytes": 44838,
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+    },
+    {
+      "bytes": 91070,
+      "name": "formal_kv2_protocol.py",
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    },
+    {
+      "bytes": 10944,
+      "name": "readback-result.public.json",
+      "sha256": "f0db2d9807b73fa7723b1030ddc9c4d70dd7fbb077855cafe560988d0dfff397"
+    },
+    {
+      "bytes": 731,
+      "name": "readback-terminal.original.json",
+      "sha256": "b2f396467eed32d27d71a3cf13de64341152f4bf980cae4e6d738d4a81a8fd51"
+    },
+    {
+      "bytes": 8569,
+      "name": "readback-stdout.original",
+      "sha256": "b096dd4d4faa34eeb7e73af5036ca0e28aff209c58f03c53c0b5da3f15a76bcb"
+    }
+  ],
+  "remote_projection_pass_claimed": false,
+  "request_payload_or_digest_published": false,
+  "runtime_exact_private_and_public_input_pin_arguments": true,
+  "schema": "heptabao.root-projection-r3-preexecution-review.v1",
+  "six_transport_payloads_exact_local_raw_bytes": true,
+  "stage_template_changes_only_new_create_only_input_path": true,
+  "whole_module_ast_unchanged_except_three_generation_paths_and_exact_uri_setup": true,
+  "work52_runtime60_nice5_unchanged": true
+}

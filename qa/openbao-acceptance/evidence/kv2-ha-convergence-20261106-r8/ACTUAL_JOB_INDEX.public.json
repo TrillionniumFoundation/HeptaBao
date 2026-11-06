@@ -1,0 +1,160 @@
+{
+  "jobs": [
+    {
+      "host": "mac",
+      "job_id": "1a1b20a271e-fc05-7c28",
+      "observed_outcome": "succeeded",
+      "operation": "whole_current_capture",
+      "scope": "Complete current source encrypted capture and cold restore; inherited r7 evidence"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2364646-fc05-7cfa",
+      "observed_outcome": "succeeded",
+      "operation": "whole_current_independent_readback",
+      "scope": "11/11 full readback; no live-source freshness or writer fence claim"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2643b65-fc05-7dde",
+      "observed_outcome": "succeeded",
+      "operation": "layout_tls_preparation",
+      "scope": "19 directories, normal binaries and TLS/config, no product start"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b279f85f-fc05-7e30",
+      "observed_outcome": "succeeded",
+      "operation": "manager_inputs_stage",
+      "scope": "11 public and one private-metadata input, no init"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b27bfa3f-fc05-7e3a",
+      "observed_outcome": "failed_exit_1",
+      "operation": "first_manager_and_init_attempt",
+      "scope": "Bootstrap returned 0; readiness refused; zero init requests; phase label is not endpoint evidence"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b284eb8a-fc05-7e61",
+      "observed_outcome": "succeeded",
+      "operation": "tcc_cause_readonly_log",
+      "scope": "20 original kernel denial lines for T5 stdout log"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b286bcbf-fc05-7e6a",
+      "observed_outcome": "failed_exit_1",
+      "operation": "failed_manager_readonly_r1",
+      "scope": "Read-only base Python role mismatch gate"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28aaaf3-fc05-7e83",
+      "observed_outcome": "succeeded",
+      "operation": "failed_manager_readonly_r2",
+      "scope": "Empty data and absent five init materials, actual base-launcher mismatch recorded"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28d5d67-fc05-7e99",
+      "observed_outcome": "succeeded",
+      "operation": "candidate_before_bootout",
+      "scope": "Exact candidate; spawn scheduled; no active PID; 39 launchd runs"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28ed7a1-fc05-7e9f",
+      "observed_outcome": "succeeded",
+      "operation": "candidate_bootout",
+      "scope": "Exact new gui/501 label only; zero output"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28fb493-fc05-7ea2",
+      "observed_outcome": "failed_expected_exit_113",
+      "operation": "candidate_after_bootout",
+      "scope": "Exact no-such-service stderr; native failed status preserved"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b295b02c-fc05-7ec7",
+      "observed_outcome": "succeeded",
+      "operation": "stopped_python_binding_repair",
+      "scope": "Only files.python changed; preserved old and initial binding; no init/start"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28bcb10-fc05-7e8d",
+      "observed_outcome": "succeeded",
+      "operation": "projection_r1_input_stage",
+      "scope": "Six original inputs staged"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b28e5933-fc05-7e9d",
+      "observed_outcome": "failed_exit_1",
+      "operation": "projection_r1_execution",
+      "scope": "0/8 gates; audit refusal before generation/DB access; no SQLite connections"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b29a08e5-fc05-7edc",
+      "observed_outcome": "succeeded_expected_refusal",
+      "operation": "projection_r1_cold_import_diagnostic",
+      "scope": "Code-only exact stdlib __future__ open refusal, no business IO"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b29f185a-fc05-7efb",
+      "observed_outcome": "succeeded",
+      "operation": "projection_r2_input_stage",
+      "scope": "Six original inputs independently checked"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2a14402-fc05-7f09",
+      "observed_outcome": "failed_exit_1",
+      "operation": "projection_r2_execution",
+      "scope": "2/8 gates; audit refusal before SQLite; 40/40 FDs closed"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2abac6e-fc05-7f3b",
+      "observed_outcome": "succeeded_expected_refusal",
+      "operation": "projection_r2_cold_uri_diagnostic",
+      "scope": "Code-only exact urllib.request open refusal, two original code FDs retired"
+    },
+    {
+      "host": "rog",
+      "job_id": "1a1b25235a5-fc05-7d82",
+      "observed_outcome": "succeeded",
+      "operation": "rog_empty_custody_receiver",
+      "scope": "Only four private directories; zero shares/archive transferred"
+    },
+    {
+      "host": "pocket4",
+      "job_id": "1a1b252becf-fc05-7d84",
+      "observed_outcome": "succeeded",
+      "operation": "pocket4_empty_custody_receiver",
+      "scope": "Only four private directories; zero shares/archive transferred"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2b619df-fc05-7f6c",
+      "observed_outcome": "succeeded",
+      "operation": "projection_r3_input_stage",
+      "scope": "All six raw inputs independently verified; 20 file and 2 directory FDs retired"
+    },
+    {
+      "host": "mac",
+      "job_id": "1a1b2b773d7-fc05-7f73",
+      "observed_outcome": "succeeded",
+      "operation": "projection_r3_execution",
+      "scope": "8/8 current-row projection checks; all nine rows; six SQLite and 66 FDs closed. Independent root row commitments/native output readback passed. No product API or formal KV2 qualification."
+    }
+  ],
+  "note": "Job status labels are explicit summaries; original native terminal objects remain authoritative. Success of a refusal diagnostic or empty receiver does not qualify product behavior.",
+  "schema": "heptabao.actual-job-index.v8"
+}

@@ -1,0 +1,343 @@
+{
+  "admission_cap_seconds": 60,
+  "admission_seconds_from_new_original_entry": 0.3671679589897394,
+  "all_archive_chunks_authenticated_in_exact_order": true,
+  "all_bound_verifier_inputs_unchanged": true,
+  "all_cold_copy_handles_retired": true,
+  "all_existing_nonempty_databases_cold_verified": true,
+  "all_known_writers_fenced": false,
+  "all_safety_files_and_declared_absences_verified": true,
+  "application_boot_or_client_routing_qualified": false,
+  "archive": {
+    "absent_files": 7,
+    "archive_tree_files": 792,
+    "ciphertext_chunk_bytes": 4371275284,
+    "declared_files": 19,
+    "declared_plaintext_bytes": 3278398048,
+    "encrypted_chunks": 790,
+    "every_chunk_authenticated": true,
+    "key_tree_files": 1,
+    "no_missing_or_extra_archive_files": true,
+    "ordered_chunk_inventory_complete": true,
+    "present_files": 12
+  },
+  "archive_authentication_cap_seconds": 300,
+  "authbus_qualified": false,
+  "automatic_retry": false,
+  "baseline_configuration_controlled_projection_verified": true,
+  "candidate_workspace_independently_verified": false,
+  "captured_agent_count": 5,
+  "cleanup_failure_codes": [],
+  "cold_connections_closed": 12,
+  "cold_connections_opened": 12,
+  "cold_sqlite": {
+    "capture": {
+      "absent_families_verified": 3,
+      "agent_auth_stores_nonempty": 5,
+      "all_agent_auth_state_rows": 4,
+      "all_agent_auth_store_rows": 5,
+      "database_families": 9,
+      "empty_markers_verified": 0,
+      "nonempty_cold_checked": 6,
+      "rows": [
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 0,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 1,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 2,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 3,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 4,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 5,
+          "kind": "shared",
+          "state": "cold_database_verified"
+        },
+        {
+          "index": 6,
+          "kind": "quarantine",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 7,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 8,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        }
+      ]
+    },
+    "restore": {
+      "absent_families_verified": 3,
+      "agent_auth_stores_nonempty": 5,
+      "all_agent_auth_state_rows": 4,
+      "all_agent_auth_store_rows": 5,
+      "database_families": 9,
+      "empty_markers_verified": 0,
+      "nonempty_cold_checked": 6,
+      "rows": [
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 0,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 1,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 2,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 3,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 4,
+          "kind": "agent",
+          "state": "cold_database_verified"
+        },
+        {
+          "all_agent_auth_rows_exact_or_not_agent": true,
+          "index": 5,
+          "kind": "shared",
+          "state": "cold_database_verified"
+        },
+        {
+          "index": 6,
+          "kind": "quarantine",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 7,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        },
+        {
+          "index": 8,
+          "kind": "transport",
+          "state": "absent_family_verified"
+        }
+      ]
+    }
+  },
+  "complete_declared_capture_archive_and_existing_restore_verified": true,
+  "consumed_data_file_identity_count": 817,
+  "consumed_input_observation_count": 719,
+  "credential_values_or_content_fingerprints_published": false,
+  "cross_database_atomic_snapshot_qualified": false,
+  "current_credential_validity_qualified": false,
+  "current_two_fixed_volume_root_identities_verified": true,
+  "deadline_fired": false,
+  "deadline_renewed": false,
+  "declared_database_family_count": 9,
+  "declared_safety_file_count": 7,
+  "directory_handle_close_is_runtime_terminal_dependent": true,
+  "dual_copy_hash_and_cold_sqlite_cap_seconds": 300,
+  "durable_completion_authority": "separate_original_independent_runtime_terminal_and_final_stdout_with_900_second_cap",
+  "elapsed_observation_before_receipt_publication": true,
+  "elapsed_observation_before_receipt_publication_seconds": 16.255110959056765,
+  "existing_capture_archive_key_restore_modified": false,
+  "existing_original_generation_identity_preserved": true,
+  "forbidden_effect_attempt_count": 0,
+  "formal_kv2_qualified": false,
+  "full_host_secret_source_inventory_qualified": false,
+  "ha_qualified": false,
+  "independent_attempt_not_original_workflow_extension": true,
+  "independent_fd_inode_target_count": 1529,
+  "installed_public_package_files_equal_fixed_wheels": {
+    "cffi": 29,
+    "cryptography": 119,
+    "pip": 512,
+    "pycparser": 22
+  },
+  "interrupted": false,
+  "known_product_ci_failures_resolved_by_this_work": false,
+  "live_source_freshness_qualified": false,
+  "missing_required_checks": [],
+  "namespace": {
+    "all_declared_absences_verified": true,
+    "baseline_directories": 14,
+    "baseline_present_files": 10,
+    "exact_baseline_and_restore_trees": true,
+    "restore_directories": 15,
+    "restore_present_files_including_phase_receipt": 13
+  },
+  "network_provider_or_j3160_called": false,
+  "new_capture_backup_or_restore_created": false,
+  "new_child_processes_spawned": 0,
+  "new_cleanup_reserve_seconds": 60,
+  "new_runtime_seconds": 900,
+  "new_volume_uuid_query_performed": false,
+  "new_work_seconds": 840,
+  "no_new_restore_or_mutating_core_entrypoint_called": true,
+  "observed_verification_check_count": 11,
+  "old_assets_removed": false,
+  "only_declared_captured_generation": true,
+  "original_capture_workflow_plan_locations_and_result_verified": true,
+  "original_directory_paths_and_handles_preserved": true,
+  "original_successful_workflow_job_id": "1a1b20a271e-fc05-7c28",
+  "original_successful_workflow_volume_uuid_binding_reused": true,
+  "owned_directory_handle_count": 42,
+  "partial_owned_verification_output_retained": false,
+  "passed_verification_check_count": 11,
+  "phases": [
+    {
+      "cap_seconds": 60,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 0.3671686672605574,
+      "phase": "admission",
+      "status": "passed"
+    },
+    {
+      "cap_seconds": 300,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 12.461778624914587,
+      "phase": "archive_authentication",
+      "status": "passed"
+    },
+    {
+      "cap_seconds": 300,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 3.329233792144805,
+      "phase": "existing_copies_full_hash_and_cold_sqlite",
+      "status": "passed"
+    },
+    {
+      "absolute_new_entry_work_ceiling_seconds": 840,
+      "completed_within_original_phase_and_new_attempt_work_deadline": true,
+      "elapsed_seconds": 0.09620941709727049,
+      "phase": "postflight",
+      "status": "passed"
+    }
+  ],
+  "primary_failure_code": null,
+  "product_sdk_or_service_executed": false,
+  "remaining_work_seconds_at_archive_entry": 839.6328316247091,
+  "required_verification_check_count": 11,
+  "restored_configuration_paths_rewritten": false,
+  "safety_files": {
+    "absent_count": 4,
+    "complete_both_copy_full_bytes_and_absences_verified": true,
+    "present_count": 3,
+    "required_count": 7
+  },
+  "schema": "heptabao.independent-current-sqlite-readback.public.v1",
+  "source_and_live_clients_not_consulted": true,
+  "source_data_written": false,
+  "source_device_loss_recovery_qualified": false,
+  "source_live_configuration_opened": false,
+  "source_live_database_opened": false,
+  "status": "passed",
+  "traffic_cutover_performed": false,
+  "verification_checks": [
+    {
+      "check": "fixed_readonly_code_and_environment_bound",
+      "passed": true
+    },
+    {
+      "check": "original_complete_workflow_and_fresh_stage_bound",
+      "passed": true
+    },
+    {
+      "check": "original_private_generation_roots_files_and_plan_bound",
+      "passed": true
+    },
+    {
+      "check": "complete_ordered_authenticated_archive_generation",
+      "passed": true
+    },
+    {
+      "check": "both_existing_copies_full_declared_bytes_and_absences",
+      "passed": true
+    },
+    {
+      "check": "every_nonempty_database_cold_and_all_agent_rows_exact",
+      "passed": true
+    },
+    {
+      "check": "all_seven_safety_and_absent_file_boundaries_covered",
+      "passed": true
+    },
+    {
+      "check": "complete_current_snapshot_denominators_without_truncation",
+      "passed": true
+    },
+    {
+      "check": "all_bound_inputs_consumed_files_and_roots_unchanged",
+      "passed": true
+    },
+    {
+      "check": "all_consumed_plaintext_key_and_input_handles_retired",
+      "passed": true
+    },
+    {
+      "check": "no_live_source_network_process_or_mutation_effect",
+      "passed": true
+    }
+  ],
+  "verification_complete": true,
+  "verification_private_file_identity": {
+    "bytes": 926681,
+    "ctime_ns": 1793991287615111954,
+    "dev": 16777244,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 72750959,
+    "mode": 384,
+    "mtime_ns": 1793991287615111954,
+    "nlink": 1,
+    "uid": 501
+  },
+  "whole_file_readback": {
+    "capture": {
+      "absent_files_verified": 7,
+      "complete_manifest_matches_authenticated_archive": true,
+      "declared_files": 19,
+      "present_files_hashed": 12,
+      "whole_plaintext_bytes_hashed": 3278398048
+    },
+    "restore": {
+      "absent_files_verified": 7,
+      "complete_manifest_matches_authenticated_archive": true,
+      "declared_files": 19,
+      "present_files_hashed": 12,
+      "whole_plaintext_bytes_hashed": 3278398048
+    }
+  }
+}

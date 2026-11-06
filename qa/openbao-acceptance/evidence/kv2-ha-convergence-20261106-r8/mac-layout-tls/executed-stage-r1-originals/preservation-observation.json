@@ -1,0 +1,22 @@
+[
+  {
+    "file": "stage-request.transport.json",
+    "matched": true,
+    "current_sha256": "56f7ef55b557bd1b4f27bb2ccd17ee5509936876f6d4e99fe9d278a99d5740b4"
+  },
+  {
+    "file": "stage_inputs.template.py",
+    "matched": false,
+    "current_sha256": "421de78ab229351f3ebb89a2bccbf34c2679befafcc92c7e758432b9a2eb4010"
+  },
+  {
+    "file": "layout_tls_prepare.py",
+    "matched": false,
+    "current_sha256": "34ebd0ffa292b5b4955d7b75e66a7aee0e21899869c3199c3a8e895323b7cf91"
+  },
+  {
+    "file": "STAGE_INPUT_MANIFEST.public.json",
+    "matched": true,
+    "current_sha256": "b0fa42bd3d2566c2c57a798f222b770f54fd5693edaf31739e47228b0e4b9cbe"
+  }
+]

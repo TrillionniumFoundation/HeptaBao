@@ -1,0 +1,24 @@
+{
+  "both_original_streams_read_completely": true,
+  "both_terminal_zero_complete_durable": true,
+  "default_log_matching_service_inactive_lines": 10,
+  "exact_original_jobs": [
+    "1a1b27f81dd-fc05-7e48",
+    "1a1b280829b-fc05-7e4c"
+  ],
+  "gui_observation": {
+    "active_count": 0,
+    "exit_name": "EX_CONFIG",
+    "keepalive_and_runatload": true,
+    "last_exit_code": 78,
+    "pid_field_present": false,
+    "runs": 8,
+    "state": "spawn scheduled"
+  },
+  "launchd_restarts_are_not_repeated_controller_bootstrap_calls": true,
+  "no_new_service_or_http_operation_by_diagnostics": true,
+  "no_specific_cause_from_exit78_or_service_inactive_lines": true,
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-readonly-launchd-diagnostics-review.v1",
+  "source_reconciliation_not_in_this_frozen_package": true
+}

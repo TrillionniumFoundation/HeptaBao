@@ -1,0 +1,11 @@
+# Projection r2: preserved actual failure and code-only diagnosis
+
+The actual r2 projection failed once at 2 of 8 required checks. It validated the completed independent readback closure and restored capture/database identities, then the unchanged audit refused a filesystem effect before any SQLite connection was attempted. The authoritative failed terminal is complete, durable, non-timeout and non-cancelled. The persisted public receipt agrees with the complete stdout; final stdout closes all 40 registered descriptors. No projection, formal KV2, HA, AuthBus, traffic migration or cleanup qualification was granted.
+
+The independent safe inspection of the private failure/prefix confirms zero connection intent rows and 37 prefix descriptor rows. Only these counts and the fixed failure code are published; private diagnostics, generation manifests, credential values, hashes derived from them, and the private dispatch requests are excluded.
+
+A separate actual Mac code-only job read and re-hashed exactly the two fixed public code files. Under the original audit it called Path.as_uri on a synthetic absolute path, without main, any private plan, a database connection, a child process, a network call or a file write. It observed precisely one denied open of the urllib.request standard-library module, with that module initially uncached. Both original descriptors closed. This is diagnostic success, not a successful projection.
+
+CPython v3.14.3 Path.as_uri imports urllib.request.pathname2url inside the method. The fixed projection first calls that method before registering a SQLite connection. Together, the actual r2 zero-connection failure and the isolated Mac refusal identify the unexpected lazy import. The subsequent r3 proposal uses explicit encoding of absolute POSIX filesystem bytes; it does not relax the audit. r3 execution is outside this package.
+
+All native wrappers and extracted streams are exact original bytes. Stage and projection starts containing the fixed private input fingerprint remain private. The complete public stage result contains the private input size/identity, but no content fingerprint. The manifest is a new safe-package index; it does not replace either prior prepared tree or either failed remote generation.

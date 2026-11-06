@@ -1,0 +1,28 @@
+--- reviewed-r1/layout_tls_prepare.py
++++ final-r2/layout_tls_prepare.py
+@@ -133,6 +133,7 @@
+         self.signal_number: int | None = None
+         self.deadline_fired = False
+         self.old_handlers: dict[int, Any] = {}
++        self.timer_owned = False
+ 
+     def check(self) -> None:
+         if self.signal_number is not None or self.deadline_fired or time.monotonic() >= self.end:
+@@ -159,11 +160,15 @@
+         for signum in (signal.SIGALRM, signal.SIGTERM, signal.SIGINT):
+             self.old_handlers[signum] = signal.getsignal(signum)
+             signal.signal(signum, self.interrupt)
+-        signal.setitimer(signal.ITIMER_REAL, max(0.000001, self.end - time.monotonic()))
++        with self.critical():
++            self.timer_owned = True
++            signal.setitimer(signal.ITIMER_REAL, max(0.000001, self.end - time.monotonic()))
+         self.check()
+ 
+     def finish(self) -> None:
+-        signal.setitimer(signal.ITIMER_REAL, 0.0)
++        if self.timer_owned:
++            signal.setitimer(signal.ITIMER_REAL, 0.0)
++            self.timer_owned = False
+         for signum, old in self.old_handlers.items():
+             signal.signal(signum, old)
+ 

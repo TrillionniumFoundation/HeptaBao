@@ -1,0 +1,13 @@
+{
+  "authbus_qualified": false,
+  "earlier_failure_and_EX_CONFIG_records_preserved": true,
+  "formal_kv2_qualified": false,
+  "full_original_terminal_and_fixed_query_are_public": true,
+  "not_a_repair_or_restart_result": true,
+  "physical_ha_qualified": false,
+  "public_projection_is_explicit_subset_not_full_original": true,
+  "schema": "heptabao.actual-tcc-diagnostic-public-scope.v1",
+  "scope": "later_single_readonly_native_log_job_supplement",
+  "traffic_cutover": false,
+  "whole_original_stream_hash_or_private_attribution_not_published": true
+}

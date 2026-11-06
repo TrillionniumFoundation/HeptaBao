@@ -1,0 +1,13 @@
+test_artifact_stream_copy_has_independent_inode_and_full_digest (test_layout_tls_prepare.PreparationGuards.test_artifact_stream_copy_has_independent_inode_and_full_digest) ... ok
+test_create_only_private_directory_and_fsynced_readback (test_layout_tls_prepare.PreparationGuards.test_create_only_private_directory_and_fsynced_readback) ... ok
+test_existing_symlink_and_hardlink_targets_never_overwritten (test_layout_tls_prepare.PreparationGuards.test_existing_symlink_and_hardlink_targets_never_overwritten) ... ok
+test_input_json_rejects_ambiguous_fields_and_preserves_nanosecond_integers (test_layout_tls_prepare.PreparationGuards.test_input_json_rejects_ambiguous_fields_and_preserves_nanosecond_integers) ... ok
+test_partial_write_failure_preserves_partial_file_and_closes_original (test_layout_tls_prepare.PreparationGuards.test_partial_write_failure_preserves_partial_file_and_closes_original) ... ok
+test_path_swap_is_detected_and_only_original_directory_fd_is_closed (test_layout_tls_prepare.PreparationGuards.test_path_swap_is_detected_and_only_original_directory_fd_is_closed) ... ok
+test_real_tls_chain_key_separation_sans_lifetimes_and_wrong_key_rejection (test_layout_tls_prepare.PreparationGuards.test_real_tls_chain_key_separation_sans_lifetimes_and_wrong_key_rejection) ... ok
+test_registered_fd_birth_and_sticky_signal_survive_caller_interruption (test_layout_tls_prepare.PreparationGuards.test_registered_fd_birth_and_sticky_signal_survive_caller_interruption) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.034s
+
+OK

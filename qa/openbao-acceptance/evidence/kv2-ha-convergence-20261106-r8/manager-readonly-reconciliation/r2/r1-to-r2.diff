@@ -1,0 +1,44 @@
+--- r1/controller.public.template.py
++++ r2/controller.public.template.py
+@@ -20,7 +20,7 @@
+ 
+ ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1')
+ INPUTS = ROOT / 'control/formal-kv2-manager-init-inputs-r1'
+-OUTPUT = ROOT / 'control/formal-kv2-failed-manager-readonly-r1'
++OUTPUT = ROOT / 'control/formal-kv2-failed-manager-readonly-r2'
+ SERVICE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1')
+ AUTHORITY = Path('/Users/qianqi/heptabao-formal-kv2-current-20261106-r1/service-authority-current-20261106-r1')
+ VENV = ROOT / 'control/formal-kv2-python-env-50-0-2-r3/venv'
+@@ -135,10 +135,28 @@
+          and plist['StandardOutPath'] == str(SERVICE / 'logs/stdout.log')
+          and plist['StandardErrorPath'] == str(SERVICE / 'logs/stderr.log'),
+          'installed_plist_exact_normal_launcher')
+-    # Homebrew's intentional public executable symlink must resolve to the
+-    # same real executable whose full original bytes were just verified.
+-    need(Path(plist['ProgramArguments'][0]).resolve(strict=True) == Path(files['python']['path']),
+-         'actual_launcher_resolves_to_original_python')
++    # Controller/venv and launchd base interpreter are distinct roles.
++    # Verify the base launcher's public bytes without concealing a mismatch.
++    launcher_path = Path(plist['ProgramArguments'][0]).resolve(strict=True)
++    launcher_identity = runtime.file_identity(launcher_path.lstat())
++    need(launcher_identity['file_type'] == stat.S_IFREG
++         and launcher_identity['uid'] in (0, 501) and launcher_identity['nlink'] == 1
++         and launcher_identity['mode'] & 0o022 == 0 and launcher_identity['mode'] & 0o111 != 0,
++         'actual_base_launcher_regular_executable')
++    launcher_pin = {'path': str(launcher_path), 'identity': launcher_identity,
++                    'bytes': 34640,
++                    'sha256': 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'}
++    io.read_file(launcher_pin, maximum=1048576, private=False, materialize=False)
++    private['actual_base_launcher'] = launcher_pin
++    private['original_controller_venv_python'] = files['python']
++    public['actual_base_launcher_public_pin'] = launcher_pin
++    public['guard_python_path_matches_actual_base_launcher'] = (
++        launcher_path == Path(files['python']['path']))
++    public['unresolved_configuration_conflicts'] = ([] if
++        public['guard_python_path_matches_actual_base_launcher'] else
++        ['guard_python_binding_uses_controller_venv_instead_of_plist_base_launcher'])
++    # Completing this read-only observation does not resolve the separately
++    # retained exact-path mismatch or authorize a launch/initialization.
+     data = io.hold(SERVICE / 'data', binding['data_pin'])
+     need(os.listdir(data['fd']) == [], 'original_data_still_empty')
+     missing = []

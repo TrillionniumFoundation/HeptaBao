@@ -1,0 +1,97 @@
+{
+  "actual_r3_outcome": "not_observed_by_this_review",
+  "controller_or_remote_jobs_executed_by_reviewer": 0,
+  "formal_kv2_qualified": false,
+  "independent_checks": {
+    "ALLOWED_URIS_connection_and_finally_removal_unchanged": true,
+    "actual_unified_diff_equals_frozen_diff": true,
+    "all_other_functions_and_classes_ast_equal": true,
+    "audit_ast_equal": true,
+    "cold_database_body_after_uri_setup_ast_equal": true,
+    "filesystem_byte_uri_encoding_not_lazy_Path_as_uri": true,
+    "literal_query_fragment_percent_are_encoded_as_path_bytes": true,
+    "only_INPUT_OUT_DEST_and_cold_database_changed": true,
+    "original_deadline_and_resource_custody_unchanged": true,
+    "same_fixed_readonly_immutable_query": true,
+    "single_slash_absolute_posix_Path_admission": true,
+    "stage_only_OUT_changed": true,
+    "whole_module_ast_equal_after_only_those_changes_normalized": true
+  },
+  "inputs": [
+    {
+      "bytes": 44838,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/mac_formal_kv2_allrows_projection.py",
+      "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+    },
+    {
+      "bytes": 1570,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/projection-r2-r3-posix-uri.diff",
+      "sha256": "91f8e4a37ee189e028e4f4134a057d8ecd7cd2bd8fa4847a2dd61c95e84170c6"
+    },
+    {
+      "bytes": 1638,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/SOURCE_REVIEW.public.json",
+      "sha256": "34399ff8c7b76365698d4d569e2cd38b283cf272f66e7647d3eadffc176bfa9f"
+    },
+    {
+      "bytes": 4613,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/test_projection_posix_uri.py",
+      "sha256": "d9849f353c2bf6e374dec33dddf80495fdaa2f0447593ea487861451924a3d0f"
+    },
+    {
+      "bytes": 1483,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/cpython_v3143_pathname2url.reference.py",
+      "sha256": "0c56f2caa1eaef1f66e8c01849abac5cf98eef12a18fd743191cb3e0223f9470"
+    },
+    {
+      "bytes": 12924,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/input-stage/stage_projection_inputs.template.py",
+      "sha256": "575b116dabfc4bd51514919bc0834300cd3f7c334324b2e3a325e7c06d0e1352"
+    },
+    {
+      "bytes": 508,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/input-stage/stage-template-r2-r3.diff",
+      "sha256": "f0b0639bea2c7470c17ba8bd32b7fc35d6285c79f728e638706a36db9f1aeb50"
+    },
+    {
+      "bytes": 2989,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/guards-r1/result.public.json",
+      "sha256": "b774539baf169a5ae6641b3d8a42024719c43daa25ba9e5f2af30740f2b363f8"
+    },
+    {
+      "bytes": 2266,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/guards-r1/stderr.original",
+      "sha256": "58816f44306ac55c2efdd7b3aff5049c08e6d4053492c04d78d29e46d7afde6a"
+    },
+    {
+      "bytes": 928,
+      "path": "/tmp/heptabao-formal-kv2-projection-20261106-r3/guards-r1/posix-uri.stdout.original",
+      "sha256": "1933db213d6b90b4f223fad17edefd5c1184f1b895e3eaed7c971390ab1776f5"
+    }
+  ],
+  "observed_existing_local_guards": {
+    "errors": 0,
+    "failures": 0,
+    "invalid_scope_cases": 3,
+    "new_uri_fixture_real_sqlite_connections": 0,
+    "new_uri_fixture_urllib_request_imported": false,
+    "new_uri_reference_cases": 8,
+    "not_actual_Mac_business_projection": true,
+    "not_rerun_by_reviewer": true,
+    "skips": 0,
+    "tests": 11
+  },
+  "old_main": {
+    "bytes": 44499,
+    "path": "/tmp/heptabao-formal-kv2-projection-20261106-r2/mac_formal_kv2_allrows_projection.py",
+    "sha256": "e79a8956a14b8c85935ea371a5cbd844d735fbf6ce8c6bb21836d9fda249307c"
+  },
+  "private_stage_payload": {
+    "not_reproduced_in_report": true,
+    "root_owns_complete_six_input_native_reconciliation": true
+  },
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-projection-r3-posix-uri-review.v1",
+  "scope": "Read-only static narrow r2-to-r3 review and inspection of existing local guard originals. No controller, tests or remote jobs executed by reviewer.",
+  "static_blockers": []
+}

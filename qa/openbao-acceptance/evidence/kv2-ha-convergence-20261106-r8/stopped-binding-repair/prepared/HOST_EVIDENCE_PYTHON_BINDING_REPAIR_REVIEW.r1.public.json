@@ -1,0 +1,29 @@
+{
+  "boundary": "does not resolve actual RemovableVolumes TCC denial and does not authorize manager restart",
+  "controller_not_reviewed_or_authorized_by_this_component_review": true,
+  "formal_kv2_qualified": false,
+  "new_tests_remote_processes_or_mutations_by_review": false,
+  "required_outer_authority": [
+    "exact actual failed attempt and readonly r2 generations",
+    "original before-query, bootout and after-query complete native terminals",
+    "fresh same-job gui501 exact-label absence immediately before invoking publish",
+    "current original empty data and five init materials absent"
+  ],
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-stopped-python-binding-repair-review.v1",
+  "source": {
+    "bytes": 7540,
+    "sha256": "b21dba79cc64af09b429214204ec49238ccdacd9757bf058265f36ebe19784bd"
+  },
+  "status": "no_component_level_execution_blocker_in_exact_source",
+  "verified": [
+    "pure replacement accepts fixed initial_empty 2root/file shape and changes only files.python; original state/config/data/seal remain unchanged",
+    "new base launcher fixed real path,34640 bytes,fullSHA and exact ten-field native identity uid501 gid80 mode0755 nlink1",
+    "old current and retained initial archive fully read and byte-equal before preparation",
+    "old current copied create-only/fsynced/fullreadback; separate pending inode and fsynced durable mutation intent retained",
+    "single os.replace through held original manager directory; same pending inode/all metadata except rename ctime and exact bytes verified afterward",
+    "all old current read FDs verified unlinked and removed only from path expectations; remain in original handle registry until one final close",
+    "original initial archive re-read and current bound file fullreadback; unknown publication or cleanup failure cannot trigger retry",
+    "no bootstrap,HTTP,init,unseal,permission change or deletion and no root/share content access"
+  ]
+}

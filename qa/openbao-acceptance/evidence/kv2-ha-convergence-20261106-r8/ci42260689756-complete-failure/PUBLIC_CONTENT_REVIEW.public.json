@@ -1,0 +1,50 @@
+{
+  "limitation": "The listed checks and review do not assert a general secret-detection guarantee; all observed checkout authorization values were already masked in the originals.",
+  "logs": [
+    {
+      "all_observed_checkout_authorization_values_masked_by_original_ci": true,
+      "path": "head.job.original.log",
+      "pattern_counts": {
+        "aws_access_key_value": 0,
+        "bao_vault_token_value": 0,
+        "github_token_value": 0,
+        "private_key_pem": 0
+      },
+      "reviewed_checkout_authorization_lines": 2
+    },
+    {
+      "all_observed_checkout_authorization_values_masked_by_original_ci": true,
+      "path": "merge.job.original.log",
+      "pattern_counts": {
+        "aws_access_key_value": 0,
+        "bao_vault_token_value": 0,
+        "github_token_value": 0,
+        "private_key_pem": 0
+      },
+      "reviewed_checkout_authorization_lines": 2
+    },
+    {
+      "all_observed_checkout_authorization_values_masked_by_original_ci": true,
+      "path": "verdict.job.original.log",
+      "pattern_counts": {
+        "aws_access_key_value": 0,
+        "bao_vault_token_value": 0,
+        "github_token_value": 0,
+        "private_key_pem": 0
+      },
+      "reviewed_checkout_authorization_lines": 0
+    }
+  ],
+  "original_logs_modified_or_redacted": false,
+  "schema": "heptabao.ci42260689756-public-content-review.v1",
+  "scope": "Actual original logs from the public repository CI, plus original public run/job API wrappers; no Mac private inputs or runtime closure materials.",
+  "wrapper_review": {
+    "credential_named_fields_detected": false,
+    "credential_url_values_detected": false,
+    "files": [
+      "metadata/full-ci-run-latest.native.json",
+      "metadata/full-ci-jobs-latest.native.json"
+    ],
+    "private_key_pem_detected": false
+  }
+}

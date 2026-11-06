@@ -1,0 +1,12 @@
+{
+  "authoritative_product_originals_modified": false,
+  "cause": "native file_info mode is an integer; int(value,8) requires a string",
+  "correction": "accept the actual native integer mode; only explicitly string mode uses octal parsing",
+  "exception_type": "TypeError",
+  "independent_final_review_saved_separately": true,
+  "initial_local_review_exit_code": 1,
+  "kind": "reviewer_local_metadata_parser_error",
+  "product_preparation_failed": false,
+  "remote_action_or_key_read_repeated": false,
+  "schema": "heptabao.local-evidence-review-parser-correction.v1"
+}

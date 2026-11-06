@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.projection-cold-audit-boundary-local-guards.v1",
+  "expected_tests": 10,
+  "prior_resource_and_projection_guards": 8,
+  "new_fresh_isolated_cold_audit_guards": 2,
+  "returncode": 0,
+  "status": "passed",
+  "elapsed_seconds": 0.36572793000232195,
+  "inputs": {
+    "/tmp/heptabao-formal-kv2-projection-20261106-r2/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 44499,
+      "sha256": "e79a8956a14b8c85935ea371a5cbd844d735fbf6ce8c6bb21836d9fda249307c"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r2/test_projection_boundaries.py": {
+      "bytes": 11590,
+      "sha256": "3211087139695adf63401919624b39fa90de910525b831ae0843f79441f8848f"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r2/test_projection_cold_import.py": {
+      "bytes": 4256,
+      "sha256": "b555d35f730a46f7210977decaad8263b3df5b81c36232182fca9d18dc0aed87"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 44334,
+      "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r1/formal_kv2_protocol.py": {
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    }
+  },
+  "inputs_unchanged": true,
+  "original_streams": {
+    "new.stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "new.stdout.original": {
+      "bytes": 230,
+      "sha256": "4089681504b67ad280196827cc5d09618b87c822bb6c6898e0c983a19b493093"
+    },
+    "old.stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "old.stdout.original": {
+      "bytes": 124,
+      "sha256": "b1e40d5d6099ae9ab490b59adc161f94591570b3d96bd3fe52c16273afa91fda"
+    },
+    "stderr.original": {
+      "bytes": 2051,
+      "sha256": "9836b2a0988f904f4eac5552d706d55485491a5320ae1bbab8c68d674c6e5dbf"
+    },
+    "stdout.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "actual_remote_projection_or_generation_accessed": false,
+  "old_r1_actual_failure_changed": false
+}

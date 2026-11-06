@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.original-launch-safe-field-projection.v1",
+  "original_native_preserved_privately": true,
+  "original_request_digest_and_fingerprint_not_published": true,
+  "projection_reconstructed_original_ack": false,
+  "audit_recorded": true,
+  "reused": false,
+  "job": {
+    "id": "1a1b28aaaf3-fc05-7e83",
+    "host": "mac",
+    "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-manager-init-inputs-r1",
+    "env_keys": [],
+    "idempotency_key": "heptabao-mac-failed-normal-manager-readonly-reconciliation-20261106-r2",
+    "launch_state": "launched",
+    "launch_error": null
+  },
+  "launch": {
+    "ok": true,
+    "backend": "detached",
+    "launcher_pid": 70699,
+    "systemd_error": "systemd user units unavailable on this platform"
+  },
+  "request_contains_private_native_metadata": true,
+  "executed_stdin_not_published": true,
+  "public_template_is_private_binding_masked": true
+}

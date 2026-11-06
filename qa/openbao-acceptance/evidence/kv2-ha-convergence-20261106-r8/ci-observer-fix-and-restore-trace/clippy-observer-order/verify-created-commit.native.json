@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"f0e4694e5637415d394916b7590e7deec81e9d71\",\"node_id\":\"C_kwDOUGncwNoAKGYwZTQ2OTRlNTYzNzQxNWQzOTQ5MTZiNzU5MGU3ZGVlYzgxZTlkNzE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f0e4694e5637415d394916b7590e7deec81e9d71\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/f0e4694e5637415d394916b7590e7deec81e9d71\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T20:59:46Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T20:59:46Z\"},\"tree\":{\"sha\":\"76ca6224c9597ab9109e121adf19113ad12509f0\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/76ca6224c9597ab9109e121adf19113ad12509f0\"},\"message\":\"fix(ci): place historical restore test observer after production items\\n\\nMove the existing test-only observer module below both production impl blocks to satisfy clippy::items_after_test_module. Preserve the original module and production segments byte for byte, with explicit separator newline relocation.\\n\\nThe historical restore HTTP 503 observed in workflow 42260689756 remains unresolved. This item-order change does not claim a runtime or HA correctness fix.\",\"parents\":[{\"sha\":\"9c68b95b152a468ab378b68730e9e3f04e6a7100\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9c68b95b152a468ab378b68730e9e3f04e6a7100\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/9c68b95b152a468ab378b68730e9e3f04e6a7100\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "f0e4694e5637415d394916b7590e7deec81e9d71",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f0e4694e5637415d394916b7590e7deec81e9d71",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f0e4694e5637415d394916b7590e7deec81e9d71",
+    "display_title": "f0e4694e5637415d394916b7590e7deec81e9d71",
+    "structuredContent": {
+      "title": "f0e4694e5637415d394916b7590e7deec81e9d71",
+      "content": "{\"sha\":\"f0e4694e5637415d394916b7590e7deec81e9d71\",\"node_id\":\"C_kwDOUGncwNoAKGYwZTQ2OTRlNTYzNzQxNWQzOTQ5MTZiNzU5MGU3ZGVlYzgxZTlkNzE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f0e4694e5637415d394916b7590e7deec81e9d71\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/f0e4694e5637415d394916b7590e7deec81e9d71\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T20:59:46Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T20:59:46Z\"},\"tree\":{\"sha\":\"76ca6224c9597ab9109e121adf19113ad12509f0\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/76ca6224c9597ab9109e121adf19113ad12509f0\"},\"message\":\"fix(ci): place historical restore test observer after production items\\n\\nMove the existing test-only observer module below both production impl blocks to satisfy clippy::items_after_test_module. Preserve the original module and production segments byte for byte, with explicit separator newline relocation.\\n\\nThe historical restore HTTP 503 observed in workflow 42260689756 remains unresolved. This item-order change does not claim a runtime or HA correctness fix.\",\"parents\":[{\"sha\":\"9c68b95b152a468ab378b68730e9e3f04e6a7100\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9c68b95b152a468ab378b68730e9e3f04e6a7100\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/9c68b95b152a468ab378b68730e9e3f04e6a7100\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/f0e4694e5637415d394916b7590e7deec81e9d71"
+    }
+  },
+  "isError": false
+}

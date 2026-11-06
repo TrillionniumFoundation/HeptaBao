@@ -1,0 +1,145 @@
+{
+  "all_failed_generations_retained": true,
+  "files": [
+    {
+      "bytes": 3036,
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "84344d936345e96113282b1b7b0594b66bdaa46b008291ff46bbe376315700f6"
+    },
+    {
+      "bytes": 2264,
+      "path": "README.md",
+      "sha256": "5c6e6b02d24e744f99a99db76e3947a3414f7d8d7d74c73d1f4d0e55f822587d"
+    },
+    {
+      "bytes": 825,
+      "path": "projection/ROOT_PREEXECUTION_REVIEW.public.json",
+      "sha256": "b49d70294a0f78fea30143c8086fb32fc3b0d64ea99349e214927e52d548236e"
+    },
+    {
+      "bytes": 542,
+      "path": "projection/result-file-info.native.original.json",
+      "sha256": "f8d9bc7cf119b78d9f38aaa301bff0d2de188640e62060dadde7c5a52c9290f2"
+    },
+    {
+      "bytes": 2969,
+      "path": "projection/result-read.native.original.json",
+      "sha256": "dc5d1597489e11a8fdc0c2dfc50091a4be40eb2fce97dc9d610d8ab491d6206a"
+    },
+    {
+      "bytes": 1932,
+      "path": "projection/result.public.original.json",
+      "sha256": "1075dabce8639834d37354ca3fd64088697d8abc77a55a83ad5bb29debf1c500"
+    },
+    {
+      "bytes": 0,
+      "path": "projection/runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2520,
+      "path": "projection/runtime.stdout.original",
+      "sha256": "9968a75416fc2e83ee8dd4121dd0cfa0e0d55ceae57f116fff5576381c309176"
+    },
+    {
+      "bytes": 8579,
+      "path": "projection/streams.native.original.json",
+      "sha256": "c56180713d78a26c3bc7eed944085bf65eb6e98bf621fad5c64cb06eb76571e5"
+    },
+    {
+      "bytes": 951,
+      "path": "projection/terminal.native.original.json",
+      "sha256": "7c94075bfe3da57efbf8b13332ad6132322490b90966a8a9de1d5eb0dbc1c4b1"
+    },
+    {
+      "bytes": 698,
+      "path": "stage/ROOT_ACTUAL_STAGE_REVIEW.public.json",
+      "sha256": "156c0348ca016965e8ee8064de87e81a660a7f6b9acb3752c4aef0823b6e1cdd"
+    },
+    {
+      "bytes": 5806,
+      "path": "stage/result-read.native.original.json",
+      "sha256": "3cd4fe379e44c5b3f53ad631ea169b17f72316b841f48d74fab4c7e46215266c"
+    },
+    {
+      "bytes": 4117,
+      "path": "stage/result.public.original.json",
+      "sha256": "cf98633f7b56d943b0d1936697e3bcdab1f7eda1937f9ed3fa21c86fb7c4dca4"
+    },
+    {
+      "bytes": 0,
+      "path": "stage/runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3246,
+      "path": "stage/runtime.stdout.original",
+      "sha256": "cc1a74e8e9afb885e6c2ae9ff60380055d74e29425ee0fd54a3d64f5d4668b43"
+    },
+    {
+      "bytes": 11057,
+      "path": "stage/streams.native.original.json",
+      "sha256": "073e030c06267743f883bb45dad73d78cd3d2466de5c28881a35274ef23d0d4b"
+    },
+    {
+      "bytes": 912,
+      "path": "stage/terminal.native.original.json",
+      "sha256": "b15eac5278c95466eb053b9a128d5edbd6c79cb14c0d72b40301ed7fb3d7b4fb"
+    },
+    {
+      "bytes": 522,
+      "path": "uri-code-only-diagnostic/INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "9aca50f941289efb7f7843271e96a9c54e949b02ef1f0c227a7c9ea4cb6439ff"
+    },
+    {
+      "bytes": 889,
+      "path": "uri-code-only-diagnostic/PLAN.public.json",
+      "sha256": "ab53bd24f3bc3f34a384f9099ebe5231c47cb8c38c863f423ea81c6565c5e861"
+    },
+    {
+      "bytes": 550,
+      "path": "uri-code-only-diagnostic/ROOT_PREEXECUTION_REVIEW.public.json",
+      "sha256": "2cee2684f6e0867e032446b2d3f4b5432d4a947082b001de445c6c61a74f1af4"
+    },
+    {
+      "bytes": 9775,
+      "path": "uri-code-only-diagnostic/RUNTIME_REQUEST.public.json",
+      "sha256": "07689d3e2af59cb66d67e865a12f9f9a60fb87fd73610c67ec0f24a8a75aa564"
+    },
+    {
+      "bytes": 1423,
+      "path": "uri-code-only-diagnostic/actual-start.native.json",
+      "sha256": "09ed7ff42eb4d5e899a03930346d3bbd3c79b2d978e2939e87e16b6c018e996f"
+    },
+    {
+      "bytes": 4895,
+      "path": "uri-code-only-diagnostic/actual-streams.native.json",
+      "sha256": "104add7188c221d123b78f3de86e59878616001dedb3f7291eca1a04b36d9762"
+    },
+    {
+      "bytes": 954,
+      "path": "uri-code-only-diagnostic/actual-terminal.native.json",
+      "sha256": "1faa648e9967c50e49b0591a40fb361b9bb2c1f052b45f8be2fa3d69f0287655"
+    },
+    {
+      "bytes": 9178,
+      "path": "uri-code-only-diagnostic/mac_projection_cold_uri_code_only.py",
+      "sha256": "1a9f096364e19e31ed7c99ee8d08be3f223f1839a595174c768ed54875c8ec57"
+    },
+    {
+      "bytes": 0,
+      "path": "uri-code-only-diagnostic/runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1372,
+      "path": "uri-code-only-diagnostic/runtime.stdout.original",
+      "sha256": "4cecd03d9067bea48075a15f07347f0d3c0ce54992a92c1b019d8a11e02e8368"
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "original_private_content_included": false,
+  "private_content_fingerprints_included": false,
+  "schema": "heptabao.public-evidence-package.v1",
+  "scope": "actual projection r2 failure and separate Mac code-only URI diagnosis"
+}

@@ -1,0 +1,36 @@
+{
+  "actual_ca_and_leaf_signature_verified_from_readback": true,
+  "actual_nonce_root_or_share_created": false,
+  "actual_normal_binary_copies_verified": 2,
+  "actual_service_or_tls_endpoint_qualified": false,
+  "exit_code": 0,
+  "formal_kv2_qualified": false,
+  "job_id": "1a1b2643b65-fc05-7dde",
+  "leaf_dns_sans": [
+    "localhost"
+  ],
+  "leaf_eku": [
+    "serverAuth"
+  ],
+  "leaf_ip_sans": [
+    "127.0.0.1"
+  ],
+  "leaf_not_after_utc": "2027-11-06T19:44:36+00:00",
+  "leaf_public_der_sha256": "0bd8bab80fe2b8b5b44b6ccc5da2fccbbbf163dd084d6adcf62a45d66575da9b",
+  "native_acl_digest_equals_empty_bytes": true,
+  "native_xattr_names_empty": true,
+  "new_directories": 19,
+  "owned_directory_handles_closed": 23,
+  "owned_file_handles_closed": 35,
+  "private_file_uid": 501,
+  "private_files_mode": "0600",
+  "private_files_single_link": true,
+  "private_tls_keys_native_metadata_and_private_original_pins_verified": 2,
+  "public_bytes": 4086,
+  "public_sha256": "6d803e1e5a684dc20abbc3c51fac9632aa497a133455ab0a4798fc79a251a638",
+  "root_review_received_key_metadata_and_digests_only": true,
+  "schema": "heptabao.root-actual-layout-tls-preparation-review.v1",
+  "status": "prepared_not_started",
+  "stdout_bytes": 3951,
+  "stdout_sha256": "fb3848ff0e04c0a0145b7a6c6afddccd5739916ae24cb7279d0b82c08e11e30d"
+}

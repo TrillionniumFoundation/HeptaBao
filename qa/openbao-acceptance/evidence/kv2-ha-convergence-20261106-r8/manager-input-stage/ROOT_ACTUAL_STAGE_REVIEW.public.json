@@ -1,0 +1,29 @@
+{
+  "actual_fixed_inputs": {
+    "bytes": 2216,
+    "sha256": "a012b694832272711bfee5ba9b0200743288c5cef674a89134a0b3899819b597"
+  },
+  "actual_input_count": 12,
+  "fixed_only_actual_private_identity_replaced": true,
+  "job_id": "1a1b279f85f-fc05-7e30",
+  "manager_or_init_executed": false,
+  "native_all_inputs_full_sha_size_version_mode_owner_nlink_exact": true,
+  "native_terminal_complete_durable_exit_zero": true,
+  "owned_directory_handles_closed": 2,
+  "owned_file_handles_closed": 38,
+  "owned_file_handles_opened": 38,
+  "private_inputs": 1,
+  "public_inputs": 11,
+  "public_native_start_projection_required_to_exclude_private_request_digest": true,
+  "public_receipt": {
+    "bytes": 7156,
+    "sha256": "73deb1ddd01ab41f66dda72e7769661a3cf85cee8b828f7c38cc208965884c86"
+  },
+  "raw_final_stdout": {
+    "bytes": 5335,
+    "sha256": "cdfbd41459bf013e6bb0636b9f769b757e62a82a2f1af2a603d7d37a9549897b"
+  },
+  "schema": "heptabao.root-actual-manager-input-stage-review.public.v1",
+  "status": "verified",
+  "transport_field_mapping": "original stdin_text string dispatched as stdin without changing content"
+}

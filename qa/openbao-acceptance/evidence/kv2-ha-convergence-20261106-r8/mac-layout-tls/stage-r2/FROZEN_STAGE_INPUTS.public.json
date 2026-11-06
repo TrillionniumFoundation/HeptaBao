@@ -1,0 +1,28 @@
+{
+  "input_bytes": 253942,
+  "input_count": 11,
+  "input_manifest": {
+    "bytes": 2245,
+    "sha256": "3c5155311d7c0c51b205426fb2b5e5eb2637a221c915bc432b0f74658ee9a3f9"
+  },
+  "key": "heptabao-mac-formal-kv2-layout-tls-input-stage-20261106-r2",
+  "new_stage_request_not_dispatched_by_builder": true,
+  "new_target": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-layout-tls-inputs-r2",
+  "prior_stage_job_retained": "1a1b25e0cd2-fc05-7db8",
+  "source": {
+    "bytes": 37376,
+    "sha256": "c9fb2cb6f960e85ec2eb1f8f35ee30e2446703bcd53cfe416c72c06617f65fba"
+  },
+  "stage_request": {
+    "bytes": 379042,
+    "sha256": "da5f6044cf4acb462dff4944c7d7f1c2aa0a4762707efec03cbb4cfd4d8ce6ff"
+  },
+  "stage_stdin": {
+    "bytes": 378364,
+    "sha256": "aac683a67776c5f0d33122b998611c0ba6d6f823ab9698aecc65e6991f1f9e73"
+  },
+  "stage_template": {
+    "bytes": 12431,
+    "sha256": "4a16c05c7334422c83489c7c5178797c18e82683351b104911d8e7d486372665"
+  }
+}

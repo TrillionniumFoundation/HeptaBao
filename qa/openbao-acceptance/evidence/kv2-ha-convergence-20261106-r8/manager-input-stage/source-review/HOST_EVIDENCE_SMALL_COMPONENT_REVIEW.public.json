@@ -1,0 +1,40 @@
+{
+  "files": {
+    "init_delivery.py": {
+      "bytes": 3507,
+      "sha256": "896a80094f8f7836315bb837d625756a4b9057ba0bbffe476133917a7cbed88e"
+    },
+    "launch_guard.py": {
+      "bytes": 18573,
+      "sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3"
+    },
+    "lifecycle_observations.py": {
+      "bytes": 11696,
+      "sha256": "80b5937ba07304d78f7055a35ec9d8a159e051f6923a3e66accd247fa63bb532"
+    }
+  },
+  "future_adapter_review_required": true,
+  "not_claimed": [
+    "actual manager startup or domain ownership after the earlier preflight",
+    "HTTP mutation implementation reviewed or executed",
+    "real init threshold or cross-host share custody",
+    "real restart seal behavior or automatic unseal",
+    "persistent logout/reboot operation",
+    "formal KV2 HA AuthBus traffic cutover or legacy cleanup"
+  ],
+  "product_or_remote_execution_performed_by_review": false,
+  "review_scope": "exact_read_only_source_review",
+  "reviewed_properties": [
+    "guard registers original file descriptors adjacent to birth and never retries an ambiguous numeric close",
+    "guard exec replaces the wrapper with the exact normal server and keeps CLOEXEC validation handles",
+    "guard never reads root token recovery nonce or unseal shares; server private key is metadata-only",
+    "pre-exec private receipt does not assert later executable socket or TLS handoff success",
+    "normal File-only fixed config and clean childless exec environment",
+    "pure lifecycle validation distinguishes launchd-owned server retirement from original command child wait-once",
+    "unknown manager mutation cannot qualify pure lifecycle retirement",
+    "init decoder rejects duplicate fields ambiguous encodings and duplicate shares without public secret serialization"
+  ],
+  "reviewer": "host_evidence",
+  "schema": "heptabao.small-bootstrap-components-independent-static-review.v1",
+  "static_result": "no_new_blocker_in_reviewed_modules"
+}

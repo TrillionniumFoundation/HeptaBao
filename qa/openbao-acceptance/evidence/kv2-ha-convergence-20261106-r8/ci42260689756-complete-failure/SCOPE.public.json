@@ -1,0 +1,14 @@
+{
+  "ci_started_cancelled_or_retried": false,
+  "creates_commit_branch_or_pr_update": false,
+  "formal_kv2_qualified": false,
+  "full_original_run_and_jobs_wrappers_included": true,
+  "full_replacement_qualified": false,
+  "historical_comparison_not_rewritten": true,
+  "historical_extraction_manifest_preserved_exactly": true,
+  "includes_three_complete_original_job_logs": true,
+  "later_error_chain_scope": "An additive source-inference review narrows two possible coordinator mapping sites without claiming an observed inner phase or durable readback.",
+  "physical_ha_qualified": false,
+  "schema": "heptabao.ci42260689756-publication-scope.v1",
+  "source_changes_in_this_package": false
+}

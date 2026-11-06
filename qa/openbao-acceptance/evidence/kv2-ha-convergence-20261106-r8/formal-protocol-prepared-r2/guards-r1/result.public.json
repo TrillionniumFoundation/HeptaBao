@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.formal-kv2-wire-boundary-local-guards.v1",
+  "expected_tests": 10,
+  "prior_protocol_tests": 7,
+  "new_log_fd_tests": 3,
+  "returncode": 0,
+  "elapsed_seconds": 0.3655513970006723,
+  "status": "passed",
+  "inputs": {
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r2/formal_kv2_protocol.py": {
+      "bytes": 94455,
+      "sha256": "858b325bba2c8261d3e3e81317ea63d968d2d7b78d2e63270d423d3794cd54e8"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r2/formal_kv2_wire.py": {
+      "bytes": 7393,
+      "sha256": "6b0142c1316ef7ae69bf15ad9d3897aac1ebd09caf63ae096137dcd3a20f9ddc"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r2/test_wire_original_handles.py": {
+      "bytes": 8498,
+      "sha256": "1065075915466672b2004f64241d145e6aef7d7e47dc0841662a3d83d7dc6e69"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r2/test_formal_kv2_protocol_guards.py": {
+      "bytes": 11274,
+      "sha256": "7125fbe7a4a084112411f3c3878afe3b70461c8a3175eec224aa63363d3a91d0"
+    },
+    "/tmp/heptabao-formal-kv2-static-20261106-r1/source-references/a25772377e9bfad91564cf6702a26e861fded16f/qa/openbao-acceptance/kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    }
+  },
+  "inputs_unchanged": true,
+  "original_streams": {
+    "stdout.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.original": {
+      "bytes": 2052,
+      "sha256": "d5cb8ac0b4ddb7c3627aaf13e421d9c338200f70669112b6be7afd27d24995a2"
+    }
+  },
+  "real_product_tls_network_or_credentials_executed": false,
+  "short_synthetic_python_children_only": true
+}

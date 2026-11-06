@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.projection-r1-actual-failure-public-manifest.v1",
+  "actual_projection_status": "failed",
+  "actual_projection_required_checks": 8,
+  "actual_projection_passed_checks": 0,
+  "private_diagnostic_originals_and_fingerprints_included": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2307,
+      "sha256": "97d38d093e6024aebbec1c7f68c5b73431a8fe8a0a380186d6d6d7b7038cae5d"
+    },
+    {
+      "path": "diagnostic/INDEPENDENT_RECONCILIATION.public.json",
+      "bytes": 543,
+      "sha256": "b49e7c3ee91a0f470b3cdea8f2b74e8b2db9690cf66fd1d71e9b971b4b47a440"
+    },
+    {
+      "path": "diagnostic/PLAN.public.json",
+      "bytes": 1005,
+      "sha256": "140afb74f6e62bc8d24a6cd76b2085a0ce1f2e4c857f47e1e430106fd7cfdc16"
+    },
+    {
+      "path": "diagnostic/RUNTIME_REQUEST.public.json",
+      "bytes": 9701,
+      "sha256": "55195b8c621a52fbe966d58b3cea48bdb55a91beea91fd1e375f63db70525c30"
+    },
+    {
+      "path": "diagnostic/actual-start.native.json",
+      "bytes": 1382,
+      "sha256": "71cf0f2ba2cc2177d98eed7b8ef18352852fe10508e9b904a3aeffc7f9a12d7d"
+    },
+    {
+      "path": "diagnostic/actual-streams.native.json",
+      "bytes": 4802,
+      "sha256": "b2b3294ca4e5f38215616d756699731edbc705633cff1201dc103c4cc20a3388"
+    },
+    {
+      "path": "diagnostic/actual-terminal.native.json",
+      "bytes": 912,
+      "sha256": "92d22623232f221f49b5ae27d6caf778121f953366978179f16b9c1b655a77d0"
+    },
+    {
+      "path": "diagnostic/mac_projection_cold_audit_code_only.py",
+      "bytes": 9108,
+      "sha256": "43d3244873129eb689ec1f90cd16029516ab7973e8897266c4876ed712b84cbf"
+    },
+    {
+      "path": "diagnostic/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "diagnostic/runtime.stdout.original",
+      "bytes": 1355,
+      "sha256": "0163ee3207c2c725f641fb027d27ad6bbbe9cea6d6744d1f78874bc7513c0ff2"
+    },
+    {
+      "path": "projection/ACTUAL_FAILURE_PREFIX_RECONCILIATION.public.json",
+      "bytes": 826,
+      "sha256": "bc86c8b2a19f4adb9b78f50785a99151b02636b6fcb3bb57c6e33bd4810ae09b"
+    },
+    {
+      "path": "projection/projection-failed-public.native.json",
+      "bytes": 2686,
+      "sha256": "85f8ddd1283d24c9f2a1fed5cadb604382159b0f1edc65c08affeac021135341"
+    },
+    {
+      "path": "projection/projection-streams.native.json",
+      "bytes": 7991,
+      "sha256": "82fd5f40679e3b61cd06f8d0457c2a2d275a9e790d5e2a789b719940dd810bbf"
+    },
+    {
+      "path": "projection/projection-terminal.native.json",
+      "bytes": 909,
+      "sha256": "7f27567e8b4af9ae12dea2d81ac0c5a85d276198e408f933c63b0beffe9e17ad"
+    },
+    {
+      "path": "projection/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "projection/runtime.stdout.original",
+      "bytes": 2350,
+      "sha256": "bea05e020a16a0d75814b2ba3e3ebe26c5edb9570bc6b1fb5a2a214c8d84c6a4"
+    },
+    {
+      "path": "stage/ROOT_ACTUAL_STAGE_REVIEW.public.json",
+      "bytes": 694,
+      "sha256": "8640bd48fba6e494eaf0ebb4fe72c7bb8681cdb8e492689e019793101ddbda44"
+    },
+    {
+      "path": "stage/root-stage-streams.native.json",
+      "bytes": 11063,
+      "sha256": "81ec803b48ab0000fe1c2e6e6886c34125c5344c046190e985cc978f5321dcf3"
+    },
+    {
+      "path": "stage/root-stage-terminal.native.json",
+      "bytes": 912,
+      "sha256": "479a46614fd0b2a1bbd35a69c766da7ada705bfecbc94c4c0202cf8d506d5d5d"
+    },
+    {
+      "path": "stage/stage-result.public.original.json",
+      "bytes": 4119,
+      "sha256": "67805ac207468a98ffb6316c9f35c4b4ad32fb98e65d4f8caa267982323cf77d"
+    },
+    {
+      "path": "stage/stage-stdout.original",
+      "bytes": 3248,
+      "sha256": "f3276c0cf4fc203e9e93dd59dd195bb96df0b47ac7eae570b5573f250b8ef5d4"
+    }
+  ]
+}

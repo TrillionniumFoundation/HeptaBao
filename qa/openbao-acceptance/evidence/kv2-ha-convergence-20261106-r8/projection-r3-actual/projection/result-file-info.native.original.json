@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-allrows-projection-execution-r3/result.public.json\",\"sha256\":\"dba302fdc0262f28369b812ae9fa369d2c7025890f204ed3c91f6191a14e2f48\",\"size\":2957,\"version\":\"16777244:72758765:2957:1793999732540155687:1793999732540155687\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

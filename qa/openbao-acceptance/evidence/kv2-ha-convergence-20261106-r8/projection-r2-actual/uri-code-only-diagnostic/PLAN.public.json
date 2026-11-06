@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.projection-cold-uri-code-only-prepared.v1",
+  "status": "prepared_not_executed",
+  "source": {
+    "bytes": 9178,
+    "sha256": "1a9f096364e19e31ed7c99ee8d08be3f223f1839a595174c768ed54875c8ec57"
+  },
+  "same_work_runtime_nice_as_original": {
+    "work": 52,
+    "runtime": 60,
+    "nice": 5
+  },
+  "only_original_two_public_code_files_read": true,
+  "original_audit_function_unchanged": true,
+  "single_path_as_uri_on_synthetic_absolute_posix_path": true,
+  "urllib_request_must_not_be_preloaded": true,
+  "no_reference_conversion_before_denial": true,
+  "output_denied_event_category_and_stdlib_request_boolean_only": true,
+  "private_plan_generation_database_or_sqlite_connection": false,
+  "file_directory_write_child_network_product": false,
+  "expected_original_code_fd_close_denominator": 2,
+  "diagnostic_success_confers_no_projection_qualification": true
+}

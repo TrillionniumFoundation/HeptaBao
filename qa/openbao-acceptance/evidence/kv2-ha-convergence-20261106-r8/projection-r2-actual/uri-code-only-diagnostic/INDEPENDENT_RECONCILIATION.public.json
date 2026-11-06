@@ -1,0 +1,11 @@
+{
+  "schema": "heptabao.projection-cold-uri-independent-reconciliation.v1",
+  "job_id": "1a1b2abac6e-fc05-7f3b",
+  "actual_successful_terminal_complete_durable_no_timeout_cancel": true,
+  "stdout_bytes": 1372,
+  "stdout_sha256": "4cecd03d9067bea48075a15f07347f0d3c0ce54992a92c1b019d8a11e02e8368",
+  "original_audit_exact_uncached_urllib_request_open_denial": true,
+  "two_original_code_files_rehashed_and_closed": true,
+  "private_generation_sqlite_or_product_executed": false,
+  "actual_r2_projection_qualified": false
+}

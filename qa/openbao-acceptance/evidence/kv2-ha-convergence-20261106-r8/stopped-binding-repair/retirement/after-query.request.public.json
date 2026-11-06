@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/bin/launchctl",
+  "cwd": "/Users/qianqi",
+  "timeout_seconds": 15,
+  "nice": 5,
+  "args": [
+    "print",
+    "gui/501/org.heptabao.kv2"
+  ],
+  "idempotency_key": "heptabao-mac-failed-kv2-exact-retirement-after-query-20261106-r1"
+}

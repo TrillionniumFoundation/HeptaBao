@@ -1,0 +1,81 @@
+{
+  "bytes_excluding_manifest": 42343,
+  "file_count_excluding_manifest": 12,
+  "files": [
+    {
+      "bytes": 3371,
+      "path": "HOST_EVIDENCE_ACTUAL_MANAGER_FAILURE_REVIEW.r1.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "042697d221b2b7f89866741b2637deb2ce610e3488bf1a70c0b44077494bf20c"
+    },
+    {
+      "bytes": 1068,
+      "path": "PROOF_SCOPE.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "44705b84e1337118a2c02a911209ec26b93dead2dac243f921e925b5bdc8d96b"
+    },
+    {
+      "bytes": 1589,
+      "path": "ROOT_ACTUAL_MANAGER_FAILURE_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "83c2688ee239b999796a6b104e7b5ce2849929cc6e7f8ebd50f142b051f3aecc"
+    },
+    {
+      "bytes": 7837,
+      "path": "manager-init-failed-public-result.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "47ef9818659fd5250f9ec46c323d370ef6114ed0e8c2767a73ed308377c11958"
+    },
+    {
+      "bytes": 5687,
+      "path": "manager-init-failed-result.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "15f2676d4aae1d9db9c88fe19f2adc57be6fa871f82c602e9df6328c31ec6fad"
+    },
+    {
+      "bytes": 4189,
+      "path": "manager-init-final-stdout.original",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "ad191c325e74cd7cb2708e92d9103c7d00cf598ff051bbb2dfb498a87ea08f1f"
+    },
+    {
+      "bytes": 815,
+      "path": "manager-init-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "d214f1259993befb9fbef8b819cfb54442471dc7764b78571a76fa22cf3709a1"
+    },
+    {
+      "bytes": 1872,
+      "path": "manager-init-start.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "8c51cef2e46f3f3065d0bc3e0ca38fcd2ff07a29d331725a3ce6b9cb29795c7f"
+    },
+    {
+      "bytes": 459,
+      "path": "manager-init-streams.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "375d5d0003fb8780ae7b4991cb107a6c19687afb2a1a8fc078d8265b8ffdd29a"
+    },
+    {
+      "bytes": 331,
+      "path": "manager-init-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "198438f9445e5127496203ef0ca5440f518ea108224944c42492f2c2fd17b088"
+    },
+    {
+      "bytes": 909,
+      "path": "manager-status-observation-2.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6a39099213a25259bbe64050978a4e04ec3ce8d924cf132747ebaa590d34da2f"
+    },
+    {
+      "bytes": 14216,
+      "path": "manager-streams-observation-2.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "0ac3aec828ec008c6ce788a62ae471d345a2a4ec15f0686aee3f7defd11871db"
+    }
+  ],
+  "package": "manager-init-failure-r1",
+  "paths_are_relative": true,
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

@@ -1,0 +1,80 @@
+{
+  "actual_code_only_diagnostic": {
+    "both_public_code_pins_and_identities_unchanged": true,
+    "cached_urllib_request_before": false,
+    "denied_path_is_stdlib_urllib_request": true,
+    "expected_original_refusal": true,
+    "original_fds_closed": 2,
+    "private_or_generation_or_db_read": false,
+    "subprocess_network_product_filewrite": false,
+    "unique_denied_event": "open"
+  },
+  "authbus_qualified": false,
+  "authoritative_terminal_and_entire_native_streams_verified": true,
+  "automatic_retry": false,
+  "deadline_fired": false,
+  "diagnostic_elapsed_observation_seconds": 0.019390583038330078,
+  "diagnostic_job_id": "1a1b2abac6e-fc05-7f3b",
+  "final_resource_custody": {
+    "all_original_handles_and_stdio_retired": true,
+    "close_errors": [],
+    "fd_birth_count": 40,
+    "fd_births_by_kind": {
+      "directory": 22,
+      "file": 14,
+      "stdio_private": 2,
+      "stdio_saved": 2
+    },
+    "fd_close_attempt_count": 40,
+    "fd_close_success_count": 40,
+    "fd_first_fstat_failure_count": 0,
+    "sqlite_close_attempt_count": 0,
+    "sqlite_close_success_count": 0,
+    "sqlite_connection_birth_count": 0,
+    "stdio_redirect_attempt_count": 2,
+    "stdio_redirect_completed_count": 2,
+    "stdio_restore_attempt_count": 2,
+    "stdio_restore_completed_count": 2,
+    "unattempted_original_fd_count": 0
+  },
+  "forbidden_effect_attempt_count": 1,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "observed_checks": 2,
+  "old_failed_roots_or_assets_modified": false,
+  "original_runtime_seconds": 60,
+  "original_work_seconds": 52,
+  "primary_failure_code": "forbidden_projection_effect",
+  "private_prefix_safe_projection": {
+    "connection_intent_rows": 0,
+    "original_fd_rows_before_prefix_writer_and_later_publication": 37,
+    "private_body_and_content_hashes_published": false
+  },
+  "projection_checks": [
+    {
+      "check": "completed_independent_readback_and_exact_private_closure",
+      "passed": true
+    },
+    {
+      "check": "same_restored_capture_and_all_database_original_identities",
+      "passed": true
+    }
+  ],
+  "projection_complete": false,
+  "projection_elapsed_observation_seconds": 0.8505362910218537,
+  "projection_job_id": "1a1b2a14402-fc05-7f09",
+  "public_result_exact_native_read_and_full_stdout_consistent": true,
+  "required_checks": 8,
+  "root_cause_evidence": {
+    "actual_mac_expected_refusal_reproduced_without_private_generation": true,
+    "fixed_source_first_cold_database_statement": "path.as_uri() before resource connection registration",
+    "official_pathlib_behavior": "Path.as_uri lazily imports urllib.request.pathname2url",
+    "official_source": "https://github.com/python/cpython/blob/v3.14.3/Lib/pathlib/__init__.py#L1264-L1269",
+    "unchanged_audit_rejects_unlisted_stdlib_open": true
+  },
+  "schema": "heptabao.projection-r2-actual-failure-reconciliation.v1",
+  "sqlite_connections_opened": 0,
+  "stage_job_id": "1a1b29f185a-fc05-7efb",
+  "status": "actual_failed_preserved",
+  "traffic_cutover_or_cleanup_authorized": false
+}

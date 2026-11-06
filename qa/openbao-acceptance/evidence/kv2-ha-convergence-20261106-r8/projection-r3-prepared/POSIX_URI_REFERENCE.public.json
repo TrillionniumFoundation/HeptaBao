@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.posix-file-uri-primary-source-reference.v1",
+  "source_url": "https://github.com/python/cpython/blob/v3.14.3/Lib/urllib/request.py",
+  "source_tag": "v3.14.3",
+  "observed_full_source_bytes": 77037,
+  "observed_full_source_sha256": "7465dbf037295f8f04774c453ab84c31879999c507fa16a82627ce9bd9615992",
+  "function": "pathname2url",
+  "first_line": 1698,
+  "last_line": 1730,
+  "reference_bytes": 1483,
+  "reference_sha256": "0c56f2caa1eaef1f66e8c01849abac5cf98eef12a18fd743191cb3e0223f9470",
+  "execution_scope": "single extracted pure function, os.name == posix; no urllib.request module import",
+  "license_url": "https://github.com/python/cpython/blob/v3.14.3/LICENSE"
+}

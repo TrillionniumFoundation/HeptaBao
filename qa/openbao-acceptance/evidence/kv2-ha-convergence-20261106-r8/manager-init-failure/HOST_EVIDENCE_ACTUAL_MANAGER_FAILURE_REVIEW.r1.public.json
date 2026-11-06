@@ -1,0 +1,99 @@
+{
+  "actual_terminal": "failed_exit_1_non_timeout_non_cancelled_complete_durable",
+  "all_original_children_retired": true,
+  "authbus_qualified": false,
+  "bootstrap_command_exit_zero": true,
+  "bootstrap_manager_endpoint_success_not_proven": true,
+  "bootstrap_outcome_remains_unknown": true,
+  "cleanup_failure_codes": [],
+  "cross_host_share_transfer_performed": false,
+  "deadline_renewed": false,
+  "elapsed_seconds": 15.392575209029019,
+  "exact_absence_commands": 3,
+  "failure_does_not_authorize_bootstrap_or_init_replay": true,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "http_connection_created_and_closed": 140,
+  "initialization_attempted": false,
+  "job_id": "1a1b27bfa3f-fc05-7e3a",
+  "long_launchd_service_retirement_not_claimed": true,
+  "manager_pid_or_executable_handoff_not_reached": true,
+  "native_originals": [
+    {
+      "bytes": 909,
+      "path": "manager-status-observation-2.native.json",
+      "sha256": "6a39099213a25259bbe64050978a4e04ec3ce8d924cf132747ebaa590d34da2f"
+    },
+    {
+      "bytes": 14216,
+      "path": "manager-streams-observation-2.native.json",
+      "sha256": "0ac3aec828ec008c6ce788a62ae471d345a2a4ec15f0686aee3f7defd11871db"
+    }
+  ],
+  "new_initial_guard_binding_files_were_written": true,
+  "new_launchagents_plist_was_written": true,
+  "no_tls_negative_or_init_or_unseal_or_ack_or_seed_or_activation_or_business_import": true,
+  "nonce_root_and_shares_not_reached_in_frozen_control_flow": true,
+  "old_preparation_success_remains_historical_only": true,
+  "original_children": [
+    {
+      "exec_admitted": true,
+      "gaps_count": 0,
+      "no_live_before_reap": true,
+      "pid": 62198,
+      "remaining_live_count": 0,
+      "returncode": 113,
+      "wait_count": 1
+    },
+    {
+      "exec_admitted": true,
+      "gaps_count": 0,
+      "no_live_before_reap": true,
+      "pid": 62204,
+      "remaining_live_count": 0,
+      "returncode": 113,
+      "wait_count": 1
+    },
+    {
+      "exec_admitted": true,
+      "gaps_count": 0,
+      "no_live_before_reap": true,
+      "pid": 62210,
+      "remaining_live_count": 0,
+      "returncode": 113,
+      "wait_count": 1
+    },
+    {
+      "exec_admitted": true,
+      "gaps_count": 0,
+      "no_live_before_reap": true,
+      "pid": 62216,
+      "remaining_live_count": 0,
+      "returncode": 0,
+      "wait_count": 1
+    }
+  ],
+  "original_fd_opened_and_closed": 79,
+  "original_streams_complete": true,
+  "owned_child_denominator": 4,
+  "primary_failure_code": "fixed_endpoint_readiness_deadline",
+  "private_payload_or_private_content_hash_published": false,
+  "raw_phase_label_not_an_observed_success": "sealed_uninitialized_owned_endpoint is assigned before readiness and is not proof that the endpoint was observed",
+  "remaining_original_fds": 0,
+  "remote_jobs_by_this_review": 0,
+  "reviewer": "host_evidence",
+  "runtime_cap_seconds": 120,
+  "schema": "heptabao.independent-manager-init-failure-boundary-review.v1",
+  "source_controller": {
+    "bytes": 28141,
+    "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+  },
+  "source_runtime": {
+    "bytes": 25233,
+    "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+  },
+  "stderr_bytes": 0,
+  "stdout_bytes": 4189,
+  "stdout_sha256": "ad191c325e74cd7cb2708e92d9103c7d00cf598ff051bbb2dfb498a87ea08f1f",
+  "work_cap_seconds": 110
+}

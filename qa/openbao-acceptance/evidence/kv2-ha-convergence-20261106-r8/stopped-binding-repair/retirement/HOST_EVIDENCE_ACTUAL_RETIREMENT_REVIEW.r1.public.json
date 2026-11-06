@@ -1,0 +1,97 @@
+{
+  "authbus_qualified": false,
+  "candidate_files_removed": false,
+  "candidate_unregistered_at_after_query": true,
+  "domain": "gui/501",
+  "expected_exit_codes": [
+    0,
+    0,
+    113
+  ],
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "label": "org.heptabao.kv2",
+  "long_server_waitpid_retirement_claimed": false,
+  "macos_privacy_permission_changed": false,
+  "macos_removable_volume_hold_resolved": false,
+  "observations": [
+    {
+      "args": [
+        "print",
+        "gui/501/org.heptabao.kv2"
+      ],
+      "automatic_retry": false,
+      "cancelled": false,
+      "complete_durable_terminal": true,
+      "executable": "/bin/launchctl",
+      "exit_code": 0,
+      "fixed_status_projection": {
+        "active_count": 0,
+        "last_exit_code": 78,
+        "pid_field_present": false,
+        "runs": 39,
+        "state": "spawn scheduled"
+      },
+      "host": "mac",
+      "job_id": "1a1b28d5d67-fc05-7e99",
+      "raw_environment_stream_withheld": true,
+      "raw_stream_content_hash_published": false,
+      "role": "before",
+      "state": "succeeded",
+      "stderr_bytes": 0,
+      "stdout_bytes": 1848,
+      "streams_complete_and_exact": true,
+      "timed_out": false
+    },
+    {
+      "args": [
+        "bootout",
+        "gui/501/org.heptabao.kv2"
+      ],
+      "automatic_retry": false,
+      "cancelled": false,
+      "complete_durable_terminal": true,
+      "executable": "/bin/launchctl",
+      "exit_code": 0,
+      "host": "mac",
+      "job_id": "1a1b28ed7a1-fc05-7e9f",
+      "role": "bootout",
+      "state": "succeeded",
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "streams_complete_and_exact": true,
+      "timed_out": false
+    },
+    {
+      "args": [
+        "print",
+        "gui/501/org.heptabao.kv2"
+      ],
+      "automatic_retry": false,
+      "cancelled": false,
+      "complete_durable_terminal": true,
+      "exact_label_absence_grammar": true,
+      "executable": "/bin/launchctl",
+      "exit_code": 113,
+      "host": "mac",
+      "job_id": "1a1b28fb493-fc05-7ea2",
+      "role": "after",
+      "state": "failed",
+      "stderr_bytes": 83,
+      "stderr_sha256": "0bf982c3478fcf93e0206505438b9c1c78d9429c33d307400db6874e904851f1",
+      "stdout_bytes": 0,
+      "streams_complete_and_exact": true,
+      "timed_out": false
+    }
+  ],
+  "original_manager_init_failure_reclassified": false,
+  "per_native_runtime_cap_seconds_from_fixed_requests": 15,
+  "pid_signal_used": false,
+  "remote_job_dispatched_by_this_review": false,
+  "review_method": "local_original_native_start_terminal_and_complete_stream_reconciliation",
+  "schema": "heptabao.host-evidence-exact-candidate-retirement-review.public.v1",
+  "service_restart_performed": false,
+  "single_shared_45_second_deadline_claimed": false,
+  "status": "originals_independently_verified",
+  "three_distinct_jobs_in_terminal_time_order": true
+}

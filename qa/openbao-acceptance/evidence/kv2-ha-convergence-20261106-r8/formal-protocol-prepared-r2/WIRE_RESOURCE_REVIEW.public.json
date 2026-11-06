@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.formal-kv2-wire-log-handle-review.v1",
+  "status": "draft_locally_guarded_not_product_executed",
+  "original_source": {
+    "bytes": 91070,
+    "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+  },
+  "new_source": {
+    "bytes": 94455,
+    "sha256": "858b325bba2c8261d3e3e81317ea63d968d2d7b78d2e63270d423d3794cd54e8"
+  },
+  "changed_top_level_definition": "OwnedWire",
+  "all_other_function_and_class_ast_unchanged": true,
+  "all_top_level_assignment_ast_unchanged": true,
+  "pure_projection_definition_names_unchanged": [
+    "Refused",
+    "need",
+    "digest",
+    "fixed_json",
+    "PrivatePin",
+    "ProjectionSource",
+    "stat_identity",
+    "ReadbackGenerationAdapter",
+    "read_pin",
+    "safe_path",
+    "projection_rows",
+    "sqlite_projection_decode"
+  ],
+  "pure_projection_constants_unchanged": [
+    "MIB",
+    "JSON_REQUEST_MAX",
+    "TABLES",
+    "READBACK_CHECKS"
+  ],
+  "old_projection_controller_may_keep_exact_f937_input": true,
+  "old_f937_directory_modified": false,
+  "fixed_wire_leaf_unchanged": {
+    "bytes": 7393,
+    "sha256": "6b0142c1316ef7ae69bf15ad9d3897aac1ebd09caf63ae096137dcd3a20f9ddc"
+  },
+  "fixed_custody_bytes": 26131,
+  "fixed_custody_sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008",
+  "fixed_a257_helper_pins_unchanged": true,
+  "original_http_absolute_seconds": 15,
+  "request_retries_added": 0,
+  "guard_observations": {
+    "total": 10,
+    "old": 7,
+    "new_log_fd_cases": 3,
+    "pass": 10,
+    "failed": 0,
+    "skipped": 0,
+    "actual_short_python_children": true,
+    "actual_self_SIGTERM_at_birth_and_cleanup": true,
+    "actual_numeric_fd_reuse": true,
+    "product_or_tls_or_network_executed": false
+  },
+  "scope": "Original parent stdout/stderr log descriptors, their single-close proof, and frozen owner interruption scope. This does not qualify a deployed lifecycle adapter or actual protocol run."
+}

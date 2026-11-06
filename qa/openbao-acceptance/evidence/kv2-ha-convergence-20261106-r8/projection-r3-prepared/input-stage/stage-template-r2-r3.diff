@@ -1,0 +1,11 @@
+--- r2/stage_projection_inputs.template.py
++++ r3/stage_projection_inputs.template.py
+@@ -13,7 +13,7 @@
+ import sys
+ 
+ PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control')
+-OUT = PARENT / 'formal-kv2-allrows-projection-inputs-r2'
++OUT = PARENT / 'formal-kv2-allrows-projection-inputs-r3'
+ EXPECTED_NAMES = {
+     'mac_formal_kv2_allrows_projection.py', 'formal_kv2_protocol.py',
+     'readback-result.public.json', 'readback-terminal.original.json',

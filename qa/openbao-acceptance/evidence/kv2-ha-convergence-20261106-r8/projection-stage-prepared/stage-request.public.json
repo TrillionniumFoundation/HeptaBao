@@ -1,0 +1,17 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "env": {},
+  "timeout_seconds": 60,
+  "nice": 5,
+  "idempotency_key": "heptabao-mac-formal-kv2-allrows-projection-input-stage-20261106-r1",
+  "private_stdin_withheld": true,
+  "private_stdin_hash_withheld": true
+}

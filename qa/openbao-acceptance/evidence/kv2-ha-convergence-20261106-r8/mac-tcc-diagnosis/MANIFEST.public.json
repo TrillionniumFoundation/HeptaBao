@@ -1,0 +1,45 @@
+{
+  "bytes_excluding_manifest": 10350,
+  "file_count_excluding_manifest": 6,
+  "files": [
+    {
+      "bytes": 1282,
+      "path": "HOST_EVIDENCE_KERNEL_DENIAL_REVIEW.public.json",
+      "record_class": "independent_derived_review",
+      "sha256": "0f7a380c430b083620dd2c468bfd3383761c82ab0553c1fdda24106cec1b24bc"
+    },
+    {
+      "bytes": 555,
+      "path": "PROOF_SCOPE.public.json",
+      "record_class": "scope",
+      "sha256": "8d3218c65dfdd7260ec89de2acfe4205dbaf2f7bc581df21f5f5c0e6faaab5f4"
+    },
+    {
+      "bytes": 432,
+      "path": "failed-bootstrap-path-log-readonly-request.public.json",
+      "record_class": "exact_public_query_or_start_original",
+      "sha256": "eed2cca25a3cafb133195e6b379a0043c3b2480114da7e6d83b52cd5cccbfd6c"
+    },
+    {
+      "bytes": 1589,
+      "path": "failed-bootstrap-path-log-readonly-start.native.json",
+      "record_class": "exact_public_query_or_start_original",
+      "sha256": "8c6a543a74fea18428d224ab546917e65447fad73f8780801432af0af628550c"
+    },
+    {
+      "bytes": 5580,
+      "path": "kernel-removable-volumes-denials.exact-selected-lines.txt",
+      "record_class": "explicit_exact_line_projection",
+      "sha256": "170b696a66317c87eb522a9027f679b377ced4f928ca8fd47ff50ee481a09239"
+    },
+    {
+      "bytes": 912,
+      "path": "path-log-terminal.original.native.json",
+      "record_class": "exact_native_terminal_original",
+      "sha256": "4d4465d0e7a9bb124479a46ce333e39d68266fbea88ecf1e09b45d4eb02f7d49"
+    }
+  ],
+  "package": "manager-failure-tcc-diagnosis-r1",
+  "paths_are_relative": true,
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

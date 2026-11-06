@@ -1,0 +1,90 @@
+{
+  "actual_base_launcher_public_pin": {
+    "bytes": 34640,
+    "identity": {
+      "bytes": 34640,
+      "ctime_ns": 1793798038915695047,
+      "dev": 16777233,
+      "file_type": 32768,
+      "gid": 80,
+      "inode": 587518380,
+      "mode": 493,
+      "mtime_ns": 1793798038915516382,
+      "nlink": 1,
+      "uid": 501
+    },
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "authbus_qualified": false,
+  "business_source_opened": false,
+  "child_processes_created": 0,
+  "cleanup_failure_codes": [],
+  "current_binding_bytes_equal_initial_archive": true,
+  "current_binding_original_inode_history_claimed": false,
+  "deadline_renewed": false,
+  "durable_completion_authority": "public_record_plus_final_stdout_plus_separate_native_terminal",
+  "endpoint_observations": [
+    {
+      "connection_refused_before_http": true,
+      "http_status": null,
+      "method": "GET",
+      "path": "sys/init",
+      "request_attempted": false,
+      "response_complete": false
+    },
+    {
+      "connection_refused_before_http": true,
+      "http_status": null,
+      "method": "GET",
+      "path": "sys/seal-status",
+      "request_attempted": false,
+      "response_complete": false
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "guard_python_path_matches_actual_base_launcher": false,
+  "ha_qualified": false,
+  "http_connections_closed": 2,
+  "http_connections_created": 2,
+  "initialization_material_absent_count": 5,
+  "initialization_request_sent": false,
+  "installed_plist_exact_prepared_bytes": true,
+  "launchd_log_queries_performed_here": 0,
+  "launcher_program_exact": true,
+  "manager_queries_performed_here": 0,
+  "normal_binary_guard_config_cert_pins_unchanged": true,
+  "observations_complete": true,
+  "original_empty_data_identity_unchanged": true,
+  "original_failed_attempt_bound": true,
+  "original_failed_attempt_reclassified": false,
+  "original_failed_job_id": "1a1b27bfa3f-fc05-7e3a",
+  "original_initial_binding_archive_unchanged": true,
+  "primary_failure_code": null,
+  "private_closure_content_hash_published": false,
+  "private_closure_identity": {
+    "bytes": 7250,
+    "ctime_ns": 1793996794873258307,
+    "dev": 16777244,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 72758467,
+    "mode": 384,
+    "mtime_ns": 1793996794873258307,
+    "nlink": 1,
+    "uid": 501
+  },
+  "private_tls_key_content_read": false,
+  "private_tls_key_original_metadata_unchanged": true,
+  "provider_or_j3160_called": false,
+  "root_nonce_or_share_content_opened": false,
+  "runtime_seconds": 60,
+  "schema": "heptabao.failed-manager-readonly-reconciliation.public.v1",
+  "service_mutation_performed": false,
+  "status": "completed_readonly_observation",
+  "unresolved_configuration_conflicts": [
+    "guard_python_binding_uses_controller_venv_instead_of_plist_base_launcher"
+  ],
+  "unseal_or_ack_sent": false,
+  "work_seconds": 52
+}

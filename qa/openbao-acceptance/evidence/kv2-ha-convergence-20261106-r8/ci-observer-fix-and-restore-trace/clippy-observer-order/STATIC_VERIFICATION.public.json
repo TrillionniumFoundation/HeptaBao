@@ -1,0 +1,65 @@
+{
+  "after": {
+    "bytes": 47093,
+    "sha256": "a516ac803d42d7a23a0f957bc93b7c9d34d0477f9f504cfc381b4c56feec4189"
+  },
+  "base_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "base_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "before": {
+    "bytes": 47093,
+    "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+  },
+  "branch": "codex/heptabao-ci-observer-order-20261106-r1",
+  "checks": {
+    "all_non_observer_text_byte_identical_in_original_order": true,
+    "diff_check_passed": true,
+    "entire_observer_block_including_comments_and_cfg_unchanged": true,
+    "file_identical_at_4bde_and_9c68_before_fix": true,
+    "file_length_unchanged": true,
+    "observer_is_last_item": true,
+    "one_source_file_changed": true,
+    "reverse_patch_check_passed": true,
+    "shared_base_worktree_clean_before_and_after": true,
+    "test_attribute_counts_unchanged": true,
+    "two_production_impl_blocks_retain_exact_text_and_order": true
+  },
+  "exact_original_log_excerpts": {
+    "head.clippy-diagnostic.original.txt": {
+      "bytes": 1253,
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    "merge.failure-block.original.txt": {
+      "bytes": 2305,
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    "merge.serial-test-window-and-timing.original.txt": {
+      "bytes": 693,
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    }
+  },
+  "local_toolchain": {
+    "cargo": null,
+    "rustc": null,
+    "rustfmt": null
+  },
+  "moved_block": {
+    "bytes": 3163,
+    "sha256": "c1fcd9d26ed3cd0d64547d3a0225137cabfdc32b20154d5d70fb58288d1e86d4"
+  },
+  "patch": {
+    "bytes": 7206,
+    "sha256": "7a143e7b9f6c5033543381957b9c36894fda295d3a3ea22091d5fe4019237d47"
+  },
+  "schema": "heptabao.ci-observer-order-static-verification.v1",
+  "scope": "Mechanical item order only; existing CI failures remain actual failures; static byte verification does not establish a passing compiler or Clippy run.",
+  "source_path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+  "validation_boundary": {
+    "ci_rerun_requested": false,
+    "clippy_executed": false,
+    "pushed": false,
+    "remote_service_action": false,
+    "rust_ast_parser_executed": false,
+    "rust_compilation_executed": false,
+    "tests_executed": false
+  }
+}

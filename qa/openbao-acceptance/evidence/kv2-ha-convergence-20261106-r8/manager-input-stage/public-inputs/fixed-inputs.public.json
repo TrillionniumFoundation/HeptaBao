@@ -1,0 +1,64 @@
+{
+  "budgets": {
+    "cleanup_reserve": 10,
+    "http": 15,
+    "runtime": 120,
+    "utility": 5,
+    "work": 110
+  },
+  "normal_product": {
+    "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "tree": "f08493a23f8ea0637073651231865ea9607b790e"
+  },
+  "preparation_job_id": "1a1b2643b65-fc05-7dde",
+  "private_input_identity": null,
+  "product_ci_hold": {
+    "resolved": false,
+    "run_id": 42229582001
+  },
+  "public_prerequisites": {
+    "preparation-result.public.json": {
+      "bytes": 4086,
+      "sha256": "6d803e1e5a684dc20abbc3c51fac9632aa497a133455ab0a4798fc79a251a638"
+    },
+    "preparation-runtime-terminal.original.json": {
+      "bytes": 731,
+      "sha256": "e460d89ca357ef57ffce461f5b5a7238345b3d8c104b818f8142ac3d45c361a5"
+    },
+    "preparation-runtime.stdout.original": {
+      "bytes": 3951,
+      "sha256": "fb3848ff0e04c0a0145b7a6c6afddccd5739916ae24cb7279d0b82c08e11e30d"
+    }
+  },
+  "schema": "heptabao.normal-kv2-manager-init-inputs.v1",
+  "source_files": {
+    "init_delivery.py": {
+      "bytes": 3507,
+      "sha256": "896a80094f8f7836315bb837d625756a4b9057ba0bbffe476133917a7cbed88e"
+    },
+    "kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "launch_guard.py": {
+      "bytes": 18573,
+      "sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3"
+    },
+    "manager_launch_binding.py": {
+      "bytes": 8558,
+      "sha256": "42b40d4be9f43ec18056ed14976603acfec4cbcfebe46eb77692c753faa62436"
+    },
+    "manager_runtime.py": {
+      "bytes": 25233,
+      "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+    },
+    "manager_start_init.py": {
+      "bytes": 28141,
+      "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+    },
+    "owned_process.py": {
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  }
+}

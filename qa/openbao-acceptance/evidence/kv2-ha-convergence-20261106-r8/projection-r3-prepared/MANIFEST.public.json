@@ -1,0 +1,129 @@
+{
+  "files": [
+    {
+      "bytes": 4089,
+      "path": "HOST_EVIDENCE_REVIEW.public.json",
+      "sha256": "1830be23ceab149d819f100bbdfe98d290f9197347e017394e2b14cff0438707"
+    },
+    {
+      "bytes": 696,
+      "path": "POSIX_URI_REFERENCE.public.json",
+      "sha256": "729cbf0d063ac81841721ea9be8ab4d38e7b4a4162a8d605b7b77112094c4a11"
+    },
+    {
+      "bytes": 3363,
+      "path": "README.md",
+      "sha256": "54b2b4d649c06f27a8be4efdaf6759f6d4590afd23791bbc4afb9dea036a3001"
+    },
+    {
+      "bytes": 876,
+      "path": "RUNTIME_REQUEST.public.json",
+      "sha256": "9043b9e02c731fbc1dfe3b26c3b3f35bb0e5c8dbcfacd7ce472ed85062d8285d"
+    },
+    {
+      "bytes": 1638,
+      "path": "SOURCE_REVIEW.public.json",
+      "sha256": "34399ff8c7b76365698d4d569e2cd38b283cf272f66e7647d3eadffc176bfa9f"
+    },
+    {
+      "bytes": 1483,
+      "path": "cpython_v3143_pathname2url.reference.py",
+      "sha256": "0c56f2caa1eaef1f66e8c01849abac5cf98eef12a18fd743191cb3e0223f9470"
+    },
+    {
+      "bytes": 0,
+      "path": "guards-r1/new.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 230,
+      "path": "guards-r1/new.stdout.original",
+      "sha256": "4089681504b67ad280196827cc5d09618b87c822bb6c6898e0c983a19b493093"
+    },
+    {
+      "bytes": 0,
+      "path": "guards-r1/old.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 124,
+      "path": "guards-r1/old.stdout.original",
+      "sha256": "b1e40d5d6099ae9ab490b59adc161f94591570b3d96bd3fe52c16273afa91fda"
+    },
+    {
+      "bytes": 0,
+      "path": "guards-r1/posix-uri.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 928,
+      "path": "guards-r1/posix-uri.stdout.original",
+      "sha256": "1933db213d6b90b4f223fad17edefd5c1184f1b895e3eaed7c971390ab1776f5"
+    },
+    {
+      "bytes": 2989,
+      "path": "guards-r1/result.public.json",
+      "sha256": "b774539baf169a5ae6641b3d8a42024719c43daa25ba9e5f2af30740f2b363f8"
+    },
+    {
+      "bytes": 2266,
+      "path": "guards-r1/stderr.original",
+      "sha256": "58816f44306ac55c2efdd7b3aff5049c08e6d4053492c04d78d29e46d7afde6a"
+    },
+    {
+      "bytes": 0,
+      "path": "guards-r1/stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1758,
+      "path": "input-stage/STAGE_INPUTS_MANIFEST.public.json",
+      "sha256": "124c105e45707a7a7589e81f52d5e731c5ef5b8f9f1aa3f8113bf10da91fb306"
+    },
+    {
+      "bytes": 433,
+      "path": "input-stage/stage-request.public.json",
+      "sha256": "c196ffbd291e790de1b044eb26949b9e9b99d8813ba6c48d179765cefc5a816f"
+    },
+    {
+      "bytes": 508,
+      "path": "input-stage/stage-template-r2-r3.diff",
+      "sha256": "f0b0639bea2c7470c17ba8bd32b7fc35d6285c79f728e638706a36db9f1aeb50"
+    },
+    {
+      "bytes": 12924,
+      "path": "input-stage/stage_projection_inputs.template.py",
+      "sha256": "575b116dabfc4bd51514919bc0834300cd3f7c334324b2e3a325e7c06d0e1352"
+    },
+    {
+      "bytes": 44838,
+      "path": "mac_formal_kv2_allrows_projection.py",
+      "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+    },
+    {
+      "bytes": 1570,
+      "path": "projection-r2-r3-posix-uri.diff",
+      "sha256": "91f8e4a37ee189e028e4f4134a057d8ecd7cd2bd8fa4847a2dd61c95e84170c6"
+    },
+    {
+      "bytes": 11590,
+      "path": "test_projection_boundaries.py",
+      "sha256": "3211087139695adf63401919624b39fa90de910525b831ae0843f79441f8848f"
+    },
+    {
+      "bytes": 4256,
+      "path": "test_projection_cold_import.py",
+      "sha256": "b555d35f730a46f7210977decaad8263b3df5b81c36232182fca9d18dc0aed87"
+    },
+    {
+      "bytes": 4613,
+      "path": "test_projection_posix_uri.py",
+      "sha256": "d9849f353c2bf6e374dec33dddf80495fdaa2f0447593ea487861451924a3d0f"
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "private_inputs_and_fingerprints_included": false,
+  "schema": "heptabao.public-prepared-evidence-package.v1",
+  "scope": "projection r3 minimal POSIX URI candidate and eleven local guards",
+  "status": "prepared_not_executed"
+}

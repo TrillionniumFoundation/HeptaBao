@@ -1,0 +1,17 @@
+{
+  "all_eleven_public_inputs_complete": true,
+  "directory_fds_closed": 2,
+  "exit_code": 0,
+  "file_fd_opened_closed": 35,
+  "job_id": "1a1b25e0cd2-fc05-7db8",
+  "later_static_first_fstat_fault_path_fix_required_before_producer_execution": true,
+  "original_template_and_source_recovered_exactly_from_preserved_original_request": true,
+  "producer_266760_executed": false,
+  "public_bytes": 6487,
+  "public_sha256": "b4dc4feb5bca8132e0668408cb1d35c224f3ef05511055bc3c8d43f8949cd9ee",
+  "schema": "heptabao.root-executed-layout-tls-input-stage-r1-review.v1",
+  "state": "succeeded",
+  "stdout_bytes": 4843,
+  "stdout_sha256": "f432d509cf28ae63884d27ded0bb4f026df28094bdde09640abeb9307c9ded04",
+  "tls_or_service_created": false
+}

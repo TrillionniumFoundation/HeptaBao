@@ -1,0 +1,11 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-07 04:10:32.384 Df launchd[1:4163524] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:11:02.408 Df launchd[1:4163b69] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:11:32.429 Df launchd[1:4163fe3] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:12:02.446 Df launchd[1:41642ea] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:12:32.471 Df launchd[1:41645d3] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:13:02.495 Df launchd[1:4164906] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:13:32.516 Df launchd[1:4164981] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:14:02.542 Df launchd[1:4164dc4] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:14:32.707 Df launchd[1:4165a94] [gui/501 [100026]:] service inactive: org.heptabao.kv2
+2026-11-07 04:15:02.727 Df launchd[1:4165de9] [gui/501 [100026]:] service inactive: org.heptabao.kv2

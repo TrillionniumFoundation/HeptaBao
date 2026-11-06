@@ -1,0 +1,56 @@
+--- root-verifier-r1
++++ root-verifier-r2
+@@ -150,10 +150,16 @@
+     seen_rows.add(row_identity); seen_ids.add(row['record_id']); seen_keys.add(row['kv_key'])
+     grouped[slot][table].append(values)
+ expected_record_ids = []
++expected_id_by_source = {}
+ for slot, source in enumerate(agents):
+     for table_index, table in enumerate(tables):
+         grouped[slot][table].sort(key=lambda values: values[0])
+-        expected_record_ids.extend(f'a{slot:04d}-t{table_index}-r{ordinal:04d}' for ordinal in range(len(grouped[slot][table])))
++        for ordinal, values in enumerate(grouped[slot][table]):
++            record_id = f'a{slot:04d}-t{table_index}-r{ordinal:04d}'
++            expected_record_ids.append(record_id)
++            source_identity = (slot, table, values[0])
++            assert source_identity not in expected_id_by_source
++            expected_id_by_source[source_identity] = record_id
+     if source.get('present') and not source.get('empty_database_marker'):
+         assert len(grouped[slot]['auth_profile_store']) == source['auth_store_rows']
+         assert len(grouped[slot]['auth_profile_state']) == source['auth_state_rows']
+@@ -162,6 +168,11 @@
+     else:
+         assert not any(grouped[slot].values())
+ assert [row['record_id'] for row in projection['rows']] == expected_record_ids
++assert len(expected_id_by_source) == len(projection['rows'])
++for row in projection['rows']:
++    primary = row['row_fields'][tables[row['table']][0]]
++    expected_id = expected_id_by_source[(row['agent_slot'], row['table'], primary)]
++    assert row['record_id'] == row['kv_key'] == expected_id
+ counts = {'agents': len(agents), 'database_families': len(capture['database_rows']), 'business_rows': len(projection['rows']), 'auth_profile_store_rows': sum(len(g['auth_profile_store']) for g in grouped), 'auth_profile_state_rows': sum(len(g['auth_profile_state']) for g in grouped)}
+ assert counts == observed['counts'] == binding['counts']
+ assert counts['auth_profile_store_rows'] == 5 and counts['auth_profile_state_rows'] == 4 and counts['business_rows'] == 9
+@@ -169,7 +180,7 @@
+     assert observed[flag] is False
+ 
+ report = {
+-    'schema': 'heptabao.root-actual-projection-r3-independent-review.v1',
++    'schema': 'heptabao.root-actual-projection-r3-independent-review.v2',
+     'job_id': terminal['job_id'], 'terminal_success_complete_durable_confirmed': True,
+     'stdout_bytes': len(stdout), 'stdout_sha256': sha(stdout), 'stderr_bytes': 0,
+     'public_result_bytes': len(public_raw), 'public_result_sha256': sha(public_raw),
+@@ -185,6 +196,7 @@
+     'independent_reconstruction_opened_database_or_product': False,
+     'source_updated_at_null_blob_and_credential_json_string_cells_preserved_by_full_row_commitment': True,
+     'all_nine_opaque_record_scopes_unique_and_complete': True,
++    'all_nine_row_to_kv_key_mappings_independently_bound': True,
+     'original_controller_connections_closed': 6, 'original_controller_fds_closed': 66,
+     'controller_forbidden_effect_attempts': 0, 'controller_elapsed_seconds': observed['elapsed_work_observation_seconds'],
+     'root_independently_reread_full_six_databases': False,
+@@ -193,5 +205,5 @@
+     'formal_kv2_qualified': False, 'ha_qualified': False, 'authbus_qualified': False,
+     'service_initialized_or_api_tested_by_projection': False, 'traffic_cutover_performed': False,
+ }
+-(ROOT / 'ROOT_ACTUAL_PROJECTION_REVIEW.public.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
++(ROOT / 'ROOT_ACTUAL_PROJECTION_REVIEW.r2.public.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
+ print(json.dumps(report, sort_keys=True))

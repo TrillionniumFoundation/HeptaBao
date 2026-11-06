@@ -1,0 +1,12 @@
+test_actual_directory_publish_retains_original_fd_and_rejects_unproved_transition (test_manager_boundaries.ManagerBoundaries.test_actual_directory_publish_retains_original_fd_and_rejects_unproved_transition) ... ok
+test_binding_swap_is_single_named_transition_preserves_original_archive_and_closes_old_fds (test_manager_boundaries.ManagerBoundaries.test_binding_swap_is_single_named_transition_preserves_original_archive_and_closes_old_fds) ... ok
+test_observed_absence_grammar_and_never_exited_are_not_forged_success (test_manager_boundaries.ManagerBoundaries.test_observed_absence_grammar_and_never_exited_are_not_forged_success) ... ok
+test_partial_delivery_is_preserved_without_overwrite_and_original_fds_retire (test_manager_boundaries.ManagerBoundaries.test_partial_delivery_is_preserved_without_overwrite_and_original_fds_retire) ... ok
+test_signal_after_fd_birth_counts_and_retires_registered_original (test_manager_boundaries.ManagerBoundaries.test_signal_after_fd_birth_counts_and_retires_registered_original) ... ok
+test_signal_respects_custody_protected_birth_and_stays_sticky (test_manager_boundaries.ManagerBoundaries.test_signal_respects_custody_protected_birth_and_stays_sticky) ... ok
+test_uncertain_init_is_one_attempt_and_no_combined_response_or_argv_digest_is_public (test_manager_boundaries.ManagerBoundaries.test_uncertain_init_is_one_attempt_and_no_combined_response_or_argv_digest_is_public) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.003s
+
+OK

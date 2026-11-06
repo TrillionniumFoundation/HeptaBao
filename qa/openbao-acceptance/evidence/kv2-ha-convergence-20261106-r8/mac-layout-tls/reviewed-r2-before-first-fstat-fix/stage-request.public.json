@@ -1,0 +1,25 @@
+{
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+  "executable": "/opt/homebrew/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-formal-kv2-layout-tls-input-stage-20261106-r1",
+  "nice": 5,
+  "request": {
+    "bytes": 378458,
+    "sha256": "56f7ef55b557bd1b4f27bb2ccd17ee5509936876f6d4e99fe9d278a99d5740b4"
+  },
+  "stdin": {
+    "bytes": 377783,
+    "private_transport_not_printed": true,
+    "public_payload_count": 11,
+    "sha256": "88100508eda7564c3a570b8472cca4f061e54b68be8d4f209606cd7659c84260",
+    "subprocesses": 0
+  },
+  "timeout_seconds": 60
+}

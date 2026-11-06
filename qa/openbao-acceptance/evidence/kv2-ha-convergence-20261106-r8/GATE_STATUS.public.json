@@ -1,0 +1,160 @@
+{
+  "ci": {
+    "failed_full_run": 42260689756,
+    "full_ci_qualified": false,
+    "head_job": 128048874677,
+    "merge_job": 128048873935,
+    "new_full_job_observation": "both running complete locked Rust workspace tests",
+    "new_full_jobs": [
+      128151279759,
+      128151280154
+    ],
+    "new_full_last_observed": "in_progress",
+    "new_full_run": 42293086208,
+    "new_trust_last_observed": "completed_success",
+    "new_trust_run": 42293086260,
+    "verdict_job": 128141481423
+  },
+  "current_projection": {
+    "absent_families": 3,
+    "actual_product_api_writes": 0,
+    "agents": 5,
+    "auth_state_rows": 4,
+    "auth_store_rows": 5,
+    "business_rows": 9,
+    "checks": 8,
+    "database_families": 9,
+    "generation": "r3",
+    "historical_openbao_versions_supplied": false,
+    "independent_complete_commitment_reconstruction_passed": true,
+    "independent_per_row_source_identity_to_kv_key_mapping_passed": true,
+    "job_id": "1a1b2b773d7-fc05-7f73",
+    "present_nonempty_databases": 6,
+    "product_api_executed": false,
+    "projection_bytes": 30631,
+    "scope": "All rows of auth_profile_store and auth_profile_state for five captured agents; other database contents are verified recovery input, not a wholesale KV2 payload.",
+    "status": "passed"
+  },
+  "date_utc": "2026-11-06",
+  "decision": "HOLD",
+  "gate_scope": "current formal candidate acceptance in r8; historical attempts remain in prior checkpoints",
+  "gates": [
+    {
+      "actual": [
+        "whole-current-source encrypted backup and independent readback from r7",
+        "normal Mac service layout and TLS created",
+        "manager start failed before init",
+        "stopped-candidate base-Python binding repaired",
+        "projection r1 and r2 actual failures preserved",
+        "r3 real complete-row baseline projection passed 8/8 and independent native full readback plus all original row commitments"
+      ],
+      "missing": [
+        "running sealed then initialized normal service",
+        "real baseline KV2 API writes and verification",
+        "complete version/history/export checks",
+        "independent remote encrypted backup transfer",
+        "cold restart, restore and tamper refusal",
+        "rollback with source unchanged",
+        "same-corpus OpenBao 2.7.1 comparison"
+      ],
+      "name": "KV2",
+      "state": "HOLD"
+    },
+    {
+      "missing": [
+        "real Mac/ROG/Pocket4 voters",
+        "leader loss and reelection",
+        "ReadIndex behavior",
+        "durable commit witnesses",
+        "restart and fault recovery",
+        "same-protocol OpenBao HA/resource comparison"
+      ],
+      "name": "HA",
+      "state": "NOT_QUALIFIED_WAITING_FOR_KV2"
+    },
+    {
+      "missing": [
+        "trusted credential authority without J3160",
+        "AppRole and TLS end to end",
+        "Policy and KV client authorization",
+        "renewal and revocation",
+        "key custody and recovery verification"
+      ],
+      "name": "AuthBus",
+      "state": "NOT_QUALIFIED_WAITING_FOR_HA"
+    },
+    {
+      "missing": [
+        "per-host real credential read/write",
+        "per-host restore and rollback",
+        "complete dependent client census and validation",
+        "writer/sync boundary evidence",
+        "no-regression before real traffic"
+      ],
+      "name": "per-host-cutover",
+      "state": "NOT_QUALIFIED_WAITING_FOR_AUTHBUS"
+    },
+    {
+      "missing": [
+        "all clients and backup routes migrated",
+        "independent host acceptance evidence",
+        "latest-only retained service inventory"
+      ],
+      "name": "old-asset-cleanup",
+      "state": "NOT_QUALIFIED_WAITING_FOR_ALL_MIGRATIONS"
+    }
+  ],
+  "hosts": [
+    {
+      "current_candidate": "prepared, bootstrap failed before init, exact new label booted out, base-Python binding repaired",
+      "formal_service_initialized": false,
+      "host": "Mac/T5",
+      "persistent_launchctl_disable_performed": false,
+      "real_traffic_switched": false
+    },
+    {
+      "current_candidate": "prior limited isolated product/diagnostic evidence; empty custody receiver directories only",
+      "host": "ROG",
+      "real_traffic_switched": false,
+      "remote_unseal_share_or_formal_backup_received": false
+    },
+    {
+      "current_candidate": "reachability and empty custody receiver directories only",
+      "host": "Pocket4",
+      "real_traffic_switched": false,
+      "remote_unseal_share_or_formal_backup_received": false
+    },
+    {
+      "current_candidate": "historical isolated OpenBao 2.7.1 dev reference; no complete migration acceptance",
+      "host": "X230",
+      "real_traffic_switched": false
+    }
+  ],
+  "replacement_approved": false,
+  "schema": "heptabao.replacement-gate-status.v8",
+  "shared_boundaries": {
+    "authbus_qualified": false,
+    "cross_database_atomic_snapshot_qualified": false,
+    "historical_openbao_versions_supplied": false,
+    "j3160_used": false,
+    "old_assets_removed": false,
+    "production_storage_qualified": false,
+    "provider_credential_validity_qualified": false,
+    "real_multi_host_ha_qualified": false,
+    "real_traffic_switched": false,
+    "source_writer_fence_qualified": false
+  },
+  "source_identity": {
+    "ci_original_failed_head": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+    "latest_draft_pr_head": "f0e4694e5637415d394916b7590e7deec81e9d71",
+    "latest_head_deployed": false,
+    "normal_mac_binaries_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249"
+  },
+  "strict_order": [
+    "KV2",
+    "HA",
+    "AuthBus",
+    "per-host-cutover",
+    "old-asset-cleanup"
+  ]
+}

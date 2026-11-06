@@ -1,0 +1,184 @@
+{
+  "actual_layout_tls_public_result": {
+    "bytes": 4086,
+    "job_id": "1a1b2643b65-fc05-7dde",
+    "sha256": "6d803e1e5a684dc20abbc3c51fac9632aa497a133455ab0a4798fc79a251a638"
+  },
+  "actual_receipt_tree": "c89a60ec53b29861cef6249126740c7d9f1b180d",
+  "actual_stopped_repair_public_receipts": [
+    {
+      "bytes": 3300,
+      "path": "repair/result.public.json",
+      "sha256": "c22b367d77e63f82f56c0f90d13fad42b2c42e3e468567123b98e7f6369e22fc"
+    },
+    {
+      "bytes": 731,
+      "path": "repair/runtime-terminal.original.json",
+      "sha256": "b5c12db5340d128a58d977b70a8f8cb2ebe7f4e5e5baf91e47b5213cb75671c7"
+    },
+    {
+      "bytes": 3473,
+      "path": "repair/runtime.stdout.original",
+      "sha256": "2b2d6146d1c70465dba33906d5f1d8f06588395a274c16b9ae112b3d6bdb589b"
+    },
+    {
+      "bytes": 731,
+      "path": "retirement/before-query/runtime-terminal.original.json",
+      "sha256": "39e352ea37e91a8e58f22f1acfe5c7cbc6c24cd70ba06e3a9c912e65670b3cb2"
+    },
+    {
+      "bytes": 725,
+      "path": "retirement/bootout/runtime-terminal.original.json",
+      "sha256": "a21c7c3d40dd65df46acff1d613f2768cf0afba7c1eefd54f65910eea5660e09"
+    },
+    {
+      "bytes": 726,
+      "path": "retirement/after-query/runtime-terminal.original.json",
+      "sha256": "5d9cbf179aad9b666d5603cdf17a22bd5a258277fcdce39fbe4194f1fe433462"
+    },
+    {
+      "bytes": 83,
+      "path": "retirement/after-query/runtime.stderr.original",
+      "sha256": "0bf982c3478fcf93e0206505438b9c1c78d9429c33d307400db6874e904851f1"
+    }
+  ],
+  "candidate": {
+    "base_launcher": {
+      "bytes": 34640,
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "domain": "gui/501",
+    "label": "org.heptabao.kv2",
+    "leaf_certificate_der_sha256": "0bd8bab80fe2b8b5b44b6ccc5da2fccbbbf163dd084d6adcf62a45d66575da9b",
+    "normal_product_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "normal_product_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "origin": "https://127.0.0.1:18240",
+    "repair_job_id": "1a1b295b02c-fc05-7ec7",
+    "repair_recorded_seal_file": null,
+    "repair_recorded_state": "initial_empty"
+  },
+  "deferred_exact_inputs": [
+    "new_entry_source_and_helper_hashes",
+    "new_absolute_inputs_output_and_private_attempt_root_bindings",
+    "new_stable_runtime_idempotency_key",
+    "legal_OS_authorization_evidence",
+    "current_artifact_full_identity_checks",
+    "current_three_domain_exact_absence_results"
+  ],
+  "denied_behaviors": [
+    "replay_original_create_only_entry",
+    "rebuild_initial_binding_with_venv_launcher",
+    "overwrite_original_failed_private_receipt",
+    "automatic_bootstrap_or_init_retry",
+    "TCC_or_mount_policy_bypass",
+    "alternate_permanent_launcher",
+    "combined_plaintext_init_response_persistence",
+    "unseal_or_ack_in_this_step",
+    "mount_activation_or_business_import_in_this_step"
+  ],
+  "exact_frozen_plan_review_received": false,
+  "existing_unresolved_holds": {
+    "complete_product_ci_failures_retained": [
+      42229582001,
+      42260689756
+    ],
+    "macos_removable_volume_permission": "requires lawful authorization; no grant evidence supplied to this preparation",
+    "new_source_f0e_full_run_observation": {
+      "not_a_passing_result": true,
+      "run_id": 42293086208,
+      "stored_status": "in_progress"
+    }
+  },
+  "implementation_present": false,
+  "planned_budget_seconds": {
+    "all_from_original_entry": true,
+    "cleanup_reserve": 10,
+    "http": 15,
+    "runtime": 120,
+    "utility": 5,
+    "work": 110
+  },
+  "private_input_roles_without_values": [
+    "actual_preparation_closure",
+    "actual_failed_init_closure",
+    "actual_repair_closure",
+    "native_repaired_current_binding_pin",
+    "native_original_initial_archive_pin",
+    "native_retained_old_current_pin",
+    "original_installed_plist_pin",
+    "original_copied_guard_pin",
+    "launch_agents_parent",
+    "volume_root_pins"
+  ],
+  "proposed_checker": {
+    "effect": "pure expected-relations data; no I/O or authority",
+    "implemented": false,
+    "inputs": [
+      "preparation",
+      "failed_attempt",
+      "retirement",
+      "repair",
+      "private_native_envelope"
+    ],
+    "name": "derive_existing_candidate_expectations",
+    "output_type": "ExpectedExistingCandidate"
+  },
+  "qualification_flags_remain_false": [
+    "formal_kv2",
+    "ha",
+    "authbus",
+    "offhost_share_custody",
+    "traffic_cutover",
+    "current_product_ci_hold_resolved"
+  ],
+  "ready_for_dispatch": false,
+  "remote_calls_by_plan_preparation": 0,
+  "reused_code_pins": [
+    {
+      "bytes": 28141,
+      "name": "manager_start_init.py",
+      "role": "historical_entry_not_replayable",
+      "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+    },
+    {
+      "bytes": 25233,
+      "name": "manager_runtime.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+    },
+    {
+      "bytes": 8558,
+      "name": "manager_launch_binding.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "42b40d4be9f43ec18056ed14976603acfec4cbcfebe46eb77692c753faa62436"
+    },
+    {
+      "bytes": 3507,
+      "name": "init_delivery.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "896a80094f8f7836315bb837d625756a4b9057ba0bbffe476133917a7cbed88e"
+    },
+    {
+      "bytes": 18573,
+      "name": "launch_guard.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3"
+    },
+    {
+      "bytes": 26131,
+      "name": "kv2_dr_process_custody.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 28442,
+      "name": "owned_process.py",
+      "role": "unchanged_reusable_component",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    }
+  ],
+  "root_direction_review_received": true,
+  "runtime_request_constructed": false,
+  "schema": "heptabao.existing-candidate-resume-first-init-plan-dependencies.v1",
+  "status": "prepared_plan_not_implemented_not_executed"
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\",\n      \"pocket4\"\n    ],\n    \"created_unix_ms\": 1793993129679,\n    \"cwd\": \"/home/alex\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b252becf-fc05-7d84\",\n    \"idempotency_key\": \"heptabao-pocket4-formal-kv2-private-receivers-20261106-r1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b252becf-fc05-7d84\",\n    \"request_digest\": \"31fe657067b570c4d51e3fa0770d6ff1925b0c8b515470c084524643cac4648c\",\n    \"request_fingerprint\": 3602428285393662148,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b252becf-fc05-7d84\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b252becf-fc05-7d84\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,32 @@
+{
+  "after_query_job_id": "1a1b28fb493-fc05-7ea2",
+  "all_three_native_terminals_full_complete_durable": true,
+  "before_query_job_id": "1a1b28d5d67-fc05-7e99",
+  "candidate": "org.heptabao.kv2",
+  "domain": "gui/501",
+  "exact_bootout_job_id": "1a1b28ed7a1-fc05-7e9f",
+  "formal_kv2_qualified": false,
+  "initialization_performed": false,
+  "installed_files_preserved_by_command_scope": true,
+  "long_server_waitpid_claimed": false,
+  "native_expected_exit_codes": [
+    0,
+    0,
+    113
+  ],
+  "no_pid_signal_used": true,
+  "no_shared_outer_deadline_claimed": true,
+  "old_assets_removed": false,
+  "only_new_failed_candidate_stopped": true,
+  "per_native_runtime_seconds": 15,
+  "post_query_exact_absence_grammar": true,
+  "post_query_stderr": {
+    "bytes": 83,
+    "sha256": "0bf982c3478fcf93e0206505438b9c1c78d9429c33d307400db6874e904851f1"
+  },
+  "schema": "heptabao.root-exact-failed-candidate-retirement-review.public.v1",
+  "service_restart": false,
+  "status": "candidate_unregistered_verified",
+  "sum_of_three_native_runtime_caps_seconds": 45,
+  "tcc_modified": false
+}

@@ -1,0 +1,58 @@
+{
+  "actual_preparation": {
+    "children_started": 0,
+    "created_directories": 19,
+    "owned_directory_handles_closed": 23,
+    "owned_file_handles_closed": 35,
+    "status": "prepared_not_started"
+  },
+  "excluded": [
+    "all private-runtime files and native private fingerprints",
+    "filled transport requests, retained locally with exact original bytes",
+    "Python cache files"
+  ],
+  "execution_generations": [
+    {
+      "job_id": "1a1b25e0cd2-fc05-7db8",
+      "producer_run": false,
+      "role": "original_public_input_stage",
+      "staged_producer_sha256": "266760644fb7e5dd9f5c0c92dc8ab40d7c775332eee1c461849c4d9f38014cce",
+      "status": "succeeded"
+    },
+    {
+      "job_id": "1a1b2632788-fc05-7dd8",
+      "producer_run": false,
+      "role": "successor_public_input_stage",
+      "staged_producer_sha256": "c9fb2cb6f960e85ec2eb1f8f35ee30e2446703bcd53cfe416c72c06617f65fba",
+      "status": "succeeded"
+    },
+    {
+      "job_id": "1a1b2643b65-fc05-7dde",
+      "producer_run": true,
+      "producer_sha256": "c9fb2cb6f960e85ec2eb1f8f35ee30e2446703bcd53cfe416c72c06617f65fba",
+      "role": "first_actual_layout_tls_preparation",
+      "status": "succeeded"
+    }
+  ],
+  "git_publication_scope": "new no-base tree only; parent agent owns any commit or reference update",
+  "included_config_and_uninstalled_plist": "exact fixed-locator files separately reviewed by root to contain no credentials",
+  "local_guard_scope": "local Linux Python3.12.14 cryptography50.0.0 checks; actual Mac Python3.14.3 cryptography50.0.2 comes from separate immutable environment and preparation receipts",
+  "original_source_files_are_preserved_without_postexecution_rewriting": true,
+  "private_closure_or_key_content_fingerprints_in_package": false,
+  "private_key_plaintext_in_package": false,
+  "qualifications": {
+    "authbus_qualified": false,
+    "cross_host_unseal_share_custody_verified": false,
+    "formal_kv2_qualified": false,
+    "full_openbao_replacement_qualified": false,
+    "initialized": false,
+    "legacy_cleanup_authorized_by_this_package": false,
+    "physical_ha_qualified": false,
+    "service_started": false,
+    "tls_endpoint_verified": false,
+    "traffic_cutover": false
+  },
+  "schema": "heptabao.normal-kv2-layout-tls-public-evidence-scope.v1",
+  "scope": "create_only_layout_public_tls_and_normal_artifact_preparation",
+  "transport_reconstruction": "full public source/input originals, fixed manifest, original request projection, and exact stage template are included; filled transport is not represented as a published original"
+}

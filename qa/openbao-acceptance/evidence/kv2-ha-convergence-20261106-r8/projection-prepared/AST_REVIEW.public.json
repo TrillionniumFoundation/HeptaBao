@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.projection-resource-boundary-ast-diff.v1",
+  "old_source": {
+    "bytes": 33953,
+    "sha256": "576ba0254eb6ac4af12cee78450fbca3cfffdd781bb4267a4adbd1d345bb0977"
+  },
+  "new_source": {
+    "bytes": 44334,
+    "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+  },
+  "unchanged_top_level_definitions": [
+    "Cancelled",
+    "Helpers",
+    "Refused",
+    "audit",
+    "canonical_path",
+    "check",
+    "checked",
+    "decoded",
+    "encoded",
+    "extract_protocol",
+    "family_state",
+    "identity",
+    "load_protocol",
+    "mkdir_exact",
+    "native_version",
+    "need",
+    "no_source_fds",
+    "query_allrows",
+    "restored_path",
+    "retained_directories",
+    "unique"
+  ],
+  "changed_top_level_definitions": [
+    "cold_database",
+    "create_file",
+    "hold_directory",
+    "interrupt",
+    "main",
+    "private_stdio",
+    "read_file",
+    "run"
+  ],
+  "added_top_level_definitions": [
+    "OwnedResources",
+    "arm_work_timer",
+    "disarm_owned_timer",
+    "resource_check"
+  ],
+  "removed_top_level_definitions": [],
+  "scope": "resource and interruption ownership only; full patch retained; no claim that entire modules have equal AST",
+  "actual_projection_run": false
+}

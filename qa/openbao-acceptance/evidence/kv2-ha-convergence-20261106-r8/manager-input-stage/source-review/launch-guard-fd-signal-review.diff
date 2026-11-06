@@ -1,0 +1,314 @@
+--- unexecuted-original
++++ root-reviewed-unexecuted
+@@ -10,6 +10,7 @@
+ 
+ import time
+ ENTRY = time.monotonic()
++import contextlib
+ import hashlib
+ import json
+ import os
+@@ -19,6 +20,7 @@
+ import sys
+ 
+ SERVICE = Path('/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1')
++KEY_ROOT = Path('/Users/qianqi/heptabao-formal-kv2-current-20261106-r1/service-authority-current-20261106-r1')
+ BINDING = SERVICE / 'manager/launch-binding.private.json'
+ UID = 501
+ FILE_KEYS = {'dev', 'inode', 'uid', 'gid', 'mode', 'nlink', 'bytes', 'mtime_ns', 'ctime_ns', 'file_type'}
+@@ -64,14 +66,87 @@
+     return path
+ 
+ 
+-class Admission:
++class LaunchClock:
++    """Defer a termination signal only while registering/retiring an owned FD."""
+     def __init__(self, end):
+         self.end = end
++        self.depth = 0
++        self.pending = None
++        self.previous = {}
++        self.timer_owned = False
++
++    def interrupted(self, signum, _frame):
++        if self.pending is None:
++            self.pending = signum
++        if not self.depth:
++            raise Refused('launch_signal_or_deadline')
++
++    @contextlib.contextmanager
++    def critical(self):
++        self.depth += 1
++        try:
++            yield
++        finally:
++            self.depth -= 1
++
++    def start(self):
++        need(signal.getitimer(signal.ITIMER_REAL) == (0.0, 0.0), 'no_inherited_launch_timer')
++        with self.critical():
++            for signum in (signal.SIGALRM, signal.SIGTERM, signal.SIGINT):
++                self.previous[signum] = signal.getsignal(signum)
++                signal.signal(signum, self.interrupted)
++            signal.setitimer(signal.ITIMER_REAL, max(0.001, self.end - time.monotonic()))
++            self.timer_owned = True
++        self.check()
++
++    def check(self):
++        need(self.pending is None and time.monotonic() < self.end, 'original_launch_deadline')
++
++    def finish(self):
++        if self.timer_owned:
++            signal.setitimer(signal.ITIMER_REAL, 0)
++            self.timer_owned = False
++        for signum, handler in self.previous.items():
++            signal.signal(signum, handler)
++        self.previous.clear()
++
++
++class Admission:
++    def __init__(self, end, clock=None):
++        self.end = end
++        self.clock = clock if clock is not None else LaunchClock(end)
+         self.directories = []
+         self.files = []
++        self.handles = {}
++        self.cleanup_errors = []
+ 
+     def check(self):
+-        need(time.monotonic() < self.end, 'original_launch_deadline')
++        self.clock.check()
++        need(not self.cleanup_errors, 'original_handles_close_failed')
++
++    def open_fd(self, path, flags, mode=0o600, *, dir_fd=None):
++        self.check()
++        with self.clock.critical():
++            fd = os.open(path, flags | os.O_NOFOLLOW | os.O_CLOEXEC, mode, dir_fd=dir_fd)
++            # Registration is adjacent to birth and cannot be interrupted by
++            # our handlers. Even a later fstat/validation failure retains this
++            # original descriptor for one explicit cleanup attempt.
++            self.handles[fd] = str(path)
++        self.check()
++        return fd
++
++    def release_fd(self, fd):
++        # Never retry close after an error: its numeric FD may have been reused.
++        # Cleanup errors remain separate from a primary admission exception.
++        with self.clock.critical():
++            if fd not in self.handles:
++                self.cleanup_errors.append('unknown_original_handle')
++                return
++            del self.handles[fd]
++            try:
++                os.close(fd)
++            except OSError:
++                self.cleanup_errors.append('original_handle_close_failed')
+ 
+     def hold_directory(self, pin, *, private=True):
+         self.check()
+@@ -84,16 +159,11 @@
+             need(pin['uid'] == UID and pin['mode'] == 0o700, 'private_directory_owner')
+         else:
+             need(path in (Path('/Volumes/T5'), Path('/System/Volumes/Data')), 'only_two_fixed_volume_roots')
+-        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+-        try:
+-            need(directory_identity(path, os.fstat(fd)) == pin == directory_identity(path, path.lstat()), 'original_directory_fd')
+-            row = {'path': path, 'pin': pin, 'fd': fd}
+-            self.directories.append(row)
+-            fd = None
+-            return row
+-        finally:
+-            if fd is not None:
+-                os.close(fd)
++        fd = self.open_fd(path, os.O_RDONLY | os.O_DIRECTORY)
++        need(directory_identity(path, os.fstat(fd)) == pin == directory_identity(path, path.lstat()), 'original_directory_fd')
++        row = {'path': path, 'pin': pin, 'fd': fd}
++        self.directories.append(row)
++        return row
+ 
+     def read_file(self, item, *, maximum, private=True, materialize=True, verify_bytes=True):
+         self.check()
+@@ -109,31 +179,26 @@
+         need(pin['mode'] & 0o022 == 0, 'not_group_or_world_writable')
+         if private:
+             need(pin['uid'] == UID and pin['mode'] in (0o600, 0o700), 'owned_private_file')
+-        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+-        try:
+-            need(file_identity(os.fstat(fd)) == pin, 'original_file_fd')
+-            digest = hashlib.sha256()
+-            data = []
+-            count = 0
+-            if verify_bytes:
+-                while True:
+-                    self.check()
+-                    part = os.read(fd, min(1024 * 1024, maximum + 1 - count))
+-                    if not part:
+-                        break
+-                    count += len(part)
+-                    need(count <= maximum, 'file_read_cap')
+-                    digest.update(part)
+-                    if materialize:
+-                        data.append(part)
+-                need(count == item['bytes'] and digest.hexdigest() == item['sha256'], 'original_file_content')
+-            need(file_identity(os.fstat(fd)) == pin == file_identity(path.lstat()), 'file_identity_unchanged')
+-            self.files.append({'path': path, 'pin': pin, 'fd': fd, 'byte_hash_checked': verify_bytes})
+-            fd = None
+-            return b''.join(data) if materialize and verify_bytes else None
+-        finally:
+-            if fd is not None:
+-                os.close(fd)
++        fd = self.open_fd(path, os.O_RDONLY)
++        need(file_identity(os.fstat(fd)) == pin, 'original_file_fd')
++        digest = hashlib.sha256()
++        data = []
++        count = 0
++        if verify_bytes:
++            while True:
++                self.check()
++                part = os.read(fd, min(1024 * 1024, maximum + 1 - count))
++                if not part:
++                    break
++                count += len(part)
++                need(count <= maximum, 'file_read_cap')
++                digest.update(part)
++                if materialize:
++                    data.append(part)
++            need(count == item['bytes'] and digest.hexdigest() == item['sha256'], 'original_file_content')
++        need(file_identity(os.fstat(fd)) == pin == file_identity(path.lstat()), 'file_identity_unchanged')
++        self.files.append({'path': path, 'pin': pin, 'fd': fd, 'byte_hash_checked': verify_bytes})
++        return b''.join(data) if materialize and verify_bytes else None
+ 
+     def recheck(self):
+         self.check()
+@@ -145,28 +210,25 @@
+                  == file_identity(os.fstat(row['fd'])), 'original_files_unchanged')
+ 
+     def close(self):
+-        failures = 0
+-        for row in reversed(self.files + self.directories):
+-            try:
+-                os.close(row['fd'])
+-            except OSError:
+-                failures += 1
++        for fd in reversed(list(self.handles)):
++            self.release_fd(fd)
+         self.files.clear()
+         self.directories.clear()
+-        need(failures == 0, 'original_handles_close_failed')
+-
+-
+-def read_initial_binding(path):
++        return list(self.cleanup_errors)
++
++
++def read_initial_binding(path, guard):
+     path = canonical_path(str(path))
+     need(path == BINDING, 'fixed_launch_binding_path')
+     before = file_identity(path.lstat())
+     need(before['file_type'] == stat.S_IFREG and before['uid'] == UID
+          and before['mode'] == 0o600 and before['nlink'] == 1 and 0 < before['bytes'] <= 131072, 'private_launch_binding_file')
+-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
++    fd = guard.open_fd(path, os.O_RDONLY)
+     try:
+         need(file_identity(os.fstat(fd)) == before, 'binding_original_fd')
+         data = bytearray()
+         while len(data) <= 131072:
++            guard.check()
+             part = os.read(fd, 16384)
+             if not part:
+                 break
+@@ -175,7 +237,7 @@
+         obj = json.loads(data, object_pairs_hook=unique_object)
+         return obj, {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'identity': before}
+     finally:
+-        os.close(fd)
++        guard.release_fd(fd)
+ 
+ 
+ def admit(binding, original_binding, guard):
+@@ -189,6 +251,7 @@
+     roots = binding['roots']
+     need(type(roots) is dict and set(roots) == {'service', 'key', 'admissions', 't5', 'internal'}, 'exact_launch_roots')
+     need(roots['service']['path'] == str(SERVICE), 'fixed_service_root')
++    need(roots['key']['path'] == str(KEY_ROOT), 'fixed_internal_key_root')
+     need(roots['t5']['path'] == '/Volumes/T5' and roots['internal']['path'] == '/System/Volumes/Data', 'fixed_volume_paths')
+     need(roots['admissions']['path'] == roots['key']['path'] + '/manager-admissions', 'private_admissions_child')
+     for role in ('t5', 'internal', 'service', 'key', 'admissions'):
+@@ -254,44 +317,59 @@
+             'volume_uuid_requeried': False, 'fixed_volume_identity_verified': True,
+             'elapsed_before_exec': time.monotonic() - ENTRY}
+     raw = (json.dumps(body, sort_keys=True, separators=(',', ':')) + '\n').encode()
+-    fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=directory['fd'])
++    fd = guard.open_fd(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, dir_fd=directory['fd'])
+     try:
+-        with os.fdopen(fd, 'wb', closefd=False) as stream:
+-            stream.write(raw)
+-            stream.flush()
+-            os.fsync(fd)
++        offset = 0
++        while offset < len(raw):
++            guard.check()
++            count = os.write(fd, memoryview(raw)[offset:])
++            need(count > 0, 'private_receipt_short_write')
++            offset += count
++        os.fsync(fd)
+         info = file_identity(os.fstat(fd))
+         need(info['uid'] == UID and info['mode'] == 0o600 and info['nlink'] == 1 and info['bytes'] == len(raw), 'private_pre_exec_receipt')
+         os.fsync(directory['fd'])
+     finally:
+-        os.close(fd)
++        guard.release_fd(fd)
+     guard.recheck()
+ 
+ 
+ def main():
+     need(sys.platform == 'darwin' and sys.argv[1:] == ['--binding', str(BINDING)], 'fixed_darwin_launch_argv')
+-    need(signal.getitimer(signal.ITIMER_REAL) == (0.0, 0.0), 'no_inherited_launch_timer')
+-    previous = signal.getsignal(signal.SIGALRM)
+-    signal.signal(signal.SIGALRM, lambda signum, frame: (_ for _ in ()).throw(Refused('original_launch_deadline')))
+-    signal.setitimer(signal.ITIMER_REAL, max(0.001, ENTRY + 15 - time.monotonic()))
+-    guard = Admission(ENTRY + 15)
++    need(sys.flags.isolated == 1 and sys.dont_write_bytecode, 'isolated_no_bytecode_launch')
++    clock = LaunchClock(ENTRY + 15)
++    guard = Admission(clock.end, clock)
++    primary = None
+     try:
+-        binding, pin = read_initial_binding(BINDING)
++        clock.start()
++        binding, pin = read_initial_binding(BINDING, guard)
+         roots, files = admit(binding, pin, guard)
+         publish_pre_exec(guard, roots, pin, binding['state'])
++        os.chdir(SERVICE)
+         guard.recheck()
+         # CLOEXEC closes all original validation handles in the new process.
+         # Disarm only after final admission and immediately before exec. The
+         # HTTP server has its own normal 15-second request deadline thereafter.
+-        signal.setitimer(signal.ITIMER_REAL, 0)
+-        signal.signal(signal.SIGALRM, previous)
+-        os.chdir(SERVICE)
++        with clock.critical():
++            clock.finish()
++            clock.check()
+         os.execve(files['server']['path'], [files['server']['path'], '--config', files['config']['path']],
+                   {'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'LANG': 'C', 'LC_ALL': 'C'})
++    except BaseException as error:
++        primary = error
+     finally:
+-        signal.setitimer(signal.ITIMER_REAL, 0)
+-        signal.signal(signal.SIGALRM, previous)
+-        guard.close()
++        with clock.critical():
++            cleanup_errors = guard.close()
++            try:
++                clock.finish()
++            except BaseException:
++                cleanup_errors.append('signal_handler_retirement_failed')
++        if cleanup_errors:
++            print('heptabao launch cleanup: ' + ','.join(cleanup_errors), file=sys.stderr)
++    if primary is not None:
++        raise primary
++    need(not cleanup_errors, 'original_handles_close_failed')
++    raise Refused('exec_unexpectedly_returned')
+ 
+ 
+ if __name__ == '__main__':

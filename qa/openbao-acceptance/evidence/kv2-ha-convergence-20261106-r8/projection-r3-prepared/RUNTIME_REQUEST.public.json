@@ -1,0 +1,23 @@
+{
+  "actual_execution_recorded_here": false,
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-allrows-projection-inputs-r3/mac_formal_kv2_allrows_projection.py",
+    "--inputs-sha256",
+    "PRIVATE_FIXED_INPUT_SHA256_WITHHELD",
+    "--controller-sha256",
+    "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+  "env": {},
+  "executable": "/opt/homebrew/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-current-kv2-allrows-projection-20261106-r3",
+  "nice": 5,
+  "not_an_executable_request": true,
+  "private_fixed_input_fingerprint_withheld": true,
+  "schema": "heptabao.redacted-prepared-runtime-request.v1",
+  "timeout_seconds": 60
+}

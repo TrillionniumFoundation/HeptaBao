@@ -1,0 +1,19 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-layout-tls-inputs-r1/layout_tls_prepare.py",
+    "--inputs",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-layout-tls-inputs-r1/fixed-inputs.public.json",
+    "--inputs-sha256",
+    "a7114185996a845bb9e5bbfe64c76a8d025d38fb35d07bd5a3ec1c4ac64cf494",
+    "--code-sha256",
+    "266760644fb7e5dd9f5c0c92dc8ab40d7c775332eee1c461849c4d9f38014cce"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-layout-tls-inputs-r1",
+  "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-formal-kv2-layout-tls-preparation-20261106-r1",
+  "nice": 5,
+  "timeout_seconds": 120
+}

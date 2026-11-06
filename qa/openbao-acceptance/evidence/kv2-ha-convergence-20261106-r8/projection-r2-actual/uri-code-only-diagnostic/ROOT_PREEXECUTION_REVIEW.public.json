@@ -1,0 +1,14 @@
+{
+  "automatic_retry": false,
+  "code_bytes": 9178,
+  "code_sha256": "1a9f096364e19e31ed7c99ee8d08be3f223f1839a595174c768ed54875c8ec57",
+  "deadline_runtime_seconds": 60,
+  "deadline_work_seconds": 52,
+  "expected_failure_diagnostic_not_projection_acceptance": true,
+  "fixed_two_public_sources_only": true,
+  "original_audit_unchanged": true,
+  "request_stdin_exact_code_bytes": true,
+  "schema": "heptabao.root-cold-uri-diagnostic-review.v1",
+  "source_code_read_only_no_sqlite_private_or_service": true,
+  "synthetic_path_conversion_only": true
+}

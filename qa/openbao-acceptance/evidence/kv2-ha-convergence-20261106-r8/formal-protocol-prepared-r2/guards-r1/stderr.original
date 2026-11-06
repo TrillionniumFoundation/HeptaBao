@@ -1,0 +1,15 @@
+test_allrows_refuses_missing_nonprimary_state_agent_or_duplicate_key (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_allrows_refuses_missing_nonprimary_state_agent_or_duplicate_key) ... ok
+test_dynamic_raw_witness_keeps_actual_mount_and_key_binding (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_dynamic_raw_witness_keeps_actual_mount_and_key_binding) ... ok
+test_export_rejects_missing_destroyed_version_or_soft_deleted_payload (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_export_rejects_missing_destroyed_version_or_soft_deleted_payload) ... ok
+test_known_denial_stops_without_becoming_unknown_or_retry (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_known_denial_stops_without_becoming_unknown_or_retry) ... ok
+test_recovery_scope_refuses_reactivation_and_all_source_writes (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_recovery_scope_refuses_reactivation_and_all_source_writes) ... ok
+test_unknown_mutation_stops_later_operation_without_retry (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_unknown_mutation_stops_later_operation_without_retry) ... ok
+test_wrong_endpoint_restore_or_business_write_never_dispatches (test_formal_kv2_protocol_guards.ProtocolBoundaryGuards.test_wrong_endpoint_restore_or_business_write_never_dispatches) ... ok
+test_primary_survives_cleanup_signal_and_ambiguous_close_is_not_retried (test_wire_original_handles.WireOriginalHandleGuards.test_primary_survives_cleanup_signal_and_ambiguous_close_is_not_retried) ... ok
+test_real_short_child_retires_two_original_log_handles_and_waits_once (test_wire_original_handles.WireOriginalHandleGuards.test_real_short_child_retires_two_original_log_handles_and_waits_once) ... ok
+test_signal_at_each_log_birth_and_first_fstat_failure_retire_without_dispatch (test_wire_original_handles.WireOriginalHandleGuards.test_signal_at_each_log_birth_and_first_fstat_failure_retire_without_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.209s
+
+OK

@@ -1,0 +1,147 @@
+{
+  "file_count_excluding_manifest": 28,
+  "files": [
+    {
+      "bytes": 2158,
+      "path": "CHECKPOINT_SCOPE.md",
+      "sha256": "421c7531d3883bf13b2e458bc587bf83d7279160e720ebf38bdf457d44c16bcc"
+    },
+    {
+      "bytes": 1727,
+      "path": "clippy-observer-order/EXACT_BYTE_BOUNDARIES.public.json",
+      "sha256": "f46f71e9de514ca5f65fe1c520b5308c21835d507e3851be2266f426568ebf59"
+    },
+    {
+      "bytes": 910,
+      "path": "clippy-observer-order/MANIFEST.public.json",
+      "sha256": "9bb5610605e980962f0b6b5fd45c558ab74873b4c04caae4fe3959ded39d1151"
+    },
+    {
+      "bytes": 1884,
+      "path": "clippy-observer-order/MANIFEST.r2.public.json",
+      "sha256": "8988598d2712b4fd4a7a0a52da3f87692e238983ee6422ca2d895615022dde64"
+    },
+    {
+      "bytes": 382,
+      "path": "clippy-observer-order/ROOT_EXPECTED_TREE.public.json",
+      "sha256": "5c911c33798ac3e39db5bd947e84997d7f040a887b94dbeeba908c6ca163dd1a"
+    },
+    {
+      "bytes": 1000,
+      "path": "clippy-observer-order/ROOT_STATIC_REVIEW.public.json",
+      "sha256": "cf52b8887542bbe7b71955fb12fba755364e8644091178193837a909226789ab"
+    },
+    {
+      "bytes": 2398,
+      "path": "clippy-observer-order/STATIC_VERIFICATION.public.json",
+      "sha256": "d0f2eb374deee6ea30925db012127abadc5a62d65f86f4525afc6e8041b6ea41"
+    },
+    {
+      "bytes": 3397,
+      "path": "clippy-observer-order/STATIC_VERIFICATION.r2.public.json",
+      "sha256": "11ec3406dea09ffef5eb0c346bb703ee3ff64a7f940bf8e4a78e5dfabdc03c6c"
+    },
+    {
+      "bytes": 195,
+      "path": "clippy-observer-order/create-commit.native.json",
+      "sha256": "d00805bbac9250887574004fd9133c655c26b6ae678b0c37bf49da9661d40eb7"
+    },
+    {
+      "bytes": 195,
+      "path": "clippy-observer-order/create-tree.native.json",
+      "sha256": "289a364b89c6ae0b1d695c93d0ebe786d127302f23c7198c5602c8bc4d441533"
+    },
+    {
+      "bytes": 1253,
+      "path": "clippy-observer-order/head.clippy-diagnostic.original.txt",
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    {
+      "bytes": 2305,
+      "path": "clippy-observer-order/merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "clippy-observer-order/merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    },
+    {
+      "bytes": 62639,
+      "path": "clippy-observer-order/new-head-runs.native.json",
+      "sha256": "96cd402bd8ff38886fd8fd014e6274f3bd51789b34b8ce79ed98b907e0122c36"
+    },
+    {
+      "bytes": 7206,
+      "path": "clippy-observer-order/observer-order.patch",
+      "sha256": "7a143e7b9f6c5033543381957b9c36894fda295d3a3ea22091d5fe4019237d47"
+    },
+    {
+      "bytes": 1891,
+      "path": "clippy-observer-order/post-update-head.native.json",
+      "sha256": "bd6f307c2bcccef78ea34cf4617d2b84d183f5cadeba0c96b9eb30865defd304"
+    },
+    {
+      "bytes": 63779,
+      "path": "clippy-observer-order/post-update-pr163.native.json",
+      "sha256": "36deb5ec86e1e88ea4384e5bb1e2fa666d49392f3ead1e4a7687d36b8ad5ab77"
+    },
+    {
+      "bytes": 161,
+      "path": "clippy-observer-order/update-pr-head.native.json",
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e"
+    },
+    {
+      "bytes": 4343,
+      "path": "clippy-observer-order/verify-created-commit.native.json",
+      "sha256": "7f745d93fe2a8608648f271e6f5d6eff958b4d04475bd960fef0838da45bb387"
+    },
+    {
+      "bytes": 1891,
+      "path": "clippy-observer-order/verify-original-head.native.json",
+      "sha256": "1c715ccf8d5c067110eef65f80a467eeb9c3db47f786535489b0fb9d3f0a47ba"
+    },
+    {
+      "bytes": 2499,
+      "path": "clippy-observer-order/verify_relocation_bytes.py",
+      "sha256": "b00e687242c698508698f06e7a3ab5a55a33a45f8b2164923e5ed564711ce5bf"
+    },
+    {
+      "bytes": 2470,
+      "path": "host-review/HOST_EVIDENCE_REVIEW.public.json",
+      "sha256": "e9df2b3bd6e967a26ba20c35a8344291d76e9b4e7fe6d650fe410272b2d24db5"
+    },
+    {
+      "bytes": 237,
+      "path": "host-review/MANIFEST.public.json",
+      "sha256": "f3d2152bd5df46a1dbd9f50ad1629a619d8009f9f01e1414541a09bd8cead33e"
+    },
+    {
+      "bytes": 733,
+      "path": "snapshot503-readonly/MANIFEST.public.json",
+      "sha256": "932def9713bc3529d20af88908e6676f7f505a73962df100fc47360aedc2afb8"
+    },
+    {
+      "bytes": 3750,
+      "path": "snapshot503-readonly/READONLY_TRACE.md",
+      "sha256": "50f6dd36d9b1829d087b5fd738d8723afd39b88634d65170bc4e72b26475eabc"
+    },
+    {
+      "bytes": 11970,
+      "path": "snapshot503-readonly/READONLY_TRACE.public.json",
+      "sha256": "a6adb074d63815d40141bf8d78715c7640122acef10ac08b8b4cd54a7d319654"
+    },
+    {
+      "bytes": 2305,
+      "path": "snapshot503-readonly/merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "snapshot503-readonly/merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    }
+  ],
+  "schema": "heptabao.safe-evidence-manifest.v1",
+  "total_bytes_excluding_manifest": 185064
+}

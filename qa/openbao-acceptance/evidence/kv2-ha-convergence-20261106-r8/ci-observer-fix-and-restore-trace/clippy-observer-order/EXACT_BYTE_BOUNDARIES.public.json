@@ -1,0 +1,44 @@
+{
+  "block_excludes_terminating_lf": {
+    "bytes": 3163,
+    "sha256": "c1fcd9d26ed3cd0d64547d3a0225137cabfdc32b20154d5d70fb58288d1e86d4"
+  },
+  "block_including_original_two_lf_separator": {
+    "bytes": 3165,
+    "sha256": "8da3945367d66a3e4418ea93ef5eb155c3ab257e13b1a4788d43467210728640"
+  },
+  "claim_direct_remove_block_gives_identical_residual_bytes": false,
+  "entire_new_file_matches_explicit_byte_reconstruction": true,
+  "module_bytes_unchanged": true,
+  "new_block_start_offset": 43929,
+  "new_reconstruction": "prefix + suffix + b\"\\n\" + block + b\"\\n\"",
+  "new_tail_including_final_lf": {
+    "bytes": 3164,
+    "sha256": "1ac059bc6f246cbb73b155c704a1c3fe508b7d9124fb8c9c8c15afd18c4e665f"
+  },
+  "original_block_exclusive_end_offset": 43898,
+  "original_block_start_offset": 40735,
+  "original_reconstruction": "prefix + block + b\"\\n\\n\" + suffix",
+  "original_suffix_start_offset": 43900,
+  "prefix": {
+    "bytes": 40735,
+    "sha256": "a805aecec8fc423fb5637d30035a7f4ca7d46b4bee8758c7d1447abfae1f3075"
+  },
+  "prefix_and_suffix_bytes_and_order_unchanged": true,
+  "rust_parser_or_toolchain_executed": false,
+  "schema": "heptabao.observer-relocation-exact-byte-boundaries.v1",
+  "separator_bytes_explicitly_relocated": true,
+  "source_after": {
+    "bytes": 47093,
+    "sha256": "a516ac803d42d7a23a0f957bc93b7c9d34d0477f9f504cfc381b4c56feec4189"
+  },
+  "source_before": {
+    "bytes": 47093,
+    "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+  },
+  "strip_or_whitespace_normalization_used": false,
+  "suffix_two_production_impls_including_its_original_final_lf": {
+    "bytes": 3193,
+    "sha256": "88251f8f3a35c4ba413913e84968f6ebd2aa56e1f9bc39038f0d8883c9109265"
+  }
+}

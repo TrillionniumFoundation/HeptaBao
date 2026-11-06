@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.formal-kv2-protocol-revision-public-manifest.v1",
+  "status": "draft_not_product_executed",
+  "original_revision_tree": "edc16fc17497a5a60d39f75edcd5e4251e29fdef",
+  "files": [
+    {
+      "path": "formal_kv2_protocol.py",
+      "bytes": 94455,
+      "sha256": "858b325bba2c8261d3e3e81317ea63d968d2d7b78d2e63270d423d3794cd54e8"
+    },
+    {
+      "path": "formal_kv2_wire.py",
+      "bytes": 7393,
+      "sha256": "6b0142c1316ef7ae69bf15ad9d3897aac1ebd09caf63ae096137dcd3a20f9ddc"
+    },
+    {
+      "path": "test_formal_kv2_protocol_guards.py",
+      "bytes": 11274,
+      "sha256": "7125fbe7a4a084112411f3c3878afe3b70461c8a3175eec224aa63363d3a91d0"
+    },
+    {
+      "path": "test_wire_original_handles.py",
+      "bytes": 8498,
+      "sha256": "1065075915466672b2004f64241d145e6aef7d7e47dc0841662a3d83d7dc6e69"
+    },
+    {
+      "path": "wire-parent-fd-boundary.diff",
+      "bytes": 7941,
+      "sha256": "02effca6300bc4432a84e8adc710e457c28f2ce6169380883a4fc5c6dc0669ad"
+    },
+    {
+      "path": "WIRE_RESOURCE_REVIEW.public.json",
+      "bytes": 1943,
+      "sha256": "4171857f7e8e413a86b144ef35564b09eda21a8971f90147b8bffa882464c3d4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 15373,
+      "sha256": "a97439289b5f10cb0c49f5e721ff7134bda9fd0b89dd7463c39d45e2447b754d"
+    },
+    {
+      "path": "OPENBAO_271_COMPARISON_INTERFACE.md",
+      "bytes": 6837,
+      "sha256": "e5c7bd232d1f4964c8f14103b8c1f533617345869fae01d35c8bb4694ff78638"
+    },
+    {
+      "path": "guards-r1/stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guards-r1/stderr.original",
+      "bytes": 2052,
+      "sha256": "d5cb8ac0b4ddb7c3627aaf13e421d9c338200f70669112b6be7afd27d24995a2"
+    },
+    {
+      "path": "guards-r1/result.public.json",
+      "bytes": 1725,
+      "sha256": "9996885cb8163094e803c015b55eb92d97a96539b489891c0402fb5e51066d77"
+    },
+    {
+      "path": "HOST_EVIDENCE_PROTOCOL_R2_REVIEW.public.json",
+      "bytes": 2499,
+      "sha256": "97d8f19c929446442d35fc0a25697deb736ce4cdaac62b2e09e9157ee1bf92d4"
+    }
+  ],
+  "pre_independent_review_tree": "4b0e7147d4fdb646565fe3228f5020769d727d5f"
+}

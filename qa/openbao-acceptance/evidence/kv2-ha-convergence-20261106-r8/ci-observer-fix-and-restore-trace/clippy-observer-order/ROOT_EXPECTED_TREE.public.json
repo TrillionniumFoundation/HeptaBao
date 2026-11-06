@@ -1,0 +1,8 @@
+{
+  "base": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "index_scope": "separate temporary Git index; original source worktree index untouched",
+  "native_create_tree_sha_equal": true,
+  "schema": "heptabao.root-local-git-tree-proof.v1",
+  "single_replacement_blob_sha": "20f878e854624168e89bc0930f30bca166ed9fbb",
+  "whole_tree_sha": "76ca6224c9597ab9109e121adf19113ad12509f0"
+}

@@ -1,0 +1,98 @@
+{
+  "execution_performed": false,
+  "fixed_public_input_count": 11,
+  "functions_and_classes_changed": [
+    "run"
+  ],
+  "functions_and_classes_unchanged": [
+    "Interrupted",
+    "Refused",
+    "check",
+    "close_owned",
+    "create",
+    "directories_unchanged",
+    "dirpin",
+    "filepin",
+    "interrupt",
+    "main",
+    "need",
+    "open_owned",
+    "readback"
+  ],
+  "manifest": {
+    "bytes": 2477,
+    "sha256": "74ecb68c071d95d46955b03378fe639455b108c11daa99d01da1b62ee9f21846"
+  },
+  "new_functions_and_classes": [],
+  "public_input_pin_checks": [
+    {
+      "bytes_equal": true,
+      "name": "fixed-inputs.public.json",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "init_delivery.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "kv2_dr_process_custody.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "launch_guard.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "manager_launch_binding.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "manager_runtime.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "manager_start_init.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "owned_process.py",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "preparation-result.public.json",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "preparation-runtime-terminal.original.json",
+      "sha_equal": true
+    },
+    {
+      "bytes_equal": true,
+      "name": "preparation-runtime.stdout.original",
+      "sha_equal": true
+    }
+  ],
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-manager-input-stage-review.v1",
+  "stage_template": {
+    "bytes": 13933,
+    "sha256": "959b4a212db822d108434d653af113a8cfee81a0407ef7dacee54301f8e122b0"
+  },
+  "status": "no_new_execution_blocker_in_exact_reviewed_stage_source",
+  "verified": [
+    "all12 input request bytes checked before writes; 11public +1restricted metadata envelope",
+    "private envelope create-only/fsync/full readback before actual private_input_identity enters derived fixed public inputs",
+    "derived fixed inputs create-only/full readback; all12 undergo second original identity and full SHA readback",
+    "private envelope SHA and filled request hash withheld from public output",
+    "52/60 timing/signals/original FD cleanup/public false boundaries unchanged from reviewed layout stage"
+  ]
+}

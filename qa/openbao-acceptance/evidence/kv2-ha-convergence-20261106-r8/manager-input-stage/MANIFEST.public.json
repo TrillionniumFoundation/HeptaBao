@@ -1,0 +1,231 @@
+{
+  "bytes_excluding_manifest": 267279,
+  "file_count_excluding_manifest": 37,
+  "files": [
+    {
+      "bytes": 2575,
+      "path": "HOST_EVIDENCE_ACTUAL_STAGE_REVIEW.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "d750396890b85a956389f2499d45b7d85aaabcad1ce67ce11e456bae03542f3a"
+    },
+    {
+      "bytes": 2582,
+      "path": "HOST_EVIDENCE_STAGE_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "9077b329e4861bea1227991be4b9259f8a00f02d04d1c8b2f8ba289432a56620"
+    },
+    {
+      "bytes": 710,
+      "path": "PROOF_SCOPE.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "d7b7fed9c854c1b7d8b4f884beb9ecd1e6079fa3e2ccbb7c62d7475cc14cc2f6"
+    },
+    {
+      "bytes": 1117,
+      "path": "ROOT_ACTUAL_STAGE_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "85159b69061398c83df27dc1438faad88b3d3577f33531960666d89f996add9c"
+    },
+    {
+      "bytes": 2477,
+      "path": "STAGE_INPUTS_MANIFEST.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "74ecb68c071d95d46955b03378fe639455b108c11daa99d01da1b62ee9f21846"
+    },
+    {
+      "bytes": 2216,
+      "path": "actual-fixed-inputs.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "a012b694832272711bfee5ba9b0200743288c5cef674a89134a0b3899819b597"
+    },
+    {
+      "bytes": 7156,
+      "path": "actual-input-stage-result.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "73deb1ddd01ab41f66dda72e7769661a3cf85cee8b828f7c38cc208965884c86"
+    },
+    {
+      "bytes": 1991,
+      "path": "public-inputs/fixed-inputs.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "9fb8aab75f15c61f71d8a9f93b66ebb1ad88c17c930d0ee667c4379e78d1317d"
+    },
+    {
+      "bytes": 3507,
+      "path": "public-inputs/init_delivery.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "896a80094f8f7836315bb837d625756a4b9057ba0bbffe476133917a7cbed88e"
+    },
+    {
+      "bytes": 26131,
+      "path": "public-inputs/kv2_dr_process_custody.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    {
+      "bytes": 18573,
+      "path": "public-inputs/launch_guard.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3"
+    },
+    {
+      "bytes": 8558,
+      "path": "public-inputs/manager_launch_binding.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "42b40d4be9f43ec18056ed14976603acfec4cbcfebe46eb77692c753faa62436"
+    },
+    {
+      "bytes": 25233,
+      "path": "public-inputs/manager_runtime.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+    },
+    {
+      "bytes": 28141,
+      "path": "public-inputs/manager_start_init.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+    },
+    {
+      "bytes": 28442,
+      "path": "public-inputs/owned_process.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 4086,
+      "path": "public-inputs/preparation-result.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6d803e1e5a684dc20abbc3c51fac9632aa497a133455ab0a4798fc79a251a638"
+    },
+    {
+      "bytes": 731,
+      "path": "public-inputs/preparation-runtime-terminal.original.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "e460d89ca357ef57ffce461f5b5a7238345b3d8c104b818f8142ac3d45c361a5"
+    },
+    {
+      "bytes": 3951,
+      "path": "public-inputs/preparation-runtime.stdout.original",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "fb3848ff0e04c0a0145b7a6c6afddccd5739916ae24cb7279d0b82c08e11e30d"
+    },
+    {
+      "bytes": 3172,
+      "path": "source-review/HOST_EVIDENCE_MANAGER_INIT_REVIEW.r1.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "32f3f8138e6116580a779e2913a24df93c4b37456bb1cd81fd139f065cd23c05"
+    },
+    {
+      "bytes": 1968,
+      "path": "source-review/HOST_EVIDENCE_SMALL_COMPONENT_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "5e45482694aade8eeb4c43369bb9fdcf6c62021d4ac5a88a8963cbc22f669974"
+    },
+    {
+      "bytes": 967,
+      "path": "source-review/ROOT_LAUNCH_GUARD_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "10ccb90767104b5d8a65ca64b01590b2a58994a6543371935840b09f4304555f"
+    },
+    {
+      "bytes": 13326,
+      "path": "source-review/launch-guard-fd-signal-review.diff",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "8ee10a20c9609eadeedd7802de8989c7c7ddf2c8c15854e18b1d01175e773689"
+    },
+    {
+      "bytes": 768,
+      "path": "source-review/launch-guard-local-checks.exec-result.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "687aa84d0596aa3501af6961ea3d8f409cb2a5a9a816650b3ef87a08d83ab7d6"
+    },
+    {
+      "bytes": 1521,
+      "path": "source-review/manager-boundaries-r1.original.log",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6c7dd73ddd4ed86c71c063f1c9fc0824f141059da7ca075e2194bc23786e05fa"
+    },
+    {
+      "bytes": 1097,
+      "path": "source-review/manager-boundaries-r1.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6025787fc319d66f6ae3a9b9f584898286a5f59947fc4f308841ce0ae301b695"
+    },
+    {
+      "bytes": 1521,
+      "path": "source-review/manager-boundaries-r2.original.log",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "95da2b0682beb3ac6fee484dff2cfe3eb3e3ee0b246028c4c69f2b5ad170d9ed"
+    },
+    {
+      "bytes": 1105,
+      "path": "source-review/manager-boundaries-r2.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "e0963e1770c73850fd7a8638466ae4ed4a33a6c00c38615dc338169600b81f84"
+    },
+    {
+      "bytes": 4893,
+      "path": "source-review/test_launch_guard_boundaries.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "c1fcecde1f60f769b5cfdd4085b86f424ff5f381543cff3d3f80c51d7b97de2b"
+    },
+    {
+      "bytes": 10413,
+      "path": "source-review/test_manager_boundaries.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "3003fbbe1caa5eb5057b31db5d3e24a0ef6e9655ca79dd064471da84f105aac9"
+    },
+    {
+      "bytes": 12849,
+      "path": "stage-public-inputs.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "1a7f50acb495b7ed3af582bfbf56277bcb4d5a9f57d0ab7439430dd318f06d69"
+    },
+    {
+      "bytes": 349,
+      "path": "stage-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "ba45fb8957f18d105a2884c0489c36386bf78160f5071c0de088d58ce6b16fff"
+    },
+    {
+      "bytes": 1232,
+      "path": "stage-start.public-projection.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "26810e32f539028b3ca607ac5f788d31cf46849f09506f3db14faf928f5d8604"
+    },
+    {
+      "bytes": 5335,
+      "path": "stage-stdout.original",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "cdfbd41459bf013e6bb0636b9f769b757e62a82a2f1af2a603d7d37a9549897b"
+    },
+    {
+      "bytes": 17954,
+      "path": "stage-streams.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "9ebbe72e31e00a1b6b7fe1c0ae7b8bee15b28d4353bb6826bf918dbf38999ffc"
+    },
+    {
+      "bytes": 5787,
+      "path": "stage-template.diff",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6054910b3ce09c31216d8999663cffe5a4196ba23d9a019c0835eaf7e120d9ad"
+    },
+    {
+      "bytes": 912,
+      "path": "stage-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "47f349b9e53ff78fec45c184f3703d88eded742d0f4c998865d5ff7c2af84c27"
+    },
+    {
+      "bytes": 13933,
+      "path": "stage_manager_inputs.template.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "959b4a212db822d108434d653af113a8cfee81a0407ef7dacee54301f8e122b0"
+    }
+  ],
+  "package": "manager-input-stage-r1",
+  "paths_are_relative": true,
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

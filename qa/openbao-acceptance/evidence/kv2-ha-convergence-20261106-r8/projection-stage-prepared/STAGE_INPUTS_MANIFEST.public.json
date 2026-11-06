@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.formal-kv2-allrows-projection-stage-prepared.v1",
+  "status": "prepared_not_executed",
+  "original_template": {
+    "bytes": 13933,
+    "sha256": "959b4a212db822d108434d653af113a8cfee81a0407ef7dacee54301f8e122b0"
+  },
+  "new_template": {
+    "bytes": 12924,
+    "sha256": "986ed740e5a0ed01b082b0edecd5ce88c307d1afd3cb9f59fd5f80a31aa29301"
+  },
+  "exact_public_input_files": [
+    {
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "bytes": 44334,
+      "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+    },
+    {
+      "name": "formal_kv2_protocol.py",
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    },
+    {
+      "name": "readback-result.public.json",
+      "bytes": 10944,
+      "sha256": "f0db2d9807b73fa7723b1030ddc9c4d70dd7fbb077855cafe560988d0dfff397"
+    },
+    {
+      "name": "readback-terminal.original.json",
+      "bytes": 731,
+      "sha256": "b2f396467eed32d27d71a3cf13de64341152f4bf980cae4e6d738d4a81a8fd51"
+    },
+    {
+      "name": "readback-stdout.original",
+      "bytes": 8569,
+      "sha256": "b096dd4d4faa34eeb7e73af5036ca0e28aff209c58f03c53c0b5da3f15a76bcb"
+    }
+  ],
+  "private_input_name": "fixed-inputs.private.json",
+  "private_input_content_or_fingerprint_published": false,
+  "private_input_transferred_as_exact_utf8_string": true,
+  "private_plan_dynamic_identity_rewriting": false,
+  "source_template_exact_unchanged_definitions": [
+    "Interrupted",
+    "Refused",
+    "check",
+    "close_owned",
+    "create",
+    "directories_unchanged",
+    "dirpin",
+    "filepin",
+    "interrupt",
+    "main",
+    "need",
+    "open_owned",
+    "readback"
+  ],
+  "changed_definitions": [
+    "run"
+  ],
+  "stage_inputs": 6,
+  "public_inputs": 5,
+  "private_inputs": 1,
+  "original_work_seconds": 52,
+  "original_runtime_seconds": 60,
+  "native_nice": 5,
+  "source_or_service_or_projection_run": false,
+  "new_output_directory": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-allrows-projection-inputs-r1",
+  "runtime_idempotency_key": "heptabao-mac-formal-kv2-allrows-projection-input-stage-20261106-r1",
+  "actual_stage": false
+}

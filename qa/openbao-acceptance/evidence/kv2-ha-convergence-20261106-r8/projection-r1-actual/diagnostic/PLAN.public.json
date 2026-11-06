@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.projection-cold-audit-code-only-prepared.v1",
+  "status": "prepared_not_executed",
+  "controller": {
+    "bytes": 9108,
+    "sha256": "43d3244873129eb689ec1f90cd16029516ab7973e8897266c4876ed712b84cbf"
+  },
+  "runtime_seconds": 60,
+  "work_seconds": 52,
+  "native_nice": 5,
+  "two_fixed_public_code_sources_only": true,
+  "original_r1_projection_main_executed": false,
+  "private_generation_plan_or_body_read": false,
+  "projection_controller_audit_modified": false,
+  "original_expected_denial_required_for_success": true,
+  "denial_publication": "fixed open/other category plus stdlib __future__ boolean only; no event args or paths",
+  "owned_code_fd_denominator": 2,
+  "original_code_rehash_before_close": true,
+  "original_handles_single_close": true,
+  "source_or_output_directories_created": false,
+  "new_child_network_product_or_sqlite_connection": false,
+  "runtime_request": "RUNTIME_REQUEST.public.json",
+  "execution_owner": "root_review_then_single_runtime_request"
+}

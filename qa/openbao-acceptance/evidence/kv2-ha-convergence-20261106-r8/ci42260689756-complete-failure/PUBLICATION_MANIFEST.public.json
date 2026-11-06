@@ -1,0 +1,109 @@
+{
+  "file_count_excluding_manifest": 17,
+  "files": [
+    {
+      "bytes": 11800,
+      "git_blob_sha1": "fa623d157079faceb8340d5c4fb5fc88f24d9549",
+      "path": "CI_FAILURE_COMPARISON.public.json",
+      "sha256": "cb335f9bff6e105386c9000ff7cd7584507114419ac685fbdc87c20a6d3f3928"
+    },
+    {
+      "bytes": 5854,
+      "git_blob_sha1": "61f7aefc368da1723f95e5fdaed7f5e6ab3c7222",
+      "path": "ERROR_CHAIN_SOURCE_REVIEW.public.json",
+      "sha256": "003386b061b241446af69aaee8bd68ebc4385a6ce192e862556c8fcee32e9110"
+    },
+    {
+      "bytes": 2086,
+      "git_blob_sha1": "53b9af6c27934c4c17d6e46498f3a87fe36818f9",
+      "path": "MANIFEST.public.json",
+      "sha256": "de5e430adfd5e3b15a4a3ae64cfdc5a310423b9b1eb070888f6930f4285e8d7a"
+    },
+    {
+      "bytes": 1291,
+      "git_blob_sha1": "b4c5c20b9bc468271edd019ef253d0f842c3ac92",
+      "path": "ORIGINAL_LOG_EXTRACTION.public.json",
+      "sha256": "dd954d069174abf0c62b293648c9ae60e3cd65172c0c6f2113fca9f0ea7fbaaa"
+    },
+    {
+      "bytes": 1799,
+      "git_blob_sha1": "443d02f41405879eee3920489949acce422b97b3",
+      "path": "PUBLIC_CONTENT_REVIEW.public.json",
+      "sha256": "894d564238477b0ae7e4cc82de97f65ba63cd37978c9a576f74438c10e0c63f1"
+    },
+    {
+      "bytes": 695,
+      "git_blob_sha1": "b26b9e74945a2ae7a30c2f552cfcb3311ec686cd",
+      "path": "SCOPE.public.json",
+      "sha256": "d151bd65ac5c541ce63135b430e77341ab00fddac60853b0f084bce54e92efad"
+    },
+    {
+      "bytes": 1253,
+      "git_blob_sha1": "f42ac6fbb7bcd5d07fcd4b172a114baca426f3e9",
+      "path": "head.clippy-diagnostic.original.txt",
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    {
+      "bytes": 3819,
+      "git_blob_sha1": "8c56608da2b85ccb74cf7aeeece87cf802c8a024",
+      "path": "head.failure-excerpt.txt",
+      "sha256": "3fede8b40107b681f842186764a2097c183f1bbb6234b0ec18c5794630c76bdf"
+    },
+    {
+      "bytes": 3053791,
+      "git_blob_sha1": "9fd21b8deb84e0d6db3e4cb33dfec8d95f4d1f8b",
+      "path": "head.job.original.log",
+      "sha256": "a4656a3c05dd3fdb87ac3c6b5f1f767d94475807b4e889055d3d2fcd71f1b560"
+    },
+    {
+      "bytes": 2305,
+      "git_blob_sha1": "94f8de6bc7e0ced7a41054e74e3082b38b5a79ba",
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 6329,
+      "git_blob_sha1": "40e25a7aa95ab7e6ca0cae21fff5af26fc862116",
+      "path": "merge.failure-excerpt.txt",
+      "sha256": "bf52b7d63dc7ae83ad2721e81a2908920f6e2533a0277652620502c55832d216"
+    },
+    {
+      "bytes": 2988174,
+      "git_blob_sha1": "1f7fb3d1236005f80625db90167c48a2fa1b8116",
+      "path": "merge.job.original.log",
+      "sha256": "4d9d7d32010befb81b5634f48dfac5f29efce66ae711dadb85b4fb68f4f7958a"
+    },
+    {
+      "bytes": 693,
+      "git_blob_sha1": "cb0289d3f37bdc6b6d46e0b762f776300d2d2897",
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    },
+    {
+      "bytes": 20374,
+      "git_blob_sha1": "df3a431888f708540b025a105daa6cb692a59b78",
+      "path": "metadata/full-ci-jobs-latest.native.json",
+      "sha256": "abf2edf13e054b796ebc1f8047cf90ef035942485eb52f7c530c1d077e949097"
+    },
+    {
+      "bytes": 31774,
+      "git_blob_sha1": "06a30f527acb668ae03e3d1f61873ab202ca936e",
+      "path": "metadata/full-ci-run-latest.native.json",
+      "sha256": "cc75bebfddd3a9e597f7a409b94ae2ee8220170187c9b60b45755ba364c00af1"
+    },
+    {
+      "bytes": 364,
+      "git_blob_sha1": "50beae4e5a9f52202ca744e9c68782eb75883915",
+      "path": "verdict.failure-excerpt.txt",
+      "sha256": "981503029bd3e5ccc602d7ed367ea097c2623f4b9a03dc0af62d664608f56225"
+    },
+    {
+      "bytes": 2891,
+      "git_blob_sha1": "10b4a07c0b37a27e9c7a5aec35d270c5fc8ef87d",
+      "path": "verdict.job.original.log",
+      "sha256": "c75059a2ce767471c80ed1f541987c56b71567decf6c9506241cfcdf2b1b8805"
+    }
+  ],
+  "schema": "heptabao.safe-publication-manifest.v1",
+  "total_bytes_excluding_manifest": 6135292
+}

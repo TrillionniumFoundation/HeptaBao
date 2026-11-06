@@ -1,0 +1,15 @@
+{
+  "request_host": "mac",
+  "operation": "heptabao-seed-file-info",
+  "status": "fulfilled",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":448,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":448,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/runtime/heptabao-seed\",\"sha256\":\"203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7\",\"size\":86355760,\"version\":\"16777244:72751371:86355760:1793994276857371665:1793994276857371665\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

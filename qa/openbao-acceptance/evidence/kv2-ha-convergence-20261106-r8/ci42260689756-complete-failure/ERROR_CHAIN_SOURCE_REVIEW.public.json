@@ -1,0 +1,171 @@
+{
+  "actual_log_message": "native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown",
+  "actual_snapshot_failure_timing": {
+    "elapsed_us": 2107497,
+    "entry_remaining_ns": 14999999910,
+    "exit_remaining_ns": 12892502113,
+    "original_15_second_budget_exhausted_at_response": false,
+    "phases": []
+  },
+  "excluded_alternative_error_forms": [
+    "validate_enrollment_binding has a different fixed message",
+    "NativeV6ArchiveError variants use different fixed messages",
+    "NativeV6CodecError and ReplicatedStateError variants use different fixed messages",
+    "LocalV6BlobError uses different fixed messages",
+    "RaftRuntimeError dynamic consensus has a Raft consensus failed prefix",
+    "RemoteRaftError dynamic transport/consensus/I/O has remote Raft prefixes"
+  ],
+  "formal_qualification_granted": false,
+  "new_tests_or_ci_runs": false,
+  "not_proven": [
+    "the inner transport/collector/admission/witness cause",
+    "the exact later durable state from an independent readback",
+    "that no Begin/Stage was persisted",
+    "data loss",
+    "successful failover or cold recovery after this failure"
+  ],
+  "observation_limit": "EpochRestorePhaseTimer and its call sites are compiled only with private-ha-forward-diagnostic. The normal complete workspace invocation did not enable that feature. An empty phase list is not evidence that epoch preparation or staging did not execute.",
+  "request_budget_changed": false,
+  "schema": "heptabao.ci42260689756-error-chain-independent-source-review.public.v1",
+  "source_bindings": [
+    {
+      "bytes": 47093,
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "reviewed_relevant_line_range": [
+        648,
+        678
+      ],
+      "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+    },
+    {
+      "bytes": 29328,
+      "path": "crates/heptabao-server/src/ha_native_v6_epoch_restore.rs",
+      "reviewed_relevant_line_range": [
+        371,
+        678
+      ],
+      "sha256": "67c120496d2a80701c3c1da5587c2e1eed4a4ae6c32fd114483aeb0e7c299bc1"
+    },
+    {
+      "bytes": 61623,
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "reviewed_relevant_line_range": [
+        551,
+        570
+      ],
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+    },
+    {
+      "bytes": 18975,
+      "path": "crates/heptabao-server/src/ha_native_v6_archive_repair.rs",
+      "reviewed_relevant_line_range": [
+        68,
+        101
+      ],
+      "sha256": "5ca9bf80f154ba8ce6eb364733842627e3301a34b47e5a2e7d65642bf1e32659"
+    },
+    {
+      "bytes": 22973,
+      "path": "crates/heptabao-server/src/ha_native_v6_backup.rs",
+      "reviewed_relevant_line_range": [
+        39,
+        60
+      ],
+      "sha256": "379fa4f3336ce5b003f43b715d96df7b7c6084f84655fc3c0e9f67ac54d64cf2"
+    },
+    {
+      "bytes": 52138,
+      "path": "crates/heptabao-server/src/ha_v6_native_codec.rs",
+      "reviewed_relevant_line_range": [
+        45,
+        61
+      ],
+      "sha256": "5817213ce2ab37c6a536717565405e448c21380908fa92658e8ce825f5c3c369"
+    },
+    {
+      "bytes": 47747,
+      "path": "crates/heptabao-server/src/ha_state.rs",
+      "reviewed_relevant_line_range": [
+        160,
+        184
+      ],
+      "sha256": "a705449c26d62260ac6f50554ae246a9210b3f75372bba2bb5d244aeb9e701b6"
+    },
+    {
+      "bytes": 19685,
+      "path": "crates/heptabao-raft-runtime/src/lib.rs",
+      "reviewed_relevant_line_range": [
+        261,
+        284
+      ],
+      "sha256": "7cd8f3bed34f5b6e61d51a926282802e9b7a9f95881e1e65e4a8c4226769dc7d"
+    },
+    {
+      "bytes": 29956,
+      "path": "crates/heptabao-raft-runtime/src/process/network.rs",
+      "reviewed_relevant_line_range": [
+        41,
+        66
+      ],
+      "sha256": "8f8a26c29201cd2d95c175925106026a933faa78f4a6c37db051d3140091cacf"
+    },
+    {
+      "bytes": 40350,
+      "path": "crates/heptabao-raft-runtime/src/v6_replica_blobs.rs",
+      "reviewed_relevant_line_range": [
+        44,
+        68
+      ],
+      "sha256": "b1fd7c45c0028c5f14c084e5e6837cac126d588f6a376d9aa808637e21d7b315"
+    },
+    {
+      "bytes": 85408,
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "reviewed_relevant_line_range": [
+        1326,
+        1351
+      ],
+      "sha256": "2bddfb1eff7527f273c9c81f7ed90456de34cdcb71ae1fd1aed60e155ea9040d"
+    },
+    {
+      "bytes": 41985,
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "reviewed_relevant_line_range": [
+        585,
+        791
+      ],
+      "sha256": "b978a20df6252c8bcfc26ba224c4faf5c4a703777118c4e739bdfa34acecf421"
+    }
+  ],
+  "source_changed": false,
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "source_inference": {
+    "collector_or_verifier_inner_failure_known": false,
+    "exact_unprefixed_suffix": "heptabao_ha_service::HaError::OutcomeUnknown",
+    "independent_actual_begin_stage_durable_receipts_obtained": false,
+    "two_matching_original_error_mapping_sites": [
+      {
+        "call": "replicate_native_v6_closure_to_quorum",
+        "lines": [
+          614,
+          626
+        ],
+        "path": "crates/heptabao-server/src/ha_native_v6_epoch_restore.rs",
+        "phase": "historical_epoch_fsync_quorum"
+      },
+      {
+        "call": "quorum.verify_for_publication",
+        "lines": [
+          642,
+          647
+        ],
+        "path": "crates/heptabao-server/src/ha_native_v6_epoch_restore.rs",
+        "phase": "historical_epoch_pre_root_proof"
+      }
+    ],
+    "two_sites_distinguished_by_actual_log": false,
+    "upstream_begin_and_stage_checks_precede_both_sites_in_source": true
+  },
+  "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "status": "source_inference_agrees_with_independent_source_audit"
+}

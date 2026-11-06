@@ -1,0 +1,13 @@
+test_ambiguous_close_is_not_retried_after_numeric_fd_is_reused (test_projection_boundaries.OriginalResourceBoundaries.test_ambiguous_close_is_not_retried_after_numeric_fd_is_reused) ... ok
+test_first_fstat_failure_keeps_registered_original_for_cleanup (test_projection_boundaries.OriginalResourceBoundaries.test_first_fstat_failure_keeps_registered_original_for_cleanup) ... ok
+test_signal_at_dup_and_sqlite_birth_keeps_both_owned_resources (test_projection_boundaries.OriginalResourceBoundaries.test_signal_at_dup_and_sqlite_birth_keeps_both_owned_resources) ... ok
+test_signal_at_fd_birth_is_sticky_and_original_is_registered_and_closed_once (test_projection_boundaries.OriginalResourceBoundaries.test_signal_at_fd_birth_is_sticky_and_original_is_registered_and_closed_once) ... ok
+test_stdio_cleanup_preserves_primary_and_records_sync_failure (test_projection_boundaries.OriginalResourceBoundaries.test_stdio_cleanup_preserves_primary_and_records_sync_failure) ... ok
+test_timer_ownership_survives_immediate_signal_and_set_failure (test_projection_boundaries.OriginalResourceBoundaries.test_timer_ownership_survives_immediate_signal_and_set_failure) ... ok
+test_changed_protocol_source_is_rejected_before_extraction (test_projection_boundaries.ProjectionBoundaries.test_changed_protocol_source_is_rejected_before_extraction) ... ok
+test_real_readonly_sqlite_allrows_preserves_text_null_blob_and_source_time (test_projection_boundaries.ProjectionBoundaries.test_real_readonly_sqlite_allrows_preserves_text_null_blob_and_source_time) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.054s
+
+OK

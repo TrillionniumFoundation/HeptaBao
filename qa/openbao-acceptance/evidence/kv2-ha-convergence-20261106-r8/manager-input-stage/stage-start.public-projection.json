@@ -1,0 +1,42 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793995700319,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b279f85f-fc05-7e30",
+    "idempotency_key": "heptabao-mac-formal-kv2-manager-init-input-stage-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b279f85f-fc05-7e30"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 61374,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b279f85f-fc05-7e30"
+  },
+  "local_record_pending": false,
+  "not_an_unmodified_native_original": true,
+  "omitted_fields": [
+    "job.request_digest",
+    "job.request_fingerprint",
+    "job.ssh_target",
+    "job.remote_job_dir"
+  ],
+  "original_content_hash_withheld": true,
+  "original_retained_restricted": true,
+  "reused": false,
+  "schema": "heptabao.native-start-explicit-public-projection.v1"
+}

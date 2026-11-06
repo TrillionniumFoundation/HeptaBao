@@ -1,0 +1,106 @@
+--- original-r1-stage/layout_tls_prepare.py
++++ new-r2-stage/layout_tls_prepare.py
+@@ -31,7 +31,7 @@
+ CURRENT_BASE = Path('/Users/qianqi/heptabao-formal-kv2-current-20261106-r1')
+ SERVICE = PRODUCTION / 'formal-kv2-current-20261106-r1'
+ AUTHORITY = CURRENT_BASE / 'service-authority-current-20261106-r1'
+-INPUTS = ROOT / 'control/formal-kv2-layout-tls-inputs-r1'
++INPUTS = ROOT / 'control/formal-kv2-layout-tls-inputs-r2'
+ OUTPUT = ROOT / 'control/formal-kv2-layout-tls-prepare-r1'
+ VENV = ROOT / 'control/formal-kv2-python-env-50-0-2-r3/venv'
+ HOMEBREW_PYTHON = '/opt/homebrew/bin/python3'
+@@ -174,7 +174,7 @@
+ 
+ 
+ class Directory:
+-    def __init__(self, path: Path, fd: int, first: dict[str, Any], role: str):
++    def __init__(self, path: Path, fd: int, first: dict[str, Any] | None, role: str):
+         self.path, self.fd, self.first, self.role = path, fd, first, role
+         self.closed = False
+ 
+@@ -189,7 +189,7 @@
+         self.created_directory_roles: list[str] = []
+         self.file_opened = 0
+         self.file_closed = 0
+-        self.file_fds: dict[int, dict[str, Any]] = {}
++        self.file_fds: dict[int, dict[str, Any] | None] = {}
+ 
+     def directory(self, path: Path, role: str, expected: dict[str, Any] | None = None) -> Directory:
+         self.clock.check()
+@@ -201,15 +201,17 @@
+             need(stable(before) == stable(expected), 'prior_directory_identity_changed')
+         with self.clock.critical():
+             fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+-            item = Directory(path, fd, before, role)
++            item = Directory(path, fd, None, role)
+             self.directories.append(item)
+-        need(identity(os.fstat(fd)) == before, 'directory_open_identity_changed')
++            need(identity(os.fstat(fd)) == before, 'directory_open_identity_changed')
++            item.first = before
+         self.verify_directory(item)
+         self.clock.check()
+         return item
+ 
+     def verify_directory(self, item: Directory) -> None:
+         need(not item.closed, 'closed_directory_handle')
++        need(item.first is not None, 'directory_birth_identity_not_verified')
+         canonical(item.path)
+         need(stable(identity(item.path.lstat())) == stable(item.first)
+              == stable(identity(os.fstat(item.fd))), 'directory_path_or_handle_changed')
+@@ -230,8 +232,9 @@
+             os.mkdir(name, 0o700, dir_fd=parent.fd)
+             self.created_directory_roles.append(role)
+             fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent.fd)
+-            item = Directory(parent.path / name, fd, identity(os.fstat(fd)), role)
++            item = Directory(parent.path / name, fd, None, role)
+             self.directories.append(item)
++            item.first = identity(os.fstat(fd))
+             os.fsync(parent.fd)
+         need(item.first['uid'] == self.uid and item.first['gid'] == self.gid
+              and item.first['mode'] == 0o700 and item.first['kind'] == 'directory', 'created_directory_identity')
+@@ -244,6 +247,7 @@
+         with self.clock.critical():
+             fd = os.open(path, mode | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=dir_fd)
+             self.file_opened += 1
++            self.file_fds[fd] = None
+             self.file_fds[fd] = identity(os.fstat(fd))
+         return fd
+ 
+@@ -251,8 +255,9 @@
+         with self.clock.critical():
+             need(fd in self.file_fds, 'unknown_file_handle_close_refused')
+             old = self.file_fds[fd]
+-            now = identity(os.fstat(fd))
+-            need(stable(old) == stable(now), 'original_file_handle_identity_changed')
++            if old is not None:
++                now = identity(os.fstat(fd))
++                need(stable(old) == stable(now), 'original_file_handle_identity_changed')
+             # An errored close is an unknown retirement, never permission to
+             # issue another close against a possibly reused numeric descriptor.
+             del self.file_fds[fd]
+@@ -306,6 +311,7 @@
+                 fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                              mode, dir_fd=parent.fd)
+                 self.file_opened += 1
++                self.file_fds[fd] = None
+                 self.file_fds[fd] = identity(os.fstat(fd))
+             offset = 0
+             while offset < len(data):
+@@ -348,6 +354,7 @@
+                 dst = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                               0o700, dir_fd=parent.fd)
+                 self.file_opened += 1
++                self.file_fds[dst] = None
+                 self.file_fds[dst] = identity(os.fstat(dst))
+             while True:
+                 self.clock.check()
+@@ -407,7 +414,8 @@
+             for item in reversed(self.directories):
+                 if not item.closed:
+                     try:
+-                        self.verify_directory(item)
++                        if item.first is not None:
++                            self.verify_directory(item)
+                     except BaseException:
+                         errors.append('final_directory_identity_changed')
+                     try:

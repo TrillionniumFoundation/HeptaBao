@@ -1,0 +1,29 @@
+{
+  "backup_or_key_acceptance_claimed": false,
+  "current_manager_init_failure_keeps_share_transfer_held": true,
+  "hosts": [
+    {
+      "created_directories": 4,
+      "host": "rog",
+      "job_id": "1a1b25235a5-fc05-7d82",
+      "only_point_in_time_empty_receiver_preparation": true,
+      "original_directory_handles_closed": 7,
+      "receiver_owner1000_group1000_mode0700": true,
+      "secret_or_product_operations": 0,
+      "terminal_succeeded_zero_complete_durable": true
+    },
+    {
+      "created_directories": 4,
+      "host": "pocket4",
+      "job_id": "1a1b252becf-fc05-7d84",
+      "only_point_in_time_empty_receiver_preparation": true,
+      "original_directory_handles_closed": 7,
+      "receiver_owner1000_group1000_mode0700": true,
+      "secret_or_product_operations": 0,
+      "terminal_succeeded_zero_complete_durable": true
+    }
+  ],
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-empty-receiver-preparation-review.v1",
+  "shares_transferred_by_this_review": 0
+}

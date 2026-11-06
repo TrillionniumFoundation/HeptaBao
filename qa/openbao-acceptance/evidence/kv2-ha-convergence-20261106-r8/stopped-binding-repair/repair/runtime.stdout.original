@@ -1,0 +1,115 @@
+{
+  "actual_base_launcher_public_pin": {
+    "bytes": 34640,
+    "identity": {
+      "bytes": 34640,
+      "ctime_ns": 1793798038915695047,
+      "dev": 16777233,
+      "file_type": 32768,
+      "gid": 80,
+      "inode": 587518380,
+      "mode": 493,
+      "mtime_ns": 1793798038915516382,
+      "nlink": 1,
+      "uid": 501
+    },
+    "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+  },
+  "authbus_qualified": false,
+  "binding_repair_confirmed": true,
+  "cleanup_failure_codes": [],
+  "command_custody": {
+    "children": [
+      {
+        "birth": {
+          "pgid": 75901,
+          "pid": 75901,
+          "ppid": 75899,
+          "sid": 75901,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 75901,
+            "pid": 75901,
+            "ppid": 75899,
+            "sid": 75901,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 75901,
+            "pid": 75901,
+            "ppid": 75899,
+            "sid": 75901,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 75901,
+        "returncode": 113
+      }
+    ],
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "long_server_is_launchd_owned_not_an_original_child": true,
+    "original_count": 1,
+    "passed_process_custody": true,
+    "schema": "heptabao.safe-original-manager-command-custody.v1"
+  },
+  "deadline_renewed": false,
+  "durable_completion_authority": "public_record_plus_final_stdout_plus_separate_original_native_terminal",
+  "elapsed_seconds": 0.13767604203894734,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "http_requests_sent": 0,
+  "initialization_material_absent_count": 5,
+  "initialization_performed": false,
+  "interrupted_signal": null,
+  "old_asset_cleanup_performed": false,
+  "only_files_python_changed": true,
+  "original_controller_venv_runtime_still_bound": true,
+  "original_empty_data": true,
+  "original_exact_label_bootout_and_absence_bound": true,
+  "original_failed_attempt_reclassified": false,
+  "original_guard_plist_config_data_unchanged": true,
+  "os_privacy_permission_changed": false,
+  "os_privacy_permission_hold_resolved": false,
+  "owned_file_handles_closed": 51,
+  "owned_file_handles_opened": 51,
+  "primary_failure_code": null,
+  "private_closure_content_hash_published": false,
+  "private_closure_identity": {
+    "bytes": 12147,
+    "ctime_ns": 1793997520910484575,
+    "dev": 16777244,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 72758489,
+    "mode": 384,
+    "mtime_ns": 1793997520910484575,
+    "nlink": 1,
+    "uid": 501
+  },
+  "private_key_nonce_root_share_content_read": false,
+  "provider_or_j3160_called": false,
+  "publication_attempted": true,
+  "publication_outcome_unknown": false,
+  "remaining_original_fds": 0,
+  "retained_initial_archive_unchanged": true,
+  "runtime_seconds": 60,
+  "schema": "heptabao.stopped-candidate-python-binding-repair.public.v1",
+  "service_restart_performed": false,
+  "status": "binding_repaired_candidate_remains_stopped",
+  "work_seconds": 52
+}

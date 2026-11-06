@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "bytes": 3332,
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "8ecf3f41877e11a95605a007747cf3205f36cc51684b55c179ef009348fb07b5"
+    },
+    {
+      "bytes": 21257,
+      "path": "mac_formal_service_preflight.py",
+      "sha256": "d06024ff6efa9cad2c0ca992cdb53118a75290edf4c05b4fec320ce45e147ff1"
+    },
+    {
+      "bytes": 541,
+      "path": "result.native-file-info.original.json",
+      "sha256": "ca177d6811316f45698f5c080d3d9d7c7ebb6a204db06f63bbe79b54819a130a"
+    },
+    {
+      "bytes": 9165,
+      "path": "result.public.json",
+      "sha256": "0f8cd353190687433ea915a361f83e687db942d9ff3d6df638eb2dc17ae3b539"
+    },
+    {
+      "bytes": 22092,
+      "path": "runtime-request.original.json",
+      "sha256": "78fa597f5527478176a2c0d7071377cc63ab565862875784bd62dc02280f6844"
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.original.json",
+      "sha256": "cf67c020d26cc2d7d3ee8892c00b1f2e03885dff8369afeeb0206dbbaa15db0d"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6088,
+      "path": "runtime.stdout.original",
+      "sha256": "5f878d391257ecdbea69e2d08c912edae66195974438ef33b024fb70673cfc44"
+    }
+  ],
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

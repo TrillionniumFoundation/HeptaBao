@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.original-launch-safe-field-projection.v1",
+  "original_native_preserved_privately": true,
+  "request_digests_fingerprints_stdin_and_environment_not_published": true,
+  "audit_recorded": true,
+  "reused": false,
+  "job": {
+    "id": "1a1b28fb493-fc05-7ea2",
+    "host": "mac",
+    "executable": "/bin/launchctl",
+    "args": [
+      "print",
+      "gui/501/org.heptabao.kv2"
+    ],
+    "env_keys": [],
+    "idempotency_key": "heptabao-mac-failed-kv2-exact-retirement-after-query-20261106-r1",
+    "launch_state": "launched",
+    "launch_error": null
+  },
+  "launch": {
+    "ok": true,
+    "backend": "detached",
+    "launcher_pid": 73048,
+    "systemd_error": "systemd user units unavailable on this platform"
+  }
+}

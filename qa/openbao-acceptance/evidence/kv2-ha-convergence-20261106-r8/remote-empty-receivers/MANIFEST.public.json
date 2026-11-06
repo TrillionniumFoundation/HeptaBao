@@ -1,0 +1,123 @@
+{
+  "bytes_excluding_manifest": 61358,
+  "file_count_excluding_manifest": 19,
+  "files": [
+    {
+      "bytes": 1007,
+      "path": "HOST_EVIDENCE_RECEIVER_PREPARATION_REVIEW.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "4db7e297d518594ad0e6d929ae875922d4dba2d5ece11367cc049b1b74a7c960"
+    },
+    {
+      "bytes": 7100,
+      "path": "HOST_EVIDENCE_SHARE_TRANSFER_RULES.r1.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "7543ba3d6acebd40da54e634032c3659d48ceb3cdf3a3562eda7bf9ece20720f"
+    },
+    {
+      "bytes": 742,
+      "path": "PROOF_SCOPE.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "0ddc7bd1a9af1d31426be69a3bc89af5dc65650c4adda7f1994593e37a85f06e"
+    },
+    {
+      "bytes": 1397,
+      "path": "ROOT_REVIEW.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "7e7f4b2d0b7f2c1a051c4311c6969296769ff049c3ec0d5184acf660c9a0641e"
+    },
+    {
+      "bytes": 1755,
+      "path": "pocket4-PREPARED.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6a7a5d3fc955f48222e26e40c78cb1efa972ef9e26ae07fa70806698b41a120f"
+    },
+    {
+      "bytes": 1893,
+      "path": "pocket4-final.stdout",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "c8c457af6fba2c5338d1d0770f9ee5697e61d45bcd7dfa17ae24f139574e136a"
+    },
+    {
+      "bytes": 2838,
+      "path": "pocket4-prepare-receipt.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "2e9ee6d1b5fb71c36fc545ac1c005717ff3e066cac9db53e0b0e9648cc28c0ca"
+    },
+    {
+      "bytes": 6956,
+      "path": "pocket4-prepare-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "39d6eb18777526fbd10ced311779f99b3a342021089a7dad802b6ec504272d9a"
+    },
+    {
+      "bytes": 1278,
+      "path": "pocket4-prepare-start.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "461fdd2bca0d5aae4cafb660c6a3276db942c7ed62f2571d53dcdbf577b00651"
+    },
+    {
+      "bytes": 6674,
+      "path": "pocket4-prepare-streams.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "9bbc58950071f23af34080993635c2d14ed4b21f8bc767c4cd77b210c98309d6"
+    },
+    {
+      "bytes": 954,
+      "path": "pocket4-prepare-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6680d571616ce0607885c50d8a84f8ab807bf108bb0915f4b41446be9003ac37"
+    },
+    {
+      "bytes": 6325,
+      "path": "prepare_receiver.py",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "32f6dbdb562e276998d4aecb7d557601e3231f90219ed7dfc114bb61df41ae99"
+    },
+    {
+      "bytes": 1766,
+      "path": "rog-PREPARED.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "b50cc1d8e36de387b1e1aa1890d8455d85b031aa0ebf42004df96d7c01897b42"
+    },
+    {
+      "bytes": 1915,
+      "path": "rog-final.stdout",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "ed99fa8909ae3f8beba6270e6360dcc0daa5e2afc563c34c4e53946b4952ec42"
+    },
+    {
+      "bytes": 2852,
+      "path": "rog-prepare-receipt.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "8bb9f522676d5e5d67e8db0f590612861119eb65edc85e690c3598f52cba306f"
+    },
+    {
+      "bytes": 6947,
+      "path": "rog-prepare-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "2bf1fdfad79595a4825da81c36f67c44d2c754e9ba4620ce18ba3bf064151512"
+    },
+    {
+      "bytes": 1265,
+      "path": "rog-prepare-start.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "27a35e7f86c6e6a719c6142f6170a82f674398d4be75f06dbed1452b08226cfc"
+    },
+    {
+      "bytes": 6740,
+      "path": "rog-prepare-streams.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "2d59c52cd6db8b090c63da3b3b31c1c3869f041ff8afcd6f9f5ce8287987e7d0"
+    },
+    {
+      "bytes": 954,
+      "path": "rog-prepare-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "6a12c98fbeb33466af4a51b9d21ba477d7b48df46b5cbfd965ef756e608625f8"
+    }
+  ],
+  "package": "remote-empty-receivers-r1",
+  "paths_are_relative": true,
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

@@ -1,0 +1,16 @@
+{
+  "actual_job": "1a1b279f85f-fc05-7e30",
+  "authbus_qualified": false,
+  "formal_kv2_qualified": false,
+  "manager_or_init_executed_by_stage": false,
+  "old_asset_cleanup_authorized": false,
+  "originals_not_overwritten": true,
+  "physical_ha_qualified": false,
+  "public_start_is_explicit_projection_not_original": true,
+  "raw_stage_start_and_all_private_inputs_retained_restricted": true,
+  "restricted_transport_and_private_native_fingerprints_published": false,
+  "schema": "heptabao.actual-manager-followup-public-scope.v1",
+  "scope": "successful12input38file2dir_create_only_stage",
+  "traffic_cutover_performed": false,
+  "tree_scope": "new no-base Git object only; no commit or reference change"
+}

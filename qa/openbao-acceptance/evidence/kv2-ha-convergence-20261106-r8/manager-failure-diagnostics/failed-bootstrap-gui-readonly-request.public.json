@@ -1,0 +1,1 @@
+{"host":"mac","executable":"/bin/launchctl","args":["print","gui/501/org.heptabao.kv2"],"cwd":"/Users/qianqi/heptabao-formal-kv2-current-20261106-r1","nice":5,"timeout_seconds":15,"idempotency_key":"heptabao-mac-formal-kv2-failed-bootstrap-gui-readonly-20261106-r1"}

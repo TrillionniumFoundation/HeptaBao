@@ -1,0 +1,63 @@
+{
+  "file_count_excluding_manifest": 11,
+  "files": [
+    {
+      "bytes": 11800,
+      "path": "CI_FAILURE_COMPARISON.public.json",
+      "sha256": "cb335f9bff6e105386c9000ff7cd7584507114419ac685fbdc87c20a6d3f3928"
+    },
+    {
+      "bytes": 1291,
+      "path": "ORIGINAL_LOG_EXTRACTION.public.json",
+      "sha256": "dd954d069174abf0c62b293648c9ae60e3cd65172c0c6f2113fca9f0ea7fbaaa"
+    },
+    {
+      "bytes": 1253,
+      "path": "head.clippy-diagnostic.original.txt",
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    {
+      "bytes": 3819,
+      "path": "head.failure-excerpt.txt",
+      "sha256": "3fede8b40107b681f842186764a2097c183f1bbb6234b0ec18c5794630c76bdf"
+    },
+    {
+      "bytes": 3053791,
+      "path": "head.job.original.log",
+      "sha256": "a4656a3c05dd3fdb87ac3c6b5f1f767d94475807b4e889055d3d2fcd71f1b560"
+    },
+    {
+      "bytes": 2305,
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 6329,
+      "path": "merge.failure-excerpt.txt",
+      "sha256": "bf52b7d63dc7ae83ad2721e81a2908920f6e2533a0277652620502c55832d216"
+    },
+    {
+      "bytes": 2988174,
+      "path": "merge.job.original.log",
+      "sha256": "4d9d7d32010befb81b5634f48dfac5f29efce66ae711dadb85b4fb68f4f7958a"
+    },
+    {
+      "bytes": 693,
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    },
+    {
+      "bytes": 364,
+      "path": "verdict.failure-excerpt.txt",
+      "sha256": "981503029bd3e5ccc602d7ed367ea097c2623f4b9a03dc0af62d664608f56225"
+    },
+    {
+      "bytes": 2891,
+      "path": "verdict.job.original.log",
+      "sha256": "c75059a2ce767471c80ed1f541987c56b71567decf6c9506241cfcdf2b1b8805"
+    }
+  ],
+  "no_ci_or_product_execution": true,
+  "schema": "heptabao.ci42260689756-host-review-manifest.public.v1",
+  "scope": "three complete original connector log texts, exact excerpts, and derived local comparison"
+}

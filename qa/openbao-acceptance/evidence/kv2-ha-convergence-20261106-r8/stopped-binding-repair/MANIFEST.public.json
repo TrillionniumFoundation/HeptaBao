@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.safe-evidence-manifest.v1",
+  "status": "actual_stopped_candidate_binding_repair_with_independent_review",
+  "files": [
+    {
+      "path": "STOPPED_HANDOFF.md",
+      "bytes": 3347,
+      "sha256": "91fcb6f5113d3189a303946d995c8d40329545edbaee902797421615b10fc571"
+    },
+    {
+      "path": "prepared/HOST_EVIDENCE_PYTHON_BINDING_REPAIR_CONTROLLER_REVIEW.r1.public.json",
+      "bytes": 2659,
+      "sha256": "f29533104ba0ba6e1a331c37f17dd585121e63d81b080cf01be5d7943faa0c02"
+    },
+    {
+      "path": "prepared/HOST_EVIDENCE_PYTHON_BINDING_REPAIR_REVIEW.r1.public.json",
+      "bytes": 1958,
+      "sha256": "f87b15936adcd5fdcc8125120fa4cfaf67cfa2b401cfad42979a2f782b81e271"
+    },
+    {
+      "path": "prepared/manager_python_binding_repair.py",
+      "bytes": 7540,
+      "sha256": "b21dba79cc64af09b429214204ec49238ccdacd9757bf058265f36ebe19784bd"
+    },
+    {
+      "path": "prepared/manager_python_binding_repair_controller.before-terminal-shape-fix.unexecuted.py",
+      "bytes": 18593,
+      "sha256": "0ae2b35314fc98c8f99ed6fde3f24b1b5174d40b1d8ed6d73534f77e4e816394"
+    },
+    {
+      "path": "prepared/manager_python_binding_repair_controller.template.py",
+      "bytes": 19194,
+      "sha256": "e5418e8b5a1d16bdf60ba5e736903966a32e167e990820cfce701ac77cc72f78"
+    },
+    {
+      "path": "prepared/manager_python_binding_repair_controller.terminal-shape.diff",
+      "bytes": 2379,
+      "sha256": "39f393d27ea8ac53df80b9bb0e625da551fb7757329da8d42868638f173d034a"
+    },
+    {
+      "path": "repair/HOST_EVIDENCE_ACTUAL_BINDING_REPAIR_REVIEW.r1.public.json",
+      "bytes": 2455,
+      "sha256": "a11f53e127cc914fdc00d933cc955b44ba586e3bd2a0d14e262cb170d41018af"
+    },
+    {
+      "path": "repair/INPUT_FREEZE_REVIEW.public.json",
+      "bytes": 993,
+      "sha256": "79030cee42a35bae8228555405af3a069c27f585524ac26092c0b64da78517a0"
+    },
+    {
+      "path": "repair/ROOT_ACTUAL_BINDING_REPAIR_REVIEW.public.json",
+      "bytes": 1356,
+      "sha256": "7f10c8138a3f99c962ff77f72c3f3181219e28b26529f3125b69572e8f93d343"
+    },
+    {
+      "path": "repair/ROOT_PREEXECUTION_REVIEW.public.json",
+      "bytes": 985,
+      "sha256": "a8475571d936c60518c57aebcd09e4bbdc3a2c97fe5ecff438532a3af3ab5847"
+    },
+    {
+      "path": "repair/launch.safe-field-projection.public.json",
+      "bytes": 859,
+      "sha256": "55f733d5e771b6d8dc67c9af8395dccf45c516716117a3b8e3ecdc944bb6c63f"
+    },
+    {
+      "path": "repair/result.public.json",
+      "bytes": 3300,
+      "sha256": "c22b367d77e63f82f56c0f90d13fad42b2c42e3e468567123b98e7f6369e22fc"
+    },
+    {
+      "path": "repair/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "b5c12db5340d128a58d977b70a8f8cb2ebe7f4e5e5baf91e47b5213cb75671c7"
+    },
+    {
+      "path": "repair/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "repair/runtime.stdout.original",
+      "bytes": 3473,
+      "sha256": "2b2d6146d1c70465dba33906d5f1d8f06588395a274c16b9ae112b3d6bdb589b"
+    },
+    {
+      "path": "retirement/HOST_EVIDENCE_ACTUAL_RETIREMENT_REVIEW.r1.public.json",
+      "bytes": 2882,
+      "sha256": "997c71390614f15a1ecb6c4905f1eaa742a343fd6ac1fc64ac9f1df24eaed21f"
+    },
+    {
+      "path": "retirement/PLAN.public.json",
+      "bytes": 2439,
+      "sha256": "ff61f287c64de62e378f76a6d072221eff275e451951db8da00e63d9b95bd016"
+    },
+    {
+      "path": "retirement/PLAN.r2.public.json",
+      "bytes": 2601,
+      "sha256": "821a41058a2eafe0fb28d2fd4d65d08bae847ffbfc18628871bd1714dd3b348c"
+    },
+    {
+      "path": "retirement/ROOT_ACTUAL_RETIREMENT_REVIEW.public.json",
+      "bytes": 1084,
+      "sha256": "69a4b3c7b571cfaaeb1d2036a1e2090c063b70c4e473cbb69f2f4b668374e18e"
+    },
+    {
+      "path": "retirement/ROOT_BEFORE_QUERY_REVIEW.public.json",
+      "bytes": 635,
+      "sha256": "2e857d28b65395f6b94026b578b9455c3a8b4c9f1db5dcae882cf960ba5d8804"
+    },
+    {
+      "path": "retirement/after-query.request.public.json",
+      "bytes": 268,
+      "sha256": "2d298f95bcaa10ed3d23f90c9a68dbe42700379de7661392adf00a577d949b8a"
+    },
+    {
+      "path": "retirement/after-query/launch.safe-field-projection.public.json",
+      "bytes": 739,
+      "sha256": "17fd4859a26cd29f56884a58256234def38328ee647a1d563382d9e6fcebb805"
+    },
+    {
+      "path": "retirement/after-query/runtime-terminal.original.json",
+      "bytes": 726,
+      "sha256": "5d9cbf179aad9b666d5603cdf17a22bd5a258277fcdce39fbe4194f1fe433462"
+    },
+    {
+      "path": "retirement/after-query/runtime.stderr.original",
+      "bytes": 83,
+      "sha256": "0bf982c3478fcf93e0206505438b9c1c78d9429c33d307400db6874e904851f1"
+    },
+    {
+      "path": "retirement/after-query/runtime.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "retirement/before-query.request.public.json",
+      "bytes": 269,
+      "sha256": "00176ca2e247ed60bc02f9afdb49d705eedb5f328064223bb67779098a352f24"
+    },
+    {
+      "path": "retirement/before-query/launch.safe-field-projection.public.json",
+      "bytes": 740,
+      "sha256": "37288f4ef754a2fcbc362c57bee8705135cc3d59f09960c84999091b47e0c580"
+    },
+    {
+      "path": "retirement/before-query/runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "39e352ea37e91a8e58f22f1acfe5c7cbc6c24cd70ba06e3a9c912e65670b3cb2"
+    },
+    {
+      "path": "retirement/bootout/launch.safe-field-projection.public.json",
+      "bytes": 737,
+      "sha256": "1c1fa080a315aa26bbdc2f73defcfa03b42c950165b6845058339d318457e0c7"
+    },
+    {
+      "path": "retirement/bootout/runtime-terminal.original.json",
+      "bytes": 725,
+      "sha256": "a21c7c3d40dd65df46acff1d613f2768cf0afba7c1eefd54f65910eea5660e09"
+    },
+    {
+      "path": "retirement/bootout/runtime.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "retirement/bootout/runtime.stdout.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "retirement/exact-bootout.request.public.json",
+      "bytes": 266,
+      "sha256": "8e2e37e3e1e266c0963ff6b443e8274e031f50f644f3657eaba73d8930db689a"
+    }
+  ]
+}

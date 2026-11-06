@@ -1,0 +1,21 @@
+{
+  "actual_tests": 8,
+  "cryptography": "50.0.0",
+  "errors": 0,
+  "exit_code": 0,
+  "failed": 0,
+  "platform": "Linux",
+  "product_or_service_executed": false,
+  "python": "3.12.14",
+  "remote_mac_execution": false,
+  "schema": "heptabao.layout-tls-local-guards.v1",
+  "skipped": 0,
+  "source": {
+    "bytes": 37005,
+    "sha256": "266760644fb7e5dd9f5c0c92dc8ab40d7c775332eee1c461849c4d9f38014cce"
+  },
+  "tests": {
+    "bytes": 10320,
+    "sha256": "d19b1c0785f18ccb5e017141830a80765bcda5bff6ef77249e961941f78b8a73"
+  }
+}

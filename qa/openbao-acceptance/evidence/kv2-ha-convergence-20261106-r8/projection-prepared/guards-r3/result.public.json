@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.projection-draft-boundary-guards.v1",
+  "expected_tests": 8,
+  "returncode": 0,
+  "status": "passed",
+  "elapsed_seconds": 0.21492545799992513,
+  "inputs": {
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 44334,
+      "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/test_projection_boundaries.py": {
+      "bytes": 11590,
+      "sha256": "3211087139695adf63401919624b39fa90de910525b831ae0843f79441f8848f"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r1/formal_kv2_protocol.py": {
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    }
+  },
+  "inputs_unchanged": true,
+  "original_streams": {
+    "stdout.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.original": {
+      "bytes": 1640,
+      "sha256": "166001dfcd638c49ed7642c3da10b0178b14501523d1cfceabafc8a4d3ab901d"
+    }
+  },
+  "real_user_data_or_service_or_network": false,
+  "guard_change": "same eight focused tests; final handler/umask restoration preserves primary and rechecks sticky deadline"
+}

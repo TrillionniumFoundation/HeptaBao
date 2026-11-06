@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.projection-r1-failure-prefix-reconciliation.public.v1",
+  "actual_job": "1a1b28e5933-fc05-7e9d",
+  "observed_original_input_file_names": [
+    "fixed-inputs.private.json",
+    "mac_formal_kv2_allrows_projection.py",
+    "formal_kv2_protocol.py"
+  ],
+  "unmatched_file_births": 1,
+  "unmatched_original_is_failure_receipt": true,
+  "qualified_private_generation_closure_opened": false,
+  "sqlite_connection_births": 0,
+  "resource_prefix_born_fds": 14,
+  "failure_before_any_generation_read": true,
+  "private_values_or_fingerprints_published": false,
+  "scope": "Identity reconciliation locates the failure before private generation consumption; it does not independently record the original denied audit event. Native dev/inode are parsed from original version string, not assumed metadata fields."
+}

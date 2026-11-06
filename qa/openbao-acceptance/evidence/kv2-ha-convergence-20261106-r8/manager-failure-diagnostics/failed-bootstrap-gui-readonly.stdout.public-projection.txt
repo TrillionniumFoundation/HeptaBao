@@ -1,0 +1,60 @@
+gui/501/org.heptabao.kv2 = {
+	active count = 0
+	path = /Users/qianqi/Library/LaunchAgents/org.heptabao.kv2.plist
+	type = LaunchAgent
+	state = spawn scheduled
+
+	program = /opt/homebrew/bin/python3
+	arguments = {
+		/opt/homebrew/bin/python3
+		-I
+		-B
+		/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/manager/launch_guard.py
+		--binding
+		/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/manager/launch-binding.private.json
+	}
+
+	working directory = /Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1
+
+	stdout path = /Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/logs/stdout.log
+	stderr path = /Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/logs/stderr.log
+	[environment block omitted; original retained restricted]
+
+	[environment block omitted; original retained restricted]
+
+	[environment block omitted; original retained restricted]
+
+	domain = gui/501 [100026]
+	umask = 77
+	asid = 100026
+	minimum runtime = 30
+	exit timeout = 20
+	runs = 8
+	last exit code = 78: EX_CONFIG
+
+	resource coalition = {
+		ID = 1000588
+		type = resource
+		state = active
+		active count = 1
+		name = org.heptabao.kv2
+	}
+
+	jetsam coalition = {
+		ID = 1000589
+		type = jetsam
+		state = active
+		active count = 1
+		name = org.heptabao.kv2
+	}
+
+	spawn type = background (5)
+	jetsam priority = 40
+	jetsam memory limit (active) = (unlimited)
+	jetsam memory limit (inactive) = (unlimited)
+	jetsamproperties category = daemon
+	jetsam thread limit = 32
+	cpumon = default
+
+	properties = keepalive | runatload | inferred program
+}

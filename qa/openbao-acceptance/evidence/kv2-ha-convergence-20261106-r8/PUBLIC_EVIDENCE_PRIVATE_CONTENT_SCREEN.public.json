@@ -1,0 +1,12 @@
+{
+  "complete_private_cell_needles": 4,
+  "credential_leaf_needles": 6,
+  "known_private_content_fingerprint_needles": 21,
+  "matches": [],
+  "private_values_or_fingerprints_in_report": false,
+  "public_original_native_receipts_remain_unmodified": true,
+  "scanned_public_bytes": 9194639,
+  "scanned_public_files": 490,
+  "schema": "heptabao.public-evidence-private-content-screen.v1",
+  "scope": "Exact known private output/capture/readback/data fingerprints, complete credential JSON cells, and credential-bearing leaf values from the accepted projection. Empty-file generic SHA excluded. This is a bounded content screen, not a proof about all possible secrets."
+}

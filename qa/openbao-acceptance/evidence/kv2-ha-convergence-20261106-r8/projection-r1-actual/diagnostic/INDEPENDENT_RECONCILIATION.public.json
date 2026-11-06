@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.projection-cold-audit-independent-reconciliation.v1",
+  "job_id": "1a1b29a08e5-fc05-7edc",
+  "terminal_succeeded_zero_complete_durable_no_timeout_cancel": true,
+  "complete_stdout_bytes": 1355,
+  "complete_stderr_bytes": 0,
+  "original_audit_exact_cold_future_denial_observed": true,
+  "two_original_code_fds_rehashed_and_closed": true,
+  "private_generation_or_product_executed": false,
+  "projection_or_formal_qualified": false,
+  "stdout_sha256": "0163ee3207c2c725f641fb027d27ad6bbbe9cea6d6744d1f78874bc7513c0ff2"
+}

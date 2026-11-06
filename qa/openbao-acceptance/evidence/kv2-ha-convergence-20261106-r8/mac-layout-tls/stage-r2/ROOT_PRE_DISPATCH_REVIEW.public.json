@@ -1,0 +1,17 @@
+{
+  "budgets_unchanged": [
+    52,
+    60
+  ],
+  "new_stage_target": "control/formal-kv2-layout-tls-inputs-r2",
+  "no_tls_or_product_in_stage": true,
+  "old_r1_actual_stage_preserved": true,
+  "old_r1_producer_not_executed": true,
+  "private_inputs": 0,
+  "producer_bytes": 37376,
+  "producer_sha256": "c9fb2cb6f960e85ec2eb1f8f35ee30e2446703bcd53cfe416c72c06617f65fba",
+  "public_inputs": 11,
+  "request_bytes": 379042,
+  "request_sha256": "da5f6044cf4acb462dff4944c7d7f1c2aa0a4762707efec03cbb4cfd4d8ce6ff",
+  "schema": "heptabao.root-layout-input-stage-r2-review.v1"
+}

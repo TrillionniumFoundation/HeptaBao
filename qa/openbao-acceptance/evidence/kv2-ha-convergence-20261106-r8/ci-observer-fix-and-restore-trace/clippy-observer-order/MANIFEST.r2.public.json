@@ -1,0 +1,60 @@
+{
+  "files": [
+    {
+      "bytes": 1727,
+      "path": "EXACT_BYTE_BOUNDARIES.public.json",
+      "sha256": "f46f71e9de514ca5f65fe1c520b5308c21835d507e3851be2266f426568ebf59"
+    },
+    {
+      "bytes": 910,
+      "path": "MANIFEST.public.json",
+      "sha256": "9bb5610605e980962f0b6b5fd45c558ab74873b4c04caae4fe3959ded39d1151"
+    },
+    {
+      "bytes": 1000,
+      "path": "ROOT_STATIC_REVIEW.public.json",
+      "sha256": "cf52b8887542bbe7b71955fb12fba755364e8644091178193837a909226789ab"
+    },
+    {
+      "bytes": 2398,
+      "path": "STATIC_VERIFICATION.public.json",
+      "sha256": "d0f2eb374deee6ea30925db012127abadc5a62d65f86f4525afc6e8041b6ea41"
+    },
+    {
+      "bytes": 3397,
+      "path": "STATIC_VERIFICATION.r2.public.json",
+      "sha256": "11ec3406dea09ffef5eb0c346bb703ee3ff64a7f940bf8e4a78e5dfabdc03c6c"
+    },
+    {
+      "bytes": 195,
+      "path": "create-tree.native.json",
+      "sha256": "289a364b89c6ae0b1d695c93d0ebe786d127302f23c7198c5602c8bc4d441533"
+    },
+    {
+      "bytes": 1253,
+      "path": "head.clippy-diagnostic.original.txt",
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    {
+      "bytes": 2305,
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    },
+    {
+      "bytes": 7206,
+      "path": "observer-order.patch",
+      "sha256": "7a143e7b9f6c5033543381957b9c36894fda295d3a3ea22091d5fe4019237d47"
+    },
+    {
+      "bytes": 2499,
+      "path": "verify_relocation_bytes.py",
+      "sha256": "b00e687242c698508698f06e7a3ab5a55a33a45f8b2164923e5ed564711ce5bf"
+    }
+  ],
+  "schema": "heptabao.safe-evidence-manifest.v1"
+}

@@ -1,0 +1,10 @@
+{
+  "evidence_origin": "Exact previously observed exec result copied from this turn; tests were not repeated for collection.",
+  "original_result": {
+    "chunk_id": "368255",
+    "wall_time_seconds": 0.014523421,
+    "exit_code": 0,
+    "original_token_count": 113,
+    "output": "{\"checks\": [\"signal_between_open_and_registration_preserves_once_close\", \"validation_primary_survives_close_error_without_reclose\", \"key_metadata_admission_does_not_read_key_bytes\", \"inherited_timer_rejected_without_cancellation_by_finally\"], \"darwin_service_or_product_executed\": false, \"failed\": 0, \"formal_kv2_qualified\": false, \"passed\": 4, \"platform\": \"linux\", \"python\": [3, 12, 14], \"schema\": \"heptabao.launch-guard-local-boundary-checks.v1\"}\n"
+  }
+}

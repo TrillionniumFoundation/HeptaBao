@@ -1,0 +1,304 @@
+{
+  "budgets_or_expectations_relaxed": false,
+  "clippy_comparison": {
+    "minimal_candidate_change": "move the complete cfg(test) observer module after all production items; no allow attribute or semantic change",
+    "new": {
+      "later_production_impl_lines": [
+        1019,
+        1066
+      ],
+      "lint": "clippy::items_after_test_module",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "test_module_start": 910,
+      "test_module_with_comment_and_cfg": [
+        905,
+        1017
+      ]
+    },
+    "new_lint_source_file_already_present_unchanged_in_old_run": true,
+    "old": {
+      "line": 54,
+      "lint": "clippy::manual_contains",
+      "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs"
+    },
+    "same_lint_recurred": false
+  },
+  "commands": {
+    "clippy": "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+    "tests": "cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast -- --test-threads=1"
+  },
+  "existing_rog_r13_single_case_pass_does_not_cancel_full_ci_failure": true,
+  "focused_original_excerpts": [
+    {
+      "bytes": 1253,
+      "path": "head.clippy-diagnostic.original.txt",
+      "sha256": "da175d8aa286927f892d3594aa08e8877b5c70481ff94ce3dc0fe72c0fedc6ec"
+    },
+    {
+      "bytes": 2305,
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "new_ci_jobs_or_tests_started": false,
+  "new_head_pass_does_not_cancel_new_merge_failure": true,
+  "new_jobs": {
+    "head": {
+      "exit_code": 101,
+      "job_id": 128048874677,
+      "step": 11,
+      "step_name": "Check strict first-party workspace Clippy"
+    },
+    "merge": {
+      "exit_code": 101,
+      "job_id": 128048873935,
+      "step": 10,
+      "step_name": "Test the complete locked Rust workspace"
+    },
+    "verdict": {
+      "exit_code": 1,
+      "job_id": 128141481423,
+      "step": 2,
+      "step_name": "Reject failed cancelled or skipped qualification matrix"
+    }
+  },
+  "new_merge_failure": {
+    "actual_error": "native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown",
+    "actual_http_status": 503,
+    "data_loss_proven": false,
+    "expected_http_status": 200,
+    "internal_failed_phase_available": false,
+    "later_leader_stop_and_cold_rejoin_reached": false,
+    "original_fifteen_second_request_deadline_exhausted_at_response": false,
+    "persistent_begin_or_stage_absence_proven": false,
+    "prior_completed_checks_inferred_from_fixed_sequential_case": [
+      "greater_than_34_MiB_import_204",
+      "retained_history_check",
+      "historical_snapshot_GET_200",
+      "later_CAS19_mutation_200"
+    ],
+    "root_attempted": false,
+    "root_cause_proven": false,
+    "stage": "same imported historical restore",
+    "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold",
+    "timing": {
+      "bucket_bound_reached": false,
+      "bucket_limit": 64,
+      "elapsed_us": 2107497,
+      "entry_remaining_ns": 14999999910,
+      "exit_remaining_ns": 12892502113,
+      "forwarded": false,
+      "phases": [],
+      "request_class": "snapshot_test",
+      "schema": "heptabao.native-ha.request-failure-timing.v1",
+      "status": 503
+    },
+    "timing_association": "snapshot_test failure inside the serial test window immediately preceding the sole FAILED case",
+    "timing_original_line": 12227,
+    "two_logged_history_404_responses_are_expected_for_versions_1_and_2": true
+  },
+  "new_merge_is_not_a_repetition_of_old_exact_failed_case": true,
+  "old_merge_failure": {
+    "http_status": 503,
+    "message": "actual install observer absent",
+    "stage": "HA native-large finalization",
+    "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+  },
+  "physical_ha_qualified": false,
+  "runs": [
+    {
+      "head_and_merge_source_trees_equal": true,
+      "jobs": [
+        {
+          "cases": [
+            {
+              "original_line": 12254,
+              "status": "FAILED",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+            },
+            {
+              "original_line": 12232,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+            }
+          ],
+          "log": {
+            "bytes": 2927514,
+            "path": "merge.job.original.log",
+            "sha256": "f3dbe04d1ed51a14b415dae8a7a6d4f441b854ea07fffae61ff4390a455fd0e0"
+          },
+          "role": "merge",
+          "server_libtest": {
+            "elapsed_seconds": 3274.29,
+            "enumerated": 3760,
+            "executed": 3752,
+            "failed": 1,
+            "ignored": 8,
+            "original_line": 14002,
+            "passed": 3751,
+            "status": "FAILED"
+          },
+          "source_commit": "6ed25e0d1f229483050a25f18750b7ceb14ee1c5",
+          "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+        },
+        {
+          "cases": [
+            {
+              "original_line": 12304,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+            },
+            {
+              "original_line": 12280,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+            }
+          ],
+          "log": {
+            "bytes": 2983636,
+            "path": "head.job.original.log",
+            "sha256": "0361631c3e3c1b208a8247ade437141b83e8fd5eb8937e83722bacdb59c62993"
+          },
+          "role": "head",
+          "server_libtest": {
+            "elapsed_seconds": 2930.07,
+            "enumerated": 3760,
+            "executed": 3752,
+            "failed": 0,
+            "ignored": 8,
+            "original_line": 14033,
+            "passed": 3752,
+            "status": "ok"
+          },
+          "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+          "source_tree": "f08493a23f8ea0637073651231865ea9607b790e"
+        }
+      ],
+      "run_id": 42229582001
+    },
+    {
+      "head_and_merge_source_trees_equal": true,
+      "jobs": [
+        {
+          "cases": [
+            {
+              "original_line": 12253,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+            },
+            {
+              "original_line": 12228,
+              "status": "FAILED",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+            }
+          ],
+          "log": {
+            "bytes": 2988174,
+            "path": "merge.job.original.log",
+            "sha256": "4d9d7d32010befb81b5634f48dfac5f29efce66ae711dadb85b4fb68f4f7958a"
+          },
+          "role": "merge",
+          "server_libtest": {
+            "elapsed_seconds": 2579.42,
+            "enumerated": 3760,
+            "executed": 3752,
+            "failed": 1,
+            "ignored": 8,
+            "original_line": 13999,
+            "passed": 3751,
+            "status": "FAILED"
+          },
+          "source_commit": "80a14a873bcabef425aa6891ffaa79fd080c5fde",
+          "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb"
+        },
+        {
+          "cases": [
+            {
+              "original_line": 12299,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+            },
+            {
+              "original_line": 12274,
+              "status": "ok",
+              "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+            }
+          ],
+          "log": {
+            "bytes": 3053791,
+            "path": "head.job.original.log",
+            "sha256": "a4656a3c05dd3fdb87ac3c6b5f1f767d94475807b4e889055d3d2fcd71f1b560"
+          },
+          "role": "head",
+          "server_libtest": {
+            "elapsed_seconds": 2953.22,
+            "enumerated": 3760,
+            "executed": 3752,
+            "failed": 0,
+            "ignored": 8,
+            "original_line": 14029,
+            "passed": 3752,
+            "status": "ok"
+          },
+          "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+          "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb"
+        }
+      ],
+      "run_id": 42260689756
+    }
+  ],
+  "schema": "heptabao.ci42260689756-independent-failure-comparison.public.v1",
+  "source_changed_by_this_review": false,
+  "source_file_comparison": [
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+      "revisions": [
+        {
+          "bytes": 41292,
+          "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+          "sha256": "8c15a718354afb9e180024fa90dd219cdba9d4369d72746364cd039d9f5e4097"
+        },
+        {
+          "bytes": 41292,
+          "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+          "sha256": "8c15a718354afb9e180024fa90dd219cdba9d4369d72746364cd039d9f5e4097"
+        }
+      ],
+      "unchanged_between_runs": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "revisions": [
+        {
+          "bytes": 47093,
+          "commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+          "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+        },
+        {
+          "bytes": 47093,
+          "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+          "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+        }
+      ],
+      "unchanged_between_runs": true
+    }
+  ],
+  "source_location_map": {
+    "actual_failed_expectation": "service_native_kv2_large_ha_tests.rs:370-371",
+    "closure_replication_error_mapping": "ha_native_v6_epoch_restore.rs:614-626",
+    "collapsed_collector_error_paths": "v6_closure_quorum.rs:651-791: deadline, admission, local reads, voter failures, final admission and verification",
+    "collapsed_prepublication_error_paths": "v6_closure_quorum.rs:585-599",
+    "error_display": "ha_native_v6_epoch_restore.rs:107-113",
+    "pre_root_quorum_verification_error_mapping": "ha_native_v6_epoch_restore.rs:642-647",
+    "test_snapshot_request_scope": "service_native_kv2_large_ha_tests.rs:280-318; REQUEST_BUDGET from service_native_v6_ha_pipeline_tests.rs:45 is 15 seconds",
+    "unreached_later_failure_recovery": "service_native_kv2_large_ha_tests.rs:375-380"
+  },
+  "status": "new_full_ci_failures_retained_and_compared"
+}

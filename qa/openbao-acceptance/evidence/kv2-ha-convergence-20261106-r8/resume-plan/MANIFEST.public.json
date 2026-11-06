@@ -1,0 +1,15 @@
+{
+  "files": [
+    {
+      "bytes": 13222,
+      "path": "IMPLEMENTATION_PLAN.md",
+      "sha256": "ebd58924d547112dffe1a2f5ce24ce6453cbec4b334d41f5c04e58eda57fc6c6"
+    },
+    {
+      "bytes": 6224,
+      "path": "KNOWN_DEPENDENCIES.public.json",
+      "sha256": "64ffe227f3f5cfb5f4bc080ba00f91e952232d90993bd99db867c2d2dbceba2e"
+    }
+  ],
+  "schema": "heptabao.safe-evidence-manifest.v1"
+}

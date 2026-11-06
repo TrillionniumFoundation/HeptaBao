@@ -1,0 +1,39 @@
+{
+  "actual_service_or_launchctl_executed": false,
+  "errors": 0,
+  "failures": 0,
+  "inputs": [
+    {
+      "bytes": 25233,
+      "name": "manager_runtime.py",
+      "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+    },
+    {
+      "bytes": 28141,
+      "name": "manager_start_init.py",
+      "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+    },
+    {
+      "bytes": 8558,
+      "name": "manager_launch_binding.py",
+      "sha256": "42b40d4be9f43ec18056ed14976603acfec4cbcfebe46eb77692c753faa62436"
+    },
+    {
+      "bytes": 10413,
+      "name": "test_manager_boundaries.py",
+      "sha256": "3003fbbe1caa5eb5057b31db5d3e24a0ef6e9655ca79dd064471da84f105aac9"
+    },
+    {
+      "bytes": 1521,
+      "name": "manager-boundaries-r2.original.log",
+      "sha256": "95da2b0682beb3ac6fee484dff2cfe3eb3e3ee0b246028c4c69f2b5ad170d9ed"
+    }
+  ],
+  "network_or_credentials_used": false,
+  "platform": "linux",
+  "runtime": "3.12.14",
+  "schema": "heptabao.local-manager-init-boundary-checks.v1",
+  "skipped": 0,
+  "status": "passed",
+  "tests": 7
+}

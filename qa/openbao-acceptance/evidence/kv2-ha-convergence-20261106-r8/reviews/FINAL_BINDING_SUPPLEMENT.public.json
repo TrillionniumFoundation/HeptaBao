@@ -1,0 +1,66 @@
+{
+  "added_public_supplement": [
+    {
+      "bytes": 1327,
+      "path": "projection-r3-independent-supplement/README.md",
+      "sha256": "c2d3207134d5038de56afe4308147d79899b7c47ee212e251af196301abbad8a"
+    },
+    {
+      "bytes": 2145,
+      "path": "projection-r3-independent-supplement/ROOT_ACTUAL_PROJECTION_REVIEW.r2.public.json",
+      "sha256": "9c21b724fced94ab1bc7aae99405aef88e2d4022ea1d90c9a1f681b4ee07f0c8"
+    },
+    {
+      "bytes": 3649,
+      "path": "projection-r3-independent-supplement/root-verifier-r1-r2-row-key-mapping.diff",
+      "sha256": "c65706f952af7fb0339e354d26bb90dcbb15651880831f4ae75f6c15d24c8744"
+    },
+    {
+      "bytes": 13177,
+      "path": "projection-r3-independent-supplement/root_verify_actual_projection_r2.py",
+      "sha256": "1b9e5f062ee60c4f043c4a6cecb65467bfdc0643a7d43aaabbc8e0269a562490"
+    }
+  ],
+  "conclusion": "No remaining must-fix. The two final narrative additions state the already reviewed r2 source-row to opaque-KV-key mapping; they add no new execution or qualification claim. Prior HOLD and service/TCC/resume boundaries remain unchanged.",
+  "exact_delta_checks": {
+    "ACTUAL_JOB_INDEX_and_OPERATOR_HANDOFF_unchanged": true,
+    "GATE_only_independent_per_row_source_identity_to_kv_key_mapping_passed_true_added": true,
+    "GATE_removing_only_that_line_recovers_prior_exact_SHA256": true,
+    "README_only_explicit_per_row_mapping_and_supplement_link_additions": true,
+    "README_reversing_only_those_additions_recovers_prior_exact_SHA256": true,
+    "supplement_README_scope_matches_reviewed_r2_checker": true,
+    "three_supplement_code_diff_result_files_equal_previously_reviewed_original_bytes": true
+  },
+  "final_primary_files": [
+    {
+      "bytes": 14008,
+      "path": "README.md",
+      "sha256": "6b8fefb92d4388ca54a7d976b09953d4c5f9b2eb2dd3716578e5b739819f42e9"
+    },
+    {
+      "bytes": 5583,
+      "path": "GATE_STATUS.public.json",
+      "sha256": "6240ae21124ea75f8c516763640a2bd705985c3a32d05091602db7df70583f75"
+    },
+    {
+      "bytes": 5791,
+      "path": "ACTUAL_JOB_INDEX.public.json",
+      "sha256": "8d79bf1ea1879633bff2919c24d495a17d65eec4c8d0b0695040698a70241fed"
+    },
+    {
+      "bytes": 3859,
+      "path": "OPERATOR_HANDOFF.md",
+      "sha256": "0173b19bf26dd1fcfa184216b2bb0f9dca2f243e10060a4a149157ce3758881d"
+    }
+  ],
+  "prior_review_preserved": {
+    "bytes": 7016,
+    "path": "HOST_EVIDENCE_FINAL_DELTA_REVIEW.public.json",
+    "sha256": "9e3de121378f379a45511d0773946b5fe1dfce4b6e168e2fbee1c55f75e98089"
+  },
+  "reviewer": "host_evidence",
+  "reviewer_private_reads": 0,
+  "reviewer_remote_actions": 0,
+  "reviewer_verifier_or_product_runs": 0,
+  "schema": "heptabao.r8-final-binding-review-supplement.v1"
+}

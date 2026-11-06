@@ -1,0 +1,37 @@
+--- unexecuted-shape-r1.py
++++ actual-native-shape-r2.py
+@@ -81,21 +81,28 @@
+     need = runtime.need
+     records = PRIVATE_INPUT['retirement_originals']
+     need(set(records) == {'bootout', 'after_absence'}, 'two_original_retirement_records')
+-    for role, expected_argv, code in (
+-        ('bootout', ['bootout', 'gui/501/org.heptabao.kv2'], 0),
+-        ('after_absence', ['print', 'gui/501/org.heptabao.kv2'], 113),
++    for role, expected_argv, code, actual_job_id in (
++        ('bootout', ['bootout', 'gui/501/org.heptabao.kv2'], 0, '1a1b28ed7a1-fc05-7e9f'),
++        ('after_absence', ['print', 'gui/501/org.heptabao.kv2'], 113, '1a1b28fb493-fc05-7ea2'),
+     ):
+         row = records[role]
+         start = runtime.parsed(row['start_original_text'])
+         terminal = runtime.parsed(row['terminal_original_text'])
+         job = start['job']
+-        need(start['launch']['ok'] is True and job['host'] == 'mac'
++        need(start['launch']['ok'] is True and job['id'] == actual_job_id and job['host'] == 'mac'
+              and job['executable'] == '/bin/launchctl' and job['args'] == expected_argv
+              and job['env_keys'] == [] and job['launch_state'] == 'launched'
+              and job['launch_error'] is None, 'original_exact_label_retirement_job')
+         original_terminal(terminal, job['id'], code)
+-        out, err = bytes.fromhex(row['stdout_hex']), bytes.fromhex(row['stderr_hex'])
+-        need(terminal['log_bytes'] == {'stdout': len(out), 'stderr': len(err)}, 'complete_original_retirement_output')
++        streams = runtime.parsed(row['streams_original_text'])
++        need(streams['job_id'] == actual_job_id, 'original_retirement_stream_job')
++        out, err = bytes.fromhex(streams['stdout']['bytes_hex']), bytes.fromhex(streams['stderr']['bytes_hex'])
++        for stream, raw in (('stdout', out), ('stderr', err)):
++            observed = streams[stream]
++            need(observed['offset'] == 0 and observed['next_offset'] == observed['size'] == len(raw)
++                 and observed['eof'] is True and observed['text'] == raw.decode('utf-8', 'strict')
++                 and terminal['log_bytes'][stream] == {'seen': len(raw), 'stored': len(raw)},
++                 'complete_original_retirement_output')
+         if role == 'bootout':
+             need(out == err == b'', 'exact_bootout_zero_empty_streams')
+         else:

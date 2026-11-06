@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.original-launch-safe-field-projection.v1",
+  "original_native_preserved_privately": true,
+  "request_digests_fingerprints_stdin_and_environment_not_published": true,
+  "audit_recorded": true,
+  "reused": false,
+  "job": {
+    "id": "1a1b295b02c-fc05-7ec7",
+    "host": "mac",
+    "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "env_keys": [],
+    "idempotency_key": "heptabao-mac-stopped-normal-kv2-base-python-binding-repair-20261106-r1",
+    "launch_state": "launched",
+    "launch_error": null
+  },
+  "launch": {
+    "ok": true,
+    "backend": "detached",
+    "launcher_pid": 75897,
+    "systemd_error": "systemd user units unavailable on this platform"
+  }
+}

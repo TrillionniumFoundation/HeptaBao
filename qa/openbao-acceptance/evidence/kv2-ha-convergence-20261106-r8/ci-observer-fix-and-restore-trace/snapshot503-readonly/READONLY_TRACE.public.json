@@ -1,0 +1,299 @@
+{
+  "actions": {
+    "assertions_relaxed": false,
+    "deadline_changed": false,
+    "product_tests_or_ci_rerun": false,
+    "related_source_edits": false
+  },
+  "actual_failure": {
+    "actual_error": "native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown",
+    "actual_http_status": 503,
+    "data_loss_proven": false,
+    "expected_http_status": 200,
+    "internal_failed_phase_available": false,
+    "later_leader_stop_and_cold_rejoin_reached": false,
+    "original_fifteen_second_request_deadline_exhausted_at_response": false,
+    "persistent_begin_or_stage_absence_proven": false,
+    "prior_completed_checks_inferred_from_fixed_sequential_case": [
+      "greater_than_34_MiB_import_204",
+      "retained_history_check",
+      "historical_snapshot_GET_200",
+      "later_CAS19_mutation_200"
+    ],
+    "root_attempted": false,
+    "root_cause_proven": false,
+    "stage": "same imported historical restore",
+    "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold",
+    "timing": {
+      "bucket_bound_reached": false,
+      "bucket_limit": 64,
+      "elapsed_us": 2107497,
+      "entry_remaining_ns": 14999999910,
+      "exit_remaining_ns": 12892502113,
+      "forwarded": false,
+      "phases": [],
+      "request_class": "snapshot_test",
+      "schema": "heptabao.native-ha.request-failure-timing.v1",
+      "status": 503
+    },
+    "timing_association": "snapshot_test failure inside the serial test window immediately preceding the sole FAILED case",
+    "timing_original_line": 12227,
+    "two_logged_history_404_responses_are_expected_for_versions_1_and_2": true
+  },
+  "exact_request_scope": {
+    "actual_status": 503,
+    "budget_seconds": 15,
+    "expected_status": 200,
+    "method": "POST",
+    "path": "sys/storage/raft/snapshot",
+    "snapshot_from": "earlier successful GET in the same sequential test"
+  },
+  "focused_originals": [
+    {
+      "bytes": 2305,
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    }
+  ],
+  "head_job": 128048874677,
+  "independent_head_pass_does_not_replace_merge_failure": true,
+  "merge_job": 128048873935,
+  "missing_observation": {
+    "automatic_retry_authorized_by_unknown_error": false,
+    "epoch_phase_timer_is_private_feature_only": true,
+    "failed_peer_or_local_read_or_admission_or_final_witness": "unknown",
+    "independent_Begin_or_Stage_commit_receipts_in_original_failure_output": false,
+    "normal_test_command_did_not_enable_private_diagnostic_feature": true,
+    "same_request_epoch_phase_buckets": [],
+    "underlying_transport_failure": "not retained by exchange_reply mapping",
+    "which_of_two_direct_HaError_sites_failed": "unknown"
+  },
+  "not_established": [
+    "Root CAS success or data loss",
+    "precise internal root cause",
+    "requested leader kill and new leader election",
+    "cold rejoin and retained-history readback after this restore",
+    "complete HA qualification",
+    "a repaired or rerun CI result"
+  ],
+  "original_jobs": [
+    {
+      "cases": [
+        {
+          "original_line": 12253,
+          "status": "ok",
+          "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+        },
+        {
+          "original_line": 12228,
+          "status": "FAILED",
+          "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+        }
+      ],
+      "log": {
+        "bytes": 2988174,
+        "path": "merge.job.original.log",
+        "sha256": "4d9d7d32010befb81b5634f48dfac5f29efce66ae711dadb85b4fb68f4f7958a"
+      },
+      "role": "merge",
+      "server_libtest": {
+        "elapsed_seconds": 2579.42,
+        "enumerated": 3760,
+        "executed": 3752,
+        "failed": 1,
+        "ignored": 8,
+        "original_line": 13999,
+        "passed": 3751,
+        "status": "FAILED"
+      },
+      "source_commit": "80a14a873bcabef425aa6891ffaa79fd080c5fde",
+      "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb"
+    },
+    {
+      "cases": [
+        {
+          "original_line": 12299,
+          "status": "ok",
+          "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown"
+        },
+        {
+          "original_line": 12274,
+          "status": "ok",
+          "test": "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+        }
+      ],
+      "log": {
+        "bytes": 3053791,
+        "path": "head.job.original.log",
+        "sha256": "a4656a3c05dd3fdb87ac3c6b5f1f767d94475807b4e889055d3d2fcd71f1b560"
+      },
+      "role": "head",
+      "server_libtest": {
+        "elapsed_seconds": 2953.22,
+        "enumerated": 3760,
+        "executed": 3752,
+        "failed": 0,
+        "ignored": 8,
+        "original_line": 14029,
+        "passed": 3752,
+        "status": "ok"
+      },
+      "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb"
+    }
+  ],
+  "run": 42260689756,
+  "schema": "heptabao.ci42260689756-historical-restore-readonly-trace.v1",
+  "source_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "source_pins": [
+    {
+      "bytes": 41292,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+      "sha256": "8c15a718354afb9e180024fa90dd219cdba9d4369d72746364cd039d9f5e4097"
+    },
+    {
+      "bytes": 70780,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "sha256": "0e204bfd4f2a2b5640e1da6611014f5a87799b099c9b2f6c861283e60c57c2ea"
+    },
+    {
+      "bytes": 47093,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+    },
+    {
+      "bytes": 29328,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_native_v6_epoch_restore.rs",
+      "sha256": "67c120496d2a80701c3c1da5587c2e1eed4a4ae6c32fd114483aeb0e7c299bc1"
+    },
+    {
+      "bytes": 18975,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_native_v6_archive_repair.rs",
+      "sha256": "5ca9bf80f154ba8ce6eb364733842627e3301a34b47e5a2e7d65642bf1e32659"
+    },
+    {
+      "bytes": 61623,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"
+    },
+    {
+      "bytes": 22973,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_native_v6_backup.rs",
+      "sha256": "379fa4f3336ce5b003f43b715d96df7b7c6084f84655fc3c0e9f67ac54d64cf2"
+    },
+    {
+      "bytes": 52138,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_v6_native_codec.rs",
+      "sha256": "5817213ce2ab37c6a536717565405e448c21380908fa92658e8ce825f5c3c369"
+    },
+    {
+      "bytes": 47747,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/src/ha_state.rs",
+      "sha256": "a705449c26d62260ac6f50554ae246a9210b3f75372bba2bb5d244aeb9e701b6"
+    },
+    {
+      "bytes": 41985,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "sha256": "b978a20df6252c8bcfc26ba224c4faf5c4a703777118c4e739bdfa34acecf421"
+    },
+    {
+      "bytes": 85408,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "sha256": "2bddfb1eff7527f273c9c81f7ed90456de34cdcb71ae1fd1aed60e155ea9040d"
+    },
+    {
+      "bytes": 19685,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-raft-runtime/src/lib.rs",
+      "sha256": "7cd8f3bed34f5b6e61d51a926282802e9b7a9f95881e1e65e4a8c4226769dc7d"
+    },
+    {
+      "bytes": 29956,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-raft-runtime/src/process/network.rs",
+      "sha256": "8f8a26c29201cd2d95c175925106026a933faa78f4a6c37db051d3140091cacf"
+    },
+    {
+      "bytes": 17052,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-raft-runtime/src/process/v6_epoch_restore.rs",
+      "sha256": "bce056c2081ca6594348391a553b655c17634fe9e7aca4e45564b7d418c3b92f"
+    },
+    {
+      "bytes": 40350,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-raft-runtime/src/v6_replica_blobs.rs",
+      "sha256": "b1fd7c45c0028c5f14c084e5e6837cac126d588f6a376d9aa808637e21d7b315"
+    },
+    {
+      "bytes": 4796,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-server/Cargo.toml",
+      "sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642"
+    },
+    {
+      "bytes": 1660,
+      "commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+      "path": "crates/heptabao-ha-service/Cargo.toml",
+      "sha256": "d19b4298510c6c4804919e3de9314403af5080a73db69ff162ad3b3ff69ef547"
+    }
+  ],
+  "source_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "static_error_chain": [
+    {
+      "meaning": "one original snapshot request, external transfer and finalization, then failed HTTP200 assertion",
+      "source": "service_native_kv2_large_ha_tests.rs",
+      "span": "280-318,370-371"
+    },
+    {
+      "meaning": "publish_native_v6_historical_restore error is translated to HTTP503; root_attempted and retry_allowed=false are retained",
+      "source": "service_snapshot_v6_ha_restore.rs",
+      "span": "648-676"
+    },
+    {
+      "meaning": "display adds historical reconciliation prefix and root_attempted to the original reason",
+      "source": "ha_native_v6_epoch_restore.rs",
+      "span": "107-113"
+    },
+    {
+      "meaning": "exact unprefixed reason HA durable outcome is unknown is HaError::OutcomeUnknown",
+      "source": "heptabao-ha-service/src/lib.rs",
+      "span": "1332-1355"
+    },
+    {
+      "meaning": "the two direct HaError propagation sites before Root are closure collection and final quorum verification; log does not select one",
+      "source": "ha_native_v6_epoch_restore.rs",
+      "span": "614-626;642-647"
+    },
+    {
+      "meaning": "admission, local reopen, peer transfer failures or insufficient majority, final witness and publication verification are collapsed to OutcomeUnknown; transport cause is discarded",
+      "source": "v6_closure_quorum.rs",
+      "span": "651-791;585-599;875-877"
+    }
+  ],
+  "static_error_type_crosscheck": {
+    "archive_source_errors_have_fixed_distinct_messages": true,
+    "codec_and_replication_state_errors_have_fixed_distinct_messages": true,
+    "local_blob_errors_have_fixed_distinct_messages": true,
+    "native_enrollment_validation_has_fixed_distinct_message": true,
+    "raft_runtime_consensus_errors_have_Raft_consensus_prefix": true,
+    "remote_raft_errors_have_remote_Raft_prefix": true,
+    "this_is_source_reasoning_not_an_independent_durable_state_readback": true
+  }
+}

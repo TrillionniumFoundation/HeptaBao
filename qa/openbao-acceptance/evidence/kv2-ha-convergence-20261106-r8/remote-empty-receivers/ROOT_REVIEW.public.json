@@ -1,0 +1,33 @@
+{
+  "exact_two_original_jobs": true,
+  "hosts": [
+    {
+      "elapsed_seconds": 0.006343031011056155,
+      "host": "rog",
+      "job_id": "1a1b25235a5-fc05-7d82",
+      "no_secret_or_product_operations": true,
+      "receipt_bytes": 1766,
+      "receipt_sha256": "b50cc1d8e36de387b1e1aa1890d8455d85b031aa0ebf42004df96d7c01897b42",
+      "receipt_version": "66306:28477777:1766:1793993098902976534:1793993098902976534",
+      "root": "/home/qian-qi/heptabao-formal-kv2-custody-20261106-r1",
+      "status": "prepared_empty_receivers_only",
+      "stdout_bytes": 1915,
+      "stdout_sha256": "ed99fa8909ae3f8beba6270e6360dcc0daa5e2afc563c34c4e53946b4952ec42"
+    },
+    {
+      "elapsed_seconds": 0.0032586249290034175,
+      "host": "pocket4",
+      "job_id": "1a1b252becf-fc05-7d84",
+      "no_secret_or_product_operations": true,
+      "receipt_bytes": 1755,
+      "receipt_sha256": "6a7a5d3fc955f48222e26e40c78cb1efa972ef9e26ae07fa70806698b41a120f",
+      "receipt_version": "66306:38931098:1755:1793993138088136497:1793993138088136497",
+      "root": "/home/alex/heptabao-formal-kv2-custody-20261106-r1",
+      "status": "prepared_empty_receivers_only",
+      "stdout_bytes": 1893,
+      "stdout_sha256": "c8c457af6fba2c5338d1d0770f9ee5697e61d45bcd7dfa17ae24f139574e136a"
+    }
+  ],
+  "not_key_or_backup_acceptance": true,
+  "schema": "heptabao.root-private-receiver-preparation-review.v1"
+}

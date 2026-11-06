@@ -1,0 +1,39 @@
+{
+  "changed_top_level_definitions": [
+    "OwnedWire"
+  ],
+  "local_guard_original_read": true,
+  "narrow_limit": "parent stdout/stderr log handles only; this review does not claim actual TLS/service execution or full future lifecycle binding",
+  "new_tests_or_remote_actions_by_reviewer": false,
+  "original_fd_birth_finding_resolved": [
+    "original FD row allocated before open and registered before first fstat",
+    "frozen owner protected counter covers FD birth through original bounded communicate and cleanup",
+    "pending signal checked before single dispatch and after cleanup; original absolute request deadline unchanged",
+    "all born log FDs get one sync and one close attempt, ambiguous close not retried by numeric FD",
+    "cleanup error marks owner failed; original primary exception remains primary",
+    "private handle receipts contain only original resource observations and remain private"
+  ],
+  "original_r1_source_preserved": true,
+  "original_r1_wire_birth_gap_remains_in_r1_but_projection_extract_does_not_execute_it": true,
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-formal-protocol-static-review.v1",
+  "source": {
+    "bytes": 94455,
+    "sha256": "858b325bba2c8261d3e3e81317ea63d968d2d7b78d2e63270d423d3794cd54e8"
+  },
+  "status": "no_remaining_blocker_in_reviewed_two_phase_logic_and_parent_log_fd_diff",
+  "two_phase_review": [
+    "recovery_only set before admit_resume and blocks every source POST except fixed read witness",
+    "same frozen plan excludes only the new deadline/evidence directory; original snapshot terminal, complete ledger and full inventory are rebound",
+    "complete original business CAS0 acceptance requires exactly one activation and snapshot and every original business key; no resume import call",
+    "same source manager identity and complete current source history checked before independent restore operations",
+    "remote native before/after uses actual integer modes, UID/nlink/fullversion and fullSHA; complete local independent readback byte comparison and distinct inode",
+    "remote host authority remains explicit parent-reviewed original native request/response provenance, not a self-authenticating JSON claim",
+    "public phase result remains fixed counts/check labels and false formal/HA/AuthBus/cutover qualifications"
+  ],
+  "unchanged_pure_projection_definitions": 16,
+  "wire": {
+    "bytes": 7393,
+    "sha256": "6b0142c1316ef7ae69bf15ad9d3897aac1ebd09caf63ae096137dcd3a20f9ddc"
+  }
+}

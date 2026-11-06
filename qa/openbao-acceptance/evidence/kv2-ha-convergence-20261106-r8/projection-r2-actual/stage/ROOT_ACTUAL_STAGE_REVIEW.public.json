@@ -1,0 +1,21 @@
+{
+  "all_six_native_full_sha_size_version_mode_owner_single_links_exact": true,
+  "directory_fds_closed": 2,
+  "file_fds_closed": 20,
+  "formal_kv2_qualified": false,
+  "job_id": "1a1b29f185a-fc05-7efb",
+  "native_terminal_complete_durable_exit_zero": true,
+  "private_inputs": 1,
+  "projection_executed": false,
+  "public_inputs": 5,
+  "public_result": {
+    "bytes": 4117,
+    "sha256": "cf98633f7b56d943b0d1936697e3bcdab1f7eda1937f9ed3fa21c86fb7c4dca4"
+  },
+  "schema": "heptabao.root-actual-projection-r2-input-stage-review.public.v1",
+  "status": "independently_verified",
+  "stdout": {
+    "bytes": 3246,
+    "sha256": "cc1a74e8e9afb885e6c2ae9ff60380055d74e29425ee0fd54a3d64f5d4668b43"
+  }
+}

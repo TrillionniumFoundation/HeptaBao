@@ -1,0 +1,46 @@
+{
+  "actual_readonly_r2_success_and_configuration_conflict_bound": true,
+  "authbus_qualified": false,
+  "budget": {
+    "deadline_renewed": false,
+    "native_cap_seconds": 60,
+    "work_seconds": 52
+  },
+  "controller": {
+    "bytes": 19194,
+    "file": "manager_python_binding_repair_controller.template.py",
+    "sha256": "e5418e8b5a1d16bdf60ba5e736903966a32e167e990820cfce701ac77cc72f78"
+  },
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "helper": {
+    "bytes": 7540,
+    "file": "manager_python_binding_repair.py",
+    "sha256": "b21dba79cc64af09b429214204ec49238ccdacd9757bf058265f36ebe19784bd"
+  },
+  "historical_unexecuted_flat_log_bytes_draft_preserved": true,
+  "macos_removable_volume_hold_resolved": false,
+  "prior_venv_interpreter_regular_copy_metadata_verified": true,
+  "prior_venv_no_symlink_read_gate_already_executed_in_successful_readonly_r2": true,
+  "private_preparation_digest_published": false,
+  "remote_job_dispatched": false,
+  "retirement_originals_independently_verified": true,
+  "review_does_not_authorize_retry_after_unknown_publication": true,
+  "schema": "heptabao.host-evidence-stopped-binding-repair-controller-review.public.v1",
+  "scope": "source_and_existing_original_evidence_review_only_no_repair_execution",
+  "service_restart_qualified": false,
+  "status": "no_remaining_static_review_blocker",
+  "verified_boundaries": [
+    "Original bootout and absence fixed job IDs, exact argv, complete streams and nested seen/stored counts are bound.",
+    "The successful read-only r2 result, final output and original private closure identity bind the known Python role mismatch.",
+    "Both interpreter files retain their independent full identities; the old controller copy remains unchanged.",
+    "The helper accepts the fixed top-level initial_empty binding shape and changes only files.python.",
+    "The actual base interpreter is checked against the fixed public launcher target and original r2 pin.",
+    "A fresh owned exact-label query must return the fixed 113 absence grammar before one publication.",
+    "Old current binding bytes are preserved, pending bytes and intent are fsynced, and one rename is fully read back.",
+    "Old unlinked current-binding file descriptors remain registered for original once-only close.",
+    "Original data remains empty and all five initialization-material files remain absent before and after repair.",
+    "Primary and cleanup failures remain distinct; signal, elapsed budget, process and FD gates can reject final success.",
+    "The repair makes no HTTP request, starts no service, changes no plist/guard/config, and changes no macOS permission."
+  ]
+}

@@ -1,0 +1,305 @@
+{
+  "authbus_passed": false,
+  "date_utc": "2026-11-06",
+  "formal_kv2_passed": false,
+  "normal_service_binary_source": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "old_assets_removed": false,
+  "package_bytes": 8843743,
+  "package_file_count": 468,
+  "packages": [
+    {
+      "bytes": 64584,
+      "file_count": 9,
+      "name": "mac-launchd-preflight",
+      "tree_sha": "5d294aaec85060104cb068794b212141882d916a"
+    },
+    {
+      "bytes": 957028,
+      "file_count": 98,
+      "name": "mac-layout-tls",
+      "tree_sha": "9f5cd33ff223aa2659a4f2714bf8cc5f8ce306f3"
+    },
+    {
+      "bytes": 162050,
+      "file_count": 23,
+      "name": "manager-prepared",
+      "tree_sha": "3fed938efb257466600d1b1b7b017de9adde26f9"
+    },
+    {
+      "bytes": 276636,
+      "file_count": 38,
+      "name": "manager-input-stage",
+      "tree_sha": "e141fb2bc5016de7f0c0d352bd266ff57a8835ee"
+    },
+    {
+      "bytes": 45509,
+      "file_count": 13,
+      "name": "manager-init-failure",
+      "tree_sha": "cf3ebd586e6e9098b911a11c56f436005d2bdc58"
+    },
+    {
+      "bytes": 17150,
+      "file_count": 13,
+      "name": "manager-failure-diagnostics",
+      "tree_sha": "3173ef06ac42613c8e91155457de0c64ca9ede23"
+    },
+    {
+      "bytes": 66116,
+      "file_count": 20,
+      "name": "remote-empty-receivers",
+      "tree_sha": "1c7e772a4fbcc4fd6b0354455d50a507d0f1ffaa"
+    },
+    {
+      "bytes": 11972,
+      "file_count": 7,
+      "name": "mac-tcc-diagnosis",
+      "tree_sha": "993d0390a13bd86824cadf53e1aed1c5a55f35c9"
+    },
+    {
+      "bytes": 134724,
+      "file_count": 17,
+      "name": "projection-prepared",
+      "tree_sha": "56cf955f084133ac5f1329f0905530ef2764ed13"
+    },
+    {
+      "bytes": 35371,
+      "file_count": 5,
+      "name": "projection-stage-prepared",
+      "tree_sha": "9cc83b63e490e453ffeb1aac2245b225deb40ba7"
+    },
+    {
+      "bytes": 162222,
+      "file_count": 13,
+      "name": "formal-protocol-prepared-r2",
+      "tree_sha": "88bfaf2606edf6aea6c42c84363a706c22e2e667"
+    },
+    {
+      "bytes": 51403,
+      "file_count": 14,
+      "name": "manager-readonly-reconciliation",
+      "tree_sha": "3eb635078397990ed2c2ff40e54d3f6d842a02ee"
+    },
+    {
+      "bytes": 98600,
+      "file_count": 37,
+      "name": "stopped-binding-repair",
+      "tree_sha": "c89a60ec53b29861cef6249126740c7d9f1b180d"
+    },
+    {
+      "bytes": 69806,
+      "file_count": 22,
+      "name": "projection-r1-actual",
+      "tree_sha": "c206625b4e66a9d10567dffed2657d0fdec1906f"
+    },
+    {
+      "bytes": 89483,
+      "file_count": 18,
+      "name": "projection-r2-prepared",
+      "tree_sha": "0c34db3678c9f80b529951865b928fdb62513203"
+    },
+    {
+      "bytes": 190357,
+      "file_count": 29,
+      "name": "ci-observer-fix-and-restore-trace",
+      "tree_sha": "6152ce304da9c53ce9dfb1d7c84dfa561df59f3a"
+    },
+    {
+      "bytes": 6139401,
+      "file_count": 18,
+      "name": "ci42260689756-complete-failure",
+      "tree_sha": "fdf78a5664cf588087a7dfe60c0eb7a7c7491c5a"
+    },
+    {
+      "bytes": 84103,
+      "file_count": 28,
+      "name": "projection-r2-actual",
+      "tree_sha": "fe766fbba05f8dcef9aa995f2d6a6ba9b02db0ac"
+    },
+    {
+      "bytes": 105426,
+      "file_count": 25,
+      "name": "projection-r3-prepared",
+      "tree_sha": "eb122e009c96857c092e148a2c30845fed83a7c8"
+    },
+    {
+      "bytes": 81802,
+      "file_count": 21,
+      "name": "projection-r3-actual",
+      "tree_sha": "2e3f91b3a88abf66a0a49ca051f69b016a6cb4c0"
+    }
+  ],
+  "parent_evidence_commit": "f2f0d8e7d70794cd6bf8d425f7c24873d4e08fd1",
+  "parent_evidence_tree": "ddfe898404322d769a8feadf4c64035a77fcd77e",
+  "projection_r3_actual_passed": true,
+  "real_multi_host_ha_passed": false,
+  "replacement_decision": "HOLD",
+  "root_file_count_excluding_this_manifest": 23,
+  "root_files_excluding_this_manifest": [
+    {
+      "bytes": 5791,
+      "git_blob_sha": "2d4207c234e729dfa23f34b0bf02dbf705560f7b",
+      "mode": "100644",
+      "path": "ACTUAL_JOB_INDEX.public.json",
+      "sha256": "8d79bf1ea1879633bff2919c24d495a17d65eec4c8d0b0695040698a70241fed"
+    },
+    {
+      "bytes": 2702,
+      "git_blob_sha": "5282a0f5be09e47e8515de5ccb326cd2de31adc5",
+      "mode": "100644",
+      "path": "EVIDENCE_BOUNDARIES.md",
+      "sha256": "77bcc31624ec83f023c01a4a651e950498559ff3c2f81128a7364518ca7f7e6d"
+    },
+    {
+      "bytes": 5583,
+      "git_blob_sha": "c6984ffdfa6d044df12dc5955999207b9ccd9f3b",
+      "mode": "100644",
+      "path": "GATE_STATUS.public.json",
+      "sha256": "6240ae21124ea75f8c516763640a2bd705985c3a32d05091602db7df70583f75"
+    },
+    {
+      "bytes": 3859,
+      "git_blob_sha": "5656f99ba32773e7e1bac82e3e150591386fe09c",
+      "mode": "100644",
+      "path": "OPERATOR_HANDOFF.md",
+      "sha256": "0173b19bf26dd1fcfa184216b2bb0f9dca2f243e10060a4a149157ce3758881d"
+    },
+    {
+      "bytes": 135178,
+      "git_blob_sha": "942eea7edccfc7b5ca289391a21209a750f84c7d",
+      "mode": "100644",
+      "path": "PACKAGE_FILE_INDEX.public.json",
+      "sha256": "37b8950deec6bfdb8da58d50b2581951ee3cb769536e79fb68b70348649dd0cf"
+    },
+    {
+      "bytes": 3693,
+      "git_blob_sha": "b02667fc7239535e64e05776761abf5ca6fe9553",
+      "mode": "100644",
+      "path": "PACKAGE_VERIFICATION.public.json",
+      "sha256": "c4df8a31714809c3c32463f2d7d661420730dcc7615fbb58ce15919d1f8b9e0b"
+    },
+    {
+      "bytes": 668,
+      "git_blob_sha": "1b7c64b7e05da647be65f7636ca08d4d907ef97f",
+      "mode": "100644",
+      "path": "PUBLIC_EVIDENCE_PRIVATE_CONTENT_SCREEN.public.json",
+      "sha256": "b9b8e94f96ffc0ee3556a7f50edf74a2c1ad468542d340cd22c7701da88d210a"
+    },
+    {
+      "bytes": 14008,
+      "git_blob_sha": "974200a98e2e42792b5327c8ab46a15cb7f368d3",
+      "mode": "100644",
+      "path": "README.md",
+      "sha256": "6b8fefb92d4388ca54a7d976b09953d4c5f9b2eb2dd3716578e5b739819f42e9"
+    },
+    {
+      "bytes": 60127,
+      "git_blob_sha": "b1732b7147a54f952c262a0512742795096aaf25",
+      "mode": "100644",
+      "path": "latest-ci/new-full-ci-jobs-latest.native.json",
+      "sha256": "39d7b9a4da4f2a3cae7d59c34924807ca52a6d49a360e924be971e1500291b09"
+    },
+    {
+      "bytes": 31552,
+      "git_blob_sha": "0b1efba8dc8558bc8196783af6008dd6a61f564c",
+      "mode": "100644",
+      "path": "latest-ci/new-full-ci-run-latest.native.json",
+      "sha256": "f35d44e8e2a0ee52ab87ddfc3b596e3600a876a89f929e7a37954958165ed332"
+    },
+    {
+      "bytes": 31528,
+      "git_blob_sha": "ba9deed5089b638ffb16c4b4ad1f07ee7a9132cd",
+      "mode": "100644",
+      "path": "latest-ci/new-trust-ci-run-latest.native.json",
+      "sha256": "8b4a00a148a5b88123915f21a1336d973e9f9df6389b61cb22ad00978dbb2a48"
+    },
+    {
+      "bytes": 1327,
+      "git_blob_sha": "f7a986f0bc60e48f0ff0919fab3f734b25bf8060",
+      "mode": "100644",
+      "path": "projection-r3-independent-supplement/README.md",
+      "sha256": "c2d3207134d5038de56afe4308147d79899b7c47ee212e251af196301abbad8a"
+    },
+    {
+      "bytes": 2145,
+      "git_blob_sha": "15c2ce9c20254d70f8b18570e0312c9def76b866",
+      "mode": "100644",
+      "path": "projection-r3-independent-supplement/ROOT_ACTUAL_PROJECTION_REVIEW.r2.public.json",
+      "sha256": "9c21b724fced94ab1bc7aae99405aef88e2d4022ea1d90c9a1f681b4ee07f0c8"
+    },
+    {
+      "bytes": 3649,
+      "git_blob_sha": "49d7ce96022efb6b1e8a54f16300044b4d6b1062",
+      "mode": "100644",
+      "path": "projection-r3-independent-supplement/root-verifier-r1-r2-row-key-mapping.diff",
+      "sha256": "c65706f952af7fb0339e354d26bb90dcbb15651880831f4ae75f6c15d24c8744"
+    },
+    {
+      "bytes": 13177,
+      "git_blob_sha": "adbb38c1e36851df9efd2ba2bf473eef06f57015",
+      "mode": "100644",
+      "path": "projection-r3-independent-supplement/root_verify_actual_projection_r2.py",
+      "sha256": "1b9e5f062ee60c4f043c4a6cecb65467bfdc0643a7d43aaabbc8e0269a562490"
+    },
+    {
+      "bytes": 2629,
+      "git_blob_sha": "909bea06c81afba9ec721bd0e1b7bd4e68f618a5",
+      "mode": "100644",
+      "path": "resume-plan/HOST_EVIDENCE_REVIEW.public.json",
+      "sha256": "c710700cc193a6963439f30b11feef110c98ee3d0dd6875ba57651ec8b412019"
+    },
+    {
+      "bytes": 13222,
+      "git_blob_sha": "f76cdb572c085e1d676db5f1685257de8ae76a74",
+      "mode": "100644",
+      "path": "resume-plan/IMPLEMENTATION_PLAN.md",
+      "sha256": "ebd58924d547112dffe1a2f5ce24ce6453cbec4b334d41f5c04e58eda57fc6c6"
+    },
+    {
+      "bytes": 6224,
+      "git_blob_sha": "dc3d276c71b89ca0ef6febcd736d3005e522ba71",
+      "mode": "100644",
+      "path": "resume-plan/KNOWN_DEPENDENCIES.public.json",
+      "sha256": "64ffe227f3f5cfb5f4bc080ba00f91e952232d90993bd99db867c2d2dbceba2e"
+    },
+    {
+      "bytes": 393,
+      "git_blob_sha": "d795fcbe9590de3c17e99f6022b23c1d1ac2ad6c",
+      "mode": "100644",
+      "path": "resume-plan/MANIFEST.public.json",
+      "sha256": "99b9bb9998a90449bafcdb715b98a37cb56a6a924c0bfd73b88ac6b91bb35a36"
+    },
+    {
+      "bytes": 1107,
+      "git_blob_sha": "bf82ce1cedb6d45d27fddeded714c6d29166c781",
+      "mode": "100644",
+      "path": "resume-plan/ROOT_PLAN_REVIEW.public.json",
+      "sha256": "c0472f41de9ac7797f76cddaa4273cb236757b7e01c1d7e478dae599bdeee0ad"
+    },
+    {
+      "bytes": 2729,
+      "git_blob_sha": "1acbfae6039e2f33bf62d366dd2836d60a3f7214",
+      "mode": "100644",
+      "path": "reviews/FINAL_BINDING_SUPPLEMENT.public.json",
+      "sha256": "3f243bf30c4131dea290ac7a387697ab5a812b127288a7b3322d369e029b97b5"
+    },
+    {
+      "bytes": 7016,
+      "git_blob_sha": "d12b3f664be7c7fcda3fc6ea9f66bb9c3294ee79",
+      "mode": "100644",
+      "path": "reviews/HOST_EVIDENCE_FINAL_DELTA_REVIEW.public.json",
+      "sha256": "9e3de121378f379a45511d0773946b5fe1dfce4b6e168e2fbee1c55f75e98089"
+    },
+    {
+      "bytes": 3257,
+      "git_blob_sha": "01626c895e8f701b41ff302fd90e9aace65ea1af",
+      "mode": "100644",
+      "path": "reviews/HOST_NARRATIVE_REVIEW.before-projection-r3.public.json",
+      "sha256": "fd791769067dcc85abf4ecf36ab01a8f05022c30db7dae8c7fd4644b8513c700"
+    }
+  ],
+  "schema": "heptabao.replacement-evidence-checkpoint.v8",
+  "scope": "Preserve immutable previous checkpoint and all failed/prepared/actual generations. Exact accepted projection is an input to uninitialized normal KV2, not formal service acceptance. Public evidence excludes private credential material and private content fingerprints.",
+  "source_head": "f0e4694e5637415d394916b7590e7deec81e9d71",
+  "source_pr_number": 163,
+  "traffic_cutover_performed": false
+}

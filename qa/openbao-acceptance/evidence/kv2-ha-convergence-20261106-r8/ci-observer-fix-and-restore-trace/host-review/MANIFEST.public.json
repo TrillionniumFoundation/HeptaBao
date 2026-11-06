@@ -1,0 +1,10 @@
+{
+  "files": [
+    {
+      "bytes": 2470,
+      "path": "HOST_EVIDENCE_REVIEW.public.json",
+      "sha256": "e9df2b3bd6e967a26ba20c35a8344291d76e9b4e7fe6d650fe410272b2d24db5"
+    }
+  ],
+  "schema": "heptabao.safe-evidence-manifest.v1"
+}

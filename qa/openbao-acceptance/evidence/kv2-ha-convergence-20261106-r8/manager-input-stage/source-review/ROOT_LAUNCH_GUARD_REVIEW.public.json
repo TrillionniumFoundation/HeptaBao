@@ -1,0 +1,21 @@
+{
+  "actual_launchd_or_server_executed": false,
+  "actual_tls_bind_observed": false,
+  "diff_bytes": 13326,
+  "diff_sha256": "8ee10a20c9609eadeedd7802de8989c7c7ddf2c8c15854e18b1d01175e773689",
+  "four_real_local_boundary_checks_passed": true,
+  "local_platform": "linux",
+  "local_python": "3.12.14",
+  "original_unexecuted_bytes": 15778,
+  "original_unexecuted_sha256": "6bd513c975d1c185f373ee4e116d26b7c709b1aaef98f35f08bba3b7f722902e",
+  "reviewed_bytes": 18573,
+  "reviewed_sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3",
+  "schema": "heptabao.root-launch-guard-narrow-review.v1",
+  "scope": [
+    "FD births/retirements registered under sticky-signal critical sections",
+    "cleanup cannot overwrite admission primary; no reclose after unknown close",
+    "inherited timer remains unowned and is not cancelled",
+    "exact internal key root and isolated/no-bytecode entry",
+    "chdir precedes final original-clock admission"
+  ]
+}

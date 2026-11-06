@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.projection-posix-uri-local-guards.v1",
+  "expected_tests": 11,
+  "prior_guard_tests": 10,
+  "new_fresh_process_uri_guard": 1,
+  "uri_reference_cases": 8,
+  "invalid_posix_scope_cases": 3,
+  "status": "passed",
+  "returncode": 0,
+  "elapsed_seconds": 0.36562383999989834,
+  "inputs": {
+    "/tmp/heptabao-formal-kv2-projection-20261106-r3/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 44838,
+      "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r3/test_projection_boundaries.py": {
+      "bytes": 11590,
+      "sha256": "3211087139695adf63401919624b39fa90de910525b831ae0843f79441f8848f"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r3/test_projection_cold_import.py": {
+      "bytes": 4256,
+      "sha256": "b555d35f730a46f7210977decaad8263b3df5b81c36232182fca9d18dc0aed87"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r3/test_projection_posix_uri.py": {
+      "bytes": 4613,
+      "sha256": "d9849f353c2bf6e374dec33dddf80495fdaa2f0447593ea487861451924a3d0f"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r3/cpython_v3143_pathname2url.reference.py": {
+      "bytes": 1483,
+      "sha256": "0c56f2caa1eaef1f66e8c01849abac5cf98eef12a18fd743191cb3e0223f9470"
+    },
+    "/tmp/heptabao-formal-kv2-projection-20261106-r1/mac_formal_kv2_allrows_projection.py": {
+      "bytes": 44334,
+      "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+    },
+    "/tmp/heptabao-formal-kv2-protocol-20261106-r1/formal_kv2_protocol.py": {
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    }
+  },
+  "inputs_unchanged": true,
+  "original_streams": {
+    "new.stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "new.stdout.original": {
+      "bytes": 230,
+      "sha256": "4089681504b67ad280196827cc5d09618b87c822bb6c6898e0c983a19b493093"
+    },
+    "old.stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "old.stdout.original": {
+      "bytes": 124,
+      "sha256": "b1e40d5d6099ae9ab490b59adc161f94591570b3d96bd3fe52c16273afa91fda"
+    },
+    "posix-uri.stderr.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "posix-uri.stdout.original": {
+      "bytes": 928,
+      "sha256": "1933db213d6b90b4f223fad17edefd5c1184f1b895e3eaed7c971390ab1776f5"
+    },
+    "stderr.original": {
+      "bytes": 2266,
+      "sha256": "58816f44306ac55c2efdd7b3aff5049c08e6d4053492c04d78d29e46d7afde6a"
+    },
+    "stdout.original": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "actual_remote_projection_or_private_generation_used": false,
+  "old_failed_attempts_modified": false
+}

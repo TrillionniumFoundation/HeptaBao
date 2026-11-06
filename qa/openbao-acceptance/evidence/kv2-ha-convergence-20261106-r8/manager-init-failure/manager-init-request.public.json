@@ -1,0 +1,17 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-manager-init-inputs-r1/manager_start_init.py",
+    "--inputs-sha256",
+    "a012b694832272711bfee5ba9b0200743288c5cef674a89134a0b3899819b597",
+    "--code-sha256",
+    "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-manager-init-inputs-r1",
+  "executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/venv/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-formal-kv2-manager-init-20261106-r1",
+  "nice": 5,
+  "timeout_seconds": 120
+}

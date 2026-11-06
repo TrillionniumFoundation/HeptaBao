@@ -1,0 +1,31 @@
+{
+  "actual_base_launcher_pin_equal_completed_readonly_observation": true,
+  "child_original_wait_once_no_live_gap": true,
+  "current_differs_from_unchanged_original_initial_archive_only_in_files_python": true,
+  "current_state": "initial_empty",
+  "final_stdout": {
+    "bytes": 3473,
+    "sha256": "2b2d6146d1c70465dba33906d5f1d8f06588395a274c16b9ae112b3d6bdb589b"
+  },
+  "formal_kv2_qualified": false,
+  "four_native_complete_private_metadata_files_exact_sizes_sha_versions_permissions_owners_single_links": true,
+  "initialization_performed": false,
+  "job_id": "1a1b295b02c-fc05-7ec7",
+  "native_terminal_complete_durable_exit_zero": true,
+  "old_assets_removed": false,
+  "original_data_empty_and_five_init_materials_absent_checked_by_actual_controller": true,
+  "owned_file_handles_closed": 51,
+  "private_key_content_read": false,
+  "public_result": {
+    "bytes": 3300,
+    "sha256": "c22b367d77e63f82f56c0f90d13fad42b2c42e3e468567123b98e7f6369e22fc"
+  },
+  "retained_old_current_bytes_equal_original_initial_archive": true,
+  "schema": "heptabao.root-actual-stopped-binding-repair-review.public.v1",
+  "seal_file": null,
+  "service_restart_performed": false,
+  "single_atomic_publication_confirmed": true,
+  "single_fresh_exact_label_absence_child_returncode": 113,
+  "status": "independently_verified",
+  "tcc_permission_hold_resolved": false
+}

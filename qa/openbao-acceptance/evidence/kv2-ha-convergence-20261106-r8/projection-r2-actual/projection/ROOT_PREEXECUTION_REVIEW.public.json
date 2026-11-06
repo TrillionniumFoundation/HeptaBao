@@ -1,0 +1,20 @@
+{
+  "actual_mac_cold_audit_diagnostic_job_id": "1a1b29a08e5-fc05-7edc",
+  "all_functions_and_classes_ast_equal_actual_r1": true,
+  "all_six_embedded_inputs_exact_local_bytes_and_pins": true,
+  "formal_kv2_qualified": false,
+  "only_changes_explicit_future_preload_and_three_new_r2_paths": true,
+  "original_failure_and_outputs_preserved": true,
+  "private_generation_plan_exact_previous_successful_stage_bytes": true,
+  "projection_executed": false,
+  "restrictive_audit_function_ast_unchanged": true,
+  "runtime_seconds": 60,
+  "schema": "heptabao.root-projection-r2-preexecution-review.public.v1",
+  "source": {
+    "bytes": 44499,
+    "sha256": "e79a8956a14b8c85935ea371a5cbd844d735fbf6ce8c6bb21836d9fda249307c"
+  },
+  "stage_executed": false,
+  "stage_template_changes_only_new_r2_out_path": true,
+  "work_seconds": 52
+}

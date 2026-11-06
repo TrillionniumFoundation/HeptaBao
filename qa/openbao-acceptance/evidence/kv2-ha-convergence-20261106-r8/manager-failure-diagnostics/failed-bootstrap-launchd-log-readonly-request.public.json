@@ -1,0 +1,1 @@
+{"host":"mac","executable":"/usr/bin/log","args":["show","--last","10m","--style","compact","--predicate","process == \"launchd\" AND eventMessage CONTAINS \"org.heptabao.kv2\""],"cwd":"/Users/qianqi/heptabao-formal-kv2-current-20261106-r1","nice":5,"timeout_seconds":30,"idempotency_key":"heptabao-mac-formal-kv2-failed-bootstrap-launchd-log-readonly-20261106-r1"}

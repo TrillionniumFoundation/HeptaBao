@@ -1,0 +1,215 @@
+{
+  "authbus_credential_created": false,
+  "authbus_qualified": false,
+  "automatic_retry": false,
+  "bootstrap_attempted": true,
+  "bootstrap_command_completed_zero": true,
+  "bootstrap_complete": false,
+  "bootstrap_outcome_unknown": true,
+  "business_kv_imported": false,
+  "business_source_opened": false,
+  "cleanup_failure_codes": [],
+  "cleanup_reserve_seconds": 10,
+  "combined_plaintext_init_response_persisted": false,
+  "command_custody": {
+    "children": [
+      {
+        "birth": {
+          "pgid": 62198,
+          "pid": 62198,
+          "ppid": 62188,
+          "sid": 62198,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 62198,
+            "pid": 62198,
+            "ppid": 62188,
+            "sid": 62198,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 62198,
+            "pid": 62198,
+            "ppid": 62188,
+            "sid": 62198,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 62198,
+        "returncode": 113
+      },
+      {
+        "birth": {
+          "pgid": 62204,
+          "pid": 62204,
+          "ppid": 62188,
+          "sid": 62204,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 62204,
+            "pid": 62204,
+            "ppid": 62188,
+            "sid": 62204,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 62204,
+            "pid": 62204,
+            "ppid": 62188,
+            "sid": 62204,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 62204,
+        "returncode": 113
+      },
+      {
+        "birth": {
+          "pgid": 62210,
+          "pid": 62210,
+          "ppid": 62188,
+          "sid": 62210,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 62210,
+            "pid": 62210,
+            "ppid": 62188,
+            "sid": 62210,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 62210,
+            "pid": 62210,
+            "ppid": 62188,
+            "sid": 62210,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 62210,
+        "returncode": 113
+      },
+      {
+        "birth": {
+          "pgid": 62216,
+          "pid": 62216,
+          "ppid": 62188,
+          "sid": 62216,
+          "state": "R",
+          "uid": 501
+        },
+        "exec_admitted": true,
+        "gaps": [],
+        "members_at_leader_exit": [
+          {
+            "pgid": 62216,
+            "pid": 62216,
+            "ppid": 62188,
+            "sid": 62216,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "members_before_original_reap": [
+          {
+            "pgid": 62216,
+            "pid": 62216,
+            "ppid": 62188,
+            "sid": 62216,
+            "state": "Z",
+            "uid": 501
+          }
+        ],
+        "no_live_members_before_reap": true,
+        "original_wait_completed": true,
+        "original_wait_count": 1,
+        "pid": 62216,
+        "returncode": 0
+      }
+    ],
+    "failed": false,
+    "finished": true,
+    "interrupted": false,
+    "long_server_is_launchd_owned_not_an_original_child": true,
+    "original_count": 4,
+    "passed_process_custody": true,
+    "schema": "heptabao.safe-original-manager-command-custody.v1"
+  },
+  "current_product_ci_hold_resolved": false,
+  "deadline_renewed": false,
+  "durable_completion_authority": "original_runtime_terminal_and_final_stdout_with_120_second_cap",
+  "exact_label_absence_queries": 3,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "http_connections_closed": 140,
+  "http_connections_created": 140,
+  "init_ack_performed": false,
+  "initialization_attempted": false,
+  "initialization_outcome_unknown": false,
+  "kv_mount_created": false,
+  "long_server_waitpid_performed_by_controller": false,
+  "native_v6_activated": false,
+  "new_private_plist_installed": true,
+  "off_host_share_custody_verified": false,
+  "old_asset_removed": false,
+  "phase": "sealed_uninitialized_owned_endpoint",
+  "preactivation_seed_exported": false,
+  "primary_failure_code": "fixed_endpoint_readiness_deadline",
+  "private_closure_content_hash_published": false,
+  "private_closure_identity": {
+    "bytes": 53298,
+    "ctime_ns": 1793995847488491397,
+    "dev": 16777233,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 593545047,
+    "mode": 384,
+    "mtime_ns": 1793995847488491397,
+    "nlink": 1,
+    "uid": 501
+  },
+  "provider_or_j3160_called": false,
+  "python_secret_memory_zeroization_claimed": false,
+  "runtime_seconds": 120,
+  "schema": "heptabao.normal-kv2-manager-init.public.v1",
+  "service_left_registered_and_running": false,
+  "status": "failed",
+  "traffic_cutover_performed": false,
+  "unseal_performed": false,
+  "work_seconds": 110
+}

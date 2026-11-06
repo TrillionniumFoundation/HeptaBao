@@ -1,0 +1,115 @@
+{
+  "all_key_roles_separate_directories": true,
+  "authbus_qualified": false,
+  "automatic_retry": false,
+  "automatic_unseal_implemented": false,
+  "bootstrap_or_bootout_called": false,
+  "business_source_opened": false,
+  "capacity_before": {
+    "external_available_bytes": 108820639744,
+    "internal_available_bytes": 251546062848
+  },
+  "child_processes_created": 0,
+  "cleanup_failure_codes": [],
+  "cleanup_reserve_seconds": 10,
+  "copied_artifacts": {
+    "seed": {
+      "bytes": 86355760,
+      "sha256": "203c7af52c0f9aa4ca71e591c1428acac9382f3c4105036a494631b0e1cae8e7"
+    },
+    "server": {
+      "bytes": 92359328,
+      "sha256": "5f75acb9822defded2ed21f2f0ed1c21895c5e7d8d8d595e9f1c4ee9b9eaa85c"
+    }
+  },
+  "created_file_count_before_public_receipt": 9,
+  "created_layout_directories": 19,
+  "cross_host_share_custody_verified": false,
+  "current_domain_or_listener_reobserved_by_preparation": false,
+  "current_product_ci_hold_resolved": false,
+  "data_and_private_key_devices_differ": true,
+  "deadline_renewed": false,
+  "directory_metadata_excludes_expected_child_count_and_time_changes": true,
+  "durable_completion_authority": "original_runtime_terminal_and_final_stdout_with_120_second_cap",
+  "elapsed_observation_before_receipt_publication_seconds": 0.7967024575918913,
+  "failed_objects_deleted": false,
+  "file_handles_closed_before_public_receipt": 33,
+  "file_handles_opened_before_public_receipt": 33,
+  "fixed_input_and_source_pins_verified": true,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "initial_empty_data_observed": true,
+  "initialization_nonce_created": false,
+  "issuer_and_server_keys_on_different_devices": false,
+  "launch_agents_configuration_written": false,
+  "network_or_http_performed": false,
+  "normal_product_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "normal_product_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "old_assets_removed": false,
+  "old_key_or_credential_content_opened": false,
+  "original_sources_and_all_created_file_identities_unchanged": true,
+  "preparation_complete": true,
+  "primary_failure_code": null,
+  "prior_domain_preflight_is_point_in_time_only": true,
+  "private_record_content_hash_published": false,
+  "private_record_identity": {
+    "bytes": 30619,
+    "ctime_ns": 1793994277018258200,
+    "dev": 16777233,
+    "file_type": 32768,
+    "gid": 20,
+    "inode": 593536561,
+    "mode": 384,
+    "mtime_ns": 1793994277018258200,
+    "nlink": 1,
+    "uid": 501
+  },
+  "private_role_directory_count": 9,
+  "product_executed": false,
+  "provider_or_j3160_contacted": false,
+  "public_certificates": {
+    "ca_certificate": {
+      "bytes": 652,
+      "sha256": "309bf6a7f7b53da4559de360500a949897cfc02797fcffa4c3387b7a70a65cf2"
+    },
+    "server_certificate": {
+      "bytes": 688,
+      "sha256": "7bc3f71a2eece810a524f38d1c9eb678ae72db3f943eb3a6de6d52c0e661fd3f"
+    }
+  },
+  "root_token_or_unseal_share_created": false,
+  "runtime_seconds": 120,
+  "schema": "heptabao.normal-kv2-layout-tls.public.v1",
+  "service_started": false,
+  "status": "prepared_not_started",
+  "tls": {
+    "algorithm": "ECDSA_P256_SHA256",
+    "automatic_certificate_rotation_implemented": false,
+    "ca_crl_or_ocsp_service_available": false,
+    "ca_lifetime_days_after_generation": 3650,
+    "ca_not_after_utc": "2036-11-03T19:44:36+00:00",
+    "ca_path_length": 0,
+    "ca_self_signature_verified": true,
+    "dns_sans": [
+      "localhost"
+    ],
+    "generated_at_utc": "2026-11-06T19:44:36+00:00",
+    "ip_sans": [
+      "127.0.0.1"
+    ],
+    "leaf_eku": [
+      "serverAuth"
+    ],
+    "leaf_lifetime_days_after_generation": 365,
+    "leaf_not_after_utc": "2027-11-06T19:44:36+00:00",
+    "leaf_signature_and_key_pair_verified": true,
+    "not_before_skew_seconds": 300,
+    "not_before_utc": "2026-11-06T19:39:36+00:00",
+    "private_key_encryption_at_rest_claimed": false,
+    "remote_tls_endpoint_verified": false,
+    "separate_issuer_and_server_keys": true
+  },
+  "traffic_cutover_performed": false,
+  "whole_internal_device_loss_recoverable": false,
+  "work_seconds": 110
+}

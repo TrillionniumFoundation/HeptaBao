@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.binding-repair-input-freeze-review.v1",
+  "status": "prepared_not_executed",
+  "template": {
+    "bytes": 19194,
+    "sha256": "e5418e8b5a1d16bdf60ba5e736903966a32e167e990820cfce701ac77cc72f78"
+  },
+  "helper": {
+    "bytes": 7540,
+    "sha256": "b21dba79cc64af09b429214204ec49238ccdacd9757bf058265f36ebe19784bd"
+  },
+  "private_source_and_request_not_public": true,
+  "mask_two_assignments_full_module_ast_equal": true,
+  "original_retirement_pure_consumer_actual_originals_pass": true,
+  "original_native_stream_text_preserved_without_reserialization": true,
+  "two_targeted_negative_cases_rejected": [
+    "stored_byte_mismatch",
+    "wrong_original_job"
+  ],
+  "readonly_private_native_identity_version_and_metadata_match_public": true,
+  "original_jobs": [
+    "1a1b28ed7a1-fc05-7e9f",
+    "1a1b28fb493-fc05-7ea2"
+  ],
+  "original_query_stderr_bytes": 83,
+  "runtime_seconds": 60,
+  "work_seconds": 52,
+  "runtime_or_service_executed_by_this_local_check": false
+}

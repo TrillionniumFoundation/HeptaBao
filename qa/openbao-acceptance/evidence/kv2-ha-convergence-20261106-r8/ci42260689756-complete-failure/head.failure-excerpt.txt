@@ -1,0 +1,38 @@
+14559: 2026-11-06T20:38:11.9632761Z     Checking heptabao-service-core v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-service-core)
+14560: 2026-11-06T20:38:12.4544556Z     Checking heptabao-recovery-core v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-recovery-core)
+14561: 2026-11-06T20:38:13.9386469Z     Checking heptabao-authbus-contracts v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-authbus-contracts)
+14562: 2026-11-06T20:39:43.4001360Z error: items after a test module
+14563: 2026-11-06T20:39:43.4001942Z     --> crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs:910:1
+14564: 2026-11-06T20:39:43.4002405Z      |
+14565: 2026-11-06T20:39:43.4002663Z  910 | mod historical_prepare_observer {
+14566: 2026-11-06T20:39:43.4002995Z      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14567: 2026-11-06T20:39:43.4003291Z ...
+14568: 2026-11-06T20:39:43.4003506Z 1019 | impl Service {
+14569: 2026-11-06T20:39:43.4003748Z      | ^^^^^^^^^^^^
+14570: 2026-11-06T20:39:43.4003976Z ...
+14571: 2026-11-06T20:39:43.4004181Z 1066 | impl Service {
+14572: 2026-11-06T20:39:43.4004418Z      | ^^^^^^^^^^^^
+14573: 2026-11-06T20:39:43.4004636Z      |
+14574: 2026-11-06T20:39:43.4005236Z      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#items_after_test_module
+14575: 2026-11-06T20:39:43.4006456Z      = note: `-D clippy::items-after-test-module` implied by `-D warnings`
+14576: 2026-11-06T20:39:43.4007077Z      = help: to override `-D warnings` add `#[allow(clippy::items_after_test_module)]`
+14577: 2026-11-06T20:39:43.4007639Z      = help: move the items to before the test module was defined
+14578: 2026-11-06T20:39:43.4007936Z 
+14579: 2026-11-06T20:39:49.3247697Z error: could not compile `heptabao-server` (lib test) due to 1 previous error
+14580: 2026-11-06T20:39:49.3624386Z ##[error]Process completed with exit code 101.
+14581: 2026-11-06T20:39:49.4272313Z Post job cleanup.
+14582: 2026-11-06T20:39:49.7450428Z [command]/usr/bin/git version
+14583: 2026-11-06T20:39:49.7514596Z git version 2.56.0
+14584: 2026-11-06T20:39:49.7585495Z Temporarily overriding HOME='/home/runner/work/_temp/3f28955a-b574-4096-9d18-1756a326731b' before making global git config changes
+14585: 2026-11-06T20:39:49.7599869Z Adding repository directory to the temporary git global config as a safe directory
+14586: 2026-11-06T20:39:49.7602877Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HeptaBao/HeptaBao
+14587: 2026-11-06T20:39:49.7662981Z Removing SSH command configuration
+14588: 2026-11-06T20:39:49.7663818Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+14589: 2026-11-06T20:39:49.7719966Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+14590: 2026-11-06T20:39:49.8160940Z Removing HTTP extra header
+14591: 2026-11-06T20:39:49.8170913Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+14592: 2026-11-06T20:39:49.8222221Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+14593: 2026-11-06T20:39:49.8529922Z Removing includeIf entries pointing to credentials config files
+14594: 2026-11-06T20:39:49.8538222Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+14595: 2026-11-06T20:39:49.8590668Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+14596: 2026-11-06T20:39:49.9009230Z Cleaning up orphan processes

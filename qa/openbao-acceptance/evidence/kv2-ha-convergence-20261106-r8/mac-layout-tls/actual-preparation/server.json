@@ -1,0 +1,19 @@
+{
+  "audit_file": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/audit/audit.jsonl",
+  "data_dir": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/data",
+  "disable_unauthed_rekey_endpoints": true,
+  "listen": "127.0.0.1:18240",
+  "max_connections": 16,
+  "outbound_endpoints": [],
+  "storage": {
+    "native_v6_file": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/data"
+    }
+  },
+  "timeout_seconds": 15,
+  "tls_cert_file": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/formal-kv2-current-20261106-r1/tls/server.crt",
+  "tls_key_file": "/Users/qianqi/heptabao-formal-kv2-current-20261106-r1/service-authority-current-20261106-r1/tls/server.key",
+  "tls_max_version": "tls13",
+  "tls_min_version": "tls12",
+  "ui": false
+}

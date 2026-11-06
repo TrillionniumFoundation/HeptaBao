@@ -1,0 +1,32 @@
+{
+  "exact_plan_read": true,
+  "implementation_exists": false,
+  "initialization_unknown_not_retried_or_acknowledged": true,
+  "new_attempt_cannot_replay_original_create_only_entry": true,
+  "new_private_attempt_receipt_required": true,
+  "original_deadlines_preserved": true,
+  "original_three_differences_explicit": true,
+  "os_tcc_authorization_is_external_precondition": true,
+  "ready_for_dispatch": false,
+  "remote_request_constructed": false,
+  "repaired_base_launcher_binding_required": true,
+  "reviewed_files": [
+    {
+      "bytes": 13222,
+      "name": "IMPLEMENTATION_PLAN.md",
+      "sha256": "ebd58924d547112dffe1a2f5ce24ce6453cbec4b334d41f5c04e58eda57fc6c6"
+    },
+    {
+      "bytes": 6224,
+      "name": "KNOWN_DEPENDENCIES.public.json",
+      "sha256": "64ffe227f3f5cfb5f4bc080ba00f91e952232d90993bd99db867c2d2dbceba2e"
+    },
+    {
+      "bytes": 393,
+      "name": "MANIFEST.public.json",
+      "sha256": "99b9bb9998a90449bafcdb715b98a37cb56a6a924c0bfd73b88ac6b91bb35a36"
+    }
+  ],
+  "schema": "heptabao.root-resume-plan-review.v1",
+  "service_or_kv2_acceptance_established": false
+}

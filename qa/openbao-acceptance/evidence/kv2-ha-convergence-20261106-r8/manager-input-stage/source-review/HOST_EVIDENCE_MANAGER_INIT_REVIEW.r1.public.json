@@ -1,0 +1,56 @@
+{
+  "execution_performed_by_this_review": false,
+  "not_proven_by_source_review": [
+    "actual bootstrap and running manager ownership",
+    "actual platform observations after current preflight",
+    "actual 2-of-3 unseal or third-share recovery",
+    "off-host custody and nonce/capsule retirement",
+    "actual persistent restart recovery formal KV2 HA AuthBus client cutover or legacy cleanup"
+  ],
+  "previous_review_findings_resolved": [
+    "active custody protected interrupt is returned without unconditional subsequent raise",
+    "PrivateIO records actual new owned FD count even if post-birth check raises",
+    "initialized data transition requires exact decoded successful response before any persistent-share-delivery claim",
+    "utility output fsync and cleanup errors preserve the original primary error",
+    "final sticky signal and original 110 second work deadline are checked after handler retirement"
+  ],
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-manager-init-static-review.v1",
+  "source_files": {
+    "init_delivery.py": {
+      "bytes": 3507,
+      "sha256": "896a80094f8f7836315bb837d625756a4b9057ba0bbffe476133917a7cbed88e"
+    },
+    "launch_guard.py": {
+      "bytes": 18573,
+      "sha256": "2884f17e6629e7f5bebcce067e100e8402c73bc3f709e13cd411a32bf52f88b3"
+    },
+    "manager_launch_binding.py": {
+      "bytes": 8558,
+      "sha256": "42b40d4be9f43ec18056ed14976603acfec4cbcfebe46eb77692c753faa62436"
+    },
+    "manager_runtime.py": {
+      "bytes": 25233,
+      "sha256": "c5bacfd931d63561ee204fe7f4e0b886378c87ca9db2632327783c709eddf91f"
+    },
+    "manager_start_init.py": {
+      "bytes": 28141,
+      "sha256": "3615fbea73a26943256491699dbc74db422a6c4d3814ccb8c68ddacd7face168"
+    }
+  },
+  "status": "no_new_execution_blocker_in_exact_reviewed_source",
+  "verified_control_flow": [
+    "eight prior preparation source/result/terminal gates remain separate from actual startup authority",
+    "exact launchd label absence is rechecked in gui/user/system domains before installing the new plist",
+    "single original bootstrap; readiness only permits bounded read-only connection-refused observations",
+    "actual manager executable path UID PGID session and exact installed plist are reobserved",
+    "strict CA hostname exact leaf TLS; wrong CA and wrong hostname negative handshakes occur before nonce or init",
+    "nonce and private intent are fsynced before one init mutation; unknown result never triggers a replay",
+    "actual init200 and exact three-share decoder precede the explicit retired-empty-data directory transition",
+    "root token and each of three shares are independently created fsynced and read back before initialized binding publication",
+    "old initial binding archive and original unlinked descriptors are retained with one close",
+    "successful exit is initialized_sealed_held; actual off-host custody unseal ack and seed remain later gates",
+    "long server remains launchd-owned; only original short utilities count as controller wait children",
+    "public child custody excludes argv-derived fingerprints; combined plaintext init response is never persisted"
+  ]
+}

@@ -1,0 +1,7 @@
+test_changed_protocol_source_is_rejected_before_extraction (test_projection_boundaries.ProjectionBoundaries.test_changed_protocol_source_is_rejected_before_extraction) ... ok
+test_real_readonly_sqlite_allrows_preserves_text_null_blob_and_source_time (test_projection_boundaries.ProjectionBoundaries.test_real_readonly_sqlite_allrows_preserves_text_null_blob_and_source_time) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.045s
+
+OK

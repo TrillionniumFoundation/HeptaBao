@@ -1,0 +1,35 @@
+{
+  "logs": [
+    {
+      "bytes": 2988174,
+      "complete_decoded_content_preserved": true,
+      "connector_original_file": "ci42260689756-merge-job-128048873935-logs.native.json",
+      "job_id": 128048873935,
+      "path": "merge.job.original.log",
+      "role": "merge",
+      "sha256": "4d9d7d32010befb81b5634f48dfac5f29efce66ae711dadb85b4fb68f4f7958a"
+    },
+    {
+      "bytes": 3053791,
+      "complete_decoded_content_preserved": true,
+      "connector_original_file": "ci42260689756-head-job-128048874677-logs.native.json",
+      "job_id": 128048874677,
+      "path": "head.job.original.log",
+      "role": "head",
+      "sha256": "a4656a3c05dd3fdb87ac3c6b5f1f767d94475807b4e889055d3d2fcd71f1b560"
+    },
+    {
+      "bytes": 2891,
+      "complete_decoded_content_preserved": true,
+      "connector_original_file": "ci42260689756-verdict-job-128141481423-logs.native.json",
+      "job_id": 128141481423,
+      "path": "verdict.job.original.log",
+      "role": "verdict",
+      "sha256": "c75059a2ce767471c80ed1f541987c56b71567decf6c9506241cfcdf2b1b8805"
+    }
+  ],
+  "method": "exact_utf8_encoding_of_complete_connector_structured_content_content",
+  "new_ci_jobs_started": false,
+  "run_id": 42260689756,
+  "schema": "heptabao.ci42260689756-original-log-extraction.public.v1"
+}

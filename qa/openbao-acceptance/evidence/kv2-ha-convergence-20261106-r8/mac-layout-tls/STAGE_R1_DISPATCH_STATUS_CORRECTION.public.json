@@ -1,0 +1,15 @@
+{
+  "actual_original_stage_job_id": "1a1b25e0cd2-fc05-7db8",
+  "new_stage_requires_new_target_and_key": true,
+  "observed_at_utc": "2026-11-06T19:41:06.651467+00:00",
+  "original_producer_sha256": "266760644fb7e5dd9f5c0c92dc8ab40d7c775332eee1c461849c4d9f38014cce",
+  "original_request_sha256": "56f7ef55b557bd1b4f27bb2ccd17ee5509936876f6d4e99fe9d278a99d5740b4",
+  "original_request_unchanged": true,
+  "original_source_copy_unchanged": true,
+  "preparation_dispatched": false,
+  "prior_local_not_dispatched_observation_superseded": true,
+  "schema": "heptabao.layout-tls-stage-dispatch-status-correction.v1",
+  "source": "root_orchestrator_actual_dispatch_notice",
+  "stage_dispatched": true,
+  "terminal_observation_owned_by_root": true
+}

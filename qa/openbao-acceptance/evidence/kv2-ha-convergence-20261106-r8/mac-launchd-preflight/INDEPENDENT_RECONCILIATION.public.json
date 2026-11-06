@@ -1,0 +1,128 @@
+{
+  "all_directory_handles_retired": true,
+  "claim_scope": "Only the three exact scoped label queries and two domain availability queries; no all-domain or continuous exclusivity claim.",
+  "current_base_is_current_stable_metadata_not_a_claim_of_historical_identity": true,
+  "durable_terminal_and_full_public_bytes_verified": true,
+  "exact_queries": [
+    {
+      "candidate_explicit_disabled_override": null,
+      "domain": "gui/501",
+      "domain_exists": true,
+      "exit_code": 0,
+      "index": 0,
+      "outcome": "domain_available",
+      "role": "gui_disabled",
+      "stderr_bytes": 0,
+      "stdout_bytes": 1435
+    },
+    {
+      "candidate_explicit_disabled_override": null,
+      "domain": "user/501",
+      "domain_exists": true,
+      "exit_code": 0,
+      "index": 1,
+      "outcome": "domain_available",
+      "role": "user_disabled",
+      "stderr_bytes": 0,
+      "stdout_bytes": 1435
+    },
+    {
+      "domain": "gui/501",
+      "exit_code": 113,
+      "index": 2,
+      "label": "org.heptabao.kv2",
+      "label_present": false,
+      "outcome": "label_absent_in_exact_domain_query",
+      "role": "gui_label",
+      "stderr_bytes": 83,
+      "stdout_bytes": 0
+    },
+    {
+      "domain": "user/501",
+      "exit_code": 113,
+      "index": 3,
+      "label": "org.heptabao.kv2",
+      "label_present": false,
+      "outcome": "label_absent_in_exact_domain_query",
+      "role": "user_label",
+      "stderr_bytes": 78,
+      "stdout_bytes": 0
+    },
+    {
+      "domain": "system",
+      "exit_code": 113,
+      "index": 4,
+      "label": "org.heptabao.kv2",
+      "label_present": false,
+      "outcome": "label_absent_in_exact_domain_query",
+      "role": "system_label",
+      "stderr_bytes": 76,
+      "stdout_bytes": 0
+    }
+  ],
+  "exec_admitted": 5,
+  "exit_codes": [
+    0,
+    0,
+    113,
+    113,
+    113
+  ],
+  "formal_product_migration_qualification": false,
+  "gaps": 0,
+  "job_id": "1a1b246548f-fc05-7d47",
+  "metadata": {
+    "candidate_user_plist": {
+      "exists": false
+    },
+    "current_internal_base": {
+      "canonical": true,
+      "dev": 16777233,
+      "exists": true,
+      "gid": 20,
+      "inode": 593473266,
+      "kind": "directory",
+      "mode": 448,
+      "nlink": 5,
+      "uid": 501
+    },
+    "existing_production_root": {
+      "canonical": true,
+      "dev": 16777244,
+      "exists": true,
+      "gid": 20,
+      "inode": 72412530,
+      "kind": "directory",
+      "mode": 448,
+      "nlink": 13,
+      "uid": 501
+    },
+    "launch_agents_parent": {
+      "canonical": true,
+      "dev": 16777233,
+      "exists": true,
+      "gid": 20,
+      "inode": 8060678,
+      "kind": "directory",
+      "mode": 448,
+      "nlink": 26,
+      "uid": 501
+    },
+    "proposed_new_native_root": {
+      "exists": false
+    }
+  },
+  "no_live_members": 5,
+  "no_service_configuration_key_or_port_action": true,
+  "original_public_result_and_final_stdout_only_expected_closeout_difference": true,
+  "originals": 5,
+  "owned_directory_handles_closed": 5,
+  "point_in_time_observation_complete": true,
+  "point_in_time_user_manager_preflight_clear": true,
+  "raw_query_output_kept_private_on_mac": true,
+  "requested_queries": 5,
+  "schema": "heptabao.exact-launchd-preflight-independent-reconciliation.v1",
+  "status": "passed",
+  "wait_completed": 5,
+  "wait_exactly_once": 5
+}

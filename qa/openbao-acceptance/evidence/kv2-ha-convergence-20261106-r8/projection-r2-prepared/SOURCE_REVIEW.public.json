@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.projection-r2-cold-stdlib-fix-review.v1",
+  "status": "prepared_not_executed",
+  "original_actual_failed_source": {
+    "bytes": 44334,
+    "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+  },
+  "new_source": {
+    "bytes": 44499,
+    "sha256": "e79a8956a14b8c85935ea371a5cbd844d735fbf6ce8c6bb21836d9fda249307c"
+  },
+  "all_function_and_class_ast_unchanged": true,
+  "original_audit_ast_identical": true,
+  "only_source_semantic_changes": [
+    "explicit top-level stdlib __future__ preload before restrictive audit installation",
+    "INPUT new r2 generation",
+    "OUT new r2 generation",
+    "DEST new r2 generation"
+  ],
+  "original_r1_outputs_and_private_evidence_preserved": true,
+  "original_http_or_product_service_actions_added": false,
+  "budgets_52_work_60_runtime_unchanged": true,
+  "actual_mac_denied_event_confirmation_pending": false,
+  "private_generation_pins_or_content_published": false,
+  "actual_mac_code_only_diagnostic": {
+    "job_id": "1a1b29a08e5-fc05-7edc",
+    "parent_reported_status": "succeeded_exit0_complete_durable_non_timeout",
+    "root_originals_directory": "/tmp/heptabao-formal-kv2-projection-audit-diagnostic-20261106-r1",
+    "denied_event": "open",
+    "stdlib_future_module_file": true,
+    "future_cached_before_extraction": false,
+    "originals_independently_read_and_reconciled": true
+  },
+  "prior_r1_six_local_input_bytes_exactly_match_actual_native_stage_pins": true,
+  "private_plan_copied_byte_for_byte_and_hash_matches_original_actual_stage": true,
+  "private_integer_json_text_reencoded": false,
+  "local_guards": {
+    "required": 10,
+    "passed": 10,
+    "old": 8,
+    "new_fresh_isolated": 2,
+    "failed": 0,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "must_correct_items": [
+    {
+      "actual_correction": "is designed to read/create; explicit no qualified projection through r2",
+      "item": "Projection design must not imply a completed baseline through actual failed r2",
+      "status": "corrected_and_read_back"
+    },
+    {
+      "actual_correction": "gate_scope explicitly current formal candidate acceptance in r8; four downstream states NOT_QUALIFIED_WAITING",
+      "item": "Downstream NOT_STARTED must not erase historical HA/AuthBus attempts",
+      "status": "corrected_and_read_back"
+    }
+  ],
+  "new_remote_jobs": 0,
+  "observation_scope": "Current last-observed records only; no claim launchd or CI state cannot subsequently change. Apple background links were not independently re-fetched in this narrow review.",
+  "remaining_must_correct_items": [],
+  "reviewed_inputs": [
+    {
+      "bytes": 11449,
+      "path": "README.md",
+      "sha256": "a087c0ab40bd1cbfca7d5687ca60115190816831d0ddbcd1c196e28d7f20972e"
+    },
+    {
+      "bytes": 4522,
+      "path": "GATE_STATUS.public.json",
+      "sha256": "818f9d82f20cd7ea0eac009d6b82bcc157123d052dfcdddc709f5436d15b436c"
+    },
+    {
+      "bytes": 5168,
+      "path": "ACTUAL_JOB_INDEX.public.json",
+      "sha256": "473acc9bfce7b1a560a3c28b59435207432f9ebc8db1bb6a6ac8f5b28da2f77d"
+    },
+    {
+      "bytes": 2702,
+      "path": "EVIDENCE_BOUNDARIES.md",
+      "sha256": "77bcc31624ec83f023c01a4a651e950498559ff3c2f81128a7364518ca7f7e6d"
+    },
+    {
+      "bytes": 3309,
+      "path": "OPERATOR_HANDOFF.md",
+      "sha256": "cef0a5489e789949114a9eabf0b8e2102efa23863f571f702a96cd80f1506a58"
+    }
+  ],
+  "reviewer": "host_evidence",
+  "root_files_modified_by_reviewer": false,
+  "schema": "heptabao.independent-r8-root-narrative-review.v1",
+  "scope": "Current five public root documents; textual claim audit against retained actual evidence. No product or remote job execution. Projection r3 outcome is outside this review until separately observed.",
+  "verified_claim_boundaries": {
+    "503_error_chain_is_source_inference_not_durable_phase_evidence": true,
+    "bootout_is_observed_absence_not_persistent_disable": true,
+    "capture_generation_not_live_freshness_or_writer_fence": true,
+    "clippy_mechanical_fix_does_not_clear_actual_ha_failure": true,
+    "empty_remote_receivers_not_key_transfer_or_backup": true,
+    "failed_ci_matrix_counts_and_15_second_budget_timing_match_originals": true,
+    "failed_manager_zero_init_requests": true,
+    "formal_kv2_and_replacement_hold": true,
+    "layout_tls_preparation_not_running_endpoint": true,
+    "new_full_ci_only_last_observed_in_progress_trust_success_not_full_qualification": true,
+    "no_init_root_shares_nonce_does_not_erase_existing_tls_or_backup_keys": true,
+    "operator_handoff_does_not_assume_settings_app_identity": true,
+    "operator_handoff_no_replay_original_create_only_init": true,
+    "projection_r1_r2_failures_and_expected_refusal_diagnostics_distinct": true,
+    "r2_final_stdout_40_fds_all_closed_zero_sqlite": true,
+    "resume_implementation_explicitly_incomplete_not_ready": true,
+    "stopped_repair_only_files_python_not_tcc_permission_fix": true,
+    "tcc_twenty_exact_kernel_lines_is_distinct_from_python_binding_mismatch": true
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.projection-r3-posix-uri-source-review.v1",
+  "status": "prepared_not_executed",
+  "old_source": {
+    "bytes": 44499,
+    "sha256": "e79a8956a14b8c85935ea371a5cbd844d735fbf6ce8c6bb21836d9fda249307c"
+  },
+  "new_source": {
+    "bytes": 44838,
+    "sha256": "856ac956dbea671e85783692dcdb0101b6673ef34002cc9c3edad06530565f02"
+  },
+  "changed_function": "cold_database",
+  "changes_inside_function": [
+    "require os.name posix, Path instance, and exactly single-slash POSIX anchor",
+    "filesystem bytes quote_from_bytes(...,safe=/) with unchanged readonly immutable query"
+  ],
+  "all_cold_database_statements_after_uri_setup_ast_unchanged": true,
+  "all_other_function_and_class_ast_unchanged": true,
+  "original_audit_ast_unchanged": true,
+  "other_module_changes_only_INPUT_OUT_DEST_r3_paths": true,
+  "whole_module_ast_equal_after_exact_changes_normalized": true,
+  "local_guards": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "new_pure_uri_reference_cases": 8,
+    "invalid_scope_rejections": 3
+  },
+  "actual_mac_code_only_diagnostic": {
+    "job_id": "1a1b2abac6e-fc05-7f3b",
+    "authoritative_success_complete_durable_non_timeout": true,
+    "unique_original_audit_denial": "open stdlib urllib.request",
+    "request_preloaded": false,
+    "independently_read_actual_terminal_and_full_stdout": true
+  },
+  "r1_r2_private_plan_bytes_identical": true,
+  "all_six_prior_r2_actual_stage_native_file_pins_match_local_inputs": true,
+  "private_plan_fingerprint_published": false,
+  "budget_work52_runtime60_nice5_unchanged": true,
+  "old_failed_roots_or_assets_modified": false
+}

@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "bytes": 3750,
+      "path": "READONLY_TRACE.md",
+      "sha256": "50f6dd36d9b1829d087b5fd738d8723afd39b88634d65170bc4e72b26475eabc"
+    },
+    {
+      "bytes": 11970,
+      "path": "READONLY_TRACE.public.json",
+      "sha256": "a6adb074d63815d40141bf8d78715c7640122acef10ac08b8b4cd54a7d319654"
+    },
+    {
+      "bytes": 2305,
+      "path": "merge.failure-block.original.txt",
+      "sha256": "2766abefcb520019eebb7b9c602cbb17cb9e8a567c0c700f7c7e974e4c72fc1c"
+    },
+    {
+      "bytes": 693,
+      "path": "merge.serial-test-window-and-timing.original.txt",
+      "sha256": "27a4cfb577c2e35f7dcb6f30284effe4a5c5cbe0001dd4bb0aab1ab612655338"
+    }
+  ],
+  "schema": "heptabao.safe-evidence-manifest.v1"
+}

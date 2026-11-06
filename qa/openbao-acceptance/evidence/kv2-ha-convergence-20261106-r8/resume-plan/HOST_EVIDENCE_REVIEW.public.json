@@ -1,0 +1,47 @@
+{
+  "fatal_plan_defects": [],
+  "implementation_and_ready_status": "not_implemented_not_executed_not_ready",
+  "inputs": [
+    {
+      "bytes": 13222,
+      "path": "/tmp/heptabao-formal-kv2-resume-first-init-plan-20261106-r1/IMPLEMENTATION_PLAN.md",
+      "sha256": "ebd58924d547112dffe1a2f5ce24ce6453cbec4b334d41f5c04e58eda57fc6c6"
+    },
+    {
+      "bytes": 6224,
+      "path": "/tmp/heptabao-formal-kv2-resume-first-init-plan-20261106-r1/KNOWN_DEPENDENCIES.public.json",
+      "sha256": "64ffe227f3f5cfb5f4bc080ba00f91e952232d90993bd99db867c2d2dbceba2e"
+    }
+  ],
+  "new_remote_operations_by_reviewer": 0,
+  "new_tests_required_by_this_review": false,
+  "original_plan_modified_by_reviewer": false,
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-existing-candidate-resume-plan-review.v1",
+  "scope": "Full read-only review of implementation plan and known dependencies; not source execution or launch authorization.",
+  "verified_plan_boundaries": {
+    "actual_init_data_replacement_checked_before_separated_delivery": true,
+    "actual_stopped_repair_binding_consumed_without_obsolete_venv_build_initial": true,
+    "base_launch_interpreter_distinct_from_controller_venv": true,
+    "current_exact_three_domain_absence_and_full_pins_revalidated": true,
+    "five_materials_and_init_intent_and_pending_binding_absent": true,
+    "historical_create_only_entry_not_replayable": true,
+    "historical_failure_retirement_repair_complete_originals_required": true,
+    "implementation_absent_and_ready_false_explicit": true,
+    "installed_artifacts_reopened_not_reinstalled": true,
+    "known_full_CI_failure_and_new_in_progress_CI_not_cleared": true,
+    "legal_actual_launch_identity_TCC_authorization_external_precondition": true,
+    "new_private_attempt_child_preserves_failed_closeout_with_same_allowed_basename": true,
+    "no_TCC_mount_identity_or_path_bypass": true,
+    "no_unseal_ack_seed_business_import_provider_or_cutover": true,
+    "pure_expected_relations_checker_not_authority": true,
+    "repaired_base_interpreter_role_preserved_in_initialized_binding": true,
+    "root_and_three_shares_separate_fsync_readback_before_initialized_binding": true,
+    "same_original_110_work_120_runtime_15_HTTP_5_utility_limits": true,
+    "sealed_awaiting_offhost_custody_not_formal_KV2": true,
+    "short_child_ownership_not_claimed_for_launchd_service": true,
+    "single_bootstrap_and_single_init_no_automatic_retry": true,
+    "strict_actual_TLS_positive_and_two_negative_checks_before_nonce": true,
+    "unknown_init_or_partial_delivery_preserves_nonce_intent_material_no_replay_or_ack": true
+  }
+}

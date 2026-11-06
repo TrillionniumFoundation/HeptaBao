@@ -1,0 +1,78 @@
+{
+  "all_12_original_native_full_identities_and_SHA_checked": true,
+  "child_process_count": 0,
+  "fixed_template_only_actual_private_identity_changed": true,
+  "job_id": "1a1b279f85f-fc05-7e30",
+  "manager_or_init_executed": false,
+  "owned_directories_opened_closed": 2,
+  "owned_files_opened_closed": 38,
+  "per_input": [
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "init_delivery.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "kv2_dr_process_custody.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "launch_guard.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "manager_launch_binding.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "manager_runtime.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "manager_start_init.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "owned_process.py"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "preparation-result.public.json"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "preparation-runtime-terminal.original.json"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "preparation-runtime.stdout.original"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "preparation.native-envelope.private.json"
+    },
+    {
+      "bytes_sha_full_native_identity_match": true,
+      "mode0600_owner501_group20_nlink1": true,
+      "name": "fixed-inputs.public.json"
+    }
+  ],
+  "private_content_hashes_published": false,
+  "private_inputs": 1,
+  "public_inputs": 11,
+  "reviewer": "host_evidence",
+  "schema": "heptabao.independent-actual-manager-stage-review.v1",
+  "source_request_field_mapping": "stdin_text in local prepared transport was dispatched as stdin; original content retained privately",
+  "terminal_succeeded_zero_complete_durable": true
+}

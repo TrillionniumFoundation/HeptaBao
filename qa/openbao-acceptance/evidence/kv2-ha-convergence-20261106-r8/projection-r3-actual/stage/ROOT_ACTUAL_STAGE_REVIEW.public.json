@@ -1,0 +1,78 @@
+{
+  "actual_projection_executed_by_this_stage": false,
+  "all_six_native_whole_file_pins_match_exact_staged_local_bytes": true,
+  "formal_kv2_qualified": false,
+  "inputs": [
+    {
+      "bytes": 44838,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    },
+    {
+      "bytes": 91070,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "formal_kv2_protocol.py",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    },
+    {
+      "bytes": 10944,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "readback-result.public.json",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    },
+    {
+      "bytes": 731,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "readback-terminal.original.json",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    },
+    {
+      "bytes": 8569,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "readback-stdout.original",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    },
+    {
+      "bytes": 1482,
+      "gid": 20,
+      "links": 1,
+      "mode": 384,
+      "name": "fixed-inputs.private.json",
+      "native_version_present": true,
+      "native_whole_sha256_matches": true,
+      "uid": 501
+    }
+  ],
+  "job_id": "1a1b2b619df-fc05-7f6c",
+  "original_directory_fds_closed": 2,
+  "original_file_fds_closed": 20,
+  "private_content_fingerprints_published": false,
+  "public_result_bytes": 4119,
+  "public_result_sha256": "8ead178e3b9ec63fe584f1f9c4722b4048d6caa8dd1f9e337d6686db0a368f30",
+  "schema": "heptabao.root-actual-projection-r3-stage-review.v1",
+  "terminal_success_complete_durable_confirmed": true,
+  "whole_stderr_bytes": 0,
+  "whole_stdout_bytes": 3248,
+  "whole_stdout_sha256": "adfdf5a9ad29cb349c8bd03609c722c7ab569f190451f7927914ebaa3a343a05"
+}

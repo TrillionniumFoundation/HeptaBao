@@ -1,0 +1,19 @@
+{
+  "active_count": 0,
+  "complete_durable_terminal_zero": true,
+  "domain": "gui/501",
+  "job_id": "1a1b28d5d67-fc05-7e99",
+  "label": "org.heptabao.kv2",
+  "last_exit_code": 78,
+  "native_full_stdout_eof": true,
+  "native_full_stdout_size": 1848,
+  "pid_field_present": false,
+  "private_original_with_environment_retained": true,
+  "public_projection_is_not_raw_original": true,
+  "read_only_r2_root_review_bound": true,
+  "registered_fixed_paths_and_argv_match_original_plist": true,
+  "runs": 39,
+  "schema": "heptabao.root-failed-candidate-prestop-observation.public.v1",
+  "state": "spawn scheduled",
+  "stop_executed": false
+}

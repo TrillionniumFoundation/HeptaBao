@@ -1,0 +1,18 @@
+2026-11-06T20:39:43.4001360Z error: items after a test module
+2026-11-06T20:39:43.4001942Z     --> crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs:910:1
+2026-11-06T20:39:43.4002405Z      |
+2026-11-06T20:39:43.4002663Z  910 | mod historical_prepare_observer {
+2026-11-06T20:39:43.4002995Z      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-06T20:39:43.4003291Z ...
+2026-11-06T20:39:43.4003506Z 1019 | impl Service {
+2026-11-06T20:39:43.4003748Z      | ^^^^^^^^^^^^
+2026-11-06T20:39:43.4003976Z ...
+2026-11-06T20:39:43.4004181Z 1066 | impl Service {
+2026-11-06T20:39:43.4004418Z      | ^^^^^^^^^^^^
+2026-11-06T20:39:43.4004636Z      |
+2026-11-06T20:39:43.4005236Z      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#items_after_test_module
+2026-11-06T20:39:43.4006456Z      = note: `-D clippy::items-after-test-module` implied by `-D warnings`
+2026-11-06T20:39:43.4007077Z      = help: to override `-D warnings` add `#[allow(clippy::items_after_test_module)]`
+2026-11-06T20:39:43.4007639Z      = help: move the items to before the test module was defined
+2026-11-06T20:39:43.4007936Z 
+2026-11-06T20:39:49.3247697Z error: could not compile `heptabao-server` (lib test) due to 1 previous error

@@ -1,0 +1,126 @@
+--- r1/formal_kv2_protocol.py
++++ r2/formal_kv2_protocol.py
+@@ -319,6 +319,7 @@
+         self.wire_file, self.module, self.owner = wire_file, custody_module, custody_owner
+         self.h, self.evidence_dir, self.total_end = helpers, evidence_dir, total_end
+         self.serial = 0
++        self.handle_receipts = []
+         self.check_owner()
+ 
+     def check_owner(self):
+@@ -348,42 +349,89 @@
+         paths = [self.evidence_dir / f"wire-{self.serial:06d}.{suffix}.private" for suffix in ("stdout", "stderr")]
+         process, descriptors = None, []
+         cleanup_error = None
++        # The frozen owner makes interrupts sticky while protected. Keep this
++        # scope through the original bounded request and cleanup so a signal
++        # cannot land between an FD birth and registration, or between entry
++        # into finally and retirement. The existing absolute deadline is not
++        # changed; any pending interruption prevents a reply from being used.
++        self.owner.protected += 1
+         try:
+-            for path in paths:
+-                descriptors.append(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600))
+-            process = subprocess.Popen([sys.executable, "-I", "-S", "-B", str(self.wire_file.path), "--_wire"],
+-                stdin=subprocess.PIPE, stdout=descriptors[0], stderr=descriptors[1],
+-                env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+-                cwd=self.evidence_dir, start_new_session=True)
+-            process.communicate(fixed_json(packet), timeout=max(0.001, absolute_deadline - time.monotonic()))
+-        finally:
+-            active_error = sys.exc_info()[1]
+             try:
+-                if process is not None and process.poll() is None:
+-                    # Only the frozen custody owner signals this original.
+-                    process.kill()
+-                    process.wait(timeout=max(0.001, min(5, self.total_end - time.monotonic())))
+-            except BaseException as error:
+-                cleanup_error = error
+-            for descriptor in descriptors:
++                for path in paths:
++                    row = {"fd": None, "birth_registered": False, "identity": None,
++                           "sync_attempted": False, "sync_succeeded": False,
++                           "close_attempted": False, "close_succeeded": False}
++                    descriptors.append(row)
++                    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
++                    row["fd"] = fd
++                    row["birth_registered"] = True
++                    observed = os.fstat(fd)
++                    row["identity"] = {"dev": observed.st_dev, "inode": observed.st_ino,
++                                       "uid": observed.st_uid, "mode": stat.S_IMODE(observed.st_mode)}
++                    need(stat.S_ISREG(observed.st_mode) and observed.st_uid == os.geteuid()
++                         and observed.st_nlink == 1 and stat.S_IMODE(observed.st_mode) == 0o600,
++                         "wire_private_output_original_identity")
++                need(not self.owner.failed and not self.owner.interrupted
++                     and time.monotonic() < absolute_deadline, "wire_cancelled_before_single_dispatch")
++                process = subprocess.Popen([sys.executable, "-I", "-S", "-B", str(self.wire_file.path), "--_wire"],
++                    stdin=subprocess.PIPE, stdout=descriptors[0]["fd"], stderr=descriptors[1]["fd"],
++                    env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
++                    cwd=self.evidence_dir, start_new_session=True)
++                process.communicate(fixed_json(packet), timeout=max(0.001, absolute_deadline - time.monotonic()))
++            finally:
++                active_error = sys.exc_info()[1]
+                 try:
+-                    os.fsync(descriptor)
++                    if process is not None and process.poll() is None:
++                        # Only the frozen custody owner signals this original.
++                        process.kill()
++                        process.wait(timeout=max(0.001, min(5, self.total_end - time.monotonic())))
+                 except BaseException as error:
+-                    cleanup_error = cleanup_error or error
+-                finally:
++                    cleanup_error = error
++                for row in descriptors:
++                    if not row["birth_registered"]:
++                        continue
++                    row["sync_attempted"] = True
+                     try:
+-                        os.close(descriptor)
++                        os.fsync(row["fd"])
++                        row["sync_succeeded"] = True
+                     except BaseException as error:
+                         cleanup_error = cleanup_error or error
+-            if process is not None:
++                    finally:
++                        # Mark before close. Its numeric descriptor must never
++                        # be retried after an ambiguous original close result.
++                        row["close_attempted"] = True
++                        try:
++                            os.close(row["fd"])
++                            row["close_succeeded"] = True
++                        except BaseException as error:
++                            cleanup_error = cleanup_error or error
++                handles = {"schema": "heptabao.formal-kv2-wire-original-log-handles.private.v1",
++                    "original_rows": copy.deepcopy(descriptors),
++                    "birth_count": sum(row["birth_registered"] for row in descriptors),
++                    "close_attempt_count": sum(row["close_attempted"] for row in descriptors),
++                    "close_success_count": sum(row["close_succeeded"] for row in descriptors),
++                    "all_born_original_log_handles_retired": all(not row["birth_registered"]
++                        or row["close_attempted"] and row["close_succeeded"] for row in descriptors),
++                    "owned_signal_pending": self.owner.interrupted,
++                    "scope": "parent_stdout_and_stderr_original_files_only"}
++                self.handle_receipts.append(handles)
++                if cleanup_error is not None:
++                    self.owner.failed = True
+                 try:
+-                    self.h.private_write(self.evidence_dir / f"wire-{self.serial:06d}.custody.private.json",
+-                                         self.h.canonical(private_value(copy.deepcopy(process.custody))))
++                    self.h.private_write(self.evidence_dir / f"wire-{self.serial:06d}.handles.private.json",
++                                         self.h.canonical(private_value(handles)))
++                    if process is not None:
++                        self.h.private_write(self.evidence_dir / f"wire-{self.serial:06d}.custody.private.json",
++                                             self.h.canonical(private_value(copy.deepcopy(process.custody))))
+                 except BaseException as error:
++                    self.owner.failed = True
+                     cleanup_error = cleanup_error or error
+-            if cleanup_error is not None and active_error is None:
+-                raise Refused("wire_original_cleanup_failed") from None
+-        need(time.monotonic() < absolute_deadline and process.returncode == 0,
++                if cleanup_error is not None and active_error is None:
++                    raise Refused("wire_original_cleanup_failed") from None
++        finally:
++            self.owner.protected -= 1
++        need(not self.owner.failed and not self.owner.interrupted
++             and time.monotonic() < absolute_deadline and process.returncode == 0,
+              "wire_failed_or_unknown_no_retry")
+         stdout = self.h.private_read(paths[0], 6 * MIB)
+         stderr = self.h.private_read(paths[1], 65536)

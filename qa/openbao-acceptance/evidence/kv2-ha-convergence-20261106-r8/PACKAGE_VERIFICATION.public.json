@@ -1,0 +1,130 @@
+{
+  "all_local_payloads_match_independently_fetched_native_git_blob_size_sha": true,
+  "all_recursive_git_tree_objects_recomputed": true,
+  "packages": [
+    {
+      "bytes": 64584,
+      "file_count": 9,
+      "name": "mac-launchd-preflight",
+      "tree_sha": "5d294aaec85060104cb068794b212141882d916a"
+    },
+    {
+      "bytes": 957028,
+      "file_count": 98,
+      "name": "mac-layout-tls",
+      "tree_sha": "9f5cd33ff223aa2659a4f2714bf8cc5f8ce306f3"
+    },
+    {
+      "bytes": 162050,
+      "file_count": 23,
+      "name": "manager-prepared",
+      "tree_sha": "3fed938efb257466600d1b1b7b017de9adde26f9"
+    },
+    {
+      "bytes": 276636,
+      "file_count": 38,
+      "name": "manager-input-stage",
+      "tree_sha": "e141fb2bc5016de7f0c0d352bd266ff57a8835ee"
+    },
+    {
+      "bytes": 45509,
+      "file_count": 13,
+      "name": "manager-init-failure",
+      "tree_sha": "cf3ebd586e6e9098b911a11c56f436005d2bdc58"
+    },
+    {
+      "bytes": 17150,
+      "file_count": 13,
+      "name": "manager-failure-diagnostics",
+      "tree_sha": "3173ef06ac42613c8e91155457de0c64ca9ede23"
+    },
+    {
+      "bytes": 66116,
+      "file_count": 20,
+      "name": "remote-empty-receivers",
+      "tree_sha": "1c7e772a4fbcc4fd6b0354455d50a507d0f1ffaa"
+    },
+    {
+      "bytes": 11972,
+      "file_count": 7,
+      "name": "mac-tcc-diagnosis",
+      "tree_sha": "993d0390a13bd86824cadf53e1aed1c5a55f35c9"
+    },
+    {
+      "bytes": 134724,
+      "file_count": 17,
+      "name": "projection-prepared",
+      "tree_sha": "56cf955f084133ac5f1329f0905530ef2764ed13"
+    },
+    {
+      "bytes": 35371,
+      "file_count": 5,
+      "name": "projection-stage-prepared",
+      "tree_sha": "9cc83b63e490e453ffeb1aac2245b225deb40ba7"
+    },
+    {
+      "bytes": 162222,
+      "file_count": 13,
+      "name": "formal-protocol-prepared-r2",
+      "tree_sha": "88bfaf2606edf6aea6c42c84363a706c22e2e667"
+    },
+    {
+      "bytes": 51403,
+      "file_count": 14,
+      "name": "manager-readonly-reconciliation",
+      "tree_sha": "3eb635078397990ed2c2ff40e54d3f6d842a02ee"
+    },
+    {
+      "bytes": 98600,
+      "file_count": 37,
+      "name": "stopped-binding-repair",
+      "tree_sha": "c89a60ec53b29861cef6249126740c7d9f1b180d"
+    },
+    {
+      "bytes": 69806,
+      "file_count": 22,
+      "name": "projection-r1-actual",
+      "tree_sha": "c206625b4e66a9d10567dffed2657d0fdec1906f"
+    },
+    {
+      "bytes": 89483,
+      "file_count": 18,
+      "name": "projection-r2-prepared",
+      "tree_sha": "0c34db3678c9f80b529951865b928fdb62513203"
+    },
+    {
+      "bytes": 190357,
+      "file_count": 29,
+      "name": "ci-observer-fix-and-restore-trace",
+      "tree_sha": "6152ce304da9c53ce9dfb1d7c84dfa561df59f3a"
+    },
+    {
+      "bytes": 6139401,
+      "file_count": 18,
+      "name": "ci42260689756-complete-failure",
+      "tree_sha": "fdf78a5664cf588087a7dfe60c0eb7a7c7491c5a"
+    },
+    {
+      "bytes": 84103,
+      "file_count": 28,
+      "name": "projection-r2-actual",
+      "tree_sha": "fe766fbba05f8dcef9aa995f2d6a6ba9b02db0ac"
+    },
+    {
+      "bytes": 105426,
+      "file_count": 25,
+      "name": "projection-r3-prepared",
+      "tree_sha": "eb122e009c96857c092e148a2c30845fed83a7c8"
+    },
+    {
+      "bytes": 81802,
+      "file_count": 21,
+      "name": "projection-r3-actual",
+      "tree_sha": "2e3f91b3a88abf66a0a49ca051f69b016a6cb4c0"
+    }
+  ],
+  "schema": "heptabao.root-frozen-package-verification.v1",
+  "scope": "Complete local frozen payloads checked against independently fetched native Git tree objects; this does not claim a second complete network download of every blob, nor any product or migration pass.",
+  "total_bytes": 8843743,
+  "total_files": 468
+}

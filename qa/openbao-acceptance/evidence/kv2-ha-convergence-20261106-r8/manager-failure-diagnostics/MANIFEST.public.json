@@ -1,0 +1,81 @@
+{
+  "bytes_excluding_manifest": 13813,
+  "file_count_excluding_manifest": 12,
+  "files": [
+    {
+      "bytes": 426,
+      "path": "GUI_STREAM_PROJECTION_SCOPE.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "451bcfc828223b096fe4471438b2da68843cb5b1e47acd61c0868226bc5758a1"
+    },
+    {
+      "bytes": 827,
+      "path": "HOST_EVIDENCE_READONLY_DIAGNOSTICS_REVIEW.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "d9617f4fd7bb3fa6dce7982e9cdd5d1ea5383fefe4444a11aa172cdd5ffdc8de"
+    },
+    {
+      "bytes": 783,
+      "path": "PROOF_SCOPE.public.json",
+      "record_class": "new_explicit_safe_projection_or_independent_review",
+      "sha256": "cf119a51a0ae499005f361ec6128e219ad2dd7a4ec0d2ef7ee5b12ec048037a5"
+    },
+    {
+      "bytes": 267,
+      "path": "failed-bootstrap-gui-readonly-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "c202febdedfe150e135e89cad86003e029dd9aaef286e17cb88d7421b5b63c15"
+    },
+    {
+      "bytes": 1342,
+      "path": "failed-bootstrap-gui-readonly-start.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "99d08e5d1a52980695624439f57ab8e7fbc4b24f4f14aa83d3a5db4bf33bfc40"
+    },
+    {
+      "bytes": 912,
+      "path": "failed-bootstrap-gui-readonly-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "ea13b02d92bfd381bead0cf8c8659d4408bfa6e4946a7f2bac89b08821f920b7"
+    },
+    {
+      "bytes": 1777,
+      "path": "failed-bootstrap-gui-readonly.stdout.public-projection.txt",
+      "record_class": "explicit_environment_redacted_projection_not_original",
+      "sha256": "598adcc6a135c61325c0c160972d004999f09b138d2884e0907c0684a327e57e"
+    },
+    {
+      "bytes": 366,
+      "path": "failed-bootstrap-launchd-log-readonly-request.public.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "ec2074eb2341113198ba879bd445d142222206325e2a9ac1a5a9fc3ecbc1ea32"
+    },
+    {
+      "bytes": 1498,
+      "path": "failed-bootstrap-launchd-log-readonly-start.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "60458c83db64110914f41069c6911488d581fc3c0c0d26045262ea8347f08a54"
+    },
+    {
+      "bytes": 3649,
+      "path": "failed-bootstrap-launchd-log-readonly-streams.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "d28c647df63282cab223d2f1e12bfcef3a5fff00f0bec57841f8ee05c1200a3f"
+    },
+    {
+      "bytes": 912,
+      "path": "failed-bootstrap-launchd-log-readonly-terminal.native.json",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "10f53709d8b363d668c45242ed686df3eed385cfc8bf1de16cc96f3f11e9decc"
+    },
+    {
+      "bytes": 1054,
+      "path": "failed-bootstrap-launchd-log-readonly.stdout.original",
+      "record_class": "exact_original_or_previously_named_derived_file",
+      "sha256": "a295c958ae81120ca0d09cb4b2553461e97f97cdb4c53d97ce588218b43d4fe5"
+    }
+  ],
+  "package": "manager-failure-readonly-diagnostics-r1",
+  "paths_are_relative": true,
+  "schema": "heptabao.public-evidence-manifest.v1"
+}

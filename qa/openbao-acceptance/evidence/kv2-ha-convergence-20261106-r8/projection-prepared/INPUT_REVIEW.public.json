@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.formal-kv2-projection-prepared-inputs.public.v1",
+  "status": "prepared_not_executed",
+  "runtime_seconds": 60,
+  "work_seconds": 52,
+  "cleanup_receipt_reserve_seconds": 8,
+  "python_mode": [
+    "-I",
+    "-S",
+    "-B"
+  ],
+  "native_nice": 5,
+  "business_mount": "current-credentials",
+  "canary_mount_not_written": "kv2-acceptance",
+  "actual_restore_only": true,
+  "new_output_relative_to_existing_current_internal_base": "projections/formal-kv2-current-r1/projection.private.json",
+  "private_input_plan_and_derived_fingerprints_withheld": true,
+  "raw_64bit_metadata_integers_preserved": true,
+  "service_or_network_or_provider_executed": false,
+  "public_original_readback_inputs": [
+    {
+      "source_name": "readback-result.public.json",
+      "bytes": 10944,
+      "sha256": "f0db2d9807b73fa7723b1030ddc9c4d70dd7fbb077855cafe560988d0dfff397"
+    },
+    {
+      "source_name": "readback-terminal.original.json",
+      "bytes": 731,
+      "sha256": "b2f396467eed32d27d71a3cf13de64341152f4bf980cae4e6d738d4a81a8fd51"
+    },
+    {
+      "source_name": "readback-stdout.original",
+      "bytes": 8569,
+      "sha256": "b096dd4d4faa34eeb7e73af5036ca0e28aff209c58f03c53c0b5da3f15a76bcb"
+    }
+  ],
+  "public_source_files": [
+    {
+      "name": "mac_formal_kv2_allrows_projection.py",
+      "bytes": 44334,
+      "sha256": "842cbda492d254da6315a4021225b8f33919d13ab5f7836c7c2157e0ee605d4c"
+    },
+    {
+      "name": "formal_kv2_protocol.py",
+      "bytes": 91070,
+      "sha256": "f93749dcac3d4f8517c71ff97171aa3cf2083d33f09a16638861e3c4bb012f20"
+    }
+  ],
+  "original_unexecuted_source": {
+    "bytes": 33953,
+    "sha256": "576ba0254eb6ac4af12cee78450fbca3cfffdd781bb4267a4adbd1d345bb0977"
+  },
+  "original_draft_remote_execution": false,
+  "fixed_mounts": {
+    "business": "current-credentials",
+    "canary": "kv2-acceptance"
+  },
+  "final_original_resource_evidence_required": [
+    "authoritative Runtime succeeded/exit0/non-timeout/non-cancel/complete/durable",
+    "persisted result public checks 8/8 and work_resource_custody all retired",
+    "complete final stdout same checks plus final_resource_custody all retired",
+    "receipt_publication_handles_closed true, no pending signal, work <52s and final publication <60s"
+  ],
+  "focused_local_guards": {
+    "required": 8,
+    "actual_passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "receipt": "guards-r3/result.public.json",
+    "original_stderr": "guards-r3/stderr.original",
+    "actual_mac_execution": false,
+    "real_credentials_or_product_executed": false
+  },
+  "resource_boundary_change": "sticky non-raising signal handlers, preallocated FD/SQLite birth records before first fstat/check; one close attempt; primary preserved; final sticky gate after ambient restoration",
+  "explicit_request_shape": "file launch omits stdin; no null stdin",
+  "execution_authority": "root stages exact six files and dispatches once after independent review; no actual projection has run"
+}

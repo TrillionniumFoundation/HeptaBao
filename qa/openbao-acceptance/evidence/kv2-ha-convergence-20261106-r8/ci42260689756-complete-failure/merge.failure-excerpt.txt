@@ -1,0 +1,62 @@
+13981: 2026-11-06T20:13:22.1665119Z 
+13982: 2026-11-06T20:13:22.1665216Z failures:
+13983: 2026-11-06T20:13:22.1665350Z 
+13984: 2026-11-06T20:13:22.1665933Z ---- service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold stdout ----
+13985: 2026-11-06T20:13:22.1667374Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+13986: 2026-11-06T20:13:22.1668643Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+13987: 2026-11-06T20:13:22.1669872Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+13988: 2026-11-06T20:13:22.1671105Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+13989: 2026-11-06T20:13:22.1672028Z native HA Service pipeline path=imported/data/history status=404 errors=[]
+13990: 2026-11-06T20:13:22.1672615Z native HA Service pipeline path=imported/data/history status=404 errors=[]
+13991: 2026-11-06T20:13:22.1673686Z native HA Service pipeline path=HA import snapshot completion status=503 errors=["native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown"]
+13992: 2026-11-06T20:13:22.1675207Z native HA Service pipeline path=same imported historical restore status=503 errors=["native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown"]
+13993: 2026-11-06T20:13:22.1676407Z Error: "native HA Service pipeline stage=same imported historical restore: expected HTTP 200, observed 503"
+13994: 2026-11-06T20:13:22.1677025Z 
+13995: 2026-11-06T20:13:22.1677029Z 
+13996: 2026-11-06T20:13:22.1677125Z failures:
+13997: 2026-11-06T20:13:22.1677803Z     service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold
+13998: 2026-11-06T20:13:22.1678482Z 
+13999: 2026-11-06T20:13:22.1678820Z test result: FAILED. 3751 passed; 1 failed; 8 ignored; 0 measured; 0 filtered out; finished in 2579.42s
+14000: 2026-11-06T20:13:22.1679273Z 
+14001: 2026-11-06T20:13:22.1986228Z error: test failed, to rerun pass `-p heptabao-server --lib`
+14002: 2026-11-06T20:13:22.1987039Z      Running unittests src/bin/heptabao-seed.rs (target/debug/deps/heptabao_seed-69ba244a9271f656)
+14003: 2026-11-06T20:13:22.2020088Z 
+14004: 2026-11-06T20:13:22.2020512Z running 0 tests
+14005: 2026-11-06T20:13:22.2020661Z 
+14006: 2026-11-06T20:13:22.2020891Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+14007: 2026-11-06T20:13:22.2021163Z 
+14008: 2026-11-06T20:13:22.2022238Z      Running unittests src/main.rs (target/debug/deps/heptabao_server-2f14bc48299f333c)
+14009: 2026-11-06T20:13:22.2052081Z 
+14010: 2026-11-06T20:13:22.2052228Z running 0 tests
+14011: 2026-11-06T20:13:22.2052413Z 
+14012: 2026-11-06T20:13:22.2052709Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+14013: 2026-11-06T20:13:22.2052982Z 
+14014: 2026-11-06T20:13:22.2054494Z      Running unittests examples/postgres_durable_probe.rs (target/debug/examples/postgres_durable_probe-bf49849b8e5e6d8a)
+14015: 2026-11-06T20:13:22.2078415Z 
+14016: 2026-11-06T20:13:22.2078537Z running 0 tests
+14017: 2026-11-06T20:13:22.2078681Z 
+14018: 2026-11-06T20:13:22.2079111Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+14019: 2026-11-06T20:13:22.2079536Z 
+14020: 2026-11-06T20:13:22.2080622Z      Running unittests examples/postgres_storage_probe.rs (target/debug/examples/postgres_storage_probe-375f9c3ceb3e841c)
+14217: 2026-11-06T20:13:22.3982064Z 
+14218: 2026-11-06T20:13:22.3982538Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+14219: 2026-11-06T20:13:22.3982964Z 
+14220: 2026-11-06T20:13:22.3991413Z error: 1 target failed:
+14221: 2026-11-06T20:13:22.3991762Z     `-p heptabao-server --lib`
+14222: 2026-11-06T20:13:22.4144559Z ##[error]Process completed with exit code 101.
+14223: 2026-11-06T20:13:22.5117587Z Post job cleanup.
+14224: 2026-11-06T20:13:22.7033490Z [command]/usr/bin/git version
+14225: 2026-11-06T20:13:22.7107306Z git version 2.56.0
+14226: 2026-11-06T20:13:22.7148727Z Temporarily overriding HOME='/home/runner/work/_temp/565c6524-d827-4668-bb41-bdb682c06784' before making global git config changes
+14227: 2026-11-06T20:13:22.7155646Z Adding repository directory to the temporary git global config as a safe directory
+14228: 2026-11-06T20:13:22.7168900Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HeptaBao/HeptaBao
+14229: 2026-11-06T20:13:22.7245877Z Removing SSH command configuration
+14230: 2026-11-06T20:13:22.7246767Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+14231: 2026-11-06T20:13:22.7321337Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+14232: 2026-11-06T20:13:22.7749104Z Removing HTTP extra header
+14233: 2026-11-06T20:13:22.7754714Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+14234: 2026-11-06T20:13:22.7811350Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+14235: 2026-11-06T20:13:22.8053342Z Removing includeIf entries pointing to credentials config files
+14236: 2026-11-06T20:13:22.8061375Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+14237: 2026-11-06T20:13:22.8109183Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+14238: 2026-11-06T20:13:22.8524655Z Cleaning up orphan processes

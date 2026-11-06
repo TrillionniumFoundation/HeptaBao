@@ -1,0 +1,11 @@
+{
+  "all_other_original_stdout_bytes_preserved_in_order": true,
+  "job_id": "1a1b27f81dd-fc05-7e48",
+  "original_private_stream_hash_published": false,
+  "original_stderr_bytes": 0,
+  "original_stream_bytes": 1847,
+  "projection_is_not_an_original": true,
+  "removed_environment_blocks": 3,
+  "schema": "heptabao.launchd-gui-stream-safe-projection.v1",
+  "whole_original_native_streams_and_stdout_retained_restricted": true
+}

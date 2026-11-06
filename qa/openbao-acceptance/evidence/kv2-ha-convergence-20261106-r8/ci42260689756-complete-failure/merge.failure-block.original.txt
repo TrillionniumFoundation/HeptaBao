@@ -1,0 +1,18 @@
+2026-11-06T20:13:22.1665933Z ---- service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold stdout ----
+2026-11-06T20:13:22.1667374Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+2026-11-06T20:13:22.1668643Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+2026-11-06T20:13:22.1669872Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+2026-11-06T20:13:22.1671105Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+2026-11-06T20:13:22.1672028Z native HA Service pipeline path=imported/data/history status=404 errors=[]
+2026-11-06T20:13:22.1672615Z native HA Service pipeline path=imported/data/history status=404 errors=[]
+2026-11-06T20:13:22.1673686Z native HA Service pipeline path=HA import snapshot completion status=503 errors=["native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown"]
+2026-11-06T20:13:22.1675207Z native HA Service pipeline path=same imported historical restore status=503 errors=["native historical restore requires reconciliation (root_attempted=false): HA durable outcome is unknown"]
+2026-11-06T20:13:22.1676407Z Error: "native HA Service pipeline stage=same imported historical restore: expected HTTP 200, observed 503"
+2026-11-06T20:13:22.1677025Z 
+2026-11-06T20:13:22.1677029Z 
+2026-11-06T20:13:22.1677125Z failures:
+2026-11-06T20:13:22.1677803Z     service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold
+2026-11-06T20:13:22.1678482Z 
+2026-11-06T20:13:22.1678820Z test result: FAILED. 3751 passed; 1 failed; 8 ignored; 0 measured; 0 filtered out; finished in 2579.42s
+2026-11-06T20:13:22.1679273Z 
+2026-11-06T20:13:22.1986228Z error: test failed, to rerun pass `-p heptabao-server --lib`

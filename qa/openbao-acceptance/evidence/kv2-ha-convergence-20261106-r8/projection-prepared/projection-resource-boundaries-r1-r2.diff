@@ -1,0 +1,511 @@
+--- mac_formal_kv2_allrows_projection.r1-unexecuted.original.py
++++ mac_formal_kv2_allrows_projection.py
+@@ -53,13 +53,14 @@
+     'original_inputs_roots_and_all_database_bytes_unchanged',
+     'all_readonly_connections_files_and_owned_directory_handles_closed',
+ )
+-FIRED = INTERRUPTED = FINISHING = False
++FIRED = INTERRUPTED = FINISHING = TIMER_OWNED = False
+ DIRECTORIES, INPUTS, DATABASES, CHECKS = {}, {}, [], []
+ ALLOWED_READS, ALLOWED_WRITES, ALLOWED_MKDIRS, ALLOWED_URIS = set(), set(), set(), set()
+ OPENED = CLOSED = 0
+ DENIALS = 0
+ OUTPUT_READY = False
+ PROTOCOL = None
++CLEANUP_ERRORS = []
+ PUBLIC = {
+     'schema': 'heptabao.formal-kv2-allrows-projection.public.v1', 'status': 'failed',
+     'projection_complete': False, 'new_work_seconds': 52, 'new_runtime_seconds': 60,
+@@ -98,8 +99,173 @@
+         FIRED = True
+     else:
+         INTERRUPTED = True
+-    if not FINISHING:
+-        raise Cancelled()
++    # Our handlers never raise in the open/dup/connect -> registry interval.
++    # Every bounded read/write and SQLite progress callback observes this sticky
++    # state. Birth is registered before fstat or the next cancellation check.
++
++
++def resource_check():
++    if FINISHING:
++        need(time.monotonic() < TOTAL_END, 'original_projection_cleanup_deadline')
++    else:
++        check()
++        need(not CLEANUP_ERRORS, 'prior_original_resource_cleanup_failed')
++
++
++def arm_work_timer():
++    global TIMER_OWNED
++    # Retain ownership even if setitimer or its immediate signal path fails.
++    TIMER_OWNED = True
++    signal.setitimer(signal.ITIMER_REAL, max(0.000001, WORK_END - time.monotonic()))
++    check()
++
++
++def disarm_owned_timer():
++    global TIMER_OWNED
++    if TIMER_OWNED:
++        signal.setitimer(signal.ITIMER_REAL, 0)
++        TIMER_OWNED = False
++
++
++class OwnedResources:
++    """Original FD/connection birth registry; one explicit close attempt only.
++
++    This follows the reviewed launch_guard Admission pattern. Fixed signal
++    handlers only set sticky state, so even failure of the first fstat leaves
++    the newly returned handle registered for cleanup. A failed close is never
++    retried on its possibly reused numeric descriptor.
++    """
++    def __init__(self):
++        self.fds, self.connections, self.redirects = [], [], []
++
++    def _fd_birth(self, factory, kind):
++        resource_check()
++        row = {'fd': None, 'kind': kind, 'birth_registered': False, 'first_identity': None,
++               'first_fstat_failed': False, 'close_attempted': False, 'close_succeeded': False}
++        self.fds.append(row)
++        fd = factory()
++        row['fd'] = fd
++        row['birth_registered'] = True
++        try:
++            row['first_identity'] = identity(os.fstat(fd))
++        except BaseException:
++            row['first_fstat_failed'] = True
++            raise
++        resource_check()
++        return fd
++
++    def open(self, path, flags, mode=0o600, *, dir_fd=None, kind='file'):
++        return self._fd_birth(lambda: os.open(path, flags | os.O_NOFOLLOW | os.O_CLOEXEC,
++                                              mode, dir_fd=dir_fd), kind)
++
++    def dup(self, fd):
++        return self._fd_birth(lambda: os.dup(fd), 'stdio_saved')
++
++    def close(self, fd):
++        matches = [row for row in self.fds if row['fd'] == fd and row['birth_registered']
++                   and not row['close_attempted']]
++        if len(matches) != 1:
++            CLEANUP_ERRORS.append('unknown_or_repeated_original_fd_close')
++            return
++        row = matches[0]
++        row['close_attempted'] = True
++        try:
++            os.close(fd)
++            row['close_succeeded'] = True
++        except BaseException:
++            CLEANUP_ERRORS.append('original_fd_close_failed_no_retry')
++
++    def connect(self, uri):
++        global OPENED
++        need(not FINISHING, 'no_new_sqlite_connection_during_cleanup')
++        check()
++        row = {'connection': None, 'birth_registered': False,
++               'close_attempted': False, 'close_succeeded': False}
++        self.connections.append(row)
++        connection = sqlite3.connect(uri, uri=True, timeout=1)
++        row['connection'] = connection
++        row['birth_registered'] = True
++        OPENED += 1
++        check()
++        return connection
++
++    def close_connection(self, connection):
++        global CLOSED
++        matches = [row for row in self.connections if row['connection'] is connection
++                   and row['birth_registered'] and not row['close_attempted']]
++        if len(matches) != 1:
++            CLEANUP_ERRORS.append('unknown_or_repeated_original_sqlite_close')
++            return
++        row = matches[0]; row['close_attempted'] = True
++        try:
++            connection.close()
++            row['close_succeeded'] = True; CLOSED += 1
++        except BaseException:
++            CLEANUP_ERRORS.append('original_sqlite_close_failed_no_retry')
++
++    def redirect(self, target, source, saved):
++        row = {'target': target, 'saved': saved, 'redirect_attempted': True,
++               'redirect_completed': False, 'restore_attempted': False, 'restore_completed': False}
++        self.redirects.append(row)
++        os.dup2(source, target)
++        row['redirect_completed'] = True
++        resource_check()
++
++    def restore_stdio(self):
++        for row in reversed(self.redirects):
++            if row['restore_attempted']:
++                continue
++            row['restore_attempted'] = True
++            try:
++                os.dup2(row['saved'], row['target'])
++                row['restore_completed'] = True
++            except BaseException:
++                CLEANUP_ERRORS.append('original_stdio_restore_failed_no_retry')
++
++    def close_all(self):
++        self.restore_stdio()
++        for row in reversed(self.connections):
++            if row['birth_registered'] and not row['close_attempted']:
++                self.close_connection(row['connection'])
++        for row in reversed(self.fds):
++            if row['birth_registered'] and not row['close_attempted']:
++                self.close(row['fd'])
++
++    def summary(self):
++        rows = [row for row in self.fds if row['birth_registered']]
++        connections = [row for row in self.connections if row['birth_registered']]
++        kinds = {name: sum(row['kind'] == name for row in rows)
++                 for name in ('file', 'directory', 'stdio_saved', 'stdio_private')}
++        complete = (all(row['close_attempted'] and row['close_succeeded'] for row in rows + connections)
++                    and all(row['restore_attempted'] and row['restore_completed'] for row in self.redirects)
++                    and not CLEANUP_ERRORS)
++        return {'fd_birth_count': len(rows), 'fd_births_by_kind': kinds,
++                'fd_first_fstat_failure_count': sum(row['first_fstat_failed'] for row in rows),
++                'fd_close_attempt_count': sum(row['close_attempted'] for row in rows),
++                'fd_close_success_count': sum(row['close_succeeded'] for row in rows),
++                'unattempted_original_fd_count': sum(not row['close_attempted'] for row in rows),
++                'sqlite_connection_birth_count': len(connections),
++                'sqlite_close_attempt_count': sum(row['close_attempted'] for row in connections),
++                'sqlite_close_success_count': sum(row['close_succeeded'] for row in connections),
++                'stdio_redirect_attempt_count': len(self.redirects),
++                'stdio_redirect_completed_count': sum(row['redirect_completed'] for row in self.redirects),
++                'stdio_restore_attempt_count': sum(row['restore_attempted'] for row in self.redirects),
++                'stdio_restore_completed_count': sum(row['restore_completed'] for row in self.redirects),
++                'all_original_handles_and_stdio_retired': complete,
++                'close_errors': list(CLEANUP_ERRORS)}
++
++    def private_snapshot(self):
++        return {'schema': 'heptabao.projection-original-resource-prefix.private.v1',
++                'fd_rows': [dict(row) for row in self.fds],
++                'connection_rows': [{key: value for key, value in row.items() if key != 'connection'}
++                                    for row in self.connections],
++                'stdio_redirects': [dict(row) for row in self.redirects],
++                'summary_at_snapshot': self.summary(),
++                'excludes_own_writer_and_later_publication_fds': True,
++                'final_authority': 'complete_final_stdout_resource_custody_and_authoritative_runtime_terminal'}
++
++
++RESOURCES = OwnedResources()
+ 
+ 
+ def unique(rows):
+@@ -154,7 +320,7 @@
+         need(all(observed[key] == expected[key] for key in ('dev', 'inode', 'uid', 'gid', 'mode')),
+              'original_directory_identity')
+     ALLOWED_READS.add(str(path))
+-    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
++    fd = RESOURCES.open(path, os.O_RDONLY | os.O_DIRECTORY, kind='directory')
+     need(identity(os.fstat(fd)) == observed, 'held_directory_same_open_identity')
+     value = {'path': path, 'fd': fd, 'identity': observed}
+     DIRECTORIES[str(path)] = value
+@@ -183,7 +349,7 @@
+     check()
+     path = canonical_path(path)
+     ALLOWED_READS.add(str(path))
+-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
++    fd = RESOURCES.open(path, os.O_RDONLY | os.O_NONBLOCK)
+     try:
+         before = identity(os.fstat(fd))
+         need(before['uid'] == UID and before['mode'] == 0o600 and before['nlink'] == 1
+@@ -214,25 +380,28 @@
+             INPUTS[str(path)] = row
+         return (b''.join(pieces) if keep else None), before, actual
+     finally:
+-        os.close(fd)
++        RESOURCES.close(fd)
+ 
+ 
+ def create_file(path, raw):
+     path = Path(path)
+     need(str(path) in ALLOWED_WRITES and isinstance(raw, bytes), 'fixed_create_only_output')
+     parent = DIRECTORIES[str(path.parent)]
+-    fd = os.open(path.name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+-                 0o600, dir_fd=parent['fd'])
++    fd = RESOURCES.open(path.name, os.O_WRONLY | os.O_CREAT | os.O_EXCL,
++                        0o600, dir_fd=parent['fd'])
+     try:
+-        with os.fdopen(fd, 'wb', closefd=False) as stream:
+-            stream.write(raw)
+-            stream.flush()
+-            os.fsync(fd)
++        offset = 0
++        while offset < len(raw):
++            resource_check()
++            written = os.write(fd, memoryview(raw)[offset:offset + 65536])
++            need(written > 0, 'private_projection_write_progress')
++            offset += written
++        os.fsync(fd)
+         observed = identity(os.fstat(fd))
+         need(observed['uid'] == UID and observed['mode'] == 0o600 and observed['nlink'] == 1
+              and observed['bytes'] == len(raw), 'private_output_identity')
+     finally:
+-        os.close(fd)
++        RESOURCES.close(fd)
+     os.fsync(parent['fd'])
+     ALLOWED_READS.add(str(path))
+     return observed
+@@ -241,28 +410,43 @@
+ @contextlib.contextmanager
+ def private_stdio():
+     originals, opened = [], []
++    prior_errors = len(CLEANUP_ERRORS)
+     try:
+         sys.stdout.flush(); sys.stderr.flush()
+         for number, name in ((1, 'runtime.stdout.private'), (2, 'runtime.stderr.private')):
+             path = DEST / name
+             ALLOWED_WRITES.add(str(path))
+-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
++            fd = RESOURCES.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, kind='stdio_private')
+             opened.append(fd)
+-            originals.append((number, os.dup(number)))
+-            os.dup2(fd, number)
++            saved = RESOURCES.dup(number)
++            originals.append(saved)
++            RESOURCES.redirect(number, fd, saved)
++        check()
+         yield
+     finally:
+-        sys.stdout.flush(); sys.stderr.flush()
+-        for number, original in reversed(originals):
+-            os.dup2(original, number)
+-            os.close(original)
++        primary = sys.exc_info()[1]
++        for stream in (sys.stdout, sys.stderr):
++            try:
++                stream.flush()
++            except BaseException:
++                CLEANUP_ERRORS.append('private_stdio_flush_failed')
++        RESOURCES.restore_stdio()
++        for original in reversed(originals):
++            RESOURCES.close(original)
+         for fd in opened:
+             try:
+                 os.fsync(fd)
++            except BaseException:
++                CLEANUP_ERRORS.append('private_stdio_sync_failed')
+             finally:
+-                os.close(fd)
++                RESOURCES.close(fd)
+         if str(DEST) in DIRECTORIES:
+-            os.fsync(DIRECTORIES[str(DEST)]['fd'])
++            try:
++                os.fsync(DIRECTORIES[str(DEST)]['fd'])
++            except BaseException:
++                CLEANUP_ERRORS.append('private_stdio_directory_sync_failed')
++        if primary is None and len(CLEANUP_ERRORS) != prior_errors:
++            raise Refused('private_stdio_cleanup_failed')
+ 
+ 
+ def audit(event, args):
+@@ -364,13 +548,11 @@
+ 
+ 
+ def cold_database(path, row):
+-    global OPENED, CLOSED
+     uri = path.as_uri() + '?mode=ro&immutable=1'
+     ALLOWED_URIS.add(uri)
+     connection = None
+     try:
+-        connection = sqlite3.connect(uri, uri=True, timeout=1)
+-        OPENED += 1
++        connection = RESOURCES.connect(uri)
+         connection.execute('PRAGMA query_only=ON')
+         connection.set_progress_handler(lambda: int(FIRED or INTERRUPTED or time.monotonic() >= WORK_END), 1000)
+         need(connection.execute('PRAGMA quick_check').fetchall() == [('ok',)], 'restored_database_quick_check')
+@@ -385,7 +567,7 @@
+         return decoded(encoded(grouped)) if grouped is not None else None
+     finally:
+         if connection is not None:
+-            connection.close(); CLOSED += 1
++            RESOURCES.close_connection(connection)
+         ALLOWED_URIS.discard(uri)
+ 
+ 
+@@ -480,13 +662,13 @@
+             if row.get('empty_database_marker'):
+                 need(row['snapshot_bytes'] == 0, 'exact_empty_database_marker'); counts['empty'] += 1
+             else:
+-                fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
++                fd = RESOURCES.open(path, os.O_RDONLY | os.O_NONBLOCK)
+                 try:
+                     need(identity(os.fstat(fd)) == old, 'same_database_held_during_sqlite')
+                     observed = cold_database(path, row)
+                     need(identity(os.fstat(fd)) == old == identity(path.lstat()), 'unchanged_held_database_after_sqlite')
+                 finally:
+-                    os.close(fd)
++                    RESOURCES.close(fd)
+                 if observed is not None:
+                     grouped = observed
+                 counts['nonempty'] += 1
+@@ -558,7 +740,7 @@
+     old_handlers = {number: signal.getsignal(number) for number in signals}
+     old_timer = signal.getitimer(signal.ITIMER_REAL)
+     old_umask = os.umask(0o077)
+-    timer_owned, failure, cleanup = False, None, []
++    failure, cleanup = None, []
+     try:
+         need(os.geteuid() == UID and sys.platform == 'darwin', 'fixed_actual_mac_owner')
+         need(sys.version_info[:2] == (3, 14) and sys.flags.isolated == 1
+@@ -568,7 +750,7 @@
+              'fixed_input_and_controller_pins')
+         for number in signals:
+             signal.signal(number, interrupt)
+-        signal.setitimer(signal.ITIMER_REAL, max(0.000001, WORK_END - time.monotonic())); timer_owned = True
++        arm_work_timer()
+         hold_directory(INPUT); hold_directory(ROOT / 'control'); hold_directory(CURRENT, CURRENT_ID)
+         mkdir_exact(OUT); OUTPUT_READY = True
+         parent = CURRENT / 'projections'
+@@ -578,7 +760,8 @@
+             mkdir_exact(parent)
+         mkdir_exact(DEST)
+         ALLOWED_WRITES.update(str(path) for path in (OUT / 'result.public.json',
+-            DEST / 'projection.private.json', DEST / 'projection-binding.private.json', DEST / 'failure.private.json'))
++            DEST / 'projection.private.json', DEST / 'projection-binding.private.json', DEST / 'failure.private.json',
++            DEST / 'original-resource-prefix.private.json'))
+         sys.addaudithook(audit)
+         with private_stdio():
+             raw, _, _ = read_file(INPUT / 'fixed-inputs.private.json', 128 * 1024, remember=True)
+@@ -587,7 +770,9 @@
+             source, _, _ = read_file(own, 128 * 1024, remember=True)
+             need(hashlib.sha256(source).hexdigest() == args.controller_sha256, 'exact_controller_bytes')
+             run(decoded(raw))
++        check()
+     except BaseException as error:
++        FINISHING = True
+         failure = str(error) if isinstance(error, Refused) else (
+             'cancelled' if isinstance(error, Cancelled) else 'projection_unexpected_failure')
+         if PROTOCOL is not None and isinstance(error, PROTOCOL['Refused']):
+@@ -603,65 +788,102 @@
+         FINISHING = True
+         try:
+             retained_directories()
++        except BaseException:
++            cleanup.append('final_original_fd_or_directory_custody')
++        if str(DEST) in DIRECTORIES:
++            try:
++                create_file(DEST / 'original-resource-prefix.private.json', encoded(RESOURCES.private_snapshot()))
++            except BaseException:
++                cleanup.append('private_original_resource_prefix_not_published')
++        RESOURCES.close_all()
++        try:
+             need(OPENED == CLOSED and not ALLOWED_URIS, 'all_cold_connections_closed')
+             no_source_fds([row['identity'] for row in DATABASES] + [row['identity'] for row in INPUTS.values()])
+         except BaseException:
+-            cleanup.append('final_original_fd_or_directory_custody')
+-        closed = 0
+-        for row in reversed(list(DIRECTORIES.values())):
+-            try:
+-                os.close(row['fd']); closed += 1
+-            except OSError:
+-                cleanup.append('original_directory_close_failed')
+-        PUBLIC.update(owned_directory_handle_count=len(DIRECTORIES), owned_directory_handles_closed=closed,
+-            all_owned_directory_handles_retired=closed == len(DIRECTORIES),
++            cleanup.append('final_original_database_or_input_handle_retirement')
++        work_resources = RESOURCES.summary()
++        work_closed_at = time.monotonic()
++        PUBLIC.update(work_resource_custody=work_resources,
+             cold_connections_opened=OPENED, cold_connections_closed=CLOSED,
+             deadline_fired=FIRED, interrupted=INTERRUPTED, forbidden_effect_attempt_count=DENIALS)
+-        if not failure and not cleanup and not FIRED and not INTERRUPTED and time.monotonic() < WORK_END:
++        if (not failure and not cleanup and not CLEANUP_ERRORS and not FIRED and not INTERRUPTED
++                and work_resources['all_original_handles_and_stdio_retired'] and work_closed_at < WORK_END):
+             checked(CHECK_NAMES[7])
+         else:
+             PUBLIC['projection_complete'] = False
+-        successful = not failure and not cleanup and CHECKS == list(CHECK_NAMES) and not FIRED and not INTERRUPTED
++        successful = (not failure and not cleanup and not CLEANUP_ERRORS and CHECKS == list(CHECK_NAMES)
++                      and not FIRED and not INTERRUPTED and work_closed_at < WORK_END)
+         PUBLIC.update(status='passed' if successful else 'failed', primary_failure_code=failure,
+-            cleanup_failure_codes=cleanup, checks=[{'check': name, 'passed': True} for name in CHECKS],
++            cleanup_failure_codes=cleanup + CLEANUP_ERRORS, checks=[{'check': name, 'passed': True} for name in CHECKS],
+             required_check_count=len(CHECK_NAMES), observed_check_count=len(CHECKS),
+-            elapsed_work_observation_seconds=time.monotonic() - ENTRY)
++            elapsed_work_observation_seconds=work_closed_at - ENTRY,
++            work_and_original_handles_completed_before_52_seconds=work_closed_at < WORK_END,
++            result_requires_final_stdout_handle_closeout=True)
+         # Work and all original handles end inside 52s. Receipt publication uses
+         # only the reserved eight seconds; it is not an extension of the work.
++        if TIMER_OWNED:
++            try:
++                signal.setitimer(signal.ITIMER_REAL, max(0.000001, TOTAL_END - time.monotonic()))
++            except BaseException:
++                cleanup.append('original_fixed_publication_timer_failed')
++                successful = False; PUBLIC.update(status='failed', projection_complete=False)
+         receipt_handles_closed = False
+         if OUTPUT_READY:
+             try:
+-                fd = os.open(OUT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
++                fd = RESOURCES.open(OUT, os.O_RDONLY | os.O_DIRECTORY, kind='directory')
+                 try:
+                     actual = identity(os.fstat(fd)); original = DIRECTORIES[str(OUT)]['identity']
+                     need(all(actual[k] == original[k] for k in ('dev', 'inode', 'uid', 'gid', 'mode')),
+                          'same_public_output_after_original_close')
+-                    target = os.open('result.public.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+-                                     0o600, dir_fd=fd)
++                    target = RESOURCES.open('result.public.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL,
++                                            0o600, dir_fd=fd)
+                     try:
+-                        with os.fdopen(target, 'wb', closefd=False) as output:
+-                            output.write(encoded(PUBLIC)); output.flush(); os.fsync(target)
++                        raw = encoded(PUBLIC); offset = 0
++                        while offset < len(raw):
++                            resource_check()
++                            written = os.write(target, raw[offset:offset + 65536])
++                            need(written > 0, 'public_receipt_write_progress')
++                            offset += written
++                        os.fsync(target)
+                     finally:
+-                        os.close(target)
++                        RESOURCES.close(target)
+                     os.fsync(fd)
+                 finally:
+-                    os.close(fd)
+-                receipt_handles_closed = True
++                    RESOURCES.close(fd)
++                receipt_handles_closed = RESOURCES.summary()['all_original_handles_and_stdio_retired']
+             except BaseException:
+                 successful = False; PUBLIC.update(status='failed', projection_complete=False)
+                 cleanup.append('public_receipt_persistence_failed')
+-        if FIRED or INTERRUPTED or time.monotonic() >= TOTAL_END:
++        RESOURCES.close_all()
++        final_resources = RESOURCES.summary()
++        if (FIRED or INTERRUPTED or time.monotonic() >= TOTAL_END or cleanup or CLEANUP_ERRORS
++                or not final_resources['all_original_handles_and_stdio_retired']):
+             successful = False; PUBLIC.update(status='failed', projection_complete=False)
+-        if timer_owned:
+-            signal.setitimer(signal.ITIMER_REAL, 0)
++        try:
++            disarm_owned_timer()
++        except BaseException:
++            successful = False; PUBLIC.update(status='failed', projection_complete=False)
++            cleanup.append('owned_timer_not_disarmed')
+         if FIRED or INTERRUPTED or time.monotonic() >= TOTAL_END:
+             successful = False; PUBLIC.update(status='failed', projection_complete=False)
+         for number, handler in old_handlers.items():
+-            signal.signal(number, handler)
+-        os.umask(old_umask)
+-        PUBLIC['cleanup_failure_codes'] = cleanup
++            try:
++                signal.signal(number, handler)
++            except BaseException:
++                cleanup.append('original_signal_handler_restore_failed')
++        try:
++            os.umask(old_umask)
++        except BaseException:
++            cleanup.append('original_umask_restore_failed')
++        # A sticky signal may have arrived while disarming/restoring. Decide
++        # once more after those operations; do not leave a stale success bit.
++        if (FIRED or INTERRUPTED or time.monotonic() >= TOTAL_END or cleanup or CLEANUP_ERRORS
++                or not receipt_handles_closed):
++            successful = False; PUBLIC.update(status='failed', projection_complete=False)
++        PUBLIC['cleanup_failure_codes'] = cleanup + CLEANUP_ERRORS
+         PUBLIC.update(deadline_fired=FIRED, interrupted=INTERRUPTED,
+-                      receipt_publication_handles_closed=receipt_handles_closed)
++                      receipt_publication_handles_closed=receipt_handles_closed,
++                      final_resource_custody=final_resources)
+         print(json.dumps(PUBLIC, sort_keys=True, separators=(',', ':')), flush=True)
+     return 0 if successful else 1
+ 

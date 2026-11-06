@@ -1,0 +1,13 @@
+{
+  "exact_request_bytes": 378458,
+  "exact_request_sha256": "56f7ef55b557bd1b4f27bb2ccd17ee5509936876f6d4e99fe9d278a99d5740b4",
+  "only_new_stage_directory_and_public_files_written": true,
+  "preparation_or_product_execution": false,
+  "private_inputs": 0,
+  "public_inputs": 11,
+  "remote_stage_not_yet_executed": true,
+  "schema": "heptabao.root-layout-tls-stage-review.v1",
+  "template_bytes": 12358,
+  "template_sha256": "5c7b0a00545aa04b1dc51ac316f673282822fd6386dd60f58b5753e7cc7cfb16",
+  "total_input_bytes": 253571
+}

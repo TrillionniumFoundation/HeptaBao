@@ -1,0 +1,133 @@
+{
+  "actual_job_id": "1a1b2b773d7-fc05-7f73",
+  "authbus_qualified": false,
+  "authoritative_terminal_exit0_complete_durable_confirmed": true,
+  "checks": [
+    {
+      "check": "completed_independent_readback_and_exact_private_closure",
+      "passed": true
+    },
+    {
+      "check": "same_restored_capture_and_all_database_original_identities",
+      "passed": true
+    },
+    {
+      "check": "all_present_database_hashes_cold_schema_and_sidecars",
+      "passed": true
+    },
+    {
+      "check": "every_agent_both_tables_exact_original_row_commitments",
+      "passed": true
+    },
+    {
+      "check": "same_frozen_protocol_projection_schema_and_complete_denominators",
+      "passed": true
+    },
+    {
+      "check": "create_only_private_projection_full_readback",
+      "passed": true
+    },
+    {
+      "check": "original_inputs_roots_and_all_database_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "check": "all_readonly_connections_files_and_owned_directory_handles_closed",
+      "passed": true
+    }
+  ],
+  "cleanup_failure_codes": [],
+  "complete_native_streams_verified": true,
+  "counts": {
+    "agents": 5,
+    "auth_profile_state_rows": 4,
+    "auth_profile_store_rows": 5,
+    "business_rows": 9,
+    "database_families": 9
+  },
+  "counts_independently_equal_original_qualified_readback_public_result": true,
+  "database_partition": {
+    "absent": 3,
+    "empty": 0,
+    "nonempty": 6,
+    "present": 6
+  },
+  "deadline_fired": false,
+  "elapsed_work_observation_seconds": 2.711796290706843,
+  "final_resource_custody": {
+    "all_original_handles_and_stdio_retired": true,
+    "close_errors": [],
+    "fd_birth_count": 66,
+    "fd_births_by_kind": {
+      "directory": 22,
+      "file": 40,
+      "stdio_private": 2,
+      "stdio_saved": 2
+    },
+    "fd_close_attempt_count": 66,
+    "fd_close_success_count": 66,
+    "fd_first_fstat_failure_count": 0,
+    "sqlite_close_attempt_count": 6,
+    "sqlite_close_success_count": 6,
+    "sqlite_connection_birth_count": 6,
+    "stdio_redirect_attempt_count": 2,
+    "stdio_redirect_completed_count": 2,
+    "stdio_restore_attempt_count": 2,
+    "stdio_restore_completed_count": 2,
+    "unattempted_original_fd_count": 0
+  },
+  "forbidden_effect_attempts": 0,
+  "formal_kv2_qualified": false,
+  "ha_qualified": false,
+  "interrupted": false,
+  "new_baseline_does_not_supply_historical_openbao_versions": true,
+  "old_asset_cleanup_authorized": false,
+  "original_runtime_seconds": 60,
+  "original_work_seconds": 52,
+  "persisted_public_result_native_whole_pin_and_all_fields_match_final_stdout": true,
+  "private_projection_bytes": 30631,
+  "receipt_publication_handles_closed": true,
+  "root_private_output_review": {
+    "native_original_private_bytes_and_pins_remain_private": true,
+    "private_rows_not_reopened_by_this_reconciler": true,
+    "public_independent_verifier_source_pin": {
+      "bytes": 12553,
+      "sha256": "60950ba84a57967ea5ad557606616097ecd6987bb40a6e0cfc64f66e4ef431e4"
+    },
+    "public_review_pin": {
+      "bytes": 2082,
+      "sha256": "c487d0df2a8913206f489d2c8c3f26bc4816b4459e8da5f39ad2ecfbfafa56ef"
+    },
+    "review_and_verifier_source_independently_read": true,
+    "root_reported_all_five_agent_row_commitments_independently_recomputed": true,
+    "root_reported_complete_small_output_binding_and_capture_manifest_verification": true,
+    "second_database_readback_or_product_execution": false
+  },
+  "schema": "heptabao.independent-projection-r3-actual-evidence-reconciliation.v1",
+  "source_exact_check_names_each_once": true,
+  "stage_job_id": "1a1b2b619df-fc05-7f6c",
+  "status": "projection_complete_formal_service_hold",
+  "traffic_cutover_performed": false,
+  "work_resource_custody": {
+    "all_original_handles_and_stdio_retired": true,
+    "close_errors": [],
+    "fd_birth_count": 64,
+    "fd_births_by_kind": {
+      "directory": 21,
+      "file": 39,
+      "stdio_private": 2,
+      "stdio_saved": 2
+    },
+    "fd_close_attempt_count": 64,
+    "fd_close_success_count": 64,
+    "fd_first_fstat_failure_count": 0,
+    "sqlite_close_attempt_count": 6,
+    "sqlite_close_success_count": 6,
+    "sqlite_connection_birth_count": 6,
+    "stdio_redirect_attempt_count": 2,
+    "stdio_redirect_completed_count": 2,
+    "stdio_restore_attempt_count": 2,
+    "stdio_restore_completed_count": 2,
+    "unattempted_original_fd_count": 0
+  }
+}

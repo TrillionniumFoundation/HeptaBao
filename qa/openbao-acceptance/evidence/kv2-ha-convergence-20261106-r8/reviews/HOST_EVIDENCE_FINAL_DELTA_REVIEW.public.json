@@ -1,0 +1,165 @@
+{
+  "actual_public_evidence_independently_reconciled": {
+    "absent": 3,
+    "agents": 5,
+    "all_original_sqlite_connections_closed": 6,
+    "all_owned_fds_closed": 66,
+    "auth_state_rows": 4,
+    "auth_store_rows": 5,
+    "authoritative_terminal": "succeeded_exit_0_complete_durable_confirmed_not_timeout_not_cancelled",
+    "child_processes": 0,
+    "database_families": 9,
+    "exact_check_names_all_true": 8,
+    "forbidden_effects": 0,
+    "formal_ha_authbus_provider_live_source_cutover_flags_false": true,
+    "full_stdout_bytes": 3545,
+    "job_id": "1a1b2b773d7-fc05-7f73",
+    "present_nonempty": 6,
+    "public_result_bytes": 2957,
+    "public_result_sha256": "dba302fdc0262f28369b812ae9fa369d2c7025890f204ed3c91f6191a14e2f48",
+    "stderr_bytes": 0,
+    "terminal_seen_stored_hex_text_eof_and_synced_exact": true
+  },
+  "final_narrative_boundaries": {
+    "bootout_not_persistent_disable": true,
+    "formal_kv2_and_replacement_remain_hold": true,
+    "new_resume_entry_remains_plan_not_implemented_not_ready": true,
+    "other_db_contents_are_recovery_input_not_wholesale_kv2_payload": true,
+    "projection_30631_bytes_and_actual_product_api_writes_zero": true,
+    "projection_pass_is_current_input_only": true,
+    "projection_runtime_not_openbao_performance_comparison": true,
+    "python_binding_repair_not_tcc_permission_fix": true,
+    "recovery_3_28GB_not_accepted_kv2_load": true,
+    "scope_exactly_two_named_tables_for_five_captured_agents": true,
+    "source_live_freshness_writer_fence_and_historical_versions_not_claimed": true,
+    "tcc_authorization_remains_external_legal_precondition": true,
+    "tls_backup_keys_distinct_from_absent_init_root_and_shares": true
+  },
+  "latest_ci_originals_checked": {
+    "both_active_step_name": "Test the complete locked Rust workspace",
+    "both_active_step_number": 10,
+    "full_run": 42293086208,
+    "head_sha": "f0e4694e5637415d394916b7590e7deec81e9d71",
+    "jobs": [
+      128151279759,
+      128151280154
+    ],
+    "prior_failed_full_ci_preserved": true,
+    "qualification_pass_claimed": false,
+    "status": "last_observed_in_progress",
+    "trust_last_observed": "completed_success",
+    "trust_not_full_qualification": true,
+    "trust_run": 42293086260
+  },
+  "must_correct_items_remaining": [],
+  "reviewed_inputs": [
+    {
+      "bytes": 13771,
+      "path": "root-files/README.md",
+      "sha256": "c8eb4a075d1804a358c02801d46dd91f64be3fe547b45e57a0635094c5729580"
+    },
+    {
+      "bytes": 5509,
+      "path": "root-files/GATE_STATUS.public.json",
+      "sha256": "9d7d05f7409f8e029e89c97d7df6a8daa0ff28bf7a1a7ebefc14791e54b8a43e"
+    },
+    {
+      "bytes": 5791,
+      "path": "root-files/ACTUAL_JOB_INDEX.public.json",
+      "sha256": "8d79bf1ea1879633bff2919c24d495a17d65eec4c8d0b0695040698a70241fed"
+    },
+    {
+      "bytes": 3859,
+      "path": "root-files/OPERATOR_HANDOFF.md",
+      "sha256": "0173b19bf26dd1fcfa184216b2bb0f9dca2f243e10060a4a149157ce3758881d"
+    },
+    {
+      "bytes": 2702,
+      "path": "root-files/EVIDENCE_BOUNDARIES.md",
+      "sha256": "77bcc31624ec83f023c01a4a651e950498559ff3c2f81128a7364518ca7f7e6d"
+    },
+    {
+      "bytes": 31552,
+      "path": "root-files/latest-ci/new-full-ci-run-latest.native.json",
+      "sha256": "f35d44e8e2a0ee52ab87ddfc3b596e3600a876a89f929e7a37954958165ed332"
+    },
+    {
+      "bytes": 60127,
+      "path": "root-files/latest-ci/new-full-ci-jobs-latest.native.json",
+      "sha256": "39d7b9a4da4f2a3cae7d59c34924807ca52a6d49a360e924be971e1500291b09"
+    },
+    {
+      "bytes": 31528,
+      "path": "root-files/latest-ci/new-trust-ci-run-latest.native.json",
+      "sha256": "8b4a00a148a5b88123915f21a1336d973e9f9df6389b61cb22ad00978dbb2a48"
+    },
+    {
+      "bytes": 12553,
+      "path": "projection-r3/root_verify_actual_projection.py",
+      "sha256": "60950ba84a57967ea5ad557606616097ecd6987bb40a6e0cfc64f66e4ef431e4"
+    },
+    {
+      "bytes": 13177,
+      "path": "projection-r3/root_verify_actual_projection_r2.py",
+      "sha256": "1b9e5f062ee60c4f043c4a6cecb65467bfdc0643a7d43aaabbc8e0269a562490"
+    },
+    {
+      "bytes": 3649,
+      "path": "projection-r3/root-verifier-r1-r2-row-key-mapping.diff",
+      "sha256": "c65706f952af7fb0339e354d26bb90dcbb15651880831f4ae75f6c15d24c8744"
+    },
+    {
+      "bytes": 2082,
+      "path": "projection-r3/ROOT_ACTUAL_PROJECTION_REVIEW.public.json",
+      "sha256": "c487d0df2a8913206f489d2c8c3f26bc4816b4459e8da5f39ad2ecfbfafa56ef"
+    },
+    {
+      "bytes": 2145,
+      "path": "projection-r3/ROOT_ACTUAL_PROJECTION_REVIEW.r2.public.json",
+      "sha256": "9c21b724fced94ab1bc7aae99405aef88e2d4022ea1d90c9a1f681b4ee07f0c8"
+    },
+    {
+      "bytes": 954,
+      "path": "projection-r3/actual-projection-terminal.native.json",
+      "sha256": "3b060d6b6d53bde83f83fa7ce3656fd6ef543419f6e9508c3e098d734acba00c"
+    },
+    {
+      "bytes": 11906,
+      "path": "projection-r3/actual-projection-streams.native.json",
+      "sha256": "5970aed134b2f1aacf5890b1115f2421e6386701cf08d75c55d0f9f6e19104db"
+    },
+    {
+      "bytes": 4209,
+      "path": "projection-r3/root-actual-projection-public-result.native.json",
+      "sha256": "eec53cfc457acc83d629f2127072ee549974abc0df2a8bd308156a33fafd7827"
+    }
+  ],
+  "reviewer": "host_evidence",
+  "reviewer_new_remote_jobs": 0,
+  "reviewer_private_reads": 0,
+  "reviewer_product_or_verifier_reruns": 0,
+  "root_files_modified_by_reviewer": false,
+  "root_independent_reconstruction_review": {
+    "all_groups_reconstruct_original_two_table_complete_row_commitments": true,
+    "gap_closed_by_additive_r2": "Build exact (agent_slot, table, source primary key) to sorted-row ID map; require its full denominator and each original record_id == kv_key == mapped ID.",
+    "initial_gap": "Original independently verified grouped row commitments and global ID uniqueness/list completeness but did not bind each ID to its source slot/table/primary-key ordinal.",
+    "native_full_byte_sha_version_owner_mode_link_checks_present": true,
+    "new_mapping_loop_static_review_passed": true,
+    "no_new_remote_or_DB_execution_for_supplement": true,
+    "non_atomic_multifile_observation_limitation_explicit": true,
+    "only_safe_counts_booleans_and_public_artifact_pins_emitted": true,
+    "original_verifier_and_review_preserved": true,
+    "r2_report_only_schema_and_new_mapping_flag_differ_from_original": true,
+    "reviewer_did_not_read_private_inputs_or_execute_verifier": true,
+    "root_private_small_input_sizes": [
+      30631,
+      8367,
+      12523
+    ],
+    "root_r2_public_report_records_actual_local_success": true,
+    "script_does_not_import_producer_or_protocol": true,
+    "script_does_not_open_sqlite_or_product_or_network": true
+  },
+  "schema": "heptabao.independent-r8-final-projection-ci-delta-review.v1",
+  "scope": "Final public narrative/status delta and static independent reconstruction supplement. Only public original receipts and source were read; private values and fingerprints were neither read nor rerun by this reviewer."
+}

@@ -1,0 +1,61 @@
+{
+  "after": {
+    "bytes": 47093,
+    "sha256": "a516ac803d42d7a23a0f957bc93b7c9d34d0477f9f504cfc381b4c56feec4189"
+  },
+  "base_commit": "9c68b95b152a468ab378b68730e9e3f04e6a7100",
+  "base_tree": "7f4b75930e8491a3110d8c7f8f894cfc0cfc1fdb",
+  "before": {
+    "bytes": 47093,
+    "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+  },
+  "boundaries": {
+    "ci_failure_reclassified": false,
+    "clippy_executed": false,
+    "formal_kv2_qualified": false,
+    "merge_unknown_failure_fixed": false,
+    "new_remote_job": false,
+    "physical_ha_qualified": false,
+    "rust_compilation_executed": false,
+    "rust_tests_executed": false,
+    "rustfmt_executed": false,
+    "source_modified_by_reviewer": false
+  },
+  "checks": {
+    "cfg_and_test_attribute_counts_identical": true,
+    "entire_observer_block_byte_identical": true,
+    "exact_new_file_reconstructed_from_original_segments": true,
+    "exact_patch_matches_only_dirty_file": true,
+    "git_diff_check": true,
+    "git_reverse_patch_check": true,
+    "no_allow_attribute_added": true,
+    "observer_final_item_in_file": true,
+    "production_item_order_identical": true,
+    "production_prefix_byte_identical": true,
+    "production_suffix_byte_identical": true
+  },
+  "observer_block": {
+    "bytes": 3163,
+    "definition": "complete comment/cfg/module bytes, excluding its terminating LF",
+    "sha256": "c1fcd9d26ed3cd0d64547d3a0225137cabfdc32b20154d5d70fb58288d1e86d4"
+  },
+  "original_ci_failure": {
+    "job_id": 128048874677,
+    "later_impl_lines": [
+      1019,
+      1066
+    ],
+    "line": 910,
+    "lint": "clippy::items_after_test_module",
+    "run_id": 42260689756
+  },
+  "patch": {
+    "bytes": 7206,
+    "sha256": "7a143e7b9f6c5033543381957b9c36894fda295d3a3ea22091d5fe4019237d47"
+  },
+  "review_method": "Read complete source diff, independently compare git base and candidate raw bytes and source block, verify exact mechanical relocation and Git patch checks.",
+  "schema": "heptabao.host-evidence-observer-order-independent-review.public.v1",
+  "separator_scope": "Two original inter-item LF bytes are relocated as the final production/module separator and module EOF LF; production segments and complete observer block are otherwise exact original bytes. Removing only the non-LF block from the whole files is not the byte proof used.",
+  "source_path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+  "status": "no_static_review_blocker"
+}

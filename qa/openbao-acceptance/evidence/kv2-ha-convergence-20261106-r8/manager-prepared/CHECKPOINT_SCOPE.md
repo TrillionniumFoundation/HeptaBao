@@ -1,0 +1,9 @@
+# Prepared normal KV2 manager/init component
+
+This immutable package is a preparation checkpoint. It includes the exact current manager/init code, seven local owned-fixture boundary checks, the create-only input-stage template, and original successful layout/TLS prerequisite receipts. It does not claim an executed manager, HTTP endpoint, Shamir unseal, off-host share custody, init ack, preactivation seed, native activation, business import, production cutover, HA or AuthBus qualification.
+
+The source and runtime are reviewed separately. Launchd owns the long server: original wait counts apply only to the controller's real short command children. Successful input staging alone does not authorize or qualify server initialization. The fixed-input template has a null private-envelope identity until the stage records its actual original file; the installed fixed input must be independently read back before dispatch.
+
+The metadata envelope, request transport carrying it, private preparation closure, private content hashes, and real credential/key bytes are excluded. The input-stage template shown here contains no embedded transport payload. Only public code, public original prerequisites, and synthetic local test data are included. The actual service bootstrap is a later independently bounded 110/120-second step; its success requires original durable terminal, final stdout and all original handles retired.
+
+Existing full-product CI hold remains unresolved by these preparation results. The current-generation whole-database protection and independent readback are separate completed evidence; they do not mean the SQLite database has been imported into KV2. Business mount current-credentials and canary mount kv2-acceptance are fixed future inputs, and this init step creates neither.

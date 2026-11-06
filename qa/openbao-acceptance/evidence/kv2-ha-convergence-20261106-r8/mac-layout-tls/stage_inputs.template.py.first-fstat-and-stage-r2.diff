@@ -1,0 +1,37 @@
+--- original-r1-stage/stage_inputs.template.py
++++ new-r2-stage/stage_inputs.template.py
+@@ -13,7 +13,7 @@
+ import sys
+ 
+ PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control')
+-OUT = PARENT / 'formal-kv2-layout-tls-inputs-r1'
++OUT = PARENT / 'formal-kv2-layout-tls-inputs-r2'
+ EXPECTED_NAMES = {
+     'layout_tls_prepare.py', 'bootstrap_layout.py', 'fixed-inputs.public.json',
+     'mac107-result.public.json', 'mac107-runtime-terminal.original.json',
+@@ -102,8 +102,9 @@
+     PROTECTED += 1
+     try:
+         fd = os.open(path, flags | os.O_NOFOLLOW | os.O_CLOEXEC, mode, dir_fd=dir_fd)
++        FILES[fd] = None
++        FILE_OPENED += 1
+         FILES[fd] = filepin(os.fstat(fd))
+-        FILE_OPENED += 1
+         return fd
+     finally:
+         PROTECTED -= 1
+@@ -114,9 +115,11 @@
+     PROTECTED += 1
+     try:
+         need(fd in FILES, 'unknown_numeric_fd_close_refused')
+-        old, current = FILES[fd], filepin(os.fstat(fd))
+-        need(all(old[k] == current[k] for k in ('dev', 'inode', 'uid', 'gid', 'mode', 'file_type')),
+-             'original_file_handle_changed')
++        old = FILES[fd]
++        if old is not None:
++            current = filepin(os.fstat(fd))
++            need(all(old[k] == current[k] for k in ('dev', 'inode', 'uid', 'gid', 'mode', 'file_type')),
++                 'original_file_handle_changed')
+         del FILES[fd]
+         os.close(fd)
+         FILE_CLOSED += 1
