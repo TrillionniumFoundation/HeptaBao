@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import pathlib,hashlib,os,json\nroot=pathlib.Path(\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1\")\nassert root.stat().st_uid==os.getuid()==501 and root.stat().st_dev==16777244 and (root.stat().st_mode & 511)==448\npins=[[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/kv2_dr_process_custody.py\",\"ed9c66dc7fb56b17cffafd3ef62ac76c42db4ff4b35c6ed95b7ff8102595dd72\"],[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/tests/test_kv2_dr_process_custody.py\",\"69ce3d3b8161149ce57bcf0766934e8461b095f93e21b44d57adf0d0077e8f4d\"],[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/owned_process.py\",\"0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0\"],[\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/build-test-r1/test-selection.public.json\",\"46c27a667bc06815594c344c0aee57970dc43b1eca32b849fba0fe2457888143\"]]\nfor name,sha in pins:\n p=pathlib.Path(name);assert p.is_file() and not p.is_symlink() and p.stat().st_uid==501 and p.stat().st_nlink==1\n assert hashlib.sha256(p.read_bytes()).hexdigest()==sha\n p.chmod(0o600)\n(root/'control/tests').chmod(0o700)\npython='/opt/homebrew/bin/python3'\nassert hashlib.sha256(pathlib.Path(python).read_bytes()).hexdigest()=='cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13'\nprint(json.dumps({'schema':'heptabao.mac-custody-selftest-input-pins.r1','pins_verified':True,'source_candidate_built':False}),flush=True)\nos.execv(python,[python,'-I','-S','-B','-m','unittest','discover','-s',str(root/'control/tests'),'-p','test_kv2_dr_process_custody.py','-v'])\n"
+    ],
+    "created_unix_ms": 1793960892050,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b066d692-fc05-7043",
+    "idempotency_key": "heptabao-mac-convergence-custody-darwin12-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b066d692-fc05-7043",
+    "request_digest": "439ee0c11f58e35d864f5724406d96f3625e8500dad39ea8c0d91186f12fb23e",
+    "request_fingerprint": 4872578966920684381,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b066d692-fc05-7043"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 51180,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b066d692-fc05-7043"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,212 @@
+test_cancel_enters_final_cleanup_and_restores_original_signal_handlers (test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers) ... ok
+test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid (test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid) ... ok
+test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap (test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap) ... ok
+test_foreign_reap_loses_authority_and_never_signals_recycled_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group) ... ok
+test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group (test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group) ... ok
+test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed) ... ERROR
+test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn (test_kv2_dr_process_custody.ProcessCustodyTests.test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn) ... ok
+test_nested_owner_and_finished_owner_do_not_create_new_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_nested_owner_and_finished_owner_do_not_create_new_originals) ... ok
+test_prior_retirement_receipt_cannot_change_when_later_originals_run (test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run) ... ERROR
+test_real_target_executes_only_in_observed_original_session_and_waits_once (test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once) ... ERROR
+test_retirement_gate_does_not_stop_a_live_target (test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target) ... ERROR
+test_run_check_output_and_owned_process_compatibility_share_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals) ... ERROR
+test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it (test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it) ... ERROR
+
+======================================================================
+ERROR: test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed (test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 106, in test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed
+    child.wait(timeout=5)
+    ~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+======================================================================
+ERROR: test_prior_retirement_receipt_cannot_change_when_later_originals_run (test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 215, in test_prior_retirement_receipt_cannot_change_when_later_originals_run
+    first.wait(timeout=5)
+    ~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+======================================================================
+ERROR: test_real_target_executes_only_in_observed_original_session_and_waits_once (test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 37, in test_real_target_executes_only_in_observed_original_session_and_waits_once
+    output, errors = child.communicate(timeout=5)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 399, in communicate
+    return _REAL_POPEN.communicate(self, input=input,
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+                                  timeout=_DEFAULT_UTILITY_SECONDS if timeout is None else timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1220, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 2178, in _communicate
+    self.wait(timeout=self._remaining_time(endtime))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+======================================================================
+ERROR: test_retirement_gate_does_not_stop_a_live_target (test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 145, in test_retirement_gate_does_not_stop_a_live_target
+    child.wait(timeout=3)
+    ~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+======================================================================
+ERROR: test_run_check_output_and_owned_process_compatibility_share_originals (test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 556, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 399, in communicate
+    return _REAL_POPEN.communicate(self, input=input,
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+                                  timeout=_DEFAULT_UTILITY_SECONDS if timeout is None else timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1220, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 2178, in _communicate
+    self.wait(timeout=self._remaining_time(endtime))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 572, in run
+    process.kill()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 334, in kill
+    self.send_signal(signal.SIGKILL)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 323, in send_signal
+    self._complete_exit()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 53, in test_run_check_output_and_owned_process_compatibility_share_originals
+    self.assertEqual(subprocess.check_output([sys.executable, "-c", "print(7)"], timeout=5), b"7\n")
+                     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 472, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 1129, in __exit__
+    self.wait()
+    ~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+======================================================================
+ERROR: test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it (test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/tests/test_kv2_dr_process_custody.py", line 92, in test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it
+    self.assertEqual(child.wait(timeout=3), -signal.SIGKILL)
+                     ~~~~~~~~~~^^^^^^^^^^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 393, in wait
+    return self._complete_exit()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 347, in _complete_exit
+    self._anchor()
+    ~~~~~~~~~~~~^^
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 302, in _anchor
+    observed = _snapshot(self.pid)
+  File "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/custody-r2/kv2_dr_process_custody.py", line 127, in _snapshot
+    row["sid"] = os.getsid(pid)
+                 ~~~~~~~~~^^^^^
+ProcessLookupError: [Errno 3] No such process
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.589s
+
+FAILED (errors=6)

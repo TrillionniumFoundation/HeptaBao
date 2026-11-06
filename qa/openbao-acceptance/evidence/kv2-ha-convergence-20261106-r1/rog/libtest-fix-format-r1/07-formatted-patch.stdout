@@ -1,0 +1,52 @@
+diff --git a/crates/heptabao-server/src/ha_request_deadline_tests.rs b/crates/heptabao-server/src/ha_request_deadline_tests.rs
+index 244a17279..432a89db6 100644
+--- a/crates/heptabao-server/src/ha_request_deadline_tests.rs
++++ b/crates/heptabao-server/src/ha_request_deadline_tests.rs
+@@ -87,6 +87,10 @@ pub(crate) fn process_with_api(
+         forward_timeout: Duration::from_secs(1),
+         emit_legacy_peer_v1: false,
+         forward_handler: Arc::new(Mutex::new(None)),
++        #[cfg(feature = "native-v6-ha")]
++        snapshot_forward_handler: Arc::new(Mutex::new(None)),
++        #[cfg(feature = "native-v6-ha")]
++        snapshot_server_pins: BTreeMap::new(),
+         listener: None,
+     })
+ }
+diff --git a/crates/heptabao-server/src/ha_snapshot_test_support.rs b/crates/heptabao-server/src/ha_snapshot_test_support.rs
+index e6f1031da..e861ef986 100644
+--- a/crates/heptabao-server/src/ha_snapshot_test_support.rs
++++ b/crates/heptabao-server/src/ha_snapshot_test_support.rs
+@@ -142,6 +142,10 @@ impl Cluster {
+                 forward_timeout: Duration::from_secs(1),
+                 emit_legacy_peer_v1: false,
+                 forward_handler: Arc::new(Mutex::new(None)),
++                #[cfg(feature = "native-v6-ha")]
++                snapshot_forward_handler: Arc::new(Mutex::new(None)),
++                #[cfg(feature = "native-v6-ha")]
++                snapshot_server_pins: BTreeMap::new(),
+                 listener: None,
+             })));
+         }
+diff --git a/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs b/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs
+index 0c51b759c..7ca123003 100644
+--- a/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs
++++ b/crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs
+@@ -154,7 +154,7 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
+     let counts = register_snapshot_handlers(&pipeline, None)?;
+     let before = selection(&pipeline, leader, migration_source)?;
+     assert_eq!(before.0, 0);
+-    assert!(before.1.epoch_transitions().is_empty());
++    assert_eq!(before.1.epoch_transitions().len(), 0);
+     let fault_node = if point == test_faults::Point::SourceAfterFinalizer {
+         leader
+     } else {
+@@ -408,7 +408,7 @@ fn run_unverified_attempt(attempt: bool) -> TestResult {
+     let after = selection(&pipeline, leader, migration_source)?;
+     assert_eq!(after, before);
+     assert_eq!(after.0, 0);
+-    assert!(after.1.epoch_transitions().is_empty());
++    assert_eq!(after.1.epoch_transitions().len(), 0);
+     Ok(())
+ }
+ 

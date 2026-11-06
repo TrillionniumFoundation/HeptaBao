@@ -1,0 +1,564 @@
+{
+  "ambient_build_overrides_inherited": false,
+  "artifacts": {},
+  "authbus_migration_qualified": false,
+  "automatic_retry": false,
+  "build_environment_overrides": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "compiler_wrappers_disabled": true,
+  "controller_sha256": "3745838eaaffe6608d42f84cf2759d5a014d4c51dd5e9422407f550a62ba25d9",
+  "created_at_unix": 1793959300.788479,
+  "deadline_renewed": false,
+  "elapsed_seconds": 73.532864,
+  "enumeration": {},
+  "executed_passed_cases": 0,
+  "expected_denominators": {
+    "ha_service_total": 17,
+    "http1_tls_new": 4,
+    "legacy_base": 44,
+    "legacy_cold_h2": 9,
+    "legacy_ingress": 7,
+    "legacy_same_root": 1,
+    "legacy_total": 61,
+    "native_jwt_new": 15,
+    "new_cases_total": 46,
+    "server_total": 90,
+    "snapshot_forward_new": 27,
+    "total_unique_cases": 107
+  },
+  "explicit_compiler": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+  "failure": "13-normal-release-build_failed",
+  "finished_at_unix": 1793959374.3211873,
+  "formal_kv2_qualified": false,
+  "full_replacement_qualified": false,
+  "groups": [],
+  "not_qualified_cases": 107,
+  "old_retained_artifacts_after": {
+    "heptabao-seed": {
+      "bytes": 102145376,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6"
+    },
+    "heptabao-server": {
+      "bytes": 110219600,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+    },
+    "server_libtest": {
+      "bytes": 187839640,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "7ea0be2f071a9bfe562c5a1d6a2cedf225cfdae23363a039be80fb7a42198725"
+    }
+  },
+  "old_retained_artifacts_before": {
+    "heptabao-seed": {
+      "bytes": 102145376,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-seed",
+      "sha256": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6"
+    },
+    "heptabao-server": {
+      "bytes": 110219600,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0"
+    },
+    "server_libtest": {
+      "bytes": 187839640,
+      "matches_original": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+      "sha256": "7ea0be2f071a9bfe562c5a1d6a2cedf225cfdae23363a039be80fb7a42198725"
+    }
+  },
+  "outer_budget_seconds": 12000,
+  "physical_ha_qualified": false,
+  "postflight": {
+    "compiler_processes": [],
+    "disk_free_bytes": 20270182400,
+    "load_average": [
+      0.87353515625,
+      0.68896484375,
+      0.96484375
+    ],
+    "mem_available_kib": 31518184,
+    "swap_free_kib": 6336
+  },
+  "preflight": {
+    "compiler_processes": [],
+    "disk_free_bytes": 20316860416,
+    "load_average": [
+      0.34814453125,
+      0.576171875,
+      0.9521484375
+    ],
+    "mem_available_kib": 31679124,
+    "swap_free_kib": 6328
+  },
+  "production_changed": false,
+  "production_server_started": false,
+  "schema": "heptabao.convergence-normal-build-tests.v1",
+  "selection_sha256": "da5863533ce6f6417fedf4336abf5f39adf732f53efdf07cfefc8eaab19a99d9",
+  "source_commit": "4be17241395952b01890d30545b537a28ac2c06c",
+  "source_parent": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "source_tree": "7c5e4068fbf7713c9b2d28bb93da9689be72a298",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951068,
+        "pgid": 860917,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860917,
+      "requested_cap_seconds": 30,
+      "seconds": 0.026635,
+      "started_at_unix": 1793959301.448818,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "6f6d3dde9edef9a5cf2e60a89deca8284b21d44d1361722a5ccc150789822aba",
+      "step": "00-source-head",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--binary",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951071,
+        "pgid": 860918,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860918,
+      "requested_cap_seconds": 30,
+      "seconds": 0.494679,
+      "started_at_unix": 1793959301.477483,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 148159,
+      "stdout_sha256": "c0a5ba37c5ec93c27b0a97fc44797d05cc5bf5722000c0af2265ed739255e3b7",
+      "step": "01-preserved-format-diff",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951121,
+        "pgid": 860926,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860926,
+      "requested_cap_seconds": 30,
+      "seconds": 0.061644,
+      "started_at_unix": 1793959301.974417,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "02-untracked",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "bundle",
+        "verify",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r1/candidate.bundle"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951127,
+        "pgid": 860927,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860927,
+      "requested_cap_seconds": 30,
+      "seconds": 0.029043,
+      "started_at_unix": 1793959302.038472,
+      "stderr_bytes": 93,
+      "stderr_sha256": "9959038763e293dfdcd444865be108fa9979e1a67ff6e3b54eff36290e156a11",
+      "stdout_bytes": 190,
+      "stdout_sha256": "fdfd70f343fd092b3066fcc1dc20e7abeced2d2957f042c22611de56678ca757",
+      "step": "03-bundle-verify",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fetch",
+        "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-r1/candidate.bundle",
+        "HEAD"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951130,
+        "pgid": 860929,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860929,
+      "requested_cap_seconds": 30,
+      "seconds": 0.088718,
+      "started_at_unix": 1793959302.06973,
+      "stderr_bytes": 140,
+      "stderr_sha256": "55283fcb5919f9fe107806038d766780a80179d46c14cadfa95d0696529ba38b",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "04-fetch",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "4be17241395952b01890d30545b537a28ac2c06c^{tree}"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951139,
+        "pgid": 860951,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860951,
+      "requested_cap_seconds": 30,
+      "seconds": 0.02418,
+      "started_at_unix": 1793959302.1608734,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "1423baa197d65f737f1b6685552d7ea0b78507f89c8e107b809f6c60918733f3",
+      "step": "05-canonical-tree",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "4be17241395952b01890d30545b537a28ac2c06c^"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951142,
+        "pgid": 860952,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860952,
+      "requested_cap_seconds": 30,
+      "seconds": 0.024235,
+      "started_at_unix": 1793959302.1869383,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "390c7fb55e7dad252a863fd3d506029538bbd613122b34f32702a30bb5cc9c19",
+      "step": "06-canonical-parent",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "add",
+        "--update"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951144,
+        "pgid": 860953,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860953,
+      "requested_cap_seconds": 30,
+      "seconds": 0.142126,
+      "started_at_unix": 1793959302.2130454,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "07-stage-exact-format",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "write-tree"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951159,
+        "pgid": 860964,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860964,
+      "requested_cap_seconds": 30,
+      "seconds": 0.024784,
+      "started_at_unix": 1793959302.357193,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "1423baa197d65f737f1b6685552d7ea0b78507f89c8e107b809f6c60918733f3",
+      "step": "08-format-working-tree",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "--detach",
+        "4be17241395952b01890d30545b537a28ac2c06c"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951162,
+        "pgid": 860965,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860965,
+      "requested_cap_seconds": 30,
+      "seconds": 0.02888,
+      "started_at_unix": 1793959302.3838296,
+      "stderr_bytes": 537,
+      "stderr_sha256": "8089d335157e4b5feb7980a6e71e540195a4ad971ff5ac194b5c57c4506a99f9",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "09-checkout-canonical",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 30,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951165,
+        "pgid": 860980,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860980,
+      "requested_cap_seconds": 30,
+      "seconds": 0.024522,
+      "started_at_unix": 1793959302.4148855,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "10-clean-source",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--full",
+        "--strict"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 60,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951167,
+        "pgid": 860988,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860988,
+      "requested_cap_seconds": 60,
+      "seconds": 2.850668,
+      "started_at_unix": 1793959302.441286,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 505,
+      "stdout_sha256": "0d40ad848cfdeee32d013618219983234bf75fe47bf1369b602af21d0b455360",
+      "step": "11-fsck",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 60,
+      "exit_code": 0,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951453,
+        "pgid": 860998,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 860998,
+      "requested_cap_seconds": 60,
+      "seconds": 5.148565,
+      "started_at_unix": 1793959305.2941935,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "12-format-check",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "attempts": 1,
+      "effective_budget_seconds": 1800,
+      "exit_code": 101,
+      "owned_group_cleanup": {
+        "abnormal_exit": false,
+        "all_owned_processes_gone": true,
+        "leader_start_ticks": 28951968,
+        "pgid": 861034,
+        "remaining_after_cleanup": [],
+        "remaining_before_cleanup": [],
+        "signals": []
+      },
+      "pid": 861034,
+      "requested_cap_seconds": 1800,
+      "seconds": 63.699666,
+      "started_at_unix": 1793959310.4452083,
+      "stderr_bytes": 13458,
+      "stderr_sha256": "38897cb881ba0c9e03c08912e11474e727d65396928b892ae73e07b515fe623a",
+      "stdout_bytes": 387359,
+      "stdout_sha256": "065a4564ec53847f38805a3e1c9a55307a923b8422d10afaf4b241621eb8b1a6",
+      "step": "13-normal-release-build",
+      "timed_out": false,
+      "unexpected_live_descendants_on_success": false
+    }
+  ],
+  "toolchain_pins": {
+    "cargo": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+    "rustc": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+    "rustfmt": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  }
+}

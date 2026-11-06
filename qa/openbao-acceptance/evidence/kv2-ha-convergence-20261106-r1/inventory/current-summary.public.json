@@ -1,0 +1,197 @@
+{
+  "collector_commit_is_not_deployed_service_commit": true,
+  "collector_sha256": "f842c10c560d639eef67496fa9618a410345ec9744738e5b3c727b88bc0099c6",
+  "collector_source_commit": "8f3dd8353aaf9642ad58f7716b0c14813d09983d",
+  "coverage": "Existing known paths and direct entrypoints only; missing X230 default config does not establish absence of clients.",
+  "hosts": [
+    {
+      "actual_credential_validity_verified": false,
+      "actual_credentials_read_or_written": false,
+      "all_backups_enumerated": false,
+      "all_clients_enumerated": false,
+      "authbus_enabled": true,
+      "binding_file_metadata": {
+        "caFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 1834,
+          "symlink": false
+        },
+        "roleIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        },
+        "secretIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        }
+      },
+      "bounded_collector_stopped_at_limit": false,
+      "config_error": null,
+      "configured_address_references_j3160": true,
+      "effective_flags_from_observed_config": {
+        "enforceRefreshLeases": false,
+        "leader": false,
+        "manageOrder": true,
+        "publishNew": true,
+        "schedulerMode": "shadow"
+      },
+      "host": "mac",
+      "known_default_config_present": true,
+      "observed_agents_count": 5,
+      "observed_at": "2026-11-06T09:23:06.102999+00:00",
+      "observed_backup_reference_groups_count": 1,
+      "observed_entrypoints_count": 13,
+      "production_traffic_changed": false,
+      "source_receipt": {
+        "remote_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-migration-inventory-r1/inventory.public.json",
+        "sha256": "36cb2d9bd777a2fb64e2a235f2a60c494600b7531b516eb4f6517fbd51874eaf",
+        "size": 24252,
+        "version": "16777244:72671437:24252:1793956986114498018:1793956986114498018"
+      }
+    },
+    {
+      "actual_credential_validity_verified": false,
+      "actual_credentials_read_or_written": false,
+      "all_backups_enumerated": false,
+      "all_clients_enumerated": false,
+      "authbus_enabled": false,
+      "binding_file_metadata": {
+        "caFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 1834,
+          "symlink": false
+        },
+        "roleIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        },
+        "secretIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        }
+      },
+      "bounded_collector_stopped_at_limit": false,
+      "config_error": null,
+      "configured_address_references_j3160": true,
+      "effective_flags_from_observed_config": {
+        "enforceRefreshLeases": false,
+        "leader": false,
+        "manageOrder": true,
+        "publishNew": true,
+        "schedulerMode": "shadow"
+      },
+      "host": "rog",
+      "known_default_config_present": true,
+      "observed_agents_count": 6,
+      "observed_at": "2026-11-06T09:24:44.224807+00:00",
+      "observed_backup_reference_groups_count": 1,
+      "observed_entrypoints_count": 14,
+      "production_traffic_changed": false,
+      "source_receipt": {
+        "remote_path": "/home/qian-qi/heptabao-migration-inventory-20261106-r1/inventory.public.json",
+        "sha256": "de10931f65934f8ce3ac8d5ada4e98d8e11b313ca9cd80cd1a41ec68202be948",
+        "size": 23053,
+        "version": "66306:31364216:23053:1793957084240236101:1793957084240236101"
+      }
+    },
+    {
+      "actual_credential_validity_verified": false,
+      "actual_credentials_read_or_written": false,
+      "all_backups_enumerated": false,
+      "all_clients_enumerated": false,
+      "authbus_enabled": true,
+      "binding_file_metadata": {
+        "caFile": {
+          "exists": true,
+          "mode": "0o644",
+          "regular_file": true,
+          "size": 1834,
+          "symlink": false
+        },
+        "roleIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        },
+        "secretIdFile": {
+          "exists": true,
+          "mode": "0o600",
+          "regular_file": true,
+          "size": 36,
+          "symlink": false
+        }
+      },
+      "bounded_collector_stopped_at_limit": false,
+      "config_error": null,
+      "configured_address_references_j3160": true,
+      "effective_flags_from_observed_config": {
+        "enforceRefreshLeases": false,
+        "leader": false,
+        "manageOrder": true,
+        "publishNew": true,
+        "schedulerMode": "shadow"
+      },
+      "host": "pocket4",
+      "known_default_config_present": true,
+      "observed_agents_count": 2,
+      "observed_at": "2026-11-06T09:25:11.517140+00:00",
+      "observed_backup_reference_groups_count": 1,
+      "observed_entrypoints_count": 11,
+      "production_traffic_changed": false,
+      "source_receipt": {
+        "remote_path": "/home/alex/heptabao-migration-inventory-20261106-r1/inventory.public.json",
+        "sha256": "97ec7c4a616f13303ec4f49a147e72fbe08880bac56b36ab9ffe4adfb0b68152",
+        "size": 16833,
+        "version": "66306:34785230:16833:1793957111543841585:1793957111543841585"
+      }
+    },
+    {
+      "actual_credential_validity_verified": false,
+      "actual_credentials_read_or_written": false,
+      "all_backups_enumerated": false,
+      "all_clients_enumerated": false,
+      "authbus_enabled": null,
+      "binding_file_metadata": {},
+      "bounded_collector_stopped_at_limit": false,
+      "config_error": "FileNotFoundError",
+      "configured_address_references_j3160": null,
+      "effective_flags_from_observed_config": null,
+      "host": "x230",
+      "known_default_config_present": false,
+      "observed_agents_count": 0,
+      "observed_at": "2026-11-06T09:22:40.083235+00:00",
+      "observed_backup_reference_groups_count": 0,
+      "observed_entrypoints_count": 0,
+      "production_traffic_changed": false,
+      "source_receipt": {
+        "remote_path": "/home/qian/heptabao-migration-inventory-20261106-r1/inventory.public.json",
+        "sha256": "b3afdceee89b1b38b2b2129c80d1a63ad116eb93a14e767d2d0e4e7c5e8090fd",
+        "size": 2691,
+        "version": "2053:3196594:2691:1793956960096738665:1793956960096738665"
+      }
+    }
+  ],
+  "observation_kind": "new_actual_read_only_metadata_runs_on_four_hosts",
+  "production_mutation": false,
+  "provider_or_j3160_called": false,
+  "raw_configuration_and_credential_fingerprints_published": false,
+  "schema": "heptabao.current-fleet-inventory.public-projection.v1"
+}

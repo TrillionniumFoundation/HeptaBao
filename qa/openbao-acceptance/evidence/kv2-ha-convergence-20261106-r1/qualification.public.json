@@ -1,0 +1,39 @@
+{
+  "all_real_clients_and_backups_migrated": false,
+  "candidate_rust_execution": "ROG build-test-r4 server libtest compilation in progress; Mac independently preparing the same source",
+  "candidate_source_commit": "2b38f091c2903eac74b4ed9dc32b1f1f00fd8a8a",
+  "candidate_source_tree": "e2da9354cf482a8d3ebd67898812e2fcb026832a",
+  "formal_kv2_production_accepted": false,
+  "full_openbao_2_7_1_replacement_qualified": false,
+  "legacy_service_or_binary_cleanup_performed": false,
+  "old_source_full_ci": {
+    "conclusion": "failure",
+    "is_current_candidate_result": false,
+    "run_id": 42164486987,
+    "source_commit": "8f3dd8353aaf9642ad58f7716b0c14813d09983d",
+    "status": "completed"
+  },
+  "ordered_gates": [
+    "formal_kv2_migration_and_recovery",
+    "physical_ha",
+    "authbus_trusted_source",
+    "host_by_host_real_client_cutover",
+    "legacy_cleanup"
+  ],
+  "original_failed_compile_rustc_diagnostics": 13,
+  "original_failed_compile_source": "4be17241395952b01890d30545b537a28ac2c06c",
+  "original_failed_compile_test_execution_count": 0,
+  "physical_ha_latest_overall_receipt_recovered": false,
+  "production_traffic_cutover_performed": false,
+  "retained_a_ancestor": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "retained_failed_attempts": {
+    "rog_r1": "13 compiler diagnostics; no tests executed",
+    "rog_r2": "normal release passed; four libtest compiler diagnostics; no tests executed",
+    "rog_r3": "bundle packaging name mismatch detected before compiler; no tests executed"
+  },
+  "same_source_old_pass_counts_reused_for_current_candidate": false,
+  "schema": "heptabao.replacement-evidence-boundaries.v1",
+  "snapshot_jwt_parent": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+  "trusted_authbus_credentials_reconstructed_without_j3160": false,
+  "updated_at": "2026-11-06T10:54:23.175055+00:00"
+}

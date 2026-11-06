@@ -1,0 +1,988 @@
+{
+  "jobs": [
+    {
+      "conclusion": "failure",
+      "id": 127721785378,
+      "logs_url": null,
+      "name": "OpenBao replacement / merge",
+      "run_id": 42164486987,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout immutable candidate without persisted credentials",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify source identity and prospective-merge parents",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind safe diagnostic reports to the immutable candidate",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install Python validation dependencies",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install exact Rust toolchain",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check formatting without changing source",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install MIT Kerberos build and acceptance prerequisites",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate current repository truth and acceptance fixtures",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Test the complete locked Rust workspace",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check strict first-party workspace Clippy",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build workspace documentation",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build and exercise the real TLS service",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise scoped authenticated workflow runtime",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated read-only secret plugin",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated authentication plugin",
+          "number": 16,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated database plugin",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated KMS plugin",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify External Keys through the admitted provider boundary",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence concurrent secret and KMS plugin responses",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned MySQL 8.4 provider lifecycle",
+          "number": 21,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned Cassandra 5.0 provider lifecycle",
+          "number": 22,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned InfluxDB 1.8 provider lifecycle",
+          "number": 23,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned RabbitMQ 4.1 provider lifecycle",
+          "number": 24,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise mandatory host-enrolled HTTPS audit delivery",
+          "number": 25,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise deployment-owned TCP socket audit delivery",
+          "number": 26,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise process-configured local Unix syslog audit delivery",
+          "number": 27,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded state saturation and replay-preserving capacity recovery",
+          "number": 28,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise lower-capacity HA election and committed-state recovery",
+          "number": 29,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Measure audited immutable KV reads over growing state",
+          "number": 30,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise real three-process HA with synthetic state",
+          "number": 31,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise leadership transfer under load response loss and restart",
+          "number": 32,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise real encrypted-link network partitions",
+          "number": 33,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded HA peer certificate rotation",
+          "number": 34,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise multi-epoch replay retirement, snapshot catch-up and failover",
+          "number": 35,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise exact-base to candidate HA rolling upgrade",
+          "number": 36,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise actual private-output client and OTP wrapping HA",
+          "number": 37,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the real PostgreSQL 17 prerequisite from signed packages",
+          "number": 38,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL physical storage transactions and crash recovery",
+          "number": 39,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL durable backend and server initialization recovery",
+          "number": 40,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual PostgreSQL SQL and active-session revocation",
+          "number": 41,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL static-role and manager credential rotation",
+          "number": 42,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL OpenBao statement-template transactions and recovery",
+          "number": 43,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL password-authentication selection across all credential paths",
+          "number": 44,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL password policies and username templates",
+          "number": 45,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded PostgreSQL root-rotation statements and schema-57 migration",
+          "number": 46,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual Valkey ACL persistence and session revocation",
+          "number": 47,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the checksum-pinned official binary in the Oracle lane",
+          "number": 48,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the separately pinned OpenBao 2.7.0 reference",
+          "number": 49,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the separately pinned OpenBao 2.7.1 reference",
+          "number": 50,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise OpenBao 2.7.1 bounded official corpus",
+          "number": 51,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare strict OpenBao 2.7.0 runtime and ACL error contracts",
+          "number": 52,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare actual OpenBao 2.7.0 external Transit consumers",
+          "number": 53,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare OpenBao 2.7.0 external roots and native locally owned KMS CSRs",
+          "number": 54,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare external Ed25519 leaf and full/delta CRL consumption against OpenBao 2.7.0",
+          "number": 55,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare OpenBao 2.7.0 local leader diagnosis and native HA lifecycle",
+          "number": 56,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise OpenBao 2.7.0 bounded corpus and migration boundaries",
+          "number": 57,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare KV metadata CAS and enumeration with official OpenBao 2.6.2",
+          "number": 58,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare live RADIUS token renewal with official OpenBao 2.6.2",
+          "number": 59,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Compare operational Agent and Proxy behavior with official OpenBao",
+          "number": 60,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence database configuration publication after concurrent authority changes",
+          "number": 61,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence database credential delivery across revocation and reply loss",
+          "number": 62,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual OpenLDAP dynamic-secret lease recovery",
+          "number": 63,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise online authentication and durable cross-node code consumption",
+          "number": 64,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove a slow provider does not serialize unrelated durable work",
+          "number": 65,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Observe real migration catalogs and target capacity without cutover",
+          "number": 66,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Inspect an authentic OpenBao Raft snapshot without restoring it",
+          "number": 67,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute all bounded official-binary differential profiles",
+          "number": 68,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement",
+          "number": 69,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute the fixed corpus against the official OpenBao binary",
+          "number": 70,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Rehearse the real bounded KV migration and lost acknowledgement",
+          "number": 71,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare bounded OpenAPI runtime with official OpenBao",
+          "number": 72,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Rehearse bounded policy Identity auth-mount and SSH role migration against the official source",
+          "number": 73,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise committed membership snapshot catch-up and real cleanup grace",
+          "number": 74,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node",
+          "number": 75,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Confirm source remained immutable",
+          "number": 76,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout immutable candidate without persisted credentials",
+          "number": 152,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 153,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "failure",
+      "id": 127721785711,
+      "logs_url": null,
+      "name": "OpenBao replacement / head",
+      "run_id": 42164486987,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout immutable candidate without persisted credentials",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify source identity and prospective-merge parents",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Bind safe diagnostic reports to the immutable candidate",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install Python validation dependencies",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install exact Rust toolchain",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check formatting without changing source",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install MIT Kerberos build and acceptance prerequisites",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Validate current repository truth and acceptance fixtures",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Test the complete locked Rust workspace",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Check strict first-party workspace Clippy",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build workspace documentation",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Build and exercise the real TLS service",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise scoped authenticated workflow runtime",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated read-only secret plugin",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated authentication plugin",
+          "number": 16,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated database plugin",
+          "number": 17,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded server-integrated KMS plugin",
+          "number": 18,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify External Keys through the admitted provider boundary",
+          "number": 19,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence concurrent secret and KMS plugin responses",
+          "number": 20,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned MySQL 8.4 provider lifecycle",
+          "number": 21,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned Cassandra 5.0 provider lifecycle",
+          "number": 22,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned InfluxDB 1.8 provider lifecycle",
+          "number": 23,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise checksum-pinned RabbitMQ 4.1 provider lifecycle",
+          "number": 24,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise mandatory host-enrolled HTTPS audit delivery",
+          "number": 25,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise deployment-owned TCP socket audit delivery",
+          "number": 26,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise process-configured local Unix syslog audit delivery",
+          "number": 27,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded state saturation and replay-preserving capacity recovery",
+          "number": 28,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise lower-capacity HA election and committed-state recovery",
+          "number": 29,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Measure audited immutable KV reads over growing state",
+          "number": 30,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise real three-process HA with synthetic state",
+          "number": 31,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise leadership transfer under load response loss and restart",
+          "number": 32,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise real encrypted-link network partitions",
+          "number": 33,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded HA peer certificate rotation",
+          "number": 34,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise multi-epoch replay retirement, snapshot catch-up and failover",
+          "number": 35,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise exact-base to candidate HA rolling upgrade",
+          "number": 36,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise actual private-output client and OTP wrapping HA",
+          "number": 37,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the real PostgreSQL 17 prerequisite from signed packages",
+          "number": 38,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL physical storage transactions and crash recovery",
+          "number": 39,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL durable backend and server initialization recovery",
+          "number": 40,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual PostgreSQL SQL and active-session revocation",
+          "number": 41,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL static-role and manager credential rotation",
+          "number": 42,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL OpenBao statement-template transactions and recovery",
+          "number": 43,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL password-authentication selection across all credential paths",
+          "number": 44,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise PostgreSQL password policies and username templates",
+          "number": 45,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise bounded PostgreSQL root-rotation statements and schema-57 migration",
+          "number": 46,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual Valkey ACL persistence and session revocation",
+          "number": 47,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the checksum-pinned official binary in the Oracle lane",
+          "number": 48,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the separately pinned OpenBao 2.7.0 reference",
+          "number": 49,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Acquire the separately pinned OpenBao 2.7.1 reference",
+          "number": 50,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise OpenBao 2.7.1 bounded official corpus",
+          "number": 51,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare strict OpenBao 2.7.0 runtime and ACL error contracts",
+          "number": 52,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare actual OpenBao 2.7.0 external Transit consumers",
+          "number": 53,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare OpenBao 2.7.0 external roots and native locally owned KMS CSRs",
+          "number": 54,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare external Ed25519 leaf and full/delta CRL consumption against OpenBao 2.7.0",
+          "number": 55,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare OpenBao 2.7.0 local leader diagnosis and native HA lifecycle",
+          "number": 56,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise OpenBao 2.7.0 bounded corpus and migration boundaries",
+          "number": 57,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compare KV metadata CAS and enumeration with official OpenBao 2.6.2",
+          "number": 58,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare live RADIUS token renewal with official OpenBao 2.6.2",
+          "number": 59,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Compare operational Agent and Proxy behavior with official OpenBao",
+          "number": 60,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence database configuration publication after concurrent authority changes",
+          "number": 61,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Fence database credential delivery across revocation and reply loss",
+          "number": 62,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual OpenLDAP dynamic-secret lease recovery",
+          "number": 63,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise online authentication and durable cross-node code consumption",
+          "number": 64,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove a slow provider does not serialize unrelated durable work",
+          "number": 65,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Observe real migration catalogs and target capacity without cutover",
+          "number": 66,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Inspect an authentic OpenBao Raft snapshot without restoring it",
+          "number": 67,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute all bounded official-binary differential profiles",
+          "number": 68,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement",
+          "number": 69,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute the fixed corpus against the official OpenBao binary",
+          "number": 70,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Rehearse the real bounded KV migration and lost acknowledgement",
+          "number": 71,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Compare bounded OpenAPI runtime with official OpenBao",
+          "number": 72,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Rehearse bounded policy Identity auth-mount and SSH role migration against the official source",
+          "number": 73,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Exercise committed membership snapshot catch-up and real cleanup grace",
+          "number": 74,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node",
+          "number": 75,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Confirm source remained immutable",
+          "number": 76,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Checkout immutable candidate without persisted credentials",
+          "number": 152,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 153,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conclusion": "failure",
+      "id": 127838476465,
+      "logs_url": null,
+      "name": "OpenBao replacement / exact-head-and-merge verdict",
+      "run_id": 42164486987,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Reject failed cancelled or skipped qualification matrix",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 3,
+          "status": "completed"
+        }
+      ]
+    }
+  ]
+}
