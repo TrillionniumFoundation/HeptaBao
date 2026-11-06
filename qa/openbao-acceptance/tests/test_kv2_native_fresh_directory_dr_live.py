@@ -27,11 +27,12 @@ def write_private(path, raw):
 
 
 def fixture_archive(path, *, state=b"HBV6PK01encrypted-fixture", format_name=None,
-                    checksum_state=None, terminal=b"\0" * 1024, sealed=b"fixture-aead-not-authenticated"):
+                    checksum_state=None, terminal=b"\0" * 1024, sealed=b"fixture-aead-not-authenticated",
+                    generation=5, seal_identity="a" * 64):
     meta = dr.encoded({"format": format_name or "heptabao-native-object-snapshot-v1",
-                       "state_format": "heptabao-encrypted-object-backup/HBV6PK01", "generation": 5,
+                       "state_format": "heptabao-encrypted-object-backup/HBV6PK01", "generation": generation,
                        "state_bytes": len(state), "seal_identity": {
-                           "format": "heptabao-seal-metadata-digest-v1", "sha256": "a" * 64}})
+                           "format": "heptabao-seal-metadata-digest-v1", "sha256": seal_identity}})
     sums = (dr.digest(meta) + "  meta.json\n" + dr.digest(checksum_state or state) + "  state.bin\n").encode()
     raw = bytearray()
     for name, content in zip(dr.ARCHIVE_NAMES, (meta, state, sums, sealed)):
@@ -50,6 +51,23 @@ def full34_report():
             "target_storage_witnesses": [{"stage": name, "versions": list(range(19))}
                                          for name in dr.full.STORAGE_CHECKS],
             "source_api_wire_observations": list(range(19))}
+
+
+def snapshot_capture_report():
+    """Fictional observations for parser guards, never a live history receipt."""
+    names = dr.full.CHECKS[:dr.full.CHECKS.index("snapshot_download") + 1]
+    return {"profile": "full34", "migration_lane": "native-large", "production_authority": False,
+            "retained_live_versions": 17, "live_payload_bytes": 34 * dr.MIB, "native_before_import": True,
+            "capacity_after_import": {"state_storage_format": "heptabao-state-records-v6",
+                "native_kv2_reader_format": 2, "native_kv2_logical_payload_bytes": 34 * dr.MIB},
+            "checks": [{"case": name, "passed": True} for name in names],
+            "source_api_wire_observations": [{"endpoint": "source", "method": "GET", "status": 200,
+                "path": "secret/data/history?version=" + str(v), "body_bytes": 100,
+                "same_response_decoded": True} for v in dr.VERSIONS],
+            "target_storage_witnesses": [{"stage": name, "source_raw_bound": True, "versions": [
+                {"version": v, "payload_present": v != 2, "destroyed": v == 2,
+                 "payload_canonical_bytes": 0 if v == 2 else 1024 if v == 1 else 2 * dr.MIB}
+                for v in dr.VERSIONS]} for name in dr.full.STORAGE_CHECKS[:2]]}
 
 
 def build_fixture():
@@ -227,6 +245,114 @@ class ControllerGuards(unittest.TestCase):
         with self.assertRaisesRegex(dr.Failure, "archive_canonical_header"):
             dr.inspect_v6_archive(archive)
         self.assertEqual({p.name for p in self.root.iterdir()}, {"link.snap", "dr-phases", "commands"})
+
+    def capture_archive_check(self, report, *, seal_identity="a" * 64, truncate=False):
+        """Exercise the real capture gate; stop before any oracle/kit creation."""
+        self.run.backup = self.args.backup_parent
+        archive = self.run.backup / "native-v6.snap"
+        fixture_archive(archive, generation=6, seal_identity=seal_identity)
+        fixture_archive(self.root / "native-snapshot.tar.gz", generation=5)
+        if truncate:
+            write_private(archive, archive.read_bytes()[:-1])
+        base = SimpleNamespace(root=self.root, report=report, candidate=object())
+        original_check = self.run.check
+
+        class CaptureComplete(Exception):
+            pass
+
+        def record_then_stop(name, passed, evidence):
+            original_check(name, passed, evidence)
+            if name == "complete_v6_archive_seal_binding":
+                raise CaptureComplete()
+
+        with patch.object(self.run, "cli", return_value={"fixture_only_no_product": True}), \
+             patch.object(self.run, "check", side_effect=record_then_stop):
+            try:
+                self.run.capture_backup(base)
+            except CaptureComplete:
+                return self.run.report["checks"][-1]
+        self.fail("capture did not reach the archive gate")
+
+    def test_snapshot_capture_accepts_small_physical_pack_with_full_logical_history(self):
+        row = self.capture_archive_check(snapshot_capture_report())
+        self.assertTrue(row["passed"])
+        evidence = row["evidence"]
+        self.assertLess(evidence["cli_archive"]["metadata"]["state_bytes"], 34 * dr.MIB)
+        history = evidence["full34_logical_history"]
+        self.assertEqual(history["capacity_after_import"]["native_kv2_logical_payload_bytes"], 34 * dr.MIB)
+        self.assertEqual(len(history["capture_checks"]), 18)
+        self.assertEqual(len(history["source_api_observations"]), 19)
+        self.assertEqual([len(stage["versions"]) for stage in history["storage_witnesses"]], [19, 19])
+        self.assertNotEqual(evidence["cli_archive"]["metadata"]["generation"],
+                            evidence["normal_http_archive"]["metadata"]["generation"])
+        self.assertFalse(evidence["cli_archive"]["standalone_aead_verified"])
+        self.assertTrue(history["archive_aead_and_restored_history_still_required"])
+        self.assertFalse(dr.complete(self.run.report["checks"]))
+        self.assertFalse(dr.full34_complete(snapshot_capture_report()))
+
+    def test_snapshot_capture_refuses_logical_shortfall_and_wrong_profile(self):
+        for field, value in (("profile", "bundle34"), ("migration_lane", "legacy"),
+                             ("retained_live_versions", 16), ("live_payload_bytes", 34 * dr.MIB - 1),
+                             ("native_before_import", False), ("production_authority", True)):
+            report = snapshot_capture_report()
+            report[field] = value
+            with self.subTest(field=field):
+                self.assertFalse(dr.full34_snapshot_history(report)[0])
+        for value in (34 * dr.MIB - 1, 0, None, True, str(34 * dr.MIB)):
+            report = snapshot_capture_report()
+            report["capacity_after_import"]["native_kv2_logical_payload_bytes"] = value
+            with self.subTest(logical_bytes=value):
+                self.assertFalse(dr.full34_snapshot_history(report)[0])
+        with self.assertRaisesRegex(dr.Failure, "complete_v6_archive_seal_binding"):
+            self.capture_archive_check(report)
+        self.assertFalse(self.run.report["checks"][-1]["passed"])
+
+    def test_snapshot_capture_requires_exact_checks_and_19_source_api_observations(self):
+        variants = []
+        report = snapshot_capture_report(); report["checks"].pop(); variants.append(report)
+        report = snapshot_capture_report(); report["checks"][0] = report["checks"][1]; variants.append(report)
+        report = snapshot_capture_report(); report["checks"][8]["passed"] = False; variants.append(report)
+        report = snapshot_capture_report(); report["checks"][0]["case"] = "snapshot_restore_once"; variants.append(report)
+        report = snapshot_capture_report(); report["source_api_wire_observations"].pop(); variants.append(report)
+        report = snapshot_capture_report(); report["source_api_wire_observations"][0] = report["source_api_wire_observations"][1]; variants.append(report)
+        report = snapshot_capture_report(); report["source_api_wire_observations"][0]["same_response_decoded"] = False; variants.append(report)
+        for index, report in enumerate(variants):
+            with self.subTest(variant=index):
+                self.assertFalse(dr.full34_snapshot_history(report)[0])
+
+    def test_snapshot_capture_requires_both_unique_raw_19_version_witnesses(self):
+        for stage_index in (0, 1):
+            for mutation in ("missing_stage", "missing_version", "duplicate_version", "not_source_bound",
+                             "short_payload", "destroyed_payload_present"):
+                report = snapshot_capture_report()
+                stage = report["target_storage_witnesses"][stage_index]
+                if mutation == "missing_stage":
+                    report["target_storage_witnesses"].pop(stage_index)
+                elif mutation == "missing_version":
+                    stage["versions"].pop()
+                elif mutation == "duplicate_version":
+                    stage["versions"][0] = stage["versions"][1]
+                elif mutation == "not_source_bound":
+                    stage["source_raw_bound"] = False
+                elif mutation == "short_payload":
+                    stage["versions"][2]["payload_canonical_bytes"] = 2 * dr.MIB - 1
+                else:
+                    stage["versions"][1]["payload_present"] = True
+                with self.subTest(stage=stage_index, mutation=mutation):
+                    self.assertFalse(dr.full34_snapshot_history(report)[0])
+
+    def test_snapshot_capture_still_refuses_mismatched_seal_with_full_history(self):
+        with self.assertRaisesRegex(dr.Failure, "complete_v6_archive_seal_binding"):
+            self.capture_archive_check(snapshot_capture_report(), seal_identity="b" * 64)
+        row = self.run.report["checks"][-1]
+        self.assertFalse(row["passed"])
+        self.assertEqual(row["evidence"]["full34_logical_history"]["live_payload_bytes"], 34 * dr.MIB)
+
+    def test_snapshot_capture_still_refuses_truncated_archive_with_full_history(self):
+        with self.assertRaisesRegex(dr.Failure, "archive_gzip_truncated"):
+            self.capture_archive_check(snapshot_capture_report(), truncate=True)
+        self.assertEqual([row["case"] for row in self.run.report["checks"]], ["official_cli_v6_save_complete"])
+        self.assertFalse(dr.complete(self.run.report["checks"]))
 
     def test_tree_manifest_preserves_rename_boundary_and_detects_byte_change(self):
         source = self.root / "source"

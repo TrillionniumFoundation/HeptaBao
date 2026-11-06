@@ -249,6 +249,75 @@ def full34_complete(report):
             and len(report.get("source_api_wire_observations", [])) == 19)
 
 
+def full34_snapshot_history(report):
+    """Bind logical full34 history at the unchanged pre-mutation capture point.
+
+    V6 stores repeated payload blocks once while retaining every descriptor
+    reference. Its encrypted pack size is not a lower bound on logical history.
+    These observations do not authenticate the pack or replace later recovery.
+    """
+    expected_checks = full.CHECKS[:full.CHECKS.index("snapshot_download") + 1]
+    checks = report.get("checks", [])
+    capacity = report.get("capacity_after_import", {})
+    wires = report.get("source_api_wire_observations", [])
+    stages = report.get("target_storage_witnesses", [])
+    valid_rows = (isinstance(checks, list) and all(isinstance(row, dict) for row in checks)
+                  and isinstance(capacity, dict)
+                  and isinstance(wires, list) and all(isinstance(row, dict) for row in wires)
+                  and isinstance(stages, list) and all(isinstance(row, dict)
+                      and isinstance(row.get("versions"), list)
+                      and all(isinstance(value, dict) for value in row["versions"]) for row in stages))
+    if not valid_rows:
+        return False, {"schema": "heptabao.dr25-full34-snapshot-history.v1",
+                       "observation_shape_valid": False}
+    wire_fields = ("endpoint", "method", "path", "status", "body_bytes", "same_response_decoded")
+    raw_fields = ("version", "payload_present", "payload_canonical_bytes", "destroyed")
+    observed = {
+        "schema": "heptabao.dr25-full34-snapshot-history.v1", "observation_shape_valid": True,
+        "profile": report.get("profile"), "migration_lane": report.get("migration_lane"),
+        "retained_live_versions": report.get("retained_live_versions"),
+        "live_payload_bytes": report.get("live_payload_bytes"),
+        "native_before_import": report.get("native_before_import"),
+        "required_logical_payload_bytes": 34 * MIB,
+        "capacity_after_import": {key: capacity.get(key) for key in (
+            "state_storage_format", "native_kv2_reader_format", "native_kv2_logical_payload_bytes")},
+        "required_capture_checks": list(expected_checks),
+        "capture_checks": [{"case": row.get("case"), "passed": row.get("passed")} for row in checks],
+        "source_api_observations": [{key: row.get(key) for key in wire_fields} for row in wires],
+        "storage_witnesses": [{"stage": row.get("stage"), "source_raw_bound": row.get("source_raw_bound"),
+            "versions": [{key: value.get(key) for key in raw_fields} for value in row["versions"]]}
+            for row in stages],
+        "archive_aead_and_restored_history_still_required": True,
+    }
+    logical_bytes = capacity.get("native_kv2_logical_payload_bytes")
+    passed = (full.PROFILES.get("full34") == (17, 2 * MIB, True)
+        and report.get("profile") == "full34" and report.get("migration_lane") == "native-large"
+        and report.get("retained_live_versions") == 17 and report.get("live_payload_bytes") == 34 * MIB
+        and report.get("native_before_import") is True and report.get("production_authority") is False
+        and capacity.get("state_storage_format") == "heptabao-state-records-v6"
+        and capacity.get("native_kv2_reader_format") == 2
+        and type(logical_bytes) is int and logical_bytes >= 34 * MIB
+        and len(checks) == len(expected_checks)
+        and {row.get("case") for row in checks} == set(expected_checks)
+        and all(row.get("passed") is True for row in checks)
+        and len(wires) == len(VERSIONS)
+        and {row.get("path") for row in wires} == {"secret/data/history?version=" + str(v) for v in VERSIONS}
+        and all(row.get("endpoint") == "source" and row.get("method") == "GET"
+            and row.get("status") == 200 and row.get("same_response_decoded") is True
+            and type(row.get("body_bytes")) is int and row["body_bytes"] > 0 for row in wires)
+        and len(stages) == 2 and {row.get("stage") for row in stages} == set(full.STORAGE_CHECKS[:2])
+        and all(row.get("source_raw_bound") is True and len(row["versions"]) == len(VERSIONS)
+            and all(type(value.get("version")) is int for value in row["versions"])
+            and {value.get("version") for value in row["versions"]} == set(VERSIONS)
+            and all(value.get("payload_present") is (value["version"] != 2)
+                and value.get("destroyed") is (value["version"] == 2)
+                and type(value.get("payload_canonical_bytes")) is int
+                and (value["payload_canonical_bytes"] == 0 if value["version"] == 2 else
+                     value["payload_canonical_bytes"] >= (2 * MIB if value["version"] >= 3 else 1))
+                for value in row["versions"]) for row in stages))
+    return passed, observed
+
+
 def validate_build_tests(receipt, selection, selection_sha256):
     need(selection.get("schema") == "heptabao.normal-rust-execution-selection.v1"
          and selection.get("execution_source_commit") == receipt.get("source_commit")
@@ -692,10 +761,13 @@ class DisasterRecovery:
                    "official_version": "2.7.1", "archive": file_pin(self.archive, private=True)})
         archive = inspect_v6_archive(self.archive)
         reference = inspect_v6_archive(base.root / "native-snapshot.tar.gz")
+        history_complete, history = full34_snapshot_history(base.report)
         self.check("complete_v6_archive_seal_binding",
-                   archive["metadata"]["state_bytes"] >= 34 * MIB
+                   history_complete
                    and archive["metadata"]["seal_identity"] == reference["metadata"]["seal_identity"], {
                        "cli_archive": archive, "normal_http_archive": reference,
+                       "full34_logical_history": history,
+                       "physical_pack_bytes_are_observations_not_logical_history_size": True,
                        "aead_authentication_required_at_restore": True})
         self.oracle = history_witness(base.original)
         self.oracle["source_api_live_payload_sha256"] = {

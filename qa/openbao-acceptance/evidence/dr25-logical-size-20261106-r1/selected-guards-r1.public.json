@@ -1,0 +1,54 @@
+{
+  "base_product_source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "dr25_denominator": 25,
+  "elapsed_seconds": 0.8701325390002239,
+  "errors": 0,
+  "failures": 0,
+  "full34_denominator": 31,
+  "inputs_unchanged": true,
+  "live_dr_qualification": false,
+  "log": {
+    "bytes": 11191,
+    "path": "selected-guards-r1.log",
+    "sha256": "a3767e9451c0d842d2f7515e866459008c7b2c7ac0232df9f98e755e779a5473"
+  },
+  "passed_tests": 55,
+  "product_build_test_denominator": 107,
+  "production_authority": false,
+  "schema": "heptabao.dr25-logical-size-controller-guards.v1",
+  "scope": "local_controller_guards_no_product_or_remote_execution",
+  "selected_expected_tests": 55,
+  "skipped": 0,
+  "source_pins": {
+    "qa/openbao-acceptance/KV2_FRESH_DIRECTORY_DR25.md": {
+      "bytes": 19170,
+      "sha256": "e893ff6c476de946d609fcae47c8a49f7cc063c6d68d9690faa835e153bd1e54"
+    },
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": {
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "qa/openbao-acceptance/kv2_dr_process_custody.py": {
+      "bytes": 26131,
+      "sha256": "669e2cd1d9ee597529c08b88f3fc21c813d4ff7b57f3792381baa44fbdbe7008"
+    },
+    "qa/openbao-acceptance/kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 75012,
+      "sha256": "2271a4ca539e1190b03e95e95d4d1c79414bd852c80ac85e205def2adac74263"
+    },
+    "qa/openbao-acceptance/owned_process.py": {
+      "bytes": 28442,
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    "qa/openbao-acceptance/tests/test_kv2_dr_process_custody.py": {
+      "bytes": 17148,
+      "sha256": "41d3b0e079b2b17a0ece458f907adf380542cbdf96530213869636e81a447807"
+    },
+    "qa/openbao-acceptance/tests/test_kv2_native_fresh_directory_dr_live.py": {
+      "bytes": 43105,
+      "sha256": "6bbf43a640e997ebfff5ac8f539a456ead96dfa08d4c80ae3a413dffd058291f"
+    }
+  },
+  "status": "passed",
+  "tests_run": 55
+}

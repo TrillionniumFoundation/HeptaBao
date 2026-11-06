@@ -35,6 +35,36 @@ outer checksum, complete gzip framing, `HBV6PK01`, the V6 metadata and seal
 binding. This structural inspection makes no standalone AEAD claim; the real
 service must authenticate and restore the complete archive later.
 
+The **34 MiB** requirement measures logical retained payloads, not the physical
+`state.bin` member. At this capture point, the controller binds the unchanged
+`full34` / `native-large` profile (17 live payloads of 2 MiB), the actual
+`capacity_after_import.native_kv2_logical_payload_bytes >= 34 MiB`, and the exact
+original check prefix ending at `snapshot_download`. All 19 source API wire
+observations and both pre-snapshot native raw-witness stages must be present,
+with each raw stage covering exactly the unique versions 1 through 19. The
+recorded observations, including payload presence and lengths, enter the same
+archive-binding evidence. Missing or duplicate observations fail this gate.
+
+V6 payload descriptors retain every block reference while the object map stores
+each keyed block once. Repeated 256 KiB blocks in the synthetic payloads can
+therefore make the encrypted object pack smaller than the logical history. The
+physical pack length remains an observed value checked against its exact tar
+member length, framing, checksums and existing archive bounds. It has no
+additional 34 MiB lower bound. Two separately produced archives must retain the
+same seal binding; their publication generations are recorded individually,
+without requiring equality across separate snapshot operations.
+
+The first actual Mac attempt on product source `4bde9a` stopped at this old
+physical-size predicate: both inspected packs contained 9,009,418-byte
+`state.bin` members and equal seal identities. It recorded 4 passed DR checks
+out of 5 observed; 21 original baseline checks were observed as passed, so the
+required 31-case baseline and 25-case recovery were incomplete. That failed
+attempt and its original directories must remain retained. Correcting this
+controller predicate does not qualify that attempt or prove the unexecuted
+fresh-directory restore. Controller regressions for missing history witnesses
+or truncated framing also do not substitute for actual authentication and
+rejection of an object-incomplete pack by the service.
+
 The backup kit contains the encrypted four-file seed, the native archive, the
 seed export receipt, a closed manifest and a verification witness containing
 metadata and hashes. It contains no original raw source bundle or plaintext
@@ -83,7 +113,7 @@ and commits version 20 followed by another cold reopen.
 | 5 | `preactivation_seed_export_pinned` | Stopped original writer; real export command; four file hashes; physical custody receipt. |
 | 6 | `independent_backup_filesystem_verified` | Actual private work, backup and key directory identities; different work/backup `st_dev`. |
 | 7 | `official_cli_v6_save_complete` | Actual pinned 2.7.1 CLI command result, archive length/hash and completed child wait. |
-| 8 | `complete_v6_archive_seal_binding` | Full canonical gzip/tar contract, V6 magic/metadata, state length, checksums and matching seal binding. |
+| 8 | `complete_v6_archive_seal_binding` | Actual full34 logical capacity and exact pre-snapshot API/raw history observations; full canonical gzip/tar contract, V6 magic/metadata, exact physical state length, checksums and matching seal binding. |
 | 9 | `backup_manifest_and_separate_key_custody` | Every backup leaf's hash/identity, manifest pin, private key-file modes and key-material exclusion. |
 | 10 | `original_processes_stopped` | Original service cleanup plus owned session/process retirement evidence before quarantine. |
 | 11 | `original_directories_quarantined` | Original path absence; private full unchanged SHA/inode manifests; two parent FD observations and closed tracked stdio before rename. |
