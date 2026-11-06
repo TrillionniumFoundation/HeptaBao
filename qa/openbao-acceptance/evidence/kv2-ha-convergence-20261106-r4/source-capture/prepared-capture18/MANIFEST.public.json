@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.prepared-current-source-capture-checkpoint.v1",
+  "prepared_only": true,
+  "business_capture_executed": false,
+  "actual_darwin_controls_executed": 0,
+  "local_controls_expected": 18,
+  "local_controls_passed": 18,
+  "local_runner_failure_r4_retained": true,
+  "files": [
+    {
+      "path": "CHECKPOINT_SCOPE.md",
+      "bytes": 2305,
+      "sha256": "cd89d8b2e117f648e69b414938c195f08931750190364b03c9836516511b188c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 11910,
+      "sha256": "706aef1e2cbb4646e40d828f353809a3168b72290e73e72d67109842c302e4ad"
+    },
+    {
+      "path": "evidence/local-controls-r1.json",
+      "bytes": 664,
+      "sha256": "6f7e6dfb9a0c8a3b574415eac9948331e847af3a9c71596642a4ec87c955df87"
+    },
+    {
+      "path": "evidence/local-controls-r1.log",
+      "bytes": 2316,
+      "sha256": "56d2d51b8efa84ada41da4114639f979e27925d605506cab253f23aca7a69e62"
+    },
+    {
+      "path": "evidence/local-controls-r2.json",
+      "bytes": 974,
+      "sha256": "a089af9ba3323b7817ccd9e2d3a99eb2f7f7c41e2eb0396e2e1f0573e1220c02"
+    },
+    {
+      "path": "evidence/local-controls-r2.log",
+      "bytes": 3279,
+      "sha256": "35f3546edac4ab3cd9b12fdade5612549472795eaba897276d739139ebd870fe"
+    },
+    {
+      "path": "evidence/local-controls-r3.json",
+      "bytes": 974,
+      "sha256": "a941e3ef80334c3a2025411c03614bfb8e0f62a9a4173fca014d30f453e5d072"
+    },
+    {
+      "path": "evidence/local-controls-r3.log",
+      "bytes": 3487,
+      "sha256": "07aacdba55edc28107e1cfff99cd4afe1ac8df34abc94064d10fafbfd9d9fd1a"
+    },
+    {
+      "path": "evidence/local-controls-r4.json",
+      "bytes": 973,
+      "sha256": "031ed5bcd061273cc91507b805a4f01d901ca848a46324e36ac5dce37b32c28b"
+    },
+    {
+      "path": "evidence/local-controls-r4.log",
+      "bytes": 853,
+      "sha256": "5e108369af53c2eaf5a3e40e66dfb8043f4e905f8514dea711ea20004a32e488"
+    },
+    {
+      "path": "evidence/local-controls-r5.json",
+      "bytes": 1129,
+      "sha256": "5e5c806be1f036df5ca397bba65fc97e4bb9b287483bb741ddd9ff8f8cff02cd"
+    },
+    {
+      "path": "evidence/local-controls-r5.log",
+      "bytes": 3285,
+      "sha256": "62ce78b5cff4d640a46a5ff9fdfd2d358776db3b7692536000736bb8d69afdc2"
+    },
+    {
+      "path": "mac-current-sqlite-workflow.schema.json",
+      "bytes": 4578,
+      "sha256": "73e21d458adc62832abda5204b7e3aa3e68b2c91e6142c5c7ebf0234089acf0a"
+    },
+    {
+      "path": "mac_current_sqlite_capture.py",
+      "bytes": 57280,
+      "sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972"
+    },
+    {
+      "path": "test_mac_current_sqlite_capture.py",
+      "bytes": 23809,
+      "sha256": "0b93d597b9fd525470951cb7b49cdb6707c11fc38b5e42f0d06bcedc7e0395f6"
+    },
+    {
+      "path": "workflow-plan.template.private.json",
+      "bytes": 1398,
+      "sha256": "15331db9b1dfbe1e8f081dc6690ae03abbea1ea75e0f36d32e3d749fae376273"
+    }
+  ]
+}

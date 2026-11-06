@@ -1,0 +1,20 @@
+{
+  "all_owned_git_retired_once": true,
+  "cancelled": false,
+  "clean": true,
+  "exit_code": 0,
+  "job_id": "1a1b1567f2f-fc05-77d9",
+  "new_dr_work_roots_absent": true,
+  "old_source_and_artifacts_preserved": true,
+  "owned_git_commands": 13,
+  "pinned_inputs_match": true,
+  "reported_by": "/root/openbao_parity",
+  "result_bytes": 37522,
+  "result_sha256": "628cb359bf97b9ce6ad43b21bb5083c859d10c700974c32114bbe93728dfac11",
+  "seconds": 2.819453,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-a2577-r2",
+  "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "source_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "state": "succeeded",
+  "timed_out": false
+}

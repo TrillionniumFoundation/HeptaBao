@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.derived-safe-payload-recovery-index.v1",
+  "group": "mac-dr25-execution-a2577-20261106-r2",
+  "derived_index": true,
+  "original_index": false,
+  "original_manifest_bytes_recovered": false,
+  "original_manifest_pin": {
+    "path": "MANIFEST.public.json",
+    "bytes": 1242,
+    "sha256": "a55b65d38b93f6dd671da8a3b13bfcfdeebc57750e965952fb74789a7029029b"
+  },
+  "original_manifest_counted_in_published_denominator": false,
+  "all_known_original_payload_leaves_recovered": true,
+  "original_payload_leaf_count": 6,
+  "published_leaf_count_including_derived_index": 7,
+  "original_payload_tree_sha1": "559d6af4bfc61a0eecfd050da81126aa73c8f8a9",
+  "original_leaf_bytes_sha256_and_git_blob_sha1_verified": true,
+  "new_machine_acceptance_authority": false,
+  "evidence_qualification_unchanged": true,
+  "private_transport_or_credential_payloads_included": false,
+  "scope_note": "All payload leaves from the previously retained safe package are recovered exactly. The unavailable original manifest is recorded only by its previously verified size and SHA256.",
+  "files": [
+    {
+      "path": "result.public.json",
+      "bytes": 1437,
+      "sha256": "22a0c151ad3c1a075d6763f0b3d7037eed12a21d19e84d9b94fadd91ff44fc9f",
+      "git_blob_sha1": "a4ea9f6c4ef11dc4623f5fa24092d990da4097e7"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 747,
+      "sha256": "c0a2712880c7c32e82c09227e98f852f0c16c9df5011665064749034dacde9ee",
+      "git_blob_sha1": "c05d1191cc0f95799673a39f90aca2bdfc0e2638"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1532,
+      "sha256": "ff07967d3e07ee02eabdcc29d840c81b32dccc2719702f61637e91d9a44cfafd",
+      "git_blob_sha1": "0b55138e84c99f1c88fa110d0d0646dcfbe099b4"
+    },
+    {
+      "path": "runtime-stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "runtime-stdout.original",
+      "bytes": 153,
+      "sha256": "bac9ce410cb9466a65ee353a2add08350c4dbe8a98068733bf2db14ad899d39f",
+      "git_blob_sha1": "4b81f6a064a7ed957093282d37d4df09cf483c65"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 729,
+      "sha256": "bfc16319788ed2dfb35419920407c9246e55c442f0af7edcfab3549195db9a1a",
+      "git_blob_sha1": "d9a1b8d17e8c9256e56c9a40bf3b0045f0290ec4"
+    }
+  ]
+}

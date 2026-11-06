@@ -1,0 +1,62 @@
+{
+  "business_capture_qualified": false,
+  "capture_source_pins_verified": {
+    "mac_current_sqlite_capture.py": [
+      57280,
+      "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972"
+    ],
+    "test_mac_current_sqlite_capture.py": [
+      23809,
+      "0b93d597b9fd525470951cb7b49cdb6707c11fc38b5e42f0d06bcedc7e0395f6"
+    ]
+  },
+  "controller": {
+    "bytes": 17876,
+    "sha256": "1affc3a2f989d6173841f5302de1eba97cdbaa4f3f302b9f55cd76699ae1b430"
+  },
+  "exact_test_names_verified": [
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_absent_main_with_stray_wal_is_refused_before_output_creation",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_backup_refuses_replaced_original_source_directory_identity",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_changed_non_auth_table_blocks_whole_database_backup",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_changed_safety_cohort_keeps_partial_copies_unqualified",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_fresh_restore_uses_authenticated_origin_without_original_source_or_capture_paths",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_full_workflow_restores_non_auth_tables_all_auth_rows_and_absences",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_hardlinked_source_database_is_refused",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_live_wal_transaction_is_captured_from_real_separate_owned_writer",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_missing_agent_cannot_be_hidden_by_rewriting_capture_denominator",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_missing_configured_agent_is_rejected_before_any_copy",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_original_total_deadline_does_not_start_capture_or_reset_on_failure",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_present_transport_requires_a_separate_current_operation_fence",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_public_result_never_exports_source_names_hashes_or_credential_values",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_same_filesystem_key_rejects_then_whole_workflow_cannot_resume",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_same_source_or_capture_filesystem_archive_refuses_even_with_other_filesystem_key",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_unavailable_encryption_refuses_before_source_configuration_or_copy",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_wrong_key_and_corrupt_archive_never_create_restore_destination",
+    "test_mac_current_sqlite_capture.CurrentCaptureControls.test_zero_length_main_requires_absent_sidecars_at_both_capture_boundaries"
+  ],
+  "execution_boundary": "The observed installer attempt failed, so this controller remains held by its prerequisite. This static review does not authorize bypassing that failure or running business capture. Any changed installer or plan pin requires a new immutable binding.",
+  "formal_kv2_qualified": false,
+  "installer_pin": [
+    25286,
+    "94723a8859ff963ecbc3b1b9adbbc1025717cfc7e747787b447025cb17911e85"
+  ],
+  "physical_ha_qualified": false,
+  "production_authority": false,
+  "reviewer": "/root/host_evidence",
+  "runtime_tests_executed_by_reviewer": 0,
+  "schema": "heptabao.capture-controls18-independent-static-review.v1",
+  "source_review_only": true,
+  "status": "no_static_source_blocker_for_exact_revision",
+  "verified_mechanisms": [
+    "Only the fixed newly created Darwin arm64 Python 3.14.3 environment is admitted. A successful exact installer receipt and authoritative successful durable original terminal are external hash-bound prerequisites.",
+    "The exact reviewed capture and test files are pinned before importing. Actual enumeration requires all 18 names, 18 completed passes and zero skip/error/expected-failure/unexpected-success.",
+    "Fixtures use a fresh internal directory and a fresh private T5 archive directory. Real st_dev inequality is mandatory; no business source or provider is opened.",
+    "The sole owned synthetic WAL writer is enclosed by the fixed original-handle custody helper, with one original wait, no remaining live member, zero gaps, and restored process hooks.",
+    "A single sticky 52-second work deadline and separate 60-second Runtime ceiling remain; signals defer through protected custody sections and no deadline is renewed.",
+    "Only newly owned synthetic test fixtures are cleaned by their own test scope. Existing production and failed-run assets are not removed."
+  ],
+  "wheel_plan_pin": [
+    8445,
+    "b8a419c3485eb04ee0d2b9dd5b152f4a5b60ffaa0e5d8216f6e21b318fafc25f"
+  ]
+}

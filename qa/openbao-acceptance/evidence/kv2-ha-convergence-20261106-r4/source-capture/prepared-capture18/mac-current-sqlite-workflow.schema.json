@@ -1,0 +1,185 @@
+{
+  "$defs": {
+    "absolutePath": {
+      "maxLength": 4096,
+      "minLength": 2,
+      "pattern": "^/",
+      "type": "string"
+    },
+    "directoryIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "dev": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "inode": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "mode": {
+          "const": 448
+        },
+        "uid": {
+          "const": 501
+        }
+      },
+      "required": [
+        "dev",
+        "inode",
+        "uid",
+        "mode"
+      ],
+      "type": "object"
+    },
+    "newName": {
+      "pattern": "^(?!\\.{1,2}$)[A-Za-z0-9_.-]{1,128}$",
+      "type": "string"
+    }
+  },
+  "$id": "urn:heptabao:mac-current-sqlite-recovery-workflow:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Shape only. Current source identities, separate actual filesystems, source completion, dependencies, normal-107/full34/DR25 external admission, original Runtime deadline, and data qualification require their own actual observations.",
+  "properties": {
+    "backup": {
+      "additionalProperties": false,
+      "properties": {
+        "archive_name": {
+          "$ref": "#/$defs/newName"
+        },
+        "archive_parent": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "budget_seconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "key_name": {
+          "$ref": "#/$defs/newName"
+        },
+        "key_parent": {
+          "$ref": "#/$defs/absolutePath"
+        }
+      },
+      "required": [
+        "budget_seconds",
+        "archive_parent",
+        "archive_name",
+        "key_parent",
+        "key_name"
+      ],
+      "type": "object"
+    },
+    "capture": {
+      "additionalProperties": false,
+      "properties": {
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/newName"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "budget_seconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "capture_name": {
+          "$ref": "#/$defs/newName"
+        },
+        "capture_parent": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "capture_parent_identity": {
+          "$ref": "#/$defs/directoryIdentity"
+        },
+        "maximum_database_bytes": {
+          "maximum": 4294967296,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "maximum_total_bytes": {
+          "maximum": 68719476736,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "phase": {
+          "const": "capture"
+        },
+        "schema": {
+          "const": "heptabao.mac-current-sqlite-capture-plan.v1"
+        },
+        "source_config_sha256": {
+          "description": "Private current input pin, never a public credential fingerprint.",
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "source_root": {
+          "const": "/Users/qianqi/.openclaw"
+        },
+        "source_root_identity": {
+          "$ref": "#/$defs/directoryIdentity"
+        }
+      },
+      "required": [
+        "schema",
+        "phase",
+        "budget_seconds",
+        "source_root",
+        "source_root_identity",
+        "source_config_sha256",
+        "agents",
+        "capture_parent",
+        "capture_parent_identity",
+        "capture_name",
+        "maximum_total_bytes",
+        "maximum_database_bytes"
+      ],
+      "type": "object"
+    },
+    "overall_budget_seconds": {
+      "maximum": 900,
+      "minimum": 61,
+      "type": "integer"
+    },
+    "restore": {
+      "additionalProperties": false,
+      "properties": {
+        "budget_seconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "restore_name": {
+          "$ref": "#/$defs/newName"
+        },
+        "restore_parent": {
+          "$ref": "#/$defs/absolutePath"
+        }
+      },
+      "required": [
+        "budget_seconds",
+        "restore_parent",
+        "restore_name"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "heptabao.mac-current-sqlite-recovery-workflow.v1"
+    }
+  },
+  "required": [
+    "schema",
+    "overall_budget_seconds",
+    "capture",
+    "backup",
+    "restore"
+  ],
+  "title": "Private Mac current SQLite capture, independent encrypted backup and fresh restore proposal",
+  "type": "object"
+}

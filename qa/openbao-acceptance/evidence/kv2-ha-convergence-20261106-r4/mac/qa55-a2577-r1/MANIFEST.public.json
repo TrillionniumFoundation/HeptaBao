@@ -1,0 +1,118 @@
+{
+  "actual": {
+    "errors": 0,
+    "failed": 0,
+    "passed": 55,
+    "skipped": 0
+  },
+  "dr25_recovery_qualified": false,
+  "files": [
+    {
+      "bytes": 26538,
+      "path": "mac_a2577_qa55_actual_baseline_r1.py",
+      "sha256": "b94b282cf95767d0185bbfa379b0da795092373fab9d938c0b53c23b30aef656",
+      "source": "exact executed fixed stdin controller"
+    },
+    {
+      "bytes": 8332,
+      "path": "test-selection.public.json",
+      "sha256": "c72708b91ffc1cbb5d51fb33a31fac4d9fe9db240e84f8a3931aece588b06b8a",
+      "source": "fixed pre-execution exact55 selection"
+    },
+    {
+      "bytes": 27885,
+      "path": "runtime-request.prepared.json",
+      "sha256": "7a245e3cd56a8378b90d19bfa17f73cc0c426df200c289423ac39ba4e47c4b8b",
+      "source": "exact prepared request structure"
+    },
+    {
+      "bytes": 879,
+      "path": "prepared-input-MANIFEST.original.json",
+      "sha256": "ced5d7031d4101762561e205d7043005e7f70118c323d68dae6e067b2ae8f687",
+      "source": "historical prepared input manifest"
+    },
+    {
+      "bytes": 1767,
+      "path": "runtime-start-reconciled.recovered.json",
+      "sha256": "7a1ea6c3437a061ba5a08e45a87bb41ec91e8b3677fc360bb9ffe955a652a40f",
+      "source": "same stable key reconciliation; reused=true and retried_launch=false"
+    },
+    {
+      "bytes": 245,
+      "path": "runtime-start-transport-error.recovered.json",
+      "sha256": "948255855e23e5078be1784e7331d6979f5f78fdd7c2f4531da50d24bbbe7bd4",
+      "source": "initial MCP start request error; not a test timeout or second execution"
+    },
+    {
+      "bytes": 734,
+      "path": "runtime-terminal.recovered.json",
+      "sha256": "f000485612a0a93cb00379a01393102ea49c65f6eac2e555cba5236a0ba629b3",
+      "source": "explicit safe derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 26677,
+      "path": "runtime.stdout.original",
+      "sha256": "3d0147204c0a05881b1a29e7e751f184c0de4028ff92d50c4f983fea1687f707",
+      "source": "durable lossless process_read 1a1b15b1a4c-fc05-77f2"
+    },
+    {
+      "bytes": 0,
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "durable lossless process_read 1a1b15b1a4c-fc05-77f2"
+    },
+    {
+      "bytes": 29571,
+      "native_version": "16777244:72729967:29571:1793976909320456959:1793976909320456959",
+      "path": "result.public.json",
+      "sha256": "3ef7c7ee192f12bd414b1bb9661beec01039f78a78d5a0310398457e9fe36fc4",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/result.public.json"
+    },
+    {
+      "bytes": 0,
+      "native_version": "16777244:72729611:0:1793976907604426445:1793976907604426445",
+      "path": "guards.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/guards.stdout"
+    },
+    {
+      "bytes": 11191,
+      "native_version": "16777244:72729612:11191:1793976908974113846:1793976908974113846",
+      "path": "guards.stderr",
+      "sha256": "5c89fb6ff2739092a83f3331ec47113e8640b07aeb9efe46f60229362b910b8c",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/guards.stderr"
+    },
+    {
+      "bytes": 599,
+      "path": "result.native-file-info.recovered.json",
+      "sha256": "51dfaa463e47aa573382f333e058bf7d2084ef0d1f5c1212ee45cbbcbdea7a5e",
+      "source": "explicit safe derivation / parsed tool metadata"
+    },
+    {
+      "bytes": 12568,
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "69f40a637b31c4f3dfa4a7d1cf9b3834ab60b0b36093e6bb2b2b9a54cac72318",
+      "source": "original receipt, stderr55 exact names, native pins and authoritative terminal independently reconciled"
+    },
+    {
+      "bytes": 744,
+      "path": "source-stage-admission.reference.public.json",
+      "sha256": "d691b42a1434729b61a2ee0d94933c3fcea371f0c5b02458158571e5ac0fa1a1",
+      "source": "separately verified source-stage reference supplied by parity; original stage package retained separately"
+    }
+  ],
+  "formal_production_qualified": false,
+  "job_id": "1a1b15b1a4c-fc05-77f2",
+  "metadata_serialization_note": "Metadata materialized from returned parsed objects; original fixed controller/selection/manifest, file contents and Runtime stream bytes preserved exactly.",
+  "old_baseline_original_remains_failed": true,
+  "old_baseline_private_readonly_validator_passed": true,
+  "one_original_job_same_key_transport_reconciliation": true,
+  "private_baseline_body_or_fingerprints_included": false,
+  "product_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "qa_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "qa_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "runtime_budget_seconds": 60,
+  "schema": "heptabao.mac-qa55-actual-old-baseline-evidence-manifest.v1",
+  "work_budget_seconds": 52,
+  "work_seconds": 2.127464
+}

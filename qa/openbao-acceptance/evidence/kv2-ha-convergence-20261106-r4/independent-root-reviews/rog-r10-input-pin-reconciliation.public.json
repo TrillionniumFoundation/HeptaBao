@@ -1,0 +1,96 @@
+{
+  "artifact_restoration_or_replacement_performed": false,
+  "conclusion": "No r10 input rebinding mismatch against the original r8 receipt. Actual missing original paths remain a failed preservation gate. This comparison does not identify a cause or operator.",
+  "formal_acceptance": false,
+  "old_retained_artifact_count": 21,
+  "original_r8_receipt_sha256": "9cf27fbf78f3f976fb6397a693b1fa18ec3965bbea84d58cb0f8773aa4f2a5ff",
+  "rows": [
+    {
+      "artifact": "heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r7_868_heptabao-ha-service-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r7_868_heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r7_868_heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r7_868_heptabao-server-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r8_09c14_heptabao-ha-service-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r8_09c14_heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r8_09c14_heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "r8_09c14_heptabao-server-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r2_heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r2_heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r4_heptabao-ha-service-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r4_heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r4_heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r4_heptabao-server-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r5_heptabao-ha-service-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r5_heptabao-seed",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r5_heptabao-server",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "retained_r5_heptabao-server-libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    },
+    {
+      "artifact": "server_libtest",
+      "exact_path_bytes_sha256_match_original_r8": true
+    }
+  ],
+  "schema": "heptabao.root-rog-r10-input-pin-reconciliation.v1",
+  "selection_sha256": "dfe8003fd1f65756673bb6d82553366970336133ca1176aa647ca450a2210b24",
+  "tests_or_builds_executed_by_this_review": 0
+}

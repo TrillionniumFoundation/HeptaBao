@@ -1,0 +1,42 @@
+{
+  "backup": {
+    "archive_name": "archive-attempt-REPLACE",
+    "archive_parent": "/REPLACE_WITH_OWNED_DURABLE_ARCHIVE_PARENT_ON_OTHER_FILESYSTEM",
+    "budget_seconds": 300,
+    "key_name": "key-attempt-REPLACE",
+    "key_parent": "/REPLACE_WITH_OWNED_KEY_PARENT_ON_NON_ARCHIVE_FILESYSTEM"
+  },
+  "capture": {
+    "agents": [
+      "REPLACE_WITH_COMPLETE_CURRENT_CONFIGURED_SET"
+    ],
+    "budget_seconds": 300,
+    "capture_name": "capture-attempt-REPLACE",
+    "capture_parent": "/REPLACE_WITH_OWNED_CAPTURE_PARENT",
+    "capture_parent_identity": {
+      "dev": "REPLACE_WITH_CURRENT_INTEGER",
+      "inode": "REPLACE_WITH_CURRENT_INTEGER",
+      "mode": 448,
+      "uid": 501
+    },
+    "maximum_database_bytes": 4294967296,
+    "maximum_total_bytes": 68719476736,
+    "phase": "capture",
+    "schema": "heptabao.mac-current-sqlite-capture-plan.v1",
+    "source_config_sha256": "REPLACE_WITH_PRIVATE_CURRENT_SHA256",
+    "source_root": "/Users/qianqi/.openclaw",
+    "source_root_identity": {
+      "dev": "REPLACE_WITH_CURRENT_INTEGER",
+      "inode": "REPLACE_WITH_CURRENT_INTEGER",
+      "mode": 448,
+      "uid": 501
+    }
+  },
+  "overall_budget_seconds": 900,
+  "restore": {
+    "budget_seconds": 300,
+    "restore_name": "restore-attempt-REPLACE",
+    "restore_parent": "/REPLACE_WITH_OWNED_FRESH_RESTORE_PARENT"
+  },
+  "schema": "heptabao.mac-current-sqlite-recovery-workflow.v1"
+}

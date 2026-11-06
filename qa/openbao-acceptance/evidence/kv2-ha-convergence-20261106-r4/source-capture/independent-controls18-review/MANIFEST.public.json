@@ -1,0 +1,10 @@
+{
+  "files": [
+    {
+      "bytes": 4805,
+      "path": "REVIEW.public.json",
+      "sha256": "29cbe5e1a479d3d1d710679b80cad82f3e0800d4d932b77d06c012a0fbaad0b7"
+    }
+  ],
+  "schema": "heptabao.independent-static-review-manifest.v1"
+}

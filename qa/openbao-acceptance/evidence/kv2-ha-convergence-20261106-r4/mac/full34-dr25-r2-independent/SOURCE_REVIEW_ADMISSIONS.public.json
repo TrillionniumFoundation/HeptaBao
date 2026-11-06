@@ -1,0 +1,7 @@
+{
+  "root": true,
+  "source_audit": true,
+  "controller_sha256": "628dd07643110b318294ecf1e01863f36eabe45213fef1f135884ad2f7eb4b15",
+  "authorized": "single bounded read-only projection, 52/60, no product rerun",
+  "basis": "Recorded collaborator source-review conclusions; these are not a new product-runtime result."
+}

@@ -1,0 +1,314 @@
+{
+  "actual_old_baseline_validator": {
+    "baseline31_remains_unqualified": true,
+    "capture18_exact": true,
+    "capture_check_count": 18,
+    "old_summary_unchanged": true,
+    "only_three_fixed_final_checks_removed_in_memory": true,
+    "original21_exact": true,
+    "original21_validator_passed": false,
+    "original_check_count": 21,
+    "original_failed_status_preserved": true,
+    "private_values_or_fingerprints_emitted": false,
+    "projected18_validator_passed": true,
+    "raw_witness_count": 2,
+    "raw_witness_version_counts": [
+      19,
+      19
+    ],
+    "source_api_observation_count": 19
+  },
+  "actual_passed": 55,
+  "actual_status_rows": 55,
+  "all_expected_names_match": true,
+  "controller_sha256": "b94b282cf95767d0185bbfa379b0da795092373fab9d938c0b53c23b30aef656",
+  "dr25_recovery_qualified": false,
+  "dynamic_required": 55,
+  "errors": 0,
+  "expected_failures": 0,
+  "failed": 0,
+  "formal_production_qualified": false,
+  "input_pins_before_and_after_equal": true,
+  "job_id": "1a1b15b1a4c-fc05-77f2",
+  "original_runtime_cap_seconds": 60,
+  "product_executed": false,
+  "product_rebuilt": false,
+  "qa_source_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "qa_source_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "raw_unittest_stderr": {
+    "bytes": 11191,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/guards.stderr",
+    "sha256": "5c89fb6ff2739092a83f3331ec47113e8640b07aeb9efe46f60229362b910b8c"
+  },
+  "result_public": {
+    "bytes": 29571,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/result.public.json",
+    "sha256": "3ef7c7ee192f12bd414b1bb9661beec01039f78a78d5a0310398457e9fe36fc4"
+  },
+  "runtime_terminal": {
+    "at_unix_ms": 1793976909383,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b15b1a4c-fc05-77f2",
+    "launch_nonce": "2607015ade66900090c8ee628df1d1e9",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 26677,
+        "stored": 26677
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "schema": "heptabao.mac-qa55-independent-original-evidence-reconciliation.v1",
+  "selection_sha256": "c72708b91ffc1cbb5d51fb33a31fac4d9fe9db240e84f8a3931aece588b06b8a",
+  "skipped": 0,
+  "source_before_and_after_clean": true,
+  "tests": [
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_inspection_requires_v6_and_does_not_claim_aead"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_refuses_noncanonical_tar_header_before_extraction"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_archive_rejects_truncation_trailing_members_and_changed_state"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_backup_and_key_parent_overlap_refuses_before_product_execution"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_build_receipt_binds_both_actual_executables_and_completed_source"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_build_receipt_cannot_claim_passed_with_missing_or_partial_107_results"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_build_receipt_cannot_count_one_test_twice_across_groups"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_build_receipt_requires_pinned_selection_and_matching_enumeration"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_custody_failure_still_retains_private_outputs_and_phase"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_output_fingerprint_is_private_even_if_utility_echoes_a_credential"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_rejection_requires_real_status_and_never_retries_label"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_child_timeout_retains_failure_and_joins_owned_original"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_data_cas_denial_with_effect_fails_and_keeps_subobservations"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_dr25_requires_exact_unique_denominator_and_real_evidence"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_rechecks_private_key_directory_even_when_files_remain_private"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_final_gate_requires_complete_custody_receipt_even_without_failed_flag"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_finish_redacts_credential_hashes_as_well_as_plaintext"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_full34_subclass_observes_original_check_before_callback"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_incomplete_finish_cannot_grant_authority_and_redacts_runtime_token"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_main_publishes_same_filesystem_refusal_with_real_custody_and_no_children"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_metadata_cas_denial_with_effect_fails_and_keeps_subobservations"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_nonregular_input_is_rejected_without_waiting_for_a_pipe_writer"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_original_full34_gate_cannot_be_replaced_by_dr_checks"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_detects_real_open_file_directory_and_closed_boundary"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_parent_fd_retirement_rejects_unclosed_stdio_and_observation_gaps"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_public_tree_summary_withholds_direct_and_aggregate_credential_fingerprints"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_recovery_api_requires_exact_official_response_tokens"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_same_filesystem_fails_before_any_server_or_official_cli"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_seed_stage_requires_exact_receipt_destination_and_four_private_files"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_accepts_small_physical_pack_with_full_logical_history"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_refuses_logical_shortfall_and_wrong_profile"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_requires_both_unique_raw_19_version_witnesses"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_requires_exact_checks_and_19_source_api_observations"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_still_refuses_mismatched_seal_with_full_history"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_snapshot_capture_still_refuses_truncated_archive_with_full_history"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_tree_manifest_preserves_rename_boundary_and_detects_byte_change"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_native_fresh_directory_dr_live.ControllerGuards.test_tree_manifest_refuses_hardlinks_and_symlinked_closures"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_cancel_enters_final_cleanup_and_restores_original_signal_handlers"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_live_esrch_never_uses_a_zombie_anchor_or_grants_retirement"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_numeric_parser_rejects_session_pointer_and_uses_kernel_sid"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_observed_signed_nobody_uid_is_numeric_not_a_parse_gap"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_darwin_waitable_zombie_requires_original_waitid_and_exact_retained_ps_identity"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_foreign_reap_loses_authority_and_never_signals_recycled_group"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_gate_identity_failure_never_executes_target_or_signals_a_guessed_group"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_leader_exit_with_live_descendant_is_failure_and_only_owned_group_is_killed"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_after_nonzero_communicate_never_signals_retired_id"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_live_owned_group_routes_once_and_restores_global_hook"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_legacy_raw_killpg_unknown_group_is_refused_without_touching_foreign_process"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_missing_wnowait_and_external_sigchld_reaper_refuse_before_spawn"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_nested_owner_and_finished_owner_do_not_create_new_originals"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_prior_retirement_receipt_cannot_change_when_later_originals_run"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_real_target_executes_only_in_observed_original_session_and_waits_once"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_retirement_gate_does_not_stop_a_live_target"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_run_check_output_and_owned_process_compatibility_share_originals"
+    },
+    {
+      "status": "ok",
+      "test": "test_kv2_dr_process_custody.ProcessCustodyTests.test_wait_timeout_keeps_original_anchor_then_declared_stop_retires_it"
+    }
+  ],
+  "unexpected_successes": 0,
+  "work_deadline_fired": false,
+  "work_seconds": 2.127464
+}

@@ -1,0 +1,16 @@
+{
+  "base_and_source_status_streams_empty": true,
+  "base_before_after_head_tree_exact": true,
+  "formal_business_migration_authority": false,
+  "git_command_streams": 26,
+  "native_full_files_independently_rehashed": 27,
+  "native_read_capture_format": "Parsed structured responses with file text and version strings retained; not a byte-exact transport envelope claim",
+  "original_stage_job": "1a1b1567f2f-fc05-77d9",
+  "original_stage_operation_replayed": false,
+  "original_stage_payload_directory": "../source-stage-r2",
+  "original_stage_result_sha256": "628cb359bf97b9ce6ad43b21bb5083c859d10c700974c32114bbe93728dfac11",
+  "product_executed": false,
+  "schema": "heptabao.mac-source-stage-raw-stream-supplement.v1",
+  "scope": "13 complete original Git stdout/stderr pairs, source-stage intent, native file read metadata, and exact QA bundle",
+  "source_head_tree_exact": true
+}

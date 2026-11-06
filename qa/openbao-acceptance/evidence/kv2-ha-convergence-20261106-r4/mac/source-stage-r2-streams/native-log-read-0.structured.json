@@ -1,0 +1,136 @@
+{
+  "atomic_snapshot": false,
+  "encoding": "utf-8",
+  "files": [
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/01-base-before-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "size": 41,
+      "text": "4bde9aee03fcd27c59e13607e529b1cee594b249\n",
+      "version": "16777244:72723179:41:1793976604587011806:1793976604587011806"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/01-base-before-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723180:0:1793976604528608967:1793976604528608967"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/02-base-before-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "size": 41,
+      "text": "f08493a23f8ea0637073651231865ea9607b790e\n",
+      "version": "16777244:72723181:41:1793976604660049333:1793976604660049333"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/02-base-before-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723182:0:1793976604623659021:1793976604623659021"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/03-base-before-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723183:0:1793976604702653626:1793976604702653626"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/03-base-before-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723184:0:1793976604702694582:1793976604702694582"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/04-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723185:0:1793976605783298474:1793976605783298474"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/04-clone.stderr",
+      "sha256": "d58bca487b13274d8afd7db778370219c0d2320eef242a92394d207b522e1ef4",
+      "size": 131,
+      "text": "Cloning into '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-a2577-r2'...\ndone.\n",
+      "version": "16777244:72723186:131:1793976605980311822:1793976605980311822"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/05-bundle-verify.stdout",
+      "sha256": "d74ca72a4868c9a02712f86c9413e9e929229df17fe8f955341b239833f45931",
+      "size": 190,
+      "text": "The bundle contains this ref:\na25772377e9bfad91564cf6702a26e861fded16f HEAD\nThe bundle requires this ref:\n4bde9aee03fcd27c59e13607e529b1cee594b249 \nThe bundle uses this hash algorithm: sha1\n",
+      "version": "16777244:72723259:190:1793976606059943894:1793976606059943894"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/05-bundle-verify.stderr",
+      "sha256": "7f225470acec5853656adb74328570956538ca454f8201f21f2780b6e009158a",
+      "size": 131,
+      "text": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-from-4bde9.bundle is okay\n",
+      "version": "16777244:72723260:131:1793976606059930312:1793976606059930312"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/06-fetch-bundle.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723262:0:1793976606104706247:1793976606104706247"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/06-fetch-bundle.stderr",
+      "sha256": "57a14dd36ed2bccf463fbbff9d0f607230544907f13af8f05661deec9252c558",
+      "size": 206,
+      "text": "From /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-from-4bde9.bundle\n * branch              a25772377e9bfad91564cf6702a26e861fded16f -> FETCH_HEAD\n",
+      "version": "16777244:72723263:206:1793976606151943892:1793976606151943892"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/07-checkout.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72723288:0:1793976606197974431:1793976606197974431"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/07-checkout.stderr",
+      "sha256": "297e9a0696be24b8b1616c8bd47aa22a4f7c88f51e3e33bbfd0e6fc08293516d",
+      "size": 196,
+      "text": "Previous HEAD position was 4bde9aee test(auth): bind native JWT role actors to effective default policies\nHEAD is now at a2577237 qa(kv2): bind DR34 size to logical history and retained witnesses\n",
+      "version": "16777244:72723289:196:1793976606557031744:1793976606557031744"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/08-source-head.stdout",
+      "sha256": "6b64f480f72e6baa57135b80e1447ef8270a332f96892c0c9f5eab5ba570a1d1",
+      "size": 41,
+      "text": "a25772377e9bfad91564cf6702a26e861fded16f\n",
+      "version": "16777244:72727771:41:1793976606635064438:1793976606635064438"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/08-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727772:0:1793976606604407258:1793976606604407258"
+    }
+  ],
+  "snapshot_scope": "independent_file",
+  "truncated": false
+}

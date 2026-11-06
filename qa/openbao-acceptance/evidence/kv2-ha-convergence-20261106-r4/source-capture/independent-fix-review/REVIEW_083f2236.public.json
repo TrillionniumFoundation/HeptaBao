@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.independent-current-sqlite-capture-source-review.v1",
+  "reviewer": "/root/host_evidence",
+  "scope": "Static review of the exact prepared revision only; no capture, provider, SDK, service, installation, or source-data access was performed.",
+  "inputs": [
+    {
+      "name": "mac_current_sqlite_capture.py",
+      "bytes": 56201,
+      "sha256": "083f223684216842ce3cd223e8115ae5e6435bb4a3239656b00ac500de2b1ff7"
+    },
+    {
+      "name": "test_mac_current_sqlite_capture.py",
+      "bytes": 21748,
+      "sha256": "81fc8c8f95cc0a60b5499f529d7c2a167b7f013d0423549a67847a509e366182"
+    }
+  ],
+  "status": "blocked_pending_narrow_source_revision",
+  "blockers": [
+    {
+      "code": "zero_main_with_present_sidecar_is_not_a_verified_empty_database",
+      "evidence": "capture() branches on info.st_size == 0 and creates an empty_database_marker without invoking SQLite or rejecting an existing WAL, SHM, or journal. The current preflight rejects only absent-main plus sidecar.",
+      "required_change": "Refuse any present sidecar when admitting the empty-marker branch, including late appearance before completion; preserve the nonempty SQLite read-transaction/backup path. Add an owned synthetic negative case.",
+      "implementation_owner": "/root/source_audit"
+    }
+  ],
+  "confirmed_source_properties": [
+    "Nonempty databases use a SQLite read transaction and native backup, followed by closed-file integrity and exact whole-file bindings.",
+    "Configured agents are bound to the exact original configuration, with declared database and safety-file absences.",
+    "Archive filesystem must differ from both source and capture filesystems; key filesystem must differ from archive filesystem.",
+    "Original source and capture directory identities are checked during capture/backup; fresh restore authenticates their retained bindings without reopening the original paths.",
+    "All chunk authentication and original file-hash validation precede restore-directory creation; restored whole files are reread and SQLite is reopened read-only/immutable.",
+    "Private data and credential-dependent fingerprints stay in owned private files. The public projection contains counts and qualification boundaries.",
+    "The workflow retains one original total deadline, bounded phase deadlines, create-only outputs, and no automatic resume or retry.",
+    "Missing encryption dependency is refused before source configuration or database copies are opened."
+  ],
+  "qualification_limits": [
+    "Static review is not actual Darwin execution, formal KV2 qualification, current credential validity, writer fencing, or cross-database atomicity.",
+    "Current test fixture uses Linux /dev/shm; actual Darwin controls require explicitly bound private fixture parents on two real filesystems and cannot be represented by skips.",
+    "The recovery key may share the source filesystem. No single-device-loss, power-failure, or independent key-replica qualification follows.",
+    "Archive and key directories remain bound to their original identities. The demonstrated recovery scope is loss of the original source/capture paths, not arbitrary archive/key relocation or reinstalled-volume recovery.",
+    "Generated candidate configuration only rewrites agentDir. It is not authority to start consumers; other configuration references require separate review before any client use."
+  ],
+  "runtime_tests_executed_by_reviewer": 0,
+  "business_capture_authorized_by_this_review": false,
+  "predecessor_failures_or_assets_modified": false
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.lossless-runtime-cursor-reconciliation.v1",
+  "job_id": "1a1b178eff2-fc05-78fb",
+  "stdout_bytes": 147183,
+  "stderr_bytes": 0,
+  "stdout_sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e",
+  "all_text_bytes_equal_bytes_hex": true,
+  "ranges": [
+    {
+      "stdout_offset": 0,
+      "stdout_next_offset": 16384,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "d01da061f2ca5e3b5673e0e3fb7a25db41604e7c9a2569164149049969f5dcd2",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 16384,
+      "stdout_next_offset": 32768,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "2e6409ff5f0d68160682a30c1794c8cd2ae2bf0b35b15b3d0bd8aed1de85a6f6",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 32768,
+      "stdout_next_offset": 49152,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "be5703cdce22d411acb66bd0bb1333179091ee15f168d0f7e63ef365b6dd3b44",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 49152,
+      "stdout_next_offset": 65536,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "830ce25e537409f87bd6139b93a6734f0732a66cbebc63569d5d0169c67c8d71",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 65536,
+      "stdout_next_offset": 81920,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "44f3f105f7f74a74e227190ec34202a499c2be8a1761229f5f828860135407d0",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 81920,
+      "stdout_next_offset": 98304,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "5f8b1715aaa1a68394395b8f534a6cfbaa680de9ba36e5caa3ac9c175d899c06",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 98304,
+      "stdout_next_offset": 114688,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "81c89291bfc8f4b024f374a18d31510be425336a0827984243c203194dee460a",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 114688,
+      "stdout_next_offset": 131072,
+      "stdout_eof": false,
+      "stdout_bytes": 16384,
+      "stdout_sha256": "2e6e557006698618f063cbd23257b8bab0bf16226ec6c7401f00b6dea9928628",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    },
+    {
+      "stdout_offset": 131072,
+      "stdout_next_offset": 147183,
+      "stdout_eof": true,
+      "stdout_bytes": 16111,
+      "stdout_sha256": "ab0e697fa6b5332b82ff863fb8c0ef5ec31033fa845b3098675f15f5564e5f20",
+      "stderr_offset": 0,
+      "stderr_next_offset": 0,
+      "stderr_eof": true,
+      "stderr_bytes": 0
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793976900172,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b15b1a4c-fc05-77f2",
+    "idempotency_key": "heptabao-mac-qa55-a2577-and-readonly-old-baseline-20261106-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b15b1a4c-fc05-77f2",
+    "request_digest": "b64135665a3800a6edb8ebd2bc2309b63d1d421a2b856b0ec2917b1fc2f63d7a",
+    "request_fingerprint": 13132836702105633000,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b15b1a4c-fc05-77f2"
+  },
+  "launch": null,
+  "retried_launch": false,
+  "reused": true,
+  "status": {
+    "at_unix_ms": 1793976909383,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b15b1a4c-fc05-77f2",
+    "launch_nonce": "2607015ade66900090c8ee628df1d1e9",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 26677,
+        "stored": 26677
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

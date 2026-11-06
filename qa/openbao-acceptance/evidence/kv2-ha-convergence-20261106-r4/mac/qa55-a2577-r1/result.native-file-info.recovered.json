@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 20,
+    "link_count": 1,
+    "metadata_platform": "darwin",
+    "mode": 384,
+    "uid": 501,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "mode": 384,
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-guards-r1/result.public.json",
+  "sha256": "3ef7c7ee192f12bd414b1bb9661beec01039f78a78d5a0310398457e9fe36fc4",
+  "size": 29571,
+  "version": "16777244:72729967:29571:1793976909320456959:1793976909320456959"
+}

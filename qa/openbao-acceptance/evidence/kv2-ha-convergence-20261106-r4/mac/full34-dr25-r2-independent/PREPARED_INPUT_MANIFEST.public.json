@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.mac-dr25-r2-safe-projection-prepared-inputs.v1",
+  "status": "prepared_not_launched",
+  "controller": {
+    "path": "project_actual_dr_r2_v2.py",
+    "bytes": 59169,
+    "sha256": "628dd07643110b318294ecf1e01863f36eabe45213fef1f135884ad2f7eb4b15"
+  },
+  "request_file": "runtime-request.prepared.json",
+  "runtime_cap_seconds": 60,
+  "work_deadline_seconds": 52,
+  "native_nice": 5,
+  "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "source_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "actual_dr_job": "1a1b1639f4d-fc05-7839",
+  "private_inputs": [
+    "full34-dr25-r2/dr25-summary.json",
+    "full34-dr25-r2/quarantine/original-closure/summary.json"
+  ],
+  "public_wrapper_receipt": {
+    "bytes": 1437,
+    "sha256": "22a0c151ad3c1a075d6763f0b3d7037eed12a21d19e84d9b94fadd91ff44fc9f"
+  },
+  "expected_case_counts": {
+    "baseline31": 31,
+    "dr25": 25,
+    "capture18": 18,
+    "source_api_versions": 19,
+    "raw_capture_stages": [
+      19,
+      19
+    ]
+  },
+  "scope": "Read only fixed summary bytes and public pins; emit explicit safe projections with complete per-child numeric observations; no product rerun.",
+  "awaiting_independent_source_review": true,
+  "production_authority": false
+}

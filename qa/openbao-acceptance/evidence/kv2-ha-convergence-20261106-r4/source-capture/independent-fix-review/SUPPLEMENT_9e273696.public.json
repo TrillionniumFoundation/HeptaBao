@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.independent-current-sqlite-capture-source-review-supplement.v1",
+  "reviewer": "/root/host_evidence",
+  "predecessor": "REVIEW_083f2236.public.json",
+  "inputs": [
+    {
+      "name": "mac_current_sqlite_capture.py",
+      "bytes": 57280,
+      "sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972"
+    },
+    {
+      "name": "test_mac_current_sqlite_capture.py",
+      "bytes": 23809,
+      "sha256": "0b93d597b9fd525470951cb7b49cdb6707c11fc38b5e42f0d06bcedc7e0395f6"
+    }
+  ],
+  "status": "no_remaining_static_review_blocker_for_fixed_inputs",
+  "exact_reverse_diff": {
+    "main_added_blocks": 4,
+    "main_reverse_exact": true,
+    "new_main_bytes": 57280,
+    "new_main_sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972",
+    "new_test_bytes": 23809,
+    "new_test_sha256": "0b93d597b9fd525470951cb7b49cdb6707c11fc38b5e42f0d06bcedc7e0395f6",
+    "old17_test_methods_preserved": true,
+    "review": "static_reverse_diff_only_no_runtime",
+    "syntax_compile_without_execution": true,
+    "test_count": 18,
+    "tests_reverse_exact": true
+  },
+  "closed_blocker": {
+    "code": "zero_main_with_present_sidecar_is_not_a_verified_empty_database",
+    "resolution": "Four added checks reject sidecars at empty-main preflight, immediately before admitting the held empty branch, after that branch together with the full original file identity, and at the final declared-empty boundary.",
+    "preserved": "The nonempty SQLite transaction and backup path, source/configuration denominator, archive/restore flow, public-output boundary, and original budgets are byte-identical after removing only the four added blocks.",
+    "new_case": "test_zero_length_main_requires_absent_sidecars_at_both_capture_boundaries",
+    "new_case_scope": "Three existing sidecar subcases, a genuine empty-file positive case, and a late WAL appearance after copy; these remain one unittest method."
+  },
+  "darwin_fixture_admission": {
+    "private_archive_parent_explicit": true,
+    "default_archive_parent_linux_only": true,
+    "real_distinct_filesystem_gate_preserved": true,
+    "skips_used_as_replacement": false,
+    "actual_fixed_parent_and_tmp_bindings_still_required_for_remote_launch": true
+  },
+  "limits": [
+    "Static review is not actual Darwin execution, formal KV2 qualification, current credential validity, writer fencing, or cross-database atomicity.",
+    "The recovery key may share the source filesystem. No single-device-loss, power-failure, or independent key-replica qualification follows.",
+    "Archive and key directories remain bound to their original identities. The demonstrated recovery scope is loss of the original source/capture paths, not arbitrary archive/key relocation or reinstalled-volume recovery.",
+    "Generated candidate configuration only rewrites agentDir. It is not authority to start consumers; other configuration references require separate review before any client use."
+  ],
+  "runtime_tests_executed_by_reviewer": 0,
+  "actual_darwin_controls_qualified_by_this_review": false,
+  "actual_capture_authorized_by_this_review": false,
+  "services_providers_or_sdks_executed": false,
+  "earlier_evidence_modified": false
+}

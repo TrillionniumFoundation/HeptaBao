@@ -1,0 +1,13 @@
+{
+  "authenticated": true,
+  "diagnostics_redacted": true,
+  "host": "rog",
+  "measurement": "SSH invocation roundtrip including connection setup or reuse, authentication, remote shell startup and fixed response; not ICMP RTT.",
+  "platform": "linux",
+  "reachable": true,
+  "schema": "hepta-host-health-v1",
+  "ssh_roundtrip_ms": 440.576208,
+  "status": "healthy",
+  "timeout_ms": 10000,
+  "transport": "ssh"
+}

@@ -1,0 +1,72 @@
+{
+  "actual_darwin_result": "read-only projection succeeded; controlled synthetic baseline31 and DR25 receipts passed; 700 original children independently reconciled",
+  "actual_dr_job": "1a1b1639f4d-fc05-7839",
+  "files": [
+    {
+      "bytes": 59169,
+      "description": "Exact reviewed and executed script bytes.",
+      "path": "project_actual_dr_r2_v2.py",
+      "sha256": "628dd07643110b318294ecf1e01863f36eabe45213fef1f135884ad2f7eb4b15"
+    },
+    {
+      "bytes": 63113,
+      "description": "Exact prepared request serialization; same fixed stdin and key launched once.",
+      "path": "runtime-request.prepared.json",
+      "sha256": "f144bcba5a3a79134737e9046a191b70c6382b22dc9f5846a9b025b5e02691aa"
+    },
+    {
+      "bytes": 1251,
+      "description": "Historical prepared-input manifest, retaining its prepared-not-launched status.",
+      "path": "PREPARED_INPUT_MANIFEST.public.json",
+      "sha256": "4809aff8c785cb280302e1f58833faaa787e42241786be8d3b70806e647ecda7"
+    },
+    {
+      "bytes": 1173,
+      "description": "Exact text content block returned by the original process_start MCP call; no added newline.",
+      "path": "runtime-start.tool-text.json",
+      "sha256": "d557a203732b0aa08489e68c14ef4e0d20c06bff3f77f5709873cffa5aee1d54"
+    },
+    {
+      "bytes": 735,
+      "description": "Exact authoritative process_status MCP text block; no added newline.",
+      "path": "runtime-terminal.tool-text.json",
+      "sha256": "55d380208276b62f2a1e65f7e71706714eb0b1fe2b71e9268c95574633edf710"
+    },
+    {
+      "bytes": 147183,
+      "description": "Exact complete Runtime stdout bytes reconstructed from contiguous bytes_hex cursors; no truncation.",
+      "path": "runtime.stdout.original",
+      "sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e"
+    },
+    {
+      "bytes": 0,
+      "description": "Exact complete zero-byte Runtime stderr.",
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1851,
+      "description": "Independent local recomputation from every retained child tuple and exact case name; no private summary was retrieved.",
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "cb5cfa0fe582cb90caac04171f4b901dfab2dc248ec128130cb14e39ff80409e"
+    },
+    {
+      "bytes": 321,
+      "description": "Source-review admissions recorded before launch.",
+      "path": "SOURCE_REVIEW_ADMISSIONS.public.json",
+      "sha256": "6fc7d9257600859267eaeab86193b5b1c71dbe3c3b2423d899dda62285383220"
+    },
+    {
+      "bytes": 3288,
+      "description": "Lossless cursor boundaries and safe stdout chunk hashes. Raw MCP responses also retained in functions.store.",
+      "path": "OBSERVATION_CURSOR_MANIFEST.public.json",
+      "sha256": "5eacd6d69d185e3875f91f5f2fc7d8f3fa5789d0e8d09350df8d91de52c36aea"
+    }
+  ],
+  "formal_production_migration_qualified": false,
+  "physical_ha_qualified": false,
+  "private_transport_publishable": false,
+  "projection_job": "1a1b178eff2-fc05-78fb",
+  "schema": "heptabao.mac-dr25-r2-safe-success-evidence-manifest.v1",
+  "scope": "Exact safe projection, request/script, original MCP metadata text and complete Runtime streams. Private source summaries, archives, keys, source data, raw utility output, credential fingerprints and private closure manifests were not retrieved."
+}

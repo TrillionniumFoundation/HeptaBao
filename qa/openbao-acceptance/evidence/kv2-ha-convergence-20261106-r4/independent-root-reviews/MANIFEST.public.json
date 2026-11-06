@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "bytes": 944,
+      "path": "PUBLICATION_RECOVERY_SCOPE.public.json",
+      "sha256": "aa3b15c8f772e3d60a3162e7dcfc7b68bfc5eef2d1ac7ad212ba21efd248a01d"
+    },
+    {
+      "bytes": 1285,
+      "path": "mac-dr25-r2-safe-evidence-reconciliation.public.json",
+      "sha256": "3f514e4d520d6a6cc51cc4fe0e9a80efac27544909d4470576cdbce18f2605eb"
+    },
+    {
+      "bytes": 3128,
+      "path": "rog-r10-input-pin-reconciliation.public.json",
+      "sha256": "ef8686310dbbb7c8b01876cb2f189d35efc52488a7d74a3a2a3117f595f6fd71"
+    }
+  ],
+  "production_or_cutover_authority": false,
+  "schema": "heptabao.root-independent-reviews-manifest.v2"
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.derived-safe-payload-recovery-index.v1",
+  "group": "mac-dr25-source-stage-a2577-20261106-r2",
+  "derived_index": true,
+  "original_index": false,
+  "original_manifest_bytes_recovered": false,
+  "original_manifest_pin": {
+    "path": "MANIFEST.public.json",
+    "bytes": 1726,
+    "sha256": "e98a9afb4a83662435cc9853cf1bda590348facb3be4c9c2b3d60f9d780dcfa7"
+  },
+  "original_manifest_counted_in_published_denominator": false,
+  "all_known_original_payload_leaves_recovered": true,
+  "original_payload_leaf_count": 9,
+  "published_leaf_count_including_derived_index": 10,
+  "original_payload_tree_sha1": "fcf1d347275047cc22919bef66ff996e9ec58857",
+  "original_leaf_bytes_sha256_and_git_blob_sha1_verified": true,
+  "new_machine_acceptance_authority": false,
+  "evidence_qualification_unchanged": true,
+  "private_transport_or_credential_payloads_included": false,
+  "scope_note": "These are the original nine critical-stage payload leaves. Per-command Git streams and the stage intent are a separate supplement.",
+  "files": [
+    {
+      "path": "bundle-upload.original.json",
+      "bytes": 193,
+      "sha256": "d5f7e7ccc82ebb26d6595da69725ec03b6a7415abad7f825069ea5e195172a60",
+      "git_blob_sha1": "ebc79b42db276cfcad2ae1ee20a125648fdfc80a"
+    },
+    {
+      "path": "dr25_mac_fixed_wrapper.py",
+      "bytes": 22626,
+      "sha256": "df564e34fd021e4eb75204b3eb8b817c175e1d860cb1bbfe06a5a62690e05b3c",
+      "git_blob_sha1": "2b860c72c195e573a1ec4ab72ea38619b33c1e62"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 37522,
+      "sha256": "628cb359bf97b9ce6ad43b21bb5083c859d10c700974c32114bbe93728dfac11",
+      "git_blob_sha1": "ff0ff5f7c813df9fdfd0d746305cc524a7697e79"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 39335,
+      "sha256": "8e744eda0f204a833264ea2a66a9d37c3812bc6fe0af453501e8b04e81a2e9f6",
+      "git_blob_sha1": "b8b1f0f8bc65d9858f83a741f81cdbfd149ca29b"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 40118,
+      "sha256": "8f04318b6529ae5a4211b870446004b981a89fe129e0bf4bdd800bdbef527f59",
+      "git_blob_sha1": "ece2670cbfcc9eb46f234f6d1ce05f60fe7e7cf2"
+    },
+    {
+      "path": "runtime-stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "runtime-stdout.original",
+      "bytes": 25722,
+      "sha256": "01d6612aee6fc536423cbda69cc85242b86194e1324c44daa119e95a19e42e70",
+      "git_blob_sha1": "d3c0262805139c44c9bf1c49e1e95c53da60b1d8"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 733,
+      "sha256": "37ebbcc62fb91d152100b8f782a425a65c8f4794fc8a2cb967250269ed76ab8e",
+      "git_blob_sha1": "af085d21ffe6195563180ac0599900efb07dbf5d"
+    },
+    {
+      "path": "stage-controller.original.py",
+      "bytes": 37508,
+      "sha256": "b1002c67e113b371304ebc1dcfbbbbab9cd7205d264a46d604cdbfd80e483a22",
+      "git_blob_sha1": "aff69e0c8664458179181be42f7676aaced9f107"
+    }
+  ]
+}

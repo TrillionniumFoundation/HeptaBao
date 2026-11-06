@@ -1,0 +1,5 @@
+remote helper on rog-ts failed with 1
+stdout:
+
+stderr:
+FileNotFoundError: [Errno 2] No such file or directory: 'heptabao-same-root-publication-normal-20261105-r2'

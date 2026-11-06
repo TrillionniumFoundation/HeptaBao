@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.derived-safe-payload-recovery-index.v1",
+  "group": "convergence-20261106-r1/resource-observation-launch-unknown-r1",
+  "derived_index": true,
+  "original_index": false,
+  "original_manifest_bytes_recovered": false,
+  "original_manifest_pin": {
+    "path": "MANIFEST.public.json",
+    "bytes": 962,
+    "sha256": "329b5b8c12d4d5ff6cd6bcc28127ec552de197f187643f00b32ace5b413fde28"
+  },
+  "original_manifest_counted_in_published_denominator": false,
+  "all_known_original_payload_leaves_recovered": true,
+  "original_payload_leaf_count": 4,
+  "published_leaf_count_including_derived_index": 5,
+  "original_payload_tree_sha1": "1d13dfa4a0ddb7d1bfdf14fb1593b1ec28d21497",
+  "original_leaf_bytes_sha256_and_git_blob_sha1_verified": true,
+  "new_machine_acceptance_authority": false,
+  "evidence_qualification_unchanged": true,
+  "private_transport_or_credential_payloads_included": false,
+  "scope_note": "All payload leaves from the previously retained safe package are recovered exactly. The unavailable original manifest is recorded only by its previously verified size and SHA256.",
+  "files": [
+    {
+      "path": "host-health.original.json",
+      "bytes": 411,
+      "sha256": "fb998cb8c433ce09323f233efa5eee233dbba6e31f422c36104a50b366f47df1",
+      "git_blob_sha1": "1989bef6904ed2f1c4efaf2a3a2faec885705562"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 3141,
+      "sha256": "18c868d6340baccc1e142ec6c76bee571d2ee4ef7771ee54d6339eea08740b65",
+      "git_blob_sha1": "ecbdae38826ddfd75a6fca4ed467246a05317317"
+    },
+    {
+      "path": "runtime-start-launch-unknown.original.json",
+      "bytes": 1136,
+      "sha256": "0d5dd9fefa8eb75bdca293761df253c54f82d29603ebc14f3f0166b5971532ab",
+      "git_blob_sha1": "62038a44b229b6f1de7af70a1b1e3d34b627abad"
+    },
+    {
+      "path": "runtime-status-jobdir-unavailable.original.txt",
+      "bytes": 328,
+      "sha256": "1868e6a07df909b81382b467c81708fdc9debf8e8c84ccbedfa9e23fbb9ce957",
+      "git_blob_sha1": "14f6d7eda67e2f291eafac26d88007d540c5b4f4"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.independent-safe-dr25-r2-reconciliation.v1",
+  "actual_dr_job": "1a1b1639f4d-fc05-7839",
+  "projection_job": "1a1b178eff2-fc05-78fb",
+  "stdout_bytes": 147183,
+  "stdout_sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e",
+  "stderr_bytes": 0,
+  "projection_status": "passed",
+  "projection_elapsed_seconds": 0.032376,
+  "gate_count": 26,
+  "all_gates_true": true,
+  "failed_gates": [],
+  "dr25_exact": true,
+  "baseline31_exact": true,
+  "custody_original_count": 700,
+  "independent_custody_counts": {
+    "children": 700,
+    "exec": 700,
+    "wait_complete": 700,
+    "wait_once": 700,
+    "nolive": 700,
+    "gaps_zero": 700,
+    "valid_birth": 700,
+    "exit_live_zero": 700,
+    "prereap_live_zero": 700,
+    "exit_anchor_zombie": 700,
+    "prereap_anchor_zombie": 700,
+    "darwin_start_ticks_null": 700
+  },
+  "returncode_counts": {
+    "0": 691,
+    "2": 1,
+    "-9": 8
+  },
+  "custody_finished": true,
+  "custody_failed": false,
+  "custody_interrupted": false,
+  "capture18": 18,
+  "source_api19": 19,
+  "capture_raw_counts": [
+    19,
+    19
+  ],
+  "baseline_raw_counts": [
+    19,
+    19,
+    19
+  ],
+  "fresh_api_count": 19,
+  "fresh_raw_count": 19,
+  "cold_api_count": 19,
+  "cold_raw_count": 19,
+  "new_write_version": 20,
+  "new_write_history_counts": [
+    20,
+    20
+  ],
+  "private_summaries_unchanged": true,
+  "qa_pins_unchanged": true,
+  "darwin_start_ticks_scope": "Not supplied by the Darwin collector; null is retained. Identity relies on captured PID/PPID/PGID/SID/UID, the original unreaped handle, and explicit member observations. No Linux-style start_ticks validation is claimed.",
+  "business_credentials_tested": false,
+  "physical_ha_qualified": false,
+  "formal_kv2_migration_qualified": false,
+  "production_authority": false,
+  "full_replacement_qualified": false
+}

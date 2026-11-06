@@ -1,0 +1,18 @@
+{
+  "actual_product_or_business_source_executed": false,
+  "budget_seconds": 60,
+  "elapsed_seconds": 0.2930132930000582,
+  "exit_code": 0,
+  "expected_tests": 13,
+  "input_sha256": {
+    "mac_current_sqlite_capture.py": "5d5dd666be22f822a2c7bfe59e975518b6f1aedffd7e507be7693d47d499b42c",
+    "test_mac_current_sqlite_capture.py": "56cc127a0d0f2e20c665b921e41cb41e4166bb4d5699dce5fb31e1e928337629"
+  },
+  "log_bytes": 2316,
+  "log_sha256": "56d2d51b8efa84ada41da4114639f979e27925d605506cab253f23aca7a69e62",
+  "passed": true,
+  "schema": "heptabao.current-source-controller-local-controls.v1",
+  "source_unchanged": true,
+  "tests_run": 13,
+  "timed_out": false
+}

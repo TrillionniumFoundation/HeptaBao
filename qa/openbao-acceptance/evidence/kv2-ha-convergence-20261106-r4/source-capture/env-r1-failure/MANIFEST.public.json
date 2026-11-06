@@ -1,0 +1,92 @@
+{
+  "files": [
+    {
+      "bytes": 1733,
+      "path": "OBSERVATION.public.json",
+      "sha256": "706a06f14ed3810735cbbf99c2c51e990498551db6a0e20be0aa3c79e46b966a"
+    },
+    {
+      "bytes": 1534,
+      "path": "README.md",
+      "sha256": "f9769db377ec9aba683ed509afd39263176b57fee0916b4785b3822e4ae933dc"
+    },
+    {
+      "bytes": 330,
+      "path": "cffi-absent-file-info.original.json",
+      "sha256": "1b650147e1549ec0810f3266e62f6ed5ebed97bad2f812ad39af5cb463625d8c"
+    },
+    {
+      "bytes": 338,
+      "path": "cryptography-absent-file-info.original.json",
+      "sha256": "fdedc1337ca80f75322625a476ce425fcd55767dc0aad7a9104dde4bf9bc2c3d"
+    },
+    {
+      "bytes": 302,
+      "path": "environment-reconciled-start.safe.json",
+      "sha256": "cf3ea153818340d32737b14560561111ce0f366afb200bc46faf069c9e4c354e"
+    },
+    {
+      "bytes": 951,
+      "path": "environment-runtime-terminal.original.json",
+      "sha256": "5851ecf19ff9da63384f1359b7a5ff02d4c9a5792b092c93a49f044104a3c7dd"
+    },
+    {
+      "bytes": 245,
+      "path": "environment-start-mcp-timeout.original.json",
+      "sha256": "751f3029c04ea697688034b5038990b35c3b28d9c4c0b005d31570154f3b2f2e"
+    },
+    {
+      "bytes": 0,
+      "path": "environment.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1163,
+      "path": "environment.stdout",
+      "sha256": "a9200a111a30cec067551b1c0a5c41bb4025ba3f9520eae8c508ddce30c65eb2"
+    },
+    {
+      "bytes": 708,
+      "path": "partial-pip-file-info.original.json",
+      "sha256": "a0be6be0dc0e9b32dd4b7282a846a41890ff03942b979fc5877892ef6deb2285"
+    },
+    {
+      "bytes": 317,
+      "path": "pycparser-absent-file-info.original.json",
+      "sha256": "71570c4683dda85a51e2346f8309d25af98785b2a185f439905029726b58291e"
+    },
+    {
+      "bytes": 1245,
+      "path": "result.public.json",
+      "sha256": "1095a215d0f3dc8a79d3cccaecacd85c900f8aa389ca93e14d510cbe1c0a9bc4"
+    },
+    {
+      "bytes": 1920,
+      "path": "runtime-request.safe.json",
+      "sha256": "da808e5c1f8327fd5c7dbb38931a18d634667c35e127341195ad955c705ef1b0"
+    },
+    {
+      "bytes": 295,
+      "path": "stage-runtime-start.safe.json",
+      "sha256": "27df8d74c160673088c85cf37eb1d793780403c04199c79c719850649626a828"
+    },
+    {
+      "bytes": 954,
+      "path": "stage-runtime-terminal.original.json",
+      "sha256": "996946953bf2f4916fc2cd3ccafbd33cb8eff9ef7e6894226440fda6b493eb40"
+    },
+    {
+      "bytes": 0,
+      "path": "stage.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1010,
+      "path": "stage.stdout",
+      "sha256": "bc1d324c2493d32e96a0aa710510a7c9930f4f3eb668baa9065d480f2f9a781e"
+    }
+  ],
+  "files_count": 17,
+  "private_originals_excluded": true,
+  "schema": "heptabao.safe-evidence-file-manifest.v1"
+}

@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793976041934,
+    "cwd": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1b14e01ce-fc05-77a3",
+    "idempotency_key": "heptabao-rog-4bde9-r10-resource-readonly-20261106-r1",
+    "launch_error": "Remote launch outcome unavailable",
+    "launch_state": "launch_unknown",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b14e01ce-fc05-77a3",
+    "request_digest": "bdc7e3caf51eabe8c2f8d3e81372d19352aca286a8abfc89e5a40f6da3eda8a8",
+    "request_fingerprint": 13675149254369127400,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b14e01ce-fc05-77a3"
+  },
+  "launch": {
+    "automatic_retry": false,
+    "job_id": "1a1b14e01ce-fc05-77a3",
+    "outcome": "unknown",
+    "reconcile_via": "process_status",
+    "state": "launch_unknown",
+    "status_authoritative": false
+  },
+  "local_record_pending": false,
+  "reused": false
+}

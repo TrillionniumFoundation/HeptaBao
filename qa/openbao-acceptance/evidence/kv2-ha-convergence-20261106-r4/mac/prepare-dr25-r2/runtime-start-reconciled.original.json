@@ -1,0 +1,73 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/dr25_mac_fixed_wrapper.py",
+      "--prepare-only",
+      "--build-receipt-sha256",
+      "90753d3b4f9b966c43d3e29919239f8d9aa879616c821a3d9ce0b6aa854054d6"
+    ],
+    "created_unix_ms": 1793976914282,
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1",
+    "env_keys": [
+      "LANG",
+      "PATH",
+      "TZ"
+    ],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b15b516a-fc05-77f4",
+    "idempotency_key": "heptabao-mac-dr25-prepare-a2577-r2-20261106",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b15b516a-fc05-77f4",
+    "request_digest": "e2867b19b1aea9db4a8b73dc0bb8a1ad8efe6b0467e59180f9c60edc4ca19f86",
+    "request_fingerprint": 16322869249736354267,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b15b516a-fc05-77f4"
+  },
+  "launch": null,
+  "retried_launch": false,
+  "reused": true,
+  "status": {
+    "at_unix_ms": 1793976923586,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b15b516a-fc05-77f4",
+    "launch_nonce": "74f8c5dc429afee1fee7f0db8c85397b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 34049,
+        "stored": 34049
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

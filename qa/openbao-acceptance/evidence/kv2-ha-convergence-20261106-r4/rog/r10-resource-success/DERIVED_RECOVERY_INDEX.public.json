@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.derived-safe-payload-recovery-index.v1",
+  "group": "convergence-20261106-r1/resource-observation-before-r10-r2",
+  "derived_index": true,
+  "original_index": false,
+  "original_manifest_bytes_recovered": false,
+  "original_manifest_pin": {
+    "path": "MANIFEST.public.json",
+    "bytes": 1086,
+    "sha256": "929b956a60af08bbe113507c1da2182ace99bfec877649fbf8c618af3b7c7495"
+  },
+  "original_manifest_counted_in_published_denominator": false,
+  "all_known_original_payload_leaves_recovered": true,
+  "original_payload_leaf_count": 5,
+  "published_leaf_count_including_derived_index": 6,
+  "original_payload_tree_sha1": "1e75da8d42c11aa04819975e12363b0ec7c7fd79",
+  "original_leaf_bytes_sha256_and_git_blob_sha1_verified": true,
+  "new_machine_acceptance_authority": false,
+  "evidence_qualification_unchanged": true,
+  "private_transport_or_credential_payloads_included": false,
+  "scope_note": "All payload leaves from the previously retained safe package are recovered exactly. The unavailable original manifest is recorded only by its previously verified size and SHA256.",
+  "files": [
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 3879,
+      "sha256": "e104d608c5eb62c1ee451a8dd7592800772d3c5e2a4cd04e9ea5da117a864b7c",
+      "git_blob_sha1": "fe42750a330e7fc91689117f6884176be51247f6"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1032,
+      "sha256": "2bbf61ee69c6cd02cccfd7624d0198090f6c201b33b03fc048408d739314becc",
+      "git_blob_sha1": "2d1f78b7866d7419d8dd84a2b9d46c31b0247363"
+    },
+    {
+      "path": "runtime-stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "runtime-stdout.original",
+      "bytes": 1024,
+      "sha256": "b11fca531268d2a014215f4102f82d0eca6c4e8af1d6db5d8f851b9f2331ab89",
+      "git_blob_sha1": "3b2df137a6f5362175403ebb202ae2d1b7383048"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "1e952198309686ef20c3dcdedafa67b8893d24b302aea061dbaa46039ca52e3d",
+      "git_blob_sha1": "3d0af4af876075ee24976f7824a82ad8c44fcab2"
+    }
+  ]
+}

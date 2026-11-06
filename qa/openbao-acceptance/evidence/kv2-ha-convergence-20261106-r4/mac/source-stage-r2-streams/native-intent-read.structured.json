@@ -1,0 +1,16 @@
+{
+  "atomic_snapshot": false,
+  "encoding": "utf-8",
+  "files": [
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/intent.public.json",
+      "sha256": "8a9073332abb92bb35157768ee6da60281601e928b61dcc683fdd0f4f7e50f3c",
+      "size": 949,
+      "text": "{\n  \"base_commit\": \"4bde9aee03fcd27c59e13607e529b1cee594b249\",\n  \"base_tree\": \"f08493a23f8ea0637073651231865ea9607b790e\",\n  \"bundle\": {\n    \"bytes\": 17033,\n    \"device\": 16777244,\n    \"inode\": 72723172,\n    \"sha256\": \"158b2b841d2f1d63dfd18ca8b466f4f4a38bc0076a7f6a86e535a26f66f09764\"\n  },\n  \"clone_no_hardlinks\": true,\n  \"control\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2\",\n  \"dr_started\": false,\n  \"prepare_only_executed\": false,\n  \"product_started\": false,\n  \"production_authority\": false,\n  \"runtime_outer_seconds\": 60,\n  \"source\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/source-dr25-a2577-r2\",\n  \"source_commit\": \"a25772377e9bfad91564cf6702a26e861fded16f\",\n  \"source_tree\": \"d34d344e261811c406f63de56b3a7227c0e0ddf3\",\n  \"work_seconds\": 52,\n  \"wrapper_sha256\": \"df564e34fd021e4eb75204b3eb8b817c175e1d860cb1bbfe06a5a62690e05b3c\"\n}\n",
+      "version": "16777244:72723178:949:1793976604515497912:1793976604515497912"
+    }
+  ],
+  "snapshot_scope": "independent_file",
+  "truncated": false
+}

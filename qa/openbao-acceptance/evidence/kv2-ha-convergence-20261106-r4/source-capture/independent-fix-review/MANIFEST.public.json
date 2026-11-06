@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "bytes": 3566,
+      "path": "REVIEW_083f2236.public.json",
+      "sha256": "5c17528bcc53055dc6a4af7a0abf8cb5751c55ffe74cb6457620520d7c67e392"
+    },
+    {
+      "bytes": 3226,
+      "path": "SUPPLEMENT_9e273696.public.json",
+      "sha256": "257dc12c6b603a77f0eedb5c4ad322b798eeba4d4fe1a46127cab5a71cf6196a"
+    }
+  ],
+  "schema": "heptabao.independent-source-review-manifest.v1",
+  "scope": "Static review only; original blocked review is retained and the supplement closes its precise source blocker. No runtime execution or business authority."
+}

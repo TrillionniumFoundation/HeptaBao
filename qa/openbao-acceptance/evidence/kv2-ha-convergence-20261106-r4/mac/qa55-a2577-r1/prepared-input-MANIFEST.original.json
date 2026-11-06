@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "bytes": 26538,
+      "path": "mac_a2577_qa55_actual_baseline_r1.py",
+      "sha256": "b94b282cf95767d0185bbfa379b0da795092373fab9d938c0b53c23b30aef656"
+    },
+    {
+      "bytes": 8332,
+      "path": "test-selection.public.json",
+      "sha256": "c72708b91ffc1cbb5d51fb33a31fac4d9fe9db240e84f8a3931aece588b06b8a"
+    },
+    {
+      "bytes": 27885,
+      "path": "runtime-request.prepared.json",
+      "sha256": "7a245e3cd56a8378b90d19bfa17f73cc0c426df200c289423ac39ba4e47c4b8b"
+    }
+  ],
+  "formal_production_qualified": false,
+  "nice": 5,
+  "product_run": false,
+  "runtime_seconds": 60,
+  "schema": "heptabao.mac-fixed-qa55-readonly-baseline-prepared-inputs.v1",
+  "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+  "source_tree": "d34d344e261811c406f63de56b3a7227c0e0ddf3",
+  "status": "prepared_not_executed",
+  "work_seconds": 52
+}

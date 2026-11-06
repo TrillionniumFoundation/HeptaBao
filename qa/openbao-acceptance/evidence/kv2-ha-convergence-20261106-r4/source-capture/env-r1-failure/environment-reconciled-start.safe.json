@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.safe-runtime-start-projection.v1",
+  "job_id": "1a1b17696b2-fc05-78ea",
+  "reused": false,
+  "launch_backend": "detached",
+  "launch_ok": true,
+  "idempotency_key": "heptabao-mac-fixed-capture-python-environment-50-0-2-20261106-r1",
+  "full_original_retained_privately": true
+}

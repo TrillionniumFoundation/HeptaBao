@@ -1,0 +1,17 @@
+test_mac_current_sqlite_capture (unittest.loader._FailedTest.test_mac_current_sqlite_capture) ... ERROR
+
+======================================================================
+ERROR: test_mac_current_sqlite_capture (unittest.loader._FailedTest.test_mac_current_sqlite_capture)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_mac_current_sqlite_capture
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'test_mac_current_sqlite_capture'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

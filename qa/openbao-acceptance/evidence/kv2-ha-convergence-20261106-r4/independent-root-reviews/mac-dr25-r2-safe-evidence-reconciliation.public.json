@@ -1,0 +1,34 @@
+{
+  "actual_job_id": "1a1b1639f4d-fc05-7839",
+  "all_child_returncodes_zero_claimed": false,
+  "all_exec_admitted_original_wait_once_no_live_zero_gaps": true,
+  "authbus_qualified": false,
+  "baseline_cases_exact_passed": 31,
+  "cleanup_authorized_by_this_evidence": false,
+  "cutover_authorized_by_this_evidence": false,
+  "darwin_start_ticks_null_count": 700,
+  "darwin_start_ticks_verification_claimed": false,
+  "dr_cases_exact_passed": 25,
+  "formal_kv2_qualified": false,
+  "manifest_files_rehashed": 10,
+  "original_owned_denominator": 700,
+  "original_package_manifest_bytes": 3406,
+  "original_package_manifest_sha256": "39cc15332e7a0e87d8c82f9408c12fd57a13463bf0cc395ba92ff06e6ba2637f",
+  "original_run_elapsed_seconds": 126.73484770907089,
+  "physical_ha_qualified": false,
+  "projection_elapsed_seconds": 0.032376,
+  "projection_job_id": "1a1b178eff2-fc05-78fb",
+  "returncode_counts": {
+    "-9": 8,
+    "0": 691,
+    "2": 1
+  },
+  "safe_projection_bytes": 147183,
+  "safe_projection_sha256": "9f217381dae653ba9f680485189ad853036956ce1bf0ac5603083f2d1fe0741e",
+  "safe_subobservation_gates_passed": 26,
+  "schema": "heptabao.root-mac-dr25-r2-full-safe-evidence-reconciliation.v1",
+  "two_independent_member_observation_counts": {
+    "exit": 700,
+    "prereap": 700
+  }
+}

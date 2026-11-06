@@ -1,0 +1,88 @@
+{
+  "atomic_snapshot": false,
+  "encoding": "utf-8",
+  "files": [
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/09-source-tree.stdout",
+      "sha256": "9e1d9293a35fc0d584c295eb6a846ee582e77173693a7f7a738af72d0b7942f4",
+      "size": 41,
+      "text": "d34d344e261811c406f63de56b3a7227c0e0ddf3\n",
+      "version": "16777244:72727773:41:1793976606703663644:1793976606703663644"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/09-source-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727774:0:1793976606672248251:1793976606672248251"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/10-source-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727777:0:1793976606740440769:1793976606740440769"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/10-source-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727778:0:1793976606740482017:1793976606740482017"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/11-base-after-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e",
+      "size": 41,
+      "text": "4bde9aee03fcd27c59e13607e529b1cee594b249\n",
+      "version": "16777244:72727780:41:1793976607002835691:1793976607002835691"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/11-base-after-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727781:0:1793976606972028519:1793976606972028519"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/12-base-after-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc",
+      "size": 41,
+      "text": "f08493a23f8ea0637073651231865ea9607b790e\n",
+      "version": "16777244:72727782:41:1793976607075401908:1793976607075401908"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/12-base-after-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727783:0:1793976607043187472:1793976607043187472"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/13-base-after-status.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727784:0:1793976607112668009:1793976607112668009"
+    },
+    {
+      "eof": true,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/dr25-a2577-r2/13-base-after-status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777244:72727785:0:1793976607112706424:1793976607112706424"
+    }
+  ],
+  "snapshot_scope": "independent_file",
+  "truncated": false
+}

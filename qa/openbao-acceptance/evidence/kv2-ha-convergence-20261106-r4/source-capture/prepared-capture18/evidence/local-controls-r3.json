@@ -1,0 +1,33 @@
+{
+  "business_capture_executed": false,
+  "elapsed_seconds": 0.22079539300011675,
+  "error_type": null,
+  "errors": 0,
+  "expected_tests": 17,
+  "failures": 0,
+  "inputs_unchanged": true,
+  "log": {
+    "bytes": 3487,
+    "path": "local-controls-r3.log",
+    "sha256": "07aacdba55edc28107e1cfff99cd4afe1ac8df34abc94064d10fafbfd9d9fd1a"
+  },
+  "mac_qualified": false,
+  "outer_budget_seconds": 60,
+  "passed": true,
+  "production_qualified": false,
+  "schema": "heptabao.current-source-capture-local-controls.v1",
+  "scope": "synthetic_owned_sqlite_and_two_real_local_filesystems_only",
+  "skipped": 0,
+  "source_pins": {
+    "mac_current_sqlite_capture.py": {
+      "bytes": 56201,
+      "sha256": "083f223684216842ce3cd223e8115ae5e6435bb4a3239656b00ac500de2b1ff7"
+    },
+    "test_mac_current_sqlite_capture.py": {
+      "bytes": 21748,
+      "sha256": "81fc8c8f95cc0a60b5499f529d7c2a167b7f013d0423549a67847a509e366182"
+    }
+  },
+  "tests_run": 17,
+  "timed_out": false
+}

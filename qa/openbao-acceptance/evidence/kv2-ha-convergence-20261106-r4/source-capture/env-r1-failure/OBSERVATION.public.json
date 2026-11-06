@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.mac-fixed-capture-python-r1-failure-observation.v1",
+  "stage": {
+    "job_id": "1a1b172e794-fc05-78d2",
+    "state": "succeeded",
+    "exit_code": 0,
+    "work_seconds": 0.009076790884137154,
+    "files": 5
+  },
+  "attempt": {
+    "job_id": "1a1b17696b2-fc05-78ea",
+    "state": "failed",
+    "exit_code": 1,
+    "runtime_timed_out": false,
+    "cancelled": false,
+    "controller_deadline_fired": true,
+    "elapsed_seconds": 20.033304624725133,
+    "phase": "download_fixed_wheels",
+    "completed_command_steps": 0,
+    "child_processes_started": 0,
+    "venv_created": false,
+    "packages_installed": false,
+    "environment_ready": false
+  },
+  "first_wheel": {
+    "project": "pip",
+    "version": "26.3",
+    "expected_bytes": 1950951,
+    "observed_partial_bytes": 65536,
+    "http_headers_passed_before_target_open_in_fixed_controller": true,
+    "complete_sha256_verified": false
+  },
+  "other_wheel_files_absent": [
+    "cryptography",
+    "cffi",
+    "pycparser"
+  ],
+  "transport": {
+    "initial_start_mcp_timeout_retained": true,
+    "identical_request_same_key_reconciliation": true,
+    "reconciled_reused_value": false,
+    "authoritative_job_count_for_record": 1,
+    "unobserved_first_transport_dispatch_claimed": false
+  },
+  "diagnostic_limits": {
+    "specific_proxy_or_domain_block_claimed": false,
+    "bandwidth_benchmark_claimed": false,
+    "original_20_second_wheel_budget_unchanged": true,
+    "retry_or_resume_performed": false,
+    "partial_bytes_retained": true
+  },
+  "capture_controls": {
+    "expected": 18,
+    "actual_mac_executed": 0,
+    "qualified": false
+  },
+  "business_capture_executed": false,
+  "production_qualified": false,
+  "formal_kv2_qualified": false
+}

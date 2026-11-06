@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.derived-safe-payload-recovery-index.v1",
+  "group": "convergence-20261106-r1/build-test-4bde9-r10-preflight-failure",
+  "derived_index": true,
+  "original_index": false,
+  "original_manifest_bytes_recovered": false,
+  "original_manifest_pin": {
+    "path": "MANIFEST.public.json",
+    "bytes": 2127,
+    "sha256": "9d5b399fc39da2c5ab10252e3fb7cf2a52f19bc15558db1b4bba5b769f9607ff"
+  },
+  "original_manifest_counted_in_published_denominator": false,
+  "all_known_original_payload_leaves_recovered": true,
+  "original_payload_leaf_count": 11,
+  "published_leaf_count_including_derived_index": 12,
+  "original_payload_tree_sha1": "fe80537133e860e719e7d02d2a9e48ae51973304",
+  "original_leaf_bytes_sha256_and_git_blob_sha1_verified": true,
+  "new_machine_acceptance_authority": false,
+  "evidence_qualification_unchanged": true,
+  "private_transport_or_credential_payloads_included": false,
+  "scope_note": "All payload leaves from the previously retained safe package are recovered exactly. The unavailable original manifest is recorded only by its previously verified size and SHA256.",
+  "files": [
+    {
+      "path": "missing-old-path-native-info-0.original.txt",
+      "bytes": 162,
+      "sha256": "378b4841acea6f46888197bd8a3ababb8fde810725bef03b231ef6a7e40c2fc7",
+      "git_blob_sha1": "e39adb9a746d699074bb1eec9557f12e6a36d569"
+    },
+    {
+      "path": "missing-old-path-native-info-1.original.txt",
+      "bytes": 162,
+      "sha256": "378b4841acea6f46888197bd8a3ababb8fde810725bef03b231ef6a7e40c2fc7",
+      "git_blob_sha1": "e39adb9a746d699074bb1eec9557f12e6a36d569"
+    },
+    {
+      "path": "missing-old-path-native-info-2.original.txt",
+      "bytes": 162,
+      "sha256": "378b4841acea6f46888197bd8a3ababb8fde810725bef03b231ef6a7e40c2fc7",
+      "git_blob_sha1": "e39adb9a746d699074bb1eec9557f12e6a36d569"
+    },
+    {
+      "path": "missing-old-path-native-info-3.original.txt",
+      "bytes": 162,
+      "sha256": "378b4841acea6f46888197bd8a3ababb8fde810725bef03b231ef6a7e40c2fc7",
+      "git_blob_sha1": "e39adb9a746d699074bb1eec9557f12e6a36d569"
+    },
+    {
+      "path": "missing-old-path-native-info-4.original.txt",
+      "bytes": 162,
+      "sha256": "378b4841acea6f46888197bd8a3ababb8fde810725bef03b231ef6a7e40c2fc7",
+      "git_blob_sha1": "e39adb9a746d699074bb1eec9557f12e6a36d569"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 15184,
+      "sha256": "7454046d5ac8fb764a458d28a9964df01485e15d17468ce92a14ee00a465a71b",
+      "git_blob_sha1": "ae3d32848596f61e20c370f59c61d8eccaf25015"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 101276,
+      "sha256": "3624304e08ac0646ccd3f1e08df277d4f597e0e17b7787410e1558094b3a5bd8",
+      "git_blob_sha1": "552b9555275346ba6ee1cd6317a6e77959423eec"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1015,
+      "sha256": "d28ce4d9d294b87c6f19685ec934622d191f09b836609e73fa99ee70f090e7eb",
+      "git_blob_sha1": "43eb774fd1e6561610b21201d0e07a7999c460af"
+    },
+    {
+      "path": "runtime-stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "runtime-stdout.original",
+      "bytes": 527,
+      "sha256": "7c2e1efcfdcc1ca175f20ee63ee616c8a925e90155ea5876521816895272101a",
+      "git_blob_sha1": "3956a9483a5a9265d9576ad7b2513c3b3f9882ac"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 726,
+      "sha256": "79834c9fa751bcc986f477cb51e9e0f3bdf5b52159ba0c4e31cb74e4ebf7cc6f",
+      "git_blob_sha1": "2afb65f0c3f8f467f27c14fe88644293d7194e62"
+    }
+  ]
+}
