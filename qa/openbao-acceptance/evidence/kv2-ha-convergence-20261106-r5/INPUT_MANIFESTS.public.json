@@ -1,0 +1,119 @@
+{
+  "cleanup_qualified": false,
+  "formal_business_kv2_qualified": false,
+  "package_bytes": 2713675,
+  "package_count": 7,
+  "package_files": 326,
+  "packages": [
+    {
+      "bytes": 44829,
+      "files": 38,
+      "manifest": {
+        "bytes": 6662,
+        "git_blob_sha1": "e137a84c458c050154bcfd2ed249d69464c59d44",
+        "path": "MANIFEST.public.json",
+        "sha256": "b25c81bd542393c573f350c56fbf1386bad807a444fa4bb72a776d9dc96f4b5a"
+      },
+      "name": "rog-preparation",
+      "original_manifest_bytes_preserved": true,
+      "path": "rog/preparation",
+      "tree": "5707a68215da1c33f28dbbf98b4d0b26369d6875",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 368219,
+      "files": 13,
+      "manifest": {
+        "bytes": 5625,
+        "git_blob_sha1": "c1d3d3115728e4fa986eb373a90b6320addbe84f",
+        "path": "INPUT_BINDING.public.json",
+        "sha256": "1848064de0c1f367b19d20ba6abead9aa833f21dcc09603554bb4add3d513b89"
+      },
+      "name": "rog-inputs",
+      "original_manifest_bytes_preserved": true,
+      "path": "rog/inputs",
+      "tree": "aab7c7015a6508fe3a907f89850e08f33a1b1ede",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 1812604,
+      "files": 161,
+      "manifest": {
+        "bytes": 70947,
+        "git_blob_sha1": "f08f7a0bdd58ee66c4487bfee8c5c356f27f9cd7",
+        "path": "MANIFEST.public.json",
+        "sha256": "b4de439d7c5a372b4e9d011e5a2f2bda203aec5d2d0d9307ce0f2afa833cb0f6"
+      },
+      "name": "rog-r11",
+      "original_manifest_bytes_preserved": true,
+      "path": "rog/diagnostic-r11",
+      "tree": "7ebaa98a7d18aff7cb6fc0bea38e90d474bd9aca",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 431923,
+      "files": 79,
+      "manifest": {
+        "bytes": 14475,
+        "git_blob_sha1": "84ef7a18083b65f58566ad1f9509f5584fbcacad",
+        "path": "MANIFEST.public.json",
+        "sha256": "2780ec2cbc88b03d507c2369cb3dc2580404f222d8f2b7f8ec45aecec946c47f"
+      },
+      "name": "mac-env-capture-controls",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/environment-and-controls",
+      "tree": "6ab5c4cd3e6c0943f3fe4c4c3a498e6ae8af5699",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 18798,
+      "files": 11,
+      "manifest": {
+        "bytes": 2939,
+        "git_blob_sha1": "cd3e409645282aa96dfa6e1fa070e2b228edfeb2",
+        "path": "MANIFEST.public.json",
+        "sha256": "47c741d1e25670e8aa712cbc0ba9b02df5ab960d49dd6d5af87c72354dfcd97f"
+      },
+      "name": "mac-current-source-admission",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/current-source-admission",
+      "tree": "bea5f34a303d6984b591ab470b5fa57367474e3c",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 26935,
+      "files": 18,
+      "manifest": {
+        "bytes": 5333,
+        "git_blob_sha1": "c5ac19872a9611a282ce94c9b18e484b9d7141bd",
+        "path": "MANIFEST.public.json",
+        "sha256": "169b81f4950ae250888aa914432f73a47e547625a4db9b530d09c4da2d2d05b7"
+      },
+      "name": "mac-public-wheel-transfers",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/public-wheel-transfers",
+      "tree": "c21b1d24fcfe4c30c64a1d22433deded326653ca",
+      "tree_independently_recomputed": true
+    },
+    {
+      "bytes": 10367,
+      "files": 6,
+      "manifest": {
+        "bytes": 1079,
+        "git_blob_sha1": "b8ec31458cc7820b10e1b02eaf5141bde53cb356",
+        "path": "MANIFEST.public.json",
+        "sha256": "eef02b9e1aefd219dcd73cd4f60dd3dc86b4c33ada81c7fe091bb28b27f6b660"
+      },
+      "name": "mac-rog-wheel-download",
+      "original_manifest_bytes_preserved": true,
+      "path": "mac/rog-wheel-download",
+      "tree": "6f4048069910cedf99f891fb65abc40e7998865d",
+      "tree_independently_recomputed": true
+    }
+  ],
+  "physical_ha_qualified": false,
+  "previous_commit": "7f0e87292552521a56204acd44b895591662f1dc",
+  "schema": "heptabao.evidence-r5-package-bindings.v1",
+  "traffic_cutover_qualified": false,
+  "trusted_authbus_qualified": false
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.evidence-publication-tree-independent-check.v1",
+  "base_tree": "290e919c0d7dc1c08323e2e28030cc516ae722b0",
+  "expected_root_tree": "282a1a14840bd1474ecdeb79da692dfe9c811122",
+  "recomputed_root_tree": "282a1a14840bd1474ecdeb79da692dfe9c811122",
+  "equal": true,
+  "new_top_entries": 17,
+  "existing_leaf_replacement_allowed": false,
+  "method": "Independent canonical Git object SHA1 from locally fetched base trees and exact UTF8 publication input; package trees previously verified through native API."
+}

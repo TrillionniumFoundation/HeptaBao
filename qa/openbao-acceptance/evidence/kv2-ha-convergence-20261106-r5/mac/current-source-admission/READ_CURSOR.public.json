@@ -1,0 +1,21 @@
+{
+  "job_id": "1a1b1b702cb-fc05-7a6d",
+  "output_complete": true,
+  "output_durable": true,
+  "schema": "heptabao.original-stream-cursor-manifest.v1",
+  "stderr": {
+    "bytes": 0,
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 4970,
+    "eof": true,
+    "next_offset": 4970,
+    "offset": 0,
+    "sha256": "9a574ad43ba74673f20f960074c33c261f56ba3048f27f8e464fe8131dfe0e8b"
+  },
+  "terminal_publication_confirmed": true
+}

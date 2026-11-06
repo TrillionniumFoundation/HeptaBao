@@ -1,0 +1,58 @@
+{
+  "budgets_seconds": {
+    "copy_each": 20,
+    "install": 35,
+    "runtime": 180,
+    "venv": 15,
+    "verify": 10,
+    "work": 150
+  },
+  "business_capture_executed_by_this_review": false,
+  "changed_existing_constants": [
+    "INPUT",
+    "OUT",
+    "PLAN_PIN"
+  ],
+  "changed_existing_function": [
+    "main"
+  ],
+  "controller": {
+    "bytes": 29364,
+    "sha256": "4ec4f525c3a926573b98ea42d36b85fbdbc9a0e4f535d8f5d48283c514e01cd0"
+  },
+  "create_only_new_input_and_output_roots_required": true,
+  "darwin_controls18_executed_by_this_review": false,
+  "diff": {
+    "bytes": 12460,
+    "sha256": "5038c38fab9de64af466423b827bbc2e25db875754f41c2c6a8a8b5133eeb1c9"
+  },
+  "four_package_metadata_markers_dependency_edges_and_custody_objects_unchanged": true,
+  "four_receiver_full_sha_and_native_versions_bound": true,
+  "global_environment_or_repository_dependencies_changed": false,
+  "native_nice": 5,
+  "new_download_or_external_provider_calls": false,
+  "new_functions": [
+    "source_version",
+    "validate_offline_provenance",
+    "copy_fixed_wheel"
+  ],
+  "offline_install_and_verify_programs_unchanged": true,
+  "original_functions_ast_equal": 17,
+  "plan": {
+    "bytes": 11294,
+    "sha256": "7639a1521c7f8551ea7cd603c2efc11b359b04149b1191c50ffeaa1fc59bf044"
+  },
+  "prior_failure_preservation_claim": "Only the two bound prior failed files contents (bytes and SHA256) are compared before and after; metadata identity across the whole attempt is not asserted.",
+  "prior_failure_reclassified": false,
+  "production_acceptance_granted": false,
+  "receiver_directory_identity_checked_before_and_after": true,
+  "receiver_version_checks_include_ctime": true,
+  "removed_functions": [
+    "NoRedirect",
+    "download"
+  ],
+  "review_scope": "Static admission review of the exact r1-to-r2 installer change; no environment success or capture qualification is inferred.",
+  "reviewed_at_utc": "2026-11-06T16:15:37.976404+00:00",
+  "schema": "heptabao.mac-offline-environment-r2-independent-root-review.v1",
+  "status": "admitted_for_one_bound_offline_environment_execution"
+}

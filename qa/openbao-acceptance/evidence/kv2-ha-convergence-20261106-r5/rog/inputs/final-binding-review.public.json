@@ -1,0 +1,27 @@
+{
+  "all_embedded_bytes_pinned": true,
+  "bootstrap_ast_only_embedded_items_changed": true,
+  "changed_actual_preparation_fields": [
+    "authoritative_state",
+    "elapsed_seconds",
+    "preparation_job_id",
+    "preparation_result_bytes",
+    "preparation_result_sha256",
+    "runtime_cancelled",
+    "runtime_exit_code",
+    "runtime_output_complete",
+    "runtime_output_durable",
+    "runtime_terminal_sha256",
+    "runtime_timed_out",
+    "source_preparation_executed",
+    "terminal_publication_confirmed"
+  ],
+  "controller_bytes_identical": true,
+  "diagnostic_build_launched": false,
+  "legacy_preservation": false,
+  "machine_acceptance": "HOLD",
+  "only_selection_top_field_changed": "fresh_diagnostic_source",
+  "schema": "heptabao.diagnostic-final-input-binding-review.v1",
+  "selected_unique_cases": 107,
+  "status": "passed_static_review"
+}

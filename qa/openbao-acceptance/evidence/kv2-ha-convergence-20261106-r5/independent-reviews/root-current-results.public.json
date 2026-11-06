@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.root-independent-current-results-review.v1",
+  "review_kind": "derived independent readback, never an original terminal",
+  "env_r3": {
+    "job_id": "1a1b1c05955-fc05-7aa0",
+    "actual_native_terminal_independently_read": true,
+    "exit_code": 0,
+    "state": "succeeded",
+    "timed_out": false,
+    "cancelled": false,
+    "complete_and_durable": true,
+    "public_receipt_bytes": 3886,
+    "public_receipt_sha256": "fabe693cfc1764f4686abaff7a5425ea0e5067c2bd036fa26e22fec7dfd6e1bb",
+    "original_owned_children": 3,
+    "all_original_children_once_waited_and_retired": true
+  },
+  "capture_controls18": {
+    "job_id": "1a1b1c4c600-fc05-7abc",
+    "actual_native_terminal_independently_read": true,
+    "public_receipt_bytes": 9753,
+    "public_receipt_sha256": "0c0a6f5f12a1d2bb5a1f3de7a70194ac1ed226eeac9816d5495f1ad18a961914",
+    "exact_unique_test_names": 18,
+    "passed": 18,
+    "failed": 0,
+    "errors": 0,
+    "skips": 0,
+    "real_filesystems": 2,
+    "original_owned_synthetic_writers": 1,
+    "all_original_children_once_waited_and_retired": true,
+    "business_source_opened": false
+  },
+  "current_source_metadata": {
+    "job_id": "1a1b1b702cb-fc05-7a6d",
+    "actual_native_terminal_independently_read": true,
+    "public_receipt_bytes": 5849,
+    "public_receipt_sha256": "4013a9636c1e8f95e99746bb20ea489fb9eb751a896b9d72692569ea879bf1fe",
+    "configured_agents": 5,
+    "declared_database_families": 9,
+    "main_databases_present": 6,
+    "total_present_main_database_bytes": 3278327808,
+    "shared_wal_bytes": 5969912,
+    "main_database_contents_read": false,
+    "metadata_stability_is_not_writer_fence": true,
+    "historical_private_file_identity_or_content_pin_independently_captured": false,
+    "historical_private_unchanged_since_original_admission_proven": false,
+    "fresh_current_plan_revalidation_required": true
+  },
+  "phase_gates": {
+    "formal_business_kv2": false,
+    "physical_three_machine_ha": false,
+    "trusted_authbus_without_j3160": false,
+    "any_business_traffic_cutover": false,
+    "old_service_or_binary_cleanup": false
+  },
+  "independent_projection_reads": {
+    "environment_children": 3,
+    "capture_controls_children": 1,
+    "original_wait_counts_all_one": true,
+    "observed_no_live_before_reap_all_true": true,
+    "return_codes_all_zero": true,
+    "gap_counts_all_zero": true,
+    "darwin_waitid_si_uid_used_as_authority": false
+  },
+  "evidence_scope": "Full current application SQLite capture, backup and restoration have not run at this checkpoint. No production KV2 or replacement qualification is conferred."
+}

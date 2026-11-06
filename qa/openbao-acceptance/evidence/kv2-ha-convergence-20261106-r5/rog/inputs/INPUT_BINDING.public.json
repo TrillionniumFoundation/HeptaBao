@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.rog-diagnostic-frozen-input-binding.v1",
+  "status": "launched_diagnostic_not_complete",
+  "source_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "source_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+  "original_controller_sha256": "d2c9bc407e7b2abb050b926ad5688863af225473a6472bb733372c6b99bfac6f",
+  "selected_unique_cases": 107,
+  "server_cases": 90,
+  "peer_cases": 17,
+  "all_original_test_selection_build_profile_and_budgets_unchanged": true,
+  "original_process_group_and_cleanup_functions_ast_unchanged": true,
+  "effective_environment_only_target_directory_changed": true,
+  "cold_target": true,
+  "compilation_performance_comparison_qualified": false,
+  "legacy_preservation": false,
+  "machine_acceptance": "HOLD",
+  "rollback_qualified": false,
+  "dr_qualified": false,
+  "cutover_qualified": false,
+  "formal_kv2_qualified": false,
+  "physical_ha_qualified": false,
+  "authbus_migration_qualified": false,
+  "full_replacement_qualified": false,
+  "expected_success_status": "diagnostic_passed_legacy_hold",
+  "expected_receipt_schema": "heptabao.convergence-normal-diagnostic-build-tests.v1",
+  "all21_original_pin_set_sha256": "1c21715a8157542e5205dfea92437f172a86619120de8d34769f0075a4ba5b73",
+  "expected_absent_names": [
+    "heptabao-seed",
+    "heptabao-server",
+    "server_libtest"
+  ],
+  "required_before_after_matching_count": 18,
+  "original_all21_preservation_gate_must_remain_failed": true,
+  "missing_assets_rebuilt_or_substituted": false,
+  "original_r10_failure_receipt_sha256": "7454046d5ac8fb764a458d28a9964df01485e15d17468ce92a14ee00a465a71b",
+  "source_preparation": {
+    "base_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-4bde9-r9",
+    "clone_no_hardlinks": true,
+    "expected_commit": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+    "expected_tree": "f08493a23f8ea0637073651231865ea9607b790e",
+    "original_preparation_seconds": 150,
+    "path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/source-4bde9-diagnostic-r11",
+    "preparation_required_before_build": true,
+    "preparation_result_bytes": 9269,
+    "preparation_result_path": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/control/source-4bde9-diagnostic-r11-prep/result.public.json",
+    "preparation_result_sha256": "625274962440eda1635323a719d61e230cd7537cae26806245b9168917c1923b",
+    "runtime_outer_seconds": 180,
+    "source_preparation_executed": true,
+    "preparation_job_id": "1a1b192ffdb-fc05-79a9",
+    "authoritative_state": "succeeded",
+    "runtime_exit_code": 0,
+    "runtime_timed_out": false,
+    "runtime_cancelled": false,
+    "runtime_output_complete": true,
+    "runtime_output_durable": true,
+    "terminal_publication_confirmed": true,
+    "runtime_terminal_sha256": "38b0728233ca824fb88e96123cdc3e0869c313e91584098ccdb361e278f1b2a8",
+    "elapsed_seconds": 3.723041800025385
+  },
+  "runtime": {
+    "job_id": "1a1b196c999-fc05-79b6",
+    "idempotency_key": "heptabao-rog-diagnostic-build-4bde9-r11-20261106-r1",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-B",
+      "-"
+    ],
+    "requested_native_nice": 5,
+    "effective_nice_independently_measured": false,
+    "outer_seconds": 12000,
+    "launch_reused": false,
+    "last_observed_state": "running"
+  },
+  "actual_formal_consumer": {
+    "source_commit": "a25772377e9bfad91564cf6702a26e861fded16f",
+    "sha256": "2271a4ca539e1190b03e95e95d4d1c79414bd852c80ac85e205def2adac74263",
+    "function": "validate_build_receipt",
+    "first_guard_requires_normal_schema_and_status_passed": true,
+    "diagnostic_schema_and_status_do_not_satisfy_guard": true,
+    "basis": "immutable source and Python AST; no forged actual test receipt"
+  },
+  "files": [
+    {
+      "path": "controller.py",
+      "bytes": 28356,
+      "sha256": "7d993c47271ce2d9dd84b64bb925770122559d2e0296dc9a12a2728a39962855"
+    },
+    {
+      "path": "test-selection.public.json",
+      "bytes": 58485,
+      "sha256": "c83414bbbca10f860a8b9b1355933c42b0a05f35c9b9dab95079253e8144494c"
+    },
+    {
+      "path": "candidate.bundle",
+      "bytes": 1393,
+      "sha256": "9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd"
+    },
+    {
+      "path": "bootstrap.py",
+      "bytes": 118761,
+      "sha256": "0897796833630ef7594eb3f453c91232faadafb1ffe3db145a2f8477803ed1f7"
+    },
+    {
+      "path": "source-prep.py",
+      "bytes": 8857,
+      "sha256": "37391ded4676c2b4c75596a836af03214b756c8689f81885bae59177bc5daa77"
+    },
+    {
+      "path": "controller.review.patch",
+      "bytes": 12464,
+      "sha256": "5a0f6ecd6b1319ccdce93eaf64683d593ad896b77e681ecb1f97f0e72bea69a4"
+    },
+    {
+      "path": "source-prep.review.patch",
+      "bytes": 7695,
+      "sha256": "8f55e6e253caebfa15082540f6ef49550b7bba7f5abe5f74aa0d24fada34904a"
+    },
+    {
+      "path": "static-review.public.json",
+      "bytes": 4504,
+      "sha256": "c89413dc489fe3b4de87c6f0d6dc510621bbe060d2ab156e0e94f91d48f528fd"
+    },
+    {
+      "path": "static-review.stdout.original",
+      "bytes": 1099,
+      "sha256": "6829781b52be71c4880a601a0dc5e021647f96f4d016e15e550e58b9b2118201"
+    },
+    {
+      "path": "final-binding-review.public.json",
+      "bytes": 857,
+      "sha256": "f326e0bfc70dc7655fe68d795ebc1ad53f02f08c36ecbf6339d3ee8d569a5374"
+    },
+    {
+      "path": "runtime-request.original.json",
+      "bytes": 119105,
+      "sha256": "94faf26add45867a2d4f0e1dedcf9d791cdcd6415d322419efc7b1c666ef8c0f"
+    },
+    {
+      "path": "runtime-start.original.json",
+      "bytes": 1018,
+      "sha256": "93be2b384cbb1ee2d1dbdcd56a8995298944b59bf74c9508d5f5a7edb0495d93"
+    }
+  ]
+}

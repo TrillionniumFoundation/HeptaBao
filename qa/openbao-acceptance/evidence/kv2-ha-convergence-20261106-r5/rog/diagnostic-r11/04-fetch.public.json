@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "fetch",
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/candidate.bundle",
+    "HEAD"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 30,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31102704,
+    "pgid": 1321528,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1321528,
+  "requested_cap_seconds": 30,
+  "seconds": 0.027055,
+  "started_at_unix": 1793980817.812921,
+  "stderr_bytes": 158,
+  "stderr_sha256": "ce00b9444867a0571a19ae339c24984d4a45c7c12fb1e9544d55b30f7ab2d023",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "04-fetch",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

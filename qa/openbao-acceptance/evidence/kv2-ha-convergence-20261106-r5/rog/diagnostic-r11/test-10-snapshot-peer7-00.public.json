@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-ha-service-libtest",
+    "authenticated_peer_frame::snapshot::tests::",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.997921,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31330980,
+    "pgid": 1372748,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1372748,
+  "requested_cap_seconds": 600,
+  "seconds": 0.704765,
+  "started_at_unix": 1793983100.5653346,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 941,
+  "stdout_sha256": "86d2085310b1ca345c67c92eab5f2e535210c5998fbb0d755606df778fa05cea",
+  "step": "test-10-snapshot-peer7-00",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

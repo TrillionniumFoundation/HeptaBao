@@ -1,0 +1,7 @@
+
+running 2 tests
+test auth::forward_actor::snapshot_tests::snapshot_actor_final_use_remains_delivery_only_without_second_admission ... ok
+test auth::forward_actor::snapshot_tests::snapshot_actor_original_auth_is_distinct_from_a_new_restored_owner ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 3758 filtered out; finished in 0.00s
+

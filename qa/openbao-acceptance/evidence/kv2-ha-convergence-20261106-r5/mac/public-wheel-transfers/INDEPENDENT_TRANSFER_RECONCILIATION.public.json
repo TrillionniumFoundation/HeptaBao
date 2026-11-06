@@ -1,0 +1,502 @@
+{
+  "destination_admission": {
+    "dev": 16777244,
+    "directory": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-public-wheels-from-rog-r1",
+    "exit_code": 0,
+    "inode": 72739337,
+    "job_id": "1a1b185665d-fc05-7953",
+    "mode": "0700",
+    "owner_uid": 501,
+    "source": "source_audit actual fixed admission",
+    "state": "succeeded",
+    "targets_absent": true
+  },
+  "file_count": 3,
+  "files": [
+    {
+      "basename": "pip-26.3-py3-none-any.whl",
+      "commit_reused": false,
+      "committed": true,
+      "expected_destination_version": "absent",
+      "independent_target_file_info_verified": true,
+      "sha256": "f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13",
+      "size": 1950951,
+      "source_full_sha256_verified": true,
+      "source_host": "rog",
+      "source_path_disclosure": "private account root omitted",
+      "source_reads": [
+        {
+          "bytes": 65536,
+          "chunk_sha256": "f9f506f3b803cd45000ff9d21f7d87869d61bb748328c78f14e3b87ead2dfc4f",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 65536,
+          "offset": 0,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "e5b16452fe4a8b222df8514bdcc004ed88723541f420c993e2acc583a5b1c8ca",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 131072,
+          "offset": 65536,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "5c521ba41689d60a6422e7619f5490bdff78a61ff7f64481b8415a9a9aedbfc9",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 196608,
+          "offset": 131072,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "bd55d991d01838bd191de60483072f26628d05382b1a603c03a29e968089b3d4",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 262144,
+          "offset": 196608,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "0f6e8c1c0d71b48d19cddc97b308c294a7feec1c38fa3353b8c880bacab4d36b",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 327680,
+          "offset": 262144,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "ef3f6d68c46c076cce90c67d1e8ae7e5a21ed6b0b6c59736de8a8677b4fcb7b8",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 393216,
+          "offset": 327680,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "96f0f73969ce2b406d87691aa270b77d2c42cdb9bf2b31bc567c04c2f2c60f3a",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 458752,
+          "offset": 393216,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "c88e332661fd3c790c30cc49650ca6b41f4dc071a05393045f5a4c10d0feaeb8",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 524288,
+          "offset": 458752,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "80f512835c821af298e8254e5253030795716ebcdd93e70506afb756189144e2",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 589824,
+          "offset": 524288,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "b4c2d0ddc2a531d420fbbfe208bb452379fa635ef4e769474ea2bd511d1d09f0",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 655360,
+          "offset": 589824,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "a82ec913237255893a797ea60c7c7e2ba1958eb40140d88b1587ec1cb7aac45b",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 720896,
+          "offset": 655360,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "fe2855e1adda09c6ae5935e05dc9ffd3b8830c578e63ad6945a712b958966934",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 786432,
+          "offset": 720896,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "612768a5e22bd4eecf78a850cf9ad1f67750779225189fce5d3d2340d46b2954",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 851968,
+          "offset": 786432,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "179968cbed3823e66356790182ae6985aa9b92b95e1efced784ba1fa9877109a",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 917504,
+          "offset": 851968,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "d4be5f804947b3ac49ea6d589debd5434903e03fbcbc6ba9f724be9adeac84ab",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 983040,
+          "offset": 917504,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "36f10ab6f8dc9e773cc841ee8c9a1253944aefb32a4617f9d8f23037ccba2768",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1048576,
+          "offset": 983040,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "ea4da73d00f496e8e2c27172e84611be0938d3c0cf01a8308f26fdafc8e7d9ab",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1114112,
+          "offset": 1048576,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "9dc703542951ce43cf068d4e49f2aa43b15b3734a87e65c4c4bc810caf2db385",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1179648,
+          "offset": 1114112,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "19e2bf6da21e20666bd265853b2f83f50f07e89622a7d47e73880b67bfe8a18c",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1245184,
+          "offset": 1179648,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "e036afe9f92c650df6e78b7e5f6319e6de0abe3ca1b16111498cc33620851cfd",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1310720,
+          "offset": 1245184,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "2e6872f43425c56b3912ef1bc71b9e72957a5e9fdf142551c13b75ae9fc1d21d",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1376256,
+          "offset": 1310720,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "24953fb036288706805ba9a0ab429d8cce7faac48598d4d6a8116cc72bc63511",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1441792,
+          "offset": 1376256,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "b04b095f66f5bd397116c24a0751205dc087c019e825e420bc4a330edefccf2c",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1507328,
+          "offset": 1441792,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "13fd159628705373c22c8182ce12b8e37f50b19da8fa0972ff182c4a2619d760",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1572864,
+          "offset": 1507328,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "cd29d6174afadcd6ac7299c3a1311855af84b0e41ecd40617f3fa80be1d0d52f",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1638400,
+          "offset": 1572864,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "6a7200eeede0cd3e2b6d032177ad6c9eb9df3fa04c6924e37f4ea0a639a4632c",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1703936,
+          "offset": 1638400,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "4eb9facfeed5fe5ad8676eee8d362d2164b83f92ce3955d8f19b3459810d3d4f",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1769472,
+          "offset": 1703936,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "6273500125c954519f132e1dcf500450fb66ee4fad996f74129ad071106557f6",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1835008,
+          "offset": 1769472,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "57d19a1b4409d8a40516ca3e4304c1608ff4cd3a7af8fdeb9a9d1455be11e5c0",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1900544,
+          "offset": 1835008,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 50407,
+          "chunk_sha256": "4d13453c37cabd003adb58a6a76b63a8894f9e3a02c6e994638ccf694406a790",
+          "eof": true,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 1950951,
+          "offset": 1900544,
+          "source_version_bound": true
+        }
+      ],
+      "source_relative_basename": "pip-26.3-py3-none-any.whl",
+      "source_version": "66306:28071693:1950951:1793979224474902960:1793979224474902960",
+      "target_gid": 20,
+      "target_host": "mac",
+      "target_link_count": 1,
+      "target_mode_octal": "0600",
+      "target_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-public-wheels-from-rog-r1/pip-26.3-py3-none-any.whl",
+      "target_uid": 501,
+      "target_version": "16777244:72739421:1950951:1793981366034099222:1793981434036642587",
+      "target_xattr_count": 0,
+      "upload_chunks": [
+        {
+          "bytes": 262144,
+          "chunk_sha256": "f151903909f53e9174e7497e6c409a28142bfa4a87014be1865adb00ae198c34",
+          "expected_destination_version": "absent",
+          "next_offset": 262144,
+          "offset": 0,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "8357897a4195bc183a37fcc8f6fc0195baa2597a8ee76327c434e1399918eb91",
+          "expected_destination_version": "absent",
+          "next_offset": 524288,
+          "offset": 262144,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "6ac1ddeb0350b8011b184f6021c0f85bbcd3774213e6f11fa6ba93243211db07",
+          "expected_destination_version": "absent",
+          "next_offset": 786432,
+          "offset": 524288,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "7c02619bddaf4a60e2499408d6bacc7378102b5c34a889e15c482090e9679393",
+          "expected_destination_version": "absent",
+          "next_offset": 1048576,
+          "offset": 786432,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "77ceb275478fbdb5963b2428265b4642649167bcba463d782ca2b954d1ad3cbe",
+          "expected_destination_version": "absent",
+          "next_offset": 1310720,
+          "offset": 1048576,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "8caa5360126d83996a972f714439303779de4e9c74a08b2d1499285a2417f1bc",
+          "expected_destination_version": "absent",
+          "next_offset": 1572864,
+          "offset": 1310720,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 262144,
+          "chunk_sha256": "144e1af44f4dd55a28f863f7c900b765e294f55cf9a557a40028420f51d70b39",
+          "expected_destination_version": "absent",
+          "next_offset": 1835008,
+          "offset": 1572864,
+          "staged_not_visible": true
+        },
+        {
+          "bytes": 115943,
+          "chunk_sha256": "75097b1ace3d99ee458cbecf18cda4004f70054a0b575729755cfd68de6c04d9",
+          "expected_destination_version": "absent",
+          "next_offset": 1950951,
+          "offset": 1835008,
+          "staged_not_visible": true
+        }
+      ],
+      "upload_id": "capture-mac-pip263-r1"
+    },
+    {
+      "basename": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+      "commit_reused": false,
+      "committed": true,
+      "expected_destination_version": "absent",
+      "independent_target_file_info_verified": true,
+      "sha256": "c654de545946e0db659b3400168c9ad31b5d29593291482c43e3564effbcee13",
+      "size": 181487,
+      "source_full_sha256_verified": true,
+      "source_host": "rog",
+      "source_path_disclosure": "private account root omitted",
+      "source_reads": [
+        {
+          "bytes": 65536,
+          "chunk_sha256": "2ce92cf985f6417303c0aaffedb9a0abbae6ff85d3b05d0784551348756daf68",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 65536,
+          "offset": 0,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 65536,
+          "chunk_sha256": "c60b8024c955280936d2e6d5d2132bbb0924a16ad275136c0573a85f1d65ec24",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 131072,
+          "offset": 65536,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 50415,
+          "chunk_sha256": "0b5d0b97379e686b5aa29c0691af35dead4311b34002a78b373aa886a8d04c6b",
+          "eof": true,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 181487,
+          "offset": 131072,
+          "source_version_bound": true
+        }
+      ],
+      "source_relative_basename": "cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+      "source_version": "66306:28071697:181487:1793979233216848388:1793979233216848388",
+      "target_gid": 20,
+      "target_host": "mac",
+      "target_link_count": 1,
+      "target_mode_octal": "0600",
+      "target_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-public-wheels-from-rog-r1/cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl",
+      "target_uid": 501,
+      "target_version": "16777244:72739407:181487:1793980456167683373:1793980527732357594",
+      "target_xattr_count": 0,
+      "upload_chunks": [
+        {
+          "bytes": 181487,
+          "chunk_sha256": "c654de545946e0db659b3400168c9ad31b5d29593291482c43e3564effbcee13",
+          "expected_destination_version": "absent",
+          "next_offset": 181487,
+          "offset": 0,
+          "staged_not_visible": true
+        }
+      ],
+      "upload_id": "capture-mac-cffi200-r1"
+    },
+    {
+      "basename": "pycparser-2.23-py3-none-any.whl",
+      "commit_reused": false,
+      "committed": true,
+      "expected_destination_version": "absent",
+      "independent_target_file_info_verified": true,
+      "sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934",
+      "size": 118140,
+      "source_full_sha256_verified": true,
+      "source_host": "rog",
+      "source_path_disclosure": "private account root omitted",
+      "source_reads": [
+        {
+          "bytes": 65536,
+          "chunk_sha256": "2c58df39cc97fbec31c13bed7016468446a91efe5afca6af3bbb015825f38277",
+          "eof": false,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 65536,
+          "offset": 0,
+          "source_version_bound": true
+        },
+        {
+          "bytes": 52604,
+          "chunk_sha256": "ec2dc13e6bf58b2c466f42a36567fdefe42051000400c056d4be12a284c17757",
+          "eof": true,
+          "independent_chunk_sha256_verified": true,
+          "next_offset": 118140,
+          "offset": 65536,
+          "source_version_bound": true
+        }
+      ],
+      "source_relative_basename": "pycparser-2.23-py3-none-any.whl",
+      "source_version": "66306:28071698:118140:1793979236383828640:1793979236383828640",
+      "target_gid": 20,
+      "target_host": "mac",
+      "target_link_count": 1,
+      "target_mode_octal": "0600",
+      "target_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-public-wheels-from-rog-r1/pycparser-2.23-py3-none-any.whl",
+      "target_uid": 501,
+      "target_version": "16777244:72739367:118140:1793980020216636518:1793980078790564466",
+      "target_xattr_count": 0,
+      "upload_chunks": [
+        {
+          "bytes": 118140,
+          "chunk_sha256": "e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934",
+          "expected_destination_version": "absent",
+          "next_offset": 118140,
+          "offset": 0,
+          "staged_not_visible": true
+        }
+      ],
+      "upload_id": "capture-mac-pycparser223-r1"
+    }
+  ],
+  "formal_capture_performed": false,
+  "installation_performed": false,
+  "production_authority": false,
+  "schema": "heptabao.fixed-public-wheel-transfer-reconciliation.v1",
+  "source_admission_authority": "source_audit fixed public wheel tuple; every source read independently version and chunk/full-SHA bound by host_evidence",
+  "source_chunks": 35,
+  "source_download_job": "1a1b17e4e51-fc05-7921",
+  "status": "passed",
+  "upload_chunks": 10
+}

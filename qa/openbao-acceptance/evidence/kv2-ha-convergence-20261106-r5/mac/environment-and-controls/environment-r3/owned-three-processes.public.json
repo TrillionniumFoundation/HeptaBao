@@ -1,0 +1,222 @@
+{
+  "schema": "heptabao.owned-process-complete-safe-projection.v1",
+  "source_binding": {
+    "runtime_job_id": "1a1b1c05955-fc05-7aa0",
+    "public_receipt_bytes": 3886,
+    "public_receipt_sha256": "fabe693cfc1764f4686abaff7a5425ea0e5067c2bd036fa26e22fec7dfd6e1bb"
+  },
+  "derivation": "explicit allowlist from exact complete private receipt read; private receipt and argv fingerprints withheld",
+  "original_count": 3,
+  "children": [
+    {
+      "index": 0,
+      "pid": 76518,
+      "exec_admitted": true,
+      "returncode": 0,
+      "original_wait_count": 1,
+      "original_wait_completed": true,
+      "no_live_members_before_reap": true,
+      "gaps": [],
+      "signal_count": 0,
+      "birth": {
+        "pid": 76518,
+        "ppid": 76516,
+        "pgid": 76518,
+        "sid": 76518,
+        "uid": 501,
+        "state": "R"
+      },
+      "members_at_leader_exit": [
+        {
+          "pid": 76518,
+          "ppid": 76516,
+          "pgid": 76518,
+          "sid": 76518,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "members_before_original_reap": [
+        {
+          "pid": 76518,
+          "ppid": 76516,
+          "pgid": 76518,
+          "sid": 76518,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "darwin_waitable_zombie_anchor": {
+        "live_birth": {
+          "pid": 76518,
+          "ppid": 76516,
+          "pgid": 76518,
+          "sid": 76518,
+          "uid": 501,
+          "state": "R"
+        },
+        "observed": {
+          "pid": 76518,
+          "ppid": 76516,
+          "pgid": 76518,
+          "sid": 76518,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "admitted_immutable_unreaped_session_leader"
+        },
+        "waitid": {
+          "si_code": 1,
+          "si_pid": 76518,
+          "si_signo": 20,
+          "si_status": 0,
+          "si_uid": 0,
+          "si_uid_used_as_authority": false
+        }
+      }
+    },
+    {
+      "index": 1,
+      "pid": 76538,
+      "exec_admitted": true,
+      "returncode": 0,
+      "original_wait_count": 1,
+      "original_wait_completed": true,
+      "no_live_members_before_reap": true,
+      "gaps": [],
+      "signal_count": 0,
+      "birth": {
+        "pid": 76538,
+        "ppid": 76516,
+        "pgid": 76538,
+        "sid": 76538,
+        "uid": 501,
+        "state": "R"
+      },
+      "members_at_leader_exit": [
+        {
+          "pid": 76538,
+          "ppid": 76516,
+          "pgid": 76538,
+          "sid": 76538,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "members_before_original_reap": [
+        {
+          "pid": 76538,
+          "ppid": 76516,
+          "pgid": 76538,
+          "sid": 76538,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "darwin_waitable_zombie_anchor": {
+        "live_birth": {
+          "pid": 76538,
+          "ppid": 76516,
+          "pgid": 76538,
+          "sid": 76538,
+          "uid": 501,
+          "state": "R"
+        },
+        "observed": {
+          "pid": 76538,
+          "ppid": 76516,
+          "pgid": 76538,
+          "sid": 76538,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "admitted_immutable_unreaped_session_leader"
+        },
+        "waitid": {
+          "si_code": 1,
+          "si_pid": 76538,
+          "si_signo": 20,
+          "si_status": 0,
+          "si_uid": 0,
+          "si_uid_used_as_authority": false
+        }
+      }
+    },
+    {
+      "index": 2,
+      "pid": 76582,
+      "exec_admitted": true,
+      "returncode": 0,
+      "original_wait_count": 1,
+      "original_wait_completed": true,
+      "no_live_members_before_reap": true,
+      "gaps": [],
+      "signal_count": 0,
+      "birth": {
+        "pid": 76582,
+        "ppid": 76516,
+        "pgid": 76582,
+        "sid": 76582,
+        "uid": 501,
+        "state": "R"
+      },
+      "members_at_leader_exit": [
+        {
+          "pid": 76582,
+          "ppid": 76516,
+          "pgid": 76582,
+          "sid": 76582,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "members_before_original_reap": [
+        {
+          "pid": 76582,
+          "ppid": 76516,
+          "pgid": 76582,
+          "sid": 76582,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "darwin_waitable_zombie_anchor": {
+        "live_birth": {
+          "pid": 76582,
+          "ppid": 76516,
+          "pgid": 76582,
+          "sid": 76582,
+          "uid": 501,
+          "state": "R"
+        },
+        "observed": {
+          "pid": 76582,
+          "ppid": 76516,
+          "pgid": 76582,
+          "sid": 76582,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "admitted_immutable_unreaped_session_leader"
+        },
+        "waitid": {
+          "si_code": 1,
+          "si_pid": 76582,
+          "si_signo": 20,
+          "si_status": 0,
+          "si_uid": 0,
+          "si_uid_used_as_authority": false
+        }
+      }
+    }
+  ],
+  "finished": true,
+  "failed": false,
+  "interrupted": false,
+  "passed_process_custody": true,
+  "escaped_session_containment_claim": false,
+  "storage_or_production_authority": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.rog-original-public-wheel-download-checkpoint.v1",
+  "job_id": "1a1b17e4e51-fc05-7921",
+  "parent_checkpoint_tree": "6ab5c4cd3e6c0943f3fe4c4c3a498e6ae8af5699",
+  "files": [
+    {
+      "path": "result.public.json",
+      "bytes": 4005,
+      "sha256": "77ac4489798f4186faa63d54901b9c9adc3f4a9535db85590a717ece2a4d52cf"
+    },
+    {
+      "path": "runtime-terminal.original.json",
+      "bytes": 731,
+      "sha256": "3634d8688e9251c3b0a145a214ca6f32f3245f1ff7b78efcb5da0407fc1affed"
+    },
+    {
+      "path": "runtime.stdout",
+      "bytes": 3269,
+      "sha256": "040e9e559d219644406dad026349e0e7b99fb67da6333805747eb76e206f3080"
+    },
+    {
+      "path": "runtime.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CHECKPOINT_SCOPE.md",
+      "bytes": 1283,
+      "sha256": "703a8e7a9c41bfd934d7ced18254c5ac0590d41cb4436389b5d7468a96075096"
+    }
+  ],
+  "excluded": [
+    "wheel payloads",
+    "ROG source account paths",
+    "private tool request payloads"
+  ]
+}

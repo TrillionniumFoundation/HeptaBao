@@ -1,0 +1,6 @@
+
+running 1 test
+test service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3759 filtered out; finished in 0.00s
+

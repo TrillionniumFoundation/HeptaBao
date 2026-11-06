@@ -1,0 +1,15 @@
+test_01_all_four_original_metadata_complete_semantics_and_crypto_text_difference (__main__.MetadataGuards.test_01_all_four_original_metadata_complete_semantics_and_crypto_text_difference) ... ok
+test_02_python_constraint_changes_that_still_allow_current_python_are_refused (__main__.MetadataGuards.test_02_python_constraint_changes_that_still_allow_current_python_are_refused) ... ok
+test_03_dependency_minimum_change_is_refused (__main__.MetadataGuards.test_03_dependency_minimum_change_is_refused) ... ok
+test_04_missing_currently_inactive_dependency_is_refused (__main__.MetadataGuards.test_04_missing_currently_inactive_dependency_is_refused) ... ok
+test_05_new_currently_inactive_dependency_is_refused (__main__.MetadataGuards.test_05_new_currently_inactive_dependency_is_refused) ... ok
+test_06_canonical_duplicates_on_both_sides_are_refused (__main__.MetadataGuards.test_06_canonical_duplicates_on_both_sides_are_refused) ... ok
+test_07_direct_url_on_both_sides_is_refused (__main__.MetadataGuards.test_07_direct_url_on_both_sides_is_refused) ... ok
+test_08_project_extra_on_both_sides_is_refused (__main__.MetadataGuards.test_08_project_extra_on_both_sides_is_refused) ... ok
+test_09_changed_dependency_marker_is_refused (__main__.MetadataGuards.test_09_changed_dependency_marker_is_refused) ... ok
+test_10_name_and_version_changes_are_refused (__main__.MetadataGuards.test_10_name_and_version_changes_are_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.001s
+
+OK

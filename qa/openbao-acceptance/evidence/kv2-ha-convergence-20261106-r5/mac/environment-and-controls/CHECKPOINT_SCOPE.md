@@ -1,0 +1,17 @@
+# Isolated capture runtime and actual Darwin controls
+
+This is evidence for dependency preparation and synthetic data-protection controller qualification. It does not qualify a persistent HeptaBao KV2 service, HA, AuthBus, any client cutover, business capture or old-service cleanup.
+
+The original Mac environment r1 remains failed at its 20-second first-wheel download limit; its already-frozen public tree is `7f3bd5e1753c132ab683e12a32a9db933a7a8dd2`. A separate ROG preparation retrieved the same four exact public wheels. The transfer included no package installation. The complete cryptography transfer ledger is included here; the other three wheels have their separate peer-owned tree `c21b1d24fcfe4c30c64a1d22433deded326653ca`.
+
+Mac environment r2 remains failed at the strict textual wheel/PyPI metadata comparison, with zero child processes or installed environment. The preserved original METADATA bytes show the cryptography Python-specifier ordering and requirement whitespace/quotation differences. No wheel, package version, deadline or dependency closure was changed to make it pass.
+
+The r3 controller binds both complete original METADATA and PyPI bytes, compares full SpecifierSet and Requirement constraints before any venv or installation, rejects canonical duplicates/URLs/project extras, and preserves inactive markers. Ten actual Mac guards passed against the exact pinned pip vendored packaging 26.3 parser. Their full names, logs and terminal are separate from the 18 capture controls.
+
+The new r3 environment then completed its original 150/180-second workflow in 5.615667666774243 seconds, with the original 15/35/10-second child budgets. All three original children executed, returned zero, were waited exactly once, and had no live descendants or custody gaps. The exact four distributions and their compatibility with the enumerated 1412 interpreter tags, dependency closure, Fernet positive and negative operations and isolation from global packages were checked.
+
+The exact 18 capture controls then passed once on the real Mac in that environment, with zero failures, errors or skips and the original 52/60-second budget. Their single synthetic WAL writer and two actual filesystems are covered by the complete allowlisted custody projection. Owned fixtures were retired; real business SQLite/configuration/credential contents were not opened by these controls. The original 18-control source remains 9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972.
+
+There are independently observed newer product CI failures. This package does not resolve them, promote the previous 107/31+25 evidence into complete product acceptance, or authorize a product/service start. Any later current-database capture is a separately admitted data-protection operation with its own original total deadline, private current source plan, writer/synchronization limitations, and full protected rollback boundaries.
+
+All package data in this package is public distribution metadata or source. Actual private receipts, argv fingerprints and complete native launch/request transport records remain restricted; the public projections explicitly state their scope. Source account paths are omitted from the public wheel-transfer ledger. Original reviewed QA source files retain their fixed synthetic/control paths so their exact byte identity is preserved. No wheel payload, actual business configuration, agent identifiers, credentials, root/unseal material or credential-dependent fingerprint is included.

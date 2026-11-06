@@ -1,0 +1,8 @@
+{"actual_tag_count": 1412, "closure_validated": true, "inactive_markers": [{"from": "cryptography", "requirement": "typing-extensions>=4.13.2; python_full_version < \"3.11\""}, {"from": "cryptography", "requirement": "bcrypt>=3.1.5; extra == \"ssh\""}], "selected": {"cffi": "2.0.0", "cryptography": "50.0.2", "pip": "26.3", "pycparser": "2.23"}}
+Processing ./wheels/pip-26.3-py3-none-any.whl (from -r /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/requirements.fixed.txt (line 1))
+Processing ./wheels/cryptography-50.0.2-cp311-abi3-macosx_11_0_arm64.whl (from -r /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/requirements.fixed.txt (line 2))
+Processing ./wheels/cffi-2.0.0-cp314-cp314-macosx_11_0_arm64.whl (from -r /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/requirements.fixed.txt (line 3))
+Processing ./wheels/pycparser-2.23-py3-none-any.whl (from -r /Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1/control/formal-kv2-python-env-50-0-2-r3/requirements.fixed.txt (line 4))
+Installing collected packages: pycparser, pip, cryptography, cffi
+
+Successfully installed cffi-2.0.0 cryptography-50.0.2 pip-26.3 pycparser-2.23

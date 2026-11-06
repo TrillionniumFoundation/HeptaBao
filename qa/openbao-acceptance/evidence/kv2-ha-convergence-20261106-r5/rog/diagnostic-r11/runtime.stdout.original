@@ -1,0 +1,102 @@
+{"event": "controller_installed", "controller_sha256": "7d993c47271ce2d9dd84b64bb925770122559d2e0296dc9a12a2728a39962855", "selection_sha256": "c83414bbbca10f860a8b9b1355933c42b0a05f35c9b9dab95079253e8144494c", "bundle_sha256": "9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd"}
+{"event": "step_started", "step": "00-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "00-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.031554}
+{"event": "step_started", "step": "01-preserved-format-diff", "budget_seconds": 30}
+{"event": "step_finished", "step": "01-preserved-format-diff", "exit_code": 0, "timed_out": false, "seconds": 0.343812}
+{"event": "step_started", "step": "02-untracked", "budget_seconds": 30}
+{"event": "step_finished", "step": "02-untracked", "exit_code": 0, "timed_out": false, "seconds": 0.02434}
+{"event": "step_started", "step": "03-bundle-verify", "budget_seconds": 30}
+{"event": "step_finished", "step": "03-bundle-verify", "exit_code": 0, "timed_out": false, "seconds": 0.024826}
+{"event": "step_started", "step": "04-fetch", "budget_seconds": 30}
+{"event": "step_finished", "step": "04-fetch", "exit_code": 0, "timed_out": false, "seconds": 0.027055}
+{"event": "step_started", "step": "05-canonical-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "05-canonical-tree", "exit_code": 0, "timed_out": false, "seconds": 0.024329}
+{"event": "step_started", "step": "06-canonical-parent", "budget_seconds": 30}
+{"event": "step_finished", "step": "06-canonical-parent", "exit_code": 0, "timed_out": false, "seconds": 0.024653}
+{"event": "step_started", "step": "07-stage-exact-format", "budget_seconds": 30}
+{"event": "step_finished", "step": "07-stage-exact-format", "exit_code": 0, "timed_out": false, "seconds": 0.143054}
+{"event": "step_started", "step": "08-format-working-tree", "budget_seconds": 30}
+{"event": "step_finished", "step": "08-format-working-tree", "exit_code": 0, "timed_out": false, "seconds": 0.026692}
+{"event": "step_started", "step": "09-checkout-canonical", "budget_seconds": 30}
+{"event": "step_finished", "step": "09-checkout-canonical", "exit_code": 0, "timed_out": false, "seconds": 0.025577}
+{"event": "step_started", "step": "10-clean-source", "budget_seconds": 30}
+{"event": "step_finished", "step": "10-clean-source", "exit_code": 0, "timed_out": false, "seconds": 0.024735}
+{"event": "step_started", "step": "11-fsck", "budget_seconds": 60}
+{"event": "step_finished", "step": "11-fsck", "exit_code": 0, "timed_out": false, "seconds": 2.797692}
+{"event": "step_started", "step": "12-format-check", "budget_seconds": 60}
+{"event": "step_finished", "step": "12-format-check", "exit_code": 0, "timed_out": false, "seconds": 5.349543}
+{"event": "step_started", "step": "13-normal-release-build", "budget_seconds": 1800}
+{"event": "step_finished", "step": "13-normal-release-build", "exit_code": 0, "timed_out": false, "seconds": 947.371086}
+{"event": "step_started", "step": "14-server-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "14-server-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 1122.481444}
+{"event": "step_started", "step": "15-peer-libtest-build", "budget_seconds": 3600}
+{"event": "step_finished", "step": "15-peer-libtest-build", "exit_code": 0, "timed_out": false, "seconds": 138.567771}
+{"event": "step_started", "step": "heptabao-server-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-server-list", "exit_code": 0, "timed_out": false, "seconds": 0.030155}
+{"event": "step_started", "step": "heptabao-ha-service-list", "budget_seconds": 30}
+{"event": "step_finished", "step": "heptabao-ha-service-list", "exit_code": 0, "timed_out": false, "seconds": 0.025917}
+{"event": "step_started", "step": "test-00-ssh25-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-00-ssh25-00", "exit_code": 0, "timed_out": false, "seconds": 43.765189}
+{"event": "step_started", "step": "test-01-mount1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-01-mount1-00", "exit_code": 0, "timed_out": false, "seconds": 0.24797}
+{"event": "step_started", "step": "test-02-redirect5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-02-redirect5-00", "exit_code": 0, "timed_out": false, "seconds": 0.145492}
+{"event": "step_started", "step": "test-03-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-03-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 10.130943}
+{"event": "step_started", "step": "test-04-ordinary5-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-04-ordinary5-00", "exit_code": 0, "timed_out": false, "seconds": 0.050252}
+{"event": "step_started", "step": "test-05-no_forward6-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-05-no_forward6-00", "exit_code": 0, "timed_out": false, "seconds": 8.019129}
+{"event": "step_started", "step": "test-06-legacy-ingress7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-00", "exit_code": 0, "timed_out": false, "seconds": 0.093434}
+{"event": "step_started", "step": "test-06-legacy-ingress7-01", "budget_seconds": 599.898}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-01", "exit_code": 0, "timed_out": false, "seconds": 0.094424}
+{"event": "step_started", "step": "test-06-legacy-ingress7-02", "budget_seconds": 599.797}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-02", "exit_code": 0, "timed_out": false, "seconds": 0.094017}
+{"event": "step_started", "step": "test-06-legacy-ingress7-03", "budget_seconds": 599.697}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-03", "exit_code": 0, "timed_out": false, "seconds": 0.026851}
+{"event": "step_started", "step": "test-06-legacy-ingress7-04", "budget_seconds": 599.663}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-04", "exit_code": 0, "timed_out": false, "seconds": 0.028219}
+{"event": "step_started", "step": "test-06-legacy-ingress7-05", "budget_seconds": 599.629}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-05", "exit_code": 0, "timed_out": false, "seconds": 0.028936}
+{"event": "step_started", "step": "test-06-legacy-ingress7-06", "budget_seconds": 599.593}
+{"event": "step_finished", "step": "test-06-legacy-ingress7-06", "exit_code": 0, "timed_out": false, "seconds": 0.027359}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-00", "exit_code": 0, "timed_out": false, "seconds": 0.027355}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-01", "budget_seconds": 599.964}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-01", "exit_code": 0, "timed_out": false, "seconds": 0.02671}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-02", "budget_seconds": 599.931}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-02", "exit_code": 0, "timed_out": false, "seconds": 0.547833}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-03", "budget_seconds": 599.376}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-03", "exit_code": 0, "timed_out": false, "seconds": 0.027266}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-04", "budget_seconds": 599.342}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-04", "exit_code": 0, "timed_out": false, "seconds": 0.028249}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-05", "budget_seconds": 599.307}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-05", "exit_code": 0, "timed_out": false, "seconds": 0.02655}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-06", "budget_seconds": 599.273}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-06", "exit_code": 0, "timed_out": false, "seconds": 0.026156}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-07", "budget_seconds": 599.239}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-07", "exit_code": 0, "timed_out": false, "seconds": 0.027721}
+{"event": "step_started", "step": "test-07-legacy-cold-h2-9-08", "budget_seconds": 599.204}
+{"event": "step_finished", "step": "test-07-legacy-cold-h2-9-08", "exit_code": 0, "timed_out": false, "seconds": 0.026761}
+{"event": "step_started", "step": "test-08-legacy-same-root1-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-08-legacy-same-root1-00", "exit_code": 0, "timed_out": false, "seconds": 0.801602}
+{"event": "step_started", "step": "test-09-snapshot-body10-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-09-snapshot-body10-00", "exit_code": 0, "timed_out": false, "seconds": 0.036856}
+{"event": "step_started", "step": "test-10-snapshot-peer7-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-10-snapshot-peer7-00", "exit_code": 0, "timed_out": false, "seconds": 0.704765}
+{"event": "step_started", "step": "test-11-snapshot-actor2-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-11-snapshot-actor2-00", "exit_code": 0, "timed_out": false, "seconds": 0.038885}
+{"event": "step_started", "step": "test-12-snapshot-wire4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-12-snapshot-wire4-00", "exit_code": 0, "timed_out": false, "seconds": 0.038973}
+{"event": "step_started", "step": "test-13-snapshot-audit4-00", "budget_seconds": 599.997}
+{"event": "step_finished", "step": "test-13-snapshot-audit4-00", "exit_code": 0, "timed_out": false, "seconds": 13.669129}
+{"event": "step_started", "step": "test-14-native-jwt15-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-14-native-jwt15-00", "exit_code": 0, "timed_out": false, "seconds": 8.935725}
+{"event": "step_started", "step": "test-15-tls-close4-00", "budget_seconds": 599.998}
+{"event": "step_finished", "step": "test-15-tls-close4-00", "exit_code": 0, "timed_out": false, "seconds": 0.849477}
+{"event": "step_started", "step": "99-final-source-head", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-head", "exit_code": 0, "timed_out": false, "seconds": 0.025828}
+{"event": "step_started", "step": "99-final-source-clean", "budget_seconds": 30}
+{"event": "step_finished", "step": "99-final-source-clean", "exit_code": 0, "timed_out": false, "seconds": 0.031112}
+{"event": "terminal", "status": "diagnostic_passed_legacy_hold", "failure": null, "executed_passed_cases": 107, "result": "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/result.public.json"}

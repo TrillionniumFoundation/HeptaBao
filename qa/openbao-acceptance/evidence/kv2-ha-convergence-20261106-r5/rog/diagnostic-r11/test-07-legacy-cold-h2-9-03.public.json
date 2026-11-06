@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.375691,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31330873,
+    "pgid": 1371133,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1371133,
+  "requested_cap_seconds": 600,
+  "seconds": 0.027266,
+  "started_at_unix": 1793983099.4940739,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 220,
+  "stdout_sha256": "10a3770e9dea200e576021bc18e8f1ce24893a9bcc7aa8a24b8dcca19e2aae97",
+  "step": "test-07-legacy-cold-h2-9-03",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

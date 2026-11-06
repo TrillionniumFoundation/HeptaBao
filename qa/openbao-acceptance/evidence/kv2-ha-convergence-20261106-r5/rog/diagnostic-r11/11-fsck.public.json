@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "fsck",
+    "--full",
+    "--strict"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 60,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31102736,
+    "pgid": 1321572,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1321572,
+  "requested_cap_seconds": 60,
+  "seconds": 2.797692,
+  "started_at_unix": 1793980818.1243417,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 562,
+  "stdout_sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3",
+  "step": "11-fsck",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

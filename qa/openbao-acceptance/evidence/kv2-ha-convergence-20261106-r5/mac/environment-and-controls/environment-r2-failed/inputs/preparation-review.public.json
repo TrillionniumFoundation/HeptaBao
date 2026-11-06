@@ -1,0 +1,51 @@
+{
+  "actual_darwin_controls18_executed": false,
+  "business_capture_executed": false,
+  "controls18_ast_equal_except_four_bindings": true,
+  "controls18_driver": {
+    "bytes": 17877,
+    "sha256": "693d9420e0a13b8852418ee76a87afc6b4ed07e46a38c29bc293f6524169908f"
+  },
+  "executed": false,
+  "installer": {
+    "bytes": 29364,
+    "sha256": "4ec4f525c3a926573b98ea42d36b85fbdbc9a0e4f535d8f5d48283c514e01cd0"
+  },
+  "original_mac_environment_r1_remains_failed": true,
+  "per_copy_seconds": 20,
+  "plan": {
+    "bytes": 11294,
+    "sha256": "7639a1521c7f8551ea7cd603c2efc11b359b04149b1191c50ffeaa1fc59bf044"
+  },
+  "runtime_seconds": 180,
+  "schema": "heptabao.offline-capture-environment-r2-preparation-review.v1",
+  "status": "prepared_only",
+  "unchanged_dependencies_markers_and_actual_tag_validation": true,
+  "unchanged_four_package_and_wheel_objects": true,
+  "unchanged_installer_functions": [
+    "Refused",
+    "Interrupted",
+    "need",
+    "checkpoint",
+    "interrupted",
+    "unique",
+    "sha",
+    "identity",
+    "read_pinned",
+    "sync_dir",
+    "owned_directory",
+    "new_directory",
+    "write_new",
+    "json_bytes",
+    "clean_env",
+    "wheel_metadata",
+    "run_step"
+  ],
+  "unchanged_offline_install_and_verify_programs": true,
+  "venv_install_verify_budgets": [
+    15,
+    35,
+    10
+  ],
+  "work_seconds": 150
+}

@@ -1,0 +1,9 @@
+
+running 4 tests
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_first_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen ... ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_second_delivery_audit_veto_keeps_authenticated_restore_after_cold_reopen ... ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_source_publication_audit_veto_keeps_real_restore_after_cold_reopen ... ok
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::snapshot_forward_audit_tests::native_ha_snapshot_forward_unverified_attempt_audit_failure_cannot_mint_root_authority ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 3756 filtered out; finished in 13.58s
+

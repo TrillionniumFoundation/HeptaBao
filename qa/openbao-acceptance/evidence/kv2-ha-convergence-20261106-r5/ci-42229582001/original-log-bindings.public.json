@@ -1,0 +1,50 @@
+{
+  "both_actual_source_trees": "f08493a23f8ea0637073651231865ea9607b790e",
+  "failures_reclassified": false,
+  "files": [
+    {
+      "bytes": 2927514,
+      "git_blob_sha1": "d78cda96821d6e66021f5daf355d6f80faee5c04",
+      "path": "merge.job.original.log",
+      "sha256": "f3dbe04d1ed51a14b415dae8a7a6d4f441b854ea07fffae61ff4390a455fd0e0"
+    },
+    {
+      "bytes": 2983636,
+      "git_blob_sha1": "b1c8d52c0cd172999d44a197234b8ce5f5486850",
+      "path": "head.job.original.log",
+      "sha256": "0361631c3e3c1b208a8247ade437141b83e8fd5eb8937e83722bacdb59c62993"
+    },
+    {
+      "bytes": 10194,
+      "git_blob_sha1": "57b99d4a9241ece257af0885d860ddf9dd8d75d6",
+      "path": "merge.failure-excerpt.txt",
+      "sha256": "4c7248b0778d0a0abb1ba165521e81a9babf28c9cadd98d7e61913bf6a22f395"
+    },
+    {
+      "bytes": 1366,
+      "git_blob_sha1": "d2aa50dba1824fb47a82c63ff1745f5c97e97f9e",
+      "path": "head.clippy-excerpt.txt",
+      "sha256": "056ec14941cf5720f51c6df331bf5d29e4a1c6761a765b5205b4a05f11ca903d"
+    }
+  ],
+  "head": "4bde9aee03fcd27c59e13607e529b1cee594b249",
+  "head_failure": "clippy::manual_contains at native_snapshot_peer.rs:54",
+  "head_job": 127931720823,
+  "head_server_tests": {
+    "failed": 0,
+    "ignored": 8,
+    "passed": 3752
+  },
+  "merge_failure": "service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown",
+  "merge_failure_actual_message": "actual install observer absent",
+  "merge_job": 127931720502,
+  "merge_server_tests": {
+    "failed": 1,
+    "ignored": 8,
+    "passed": 3751
+  },
+  "prospective_merge": "6ed25e0d1f229483050a25f18750b7ceb14ee1c5",
+  "retries_started": false,
+  "run_id": 42229582001,
+  "schema": "heptabao.ci-42229582001-original-log-bindings.v1"
+}

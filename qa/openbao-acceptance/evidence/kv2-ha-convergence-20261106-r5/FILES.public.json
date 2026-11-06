@@ -1,0 +1,2704 @@
+{
+  "covered_bytes": 8664033,
+  "covered_files": 337,
+  "files": [
+    {
+      "bytes": 4099,
+      "git_blob_sha1": "f032c0c645fe9d5f8847b35fc5decfa5f1ff329b",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "INPUT_MANIFESTS.public.json",
+      "sha256": "b95bb84a6e9b9b5212013a195f26a5a4ebe9ccd00c23da2e242dcdfaa6bae50f"
+    },
+    {
+      "bytes": 16313,
+      "git_blob_sha1": "1f4f28585ada453f5a038c5e87af088e117a5b3c",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "README.md",
+      "sha256": "f7a1f1bd49429ff72a1c565862b877e57ff0306b912533b186bccb57c6568e98"
+    },
+    {
+      "bytes": 1366,
+      "git_blob_sha1": "d2aa50dba1824fb47a82c63ff1745f5c97e97f9e",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "ci-42229582001/head.clippy-excerpt.txt",
+      "sha256": "056ec14941cf5720f51c6df331bf5d29e4a1c6761a765b5205b4a05f11ca903d"
+    },
+    {
+      "bytes": 2983636,
+      "git_blob_sha1": "b1c8d52c0cd172999d44a197234b8ce5f5486850",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "ci-42229582001/head.job.original.log",
+      "sha256": "0361631c3e3c1b208a8247ade437141b83e8fd5eb8937e83722bacdb59c62993"
+    },
+    {
+      "bytes": 10194,
+      "git_blob_sha1": "57b99d4a9241ece257af0885d860ddf9dd8d75d6",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "ci-42229582001/merge.failure-excerpt.txt",
+      "sha256": "4c7248b0778d0a0abb1ba165521e81a9babf28c9cadd98d7e61913bf6a22f395"
+    },
+    {
+      "bytes": 2927514,
+      "git_blob_sha1": "d78cda96821d6e66021f5daf355d6f80faee5c04",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "ci-42229582001/merge.job.original.log",
+      "sha256": "f3dbe04d1ed51a14b415dae8a7a6d4f441b854ea07fffae61ff4390a455fd0e0"
+    },
+    {
+      "bytes": 1827,
+      "git_blob_sha1": "eb26cc0ebc9712f9571b90c095faefb91059564c",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "ci-42229582001/original-log-bindings.public.json",
+      "sha256": "a06a0d633e171b9f52ae6a0119db0be81c1fcf0eb24b6b5ec533f0d43d792c32"
+    },
+    {
+      "bytes": 2617,
+      "git_blob_sha1": "95fd99dcf429fbe3443be69079472e053271ddff",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "independent-reviews/root-current-results.public.json",
+      "sha256": "410cd78d96b7895b92bf1c7d5a0d653fed6c9888641cbce2ebc16e13d9974467"
+    },
+    {
+      "bytes": 1507,
+      "git_blob_sha1": "6ed4b3bd83de174e0e42d19a414dbd66a326682a",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "independent-reviews/root-rog-r11-recount.public.json",
+      "sha256": "c3c00f5b9e38b4b7099476ab72a9ab0c4a6e93752fbea2a01a5eb4d0b52df2c9"
+    },
+    {
+      "bytes": 921,
+      "git_blob_sha1": "3f36d7707b16d616b9a5ccd39a64a0d7a732053d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/EXECUTED_INPUT_BINDING.public.json",
+      "sha256": "0e7155794ca5947eefb703949ace5111a7e3e5eebf998e9d6915736fbba53da5"
+    },
+    {
+      "bytes": 1245,
+      "git_blob_sha1": "4d5f2c4f7653ee177bdddb01cc31513312c607b2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "183827693b2b11c641278fa1a98fb89e6c0da0e8f12dad9d438ee568b1e729a0"
+    },
+    {
+      "bytes": 2939,
+      "git_blob_sha1": "cd3e409645282aa96dfa6e1fa070e2b228edfeb2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/MANIFEST.public.json",
+      "sha256": "47c741d1e25670e8aa712cbc0ba9b02df5ab960d49dd6d5af87c72354dfcd97f"
+    },
+    {
+      "bytes": 544,
+      "git_blob_sha1": "9eebd918b41d59abc9f37e07b9877f9d106e8466",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/READ_CURSOR.public.json",
+      "sha256": "14fb98127a4b18bbb5bb17c82bd39be8f072fe81bc28d29d970373628ef0c431"
+    },
+    {
+      "bytes": 527,
+      "git_blob_sha1": "b8b3e498088a1862711e375ccaf0a467ca32cc5a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/SOURCE_REVIEW.public.json",
+      "sha256": "617ef090dc89d7c6c1dee48ff42a68c14bac0381d8008182a8dbc1da9f62715b"
+    },
+    {
+      "bytes": 537,
+      "git_blob_sha1": "4c2b21a323c5a6053791ec7b24ab167bd936455c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/result.native-file-info.tool-text.json",
+      "sha256": "ecb6fba7251ee049ca079a5b702f80f30c09f19e4ff28bbacb95109468a27f0c"
+    },
+    {
+      "bytes": 5849,
+      "git_blob_sha1": "3915212887169a63a2f3921d26f072196340b746",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/result.public.json",
+      "sha256": "4013a9636c1e8f95e99746bb20ea489fb9eb751a896b9d72692569ea879bf1fe"
+    },
+    {
+      "bytes": 535,
+      "git_blob_sha1": "c653b70b04ac0e1428afa5e14421e0ec83ba0c11",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/runtime-start.public-projection.json",
+      "sha256": "c4382e9c1e16fafdbde1b51b4b1a4012aa245ab064053eeafd0b2dbdc74b3d07"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "21a42b87a06e6af983049ef24bd7d2b48027bb3e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/runtime-terminal.tool-text.json",
+      "sha256": "564e70389733501c44653e0af409ebd5f18ed9b13f4edde242f3c705716caea6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4970,
+      "git_blob_sha1": "f4904381092be5b3288fde2d34c802296d7e6cd3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/current-source-admission/runtime.stdout.original",
+      "sha256": "9a574ad43ba74673f20f960074c33c261f56ba3048f27f8e464fe8131dfe0e8b"
+    },
+    {
+      "bytes": 3527,
+      "git_blob_sha1": "242e97e5e57e11237947cfc60db24af4b0aac8d2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/CHECKPOINT_SCOPE.md",
+      "sha256": "2e3d6b03114cf995b96a88f38296ba0b91ee1737bd46880f9906d00aa90c3652"
+    },
+    {
+      "bytes": 14475,
+      "git_blob_sha1": "84ef7a18083b65f58566ad1f9509f5584fbcacad",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/MANIFEST.public.json",
+      "sha256": "2780ec2cbc88b03d507c2369cb3dc2580404f222d8f2b7f8ec45aecec946c47f"
+    },
+    {
+      "bytes": 3699,
+      "git_blob_sha1": "d9b2358afa9f866169137dc93321739fda681bc6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/controls.stderr",
+      "sha256": "70d50e2016d6d82d0746b9eda6ac4e7e7c5ce4e1378fe3d974d3ba2679c5b265"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 57280,
+      "git_blob_sha1": "6c9fce81cc5418ca62375bdbecef2bd9c47b5b05",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/inputs/mac_current_sqlite_capture.py",
+      "sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972"
+    },
+    {
+      "bytes": 23809,
+      "git_blob_sha1": "9aa2e19cb1eb9f3574f9af33f11518bfae4e3eb6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/inputs/test_mac_current_sqlite_capture.py",
+      "sha256": "0b93d597b9fd525470951cb7b49cdb6707c11fc38b5e42f0d06bcedc7e0395f6"
+    },
+    {
+      "bytes": 2500,
+      "git_blob_sha1": "6fd0b34f317818b95ea50e635a258f24f33f6021",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/owned-one-writer-and-two-filesystems.public.json",
+      "sha256": "81d7018749b5b8a97fa647dc428eaadd65a76aa52b8d7508b8eadf12f9f00aee"
+    },
+    {
+      "bytes": 9753,
+      "git_blob_sha1": "ab3446c5bceb88f3b3dfdc130eaf7aff0a6650d2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/result.public.json",
+      "sha256": "0c0a6f5f12a1d2bb5a1f3de7a70194ac1ed226eeac9816d5495f1ad18a961914"
+    },
+    {
+      "bytes": 407,
+      "git_blob_sha1": "d304dc2245ae3668bc2840ed127f3e1f4c815f03",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/runtime-request-and-start.public.json",
+      "sha256": "11e06a824ca15a14299c62bb3f9f355090f6e9d181890377712e79731841f4d9"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "f57c754186bd836e8053598e4c268aae69f01951",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/runtime-terminal.original.json",
+      "sha256": "7cb397897cb7275f04524229b2ab90447385c22b0ee2b353a3900c9692d98f5f"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 8851,
+      "git_blob_sha1": "d444308ff157e6612dcaafcfea84c4e031f1e073",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/capture-controls18-r1/runtime.stdout",
+      "sha256": "578de5fe5c8860ad23a3fc1a060101cf9699861c328b1f9e3902b60602913b81"
+    },
+    {
+      "bytes": 21796,
+      "git_blob_sha1": "17ee199ad67226d4951ed2d3d2f431f21de96ecb",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/crypto-transfer-r1/complete-transfer-ledger.public.json",
+      "sha256": "ffde9a6bb10a669d7f97953beac3a8904caffe56ec417cfe2b57742a6684645b"
+    },
+    {
+      "bytes": 213,
+      "git_blob_sha1": "872c10deef074af52efbcc9fbcb138a7d83bb0f8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/crypto-transfer-r1/mac-commit.original.json",
+      "sha256": "a7c3257dc51a6bdaf3df2ed69dd56765fe2ba5167947e58a7c49a910291f8e48"
+    },
+    {
+      "bytes": 576,
+      "git_blob_sha1": "441d0d810d81424ecb97f28ec0c9166163ff964e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/crypto-transfer-r1/mac-file-info.original.json",
+      "sha256": "b8b07226378ab3bae780174d2b4a252fe43e97d093a602353ba94938d4a3c2f6"
+    },
+    {
+      "bytes": 353,
+      "git_blob_sha1": "83dae3d0d177c39d6477747b187f7175b4293a02",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/crypto-transfer-r1/source-file-info.public.json",
+      "sha256": "9c793bb631506978d437d8b95bb331db1fea9159561e51b3272facb8ca408e65"
+    },
+    {
+      "bytes": 11294,
+      "git_blob_sha1": "03ed0caf0d1e67c3793826b271e80ca666fd288c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/inputs/fixed-wheel-plan.json",
+      "sha256": "7639a1521c7f8551ea7cd603c2efc11b359b04149b1191c50ffeaa1fc59bf044"
+    },
+    {
+      "bytes": 12460,
+      "git_blob_sha1": "620818acf7f1aaca8628638865e43edc304c55f0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/inputs/installer-r1-r2.diff",
+      "sha256": "5038c38fab9de64af466423b827bbc2e25db875754f41c2c6a8a8b5133eeb1c9"
+    },
+    {
+      "bytes": 29364,
+      "git_blob_sha1": "871463d641639aa6e696bedd54b9c268ec3554c6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/inputs/mac_fixed_capture_environment.py",
+      "sha256": "4ec4f525c3a926573b98ea42d36b85fbdbc9a0e4f535d8f5d48283c514e01cd0"
+    },
+    {
+      "bytes": 1342,
+      "git_blob_sha1": "5df37c3c84b99dffce58d1dec23975cc32010109",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/inputs/preparation-review.public.json",
+      "sha256": "72f7f8bd295fcd5ef409dffd82a42351e43063ae86662e0ab2de5585e857f59b"
+    },
+    {
+      "bytes": 1728,
+      "git_blob_sha1": "113a94be71599e6694840c8152ea3f342a3c1192",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/result.public.json",
+      "sha256": "86ede481d9cb5ccf10e16d1b1e9ce14c0ff8c88c419778015ad08a38b82ce003"
+    },
+    {
+      "bytes": 409,
+      "git_blob_sha1": "e2fa9604e27d55f5c641b7d67f3530d4f9636baf",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/runtime-request-and-start.public.json",
+      "sha256": "56ca52b0bf63f3b13d61b4c27782d67566011fa26127fc99dee60ea06992135a"
+    },
+    {
+      "bytes": 728,
+      "git_blob_sha1": "5099023307081c8e7e127a6fe24068de0c6a5099",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/runtime-terminal.original.json",
+      "sha256": "33b1cb2ff5e1fe184bb192bdc50fa60bb88ac243a7b0a15c2d49419dd474383c"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1582,
+      "git_blob_sha1": "407488210cd67bc2a3911ca3f2430ab3150becfa",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r2-failed/runtime.stdout",
+      "sha256": "93a53dc1f25fd9c7f1ba5b01566131ff5130d887dc3eb09b63cd3f7c247a7518"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/create-venv.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/create-venv.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13911,
+      "git_blob_sha1": "b95c9f558521800bced57753cf6b1e9baa8f0e54",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/fixed-wheel-plan.json",
+      "sha256": "ce036ee3d7879389eb23c6811b4ab2c2e23bf2221bf5315aaf78d9df40af2b49"
+    },
+    {
+      "bytes": 7813,
+      "git_blob_sha1": "a21580464a2a3ee4ad5af758c60e5cc9f9869d24",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/installer-r2-r3.diff",
+      "sha256": "d81015c39176f48c99441b56654d0fedf700c4ac73390316596801c1dc2be6eb"
+    },
+    {
+      "bytes": 17877,
+      "git_blob_sha1": "2681fd40d9d8b61bb9fa1939c97d2df3114d6820",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/mac_capture_controls18.py",
+      "sha256": "b08d982791eb807fe5a38eefa335bb45e6b8133b2d95132bdd82e925d2b078ce"
+    },
+    {
+      "bytes": 33884,
+      "git_blob_sha1": "cd671eb9fbbefb425a9de1859529ccb949fee389",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/mac_fixed_capture_environment.py",
+      "sha256": "7446010e142d381c524eea804c2a6c03a3f7e075d4143a8b66817f2b4f300985"
+    },
+    {
+      "bytes": 64060,
+      "git_blob_sha1": "7986c0d1f13a7254851989ff02db16075fbd6633",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/mac_metadata_semantics10_r2.py",
+      "sha256": "e2e67ac2080ba648275d5b3f4bf17377c991441f1ce3070b6fa5bc2d13b226b7"
+    },
+    {
+      "bytes": 15146,
+      "git_blob_sha1": "7e221e8277b3c5ba9b32c354d408493f4e7ae8d2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/metadata_guards.template.py",
+      "sha256": "bd2bf9e3f553a01ba9f3419e72f84fb449123fdfb01178cd17b36625bf98e9be"
+    },
+    {
+      "bytes": 1168,
+      "git_blob_sha1": "dff14cc7eac6f5e63a5e2e3f09a876ee39f69e22",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/inputs/preparation-review.public.json",
+      "sha256": "d719a9069908f7c76f57bc7e18250cedafd3245476f2f32c584807c076335118"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/offline-install.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1400,
+      "git_blob_sha1": "3f680a8a2978cea6051b7f1e690b43867db6caa6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/offline-install.stdout",
+      "sha256": "416385112a66035e24830cb96ce4b6bf4d58b1307149145ea00f303ab4a0797d"
+    },
+    {
+      "bytes": 5511,
+      "git_blob_sha1": "ecfd7ce26131b8f4e6b56708fb452a3ecc229cdb",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/owned-three-processes.public.json",
+      "sha256": "c0b30e13cb169cf7f213848b7a2be3c709c1abcca8ad393613cb15c847329b88"
+    },
+    {
+      "bytes": 3886,
+      "git_blob_sha1": "994a31c50986f7649b392d833bcd8bbba773732d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/result.public.json",
+      "sha256": "fabe693cfc1764f4686abaff7a5425ea0e5067c2bd036fa26e22fec7dfd6e1bb"
+    },
+    {
+      "bytes": 423,
+      "git_blob_sha1": "199d7dc36524a267077b9e14e7fd6801e7ca2c8b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/runtime-request-and-start.public.json",
+      "sha256": "b606066d9e9e74c1e75645bd93c799a7882106d9222c9529b5e61c47f6e58095"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "8aab2157a60fb1a57507c601e067fd8dd9f38a54",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/runtime-terminal.original.json",
+      "sha256": "b64376669e1cf91017a374010f353187db2fa17950c7719ad783bb2a5b884c6f"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3364,
+      "git_blob_sha1": "1d9e0658e3cd73eb4b3aa3b468409d636cba18b6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/runtime.stdout",
+      "sha256": "7b24a3ecd42967180e46068e5bb17e8aa0f6e809b1985c7048370b2f1d3e659c"
+    },
+    {
+      "bytes": 531,
+      "git_blob_sha1": "135b1f51099935601ff6b11c048c799dab46dcd6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/venv-python-file-info.original.json",
+      "sha256": "7ea02fe429ff1bae782f52ac6ee1161278314d3b67132e158b7e09a8ef13b35f"
+    },
+    {
+      "bytes": 424,
+      "git_blob_sha1": "ea4358de173c2ef02cc1bb81db6d74ba31afbb1e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/venv/pyvenv.cfg",
+      "sha256": "b6229612749d7d4ba76ba83f0b65c4b80ebd88dfa82eac845d1e65dd1ef83851"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/verify-environment.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 377,
+      "git_blob_sha1": "82bcaf0673a38db59692e4387df722d89a5fa54c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/environment-r3/verify-environment.stdout",
+      "sha256": "1518e6ed92b4f8c85e2632fd625770a36a72ee18f6f86193516c0715f24e9b65"
+    },
+    {
+      "bytes": 2085,
+      "git_blob_sha1": "17a866a3f561e9386d42ac87b373b614ecf7f5a3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/independent-root-reviews/root-env-r2-admission.public.json",
+      "sha256": "91dc4abf5a6a4936d2f6d81b632870a1d9420d02e3d41d31355f247d3b5fe8fd"
+    },
+    {
+      "bytes": 1956,
+      "git_blob_sha1": "60195bfaacd18b8fef5a3d0f4eb37091d8acbb41",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/independent-root-reviews/root-env-r3-admission.public.json",
+      "sha256": "0d49c2b5b76beb7bf38bb0670c9cab44728c056ca423e3cfc593866fe238d954"
+    },
+    {
+      "bytes": 6063,
+      "git_blob_sha1": "7a101a15d7d4bc4afee36d96ba33b85267b258b6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-diagnostic-r1/controller.original.py",
+      "sha256": "fb1dc65641d0957ade1c3d1f64ae0d200eb678efe3fbd8776d2e8bacf0f1a179"
+    },
+    {
+      "bytes": 404,
+      "git_blob_sha1": "1a42848bbf135634fb9086296fc73956383fe5dc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-diagnostic-r1/runtime-request-and-start.public.json",
+      "sha256": "a02c41790f0eb75f819e689134504be24904c547fc26bdedfbc5bff81a17eee6"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "481d293c31593c7ac7db338a37cba8a6c6af228c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-diagnostic-r1/runtime-terminal.original.json",
+      "sha256": "8ed1007ac4481401031b18d6a259d05e3cb8bc82c5e0a9d2afcd8b4ef5bd6e6f"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-diagnostic-r1/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2936,
+      "git_blob_sha1": "aedd7b4d78251c297f25df99d0675c3ff30a7c3d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-diagnostic-r1/runtime.stdout",
+      "sha256": "3452d9ae8ca55af8b0e6e2d0116d273f36937e5c2cad030d14f8aef7723e2384"
+    },
+    {
+      "bytes": 1529,
+      "git_blob_sha1": "2b018ff9d80136375f2def191ce752d7632be081",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/guards.log",
+      "sha256": "955f22392718a4abee395dfc1077b95c8627ddd12247467a09180bfec394a1fb"
+    },
+    {
+      "bytes": 2053,
+      "git_blob_sha1": "ed8864b8c4e93b460aec40ad145d4ab87607f710",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/result.public.json",
+      "sha256": "7eb1611f0d3d6361467770a790427a4f09d69578bae8cbef7941229a26a40a1c"
+    },
+    {
+      "bytes": 410,
+      "git_blob_sha1": "799bbd168a1ff1d796573799bff26e522eba20dd",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/runtime-request-and-start.public.json",
+      "sha256": "548e65c656240c86ed873acd98fccd2366e8d0650fa53c9703cd01eb6a9049a5"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "337cde3a67a89c752b27792c357012db91b6f5a5",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/runtime-terminal.original.json",
+      "sha256": "6fb93a7e16c098ff5cda3e7f98ddef23c6ed66d40dcfd33bf46139ab9535e999"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1835,
+      "git_blob_sha1": "35eed511980dc0401149ec0d95bfb6ccf1b8b563",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-guards10-r1/runtime.stdout",
+      "sha256": "3696906afbcd4a834f4ed2464603b35b0513cf893cd40dff055818f753a6316f"
+    },
+    {
+      "bytes": 2559,
+      "git_blob_sha1": "67508e56a537eec8d96a5ceac506648f73529fcc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/cffi.METADATA.original",
+      "sha256": "b98ce7e3417af089bc12d5c73412d9b3b1683ccf8ec73c986c35ac8c9be1ba39"
+    },
+    {
+      "bytes": 5180,
+      "git_blob_sha1": "0e5c2269e3a7ca4d2b82623af1288763e4feec44",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/controller.original.py",
+      "sha256": "7b5c0d29832bac2f7fd389861f3b076a8df29d27191b3b85d92633d4c59016d5"
+    },
+    {
+      "bytes": 4394,
+      "git_blob_sha1": "1c03e8246787099078b42addd72911d9a6a07599",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/cryptography.METADATA.original",
+      "sha256": "047cfc71226409de4318b360aef15c63a2adf609731e3dcf7fe932f14ea042ee"
+    },
+    {
+      "bytes": 4632,
+      "git_blob_sha1": "8c9117e0cd65c135cda9d7cd22660abdf742ce45",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/pip.METADATA.original",
+      "sha256": "ad63a8564cd158c8de9e6a912e92776b4abc56cfa2d8286ef4c35bfb9cb9e439"
+    },
+    {
+      "bytes": 993,
+      "git_blob_sha1": "318b034f905064b9a7250413cc5ca9574321e5af",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/pycparser.METADATA.original",
+      "sha256": "a2c9a11ccc5ade7e6c3f0bf959e529cb23e79bbe9ea215d8199c8a1a659b3c57"
+    },
+    {
+      "bytes": 1299,
+      "git_blob_sha1": "bf22111b713bf9e3ed30a407cf60f10b7fd256d6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/result.public.json",
+      "sha256": "dd709ec90866b7a9578a56f08838e4fc87119f6e4ba795bb91fc70a8555aa043"
+    },
+    {
+      "bytes": 410,
+      "git_blob_sha1": "a613062f93e5c8a9f966e835fc2a58c3afb895ed",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/runtime-request-and-start.public.json",
+      "sha256": "337939ec93ce399aaddefa8203b846be28bccb7d1a21b262d636e088a53a6ee9"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "f5d5ced0b8ea55d7b3a522904ead8f050f604cd4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/runtime-terminal.original.json",
+      "sha256": "3749f41ad07e55fea10fc8c49f2c78fb4b2831ebb014b211718f1f6ddf2c7f7c"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1139,
+      "git_blob_sha1": "0c3d8d10f512d7d5e5079c888db8f9948132641c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/metadata-originals-preservation-r1/runtime.stdout",
+      "sha256": "46ee01afdcf270a96cff1a3adad0f6b6e007e313515e5b60bf8c6a8381275447"
+    },
+    {
+      "bytes": 3813,
+      "git_blob_sha1": "62f153535ebe1b831ff514917c6c9340607e8782",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r2/controller.original.py",
+      "sha256": "a5e0c990115b7207ee77e3060765760f70042a37325697bd2a2e8771029705c6"
+    },
+    {
+      "bytes": 393,
+      "git_blob_sha1": "17334d2321bd84ec1e048759f2ebfbe1685cf530",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r2/runtime-request-and-start.public.json",
+      "sha256": "ff11e80bd1cd680b5457c1c191dfe185c5898ad574a3c84e6a637d8672615f28"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "dc532988073f287d3fbf64979ad6a038e9f86285",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r2/runtime-terminal.original.json",
+      "sha256": "94190983e0ef1314f390d94675c5e17b4404e1cc7c4f48a6e859701f948b7a81"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r2/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1298,
+      "git_blob_sha1": "e27edc41220e6fd93c52938d531e3c512410814f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r2/runtime.stdout",
+      "sha256": "5f2b6e3e62592749775c24402b54d4a4165ccbed224a3481bd478772a82d2cf5"
+    },
+    {
+      "bytes": 3813,
+      "git_blob_sha1": "15772c716a402e04caefce2d50a6b58cdd89e170",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r3/controller.original.py",
+      "sha256": "3f09c9e0fd4d94ccd1f40de02ee337a3ba80d6622b0b667cdedce716a50f3022"
+    },
+    {
+      "bytes": 393,
+      "git_blob_sha1": "34b12f52d0047b6412dae5851ea583aa5cbaae41",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r3/runtime-request-and-start.public.json",
+      "sha256": "224189c9039ed74112032d0ab0021ece68f15c29d0d3a5789315c2c3ccce01a0"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "51909e113e0a0d461667ddcb512c8bca32059ba9",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r3/runtime-terminal.original.json",
+      "sha256": "a3f9d77e41aa1d9edba67c0bd9bcd79da0c03ccd6686ecf98a788d803efc2d42"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r3/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1298,
+      "git_blob_sha1": "d523f2a48d1ec06becfe7640b72f6c159000af59",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/environment-and-controls/stage-r3/runtime.stdout",
+      "sha256": "8d93e5191647e4f51d0e9e43a7e2bb78b1a4c39774da91cbef0ae35f3cae8cdf"
+    },
+    {
+      "bytes": 18547,
+      "git_blob_sha1": "7be2451a9dd1d1631190ec2d3cda52d092ec02b1",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/INDEPENDENT_TRANSFER_RECONCILIATION.public.json",
+      "sha256": "03b22dda771f7452737bf2ef20d88f4bc37f1ac882b0c18f567948e4ced4a29d"
+    },
+    {
+      "bytes": 5333,
+      "git_blob_sha1": "c5ac19872a9611a282ce94c9b18e484b9d7141bd",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/MANIFEST.public.json",
+      "sha256": "169b81f4950ae250888aa914432f73a47e547625a4db9b530d09c4da2d2d05b7"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "6825d65b0f025b31c89f64ae8be4071850042190",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-cffi200-r1/chunk-0.tool-text.json",
+      "sha256": "237b081ad4c98973f26030442abfe541946054e73df74d52892d81fb4e3086b8"
+    },
+    {
+      "bytes": 211,
+      "git_blob_sha1": "254d5ec9eefed150eaeb2aa50f7913cadbec7431",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-cffi200-r1/commit.tool-text.json",
+      "sha256": "d70623b1a0a5a081446b1d0660f3a677a9ddc0669bddb74ba5c440c66aaa757f"
+    },
+    {
+      "bytes": 566,
+      "git_blob_sha1": "bb078de2dec10391b0983781937762837d0fcbca",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-cffi200-r1/target-file-info.tool-text.json",
+      "sha256": "d74b6627f60779b18b401cc97ea0fd512ad023614e20bd9fcb34d8e7ffd14f45"
+    },
+    {
+      "bytes": 74,
+      "git_blob_sha1": "8912071f6db7a34f4983258f4d135da1ba6107c3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-0.tool-text.json",
+      "sha256": "df5bb805d0840b612b8748613138ef0572ee08024b0b536a7d310cdf8c7f664a"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "ba3e2823b16be4b044fe1097f381bf52bd261b45",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-1048576.tool-text.json",
+      "sha256": "64d306c75f0200d7ff3bf22be4da81c3866e67699db270b8dcf6e499a2e738df"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "078efc4ebb32199a7991cf88c17baee0ea44de3a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-1310720.tool-text.json",
+      "sha256": "ff0b8bc8ca5f581ddd2aa8468998d25b0bf1094c9dd3b31d7992303185f615dd"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "6e41cf509e0340d3ca592a6aee295611e75aba0e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-1572864.tool-text.json",
+      "sha256": "3ec2eb00aa317385e9deeec975d1c5e5aa4d8db1f9b58edc219644b6a862b064"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "d475020126b2670f5094e0ee238832a8c1beda16",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-1835008.tool-text.json",
+      "sha256": "7b81a40191110dc5eee81722b4ce22fc01cc9e1e0055b7a0f74a485bc9a93806"
+    },
+    {
+      "bytes": 74,
+      "git_blob_sha1": "fdeab34a312270890ba036989c67bd83b1771df6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-262144.tool-text.json",
+      "sha256": "c239961d941f2e183356498d73d6de236c6470b4a0ea1727f02344c2ff8d49dd"
+    },
+    {
+      "bytes": 74,
+      "git_blob_sha1": "591b8f6b1a1c341abc3f4644eba2d0620e1fd80e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-524288.tool-text.json",
+      "sha256": "6871ccb57ad6da79e95a4293ccd31c08a45261d0c4b378d43ee6cd1b93e260e4"
+    },
+    {
+      "bytes": 75,
+      "git_blob_sha1": "a20775b30e1af12ef405656be490c93ae4fc831d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/chunk-786432.tool-text.json",
+      "sha256": "2206330cfc41cbaab7e992e881dfea3bddddc5e5c9ea88c125c8219dd3816355"
+    },
+    {
+      "bytes": 213,
+      "git_blob_sha1": "b2c93384a9661eaff47d6b9eeb4f8c3cff771897",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/commit.tool-text.json",
+      "sha256": "16386272843ca78f96fdb0977f6ede61cd66ff9dce975ae9d04734c0649da98c"
+    },
+    {
+      "bytes": 549,
+      "git_blob_sha1": "d37f97db06520e6692d19c5aad077ffb03d2f499",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pip263-r1/target-file-info.tool-text.json",
+      "sha256": "8a8893d3ec12704f6caa4f5299c18e8316dda9ac21e393642e3eef9835f171db"
+    },
+    {
+      "bytes": 80,
+      "git_blob_sha1": "1f7cbaa5ccd29359142399f33707dc260e7456f1",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pycparser223-r1/chunk-0.tool-text.json",
+      "sha256": "b12b1e6f765d2a458ffd49ebfecfbb997685beed63f690fbee165d4a7169a1ed"
+    },
+    {
+      "bytes": 211,
+      "git_blob_sha1": "94a2c072c3909befdd9e6fbdad668e5c94dc1d9c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pycparser223-r1/commit.tool-text.json",
+      "sha256": "6ac6c105672d85097778844384d102c738f78e5b4a1985c6118ab21a8392cf38"
+    },
+    {
+      "bytes": 553,
+      "git_blob_sha1": "061bcb26cce34294a382091d865f42890779eb3d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/public-wheel-transfers/capture-mac-pycparser223-r1/target-file-info.tool-text.json",
+      "sha256": "3b0aee22ffe9f390cc66bd4ef38d3a5b2bcffefa678059f533e34aaccbf76d0e"
+    },
+    {
+      "bytes": 1283,
+      "git_blob_sha1": "5855d4055debdcc90e52e37dcb27b071b1b02508",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/CHECKPOINT_SCOPE.md",
+      "sha256": "703a8e7a9c41bfd934d7ced18254c5ac0590d41cb4436389b5d7468a96075096"
+    },
+    {
+      "bytes": 1079,
+      "git_blob_sha1": "b8ec31458cc7820b10e1b02eaf5141bde53cb356",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/MANIFEST.public.json",
+      "sha256": "eef02b9e1aefd219dcd73cd4f60dd3dc86b4c33ada81c7fe091bb28b27f6b660"
+    },
+    {
+      "bytes": 4005,
+      "git_blob_sha1": "08ed0a55b5a1b845c6998f5fa6b44786bd05387b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/result.public.json",
+      "sha256": "77ac4489798f4186faa63d54901b9c9adc3f4a9535db85590a717ece2a4d52cf"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "ed31ae46d94cee9f083f5faa1c09359b06a62998",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/runtime-terminal.original.json",
+      "sha256": "3634d8688e9251c3b0a145a214ca6f32f3245f1ff7b78efcb5da0407fc1affed"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 3269,
+      "git_blob_sha1": "c250b6d89ef750bc66021c671b20ba23e354f359",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "mac/rog-wheel-download/runtime.stdout",
+      "sha256": "040e9e559d219644406dad026349e0e7b99fb67da6333805747eb76e206f3080"
+    },
+    {
+      "bytes": 532,
+      "git_blob_sha1": "7171eaa00bc54dc04118249d864e5afe9ee1e18a",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "previous-publication/independent-tree-check.json",
+      "sha256": "94669b33e351141e47e8b006b1d02fb86b5da28b3b9d3b74e221f618b9198ec9"
+    },
+    {
+      "bytes": 753,
+      "git_blob_sha1": "d0e5a60543806abbe8ed3384eb7ebf35c1fe6c50",
+      "mode": "100644",
+      "origin": "exact_root_file",
+      "path": "previous-publication/public-fetch-verification.json",
+      "sha256": "a27c15f37dafa7f25669b20d718eca7a996760a1a2d3489d96a831dc9e4fd35c"
+    },
+    {
+      "bytes": 809,
+      "git_blob_sha1": "5d19ef825c70b25c3f13e1e601e624c0557b91a3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/00-source-head.public.json",
+      "sha256": "c0920cb90c28e46ac9cce6d7817c192d57cc79433fc1a7666574fdee09a6d8cb"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/00-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/00-source-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 832,
+      "git_blob_sha1": "f63322990486a41a1c2122a29f0aceb21a04a08a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/01-preserved-format-diff.public.json",
+      "sha256": "55c42e9354bec3e9744c081dd390b36f1483260cda00f8e782032772a518a3c5"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/01-preserved-format-diff.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/01-preserved-format-diff.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 837,
+      "git_blob_sha1": "3596a3cf5bf4ef416be49df37caa47e823a33d27",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/02-untracked.public.json",
+      "sha256": "f63fc64ad1b532859a18d73ac6623ec98b75de7cc29f1b32a1f1e06be40b8099"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/02-untracked.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/02-untracked.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 926,
+      "git_blob_sha1": "1f9d5226730555047ca550799ab10f99ea630534",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/03-bundle-verify.public.json",
+      "sha256": "bdc0719e93a6802d8f64bc6bb8db6cf13de0a723a5330de48b789c51274755de"
+    },
+    {
+      "bytes": 111,
+      "git_blob_sha1": "dae721c10df3932069858126f158606a3a1ba630",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/03-bundle-verify.stderr",
+      "sha256": "5b4367561f03b6cb76dc596eb6aae69836386c4f64961026061cdca14500d43a"
+    },
+    {
+      "bytes": 190,
+      "git_blob_sha1": "81f4843fc4540cfdf0823e2c2ad60af541a2ce57",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/03-bundle-verify.stdout",
+      "sha256": "17f5c9fb6c2b4b1c917f18e2153023caba6bccf5eb2afe35437344df69b0b9e9"
+    },
+    {
+      "bytes": 912,
+      "git_blob_sha1": "035908e0f7bdee44b71e61c4a388559168e3fe94",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/04-fetch.public.json",
+      "sha256": "25ea93ced5a86dc6212220577090271e5e824ebf01c002808b65c981e4a93809"
+    },
+    {
+      "bytes": 158,
+      "git_blob_sha1": "b06b2eec0ed91c980ee6a788bae2e743df8e4a28",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/04-fetch.stderr",
+      "sha256": "ce00b9444867a0571a19ae339c24984d4a45c7c12fb1e9544d55b30f7ab2d023"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/04-fetch.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 858,
+      "git_blob_sha1": "06b1497395602aa8827c1c75e70b5e9d515daee5",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/05-canonical-tree.public.json",
+      "sha256": "4613909ebe0b65abc472f6ec3f584659bb0fddde67007db69d45fcae78b3f585"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/05-canonical-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/05-canonical-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 854,
+      "git_blob_sha1": "51ce429fef795d2c88936e1362ce875e3c1f4844",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/06-canonical-parent.public.json",
+      "sha256": "3edfe2a2c029b19fecc5f6679e769528a1eec7db7baf4422d13b55a7404e56a0"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/06-canonical-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee996c1a02d61e9396906a962ff947b549959017",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/06-canonical-parent.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 816,
+      "git_blob_sha1": "5cf7fbf034cbdb9b486115a1c3f8dc2a921e642d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/07-stage-exact-format.public.json",
+      "sha256": "19a44e3302b8ef5e75a45d8ce0e04520853aaf83e4573437e62549c3737c34e8"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/07-stage-exact-format.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/07-stage-exact-format.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 809,
+      "git_blob_sha1": "8fe54e5dba2d5a6f97ff1e0d24b7fd470676daf8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/08-format-working-tree.public.json",
+      "sha256": "9f56d6552c6da8bdd71b1c49f924e5f4211591183ced77c18ee3b0cb854bfedd"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/08-format-working-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/08-format-working-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 870,
+      "git_blob_sha1": "f203ce80eb61fb513b28d6b7eab668146a4cdfbc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/09-checkout-canonical.public.json",
+      "sha256": "91ea5a584c82b43a0b6f6345f55db6b5b3c81f00bb5c3708b9821a119263eb84"
+    },
+    {
+      "bytes": 95,
+      "git_blob_sha1": "fab88041a88650e1b22a46c7febb1750c74f22ee",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/09-checkout-canonical.stderr",
+      "sha256": "79399dd409e60b71477ad8caafff67342ed869c392872ecfb59186bdd47176e6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/09-checkout-canonical.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 815,
+      "git_blob_sha1": "d5b84955991c722ba4d7c665630b801d680a27e3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/10-clean-source.public.json",
+      "sha256": "8045206f0a01d0d28336020d8bbb264e7acb05fc1aa90cbfeeaf4ec3e29faea3"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/10-clean-source.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/10-clean-source.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 819,
+      "git_blob_sha1": "1b7233c9bca279bb4b2df57c07926804e35db6f3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/11-fsck.public.json",
+      "sha256": "a78b8b418e7d79a6626ebdb2802aaf811d1fb1af8267d585405efad967f605dc"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/11-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 562,
+      "git_blob_sha1": "6c7ac004143fef0f687bc0ff88cc2036e81a120a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/11-fsck.stdout",
+      "sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "bytes": 894,
+      "git_blob_sha1": "be2312cd7772c034ff6b6312a063b70aca40cba3",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/12-format-check.public.json",
+      "sha256": "ae761cee6f244b19409f8e204c566163286037c2874d5a9bc1daa81cba3d7985"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/12-format-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/12-format-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1082,
+      "git_blob_sha1": "ae9216e308651e22cdca518e3100f078edbf356f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/13-normal-release-build.public.json",
+      "sha256": "923d7546b3f336ad7145f51d5753c657d684b3f917e9a29809c52772fabd9311"
+    },
+    {
+      "bytes": 12180,
+      "git_blob_sha1": "79057917c75d08e6cf66387232ce63df0c11c9fc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/13-normal-release-build.stderr",
+      "sha256": "2b0f5f543d8799cff93a9c55e8c2370c34ca4318cc86e90e886faac5bff7ea42"
+    },
+    {
+      "bytes": 403205,
+      "git_blob_sha1": "9f85d3897c52d51ad60eb6c2bcdc450d74ef0cb2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/13-normal-release-build.stdout",
+      "sha256": "172738e21e430fd234bd22ec663abdd165676b2157e7d8a64c7b1fd4de730176"
+    },
+    {
+      "bytes": 1039,
+      "git_blob_sha1": "d95933acc1fe15e6515cd42ab658d35817be24af",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/14-server-libtest-build.public.json",
+      "sha256": "3c3939bbafcb0da56f20eab3c03808f783ae20b676733b9212ab8d2753b8e056"
+    },
+    {
+      "bytes": 207,
+      "git_blob_sha1": "399dccf603a0381b5d3e8014ab971b33f67cfaa7",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/14-server-libtest-build.stderr",
+      "sha256": "557d7d5fb853e919846fc95f2a5f8871a0362b05d4e6bb6c49f010959ff974ad"
+    },
+    {
+      "bytes": 400779,
+      "git_blob_sha1": "3356619b93e136ee80b0a275bb309017e1ec3718",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/14-server-libtest-build.stdout",
+      "sha256": "07ccd97379ae63772af63423ac599366afe5c0e855ed58b2b69d0bd8ed72a12a"
+    },
+    {
+      "bytes": 1088,
+      "git_blob_sha1": "ccd1761bf8f0283857893ce81b71cc12b3637066",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/15-peer-libtest-build.public.json",
+      "sha256": "89b77bc731f46dc423a3755b907100f1db0026997d882b3c52ec07b55b792eb1"
+    },
+    {
+      "bytes": 1793,
+      "git_blob_sha1": "dd92afe14b95fcafb4c819353e62a855f297320a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/15-peer-libtest-build.stderr",
+      "sha256": "0c1677701167b8b47643a8d8e2f1a755c36c567a6791a066b1c73a07f24581e9"
+    },
+    {
+      "bytes": 145888,
+      "git_blob_sha1": "d8b9a47937453a6ba79a53cd409987990c69d974",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/15-peer-libtest-build.stdout",
+      "sha256": "dae43da5248dd650a30780ed3a849622479108ad22071ef7acdc0b926cf1b5a9"
+    },
+    {
+      "bytes": 821,
+      "git_blob_sha1": "f643ad91a2a57a3d893bb2b28506c3b5f63ed2ab",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-clean.public.json",
+      "sha256": "6bc6468ddc194bf4d8b3766c0598ab282af3dd3e76de1db9a8a30fcf04d9dc0c"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 818,
+      "git_blob_sha1": "9d541549ec4f1028ed9c66b306f2d1169f0de1d8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-head.public.json",
+      "sha256": "498cb2c31e3f5e9ad8cdc070a0b62bd8809a2037ab4bc3db10e637000cb40ec9"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/99-final-source-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 62360,
+      "git_blob_sha1": "eb6cc04898c2920a61cb594cd1fe595faa0bd496",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "91f25121ebcaabc0a37d7286d6e9a8d030fc3b32595b0d9d767b8a7143e8036d"
+    },
+    {
+      "bytes": 70947,
+      "git_blob_sha1": "f08f7a0bdd58ee66c4487bfee8c5c356f27f9cd7",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/MANIFEST.public.json",
+      "sha256": "b4de439d7c5a372b4e9d011e5a2f2bda203aec5d2d0d9307ce0f2afa833cb0f6"
+    },
+    {
+      "bytes": 517,
+      "git_blob_sha1": "f827b9386e45ee367f31928261e5bad4496741c8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/artifacts.heptabao-ha-service-libtest.native-file-info.original.json",
+      "sha256": "b2c9e83da030b22715b14065ee8c423eed85092eddd0af6cc53de42942916c79"
+    },
+    {
+      "bytes": 505,
+      "git_blob_sha1": "99a96482c022e1ca7426c3179dcb0019dc82fc45",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/artifacts.heptabao-seed.native-file-info.original.json",
+      "sha256": "ed5fdd0bda792781884e7ee1b49ece1cc9745a30b39294f768b72073326859d9"
+    },
+    {
+      "bytes": 515,
+      "git_blob_sha1": "0ec3e24cf6542eb55d42bf3b8c3a1a7d80e7c314",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/artifacts.heptabao-server-libtest.native-file-info.original.json",
+      "sha256": "7c6a732e1e1c1cbbf091436dc1ca0e05e4b7169fc4a1ed1826db095176679f50"
+    },
+    {
+      "bytes": 507,
+      "git_blob_sha1": "4a7b2856eb988fdd40c03fcd1dc67631e3a13703",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/artifacts.heptabao-server.native-file-info.original.json",
+      "sha256": "42eb30023a2f22e0d8cba363b9a66358e1885a554fe1682313661950602d4e03"
+    },
+    {
+      "bytes": 921,
+      "git_blob_sha1": "cf0810ef81f6af5cdc07887404c4c7f86905ba47",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-ha-service-list.public.json",
+      "sha256": "2baca0a30f60b4b2785f7be94346d05e2c1945009c066733127135a64aefa5eb"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-ha-service-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 13827,
+      "git_blob_sha1": "8a4d0960b59f955d83fce3c51e6c97a711e4c9bc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-ha-service-list.stdout",
+      "sha256": "36bea4d74e2a1414075e0d8138da08fd96bef2b0d51139259f23588bff70267e"
+    },
+    {
+      "bytes": 914,
+      "git_blob_sha1": "56192be8c92210dec80685959bda8d46c39bbb1d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-server-list.public.json",
+      "sha256": "5299dbcd10894cf76a54da22c99c3584900e4369bff5d4dd1b11165460f8bde6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-server-list.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 429619,
+      "git_blob_sha1": "7cbbd713d87414bf77d76bd5e45e5799d7af6d8d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/heptabao-server-list.stdout",
+      "sha256": "f2a54a30d00d57094be760b4dde4afc6b0a8367588b5c35152e4471a325176fc"
+    },
+    {
+      "bytes": 494,
+      "git_blob_sha1": "98ff9aaed87241bf981658dca561c0109c31f519",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/result.native-file-info.original.json",
+      "sha256": "dbac7dfb4fc9e110c6b98940dc1dfb071a38e4fb3f1174588914b6133da29bd6"
+    },
+    {
+      "bytes": 129750,
+      "git_blob_sha1": "4ea46a9156936c888dbd69224f9f98bf43e4c0bd",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/result.public.json",
+      "sha256": "63d5f3a5d88140bfc926012b4e6c02ae30a4c82592d221ba40dc8114fdbce88b"
+    },
+    {
+      "bytes": 733,
+      "git_blob_sha1": "e708538dbc1e6c8f0da55bec712b9ac7957373a5",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/runtime-terminal.original.json",
+      "sha256": "9030dc43be3460be72c271044e05d28c2b671046bf0273d8468aab3c060406fa"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 10688,
+      "git_blob_sha1": "36d2370904bde667a01afa9e8cb1048549014f73",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/runtime.stdout.original",
+      "sha256": "b558a7b21fea64be2d51f7f3c345f9b7cd08e3b09dad5c290c7069dc5c7a24fb"
+    },
+    {
+      "bytes": 970,
+      "git_blob_sha1": "7af111fc75dc7dc0bb4502def1e7b514866e8cf9",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-00-ssh25-00.public.json",
+      "sha256": "4c44ceff90f0d6846c6f631a59e1e56339e8fb8a527cf9d66edc77c0c5201e20"
+    },
+    {
+      "bytes": 26026,
+      "git_blob_sha1": "21ebaa203c8cf686df7772a456f33f5e128c8579",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-00-ssh25-00.stderr",
+      "sha256": "32b3256ffe059027fa7364ee948717c38b1b92863f449a14985e51189539ef13"
+    },
+    {
+      "bytes": 3163,
+      "git_blob_sha1": "6dfe6bab5bd348147fe69caecc4489e98cb2467c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-00-ssh25-00.stdout",
+      "sha256": "93c8dc39c46954a759ddfd6c33aabb8086a7c9dd4cb742e4a337160346d5e2bd"
+    },
+    {
+      "bytes": 1074,
+      "git_blob_sha1": "5bcff5d988af40d219b53cd013407b63f65386bc",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-01-mount1-00.public.json",
+      "sha256": "f0933dcf1ad4744273c30b44dbaaae53455f48c4aba886a2b4f97b2d69443d4a"
+    },
+    {
+      "bytes": 162,
+      "git_blob_sha1": "4f2ce7d7af93c803e41e01c94730d01caca9ae78",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-01-mount1-00.stderr",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 233,
+      "git_blob_sha1": "b51ebf75310ca8438b48f475865fd8e4a213deda",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-01-mount1-00.stdout",
+      "sha256": "b68d97b5b4aaa7115149ce133ae1049a348f58d726b0025356756db10fa33df6"
+    },
+    {
+      "bytes": 991,
+      "git_blob_sha1": "61402ff8c0fee8151c5dd68776b276109df2ee13",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-02-redirect5-00.public.json",
+      "sha256": "d62a9fe6d8435fd9f6ce63b9e52a6a9a7062c97280113657427bec9d6d6082ae"
+    },
+    {
+      "bytes": 1304,
+      "git_blob_sha1": "11801edbcde0236291f5dca4cace5c3078e8b772",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-02-redirect5-00.stderr",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 722,
+      "git_blob_sha1": "6bab609a8dcd2ad3ba468166e4796ed8c5a39a8f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-02-redirect5-00.stdout",
+      "sha256": "e9fa61c4fd7bcd9152a95c209bb3e36d95788dbc68d4654ab1a37949045b6b13"
+    },
+    {
+      "bytes": 987,
+      "git_blob_sha1": "fef0d9fa3c28b89134b40f63ba3afb9ef3f844d0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-03-actor2-00.public.json",
+      "sha256": "3960968cd9477bc0cd230de7dab67070baf2a61bc4ef1d385bea597fd51d09da"
+    },
+    {
+      "bytes": 324,
+      "git_blob_sha1": "5841b7131d95cedb13516476519651df7aceac2e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-03-actor2-00.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 440,
+      "git_blob_sha1": "1a0b64a8e19007a300baa9e46cf11cbf2798462e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-03-actor2-00.stdout",
+      "sha256": "3f5fc06df3e55370a4291b377f758208674c71f56dedd7213857eb6622d9ca7c"
+    },
+    {
+      "bytes": 990,
+      "git_blob_sha1": "922a6fa413c262eb1998575d4c86b75df92d1abd",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-04-ordinary5-00.public.json",
+      "sha256": "ad3f3ee19499c9d01830ec3604c7633601e2ca30ee2c82e50f2cf91569cc942b"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-04-ordinary5-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 699,
+      "git_blob_sha1": "00eca4cec2a27dc700987cef14d2d8960ab22468",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-04-ordinary5-00.stdout",
+      "sha256": "a8e136f2a1635294981446c5b6cf8364ee16907c40f05450964a7f65bb9e29f3"
+    },
+    {
+      "bytes": 977,
+      "git_blob_sha1": "405f1b8ca50b8d05cf267697fda16e7bdfca90a0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-05-no_forward6-00.public.json",
+      "sha256": "11c80a76fdb7ee5582aa4a7fa9708179563d95f1e48a951bf86e398b0430c1d1"
+    },
+    {
+      "bytes": 19375,
+      "git_blob_sha1": "1f225c5671ba9230c0c69ac0c6a48cb48516c4a6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-05-no_forward6-00.stderr",
+      "sha256": "fb5231802e469411521ad247442a9eef8381d00be26cf06b5aaf013ecde3722c"
+    },
+    {
+      "bytes": 876,
+      "git_blob_sha1": "7c9382ac395316f274f766fd6b45bf41e87cd3ad",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-05-no_forward6-00.stdout",
+      "sha256": "260a99e2aa1159417fa74be64846e40c56503b8e2d005656671937762cbe2298"
+    },
+    {
+      "bytes": 1108,
+      "git_blob_sha1": "78c0db52eeb3acf448cac63eeb152f7fa15eb5de",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-00.public.json",
+      "sha256": "abef54f4e7333e898c86c4c2c6f94dcd888eabe6c852ab7685228bc480ce4d6f"
+    },
+    {
+      "bytes": 324,
+      "git_blob_sha1": "5841b7131d95cedb13516476519651df7aceac2e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-00.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 256,
+      "git_blob_sha1": "8fb912498c19c91b4b732b63b1bffe8c99ca8e6d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-00.stdout",
+      "sha256": "5afc9017039fa4caf19cc1e87fc8d2c40460d91d2ccfe24d6c72ee88895e0d1a"
+    },
+    {
+      "bytes": 1117,
+      "git_blob_sha1": "60e15713926a548d216206957e8223d57c109a47",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-01.public.json",
+      "sha256": "350358b89153c5de70298212e96626bd0c8e77fbd9fdef319fb01b3a37d6ba68"
+    },
+    {
+      "bytes": 728,
+      "git_blob_sha1": "12afad789181c43499c1d5db356faac8cf97e04f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-01.stderr",
+      "sha256": "7ac5be0b8f3a6ffbd92e941f57a224dea012b34d77c2e2b105b49147cfe4f6ce"
+    },
+    {
+      "bytes": 265,
+      "git_blob_sha1": "715af1d17807c05f7ffbfc1745e1220d8407634c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-01.stdout",
+      "sha256": "863d92dd52cda1a8a4f8f51f52420e17ee77f62ada1103b680645a10db26a0be"
+    },
+    {
+      "bytes": 1114,
+      "git_blob_sha1": "78da4f4e93f3c7c07999eaa0e0bdc58ebbe0f80b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-02.public.json",
+      "sha256": "e846d1497cb0db330c4c79ae28bec4feee1a4174aad18e4331830c1e2804d6d5"
+    },
+    {
+      "bytes": 1284,
+      "git_blob_sha1": "1adabe5577247c6b0b0a18108153930058397244",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-02.stderr",
+      "sha256": "a164c1131cdaad75b14734da8949465db3c1775d17c3e26204ca4cbde78ff24c"
+    },
+    {
+      "bytes": 262,
+      "git_blob_sha1": "6dc6ada34f8c04e2ff063ab67805b6dd5c2e2070",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-02.stdout",
+      "sha256": "62f2f03c7e9976abfee907547e75cf8d02f018485cbf507a5264fc6cf9ed1e46"
+    },
+    {
+      "bytes": 1085,
+      "git_blob_sha1": "263afb085ca1cd039577d443c279caa682b63995",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-03.public.json",
+      "sha256": "1c7d4e75367811ffd8d450334537487a540a21abb5f6ae8f26b6c3e7ac4e71da"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 235,
+      "git_blob_sha1": "05ae42858e3ffaa8695963af4e0509c5c9f910d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-03.stdout",
+      "sha256": "6384d3c8f5d24ebeeaac207cad4bd55f8ed84e89f3278255fda2efc7478bc4e8"
+    },
+    {
+      "bytes": 1092,
+      "git_blob_sha1": "894465694881cdc2da7c1f81bb39599d0d333e6f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-04.public.json",
+      "sha256": "f6142af8f550b6d5b03c81a88cbcf2413b57be135a683494370dc5885a2e3a21"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 242,
+      "git_blob_sha1": "1432465e34a0dadff318e6b61cadf12ec00d92c8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-04.stdout",
+      "sha256": "def1b8dd9c4a68c4e869deff7f5e5e9860f6d8a2fe261b6704dfb2f0f6f9a700"
+    },
+    {
+      "bytes": 1095,
+      "git_blob_sha1": "880c3efd4e23ea41ce0dd1245236ed5d152d24ce",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-05.public.json",
+      "sha256": "c54dc3bf0832335cb05718d7e472aa54a8ef2e901db416b839465b9386533f81"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 245,
+      "git_blob_sha1": "54d0d4353ead640f23dda254d28f6a48e0755b04",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-05.stdout",
+      "sha256": "ea64f6b5025616c942592650157a45c4bac5efdbd6b8f003206ff3a49ec6f7bc"
+    },
+    {
+      "bytes": 1092,
+      "git_blob_sha1": "f29ce59700923877ff77071329569509fd6b6b4c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-06.public.json",
+      "sha256": "5ac28f0fc52c16e84f701fad9c0aa26ef3a3b5162dcc9a762c89ae4e02be2d32"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 243,
+      "git_blob_sha1": "d567e55322205dfc4bebead4ebc1f79550c63534",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-06-legacy-ingress7-06.stdout",
+      "sha256": "f5efaa6f08fd9a7da841d698abe73b1fce613672c8a2fc85557ada96ba0e52a8"
+    },
+    {
+      "bytes": 1097,
+      "git_blob_sha1": "ad8e2bb75655b7bfa14382ca7728877f042b169a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-00.public.json",
+      "sha256": "b8e8a62339d9b6f989e90efc4463604a0b4701b6c825791ceb5a2e0501b13153"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 246,
+      "git_blob_sha1": "e8e344e32137ce7227d68e23536185c740d57f21",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-00.stdout",
+      "sha256": "9da5df74bfe38f80ad6d62468ecaafe0da0701743ac5398ee9a0eba26b63cd19"
+    },
+    {
+      "bytes": 1097,
+      "git_blob_sha1": "29c61af68c8dc3fa988b6b93b332e0490dadcc42",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-01.public.json",
+      "sha256": "80ef467d4d1c65ffe9f9ab973e8da4c2df9f97ffbd7bc1fd56e42fc7d3f3c50b"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 247,
+      "git_blob_sha1": "0f8c9501feea6962a632e4cd5c1464e2c71973f0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-01.stdout",
+      "sha256": "85bb0d5fb256a9d56921fff25acc63d09cb94d025eb42e27ef2e9b12e62fe897"
+    },
+    {
+      "bytes": 1091,
+      "git_blob_sha1": "264105097e48fe5f24625452802370c5ad4fb38f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-02.public.json",
+      "sha256": "6e5a59e7c01a92183aa12c539d7c8c08464d2217be599c8434d6a576cd540896"
+    },
+    {
+      "bytes": 324,
+      "git_blob_sha1": "5841b7131d95cedb13516476519651df7aceac2e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-02.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    },
+    {
+      "bytes": 238,
+      "git_blob_sha1": "7e429b96e34fb9c5cc09b9010fc2aac90bfee16d",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-02.stdout",
+      "sha256": "0ca089e28563bd56bb2a277bfaa4eb5e3ea47ecbeda3d65042236f17f1450f5d"
+    },
+    {
+      "bytes": 1071,
+      "git_blob_sha1": "28b27cd29ffb98330b90521101d01b397ccca7e6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-03.public.json",
+      "sha256": "72d5c9beba676aaa34c50716022986add75d342c3aff76abb4acad6ec80350bc"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-03.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 220,
+      "git_blob_sha1": "7f3b118ed965895a44917071e10b554666723a87",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-03.stdout",
+      "sha256": "10a3770e9dea200e576021bc18e8f1ce24893a9bcc7aa8a24b8dcca19e2aae97"
+    },
+    {
+      "bytes": 1066,
+      "git_blob_sha1": "2e88c7d4f7f2a33ab244f23a8b9a8e6a9f301619",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-04.public.json",
+      "sha256": "c651bd8039800acd475a37ca0fb561451a5cff9a47834c2976b00fb57d4d20b5"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 215,
+      "git_blob_sha1": "b1dd3b96e486c96701cb6bad48665629955f9ba6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-04.stdout",
+      "sha256": "8c306e424dc65afa96ccdf1a723f250994ecc647c826ba120337832ca5076504"
+    },
+    {
+      "bytes": 1054,
+      "git_blob_sha1": "2dbebf3b7b3ac33271a01bafe0f3699fa53e1f8b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-05.public.json",
+      "sha256": "6503e92d4181ca590c8ade0c8e2750750d8c99f143819bd73eccb34e4703758e"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-05.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 204,
+      "git_blob_sha1": "f7d846cc09ce7bb9673a00abfc96e3a8b71431ef",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-05.stdout",
+      "sha256": "e310d8a6ace3a3a1e7df77d5093cbeacd29239d316919f01bbef7713b518c5dc"
+    },
+    {
+      "bytes": 1070,
+      "git_blob_sha1": "2751dbe6965e598652203d1b0ded3d4b2386ae78",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-06.public.json",
+      "sha256": "e5cb0e2a480b076a3d4a36bbbeff6975fc6ea37448fd59d896c7d72221d3bf89"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-06.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 219,
+      "git_blob_sha1": "b96d5af5fa1ae0529421f50d40e437e800516b88",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-06.stdout",
+      "sha256": "0459ef3b314ffdfceb2f22170954caaaf7b8e9bd14bbc5627593d01ba92710a5"
+    },
+    {
+      "bytes": 1071,
+      "git_blob_sha1": "16c3c56298d7872a73d62e387ca52a5ab333b8b7",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-07.public.json",
+      "sha256": "542726c42404bd817209f08d2da305ab08d6f2a942aea5603e80ed9c6a3244a8"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-07.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 223,
+      "git_blob_sha1": "bc8fb320dd91d262024f1dd3e040b12dcdbaa7ef",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-07.stdout",
+      "sha256": "c4c9d65524416345c887fac09703fa31fe5ec07aee102d030e5afc3ef130e5c7"
+    },
+    {
+      "bytes": 1074,
+      "git_blob_sha1": "3685128a135b342bf98093fe2ed69bb2289282e0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-08.public.json",
+      "sha256": "5431b618aa3dcbbe815264a553a9e50cfdfd0b5e754d5b22931836de7a7d6074"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-08.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "git_blob_sha1": "1ddc5eee5b0faf96eaa901484ad185dc14eefffb",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-07-legacy-cold-h2-9-08.stdout",
+      "sha256": "452052e33a5d57955564570ea661b6101e4d9fdb83c0765b9cc6cd2adf3b01df"
+    },
+    {
+      "bytes": 1114,
+      "git_blob_sha1": "6f05ad5f455404a380a50f13bfc0895a610af2a2",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-08-legacy-same-root1-00.public.json",
+      "sha256": "469dd4b48a2b951788ce5ddfb630850b870a430266be3b228ed4bca48cd0c1c0"
+    },
+    {
+      "bytes": 722,
+      "git_blob_sha1": "b725d25bda0874c77de9029aab4c5b3892b48e73",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-08-legacy-same-root1-00.stderr",
+      "sha256": "17aefe15e629c5f994f63ce60de0e5a68afb8b1133a65cc2ae2be4f2d18c5602"
+    },
+    {
+      "bytes": 261,
+      "git_blob_sha1": "9a534ed17ae1e050a9c61c05dcf6dcd091207aa8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-08-legacy-same-root1-00.stdout",
+      "sha256": "c52779040aef32f0d27ef45ec7004404b092c13151500ecd977527d92ab27218"
+    },
+    {
+      "bytes": 996,
+      "git_blob_sha1": "8c227b79fff6aaf16d388732a16c5b55b252d958",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-09-snapshot-body10-00.public.json",
+      "sha256": "6b578c78edad256e87b24cd71959531fc062b2d1ad99d4ac7d7b856c33dbd6c0"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-09-snapshot-body10-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1134,
+      "git_blob_sha1": "e1f6a41a0b095827e5ed1776ca388258b71db667",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-09-snapshot-body10-00.stdout",
+      "sha256": "37ee7e76198fec5dd079c851adc6459e6d7e363c5565a122bf0a67976779a499"
+    },
+    {
+      "bytes": 1009,
+      "git_blob_sha1": "1c0c2c77b606a59147c7f318a10e6f201f881974",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-10-snapshot-peer7-00.public.json",
+      "sha256": "f4dd1433230d500ed371f105e188ea35d55410656106005059b7a8f2a26dd4d1"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-10-snapshot-peer7-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 941,
+      "git_blob_sha1": "89459efdfd6d9d7863a729fef974284004c8a7d5",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-10-snapshot-peer7-00.stdout",
+      "sha256": "86d2085310b1ca345c67c92eab5f2e535210c5998fbb0d755606df778fa05cea"
+    },
+    {
+      "bytes": 1000,
+      "git_blob_sha1": "d9ce6df9c00cec78c3661cf0bf878794129bf64e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-11-snapshot-actor2-00.public.json",
+      "sha256": "30a38afe4555484315f9229e3c6f357ef23abb776a70f9fc2b90788ca6564cc6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-11-snapshot-actor2-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 353,
+      "git_blob_sha1": "77cfeb298b77954a3db0948fc93784f0c5ce7ebf",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-11-snapshot-actor2-00.stdout",
+      "sha256": "e5abcf499788ebd1d3d241cc95c45923ff40b25063f512ff8bfefe586227147f"
+    },
+    {
+      "bytes": 1011,
+      "git_blob_sha1": "37caff9abbc90c96858086148983067dcad973d6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-12-snapshot-wire4-00.public.json",
+      "sha256": "122819c65be386b642944ea3d22b5ec32f52a31a6937927d6cbca00f6f2286a1"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-12-snapshot-wire4-00.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 627,
+      "git_blob_sha1": "d7143aca6b8ef8ab55bbf11d7c7c9e8e06d704e8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-12-snapshot-wire4-00.stdout",
+      "sha256": "080c2a24405d16858b18820a824288b907d965eb0e174dabf26e7535cdb6bb0a"
+    },
+    {
+      "bytes": 1060,
+      "git_blob_sha1": "66e6dd1ff804bb7946a8c1ffe6b3bc9d692d32a9",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-13-snapshot-audit4-00.public.json",
+      "sha256": "1f87e97710400c011173086c803800001bc3554b7ea6633186de335bff907e8e"
+    },
+    {
+      "bytes": 4778,
+      "git_blob_sha1": "45952a19e216642a6a6b81ae5d819ec0d4523352",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-13-snapshot-audit4-00.stderr",
+      "sha256": "b8d519d7756495212db20ed750ce9a364625a71208418bbce69bda7fb4229d36"
+    },
+    {
+      "bytes": 921,
+      "git_blob_sha1": "6aa0cf418e9229cac899f1085418acaff36a6c76",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-13-snapshot-audit4-00.stdout",
+      "sha256": "c5cc4df5c58a275f306fcee5ec1b9ce7ea73771ff657ba531204afdf19aa7b49"
+    },
+    {
+      "bytes": 997,
+      "git_blob_sha1": "324200c56c08a3493c7dcb257a0c1278945dbaa1",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-14-native-jwt15-00.public.json",
+      "sha256": "bcb80812d1b92d1edb972ac41eb2f2a9cdecb05233fdd03f7fc80d9a3ddf8d48"
+    },
+    {
+      "bytes": 5184,
+      "git_blob_sha1": "5a74bd535cceb6145cb6234471e002814c44458a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-14-native-jwt15-00.stderr",
+      "sha256": "74eb01f90a15505c3d4149c83c15700d0bd3a97262f6672fdd5df2447981f53f"
+    },
+    {
+      "bytes": 1974,
+      "git_blob_sha1": "544025d56dc59a4832322576bf720d9ec254df65",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-14-native-jwt15-00.stdout",
+      "sha256": "78b97796731665aa3cbad1f89f58576a4da3ef0b551df0da24a9152def2bb09a"
+    },
+    {
+      "bytes": 981,
+      "git_blob_sha1": "616d0b7fe7a101abbdd9a0c32231f9b591a9a5f1",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-15-tls-close4-00.public.json",
+      "sha256": "b1b0eb8a6243c2173bac0d674b9d38cced094dc7d797788d929dca435f04eecc"
+    },
+    {
+      "bytes": 334,
+      "git_blob_sha1": "e80840f137ce0fd29dd5338c5e98700096a790a7",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-15-tls-close4-00.stderr",
+      "sha256": "205e33b2de333922705a8683f5e739480863a366a677e1074ec9b229895ee4d3"
+    },
+    {
+      "bytes": 487,
+      "git_blob_sha1": "254dcc666a39c3264272db855da93a57006a7c0b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/diagnostic-r11/test-15-tls-close4-00.stdout",
+      "sha256": "9c143fa61ca9bb0be3a119e44165bd0716adfbdf063636d06ba2ef604ba4e8f8"
+    },
+    {
+      "bytes": 5625,
+      "git_blob_sha1": "c1d3d3115728e4fa986eb373a90b6320addbe84f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/INPUT_BINDING.public.json",
+      "sha256": "1848064de0c1f367b19d20ba6abead9aa833f21dcc09603554bb4add3d513b89"
+    },
+    {
+      "bytes": 118761,
+      "git_blob_sha1": "4b479b5eafd89d257ecd6589d110718341ae5154",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/bootstrap.py",
+      "sha256": "0897796833630ef7594eb3f453c91232faadafb1ffe3db145a2f8477803ed1f7"
+    },
+    {
+      "bytes": 1393,
+      "git_blob_sha1": "d9395a25a25a999830e1991e4b6e56615e3e311f",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/candidate.bundle",
+      "sha256": "9808cfef28ce90733b636e81aed122aeeaf4fe81e0f34b1b84dde7e0ab0e11cd"
+    },
+    {
+      "bytes": 28356,
+      "git_blob_sha1": "d6e3713bc7b8a32141e1f5fa5b2f0d6e156037c6",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/controller.py",
+      "sha256": "7d993c47271ce2d9dd84b64bb925770122559d2e0296dc9a12a2728a39962855"
+    },
+    {
+      "bytes": 12464,
+      "git_blob_sha1": "d7fb3028f35102f0ae590fbddc88ed76c056c88c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/controller.review.patch",
+      "sha256": "5a0f6ecd6b1319ccdce93eaf64683d593ad896b77e681ecb1f97f0e72bea69a4"
+    },
+    {
+      "bytes": 857,
+      "git_blob_sha1": "768e3cc9a5486ca968c03fe022351206547a875b",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/final-binding-review.public.json",
+      "sha256": "f326e0bfc70dc7655fe68d795ebc1ad53f02f08c36ecbf6339d3ee8d569a5374"
+    },
+    {
+      "bytes": 119105,
+      "git_blob_sha1": "6f6f879e082aadb3c1e8533f1dd302250119502a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/runtime-request.original.json",
+      "sha256": "94faf26add45867a2d4f0e1dedcf9d791cdcd6415d322419efc7b1c666ef8c0f"
+    },
+    {
+      "bytes": 1018,
+      "git_blob_sha1": "7644909a6ca96642ce6a2bd5d14df055c92f9f69",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/runtime-start.original.json",
+      "sha256": "93be2b384cbb1ee2d1dbdcd56a8995298944b59bf74c9508d5f5a7edb0495d93"
+    },
+    {
+      "bytes": 8857,
+      "git_blob_sha1": "1a51883d14b9176219a2c8b357999343c88a2e59",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/source-prep.py",
+      "sha256": "37391ded4676c2b4c75596a836af03214b756c8689f81885bae59177bc5daa77"
+    },
+    {
+      "bytes": 7695,
+      "git_blob_sha1": "91e579c1f8bea0c06c6c8e0003785a4ef8f224ab",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/source-prep.review.patch",
+      "sha256": "8f55e6e253caebfa15082540f6ef49550b7bba7f5abe5f74aa0d24fada34904a"
+    },
+    {
+      "bytes": 4504,
+      "git_blob_sha1": "b19d178f528a40ad82bc06efef81e260c3f1d21c",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/static-review.public.json",
+      "sha256": "c89413dc489fe3b4de87c6f0d6dc510621bbe060d2ab156e0e94f91d48f528fd"
+    },
+    {
+      "bytes": 1099,
+      "git_blob_sha1": "3d23082df460d8750baba1c319c88fe094f9029e",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/static-review.stdout.original",
+      "sha256": "6829781b52be71c4880a601a0dc5e021647f96f4d016e15e550e58b9b2118201"
+    },
+    {
+      "bytes": 58485,
+      "git_blob_sha1": "c69beead660a48182f3d1673e7baee7a89ebb7aa",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/inputs/test-selection.public.json",
+      "sha256": "c83414bbbca10f860a8b9b1355933c42b0a05f35c9b9dab95079253e8144494c"
+    },
+    {
+      "bytes": 6662,
+      "git_blob_sha1": "e137a84c458c050154bcfd2ed249d69464c59d44",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/MANIFEST.public.json",
+      "sha256": "b25c81bd542393c573f350c56fbf1386bad807a444fa4bb72a776d9dc96f4b5a"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/00-before-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 106,
+      "git_blob_sha1": "3e0b5c7a51d94eff2b10bcb68474cd1d658fef99",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/01-clone.stderr",
+      "sha256": "a6c9b75e0f8dc053375b8a2d847d0647c93fd63800ce973ebba1271cdcf33010"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/01-clone.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 120,
+      "git_blob_sha1": "d64382cf37b011a700b4c642719fcb2c07a251e8",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/02-bundle-verify.stderr",
+      "sha256": "9c6a3218473b76adf5141fd6964b41ad4217a801ed7e7d23ee9eb6a725b3825a"
+    },
+    {
+      "bytes": 190,
+      "git_blob_sha1": "81f4843fc4540cfdf0823e2c2ad60af541a2ce57",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/02-bundle-verify.stdout",
+      "sha256": "17f5c9fb6c2b4b1c917f18e2153023caba6bccf5eb2afe35437344df69b0b9e9"
+    },
+    {
+      "bytes": 167,
+      "git_blob_sha1": "3a49726823b0596849300a0bcc7cfaf6aa2428a4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/03-fetch.stderr",
+      "sha256": "f6cb72f20c89becd8d242ab465719340140539a4567d6b09bb9e04a3fa17505b"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/03-fetch.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 95,
+      "git_blob_sha1": "fab88041a88650e1b22a46c7febb1750c74f22ee",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/04-checkout.stderr",
+      "sha256": "79399dd409e60b71477ad8caafff67342ed869c392872ecfb59186bdd47176e6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/04-checkout.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/05-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/05-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/06-parent.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee996c1a02d61e9396906a962ff947b549959017",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/06-parent.stdout",
+      "sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/06-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/06-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/07-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/07-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/08-fsck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 562,
+      "git_blob_sha1": "6c7ac004143fef0f687bc0ff88cc2036e81a120a",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/08-fsck.stdout",
+      "sha256": "06d08a38c9d941e05bbdee406c042e53c9cb8cdffe667744881aab4b43447be3"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-clean.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-clean.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-head.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "ee70904330a0a79689ecfec91b30b0705c1b54d4",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-head.stdout",
+      "sha256": "798ea711ddde846d7f1fe86738651bfe5fabbbb7bac5ee756af0c2929b3dfe3e"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-tree.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 41,
+      "git_blob_sha1": "1e8a3ee2980f51cd340fea4cdb610dd1cdaa5e17",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/git-logs/09-after-tree.stdout",
+      "sha256": "ace072102d6b0ad7e10013f16b7bcf5dc48d0344dd364b1f83691a7c3672eafc"
+    },
+    {
+      "bytes": 9269,
+      "git_blob_sha1": "16ac6363c24d6bab3e69a1007685456f206f3f97",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/result.public.json",
+      "sha256": "625274962440eda1635323a719d61e230cd7537cae26806245b9168917c1923b"
+    },
+    {
+      "bytes": 9301,
+      "git_blob_sha1": "7cc2637edd2a5cfd2abb7615df7d84c69b7c5dd5",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/runtime-request.original.json",
+      "sha256": "61c69923e98efb163203af8beb7918e06cdcd43b68f93019b4b1fb5639fa0b49"
+    },
+    {
+      "bytes": 1027,
+      "git_blob_sha1": "6f4fb0ebe9173c6d9c69cfd01820e84b1b7a3b38",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/runtime-start.original.json",
+      "sha256": "837f1c3dbbfb766c373acc9a22162c26423d4469cf06edf9c9b191847b3dafc1"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/runtime-stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 7455,
+      "git_blob_sha1": "df8ec763d6c3bb554bf58f50ebe0ef23d8e795e0",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/runtime-stdout.original",
+      "sha256": "51b13dd9289ebe4b3d815d0f21ba38b4ef60424ada8ba62c9a33b56eb6e60b0e"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "8b9363d62fab07bb6b65baa61bbae6f65c2582f1",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/runtime-terminal.original.json",
+      "sha256": "38b0728233ca824fb88e96123cdc3e0869c313e91584098ccdb361e278f1b2a8"
+    },
+    {
+      "bytes": 8857,
+      "git_blob_sha1": "1a51883d14b9176219a2c8b357999343c88a2e59",
+      "mode": "100644",
+      "origin": "immutable_original_package",
+      "path": "rog/preparation/source-prep.py",
+      "sha256": "37391ded4676c2b4c75596a836af03214b756c8689f81885bae59177bc5daa77"
+    }
+  ],
+  "schema": "heptabao.evidence-files-sha256.v1",
+  "scope": "All r5 checkpoint files except this index itself; original package indexes retained"
+}

@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.898034,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31330776,
+    "pgid": 1370470,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1370470,
+  "requested_cap_seconds": 600,
+  "seconds": 0.094424,
+  "started_at_unix": 1793983098.5283563,
+  "stderr_bytes": 728,
+  "stderr_sha256": "7ac5be0b8f3a6ffbd92e941f57a224dea012b34d77c2e2b105b49147cfe4f6ce",
+  "stdout_bytes": 265,
+  "stdout_sha256": "863d92dd52cda1a8a4f8f51f52420e17ee77f62ada1103b680645a10db26a0be",
+  "step": "test-06-legacy-ingress7-01",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

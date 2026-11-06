@@ -1,0 +1,16 @@
+2026-11-06T16:30:28.7911234Z     Checking cross-krb5 v0.5.0
+2026-11-06T16:30:28.9166513Z     Checking signal-hook v0.3.18
+2026-11-06T16:30:28.9747446Z     Checking heptabao-ha-service v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-ha-service)
+2026-11-06T16:30:29.7933960Z error: using `contains()` instead of `iter().any()` is more efficient
+2026-11-06T16:30:29.7934801Z   --> crates/heptabao-ha-service/src/native_snapshot_peer.rs:54:16
+2026-11-06T16:30:29.7935353Z    |
+2026-11-06T16:30:29.7935731Z 54 |             || server_leaves.iter().any(|pin| *pin == [0; 32])
+2026-11-06T16:30:29.7936471Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `server_leaves.contains(&[0; 32])`
+2026-11-06T16:30:29.7937044Z    |
+2026-11-06T16:30:29.7937806Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_contains
+2026-11-06T16:30:29.7938865Z    = note: `-D clippy::manual-contains` implied by `-D warnings`
+2026-11-06T16:30:29.7939573Z    = help: to override `-D warnings` add `#[allow(clippy::manual_contains)]`
+2026-11-06T16:30:29.7940057Z 
+2026-11-06T16:30:29.9089835Z error: could not compile `heptabao-ha-service` (lib) due to 1 previous error
+2026-11-06T16:30:29.9552138Z ##[error]Process completed with exit code 101.
+2026-11-06T16:30:30.0248025Z Post job cleanup.

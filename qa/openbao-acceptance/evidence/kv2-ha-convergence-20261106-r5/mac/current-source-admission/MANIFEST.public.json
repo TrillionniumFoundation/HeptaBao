@@ -1,0 +1,75 @@
+{
+  "actual_runs": 1,
+  "business_capture_qualified": false,
+  "configured_agents": 5,
+  "database_families": 9,
+  "files": [
+    {
+      "bytes": 535,
+      "path": "runtime-start.public-projection.json",
+      "sha256": "c4382e9c1e16fafdbde1b51b4b1a4012aa245ab064053eeafd0b2dbdc74b3d07",
+      "source": "Explicit projection of exact retained native process_start; account worker path omitted."
+    },
+    {
+      "bytes": 731,
+      "path": "runtime-terminal.tool-text.json",
+      "sha256": "564e70389733501c44653e0af409ebd5f18ed9b13f4edde242f3c705716caea6",
+      "source": "Exact authoritative native process_status text; no added newline."
+    },
+    {
+      "bytes": 4970,
+      "path": "runtime.stdout.original",
+      "sha256": "9a574ad43ba74673f20f960074c33c261f56ba3048f27f8e464fe8131dfe0e8b",
+      "source": "Complete original Runtime stdout, one contiguous offset0..4970 read."
+    },
+    {
+      "bytes": 0,
+      "path": "runtime.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "Complete original zero-byte Runtime stderr."
+    },
+    {
+      "bytes": 5849,
+      "path": "result.public.json",
+      "sha256": "4013a9636c1e8f95e99746bb20ea489fb9eb751a896b9d72692569ea879bf1fe",
+      "source": "Exact version-bound remote public result, bytes and whole SHA independently verified."
+    },
+    {
+      "bytes": 537,
+      "path": "result.native-file-info.tool-text.json",
+      "sha256": "ecb6fba7251ee049ca079a5b702f80f30c09f19e4ff28bbacb95109468a27f0c",
+      "source": "Exact native file_info for the public result only."
+    },
+    {
+      "bytes": 921,
+      "path": "EXECUTED_INPUT_BINDING.public.json",
+      "sha256": "0e7155794ca5947eefb703949ace5111a7e3e5eebf998e9d6915736fbba53da5",
+      "source": "Safe code/runtime binding; actual private input body and fingerprints withheld."
+    },
+    {
+      "bytes": 1245,
+      "path": "INDEPENDENT_RECONCILIATION.public.json",
+      "sha256": "183827693b2b11c641278fa1a98fb89e6c0da0e8f12dad9d438ee568b1e729a0",
+      "source": "17 independent evidence reconciliations; not 17 product tests."
+    },
+    {
+      "bytes": 527,
+      "path": "SOURCE_REVIEW.public.json",
+      "sha256": "617ef090dc89d7c6c1dee48ff42a68c14bac0381d8008182a8dbc1da9f62715b",
+      "source": "Accurate before/after timing of the two independent source reviews."
+    },
+    {
+      "bytes": 544,
+      "path": "READ_CURSOR.public.json",
+      "sha256": "14fb98127a4b18bbb5bb17c82bd39be8f072fe81bc28d29d970373628ef0c431",
+      "source": "Lossless original stream boundaries; raw tool responses are retained."
+    }
+  ],
+  "formal_kv2_qualified": false,
+  "job_id": "1a1b1b702cb-fc05-7a6d",
+  "native_metadata_children": 2,
+  "private_current_inputs_retrieved": false,
+  "safety_files": 7,
+  "schema": "heptabao.mac-current-readonly-admission-evidence-manifest.v1",
+  "status": "observation_completed_formal_capture_held"
+}

@@ -1,0 +1,224 @@
+--- base/controller.py
++++ diagnostic-r11/controller.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""One owned ROG source/build/test attempt. No production service operations."""
++"""Isolated ROG product diagnosis. Legacy preservation and machine acceptance stay HOLD."""
+ import fcntl
+ import hashlib
+ import json
+@@ -8,14 +8,15 @@
+ import re
+ import shutil
+ import signal
++import stat
+ import subprocess
+ import sys
+ import time
+ 
+ os.umask(0o077)
+ ROOT = Path('/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1')
+-SOURCE = ROOT / 'source-4bde9-r9'
+-OUT = ROOT / 'build-test-4bde9-r10'
++SOURCE = ROOT / 'source-4bde9-diagnostic-r11'
++OUT = ROOT / 'build-test-4bde9-diagnostic-r11'
+ COMMIT = '4bde9aee03fcd27c59e13607e529b1cee594b249'
+ TREE = 'f08493a23f8ea0637073651231865ea9607b790e'
+ PARENT = '09c14eae7a3b52dee8ce3af3175dad5900ac59ec'
+@@ -28,27 +29,41 @@
+     'rustc': '3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2',
+     'rustfmt': '5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877',
+ }
++TARGET = ROOT / 'target-4bde9-diagnostic-r11'
++PREP_RECEIPT = ROOT / 'control/source-4bde9-diagnostic-r11-prep/result.public.json'
++CARGO_HOME = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home')
++EXACT_ABSENT = frozenset(('heptabao-seed', 'heptabao-server', 'server_libtest'))
++EXPECTED_OLD_PINS_SHA256 = '1c21715a8157542e5205dfea92437f172a86619120de8d34769f0075a4ba5b73'
++DIAGNOSTIC_SUCCESS = 'diagnostic_passed_legacy_hold'
+ START = time.monotonic()
+ DEADLINE = START + 12000
+ MANIFEST = json.loads((OUT / 'test-selection.public.json').read_text())
+ ENV = {key: os.environ[key] for key in ('HOME', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'TMPDIR', 'TZ')
+        if key in os.environ}
+-ENV.update(MANIFEST['original_build']['env'])
++ENV.update(MANIFEST['diagnostic_build_environment'])
+ ENV.update(RUSTC=str(TOOLCHAIN / 'rustc'), RUSTFMT=str(TOOLCHAIN / 'rustfmt'),
+            RUSTC_WRAPPER='', RUSTC_WORKSPACE_WRAPPER='',
+            CARGO_BUILD_RUSTC_WRAPPER='', CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER='')
+ REPORT = {
+-    'schema': 'heptabao.convergence-normal-build-tests.v1',
++    'schema': 'heptabao.convergence-normal-diagnostic-build-tests.v1',
+     'status': 'running', 'source_commit': COMMIT, 'source_tree': TREE,
+     'source_parent': PARENT, 'created_at_unix': time.time(),
+     'outer_budget_seconds': 12000, 'deadline_renewed': False,
+-    'toolchain_pins': PINS, 'build_environment_overrides': MANIFEST['original_build']['env'],
++    'toolchain_pins': PINS, 'build_environment_overrides': MANIFEST['diagnostic_build_environment'],
+     'expected_denominators': MANIFEST['denominators'],
+     'steps': [], 'artifacts': {}, 'groups': [], 'enumeration': {},
+     'production_changed': False, 'production_server_started': False,
+     'formal_kv2_qualified': False, 'physical_ha_qualified': False,
+     'authbus_migration_qualified': False, 'full_replacement_qualified': False,
+     'automatic_retry': False, 'failure': None,
++    'legacy_preservation': False, 'machine_acceptance': 'HOLD',
++    'rollback_qualified': False, 'dr_qualified': False, 'cutover_qualified': False,
++    'production_cutover_qualified': False, 'machine_qualified_cases': 0,
++    'original_r10_preservation_failure_remains': True,
++    'compilation_performance_comparison_qualified': False,
++    'cold_target_changes_cache_state': True,
++    'expected_legacy_artifacts': MANIFEST['old_retained_artifacts'],
++    'expected_legacy_absent_names': sorted(EXACT_ABSENT),
+     'ambient_build_overrides_inherited': False,
+     'explicit_compiler': str(TOOLCHAIN / 'rustc'), 'compiler_wrappers_disabled': True,
+ }
+@@ -313,6 +328,92 @@
+     row['status'] = 'passed'; row['seconds'] = round(time.monotonic() - started, 6); checkpoint()
+ 
+ 
++
++def owned_directory(path, label):
++    info = path.lstat()
++    need(stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode)
++         and info.st_uid == os.geteuid() and stat.S_IMODE(info.st_mode) == 0o700,
++         label + '_owned_private_directory_required')
++    return {'path': str(path), 'device': info.st_dev, 'inode': info.st_ino,
++            'uid': info.st_uid, 'gid': info.st_gid, 'mode': stat.S_IMODE(info.st_mode)}
++
++
++def diagnostic_directories():
++    return {name: owned_directory(path, name) for name, path in (
++        ('root', ROOT), ('source', SOURCE), ('cargo_home', CARGO_HOME), ('target', TARGET))}
++
++
++def diagnostic_layout():
++    need(MANIFEST.get('schema') == 'heptabao.normal-rust-diagnostic-selection.v1',
++         'diagnostic_selection_schema_required')
++    binding = MANIFEST.get('fresh_diagnostic_source', {})
++    expected_sha = binding.get('preparation_result_sha256')
++    need(isinstance(expected_sha, str) and re.fullmatch('[0-9a-f]{64}', expected_sha)
++         and binding.get('source_preparation_executed') is True,
++         'completed_diagnostic_preparation_binding_required')
++    raw = PREP_RECEIPT.read_bytes()
++    need(hashlib.sha256(raw).hexdigest() == expected_sha
++         and len(raw) == binding.get('preparation_result_bytes')
++         and binding.get('preparation_result_path') == str(PREP_RECEIPT),
++         'diagnostic_preparation_receipt_changed')
++    prepared = json.loads(raw)
++    need(prepared.get('schema') == 'heptabao.fresh-diagnostic-source-preparation.v1'
++         and prepared.get('status') == 'prepared_diagnostic_legacy_hold'
++         and prepared.get('source_commit') == COMMIT and prepared.get('source_tree') == TREE
++         and prepared.get('new_source') == str(SOURCE)
++         and prepared.get('new_source_clean') is True
++         and prepared.get('old_source_preserved') is True
++         and prepared.get('new_cold_target_created_empty') is True
++         and prepared.get('legacy_preservation') is False
++         and prepared.get('machine_acceptance') == 'HOLD',
++         'diagnostic_preparation_scope_or_identity')
++    expected_env = dict(MANIFEST['original_build']['env'])
++    expected_env['CARGO_TARGET_DIR'] = str(TARGET)
++    need(MANIFEST['diagnostic_build_environment'] == expected_env
++         and ENV['CARGO_TARGET_DIR'] == str(TARGET) and ENV['CARGO_HOME'] == str(CARGO_HOME),
++         'diagnostic_only_target_environment_change')
++    current = diagnostic_directories()
++    REPORT['diagnostic_directories_before'] = current
++    need(current == prepared.get('directories_after'), 'diagnostic_directory_identity_changed')
++    need(not any(TARGET.iterdir()), 'diagnostic_cold_target_no_longer_empty')
++    REPORT['diagnostic_preparation'] = {
++        'path': str(PREP_RECEIPT), 'bytes': len(raw), 'sha256': expected_sha,
++        'new_cold_target_created_empty': True, 'source_commit': COMMIT, 'source_tree': TREE}
++    return TARGET
++
++
++def diagnostic_legacy_condition(observed):
++    expected = MANIFEST['old_retained_artifacts']
++    expected_sha = hashlib.sha256(json.dumps(expected, sort_keys=True,
++                                            separators=(',', ':')).encode()).hexdigest()
++    pin_set_matches = (len(expected) == 21 and EXACT_ABSENT.issubset(expected)
++                       and expected_sha == EXPECTED_OLD_PINS_SHA256)
++    matching, absent, unexpected = [], [], []
++    for name, pin in expected.items():
++        actual = observed.get(name, {})
++        if name in EXACT_ABSENT:
++            accepted = (actual.get('path') == pin['path']
++                        and actual.get('matches_original') is False
++                        and actual.get('error_type') == 'FileNotFoundError'
++                        and 'sha256' not in actual and 'bytes' not in actual)
++            (absent if accepted else unexpected).append(name)
++        else:
++            accepted = (actual.get('path') == pin['path']
++                        and actual.get('matches_original') is True
++                        and actual.get('sha256') == pin['sha256']
++                        and actual.get('bytes') == pin['bytes'] and 'error_type' not in actual)
++            (matching if accepted else unexpected).append(name)
++    exact = (pin_set_matches and set(observed) == set(expected)
++             and set(absent) == EXACT_ABSENT and len(matching) == 18 and not unexpected)
++    return {'diagnostic_condition_met': exact, 'expected_pin_set_unchanged': pin_set_matches,
++            'expected_legacy_count': 21, 'expected_absent_names': sorted(EXACT_ABSENT),
++            'observed_absent_names': sorted(absent), 'retained_matching_names': sorted(matching),
++            'retained_matching_count': len(matching), 'unexpected_names': sorted(unexpected),
++            'legacy_preservation': False, 'machine_acceptance': 'HOLD',
++            'original_all_21_preservation_gate_passed': (len(observed) == 21
++                and all(value.get('matches_original') is True for value in observed.values()))}
++
++
+ def main():
+     need(MANIFEST['execution_source_commit'] == COMMIT, 'selection_source_binding')
+     groups = MANIFEST['legacy_groups'] + MANIFEST['legacy_additional_groups'] + MANIFEST['added_groups']
+@@ -322,8 +423,9 @@
+     for name, sha in PINS.items():
+         need(digest(TOOLCHAIN / name) == sha, 'toolchain_pin_' + name)
+     REPORT['old_retained_artifacts_before'] = old_artifacts()
+-    need(all(x['matches_original'] for x in REPORT['old_retained_artifacts_before'].values()),
+-         'old_retained_artifact_preflight_changed')
++    REPORT['diagnostic_legacy_before'] = diagnostic_legacy_condition(REPORT['old_retained_artifacts_before'])
++    need(REPORT['diagnostic_legacy_before']['diagnostic_condition_met'],
++         'diagnostic_exact_3_absent_18_matching_preflight_required')
+     REPORT['preflight'] = resources(); checkpoint()
+     need(not REPORT['preflight']['compiler_processes'], 'other_compiler_present')
+     need(REPORT['preflight']['disk_free_bytes'] >= 8 * 1024**3, 'build_disk_headroom')
+@@ -374,7 +476,7 @@
+     REPORT['source_and_artifacts_unchanged'] = True
+     REPORT['passed_cases'] = 107
+     need(time.monotonic() < DEADLINE, 'original_outer_deadline_expired')
+-    REPORT['status'] = 'passed'
++    REPORT['status'] = DIAGNOSTIC_SUCCESS
+ 
+ 
+ def old_artifacts():
+@@ -394,9 +496,8 @@
+ if __name__ == '__main__':
+     lock = None
+     try:
+-        target = Path(ENV['CARGO_TARGET_DIR'])
+-        need(target.is_dir() and not target.is_symlink(), 'existing_build_cache_required')
+-        lock = (target / '.heptabao-convergence-exclusive.lock').open('a')
++        target = diagnostic_layout()
++        lock = (target / '.heptabao-convergence-exclusive.lock').open('x')
+         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+         REPORT['selection_sha256'] = digest(OUT / 'test-selection.public.json')
+         REPORT['controller_sha256'] = digest(__file__)
+@@ -408,8 +509,17 @@
+             REPORT['groups'][-1]['status'] = 'failed'
+     finally:
+         REPORT['old_retained_artifacts_after'] = old_artifacts()
+-        if not all(x['matches_original'] for x in REPORT['old_retained_artifacts_after'].values()):
+-            REPORT['status'] = 'failed'; REPORT['failure'] = REPORT['failure'] or 'old_retained_artifact_changed'
++        REPORT['diagnostic_legacy_after'] = diagnostic_legacy_condition(REPORT['old_retained_artifacts_after'])
++        if (not REPORT['diagnostic_legacy_after']['diagnostic_condition_met']
++            or REPORT.get('old_retained_artifacts_before') != REPORT['old_retained_artifacts_after']):
++            REPORT['status'] = 'failed'; REPORT['failure'] = REPORT['failure'] or 'diagnostic_legacy_condition_changed'
++        try:
++            REPORT['diagnostic_directories_after'] = diagnostic_directories()
++            need(REPORT['diagnostic_directories_after'] == REPORT.get('diagnostic_directories_before'),
++                 'diagnostic_directory_identity_changed_after')
++        except BaseException as error:
++            REPORT['status'] = 'failed'
++            REPORT['failure'] = REPORT['failure'] or (str(error) if isinstance(error, Failed) else type(error).__name__)
+         if time.monotonic() >= DEADLINE:
+             REPORT['status'] = 'failed'; REPORT['failure'] = REPORT['failure'] or 'original_outer_deadline_expired'
+         REPORT['elapsed_seconds'] = round(time.monotonic() - START, 6)
+@@ -424,4 +534,4 @@
+                           'result': str(OUT / 'result.public.json')}), flush=True)
+         if lock is not None:
+             lock.close()
+-    sys.exit(0 if REPORT['status'] == 'passed' else 1)
++    sys.exit(0 if REPORT['status'] == DIAGNOSTIC_SUCCESS else 1)

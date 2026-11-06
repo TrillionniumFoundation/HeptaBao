@@ -1,0 +1,30 @@
+{
+  "actual_runtime_runs": 1,
+  "checks": {
+    "all_kind_entries_sum_to_denominator": true,
+    "all_native_originals_exec_waitonce_retired": true,
+    "candidate_parents_not_created": true,
+    "exact_agent_denominator": true,
+    "exact_safety_denominator": true,
+    "native_terminal_succeeded": true,
+    "no_forbidden_operations": true,
+    "no_production_promotion": true,
+    "observed_complete": true,
+    "original_native_count": true,
+    "output_original_handle_and_paths_bound": true,
+    "owner_finished_clean": true,
+    "physical_capacity_not_claimed_logical": true,
+    "public_receipt_exact_sha": true,
+    "stdio_equals_native_receipt": true,
+    "stdout_complete": true,
+    "within_original_budget": true
+  },
+  "job_id": "1a1b1b702cb-fc05-7a6d",
+  "passed_checks": 17,
+  "private_output_retrieved": false,
+  "schema": "heptabao.mac-current-readonly-admission-independent-reconciliation.v1",
+  "scope": "One complete current metadata observation only. Transaction logical size, writer fencing, safety-file content consistency, business capture and service migration remain unqualified.",
+  "script_sha256": "e910f65d28a7d329617ff7f2ef823c4ed7d79f10661e5be4bbee0b3c1d926475",
+  "total_checks": 17,
+  "transport_retries": 0
+}

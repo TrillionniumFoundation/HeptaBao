@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.safe-runtime-request-and-start-projection.v1",
+  "host": "mac",
+  "job_id": "1a1b1a90de7-fc05-7a21",
+  "reused": false,
+  "idempotency_key": "heptabao-mac-fixed-public-wheel-core-metadata-diagnostic-20261106-r1",
+  "timeout_seconds": 60,
+  "nice": 5,
+  "executable_basename": "python3",
+  "explicit_extra_environment": false,
+  "full_request_and_start_retained_privately": true
+}

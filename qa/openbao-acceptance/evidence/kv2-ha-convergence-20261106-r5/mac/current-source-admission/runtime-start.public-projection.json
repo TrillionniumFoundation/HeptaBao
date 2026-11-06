@@ -1,0 +1,20 @@
+{
+  "account_worker_path_omitted": true,
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "automatic_retry": false,
+  "created_unix_ms": 1793982923467,
+  "executable": "/opt/homebrew/bin/python3",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-current-kv2-readonly-admission-20261106-r1",
+  "job_id": "1a1b1b702cb-fc05-7a6d",
+  "launch_state": "launched",
+  "not_original_serialization": true,
+  "raw_start_retained_privately": true,
+  "reused": false,
+  "schema": "heptabao.runtime-start-explicit-public-projection.v1"
+}

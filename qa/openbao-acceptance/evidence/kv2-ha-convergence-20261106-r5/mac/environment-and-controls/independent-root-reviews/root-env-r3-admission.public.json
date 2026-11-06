@@ -1,0 +1,53 @@
+{
+  "actual_guard_success_claimed_by_this_static_review": false,
+  "budgets_unchanged": {
+    "cleanup_and_receipt_reserve_seconds": 30,
+    "install_seconds": 35,
+    "per_copy_seconds": 20,
+    "runtime_seconds": 180,
+    "venv_seconds": 15,
+    "verification_seconds": 10,
+    "work_seconds": 150
+  },
+  "canonical_dependency_duplicates_urls_and_extras_refused": true,
+  "changed_existing_constants": [
+    "INPUT",
+    "OUT",
+    "PLAN_PIN"
+  ],
+  "changed_functions": [
+    "wheel_metadata",
+    "main"
+  ],
+  "controller": {
+    "bytes": 33884,
+    "sha256": "7446010e142d381c524eea804c2a6c03a3f7e075d4143a8b66817f2b4f300985"
+  },
+  "current_python_satisfaction_is_not_metadata_equivalence": true,
+  "darwin18_or_business_capture_executed_by_this_review": false,
+  "diff": {
+    "bytes": 7813,
+    "sha256": "d81015c39176f48c99441b56654d0fedf700c4ac73390316596801c1dc2be6eb"
+  },
+  "entire_python_specifier_set_and_requirement_constraints_checked": true,
+  "environment_success_claimed_by_this_static_review": false,
+  "formal_kv2_qualified": false,
+  "four_raw_core_metadata_blobs_separately_pinned": true,
+  "new_functions": [
+    "metadata_semantics",
+    "verify_all_core_semantics"
+  ],
+  "offline_install_and_verify_programs_unchanged": true,
+  "original_four_package_fields_wheel_pins_markers_closure_and_source_versions_unchanged": true,
+  "pairwise_equality_preserves_full_marker_constraints_including_inactive_requirements": true,
+  "plan": {
+    "bytes": 13911,
+    "sha256": "ce036ee3d7879389eb23c6811b4ab2c2e23bf2221bf5315aaf78d9df40af2b49"
+  },
+  "prior_r1_and_r2_failures_retained_and_not_reclassified": true,
+  "reviewed_at_utc": "2026-11-06T16:35:54.285704+00:00",
+  "schema": "heptabao.mac-offline-environment-r3-independent-root-review.v1",
+  "semantics_checked_before_venv_and_child_creation": true,
+  "status": "static_review_complete_execution_conditional_on_actual_ten_metadata_guards",
+  "unchanged_functions_ast_count": 19
+}

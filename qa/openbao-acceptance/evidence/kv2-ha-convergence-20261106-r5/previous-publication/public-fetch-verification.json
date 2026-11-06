@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.evidence-publication-public-fetch-verification.v1",
+  "commit": "7f0e87292552521a56204acd44b895591662f1dc",
+  "tree": "282a1a14840bd1474ecdeb79da692dfe9c811122",
+  "parent": "4da3582fb52b15b5c7a18d068fc0ca9d22d92945",
+  "public_fetch_completed": true,
+  "sha256_size_and_git_blob_checked": 155,
+  "manifest_sha256": "26a8764700e4ce4180bef8f3dbb459f0970d24502597cda57dc06c6b2ca61a54",
+  "published_files": 156,
+  "manifest_covered_bytes": 1082510,
+  "only_new_r4_paths_added": true,
+  "existing_published_paths_modified": 0,
+  "working_tree_clean": true,
+  "formal_business_kv2_qualified": false,
+  "physical_ha_qualified": false,
+  "authbus_qualified": false,
+  "traffic_cutover_qualified": false,
+  "cleanup_qualified": false
+}

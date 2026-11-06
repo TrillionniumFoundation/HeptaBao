@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json-render-diagnostics"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 1800,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31103551,
+    "pgid": 1321602,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1321602,
+  "requested_cap_seconds": 1800,
+  "seconds": 947.371086,
+  "started_at_unix": 1793980826.2763832,
+  "stderr_bytes": 12180,
+  "stderr_sha256": "2b0f5f543d8799cff93a9c55e8c2370c34ca4318cc86e90e886faac5bff7ea42",
+  "stdout_bytes": 403205,
+  "stdout_sha256": "172738e21e430fd234bd22ec663abdd165676b2157e7d8a64c7b1fd4de730176",
+  "step": "13-normal-release-build",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

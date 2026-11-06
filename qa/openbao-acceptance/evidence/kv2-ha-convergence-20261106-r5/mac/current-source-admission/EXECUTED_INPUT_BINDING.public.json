@@ -1,0 +1,21 @@
+{
+  "capture_policy_sha256": "9e27369657667dc3360ae276bb62e2d1ad0c6f55f07290d91304d7d396d72972",
+  "current_configuration_fingerprints_included": false,
+  "current_private_inputs_retrieved": false,
+  "native_nice": 5,
+  "original_key": "heptabao-mac-current-kv2-readonly-admission-20261106-r1",
+  "original_script_and_request_retained": true,
+  "r1_source_revision_status": "unexecuted_original_draft_retained",
+  "runtime_argv": [
+    "-I",
+    "-S",
+    "-B",
+    "-"
+  ],
+  "runtime_seconds": 60,
+  "schema": "heptabao.mac-readonly-admission-input-binding.public.v1",
+  "scope": "Exact frozen code/request are retained privately in the preparation and recovery store. This public package contains no private current configuration, agent names, source paths or source fingerprints.",
+  "script_bytes": 36503,
+  "script_sha256": "e910f65d28a7d329617ff7f2ef823c4ed7d79f10661e5be4bbee0b3c1d926475",
+  "work_seconds": 52
+}

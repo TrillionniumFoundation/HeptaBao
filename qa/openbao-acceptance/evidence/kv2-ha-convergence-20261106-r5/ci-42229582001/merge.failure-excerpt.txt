@@ -1,0 +1,80 @@
+2026-11-06T16:22:13.8996461Z test snapshot_file::buffer_tests::export_buffer_real_descriptor_write_failure_never_drop_flushes ... ok
+2026-11-06T16:22:13.9001937Z test snapshot_file::seal_read_tests::seal_atomic_leaf_replacement_keeps_the_parent_and_reads_current_bytes ... ok
+2026-11-06T16:22:13.9006288Z test snapshot_file::seal_read_tests::seal_parent_directory_replacement_is_rejected_with_an_open_lease ... ok
+2026-11-06T16:22:13.9009683Z test snapshot_file::seal_read_tests::seal_parent_symlink_to_the_same_held_inode_is_rejected ... ok
+2026-11-06T16:22:13.9020271Z test snapshot_file::seal_read_tests::seal_read_length_hint_does_not_limit_grown_or_shrunk_real_file ... ok
+2026-11-06T16:22:13.9027153Z test snapshot_file::seal_read_tests::seal_read_original_limit_and_extra_byte_overflow_are_preserved ... ok
+2026-11-06T16:22:13.9031587Z test snapshot_file::seal_read_tests::seal_read_retries_interruption_but_never_delivers_partial_io_failure ... ok
+2026-11-06T16:22:13.9037159Z test snapshot_file::seal_read_tests::seal_read_small_real_file_is_fresh_and_keeps_physical_guards ... ok
+2026-11-06T16:22:13.9049388Z test snapshot_file::seal_reader::tests::seal_reader_does_not_cache_same_inode_bytes ... ok
+2026-11-06T16:22:13.9056615Z test snapshot_file::seal_reader::tests::seal_reader_keeps_original_deadline ... ok
+2026-11-06T16:22:13.9068954Z test snapshot_file::seal_reader::tests::seal_reader_parallel_positioned_reads_are_complete_and_fresh ... ok
+2026-11-06T16:22:13.9084756Z test snapshot_file::seal_reader::tests::seal_reader_reads_current_bytes_after_atomic_replacement ... ok
+2026-11-06T16:22:13.9100127Z test snapshot_file::seal_reader::tests::seal_reader_rejects_detached_parent ... ok
+2026-11-06T16:22:13.9111778Z test snapshot_file::seal_reader::tests::seal_reader_revalidates_permissions_links_and_length ... ok
+2026-11-06T16:22:13.9116271Z test state_record_root::tests::direct_packed_leaf_root_roundtrips_without_changing_old_leaf_or_branch_shapes ... ok
+2026-11-06T16:22:13.9117252Z test state_record_root::tests::owner_budget_exhaustion_is_distinct_from_corrupt_owner_metadata ... ok
+2026-11-06T16:22:13.9119094Z test state_record_root::tests::packed_root_rejects_wrong_levels_owner_roles_and_unknown_kind ... ok
+2026-11-06T16:22:13.9225941Z test state_record_root::tests::v5_cannot_silently_increase_aggregate_owner_capacity_or_adopt_v6_roots ... ok
+2026-11-06T16:22:13.9499997Z test state_records::bulk_tests::bulk_index_cancellation_returns_no_partial_graph_or_changed_prior_root ... ok
+2026-11-06T16:22:13.9507795Z test state_records::bulk_tests::bulk_index_cold_reader_rejects_missing_corrupt_and_wrong_key_objects ... ok
+2026-11-06T16:22:13.9508939Z test state_records::bulk_tests::bulk_index_empty_and_singleton_are_canonical_and_check_original_gate ... ok
+2026-11-06T16:22:14.6194825Z test state_records::bulk_tests::bulk_index_mixed_values_reopen_and_incremental_edits_preserve_reader_pin ... ok
+2026-11-06T16:22:14.6296421Z test state_records::tests::address_hmac_matches_previous_backend_at_domain_and_block_boundaries ... ok
+2026-11-06T16:22:14.6297785Z test state_records::tests::address_hmac_preserves_independent_fixed_vectors_and_streamed_bytes ... ok
+2026-11-06T16:22:14.6298602Z test state_records::tests::address_hmac_rejects_every_changed_mac_byte_and_wrong_length_or_domain ... ok
+2026-11-06T16:22:14.6303851Z test state_records::tests::address_hmac_shared_key_keeps_concurrent_contexts_independent ... ok
+2026-11-06T16:22:14.6305123Z test state_records::tests::authenticated_packed_page_rejects_invalid_tags_lengths_counts_order_and_height ... ok
+2026-11-06T16:22:14.6306213Z test state_records::tests::authentication_aggregate_counts_and_missing_objects_fail_closed ... ok
+2026-11-06T16:22:14.6836133Z test state_records::tests::byte_bounded_splits_form_multiple_levels_and_reopen_in_tuple_order ... ok
+2026-11-06T16:22:14.7277112Z test state_records::tests::delete_collapses_root_noops_keep_identity_and_export_excludes_temporary_pages ... ok
+2026-11-06T16:22:14.7656794Z test state_records::tests::dense_inline_values_split_by_page_bytes_and_export_only_reachable_pages ... ok
+2026-11-06T16:22:14.7657588Z test state_records::tests::failed_candidate_does_not_publish_new_root_and_staging_alone_is_invisible ... ok
+2026-11-06T16:22:14.7658462Z test state_records::tests::fixed_legacy_bytes_reopen_without_conversion_and_changed_page_preserves_references ... ok
+2026-11-06T16:22:14.7770381Z test state_records::tests::full_export_is_child_first_and_value_blocks_reassemble_at_boundaries ... ok
+2026-11-06T16:22:14.7771466Z test state_records::tests::inline_threshold_empty_bytes_and_mixed_reference_edges_roundtrip ... ok
+2026-11-06T16:22:14.7772292Z test state_records::tests::packed_leaf_has_fixed_binary_encoding_and_hmac_and_no_external_value_objects ... ok
+2026-11-06T16:22:14.8771441Z test state_records::tests::point_update_is_only_value_and_path_and_old_reader_survives_deleted_disk_objects ... ok
+2026-11-06T16:22:14.8772414Z test state_records::tests::regular_and_packed_leaf_siblings_share_height_and_cursor_but_branch_cannot_be_leaf ... ok
+2026-11-06T16:22:14.8774807Z test state_records::tests::shallow_cursor_skips_entire_subtrees_and_scope_incarnation_never_bleeds ... ok
+2026-11-06T16:22:14.8797240Z test tls_key_exchange::tests::tls270_all_eight_named_groups_execute_real_key_exchange ... ok
+2026-11-06T16:22:14.8890637Z test tls_key_exchange::tests::tls270_all_groups_negotiate_authenticated_tls13_and_preserve_alpn ... ok
+2026-11-06T16:22:14.8891817Z test tls_key_exchange::tests::tls270_listener_config_preserves_exact_groups_order_and_tls13_bounds ... ok
+2026-11-06T16:22:14.9004209Z test tls_key_exchange::tests::tls270_mldsa_server_and_ca_certificates_authenticate_pure_mlkem_and_reject_untrusted_names ... ok
+2026-11-06T16:22:14.9025454Z test tls_key_exchange::tests::tls270_p384_hybrid_matches_independent_component_wire_and_rejects_invalid_points ... ok
+2026-11-06T16:22:14.9072956Z test tls_key_exchange::tests::tls270_pqc_only_has_no_classical_or_tls12_fallback_and_keeps_hostname_verification ... ok
+2026-11-06T16:22:14.9134162Z test v6_native_custody::mutation_tests::encrypted_native_authenticated_precommit_rejects_corrupt_nonroot_ciphertext ... ok
+2026-11-06T16:22:14.9156592Z test v6_native_custody::mutation_tests::encrypted_native_candidate_preserves_real_lossless_import_before_and_after_mutation ... ok
+2026-11-06T16:22:14.9207533Z test v6_native_custody::mutation_tests::encrypted_native_live_cursor_second_read_detects_aba_after_aead ... ok
+2026-11-06T16:22:14.9212644Z test v6_native_custody::mutation_tests::encrypted_native_live_cursor_stable_success_and_owner_revoke ... ok
+2026-11-06T16:22:14.9856681Z test v6_native_custody::mutation_tests::encrypted_native_mutation_authenticates_full_source_before_engine_and_rechecks_owner ... ok
+2026-11-06T16:22:14.9858533Z test v6_native_custody::mutation_tests::encrypted_native_mutation_cannot_replace_or_extend_original_request_deadline ... ok
+2026-11-06T16:22:19.6617730Z test v6_native_custody::mutation_tests::encrypted_native_mutation_reopens_real_large_history_and_preserves_business_semantics ... ok
+2026-11-06T16:22:19.6621367Z test v6_native_custody::mutation_tests::encrypted_native_publication_preflight_preserves_noop_owner_and_original_deadline ... ok
+2026-11-06T16:22:19.6626599Z test v6_native_custody::mutation_tests::encrypted_native_publication_preflight_rejects_aba_stale_generation ... ok
+2026-11-06T16:22:19.6630389Z test v6_native_custody::mutation_tests::encrypted_native_publication_preflight_rejects_zero_rollover_and_malformed_candidate ... ok
+2026-11-06T16:22:19.6631166Z test valkey_wire::tests::parses_bounded_resp_shapes ... ok
+2026-11-06T16:22:19.6631692Z test valkey_wire::tests::rejects_malformed_or_oversized_resp ... ok
+2026-11-06T16:22:19.6634702Z test valkey_wire::tests::rejects_replies_that_exceed_aggregate_frame_budget ... ok
+2026-11-06T16:22:19.6636564Z test valkey_wire::tests::rejects_replies_that_exceed_aggregate_node_budget ... ok
+2026-11-06T16:22:19.6637958Z test workflow_runtime::lossless_response_tests::workflow_response_keeps_exact_json_numbers_and_public_marker_objects ... ok
+2026-11-06T16:22:19.6638561Z 
+2026-11-06T16:22:19.6638673Z failures:
+2026-11-06T16:22:19.6638809Z 
+2026-11-06T16:22:19.6639533Z ---- service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown stdout ----
+2026-11-06T16:22:19.6640968Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+2026-11-06T16:22:19.6642245Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+2026-11-06T16:22:19.6643415Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+2026-11-06T16:22:19.6644640Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+2026-11-06T16:22:19.6645851Z native HA Service pipeline path=HA native-large finalization status=503 errors=["native V6 HA Service publication rejected"]
+2026-11-06T16:22:19.6646539Z Error: "actual install observer absent"
+2026-11-06T16:22:19.6646757Z 
+2026-11-06T16:22:19.6646761Z 
+2026-11-06T16:22:19.6646849Z failures:
+2026-11-06T16:22:19.6647572Z     service::native_v6_ha_pipeline_tests::native_large_import_tests::published_plan_tests::native_ha_published_local_plan_changed_cipher_after_actual_commit_is_unknown
+2026-11-06T16:22:19.6648275Z 
+2026-11-06T16:22:19.6648601Z test result: FAILED. 3751 passed; 1 failed; 8 ignored; 0 measured; 0 filtered out; finished in 3274.29s
+2026-11-06T16:22:19.6649033Z 
+2026-11-06T16:22:19.7001669Z error: test failed, to rerun pass `-p heptabao-server --lib`
+2026-11-06T16:22:19.7002149Z      Running unittests src/bin/heptabao-seed.rs (target/debug/deps/heptabao_seed-69ba244a9271f656)
+2026-11-06T16:22:19.7060503Z 

@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+    "service::native_auth::jwt_tests::",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.997801,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31332430,
+    "pgid": 1377494,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1377494,
+  "requested_cap_seconds": 600,
+  "seconds": 8.935725,
+  "started_at_unix": 1793983115.0702744,
+  "stderr_bytes": 5184,
+  "stderr_sha256": "74eb01f90a15505c3d4149c83c15700d0bd3a97262f6672fdd5df2447981f53f",
+  "stdout_bytes": 1974,
+  "stdout_sha256": "78b97796731665aa3cbad1f89f58576a4da3ef0b551df0da24a9152def2bb09a",
+  "step": "test-14-native-jwt15-00",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

@@ -1,0 +1,132 @@
+--- r2-installer
++++ r3-installer
+@@ -19,12 +19,12 @@
+ import zipfile
+ 
+ ROOT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1")
+-INPUT = ROOT / "control/formal-kv2-python-env-inputs-r2"
+-OUT = ROOT / "control/formal-kv2-python-env-50-0-2-r2"
++INPUT = ROOT / "control/formal-kv2-python-env-inputs-r3"
++OUT = ROOT / "control/formal-kv2-python-env-50-0-2-r3"
+ TRANSFER_ROOT = ROOT / "control/formal-kv2-public-wheels-from-rog-r1"
+ TRANSFER_ID = (16777244, 72739337, 501, 0o700)
+ PLAN_FILE = INPUT / "fixed-wheel-plan.json"
+-PLAN_PIN = (11294, "7639a1521c7f8551ea7cd603c2efc11b359b04149b1191c50ffeaa1fc59bf044")
++PLAN_PIN = (13911, "ce036ee3d7879389eb23c6811b4ab2c2e23bf2221bf5315aaf78d9df40af2b49")
+ CUSTODY = None
+ FIRED = False
+ INTERRUPTED = False
+@@ -276,12 +276,72 @@
+                  "wheel_member_custody")
+         metadata = [item for item in members if item.filename.endswith(".dist-info/METADATA")]
+         need(len(metadata) == 1 and metadata[0].file_size <= 131072, "wheel_metadata_bound")
+-        message = email.parser.BytesParser().parsebytes(archive.read(metadata[0]))
+-        need(message["Name"].lower().replace("_", "-") == package["project"]
+-             and message["Version"] == package["version"]
+-             and message["Requires-Python"] == package["requires_python"]
+-             and sorted(message.get_all("Requires-Dist", [])) == sorted(package["requires_dist"]),
+-             "wheel_and_pypi_metadata_mismatch")
++        raw = archive.read(metadata[0])
++        bound = package["wheel_core_metadata"]
++        need(len(raw) == bound["bytes"] and sha(raw) == bound["sha256"],
++             "original_wheel_core_metadata_pin_mismatch")
++        message = email.parser.BytesParser().parsebytes(raw)
++        need(all(len(message.get_all(name, [])) == 1
++                 for name in ("Name", "Version", "Requires-Python")),
++             "single_core_metadata_identity_headers_required")
++        actual = {"name": message["Name"].lower().replace("_", "-"),
++                  "version": message["Version"], "requires_python": message["Requires-Python"],
++                  "requires_dist": message.get_all("Requires-Dist", [])}
++        need(actual == bound["fields"] and actual["name"] == package["project"]
++             and actual["version"] == package["version"], "exact_original_wheel_core_metadata")
++        return actual
++
++def metadata_semantics(package, actual, requirement_type, specifier_type):
++    need(actual["name"] == package["project"] and actual["version"] == package["version"],
++         "core_metadata_name_or_version_mismatch")
++    need(specifier_type(actual["requires_python"]) == specifier_type(package["requires_python"]),
++         "core_metadata_python_constraint_mismatch")
++    left_raw, right_raw = actual["requires_dist"], package["requires_dist"]
++    need(type(left_raw) is list and type(right_raw) is list
++         and len(left_raw) == len(right_raw)
++         and all(type(value) is str for value in left_raw + right_raw),
++         "core_metadata_dependency_count_or_type_mismatch")
++    left = [requirement_type(value) for value in left_raw]
++    right = [requirement_type(value) for value in right_raw]
++    need(all(not value.url and not value.extras for value in left + right),
++         "core_metadata_dependency_url_or_extra_refused")
++    for values in (left, right):
++        need(all(not any(value == previous for previous in values[:index])
++                 for index, value in enumerate(values)), "duplicate_core_metadata_dependency")
++    need(all(sum(value == expected for expected in right) == 1 for value in left),
++         "core_metadata_dependency_constraint_or_marker_mismatch")
++
++def verify_all_core_semantics(plan, observed):
++    pip_package = next(p for p in plan["packages"] if p["project"] == "pip")
++    wheel = pip_package["wheel"]
++    path = OUT / "wheels" / wheel["filename"]
++    read_pinned(path, (wheel["bytes"], wheel["sha256"]), private=True)
++    need(not any(name == "pip" or name.startswith("pip.") for name in sys.modules),
++         "unmodified_pinned_requirement_parser")
++    original_path = list(sys.path)
++    sys.path.insert(0, str(path))
++    try:
++        from pip._vendor import packaging
++        from pip._vendor.packaging.requirements import Requirement
++        from pip._vendor.packaging.specifiers import SpecifierSet
++        prefix = str(path) + "/pip/_vendor/packaging/"
++        need(all(str(sys.modules[name].__file__).startswith(prefix) for name in (
++            "pip._vendor.packaging.requirements", "pip._vendor.packaging.specifiers")),
++            "fixed_vendored_parser_origin")
++        need(set(observed) == {p["project"] for p in plan["packages"]}
++             and len(observed) == 4, "complete_four_core_metadata_observations")
++        for package in plan["packages"]:
++            metadata_semantics(package, observed[package["project"]], Requirement, SpecifierSet)
++        REPORT["core_metadata_semantics"] = {
++            "packages": 4, "complete_constraints_equal": True,
++            "checked_before_venv_and_install": True,
++            "current_python_satisfaction_used_as_equivalence": False,
++            "canonical_duplicates_refused": True, "direct_urls_and_project_extras_refused": True,
++            "parser_pip_wheel_sha256": wheel["sha256"],
++            "vendored_packaging_version": packaging.__version__,
++        }
++    finally:
++        sys.path[:] = original_path
+ 
+ def run_step(owner, name, arguments, budget):
+     checkpoint()
+@@ -466,6 +526,18 @@
+                  and matches[0]["yanked"] is False and matches[0]["packagetype"] == "bdist_wheel",
+                  "fixed_wheel_metadata")
+             before[pin["path"]] = raw
++            core = package["wheel_core_metadata"]
++            before[core["path"]] = read_pinned(core["path"], (core["bytes"], core["sha256"]), private=True)
++        prior = plan["retained_metadata_failure"]
++        need(prior["job_id"] == "1a1b1a60246-fc05-7a15"
++             and Path(prior["path"]) == ROOT / "control/formal-kv2-python-env-50-0-2-r2/result.public.json",
++             "retained_metadata_failure_binding")
++        raw = read_pinned(prior["path"], (prior["bytes"], prior["sha256"]), private=True)
++        before[prior["path"]] = raw
++        failure = json.loads(raw, object_pairs_hook=unique)
++        need(failure["status"] == "failed" and failure["environment_ready"] is False
++             and failure["error_label"] == "wheel_and_pypi_metadata_mismatch"
++             and failure["steps"] == [], "prior_metadata_attempt_remains_failed")
+         transfer = validate_offline_provenance(plan, before)
+         need("owned_process" not in sys.modules and "kv2_dr_process_custody" not in sys.modules,
+              "unmodified_custody_import")
+@@ -481,11 +553,14 @@
+         need(os.statvfs(OUT).f_bavail * os.statvfs(OUT).f_frsize >= 128 * 1024**2,
+              "environment_disk_headroom")
+         REPORT["phase"] = "copy_verified_transferred_wheels"
++        observed_core = {}
+         for package in plan["packages"]:
+             wheel = package["wheel"]
+             raw = copy_fixed_wheel(wheel, transfer["files"][package["project"]])
+             before[str(TRANSFER_ROOT / wheel["filename"])] = raw
+-            wheel_metadata(package)
++            observed_core[package["project"]] = wheel_metadata(package)
++        REPORT["phase"] = "verify_complete_core_metadata_semantics"
++        verify_all_core_semantics(plan, observed_core)
+         REPORT["wheel_pins"] = {p["project"]:{"version":p["version"],"bytes":p["wheel"]["bytes"],
+                                            "sha256":p["wheel"]["sha256"]} for p in plan["packages"]}
+         lines = [p["project"] + " @ " + (OUT / "wheels" / p["wheel"]["filename"]).as_uri()

@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+    "native_ssh_",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.998189,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31324524,
+    "pgid": 1365204,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1365204,
+  "requested_cap_seconds": 600,
+  "seconds": 43.765189,
+  "started_at_unix": 1793983036.0084844,
+  "stderr_bytes": 26026,
+  "stderr_sha256": "32b3256ffe059027fa7364ee948717c38b1b92863f449a14985e51189539ef13",
+  "stdout_bytes": 3163,
+  "stdout_sha256": "93c8dc39c46954a759ddfd6c33aabb8086a7c9dd4cb742e4a337160346d5e2bd",
+  "step": "test-00-ssh25-00",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

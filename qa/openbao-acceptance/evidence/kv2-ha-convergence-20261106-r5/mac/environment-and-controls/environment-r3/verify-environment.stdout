@@ -1,0 +1,1 @@
+{"business_database_opened": false, "capture_controls_qualified": false, "dependency_check": true, "environment_ready": true, "fernet_roundtrip": true, "no_global_packages": true, "openssl_version": "OpenSSL 4.0.3 29 Sep 2026", "tampering_rejected": true, "versions": {"cffi": "2.0.0", "cryptography": "50.0.2", "pip": "26.3", "pycparser": "2.23"}, "wrong_key_rejected": true}

@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "fmt",
+    "--all",
+    "--",
+    "--check"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 60,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31103016,
+    "pgid": 1321582,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1321582,
+  "requested_cap_seconds": 60,
+  "seconds": 5.349543,
+  "started_at_unix": 1793980820.9243553,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "step": "12-format-check",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

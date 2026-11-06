@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.owned-process-complete-safe-projection.v1",
+  "source_binding": {
+    "runtime_job_id": "1a1b1c4c600-fc05-7abc",
+    "public_receipt_bytes": 9753,
+    "public_receipt_sha256": "0c0a6f5f12a1d2bb5a1f3de7a70194ac1ed226eeac9816d5495f1ad18a961914"
+  },
+  "derivation": "explicit allowlist from exact complete private receipt read; private receipt and argv fingerprints withheld",
+  "original_count": 1,
+  "children": [
+    {
+      "index": 0,
+      "pid": 78438,
+      "exec_admitted": true,
+      "returncode": 0,
+      "original_wait_count": 1,
+      "original_wait_completed": true,
+      "no_live_members_before_reap": true,
+      "gaps": [],
+      "signal_count": 0,
+      "birth": {
+        "pid": 78438,
+        "ppid": 78430,
+        "pgid": 78438,
+        "sid": 78438,
+        "uid": 501,
+        "state": "R"
+      },
+      "members_at_leader_exit": [
+        {
+          "pid": 78438,
+          "ppid": 78430,
+          "pgid": 78438,
+          "sid": 78438,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "members_before_original_reap": [
+        {
+          "pid": 78438,
+          "ppid": 78430,
+          "pgid": 78438,
+          "sid": 78438,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "zombie_in_original_anchored_group"
+        }
+      ],
+      "darwin_waitable_zombie_anchor": {
+        "live_birth": {
+          "pid": 78438,
+          "ppid": 78430,
+          "pgid": 78438,
+          "sid": 78438,
+          "uid": 501,
+          "state": "R"
+        },
+        "observed": {
+          "pid": 78438,
+          "ppid": 78430,
+          "pgid": 78438,
+          "sid": 78438,
+          "uid": 501,
+          "state": "Z",
+          "sid_basis": "admitted_immutable_unreaped_session_leader"
+        },
+        "waitid": {
+          "si_code": 1,
+          "si_pid": 78438,
+          "si_signo": 20,
+          "si_status": 0,
+          "si_uid": 0,
+          "si_uid_used_as_authority": false
+        }
+      }
+    }
+  ],
+  "finished": true,
+  "failed": false,
+  "interrupted": false,
+  "passed_process_custody": true,
+  "escaped_session_containment_claim": false,
+  "storage_or_production_authority": false,
+  "owned_synthetic_directory_identities": {
+    "internal_fixture": [
+      16777233,
+      593445201,
+      501,
+      448
+    ],
+    "output": [
+      16777244,
+      72740501,
+      501,
+      448
+    ]
+  },
+  "real_two_filesystems": true
+}

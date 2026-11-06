@@ -1,0 +1,9 @@
+
+running 4 tests
+test http::tls_close_tests::http1_abrupt_tls_eof_is_rejected_after_complete_http_response ... ok
+test http::tls_close_tests::http1_completed_replies_end_with_verified_tls_close_notify ... ok
+test http::tls_close_tests::http1_reply_writer_propagates_write_and_flush_failures ... ok
+test http::tls_close_tests::http1_terminal_close_rejects_expired_original_deadline ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 3756 filtered out; finished in 0.78s
+

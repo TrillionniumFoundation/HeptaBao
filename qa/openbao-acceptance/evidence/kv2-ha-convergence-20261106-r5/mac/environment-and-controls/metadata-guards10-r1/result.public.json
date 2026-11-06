@@ -1,0 +1,60 @@
+{
+  "all_four_actual_metadata_equal": true,
+  "business_source_opened": false,
+  "capture_controls18_executed": false,
+  "deadline_fired": false,
+  "deadline_renewed": false,
+  "effects_attempted": [],
+  "elapsed_seconds_before_receipt": 0.09674683399498463,
+  "exact_names": [
+    "test_01_all_four_original_metadata_complete_semantics_and_crypto_text_difference",
+    "test_02_python_constraint_changes_that_still_allow_current_python_are_refused",
+    "test_03_dependency_minimum_change_is_refused",
+    "test_04_missing_currently_inactive_dependency_is_refused",
+    "test_05_new_currently_inactive_dependency_is_refused",
+    "test_06_canonical_duplicates_on_both_sides_are_refused",
+    "test_07_direct_url_on_both_sides_is_refused",
+    "test_08_project_extra_on_both_sides_is_refused",
+    "test_09_changed_dependency_marker_is_refused",
+    "test_10_name_and_version_changes_are_refused"
+  ],
+  "expected_tests": 10,
+  "installer_executed": false,
+  "log": {
+    "bytes": 1529,
+    "sha256": "955f22392718a4abee395dfc1077b95c8627ddd12247467a09180bfec394a1fb"
+  },
+  "network_called": false,
+  "observed": {
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 10,
+    "unexpected_successes": 0
+  },
+  "original_count": 0,
+  "original_failed_attempts_reclassified": false,
+  "original_inputs_unchanged": true,
+  "packages_installed": false,
+  "parser": {
+    "module_origin_verified": true,
+    "modules": {
+      "requirements.py": {
+        "bytes": 7052,
+        "sha256": "2c3f1aa8dc04d547c1c5b607e56871b08859321ec20d467015b420a11c51a350"
+      },
+      "specifiers.py": {
+        "bytes": 52834,
+        "sha256": "9e0b9f7a4736fa74244503520ce4c026dde4267b2f7b45eadf5b399a6de5ad82"
+      }
+    },
+    "packaging_version": "26.3",
+    "pip_wheel_sha256": "f3b60b20ffaadd4415ed7957212a38ac63fa4c5fa375bd0f4a797777940fad13"
+  },
+  "runtime_seconds": 60,
+  "schema": "heptabao.pinned-wheel-core-metadata-semantic-guards.v1",
+  "status": "passed",
+  "subprocesses_started": false,
+  "work_seconds": 52
+}

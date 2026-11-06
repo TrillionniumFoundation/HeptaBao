@@ -1,0 +1,35 @@
+{
+  "actual_darwin_capture_controls18_executed": false,
+  "actual_metadata_guards_executed": false,
+  "added_functions": [
+    "metadata_semantics",
+    "verify_all_core_semantics"
+  ],
+  "all_raw_metadata_independently_pinned": true,
+  "budgets_unchanged": true,
+  "changed_existing_functions": [
+    "wheel_metadata",
+    "main"
+  ],
+  "controls18_driver_prepared_only": {
+    "bytes": 17877,
+    "sha256": "b08d982791eb807fe5a38eefa335bb45e6b8133b2d95132bdd82e925d2b078ce"
+  },
+  "executed": false,
+  "existing_four_package_fields_unchanged": true,
+  "installer": {
+    "bytes": 33884,
+    "sha256": "7446010e142d381c524eea804c2a6c03a3f7e075d4143a8b66817f2b4f300985"
+  },
+  "offline_install_and_verify_programs_unchanged": true,
+  "old_failures_not_reclassified": true,
+  "other_existing_functions_unchanged": true,
+  "pairwise_requirement_equality_without_hash_assumption": true,
+  "plan": {
+    "bytes": 13911,
+    "sha256": "ce036ee3d7879389eb23c6811b4ab2c2e23bf2221bf5315aaf78d9df40af2b49"
+  },
+  "schema": "heptabao.core-metadata-bound-environment-r3-preparation-review.v1",
+  "semantic_comparison_before_venv_and_install": true,
+  "status": "prepared_only"
+}

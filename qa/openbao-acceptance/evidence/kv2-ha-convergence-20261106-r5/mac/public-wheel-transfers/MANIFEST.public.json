@@ -1,0 +1,116 @@
+{
+  "committed_files": 3,
+  "file_count": 17,
+  "files": [
+    {
+      "bytes": 74,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-0.tool-text.json",
+      "sha256": "df5bb805d0840b612b8748613138ef0572ee08024b0b536a7d310cdf8c7f664a"
+    },
+    {
+      "bytes": 74,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-262144.tool-text.json",
+      "sha256": "c239961d941f2e183356498d73d6de236c6470b4a0ea1727f02344c2ff8d49dd"
+    },
+    {
+      "bytes": 74,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-524288.tool-text.json",
+      "sha256": "6871ccb57ad6da79e95a4293ccd31c08a45261d0c4b378d43ee6cd1b93e260e4"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-786432.tool-text.json",
+      "sha256": "2206330cfc41cbaab7e992e881dfea3bddddc5e5c9ea88c125c8219dd3816355"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-1048576.tool-text.json",
+      "sha256": "64d306c75f0200d7ff3bf22be4da81c3866e67699db270b8dcf6e499a2e738df"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-1310720.tool-text.json",
+      "sha256": "ff0b8bc8ca5f581ddd2aa8468998d25b0bf1094c9dd3b31d7992303185f615dd"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-1572864.tool-text.json",
+      "sha256": "3ec2eb00aa317385e9deeec975d1c5e5aa4d8db1f9b58edc219644b6a862b064"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pip263-r1/chunk-1835008.tool-text.json",
+      "sha256": "7b81a40191110dc5eee81722b4ce22fc01cc9e1e0055b7a0f74a485bc9a93806"
+    },
+    {
+      "bytes": 213,
+      "description": "Exact original successful commit response text.",
+      "path": "capture-mac-pip263-r1/commit.tool-text.json",
+      "sha256": "16386272843ca78f96fdb0977f6ede61cd66ff9dce975ae9d04734c0649da98c"
+    },
+    {
+      "bytes": 549,
+      "description": "Exact independent target file_info response text; no private account path.",
+      "path": "capture-mac-pip263-r1/target-file-info.tool-text.json",
+      "sha256": "8a8893d3ec12704f6caa4f5299c18e8316dda9ac21e393642e3eef9835f171db"
+    },
+    {
+      "bytes": 75,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-cffi200-r1/chunk-0.tool-text.json",
+      "sha256": "237b081ad4c98973f26030442abfe541946054e73df74d52892d81fb4e3086b8"
+    },
+    {
+      "bytes": 211,
+      "description": "Exact original successful commit response text.",
+      "path": "capture-mac-cffi200-r1/commit.tool-text.json",
+      "sha256": "d70623b1a0a5a081446b1d0660f3a677a9ddc0669bddb74ba5c440c66aaa757f"
+    },
+    {
+      "bytes": 566,
+      "description": "Exact independent target file_info response text; no private account path.",
+      "path": "capture-mac-cffi200-r1/target-file-info.tool-text.json",
+      "sha256": "d74b6627f60779b18b401cc97ea0fd512ad023614e20bd9fcb34d8e7ffd14f45"
+    },
+    {
+      "bytes": 80,
+      "description": "Exact original bounded upload response text; request file content withheld.",
+      "path": "capture-mac-pycparser223-r1/chunk-0.tool-text.json",
+      "sha256": "b12b1e6f765d2a458ffd49ebfecfbb997685beed63f690fbee165d4a7169a1ed"
+    },
+    {
+      "bytes": 211,
+      "description": "Exact original successful commit response text.",
+      "path": "capture-mac-pycparser223-r1/commit.tool-text.json",
+      "sha256": "6ac6c105672d85097778844384d102c738f78e5b4a1985c6118ab21a8392cf38"
+    },
+    {
+      "bytes": 553,
+      "description": "Exact independent target file_info response text; no private account path.",
+      "path": "capture-mac-pycparser223-r1/target-file-info.tool-text.json",
+      "sha256": "3b0aee22ffe9f390cc66bd4ef38d3a5b2bcffefa678059f533e34aaccbf76d0e"
+    },
+    {
+      "bytes": 18547,
+      "description": "Independent complete 35 source chunks / 10 sequential upload chunks / 3 commits / 3 target metadata reconciliation. No package bytes or private source account path.",
+      "path": "INDEPENDENT_TRANSFER_RECONCILIATION.public.json",
+      "sha256": "03b22dda771f7452737bf2ef20d88f4bc37f1ac882b0c18f567948e4ced4a29d"
+    }
+  ],
+  "formal_capture_performed": false,
+  "independently_verified_targets": 3,
+  "installation_performed": false,
+  "schema": "heptabao.fixed-public-wheel-transfer-manifest.v1",
+  "scope": "Three fixed public dependencies only. Exact safe native upload/commit/target metadata responses plus derived complete cursor reconciliation. Package contents and private source account paths omitted.",
+  "source_read_chunks": 35,
+  "status": "passed",
+  "upload_chunks": 10
+}

@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-kv2-ha-convergence-20261106-r1/build-test-4bde9-diagnostic-r11/artifacts/heptabao-server-libtest",
+    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 599.998193,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31330810,
+    "pgid": 1370602,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1370602,
+  "requested_cap_seconds": 600,
+  "seconds": 0.027355,
+  "started_at_unix": 1793983098.8715699,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 246,
+  "stdout_sha256": "9da5df74bfe38f80ad6d62468ecaafe0da0701743ac5398ee9a0eba26b63cd19",
+  "step": "test-07-legacy-cold-h2-9-00",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

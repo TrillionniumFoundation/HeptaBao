@@ -1,0 +1,9 @@
+{
+  "root_prelaunch_full_r1_and_narrow_r2_review": true,
+  "root_single_execution_authorization": true,
+  "schema": "heptabao.mac-readonly-admission-source-review-admissions.v1",
+  "scope": "Source review is separate from the actual original Runtime terminal and does not qualify business capture.",
+  "script_sha256": "e910f65d28a7d329617ff7f2ef823c4ed7d79f10661e5be4bbee0b3c1d926475",
+  "source_audit_independent_review_result": "no_new_source_blocker",
+  "source_audit_independent_review_timing": "after_actual_execution"
+}

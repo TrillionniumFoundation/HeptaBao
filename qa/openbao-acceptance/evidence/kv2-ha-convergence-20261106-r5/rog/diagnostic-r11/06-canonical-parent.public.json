@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "rev-parse",
+    "4bde9aee03fcd27c59e13607e529b1cee594b249^"
+  ],
+  "attempts": 1,
+  "effective_budget_seconds": 30,
+  "exit_code": 0,
+  "owned_group_cleanup": {
+    "abnormal_exit": false,
+    "all_owned_processes_gone": true,
+    "leader_start_ticks": 31102710,
+    "pgid": 1321533,
+    "remaining_after_cleanup": [],
+    "remaining_before_cleanup": [],
+    "signals": []
+  },
+  "pid": 1321533,
+  "requested_cap_seconds": 30,
+  "seconds": 0.024653,
+  "started_at_unix": 1793980817.8686562,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 41,
+  "stdout_sha256": "cbca82f96c596676837671b5583ea9c2441ea570772691ab08bd7793006b8c3c",
+  "step": "06-canonical-parent",
+  "timed_out": false,
+  "unexpected_live_descendants_on_success": false
+}

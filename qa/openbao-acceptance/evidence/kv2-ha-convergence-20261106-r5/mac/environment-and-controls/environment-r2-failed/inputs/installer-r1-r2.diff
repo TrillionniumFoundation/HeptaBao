@@ -1,0 +1,223 @@
+--- r1-mac_fixed_capture_environment.py
++++ mac_fixed_capture_environment.py
+@@ -12,20 +12,19 @@
+ from pathlib import Path
+ import platform
+ import signal
+-import ssl
+ import stat
+ import subprocess
+ import sys
+ import sysconfig
+-import urllib.parse
+-import urllib.request
+ import zipfile
+ 
+ ROOT = Path("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261106-kv2-ha-convergence-r1")
+-INPUT = ROOT / "control/formal-kv2-python-env-inputs-r1"
+-OUT = ROOT / "control/formal-kv2-python-env-50-0-2-r1"
++INPUT = ROOT / "control/formal-kv2-python-env-inputs-r2"
++OUT = ROOT / "control/formal-kv2-python-env-50-0-2-r2"
++TRANSFER_ROOT = ROOT / "control/formal-kv2-public-wheels-from-rog-r1"
++TRANSFER_ID = (16777244, 72739337, 501, 0o700)
+ PLAN_FILE = INPUT / "fixed-wheel-plan.json"
+-PLAN_PIN = (8445, "b8a419c3485eb04ee0d2b9dd5b152f4a5b60ffaa0e5d8216f6e21b318fafc25f")
++PLAN_PIN = (11294, "7639a1521c7f8551ea7cd603c2efc11b359b04149b1191c50ffeaa1fc59bf044")
+ CUSTODY = None
+ FIRED = False
+ INTERRUPTED = False
+@@ -156,54 +155,106 @@
+             "TMPDIR": str(OUT / "tmp"), "PIP_CONFIG_FILE": "/dev/null",
+             "PIP_DISABLE_PIP_VERSION_CHECK": "1", "PYTHONDONTWRITEBYTECODE": "1"}
+ 
+-class NoRedirect(urllib.request.HTTPRedirectHandler):
+-    def redirect_request(self, request, fp, code, message, headers, newurl):
+-        raise Refused("wheel_redirect_refused")
+-
+-def download(wheel):
++def source_version(path):
++    st = Path(path).lstat()
++    return f"{st.st_dev}:{st.st_ino}:{st.st_size}:{st.st_mtime_ns}:{st.st_ctime_ns}"
++
++def validate_offline_provenance(plan, before):
++    transfer = plan["transferred_public_wheels"]
++    need(transfer["schema"] == "heptabao.fixed-public-wheel-transfer-binding.v1"
++         and Path(transfer["root"]) == TRANSFER_ROOT
++         and tuple(transfer["root_identity"]) == TRANSFER_ID
++         and owned_directory(TRANSFER_ROOT, private=True) == TRANSFER_ID,
++         "fixed_transferred_wheel_directory")
++    receipt_pin, terminal_pin = transfer["download_result"], transfer["download_terminal"]
++    proof = {}
++    for label, item in (("result", receipt_pin), ("terminal", terminal_pin)):
++        path = INPUT / item["filename"]
++        need(path.parent == INPUT and path.name == item["filename"], "fixed_provenance_filename")
++        raw = read_pinned(path, (item["bytes"], item["sha256"]), private=True)
++        before[str(path)] = raw
++        proof[label] = json.loads(raw, object_pairs_hook=unique)
++    result, terminal = proof["result"], proof["terminal"]
++    need(result["schema"] == "heptabao.rog-fixed-public-mac-wheel-download.v1"
++         and result["status"] == "passed" and result["all_four_wheels_verified"] is True
++         and result["deadline_fired"] is False and result["interrupted"] is False
++         and result["source_metadata_already_bound"] is True
++         and result["work_seconds"] == 150 and result["runtime_seconds"] == 180
++         and result["per_wheel_seconds"] == 20 and result["original_count"] == 0,
++         "completed_fixed_public_download_receipt")
++    need(terminal["job_id"] == "1a1b17e4e51-fc05-7921"
++         and terminal["state"] == "succeeded" and terminal["exit_code"] == 0
++         and terminal["timed_out"] is False and terminal["cancelled"] is False
++         and terminal["output_complete"] is True and terminal["output_durable"] is True
++         and terminal["terminal_publication_confirmed"] is True,
++         "durable_fixed_public_download_terminal")
++    projects = [p["project"] for p in plan["packages"]]
++    need(projects == ["pip", "cryptography", "cffi", "pycparser"]
++         and set(transfer["files"]) == set(projects)
++         and [row["project"] for row in result["steps"]] == projects
++         and set(result["final_pins"]) == set(projects), "exact_four_transferred_wheels")
++    for package, step in zip(plan["packages"], result["steps"]):
++        wheel = package["wheel"]
++        actual = transfer["files"][package["project"]]
++        expected = {"bytes": wheel["bytes"], "sha256": wheel["sha256"],
++                    "mode": 0o600, "owner_uid": 1000, "links": 1}
++        need(result["final_pins"][package["project"]] == expected
++             and step["filename"] == wheel["filename"] and step["phase"] == "complete"
++             and step["verified"] is True and step["response_code"] == 200
++             and step["headers_received"] is True
++             and step["readback"] == expected
++             and step["received_bytes"] == wheel["bytes"]
++             and actual["filename"] == wheel["filename"]
++             and actual["bytes"] == wheel["bytes"] and actual["sha256"] == wheel["sha256"]
++             and actual["mode"] == 0o600 and actual["owner_uid"] == 501
++             and actual["links"] == 1 and type(actual["version"]) is str
++             and source_version(TRANSFER_ROOT / wheel["filename"]) == actual["version"],
++             "download_and_transfer_wheel_binding")
++    prior = plan["prior_failed_attempt"]
++    need(prior["job_id"] == "1a1b17696b2-fc05-78ea"
++         and Path(prior["root"]) == ROOT / "control/formal-kv2-python-env-50-0-2-r1",
++         "retained_prior_failure_binding")
++    prior_result = None
++    for label, item in prior["retained_files"].items():
++        path = Path(prior["root"]) / item["relative_path"]
++        need(path.resolve(strict=True).is_relative_to(Path(prior["root"])), "prior_failure_file_scope")
++        raw = read_pinned(path, (item["bytes"], item["sha256"]), private=True)
++        before[str(path)] = raw
++        if label == "result":
++            prior_result = json.loads(raw, object_pairs_hook=unique)
++    need(prior_result is not None and prior_result["status"] == "failed"
++         and prior_result["environment_ready"] is False
++         and prior_result["phase"] == "download_fixed_wheels"
++         and prior_result["steps"] == [], "prior_attempt_remains_failed")
++    REPORT["offline_input_binding"] = {
++        "download_job_id": terminal["job_id"], "download_result_sha256": receipt_pin["sha256"],
++        "download_terminal_sha256": terminal_pin["sha256"],
++        "receiver_root_identity": list(TRANSFER_ID), "wheels": len(projects),
++        "new_network_requests": False, "prior_failed_attempt_reclassified": False,
++    }
++    return transfer
++
++def copy_fixed_wheel(wheel, actual):
+     checkpoint()
+     end = min(WORK_END, time.monotonic() + 20.0)
+-    parsed = urllib.parse.urlsplit(wheel["url"])
+-    need(parsed.scheme == "https" and parsed.netloc == "files.pythonhosted.org"
+-         and parsed.path.endswith("/" + wheel["filename"])
+-         and not parsed.query and not parsed.fragment, "fixed_official_wheel_url")
++    source = TRANSFER_ROOT / wheel["filename"]
+     target = OUT / "wheels" / wheel["filename"]
+-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(),
+-        urllib.request.HTTPSHandler(context=ssl.create_default_context()))
+-    request = urllib.request.Request(wheel["url"], headers={"User-Agent": "HeptaBao-fixed-wheel-preparation/1",
+-                                                           "Accept-Encoding": "identity"})
++    need(source.parent == TRANSFER_ROOT and target.parent == OUT / "wheels",
++         "fixed_wheel_file_scope")
+     signal.setitimer(signal.ITIMER_REAL, max(0.001, end - time.monotonic()))
+     try:
+-        with opener.open(request, timeout=max(0.001, end - time.monotonic())) as response:
+-            need(response.status == 200 and response.geturl() == wheel["url"],
+-                 "fixed_wheel_http_response")
+-            length = response.headers.get("Content-Length")
+-            need(length is not None and length.isdecimal() and int(length) == wheel["bytes"],
+-                 "wheel_http_length")
+-            fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+-            count, digest = 0, hashlib.sha256()
+-            try:
+-                while True:
+-                    checkpoint(end)
+-                    block = response.read(min(65536, wheel["bytes"] + 1 - count))
+-                    if not block:
+-                        break
+-                    count += len(block)
+-                    need(count <= wheel["bytes"], "wheel_download_bound")
+-                    digest.update(block)
+-                    view = memoryview(block)
+-                    while view:
+-                        written = os.write(fd, view)
+-                        need(written > 0, "wheel_write_progress")
+-                        view = view[written:]
+-                need(count == wheel["bytes"] and digest.hexdigest() == wheel["sha256"],
+-                     "wheel_download_pin")
+-                os.fsync(fd)
+-            finally:
+-                os.close(fd)
++        need(owned_directory(TRANSFER_ROOT, private=True) == TRANSFER_ID
++             and source_version(source) == actual["version"], "transferred_wheel_identity_changed")
++        raw = read_pinned(source, (wheel["bytes"], wheel["sha256"]), private=True)
+         checkpoint(end)
+-        read_pinned(target, (wheel["bytes"], wheel["sha256"]), private=True)
+-        sync_dir(target.parent)
++        write_new(target, raw)
++        need(read_pinned(target, (wheel["bytes"], wheel["sha256"]), private=True) == raw,
++             "copied_wheel_readback")
++        need(source_version(source) == actual["version"]
++             and owned_directory(TRANSFER_ROOT, private=True) == TRANSFER_ID,
++             "transferred_wheel_changed_during_copy")
++        checkpoint(end)
++        return raw
+     finally:
+         if not FIRED and not INTERRUPTED:
+             signal.setitimer(signal.ITIMER_REAL, max(0.001, WORK_END - time.monotonic()))
+@@ -390,7 +441,7 @@
+         need(plan["schema"] == "heptabao.mac-create-only-capture-python-environment-plan.v1"
+              and plan["destination"] == str(OUT) and plan["input_parent"] == str(INPUT)
+              and plan["budgets"] == {"work_seconds":150,"runtime_seconds":180,
+-                "cleanup_and_receipt_reserve_seconds":30,"per_download_seconds":20,
++                "cleanup_and_receipt_reserve_seconds":30,"per_copy_seconds":20,
+                 "venv_seconds":15,"install_seconds":35,"verification_seconds":10},
+              "fixed_environment_plan")
+         python = plan["python"]
+@@ -415,6 +466,7 @@
+                  and matches[0]["yanked"] is False and matches[0]["packagetype"] == "bdist_wheel",
+                  "fixed_wheel_metadata")
+             before[pin["path"]] = raw
++        transfer = validate_offline_provenance(plan, before)
+         need("owned_process" not in sys.modules and "kv2_dr_process_custody" not in sys.modules,
+              "unmodified_custody_import")
+         sys.path.insert(0, str(qa))
+@@ -428,9 +480,11 @@
+         write_new(OUT / "fixed-wheel-plan.json", plan_raw)
+         need(os.statvfs(OUT).f_bavail * os.statvfs(OUT).f_frsize >= 128 * 1024**2,
+              "environment_disk_headroom")
+-        REPORT["phase"] = "download_fixed_wheels"
++        REPORT["phase"] = "copy_verified_transferred_wheels"
+         for package in plan["packages"]:
+-            download(package["wheel"])
++            wheel = package["wheel"]
++            raw = copy_fixed_wheel(wheel, transfer["files"][package["project"]])
++            before[str(TRANSFER_ROOT / wheel["filename"])] = raw
+             wheel_metadata(package)
+         REPORT["wheel_pins"] = {p["project"]:{"version":p["version"],"bytes":p["wheel"]["bytes"],
+                                            "sha256":p["wheel"]["sha256"]} for p in plan["packages"]}
+@@ -469,6 +523,14 @@
+         for package in plan["packages"]:
+             wheel = package["wheel"]
+             read_pinned(OUT / "wheels" / wheel["filename"], (wheel["bytes"], wheel["sha256"]), private=True)
++        for package in plan["packages"]:
++            wheel = package["wheel"]
++            need(source_version(TRANSFER_ROOT / wheel["filename"])
++                 == transfer["files"][package["project"]]["version"],
++                 "transferred_wheel_changed_after_install")
++        need(owned_directory(TRANSFER_ROOT, private=True) == TRANSFER_ID,
++             "transferred_wheel_directory_changed")
++        REPORT["prior_failed_attempt_bound_file_contents_unchanged"] = True
+         need(owned_directory(OUT, private=True) == root_identity, "environment_root_changed")
+         checkpoint()
+         REPORT.update(status="passed",phase="complete",environment_ready=True,
