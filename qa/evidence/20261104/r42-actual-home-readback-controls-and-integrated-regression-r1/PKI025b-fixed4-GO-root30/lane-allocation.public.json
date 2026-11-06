@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root-lane-allocation.r1",
+  "globalMaximumNativeLanes": 2,
+  "rootNativeCalls": 0,
+  "A": 0,
+  "B": 1,
+  "C": 1,
+  "ARelease": {
+    "blob": "7f4363a4434e4c836b4853854a86e0630e585302",
+    "bytes": 10534,
+    "sha256": "fa211b20f3442f6dc29eeb365a7920982da218319b29c014ec469c623b20ef19"
+  },
+  "BResumeOriginalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "BResumeOriginalSlot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "BNextFixedFileIndex": 8,
+  "BClosedBoundary": {
+    "blob": "06d83030e95be222d05c2e04805c573ba5a86dfd",
+    "bytes": 26215,
+    "sha256": "2c8f5314f21e75ab4c05ef6994ed6dc79eff4dfef9f0a76745d21c54ac69a1e3"
+  },
+  "CExactGO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "qualificationsUnchanged": true
+}

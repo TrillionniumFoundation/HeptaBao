@@ -1,0 +1,149 @@
+{
+  "schema": "heptabao.root-source-review.fixed4-controls.r1",
+  "pass": true,
+  "checks": 30,
+  "rows": [
+    {
+      "id": "whole_source35",
+      "pass": true
+    },
+    {
+      "id": "author73_exact_reproduced",
+      "pass": true
+    },
+    {
+      "id": "root43_exact_original",
+      "pass": true
+    },
+    {
+      "id": "root43_pinned_in_plan",
+      "pass": true
+    },
+    {
+      "id": "same_actual_job_original_closed",
+      "pass": true
+    },
+    {
+      "id": "unsubmitted_fixed4",
+      "pass": true
+    },
+    {
+      "id": "actual_authority_source_exact",
+      "pass": true
+    },
+    {
+      "id": "actual_streams_source_exact",
+      "pass": true
+    },
+    {
+      "id": "actual_stdout_exact",
+      "pass": true
+    },
+    {
+      "id": "expected_receipt_reproduced_not_host_body",
+      "pass": true
+    },
+    {
+      "id": "publisher_3_exact_full9",
+      "pass": true
+    },
+    {
+      "id": "current_ready_controls_bytes",
+      "pass": true
+    },
+    {
+      "id": "receipt_unobserved_metadata",
+      "pass": true
+    },
+    {
+      "id": "info4_strict_forward_reverse",
+      "pass": true
+    },
+    {
+      "id": "body4_strict_forward_reverse",
+      "pass": true
+    },
+    {
+      "id": "original_info_source_pin",
+      "pass": true
+    },
+    {
+      "id": "original_body_source_pin",
+      "pass": true
+    },
+    {
+      "id": "exact_info_source_binding",
+      "pass": true
+    },
+    {
+      "id": "body_template_and_deriver_bound",
+      "pass": true
+    },
+    {
+      "id": "info_request_0",
+      "pass": true
+    },
+    {
+      "id": "body_template_0",
+      "pass": true
+    },
+    {
+      "id": "info_request_1",
+      "pass": true
+    },
+    {
+      "id": "body_template_1",
+      "pass": true
+    },
+    {
+      "id": "info_request_2",
+      "pass": true
+    },
+    {
+      "id": "body_template_2",
+      "pass": true
+    },
+    {
+      "id": "info_request_3",
+      "pass": true
+    },
+    {
+      "id": "body_template_3",
+      "pass": true
+    },
+    {
+      "id": "only_fixed_ranges",
+      "pass": true
+    },
+    {
+      "id": "body_two_tables_unbound",
+      "pass": true
+    },
+    {
+      "id": "explicit_conditional_no_implicit_binary",
+      "pass": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "92cc5fcc4111411ac5028728cb3773506920a057",
+    "files": 35,
+    "bytes": 410833,
+    "merkle": {
+      "root_sha": "92cc5fcc4111411ac5028728cb3773506920a057",
+      "trees_verified": 1,
+      "leaf_count": 35
+    },
+    "whole": true
+  },
+  "originalInertQualification": {
+    "blob": "3c520b3bfa6814f16b27e30f03fe2f9873e2daa6",
+    "bytes": 7848,
+    "sha256": "461de77b42f40a1885c62466fbc526a55fe5c288ae55f7067697aa21eced9c17"
+  },
+  "authorChecksReproduced": 73,
+  "reviewScope": "Exact public metadata plus conditional public bodies; source and original publication provenance only.",
+  "actualIndependentFiles": false,
+  "normalBuild": false,
+  "tests149_166": false,
+  "fullReplacement": false
+}

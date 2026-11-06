@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.root-snapshot-file10-info-immutable-page-error-boundary.r1",
+  "pass": true,
+  "checks": 14,
+  "rows": [
+    {
+      "id": "whole_release20",
+      "pass": true
+    },
+    {
+      "id": "exact_original_fixed23_GO",
+      "pass": true
+    },
+    {
+      "id": "request_arm_intent_0",
+      "pass": true
+    },
+    {
+      "id": "original_SDK_native_0",
+      "pass": true
+    },
+    {
+      "id": "request_arm_intent_1",
+      "pass": true
+    },
+    {
+      "id": "original_SDK_native_1",
+      "pass": true
+    },
+    {
+      "id": "request_arm_intent_2",
+      "pass": true
+    },
+    {
+      "id": "original_page_error_exact",
+      "pass": true
+    },
+    {
+      "id": "original_info_unique_admission",
+      "pass": true
+    },
+    {
+      "id": "future_completed_and_inactive",
+      "pass": true
+    },
+    {
+      "id": "exact_original_immutable_page0",
+      "pass": true
+    },
+    {
+      "id": "state_remains_paused_delivery_unknown",
+      "pass": true
+    },
+    {
+      "id": "no_file10_body_or_next_file",
+      "pass": true
+    },
+    {
+      "id": "reported_closed_extent",
+      "pass": true
+    }
+  ],
+  "packet": {
+    "tree": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+    "files": 20,
+    "bytes": 53164,
+    "merkle": {
+      "root_sha": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "release": {
+    "blob": "549352ea6a594c036d13fe634e45d8413fec6271",
+    "bytes": 2951,
+    "sha256": "8228191bd99f20444a37b4130c679af9009afe5ef749fe8adbf3bc03fccb3451"
+  },
+  "originalOperation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+  "status": {
+    "blob": "4e720931e08072dc1d769dcd3e5dd5fccb69e6d1",
+    "bytes": 800,
+    "sha256": "f31c15d37576e29ccedaefa2d38e3eb9cc631b7d768a8fa7b70306d1d7c8d1e3"
+  },
+  "originalPageRequest": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "originalPageError": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "ownedFutureActive": false,
+  "NativeCallsInFlight": 0,
+  "originalPayloadDelivery": "UNKNOWN",
+  "reportedWholeFiles": 10,
+  "reportedWholeBytes": 574522,
+  "fullOutput23Qualification": false,
+  "allowedNextScope": "Separate exact known-ID immutable page retrieval only; original failed call/history retained.",
+  "semanticQualification": false
+}

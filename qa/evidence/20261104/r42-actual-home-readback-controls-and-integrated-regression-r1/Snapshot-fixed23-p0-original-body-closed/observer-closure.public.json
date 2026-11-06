@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.formatted23.original-p0-recovered-observer-closed.r1",
+  "rootRecoveryGO": "cfe99cdee399d804d29acc17b6c83b0495774f89",
+  "repairCheckpoint": "a3737417b9c3d484a8577a41df50603dff9d852f",
+  "originalObserver": {
+    "id": "8d29aac0c040a47a18f5631b618a6aea98568bb05955db0d2ff49c15cdf6fb0b",
+    "tool": "binary_read",
+    "payload": {
+      "blob": "d6443a693144a5ec3e1921bd6296ec1041e54a78",
+      "bytes": 87823,
+      "sha256": "87a8b1f533d0ee0ad7bf0412dfd38237698d88b066cbbc4f49ba29ad251da87f"
+    },
+    "payloadTree": "efc3a295c910c83482916fbb0e78997f34752c7d",
+    "nativeText": {
+      "blob": "d4957cd267a3494ecf3dd03c448b54662e9ca4f5",
+      "bytes": 87720,
+      "sha256": "f53d73cb49f4cebc45ee81a9d648e131d3228dd2a5ec5958d9c8b936a5301b36"
+    },
+    "pages": 6,
+    "completedInactive": true
+  },
+  "completedFiles": 7,
+  "completedObservers": 18,
+  "bodyBytes": 294460,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "oldFailureRetained": {
+    "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+    "action": "prepare",
+    "name": "Error",
+    "message": "git_tree_read_error_preserved",
+    "automaticRetry": false,
+    "newAdmissionAllowed": false,
+    "returnedNormally": true
+  },
+  "remainingHaRangeNotYetStarted": true,
+  "noNewOperationStartForRecoveredObserver": true
+}

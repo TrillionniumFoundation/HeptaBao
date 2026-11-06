@@ -1,0 +1,32 @@
+{
+  "tree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+  "entries": [
+    {
+      "path": "armed.json",
+      "blob": "3b1c332f1bd58e838266c625554f3bd0d026ac43",
+      "bytes": 909,
+      "sha256": "12c05bbaad6a276d46a5e352ff37131caa264f7f7eb61c330876641bc6cf80e7",
+      "whole": true
+    },
+    {
+      "path": "intent.json",
+      "blob": "5e4aa8a85e4b5b8abf01f287e2f8b0a11971ee2e",
+      "bytes": 772,
+      "sha256": "6974d241e0fe43b5deaa64866d362bd0fa9a99bb9fc57e22e1db9586435f6727",
+      "whole": true
+    },
+    {
+      "path": "request.json",
+      "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+      "bytes": 122,
+      "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57",
+      "whole": true
+    }
+  ],
+  "count": 3,
+  "bytes": 1803,
+  "whole": true,
+  "recoveryReadOnly": true,
+  "mutationRepeated": false,
+  "nativeCalled": false
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.r42-root-pure-checker-history.v1",
+  "indexErrors": [],
+  "otherReviewErrorsPreservedInReferencedPackets": true,
+  "indexChecksAreArchivalOnly": true,
+  "NativeCalls": 0
+}

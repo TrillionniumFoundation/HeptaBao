@@ -1,0 +1,322 @@
+{
+  "schema": "heptabao.025b-controls-inert-actual-verification.r1",
+  "status": "PASS",
+  "checkCount": 75,
+  "checks": [
+    {
+      "name": "one_start_six_original_observer_calls",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-start:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-start:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-status:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-authority0-page0:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-start:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-status:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:exact_request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:whole_SDK_before_accept",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:original_SDK_success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:native_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:one_completed_external_arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b05a3-controls-r2-streams0-page0:exact_inert_GO",
+      "pass": true
+    },
+    {
+      "name": "exact_original_inert_request",
+      "pass": true
+    },
+    {
+      "name": "inline_source_and_carrier_identity",
+      "pass": true
+    },
+    {
+      "name": "correct_typed_stdin_SHA_and_FP",
+      "pass": true
+    },
+    {
+      "name": "actual_unique_start_ACK_binding",
+      "pass": true
+    },
+    {
+      "name": "actual_ACK_exact_executable_argv_cwd",
+      "pass": true
+    },
+    {
+      "name": "observer0:original_admission",
+      "pass": true
+    },
+    {
+      "name": "observer0:same_ID_closed",
+      "pass": true
+    },
+    {
+      "name": "observer0:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "observer0:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "observer0:original_native_success_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "observer0:full_closure",
+      "pass": true
+    },
+    {
+      "name": "observer1:original_admission",
+      "pass": true
+    },
+    {
+      "name": "observer1:same_ID_closed",
+      "pass": true
+    },
+    {
+      "name": "observer1:one_original_page",
+      "pass": true
+    },
+    {
+      "name": "observer1:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "observer1:original_native_success_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "observer1:full_closure",
+      "pass": true
+    },
+    {
+      "name": "original_known_terminal_zero_full_durable",
+      "pass": true
+    },
+    {
+      "name": "actual_1444_zero_stream_authority",
+      "pass": true
+    },
+    {
+      "name": "stdout:original_complete_hex_text_extent",
+      "pass": true
+    },
+    {
+      "name": "stderr:original_complete_hex_text_extent",
+      "pass": true
+    },
+    {
+      "name": "actual_prepared_compile_only_publication",
+      "pass": true
+    },
+    {
+      "name": "actual_exact_payload_consumed",
+      "pass": true
+    },
+    {
+      "name": "file0:exact_created_content",
+      "pass": true
+    },
+    {
+      "name": "file0:lossless_reported_full9",
+      "pass": true
+    },
+    {
+      "name": "file1:exact_created_content",
+      "pass": true
+    },
+    {
+      "name": "file1:lossless_reported_full9",
+      "pass": true
+    },
+    {
+      "name": "file2:exact_created_content",
+      "pass": true
+    },
+    {
+      "name": "file2:lossless_reported_full9",
+      "pass": true
+    },
+    {
+      "name": "actual_publisher_epoch_span_within60",
+      "pass": true
+    },
+    {
+      "name": "no_runner_Git_Cargo_service_or_transfer",
+      "pass": true
+    },
+    {
+      "name": "released_lane_not_independent_four_files_or_build",
+      "pass": true
+    }
+  ],
+  "job": "1a1b0ade81d-fc05-7220",
+  "stdout": {
+    "blob": "444fb9941c8dae52784e0b0fe99b238206024b36",
+    "bytes": 1444,
+    "sha256": "f002a8cb103ad8b4080883e31980a29edfda6640cbf65985dc6ad025b8858665"
+  },
+  "elapsedNanoseconds": "14745049",
+  "elapsedSeconds": 0.014745049,
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "originalPages": 2,
+  "independentFourFilesQualified": false,
+  "buildQualified": false,
+  "NativeCalls": 0,
+  "productTests": 0
+}

@@ -1,0 +1,5 @@
+{
+  "error": "Error: exact_three_metadata_requests",
+  "resolved": true,
+  "reason": "Reviewer file selector used info-01.request.json instead of exact source metadata-01.exact-request.public.json; no actual source or Native was changed."
+}

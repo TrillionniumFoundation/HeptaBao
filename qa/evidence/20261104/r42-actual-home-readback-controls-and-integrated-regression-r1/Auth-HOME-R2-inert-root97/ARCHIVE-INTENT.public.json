@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42-auth-home-r2-inert-actual",
+  "records": [
+    {
+      "name": "root-actual-qualification.public.json",
+      "blob": "00900615411da59bc3d0997bb579a007f832822a",
+      "bytes": 14593,
+      "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+    },
+    {
+      "name": "root-actual-verifier.js",
+      "blob": "9b157f3ee028aab0f64b73e2f1c2e9f262a8f313",
+      "bytes": 9686,
+      "sha256": "2da5c52b467b9bd740435cbee7e3838b487871aaaac57be7f598f829e878cc7f"
+    },
+    {
+      "name": "original-journal-verifier.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    },
+    {
+      "name": "author70-root-reproduced.public.json",
+      "blob": "cf04c231ac4b7b498c517957987281c54fccfdf7",
+      "bytes": 7161,
+      "sha256": "9df721a35e9d7d287bf8ff2ca05391686d7d59321543394cde96b9a32ce7e0cd"
+    },
+    {
+      "name": "original-lane-grant.public.json",
+      "blob": "7377e6cef6c0e00592243258be63dba5350c5d48",
+      "bytes": 645,
+      "sha256": "4bc2f0e79f1ade62d350572fd40c893f64d4aa5e1a5befb4d7fd64fc8fdfb4d6"
+    }
+  ],
+  "expected_data_tree": "77c5b48e658a200eb15e90995b9c9e2b2d922445",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.root-exact-GO.025b-receipt-info-status-Git-arm-recovery.r1",
+  "authorization": "GO",
+  "scope": "025b_receipt_info3_status_git_arm_recovery_only",
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "callKey": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+  "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+  "expectedTree": "0cba6dbd80682e8418edad3f685e02dd0f3aacb6",
+  "originalRequest": {
+    "blob": "7d1b35b0d9380bcc334c25e523088fb9da053233",
+    "bytes": 89,
+    "sha256": "e20f22d9d70ed5029cc45084dcbf5f6815f08ee8b9cdfe8c680cfa4dcbfa763d"
+  },
+  "exactPausedState": {
+    "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+    "bytes": 192323,
+    "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+  },
+  "exactRestoreSource": {
+    "blob": "6d39f1fee3697dc506e72157c74ac9d6a27b7a43",
+    "bytes": 3174,
+    "sha256": "d4c0b34b6f60978618be80f544daec1f3b3203173a268950814998347fc77712"
+  },
+  "sourcePacket": {
+    "tree": "7d41c7d6372d8c426d38016c84525d42059a45a5",
+    "files": 21,
+    "bytes": 217050,
+    "merkle": {
+      "root_sha": "7d41c7d6372d8c426d38016c84525d42059a45a5",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "rootReview": {
+    "blob": "51014de45760a1aafc94fd0bcf18584c19634b1d",
+    "bytes": 2990,
+    "sha256": "505bcc2f2baabaf24df01b7c970f18cf136e4577170eefa05bf3e208f795f21e"
+  },
+  "rootChecks": 19,
+  "originalFixed4GO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "action": "Execute only the frozen local restore source once, preserving original errors and GO, then invoke the existing uninvoked status0 once through the original journal; continue the same operation pages and the already authorized fixed4 table.",
+  "beforeAndAfterStateWholeCheckpointRequired": true,
+  "allowedStateChanges": [
+    "Original pending call.armed = exact readonly reconciliation record",
+    "Original pending call.phase = armed_whole",
+    "paused = false",
+    "Append receiptInfoStatusGitArmRecovery audit without deleting history"
+  ],
+  "prohibited": [
+    "No prepare or Git mutation replay",
+    "No second file_info admission",
+    "No new key or replacement observer",
+    "No slot initialization or new process_start",
+    "No alteration of original requests, GO, counters, failures or original ACK"
+  ],
+  "retainedAllocation": {
+    "C": 1,
+    "globalMaximumNativeLanes": 2,
+    "oneCallAndFuturePerLane": true,
+    "rootNativeCalls": 0,
+    "originalReceiptInfoFutureUnclosed": true
+  },
+  "sameOriginalFixed4Budgets": true,
+  "normalBuildAuthorized": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

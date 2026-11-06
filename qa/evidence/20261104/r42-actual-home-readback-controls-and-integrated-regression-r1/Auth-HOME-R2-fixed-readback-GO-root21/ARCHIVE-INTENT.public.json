@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42-auth-home-r2-fixed3INFO4BODY-GO",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "fd259b3d3dc060a4cf22efd44d276a1ed0814a3c",
+      "bytes": 8810,
+      "sha256": "0040a5f9acd0d6ef8711417c728498afcffd049228c5e6828c1cc95605f6722c"
+    },
+    {
+      "name": "root-source-review.public.json",
+      "blob": "7820702b6e8822773791567839383b0711d8809d",
+      "bytes": 5564,
+      "sha256": "92e8d05739d0283b2612bdc595f05c8f1b4238df050f1b75c9f960145af90a3a"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "d14a6270a6adf128d908d9360135db7edf388289",
+      "bytes": 5419,
+      "sha256": "8f6877c213674991cedac7cfd7c3645025f619464bd38f1d314016d1aaa9b360"
+    },
+    {
+      "name": "author20-root-reproduced.public.json",
+      "blob": "ca7e25f1f0bc4b8060237302dd6cb9dd459b3400",
+      "bytes": 2540,
+      "sha256": "a11ccba0972d3c8d367d8900189d40fb1708df6d924fb12563ec57b3fa85618d"
+    },
+    {
+      "name": "C-original-lane-release.public.json",
+      "blob": "99db1f64d7e1946686aff027795438bab27d2174",
+      "bytes": 2852,
+      "sha256": "906952cdee4dac0025d668430b5a8c6e76656198788bab30e0da989d3ece9116"
+    }
+  ],
+  "expected_data_tree": "a6ad295f7328ffad42c0cf2982a79da34315688b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

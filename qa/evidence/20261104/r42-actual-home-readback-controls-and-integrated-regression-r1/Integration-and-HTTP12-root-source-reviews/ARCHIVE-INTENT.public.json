@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42_integration_and_HTTP12_root_source_reviews_v1",
+  "records": [
+    {
+      "name": "root-integration-source-facts.public.json",
+      "blob": "91150e9602c3395448a1fdacad7574daa4cb371d",
+      "bytes": 29334,
+      "sha256": "2cc0b8da38d7e70c1dd7e9a331f4bc1e371a05f692b4e9ceafc9ca431fba8d0c"
+    },
+    {
+      "name": "root-integration-source-verifier.js",
+      "blob": "e97330fc0ec1d1dcce6cdc405f647cc0bd13ae14",
+      "bytes": 4013,
+      "sha256": "f160b401417cf14f088a901b9475758d50c8bb3a36f896c76e97de8f6c1b8ff7"
+    },
+    {
+      "name": "snapshot2379-tree.original.json",
+      "blob": "f7a0ca4a6b5915a3fa92742d6724438c43bec49c",
+      "bytes": 1208115,
+      "sha256": "7679e7a1ebbf7beec1eb2c235ea852d051ba9620ef61e554c7c46901362bf803"
+    },
+    {
+      "name": "snapshot2379-tree.original.SDK.json",
+      "blob": "c67e288852f28b6c15a7cabc3697f32475f85690",
+      "bytes": 2604307,
+      "sha256": "60a7a63fd827df08909d2805747afb0b4503c123c81690731744b0916ec33c29"
+    },
+    {
+      "name": "two-candidate-54-path-differences.public.json",
+      "blob": "209d1c7b80b4add6657ab7cd41759dfdd6d15bd4",
+      "bytes": 13768,
+      "sha256": "5092dbbb1df39b267e54e7148f5f9b95e975b925db5084414d156075159a8187"
+    },
+    {
+      "name": "HTTP12-case-local-status-root-review.public.json",
+      "blob": "8691581d7f7c2b0194412bebcf1c74a2f1c3850f",
+      "bytes": 1781,
+      "sha256": "d9f6dde871f5722e76f231a82a4c37cc4723b0ace17aedb6ed2f6830d54a0c21"
+    },
+    {
+      "name": "HTTP12-ACL23-request-count-source-analysis.public.json",
+      "blob": "9eeb89bd56601c6d27c51928599e68851d9c7908",
+      "bytes": 751,
+      "sha256": "8313dd22bfb22387ae86c59e436ba9ae58852ba5ae2a9b3a5a7f42f7e92ca54e"
+    },
+    {
+      "name": "protected-leaf-0-exact-diffspan.public.json",
+      "blob": "363e3c0df76ab4c246f1085d851bf108f2cec52b",
+      "bytes": 1042,
+      "sha256": "5bb24ca87d466cda554e9aa37cd20cc718ac52ed618098fa07647e032089e449"
+    },
+    {
+      "name": "protected-leaf-1-exact-diffspan.public.json",
+      "blob": "1a5dbb9284e257e12dd9e10b7751c6f766fc9328",
+      "bytes": 2979,
+      "sha256": "0c53e5595123238001632ac92754c4963a4b555f87f46900fddf4888a50f33ab"
+    },
+    {
+      "name": "protected-leaf-2-exact-diffspan.public.json",
+      "blob": "367215339ad647fbcd191211988b573f3c8c0d1f",
+      "bytes": 2417,
+      "sha256": "aeb46d385acbda35e1c511964d42db0df7e29fef7ca9bf9ada6f2bef3fee7bbf"
+    }
+  ],
+  "expected_data_tree": "1d0a22d91216c65734b4eafcc8480ca12c5241ab",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

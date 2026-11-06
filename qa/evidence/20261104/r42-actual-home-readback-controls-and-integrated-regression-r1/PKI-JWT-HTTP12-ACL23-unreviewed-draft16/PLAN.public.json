@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.native-jwt-pki-HTTP12-ACL23-execution-modules.source-draft.r1",
+  "status": "UNREVIEWED_SOURCE_COMPONENT_DRAFT_NOT_DISPATCHABLE",
+  "product_candidate": "025b05a340de841b8161c1120344e86eae30eb97",
+  "actual_product_build": null,
+  "actual_candidate_binary": null,
+  "actual_official_binary": null,
+  "actual_rog_official_path": null,
+  "actual_TLS_fixture": null,
+  "exact_controller": null,
+  "exact_request": null,
+  "modules": {
+    "rawStatus": {
+      "blob": "6a40dccac98b8b888d1d740156334931d27e2c58",
+      "bytes": 13412,
+      "sha256": "228ff946c0838fcb9be0c64d6b0d9f0e0487d2002f58a15a04a39ef6408c7495"
+    },
+    "acl23": {
+      "blob": "cb70eb45d483299702b73331caa360fa96d9d13a",
+      "bytes": 15599,
+      "sha256": "e96451d450224abfa7eeda34622b26b1d21493867b4344aa254709348515bfc4"
+    }
+  },
+  "original_matrix": {
+    "blob": "7364a32a2341a56b0730ad3486c72bdbd6de53c4",
+    "bytes": 14285,
+    "sha256": "59e3c9519e59e7ae26cde512a8171d39e2175e8bb24f12039222218570ebe6f8"
+  },
+  "frozen_sources": {
+    "acceptance": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+    "bao_http": "76ba79c5c8da10881337f7e9eee1e0fbd54f490b",
+    "owned_process": "64793384ee1fd7db5081ac4ebb7e9dd354757889",
+    "current_auth": "c407b40741a5660b77e2342871888e2a61ac29da",
+    "bao_http_facade": {
+      "blob": "a3afa32fb83a1f214e4d05dc928c39f29090d647",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f"
+    },
+    "consistency": {
+      "blob": "19ab60eab7e1f8f909dcead6e0a0f487f1324b61",
+      "bytes": 4836,
+      "sha256": "657d81f48895ec4bb4e27199fcd3b7125d8fc2cb9899f777945ef2e831519abe"
+    },
+    "package_init": {
+      "blob": "856df0cad90c9fe3bcac80b3662e4d7259592ca5",
+      "bytes": 194,
+      "sha256": "6b48603fea77708df5e51b71cda53f488241b3c3f3cccb60158434cbdec219b2"
+    }
+  },
+  "limits": {
+    "original_http_seconds": 15,
+    "maximum_response_body": 16777216,
+    "original_owner_seconds": 360,
+    "controller_outer_seconds": null,
+    "report_max_bytes": null,
+    "maximum_requests": null
+  },
+  "actual_cases": 0,
+  "Python_compile": 0,
+  "Runtime_calls": 0,
+  "remaining": [
+    "actual025b normal build and retained binary full pin remain pending",
+    "known fixed official2.7.1 Linux artifact path/pin still unbound; do not infer it from Mac/X230 or LAN",
+    "new isolated Linux dual-TLS fixture and activated existing Owner custody must be completed and reviewed; no default _CURRENT=None fallback",
+    "controller exact sys.path/source imports, child process/FD limits, request count, result cap, private credential lifecycle and failure/cleanup need explicit source",
+    "controller outer deadline and report cap remain null; no dispatch until fixed and reviewed",
+    "meaningful selected component checks/Python compilation not yet performed; this packet makes no executable qualification"
+  ],
+  "scopes": [
+    "Two auxiliary components, not a fixture launcher or second controller",
+    "Original production Client.request stays immutable. A narrow private copy preserves all validation/opener/HTTPError/context/decode/error behavior and adds request-local public observation fields",
+    "No opener or client timeout mutation, new response wrapper, request retry, redirect following or status normalization",
+    "Original acceptance Suite.pki_cases/check semantics remain byte-identical, including the two exact400 expectations",
+    "Original23 matrix bytes and source predictions remain immutable; real case-only/no-default service actors; no injected default policy",
+    "Role token_policies presence/null/empty/default observations remain distinct and may expose an independent policy-delegation gap",
+    "No actual binary, TLS fixture, credentials, process owner or runtime parity is inferred"
+  ],
+  "originalRequestMethod": {
+    "pin": {
+      "blob": "44e366d125e540f51a11d54d457510b84f1fe1a4",
+      "bytes": 3581,
+      "sha256": "8cec78edd335c1ba579724c5dce1cdc6b4e81c50bff00c637d87981e27de5ceb"
+    },
+    "privateAdaptation": {
+      "blob": "818a2bcee1b297074dda6c194fa1d0b9cc7b1a7a",
+      "bytes": 3927,
+      "sha256": "75ed3b707f3064250ff6cf90a4c1c1a8cacefec2bd90e20bfb4592f1bcd5293e"
+    },
+    "strictDiff": {
+      "blob": "ae3ad2527a39f3f15c00ae0ad9144d018d0e67b8",
+      "bytes": 7717,
+      "sha256": "44b76c3768b2587889f7962f6d650ebf05ebf2285ffe0ad8afe9c66e8b26a7f1"
+    }
+  },
+  "supersededDraftBoundary": "Earlier proxy-wrapper draft is retained in cache history; this packet's private-copy design removes the added response acquisition/wrapper allocation and opener-restoration gaps. No version was executed."
+}

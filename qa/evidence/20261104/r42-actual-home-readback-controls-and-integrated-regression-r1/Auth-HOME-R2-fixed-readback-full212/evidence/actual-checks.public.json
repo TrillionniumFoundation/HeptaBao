@@ -1,0 +1,365 @@
+{
+  "schema": "heptabao.home-r2-fixed-readback-actual-checks.v1",
+  "passed": true,
+  "checkCount": 88,
+  "checks": [
+    {
+      "name": "readback zero live Native and all accepted",
+      "passed": true
+    },
+    {
+      "name": "seven once-admitted reads no process starts",
+      "passed": true
+    },
+    {
+      "name": "twenty-one completed original pages",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-01-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-01-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-02-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-02-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-02-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-03-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-03-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-info-03-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p32768",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p40960",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p49152",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p57344",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p65536",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p73728",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-01-p81920",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-02-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-02-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-02-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-02-p08192",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-03-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-03-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-03-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-03-p08192",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-04-admit",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-04-state",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-04-p00000",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-04-p08192",
+      "passed": true
+    },
+    {
+      "name": "whole request/sdk/native home-r2-readback-body-04-p16384",
+      "passed": true
+    },
+    {
+      "name": "read 0 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 0 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-info-01-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 0 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 1 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 1 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-info-02-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 1 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 2 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 2 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-info-03-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 2 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 3 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 3 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p08192 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p16384 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p24576 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p32768 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p40960 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p49152 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p57344 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p65536 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p73728 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-01-p81920 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 3 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 4 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 4 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-02-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-02-p08192 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 4 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 5 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 5 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-03-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-03-p08192 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 5 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "read 6 exact ordered request and original ACK",
+      "passed": true
+    },
+    {
+      "name": "read 6 exact one completed inactive state",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-04-p00000 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-04-p08192 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "page home-r2-readback-body-04-p16384 identity extent and immutable hash",
+      "passed": true
+    },
+    {
+      "name": "read 6 exact payload and native reconstruction",
+      "passed": true
+    },
+    {
+      "name": "all three current metadata exact",
+      "passed": true
+    },
+    {
+      "name": "four actual body pieces exact plan and total",
+      "passed": true
+    },
+    {
+      "name": "body 0 actual chunk version and digest",
+      "passed": true
+    },
+    {
+      "name": "body 1 actual chunk version and digest",
+      "passed": true
+    },
+    {
+      "name": "body 2 actual chunk version and digest",
+      "passed": true
+    },
+    {
+      "name": "body 3 actual chunk version and digest",
+      "passed": true
+    },
+    {
+      "name": "all three whole files exact",
+      "passed": true
+    },
+    {
+      "name": "original inert context unchanged",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 35,
+  "originalOperations": 7,
+  "immutablePages": 21,
+  "bodyBytes": 96654,
+  "noNewRuntimeInVerifier": true,
+  "noProductTestClaim": true
+}

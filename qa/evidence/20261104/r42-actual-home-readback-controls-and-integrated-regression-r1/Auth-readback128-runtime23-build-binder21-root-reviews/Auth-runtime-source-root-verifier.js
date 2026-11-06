@@ -1,0 +1,34 @@
+function reviewActualHomeRuntimeSource(p,prior,minimum,root97,h){
+ const rows=[];const ck=(id,v)=>{rows.push({id,pass:!!v});if(!v)throw Error(id);};const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),pin=h.gitBlobMeta;
+ const f=p.raw,c=JSON.parse(f["CONTRACT.public.json"]),q=JSON.parse(f["runtime.exact-request.public.json"]),r=JSON.parse(f["readback-release.public.json"]),i=JSON.parse(f["derivation-input.public.json"]);
+ ck("source20_whole",p.audit.whole&&p.audit.tree==="fd1b2c30bb1fb390e562b55c727513e9d2c1c44d"&&p.audit.files===20);
+ ck("original_unchanged_47c_deriver",pin(f["unchanged-runtime-deriver.js"]).blob==="47c30a8833171ecc52679a25a913c71ca7a35eac"&&f["unchanged-runtime-deriver.js"]===prior.raw["reference.runtime-deriver.unchanged.js"]);
+ ck("original_input_unchanged",f["derivation-input.public.json"]===prior.raw["reference.runtime-binding-input.public.json"]);
+ ck("root97_exact_actual_provenance",f["root-inert-qualification.original.json"]===root97.text&&same(pin(f["root-inert-qualification.original.json"]),c.actualInertQualification));
+ ck("actual_authority_exact",f["actual-authority.original.json"]===prior.raw["reference.actual-inert-authority.original.json"]&&same(pin(f["actual-authority.original.json"]),c.derivationInputPins.authority));
+ ck("actual_stdout_exact",f["actual-stdout.original.txt"]===prior.raw["reference.actual-inert-stdout.original.txt"]&&same(pin(f["actual-stdout.original.txt"]),c.derivationInputPins.stdout));
+ ck("actual_receipt_independent_whole",f["actual-receipt.whole.original.json"]===minimum.raw["actual-receipt.whole.original.txt"]&&same(pin(f["actual-receipt.whole.original.json"]),c.derivationInputPins.receipt));
+ ck("actual_release_same",f["readback-release.public.json"]===minimum.raw["release.public.json"]&&same(pin(f["readback-release.public.json"]),c.actualReadbackRelease));
+ const derive=new Function("gitBlobMeta","encodeBase64Bytes","utf8Bytes",f["unchanged-runtime-deriver.js"]+"\nreturn deriveActualHomeRuntimeRequest;")(pin,h.encodeBase64Bytes,h.utf8Bytes);
+ const d=derive(i,{authorityRaw:f["actual-authority.original.json"],expectedJobId:r.originalInertJob,finalStdoutRaw:f["actual-stdout.original.txt"],receiptRaw:f["actual-receipt.whole.original.json"]});
+ ck("actual_derivation_exact_reproduced",same(d,JSON.parse(f["runtime.actual-derivation.public.json"])));
+ ck("exact_derived_request",d.requestRaw===f["runtime.exact-request.public.json"]&&same(d.requestPin,c.request));
+ ck("exact_actual_home_binding",d.bindingRaw===f["runtime.actual-home-binding.public.json"]&&same(d.bindingPin,c.actualHomeBinding));
+ const b=f["runtime-journal.before.original.js"],a=f["runtime-journal.js"],fw=h.strictApply(b,f["runtime-journal.forward.diff"]),rv=h.strictApply(a,f["runtime-journal.reverse.diff"]);
+ ck("strict2_forward_reverse",fw.text===a&&rv.text===b&&fw.hunks===2&&rv.hunks===2);
+ ck("prior_journal_exact52c",pin(b).blob==="52c2735d9eae38cf4745f89802fcf25c3b5738c1"&&same(pin(b),c.beforeJournal));
+ let expected=b.replace('owner_authbus_current_home_inert_gitfirst_r2','owner_authbus_current_home_runtime_gitfirst_r2').replace('2cbe610fa2f2264d1eb137d46421069db38655a5',c.request.blob).replace('bytes:875394','bytes:'+c.request.bytes).replace('cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314',c.request.sha256).replace('heptabao-mac-current-home-launch-inert-19b91f34-','heptabao-mac-current-home-launch-runtime-c67d6fe6-');
+ ck("all13_definitions_only_literal_bindings",expected===a&&[...a.matchAll(/^(?:async )?function (\w+)/gm)].length===13);
+ ck("new_journal_exact_pin",same(pin(a),c.journal));
+ ck("exact_original_runtime_envelope",q.host==="mac"&&q.executable===i.regularPython&&q.cwd==="/Users/qianqi"&&q.timeout_seconds===1080&&q.args.slice(0,3).join(",")==="-I,-S,-B"&&q.stdin===undefined);
+ ck("outer_actual_frozen_body",pin(minimum.raw["actual-outer.whole.original.txt"]).sha256===i.outer.sha256&&q.args[3]===i.newRoot+"/qa/mac_current_outer_wal_r1.py");
+ const opt=flag=>q.args[q.args.indexOf(flag)+1];
+ ck("candidate_actual_frozen_body",pin(minimum.raw["actual-candidate.whole.original.txt"]).sha256===i.candidate.sha256&&opt("--candidate")===i.newRoot+"/candidate-current-manager-wal-r1.public.json"&&opt("--candidate-sha256")===i.candidate.sha256);
+ ck("actual_home_binding_in_argv",opt("--public-home-control-binding-base64")===h.encodeBase64Bytes(h.utf8Bytes(d.bindingRaw))&&opt("--public-home-control-binding-sha256")===d.bindingPin.sha256);
+ ck("frozen_source_manifest_in_argv",opt("--public-source-pins-base64")===h.encodeBase64Bytes(h.utf8Bytes(i.sourcePinsRaw))&&opt("--public-source-pins-sha256")===pin(i.sourcePinsRaw).sha256);
+ ck("fresh_exact_runtime_key",q.idempotency_key==="heptabao-mac-current-five-agent-home-launch-c67d6fe6-20261106-r2");
+ ck("five_agent_and_budgets_preserved_contract",same(c.originalBusinessPreserved.fiveAgents,["main","trnm","hepta-ui","hepta","hepta-backend"])&&c.originalBusinessPreserved.workerSeconds===900&&c.originalBusinessPreserved.controllerSeconds===1080&&c.originalBusinessPreserved.currentCaptureSeconds===45&&c.originalBusinessPreserved.registryQuerySeconds===3);
+ ck("stage_readback_not_credentials",c.limits.stagingAndReadbackDoNotProveSelectedOwner&&c.limits.credentialsNotQualified&&c.limits.productionCutover===false&&c.limits.legacyCleanup===false&&c.limits.noReadThenExecAtomicityClaim);
+ const typed=h.processStartBinding(q);
+ return {schema:"heptabao.root-source-review.actual-home-bound-runtime.r1",pass:true,checks:rows.length,rows,sourcePacket:p.audit,priorFixedReadSource:prior.audit,actualReadbackMinimum:minimum.audit,actualInertQualification:root97.pins,request:d.requestPin,homeBinding:d.bindingPin,journal:c.journal,typedRequestDigest:typed.sha256,typedRequestFingerprint:typed.native_fingerprint,canonicalBytes:pin(typed.canonical).bytes,baselineCommit:"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",sourceOnly:true,fullReadbackTransportQualificationPending:true,NativeCalls:0,actualCredentialsProven:false,qualificationTransfersToFutureCombinedCandidate:false,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

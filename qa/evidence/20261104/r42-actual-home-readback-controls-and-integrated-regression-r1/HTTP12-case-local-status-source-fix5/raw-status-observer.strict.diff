@@ -1,0 +1,25 @@
+--- a/raw-status-observer.before.py
++++ b/raw-status-observer.after.py
+@@ -288,6 +288,7 @@
+             "method": method,
+             "path_template": path_template or path.replace(suite.run_id, "{run_id}"),
+         }
++        record_start = len(calls.records)
+         try:
+             return calls.call(
+                 case, method, path, payload, token=token, wrap_ttl=wrap_ttl,
+@@ -295,9 +296,13 @@
+                 public_body=case in PUBLIC_PKI_ERROR_IDS,
+             )
+         except BaoError as error:
++            new_records = [row for row in calls.records[record_start:]
++                           if row.get("case_id") == case]
++            current_status = (new_records[0]["status"]
++                              if len(new_records) == 1 else None)
+             suite.results[case] = {
+                 "result": "failed", "reason": error.code,
++                "http_status": current_status,
+-                "http_status": calls.records[-1]["status"] if calls.records else None,
+                 "semantics": {},
+             }
+             raise

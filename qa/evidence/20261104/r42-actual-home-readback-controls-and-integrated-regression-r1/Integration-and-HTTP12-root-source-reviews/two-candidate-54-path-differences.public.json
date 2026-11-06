@@ -1,0 +1,554 @@
+[
+  {
+    "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+    "B": {
+      "blob": "8edc95536e36540a0cf160cb904e4844a80f98fc",
+      "bytes": 6204
+    },
+    "C": {
+      "blob": "2abb0190d59f0385b378355a8f3d9573575ac988",
+      "bytes": 5927
+    }
+  },
+  {
+    "path": "crates/heptabao-ha-service/src/lib.rs",
+    "B": {
+      "blob": "504b1b18757bdd4bf013e7ee27029c0cc9044d37",
+      "bytes": 85408
+    },
+    "C": {
+      "blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5",
+      "bytes": 84895
+    }
+  },
+  {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_body.rs",
+    "B": {
+      "blob": "bbf14e2500ffbfe36a0ef24ca0e19240e88d319e",
+      "bytes": 15545
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_body_tests.rs",
+    "B": {
+      "blob": "fbaa67b64fd10377039096f04072868efdf88542",
+      "bytes": 7450
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+    "B": {
+      "blob": "2aae6e8a7f5bc459e19240fec8c622bdf115b8e2",
+      "bytes": 23126
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+    "B": {
+      "blob": "e4d16a8baabe02fa172232792850f291c5cdd1d5",
+      "bytes": 24050
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/auth_forward_actor.rs",
+    "B": {
+      "blob": "84d925badf31803b76d0f008bb7605d2c5c15d88",
+      "bytes": 5048
+    },
+    "C": {
+      "blob": "83fe8774097f079577f27678e3d08a8d35a27c1d",
+      "bytes": 3183
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/auth_snapshot_forward_actor_tests.rs",
+    "B": {
+      "blob": "468a6808a7b910fe5c3489f9afeaa21fa8354d13",
+      "bytes": 2135
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/engines/pki.rs",
+    "B": {
+      "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+      "bytes": 136453
+    },
+    "C": {
+      "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+      "bytes": 136672
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/ha.rs",
+    "B": {
+      "blob": "19a28bccef243c221a89841209245527252a9b21",
+      "bytes": 171691
+    },
+    "C": {
+      "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+      "bytes": 169489
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/ha_snapshot_forward.rs",
+    "B": {
+      "blob": "fdc4ddc517cb7919375e05ae18ba7ae87267c8f0",
+      "bytes": 6330
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/http.rs",
+    "B": {
+      "blob": "2f3843615e5432b311eeb438c238d9222434310d",
+      "bytes": 232657
+    },
+    "C": {
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+      "bytes": 231923
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/http_snapshot.rs",
+    "B": {
+      "blob": "c3740f0a2e55281b72a05f1b6c8e527618f3d65a",
+      "bytes": 38272
+    },
+    "C": {
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service.rs",
+    "B": {
+      "blob": "63bacb537a17cc060239a1793f8ac526e15df158",
+      "bytes": 519577
+    },
+    "C": {
+      "blob": "671bb42fa71e7a29b78b7e48355c9024c1ec7d73",
+      "bytes": 519132
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+    "B": {
+      "blob": "e5e2b67dc88ed2a67ee266a1bbdd8b777c42f36c",
+      "bytes": 29010
+    },
+    "C": {
+      "blob": "3203475bf2d08dde01570b8fe473e6343cdc4c4f",
+      "bytes": 28987
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_ha_tests.rs",
+    "B": {
+      "blob": "d3b1e12fcbbfdeba55ffa344dec0a1fa476b7992",
+      "bytes": 16080
+    },
+    "C": {
+      "blob": "d644f9788632be327e74e0cea2af6bdf1de66e20",
+      "bytes": 15905
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_controlgroups_271_namespace_tests.rs",
+    "B": {
+      "blob": "758fc2a19179bf0359f790a2b85ab0bb90e78e35",
+      "bytes": 16003
+    },
+    "C": {
+      "blob": "a25a840f0ef6680321a704fab203fa080467d74c",
+      "bytes": 15863
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_file_gc_tests.rs",
+    "B": {
+      "blob": "063676cb26c9023e5d27dbffefba694a94422295",
+      "bytes": 13274
+    },
+    "C": {
+      "blob": "5d250b3680aa85dc6063e8468bb84fc433817bf3",
+      "bytes": 13141
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_flat_retirement_tests.rs",
+    "B": {
+      "blob": "fff1bd6ba6d249299774ce508d2511e51bd42cde",
+      "bytes": 40451
+    },
+    "C": {
+      "blob": "b5d2787ddefa9a36f0621fb67bb49b600d135a77",
+      "bytes": 40317
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_import_tests.rs",
+    "B": {
+      "blob": "23038ffffacd18037700b0b9b1f4ed2d38c769f1",
+      "bytes": 34188
+    },
+    "C": {
+      "blob": "2f5372924f8ac7aef133f897e1fafe859aa4ad60",
+      "bytes": 34057
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_large_ha_tests.rs",
+    "B": {
+      "blob": "558d460b067c61d231f56c48320d4de54fa52edd",
+      "bytes": 41292
+    },
+    "C": {
+      "blob": "de9e04185f634918825636d9d42dd018e8d9f723",
+      "bytes": 41120
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+    "B": {
+      "blob": "0d55e13c52aa785eccb3f9893aada54f5fb626d4",
+      "bytes": 26981
+    },
+    "C": {
+      "blob": "7af690e48a46293adb63a65cea4cb10ccbcd1812",
+      "bytes": 26847
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_kv2_storage_witness_tests.rs",
+    "B": {
+      "blob": "4bfdfdbf943010b434134bb1cfcaaacee86f3fff",
+      "bytes": 23721
+    },
+    "C": {
+      "blob": "0db27da2dd2a5c994ee980fd15b497fcc998aa5d",
+      "bytes": 23587
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_namespace_tree_tests.rs",
+    "B": {
+      "blob": "dced505c3ce880f7cee05cec747d4400aac59d50",
+      "bytes": 32704
+    },
+    "C": {
+      "blob": "d533aeec0d078e8ed3c513c81c41870a15cd16c5",
+      "bytes": 32570
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_pki.rs",
+    "B": {
+      "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+      "bytes": 29605
+    },
+    "C": {
+      "blob": "b11309ef29cc1328657b4645045008fc57bcd628",
+      "bytes": 29631
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_pki_archive_tests.rs",
+    "B": {
+      "blob": "0256a72add9fca16d4ec8bbee3c5b4243ff7f1e2",
+      "bytes": 13352
+    },
+    "C": {
+      "blob": "a509159de804ef6f83f26980a35290f496316373",
+      "bytes": 13212
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+    "B": {
+      "blob": "47fc159b1d32b259c784b40f16a463b0739227be",
+      "bytes": 40170
+    },
+    "C": {
+      "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+      "bytes": 42909
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_remount_v6_tests.rs",
+    "B": {
+      "blob": "245516dd1985d1a64fdd0532cbbbc2a209618dd0",
+      "bytes": 25915
+    },
+    "C": {
+      "blob": "44b7930a61b8f31436c265234f24812df379c0f3",
+      "bytes": 25782
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_snapshot_forward_audit_tests.rs",
+    "B": {
+      "blob": "43917b4f6547f28c097086533b4fba36ebbddb9c",
+      "bytes": 14875
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_ssh.rs",
+    "B": {
+      "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+      "bytes": 19996
+    },
+    "C": {
+      "blob": "6d347777f8fa6a45eb570bd080aed96a5487e975",
+      "bytes": 20022
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+    "B": {
+      "blob": "748af393ffbe89e8697ba15fe1f78b5170e418ec",
+      "bytes": 8280
+    },
+    "C": {
+      "blob": "fca8c213da5d752a77ac2bdca28bd88548d2ff5c",
+      "bytes": 8140
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+    "B": {
+      "blob": "101bac012507c04ee3a1c2b6dc15273e18cd9d61",
+      "bytes": 25215
+    },
+    "C": {
+      "blob": "a93030cf3b5f4a881ad32f148e1b9afc02a07e0b",
+      "bytes": 25047
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+    "B": {
+      "blob": "9f94153e8309317194ec66cf5cdb51a16507e4af",
+      "bytes": 27508
+    },
+    "C": {
+      "blob": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204",
+      "bytes": 27371
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+    "B": {
+      "blob": "d6359eeb2d31bfc07636bbc2c2809688ebfc3467",
+      "bytes": 33328
+    },
+    "C": {
+      "blob": "e6fc168b8813dfe046fadb446bdc880ffa2d8984",
+      "bytes": 33157
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_historical_restore_tests.rs",
+    "B": {
+      "blob": "1e9818f52ee2827166f2e9694e63513fb0e8e713",
+      "bytes": 53166
+    },
+    "C": {
+      "blob": "6c9d8e5b205340ae54bde2600b09771b7325536e",
+      "bytes": 52901
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+    "B": {
+      "blob": "ac8bbc490de8197097a16acc57956b2c5243fc69",
+      "bytes": 70780
+    },
+    "C": {
+      "blob": "aa9e00cd0f530ff27fa896160f8db1e0c5700920",
+      "bytes": 69866
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_restore_borrowed_tests.rs",
+    "B": {
+      "blob": "74669ad0f4e3fd26f34d10b53ed29a06ae8a2032",
+      "bytes": 21227
+    },
+    "C": {
+      "blob": "4de9450047a084ddcfb164b54a4ff661db787d2d",
+      "bytes": 21090
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_repair_tests.rs",
+    "B": {
+      "blob": "d4b85c648162480a0ebd1900624a33d063c11eb7",
+      "bytes": 23538
+    },
+    "C": {
+      "blob": "26897662a968abfc839fea5774c5b2405e8b63e9",
+      "bytes": 23398
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_tests.rs",
+    "B": {
+      "blob": "001413918726abb14faa742f291dde633ddbd036",
+      "bytes": 12836
+    },
+    "C": {
+      "blob": "2a4fbc6bf26ee49aef0dc7eca081116f91a67aa5",
+      "bytes": 12698
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_native_v6_migration_tests.rs",
+    "B": {
+      "blob": "d755f8800bd1d93c8c2b1b7e113c09f2489e4f0b",
+      "bytes": 19758
+    },
+    "C": {
+      "blob": "cf2f577f948220a7d03db6ee94432856be2ab215",
+      "bytes": 19591
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_rate_limit_quota_139_tests.rs",
+    "B": {
+      "blob": "60925759e86f1bfad3a9d75ff0d53885da8b9626",
+      "bytes": 40558
+    },
+    "C": {
+      "blob": "de14459404def21c3954b06c6c3913b9fb4b2dbf",
+      "bytes": 40427
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward.rs",
+    "B": {
+      "blob": "622770cca42dbbc1bd7c82dbd2fc0178180cfa42",
+      "bytes": 8891
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_client.rs",
+    "B": {
+      "blob": "694edf2abe8a8f61dc887469e2dcc963dfc58fca",
+      "bytes": 18850
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_file.rs",
+    "B": {
+      "blob": "cc96349fe49fa0ffa067971f2cbda21839804410",
+      "bytes": 1811
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_source.rs",
+    "B": {
+      "blob": "ca9962d39f90cdf6ebbc06d04a9cc6c0fa7aa0a1",
+      "bytes": 17522
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_test_faults.rs",
+    "B": {
+      "blob": "abc4dbef9044f6105c00fdc290fd053e1d2cbd26",
+      "bytes": 5345
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_wire.rs",
+    "B": {
+      "blob": "e7d14fb4237c4e2638068c91f7cb421fdc3e9f85",
+      "bytes": 15616
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_forward_wire_tests.rs",
+    "B": {
+      "blob": "7dd45fb0219ea92ad7debb45f534977875ebef9a",
+      "bytes": 9844
+    },
+    "C": null
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_lossless_export_tests.rs",
+    "B": {
+      "blob": "dfe6f5e80709418b69bb1b33fee48dadb9ed6aa1",
+      "bytes": 13457
+    },
+    "C": {
+      "blob": "815cc88c81df0721e7016bf04a733a9ee7da8c96",
+      "bytes": 13326
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "B": {
+      "blob": "9dcea728cd9afd0ba9f78a65537e7cac6ccadf55",
+      "bytes": 52444
+    },
+    "C": {
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+    "B": {
+      "blob": "4c111e446031fda7ac88f673298ddfa6322ecc83",
+      "bytes": 13609
+    },
+    "C": {
+      "blob": "6c5d06a598e1e48c57dd30bf391643b7c2b448ce",
+      "bytes": 12109
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+    "B": {
+      "blob": "100938ae027cc78c3037187b074856b473f9b174",
+      "bytes": 46836
+    },
+    "C": {
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899
+    }
+  },
+  {
+    "path": "crates/heptabao-server/src/service_snapshot_v6_tests.rs",
+    "B": {
+      "blob": "2f6c5383d4303a60d15801bd348f3f337fbe144b",
+      "bytes": 17988
+    },
+    "C": {
+      "blob": "28d00dcb4193d725c9d9cb9a36f6e52518be0404",
+      "bytes": 17819
+    }
+  },
+  {
+    "path": "qa/openbao-acceptance/acceptance.py",
+    "B": {
+      "blob": "928d7ceca52f3e8ee418d9d2028b376f5c1dd7c5",
+      "bytes": 36827
+    },
+    "C": {
+      "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+      "bytes": 36333
+    }
+  }
+]

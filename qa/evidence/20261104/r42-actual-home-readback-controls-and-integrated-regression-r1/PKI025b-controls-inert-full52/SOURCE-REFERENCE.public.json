@@ -1,0 +1,60 @@
+{
+  "source": "af083341815f9dee1b456ce2de7432239e8bd832",
+  "publisher": {
+    "blob": "4410a8dd3fdd2ca7556d96b3cb9a7bbb74effe81",
+    "bytes": 5182,
+    "sha256": "1c7a650c1fcf7c909f4071341286ae6fcbbbade55cca9a550b2508bb8d238b87"
+  },
+  "journal": {
+    "blob": "510a46984f60f31458cdcb95dc7f36b9b83454ce",
+    "bytes": 19060,
+    "sha256": "6160378d180d4327bff2ba876e1ecdfb391389d1fe502ccbb7a3d73d52540d7f"
+  },
+  "request": {
+    "blob": "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+    "bytes": 124154,
+    "sha256": "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"
+  },
+  "stageRoot": {
+    "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+    "bytes": 5974,
+    "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+  },
+  "actualStage": {
+    "body": {
+      "blob": "3455e904127e4e85c79bc5b84c939873c57dea17",
+      "bytes": 28125,
+      "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf"
+    },
+    "info": {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+      "size": 28125,
+      "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+      "version": "66306:31508577:28125:1793962266025244208:1793962266025244208",
+      "nativeText": {
+        "blob": "980b13f824670a6426777d4d7b556bcdfcddd1e8",
+        "bytes": 486,
+        "sha256": "e72056f5517a54687e030d08e4e832f9ab24be6936a68254a5f6525c3587f648"
+      },
+      "originalOperation": "a8f9b286304cc6fafd99310ef325ec14621741e939929bdd493f45eecd321aa5",
+      "full9Strings": [
+        "66306",
+        "31508577",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "28125",
+        "1793962266025244208",
+        "1793962266025244208"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    "rootQualification": {
+      "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+      "bytes": 5974,
+      "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+    }
+  }
+}

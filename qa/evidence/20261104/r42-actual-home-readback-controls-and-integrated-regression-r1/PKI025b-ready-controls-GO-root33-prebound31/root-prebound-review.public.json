@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.root.025b-controls-prebound-source-qualification.r1",
+  "passed": true,
+  "checkCount": 31,
+  "checks": [
+    {
+      "name": "whole20_prebound_packet",
+      "passed": true
+    },
+    {
+      "name": "51_author_checks_previously_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "entire_input_matches_packet",
+      "passed": true
+    },
+    {
+      "name": "runner_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "runner_unique_literal_BINDING_READY = True",
+      "passed": true
+    },
+    {
+      "name": "runner_unique_literal_DIAGNOSTIC_COMMIT = '33b814c",
+      "passed": true
+    },
+    {
+      "name": "runner_unique_literal_DIAGNOSTIC_TREE = 'b7f276f70",
+      "passed": true
+    },
+    {
+      "name": "runner_only_exact_bound_literals",
+      "passed": true
+    },
+    {
+      "name": "runner_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "runner_still_not_ready",
+      "passed": true
+    },
+    {
+      "name": "launcher_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "launcher_unique_literal_BINDING_READY = True",
+      "passed": true
+    },
+    {
+      "name": "launcher_unique_literal_FINAL_COMMIT = '33b814c7034e",
+      "passed": true
+    },
+    {
+      "name": "launcher_unique_literal_FINAL_TREE = 'b7f276f70e0da1",
+      "passed": true
+    },
+    {
+      "name": "launcher_unique_literal_SOURCE_STAGE_ROOT = Path('/h",
+      "passed": true
+    },
+    {
+      "name": "launcher_unique_literal_ROOT = Path('/home/qian-qi/h",
+      "passed": true
+    },
+    {
+      "name": "launcher_only_exact_bound_literals",
+      "passed": true
+    },
+    {
+      "name": "launcher_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "launcher_still_not_ready",
+      "passed": true
+    },
+    {
+      "name": "publisher_before_after_exact",
+      "passed": true
+    },
+    {
+      "name": "publisher_unique_literal_BINDING_READY = True",
+      "passed": true
+    },
+    {
+      "name": "publisher_unique_literal_BASE = PARENT / 'heptabao-na",
+      "passed": true
+    },
+    {
+      "name": "publisher_unique_literal_PINS = {\n    \"native_jwt_bui",
+      "passed": true
+    },
+    {
+      "name": "publisher_only_exact_bound_literals",
+      "passed": true
+    },
+    {
+      "name": "publisher_strict_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "publisher_still_not_ready",
+      "passed": true
+    },
+    {
+      "name": "exact_original149_166_groups",
+      "passed": true
+    },
+    {
+      "name": "fixed_new_commit_roots_old_target_preserved",
+      "passed": true
+    },
+    {
+      "name": "original_caps_retained",
+      "passed": true
+    },
+    {
+      "name": "fresh_NB_probe_not_lifetime_lease",
+      "passed": true
+    },
+    {
+      "name": "no_actual_values_in_prebind",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "f16eb025529a6e78d5ff5fd2d24201aa242ef3ba",
+    "files": 20,
+    "bytes": 429198,
+    "merkle": {
+      "root_sha": "f16eb025529a6e78d5ff5fd2d24201aa242ef3ba",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "selectedUniqueTests": 149,
+  "selectedProfileInstances": 166,
+  "ready": false,
+  "actualBinding": false,
+  "NativeCalls": 0,
+  "normalBuildQualified": false
+}

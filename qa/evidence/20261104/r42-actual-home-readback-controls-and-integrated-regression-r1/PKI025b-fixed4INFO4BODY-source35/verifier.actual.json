@@ -1,0 +1,305 @@
+{
+  "schema": "heptabao.025b-fixed4-conditional-source-verification.v1",
+  "pass": true,
+  "checks": 73,
+  "rows": [
+    {
+      "name": "info_strict_whole_both_directions",
+      "pass": true
+    },
+    {
+      "name": "body_strict_whole_both_directions",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_0",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_1",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_2",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_3",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_4",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_5",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_6",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:shared_info_8",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:unobserved_GF_CONTROLS_BODY_REQUESTS",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:unobserved_GF_CONTROLS_BODY_EXPECTED",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:exact_conditional_inputs",
+      "pass": true
+    },
+    {
+      "name": "declared_body_replacement:conditional_authorization_only",
+      "pass": true
+    },
+    {
+      "name": "body_only_declared_changes",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfAuthorizePublishedControlsInfoOnly",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfNeed",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfMetaEquals",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfState",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfSave",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfIntegerText",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfValidateRequest",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfPrepareOne",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfInvokePreparedOnce",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfAcceptArchivedSDK",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfCloseOriginalObserver",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "name": "whole_old_body_function:gfRun",
+      "pass": true
+    },
+    {
+      "name": "current_info_authorizer_exact_in_body_template",
+      "pass": true
+    },
+    {
+      "name": "unknown_body_tables_are_null",
+      "pass": true
+    },
+    {
+      "name": "four_body_templates_version_null",
+      "pass": true
+    },
+    {
+      "name": "bounded_total_90605",
+      "pass": true
+    },
+    {
+      "name": "receipt_derived_not_observed",
+      "pass": true
+    },
+    {
+      "name": "info_attach_preserves_original_job_calls_and_observers",
+      "pass": true
+    },
+    {
+      "name": "ordered_info_request:0",
+      "pass": true
+    },
+    {
+      "name": "ordered_info_request:1",
+      "pass": true
+    },
+    {
+      "name": "ordered_info_request:2",
+      "pass": true
+    },
+    {
+      "name": "ordered_info_request:3",
+      "pass": true
+    },
+    {
+      "name": "info_does_not_admit_unbound_body",
+      "pass": true
+    },
+    {
+      "name": "pure_deriver_only_two_literal_tables",
+      "pass": true
+    },
+    {
+      "name": "deriver_preserves_exact_request_shape",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_missing_info",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_pending",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_active_future",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_paused",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_info_not_closed",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_repeated_derivation_after_body_attach",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_template_bytes",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_deriver_bytes",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_request_template",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_native_metadata",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_projection_version",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_projection_full9",
+      "pass": true
+    },
+    {
+      "name": "deriver_rejects_wrong_body_authority",
+      "pass": true
+    },
+    {
+      "name": "unbound_template_cannot_authorize_bodies",
+      "pass": true
+    },
+    {
+      "name": "body_same_root_GO_no_new_root_or_controller",
+      "pass": true
+    },
+    {
+      "name": "body_attach_preserves_all_original_calls_infos",
+      "pass": true
+    },
+    {
+      "name": "ordered_body_request:0",
+      "pass": true
+    },
+    {
+      "name": "ordered_body_request:1",
+      "pass": true
+    },
+    {
+      "name": "ordered_body_request:2",
+      "pass": true
+    },
+    {
+      "name": "ordered_body_request:3",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_repeat",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_pending",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_active",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_pause",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_noGO",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_out_of_order",
+      "pass": true
+    },
+    {
+      "name": "body_refuses_version_drift",
+      "pass": true
+    },
+    {
+      "name": "new_body_16K_pages_preserved",
+      "pass": true
+    },
+    {
+      "name": "old_info_8K_pages_preserved",
+      "pass": true
+    },
+    {
+      "name": "old_info_refuses_16K",
+      "pass": true
+    },
+    {
+      "name": "body_attach_once",
+      "pass": true
+    }
+  ],
+  "fakeMetadataOnly": true,
+  "currentIndependentMetadataObserved": false,
+  "actualBodiesObserved": false,
+  "NativeCalls": 0,
+  "PythonExecuted": false,
+  "realSlotUntouched": true
+}

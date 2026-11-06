@@ -1,0 +1,8 @@
+{
+  "kind": "pure-source release assertion rejected array-shaped bodyStarted[10]",
+  "message": "release_boundary",
+  "noGitCreateInvoked": true,
+  "noNativeCalled": true,
+  "originalEvidenceUnmodified": true,
+  "correction": "Require every per-range bodyStarted[10] entry === false; inspect infoStarted[11] === false."
+}

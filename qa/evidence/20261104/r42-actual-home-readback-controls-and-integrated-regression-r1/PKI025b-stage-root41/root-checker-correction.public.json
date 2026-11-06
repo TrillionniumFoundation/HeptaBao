@@ -1,0 +1,9 @@
+{
+  "failure": {
+    "error": "TypeError: Cannot read properties of undefined (reading 'sha256')",
+    "stack": "TypeError: Cannot read properties of undefined (reading 'sha256')\n    at verify025bWholeStage (eval at <anonymous> (exec_main.mjs:32:1), <anonymous>:76:146)\n    at eval (eval at <anonymous> (exec_main.mjs:32:1), <anonymous>:87:14)\n    at exec_main.mjs:32:1022",
+    "NativeCalls": 0
+  },
+  "correction": "Root verifier carrier pin is at plan.carrier, not plan.originalActualStage.carrier. Actual source/report unchanged; no external action.",
+  "NativeCalls": 0
+}

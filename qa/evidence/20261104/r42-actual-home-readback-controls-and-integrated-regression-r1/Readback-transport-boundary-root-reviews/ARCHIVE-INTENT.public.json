@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42_readback_transport_boundaries_roots_v1",
+  "records": [
+    {
+      "name": "Snapshot-file10-page0-boundary-root14.public.json",
+      "blob": "4d4272b3ccab6523e3004f9d95623b15606fa8a6",
+      "bytes": 2575,
+      "sha256": "e3d331c8327a884e2ec7701b4286a921da1e256691a8ebe986c52b2d0a101eb0"
+    },
+    {
+      "name": "PKI025b-actual4INFO-binding-body0-UNKNOWN-root12.public.json",
+      "blob": "ee65fb972b712a63c87ed031b894fa7a5b434ba3",
+      "bytes": 6511,
+      "sha256": "05c9a3655fc6149274ffaf0b412a99fd14c5a18971fadb469812211fe6f1a360"
+    },
+    {
+      "name": "original-Git-arm-actual-recovery-followup.public.json",
+      "blob": "470735ff7308779df63871f76d240b7cb54e50a4",
+      "bytes": 1872,
+      "sha256": "ea39c3b67351916f7983d53df3bab1040197a066bceaa7114c7fd5189f6842c9"
+    }
+  ],
+  "expected_data_tree": "84efc6923d12814bb50df6d9a9e6e60d149249e1",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

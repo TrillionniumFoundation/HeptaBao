@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.root.snapshot-fixed23-Git-page-arm-recovery-review.r1",
+  "passed": true,
+  "checkCount": 19,
+  "checks": [
+    {
+      "name": "whole18_recovery_packet",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_GO",
+      "passed": true
+    },
+    {
+      "name": "original_CREATE_positive_exact_ACK",
+      "passed": true
+    },
+    {
+      "name": "GET_error_preserved_not_native_outcome",
+      "passed": true
+    },
+    {
+      "name": "only_original_expected_tree_whole",
+      "passed": true
+    },
+    {
+      "name": "all_original_members_Merkle",
+      "passed": true
+    },
+    {
+      "name": "whole_original_armed.json",
+      "passed": true
+    },
+    {
+      "name": "whole_original_intent.json",
+      "passed": true
+    },
+    {
+      "name": "whole_original_request.json",
+      "passed": true
+    },
+    {
+      "name": "same_pending_request_uninvoked",
+      "passed": true
+    },
+    {
+      "name": "exact_original_page0_only",
+      "passed": true
+    },
+    {
+      "name": "pending_arm_original_scope",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-admit_exact_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "sf23-r1-f07-b01-s0_exact_original_SDK",
+      "passed": true
+    },
+    {
+      "name": "original_binary_read_not_replayed",
+      "passed": true
+    },
+    {
+      "name": "original_future_known_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_admitted_journal_present",
+      "passed": true
+    },
+    {
+      "name": "scheduler_stops_before_invoke_on_failed_prepare",
+      "passed": true
+    },
+    {
+      "name": "only_attach_existing_arm_no_new_prepare",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "b1bbf1adb7c9ed54f49f8ec2a913ef0c2fae0ccc",
+    "files": 18,
+    "bytes": 45842,
+    "merkle": {
+      "root_sha": "b1bbf1adb7c9ed54f49f8ec2a913ef0c2fae0ccc",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "originalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "source": "df89be7651e6d437f7d777a057c9b070a917bbb5",
+  "pending": "sf23-r1-f07-b01-p0",
+  "exactRequest": {
+    "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+    "bytes": 122,
+    "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57"
+  },
+  "originalOperation": "8d29aac0c040a47a18f5631b618a6aea98568bb05955db0d2ff49c15cdf6fb0b",
+  "expectedTree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+  "originalTreeReadError": {
+    "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+    "bytes": 304,
+    "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+  },
+  "readonlyReconcile": {
+    "blob": "fa79c134e59e96aa5f08c82bcfe881dbcd98815e",
+    "bytes": 878,
+    "sha256": "61ec8291826dbe22b0f5cdf7332ee1270fb793d99ffb9274850818a92edca8d7"
+  },
+  "originalPageCalled": false,
+  "NativeCalls": 0,
+  "ownedFutureActive": false,
+  "semanticQualification": false
+}

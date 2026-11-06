@@ -1,0 +1,432 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "base_tree_sha": "a527113b4645b61081a386d718c9f93a5ef7c77e",
+  "tree_elements": [
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-publication-proof",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fd64b0b340fc9962fe4f64e3fa4f35dd6297edd9"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-tree-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7e7f284df749f343d3d999a450720334f21492d6"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-tree-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2eb78bd4a8d73b498921fc5505d19f684733c964"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-tree-verification",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9cd1d57af0fcc288f1d96c901d72e53e7e75749c"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-commit-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cbb2e140066d3ca528f43acdeb7d7c1777d83689"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-commit-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b36abc147b2044aac3df560f72860ad2df9d2e36"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-commit-verification",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0b5e0242cf1361cc5ec270a19abc5b5f44ea277d"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-ref-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "31507953258ced5d4afc41667d9ea7befb063e89"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-ref-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0167517bd9b3a4e2bfcf06c5d60bf6eef680b431"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/R40-ref-verification",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4a03e9a4d8835b5ec88e5caa8cca15aff3c181a0"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-build-report-full2",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "80d572bec4a316e06f47956f4a04bb8e83ee79bd"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-build-report-actual58",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "db9226138ba61edc94c08ef141f15cc7c61b58a3"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-build-failure-root44",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "41a22cf1d2cacdadaf03c0cd03a48ffc107484ef"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Runtime-key-reconciliation-source8",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8e548a322b7585fd0e7f514f1831a7f749fedc77"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-info-source18",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "14ba1481003106bfa56b378f3b0ddb0870127b71"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-info-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6b17de7d37a3a0b3bc8c311c5b1ab45c53105174"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-info-actual41",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9521d91aa291a7d25943e03f50d1f4a187c5142e"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-info-root33",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "69f7964db62e92e9a964f4ac1a64a7c0240f3e82"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-stderr-source17",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c73436932f06b812e6fd9b281afaf548089b90f6"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-stderr-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ce9539fd915b3e43be09d82991d12e4d31d05791"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-stderr-minimal2",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "da388516b7007c2909213da80aa4fd21637ea19b"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-stderr-actual73",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4f0d687d092bf8f3bb767638ee94f81edca16a1e"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI33b-compiler-stderr-root44",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b99736e6401429dcd671ba84657c26fa5e1890e8"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY0-reconciliation-source18",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d2f19cf39aefdc83407b7fa18424b87b3c631916"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY0-reconciliation-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "52f786aa5b460dc6038a7b461087120bb1ad3717"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY0-reconciliation-actual54",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d87a8a11c329d76639c6d9caf6537319d7298977"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY0-root48",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "569adbd3b92b8bd7922eb3ed16bfd99a0bf38059"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY1-source21",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "458c494e2a9270ac6787af4d7ece85b99ca3a2a1"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY1-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f6570e105923551b1c502d975556fb5284564ca7"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY1-minimal6",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3de002eb29a3673045eb171c0f9d6efa58b6c163"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-BODY1-actual52",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "835b41ac97f6aaaad699572bee58440585696d42"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-output23-source81",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e0c930c6d06881ceecf36339a860b660fc66e4b9"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-output23-GO-and-report149-source121",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2ae0bcbc92747ef0c294b763082b15dde4c8074f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Snapshot2379-output23-mapping2",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3519c124be280138091655914180ff1ca691419f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/JWT-policy-official-primary-source",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "14188d30affb94a730f9dee445a4683d10337b1f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/JWT-policy-delegation-peer4",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "633533960a8990cf0296d041a5401ef432074fd7"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-fresh-core13",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c572455d47e53327ecc7fdf74c7d38933b3b9d34"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-fresh-full107",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "74deadc6eaa97085b124515a703b6b386f3d3a20"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-fresh-peer4",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4081f3507f14b9d8224fca302ee84b5d7dc5d22c"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-fresh-root56",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1ba28b4c8451831c217c19be4cb56919ab4839ad"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-inert-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b53b6824df179fe0878a7a65df8bbe0511fcecc8"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-inert-failure-minimal9",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0f06d931497662bbf899dca14183ae1c3b77566c"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-inert-failure-actual63",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1c360c303e249709a2dddd6941f110abad5c16c5"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-partial-probe-source14",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "abf63e2f6bd459947b036ad531be09beea628ff0"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-partial-probe-GO-and-failure52",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4d987fe4c38d3d22b1e9923e171479a944a58d50"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-partial-probe-minimal9",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f954e3a23b413519d8903f09eaa56ae516fbf581"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-partial-probe-actual66",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "57ddb55e073d0b9b0b4cf1db898be35cfc92d9b5"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-first5-components16",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7592e1176e1634cf4b8259f53860ec0bc35786e3"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-first5-peer4",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b11bb56ce5db86048fed2dc016861d7d5a9820fa"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-probe59-and-first5-15-roots",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e269980b72354a70a79cf40de8de9a2dd0e889c6"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-source10",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "a9a83d6af101b2042543904b839f83e01805d55b"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-next-attempt9",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cc20535bd6c12748ae89f4dabde7c9aa11215825"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-tree-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "6135d209758ceb006ace12625fc3c3f00dd5712e"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-tree-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5abf9f33c9f1363c785448c8e1a972b387cee77f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-commit-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "cc82d75c362de24311fab84e88f2c2845c91e98c"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-commit-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "bcf2ee6622591697a9aaed9d9174a337ed485bf4"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-branch-intent",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d3ef06eab82d99af65062a7bd770f54f59543b9f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-branch-SDK",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "4243b47e61e85c623e18a03c41c57a02281aae5f"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI-twoNone-product-freeze-proof",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "56bc78be42f30332bdbceae93b57056d5630c8b3"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-source27",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ca9a176fda2dedc1f73d1cab5d8078f52d60cd0e"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-GO",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "88fcf6b02bceabd59e0f0f2e5bcf3dd4ca7a4033"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-controls-prebound20",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f16eb025529a6e78d5ff5fd2d24201aa242ef3ba"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-terminal54",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d607324241907153d146d1ddf16818e71c061b18"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-INFO-source22",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "8f350d50067d528ff00529870c8ae82831f9aed6"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-INFO-GO-and-terminal35-source46",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "17c1785970160d0ec62b80dbee92620d1a04813e"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-INFO-actual25",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "eaf68e6f316704f84151eafeb020a3bba5411eca"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-BODY-source25",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f61d379652bd714009f6035ff807a15e70bdbe3d"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/PKI025b-stage-BODY-GO-and-INFO23-source19",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "68eaa1bbce65b58fa9d26b5729f44d9cc83f8db1"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-T5-R2-source125",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9204bd66dad2f266dd56cece33f455c5ffea9e2d"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/Auth-HOME-T5-R2-GO-and-root80",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7036930d684c645c68262cd636d2a9be8f9334a2"
+    },
+    {
+      "path": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1/root-current",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2f7f67ee87621e9696016211d359bd5b0e644bf6"
+    }
+  ]
+}

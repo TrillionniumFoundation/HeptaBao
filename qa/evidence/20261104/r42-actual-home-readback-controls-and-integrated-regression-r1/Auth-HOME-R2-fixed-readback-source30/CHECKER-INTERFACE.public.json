@@ -1,0 +1,20 @@
+{
+  "checker": "source-checks.js",
+  "requiredStoreMap": {
+    "owner_pure_source": "reference.pure-helpers.unchanged.js",
+    "owner_source_unified_helpers": "reference.unified-source-helpers.unchanged.js",
+    "authbus_home_r2_readback_deriver": "fixed-readback-deriver.js",
+    "authbus_home_r2_readback_journal": "readback-journal.js",
+    "authbus_home_r2_readback_journal_before": "journal.before.original.js",
+    "authbus_home_r2_readback_plan": "JSON.parse(PLAN.public.json)",
+    "authbus_home_r2_readback_journal_diff": "{raw: journal.forward.diff, hunks:3}",
+    "authbus_home_r2_readback_journal_reverse": "{raw: journal.reverse.diff, hunks:3}",
+    "owner_authbus_current_home_inert_gitfirst_r2": "JSON.parse(reference.original-inert-state.json)",
+    "authbus_home_r2_report": "JSON.parse(reference.actual-inert-stdout.original.txt)",
+    "authbus_home_r2_candidate": "{sources:{'mac_current_outer_wal_r1.py': reference.outer.frozen.py}, sourcePins: JSON.parse(reference.runtime-binding-input.public.json).sourcePins, runtimeDeriver: reference.runtime-deriver.unchanged.js}"
+  },
+  "newSlotMustBeUndefined": "owner_authbus_home_r2_fixed_readback_gitfirst_r1",
+  "NativeOrJournalFunctionInvocation": false,
+  "actualRunCount": 1,
+  "expectedChecks": 20
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.jwt-pki-025b-fixed-stage-report-body-template.r1",
+  "scope": "pending until independently closed current report file_info",
+  "oldJournal": {
+    "blob": "068abfcedf4a9116e618389f31213b4e31185b72",
+    "bytes": 28270,
+    "sha256": "65d8ad457fa07cf9312ac03e914bf949ba1e04ef15a88d0840b34aaa6234b4f3"
+  },
+  "oldRequest": {
+    "blob": "d866eaf8211ae79d4d29153a3cc47de776f51863",
+    "bytes": 442,
+    "sha256": "ae5cde505b6eadb04033a334a7d795ca94a81d7f0986e4332b477fd0f2884f0d"
+  },
+  "newInfoJournal": {
+    "blob": "69a754dee5fc0fa48d6f2bbf8e356914b0332551",
+    "bytes": 23888,
+    "sha256": "fd4cfa5d0c5a0bfc6c31305413dad01ff931c2c3b48daeac53d8aa1e6cab7f4b"
+  },
+  "newInfoRequest": {
+    "blob": "fc32f742294b7781e795273c16c6aed453f6072c",
+    "bytes": 309,
+    "sha256": "07634b88d93a6460e02fa15cdc6a1a85abf18501faa72efdf152a0f6cfea1e5d"
+  },
+  "generator": {
+    "blob": "f4cdd9f528d3d49932b409a4d91fcb464c0f0f9e",
+    "bytes": 2612,
+    "sha256": "962a15ea684bcc781d0df27c443a4bd829f52dde7aaf1a0b2a4b81b7d561bd65"
+  },
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "job": "1a1b07b7e0b-fc05-70ca",
+  "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+  "actual": {
+    "size": null,
+    "sha256": null,
+    "version": null,
+    "infoOperation": null,
+    "infoNative": null
+  },
+  "proposed": {
+    "offset": 0,
+    "limit": null,
+    "expected_version": null,
+    "immutable_page_bytes": 8192,
+    "maximum_single_body_bytes": 65536
+  },
+  "Runtime": false,
+  "GO": false
+}

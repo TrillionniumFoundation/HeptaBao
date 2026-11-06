@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.025b-controls-inert-lane-release.r1",
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "host": "rog",
+  "job": "1a1b0ade81d-fc05-7220",
+  "go": {
+    "blob": "e1450da7f349b70269b69be4d40befd8109f226f",
+    "bytes": 9414,
+    "sha256": "819df193168a2fb1e8a69d8af1b573ec7fdfd4550293c3066beeec0c0d454e5f"
+  },
+  "originalStartRequest": {
+    "blob": "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+    "bytes": 124154,
+    "sha256": "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"
+  },
+  "originalStartSDK": {
+    "blob": "644fd2ec454c1e1fa00260370f3884f84cc4cb23",
+    "bytes": 6759,
+    "sha256": "3e1090bf65c77b371a6e2f1da54c91bfdb43ca58a9c7dcc806b80f8a444f4edd"
+  },
+  "authority": {
+    "id": "4edb38378654d826ed10313b7defc623e5cd18154a4030de8dee724ad2c5118a",
+    "tool": "process_status",
+    "payload": {
+      "blob": "5925fb2fe2bb7207729523b8b7429a61b593843d",
+      "bytes": 910,
+      "sha256": "f6a6c78ca36696ff7bbe1b7f77e0c038c89764fccbd81257faf08d336a945e93"
+    },
+    "payloadTree": "67ebebce4b68e5b60115097ae1e3c77704b21544",
+    "nativeText": {
+      "blob": "15690bdf2a0078dcce3bb2d76863cf353d76b2dc",
+      "bytes": 731,
+      "sha256": "97cfc86ef059ff751ae6757738144695ae5015175d305678fa72d3c44057a277"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "streams": {
+    "id": "b9383d8a659cfe3ed84c7d1baf6cf9171d442c7ef812b88c2878280826d74786",
+    "tool": "process_read",
+    "payload": {
+      "blob": "5c0c0ddea1b314f3b412d4c665c945dce66e192b",
+      "bytes": 5073,
+      "sha256": "c9aebe1055fe567be520275a09fd9c51b8cec8715e44290ece01a70ee01fb388"
+    },
+    "payloadTree": "689c595da5b8a5d0eeb2d7b5da4c40e46a9cebbe",
+    "nativeText": {
+      "blob": "4142bf162a672bf0553a6a17815442ff09f1bd9c",
+      "bytes": 4748,
+      "sha256": "843b12b77805de709e2aa8704f4f9bd23b05ba9b19c43f8d673314eb21e8e97c"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "stdout": {
+    "blob": "444fb9941c8dae52784e0b0fe99b238206024b36",
+    "bytes": 1444,
+    "sha256": "f002a8cb103ad8b4080883e31980a29edfda6640cbf65985dc6ad025b8858665"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "exitCode": 0,
+  "outputComplete": true,
+  "outputDurable": true,
+  "terminalPublicationConfirmed": true,
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "originalImmutablePages": 2,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "nativeCallsInFlight": 0,
+  "nativeFuturesActive": 0,
+  "laneReleasedToRoot": true,
+  "publicationSemanticReviewPending": true,
+  "independentFourFilesObserved": false,
+  "CargoStarted": false,
+  "tests149_166Run": false,
+  "initialStageAndFailed33bAttemptUnmodified": true
+}

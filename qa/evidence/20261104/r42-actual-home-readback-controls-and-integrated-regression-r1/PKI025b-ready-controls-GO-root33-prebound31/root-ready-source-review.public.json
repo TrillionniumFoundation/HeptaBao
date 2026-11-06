@@ -1,0 +1,192 @@
+{
+  "schema": "heptabao.root.025b-ready-controls-source-and-lane-review.r1",
+  "passed": true,
+  "checkCount": 33,
+  "checks": [
+    {
+      "name": "ready35_whole_and_frozen",
+      "passed": true
+    },
+    {
+      "name": "prebound31_and_actual_stage41_root_qualified",
+      "passed": true
+    },
+    {
+      "name": "whole_actual_stage_and_root_receipt_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_metadata_bound_to_root_stage",
+      "passed": true
+    },
+    {
+      "name": "runner_before_exact_prebound",
+      "passed": true
+    },
+    {
+      "name": "launcher_before_exact_prebound",
+      "passed": true
+    },
+    {
+      "name": "publisher_before_exact_prebound",
+      "passed": true
+    },
+    {
+      "name": "groups_and_payload_before_exact",
+      "passed": true
+    },
+    {
+      "name": "root_reproduced_author36_exact",
+      "passed": true
+    },
+    {
+      "name": "runner_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "launcher_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "publisher_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "groups_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "carrier_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "requestRaw_exact_reproduced_binding",
+      "passed": true
+    },
+    {
+      "name": "all_pins_reproduced",
+      "passed": true
+    },
+    {
+      "name": "runner_strict_bidirectional_hunks",
+      "passed": true
+    },
+    {
+      "name": "launcher_strict_bidirectional_hunks",
+      "passed": true
+    },
+    {
+      "name": "publisher_strict_bidirectional_hunks",
+      "passed": true
+    },
+    {
+      "name": "journal_only_reviewed_two_hunks",
+      "passed": true
+    },
+    {
+      "name": "exact_request_with_typed_stdin",
+      "passed": true
+    },
+    {
+      "name": "isolated_compileonly_three_public_controls",
+      "passed": true
+    },
+    {
+      "name": "fresh_r2_preserves_r1",
+      "passed": true
+    },
+    {
+      "name": "build_denominators_and_deadlines_unchanged",
+      "passed": true
+    },
+    {
+      "name": "probe_scope_and_actual_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "A_release_whole9_and_exact_GO",
+      "passed": true
+    },
+    {
+      "name": "A_original_job_terminal_full_durable",
+      "passed": true
+    },
+    {
+      "name": "A_complete_stream_lengths_and_pins",
+      "passed": true
+    },
+    {
+      "name": "A_17_calls_3_closed_observers_10pages",
+      "passed": true
+    },
+    {
+      "name": "A_original_observer_0_closed",
+      "passed": true
+    },
+    {
+      "name": "A_original_observer_1_closed",
+      "passed": true
+    },
+    {
+      "name": "A_original_observer_2_closed",
+      "passed": true
+    },
+    {
+      "name": "A_lane_explicitly_free",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "af083341815f9dee1b456ce2de7432239e8bd832",
+    "files": 35,
+    "bytes": 788266,
+    "merkle": {
+      "root_sha": "af083341815f9dee1b456ce2de7432239e8bd832",
+      "trees_verified": 1,
+      "leaf_count": 35
+    },
+    "whole": true
+  },
+  "preboundRootChecks": 31,
+  "actualStageRoot": {
+    "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+    "bytes": 5974,
+    "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+  },
+  "authorChecksReproduced": 36,
+  "exactRequest": {
+    "blob": "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+    "bytes": 124154,
+    "sha256": "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"
+  },
+  "typedBinding": {
+    "sha256": "0b4e4b75f70c7df66df2bcb04015e6ac6c2e7dddfd209a47a4179d1b762fb2f5",
+    "native_fingerprint": "814671552628686326",
+    "canonicalBytes": 124086
+  },
+  "AReleasePacket": {
+    "tree": "90dd67e22a3cb05e7bebcfc8a388d932b9148203",
+    "files": 9,
+    "bytes": 78107,
+    "merkle": {
+      "root_sha": "90dd67e22a3cb05e7bebcfc8a388d932b9148203",
+      "trees_verified": 1,
+      "leaf_count": 9
+    },
+    "whole": true
+  },
+  "ARelease": {
+    "blob": "31a32eea228334fe9fe3d101ef572852f104626d",
+    "bytes": 5258,
+    "sha256": "dce0ed7acf012e255a608cf0fc67bff4c62e75abace1bade078df17240a76f32"
+  },
+  "laneOnlyAReview": true,
+  "fullAOriginalTransportRootQualified": false,
+  "NativeCalls": 0,
+  "PythonCalls": 0,
+  "CargoCalls": 0,
+  "normalBuildQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

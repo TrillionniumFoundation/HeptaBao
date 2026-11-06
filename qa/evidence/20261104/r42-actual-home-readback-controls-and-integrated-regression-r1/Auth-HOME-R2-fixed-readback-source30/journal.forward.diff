@@ -1,0 +1,328 @@
+--- a/inert-journal.before.js
++++ b/fixed-readback-journal.after.js
+@@ -5,7 +5,215 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "owner_authbus_home_r2_fixed_readback_gitfirst_r1";
++const GF_READBACK_PLAN = {
++  "schema": "heptabao.mac-home-r2-fixed-three-target-readback.v1",
++  "host": "mac",
++  "oldSlot": "owner_authbus_current_home_inert_gitfirst_r2",
++  "newSlot": "owner_authbus_home_r2_fixed_readback_gitfirst_r1",
++  "originalState": {
++    "blob": "797f2f8c6f3f06a5e7f69f6e2ce74522cd37d69f",
++    "bytes": 928844,
++    "sha256": "8c6e23c27083d752270c40d79b2d62cb994cdb149d93d0ba5f558cb3b8a5b810"
++  },
++  "originalJob": "1a1b09ee29e-fc05-71c4",
++  "originalGo": {
++    "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
++    "bytes": 6762,
++    "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
++  },
++  "sourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
++  "actualPacket": "6192e0b1a2e5c615e92d45e506a45de44d4cc017",
++  "finalStdout": {
++    "blob": "42e9acab1cfb93c454893bc941b6e01b4b1d87a3",
++    "bytes": 20680,
++    "sha256": "ab2f549764f37c9c39acf305e8d3badb8771fa72c1b72fc180b8bef9cfae2c79"
++  },
++  "authority": {
++    "blob": "dacac533c126bcb5aed0d6b93a2baad9776f6b01",
++    "bytes": 733,
++    "sha256": "7f7513f587d43fecea9b3402d07d2e2e087296a066ce67d69718f5d906e4f077"
++  },
++  "release": {
++    "blob": "31a32eea228334fe9fe3d101ef572852f104626d",
++    "bytes": 5258,
++    "sha256": "dce0ed7acf012e255a608cf0fc67bff4c62e75abace1bade078df17240a76f32"
++  },
++  "targets": [
++    {
++      "ordinal": 1,
++      "id": "outer",
++      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
++      "bytes": 73918,
++      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7",
++      "stageFull9": [
++        "16777244",
++        "72686374",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "73918",
++        "1793964565564291379",
++        "1793964565564297212"
++      ],
++      "sourcePin": {
++        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
++        "bytes": 73918,
++        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
++      },
++      "bodyChunks": [
++        65536,
++        8382
++      ]
++    },
++    {
++      "ordinal": 2,
++      "id": "candidate",
++      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
++      "bytes": 7499,
++      "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56",
++      "stageFull9": [
++        "16777244",
++        "72686388",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "7499",
++        "1793964565572547394",
++        "1793964565572553103"
++      ],
++      "sourcePin": {
++        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
++        "bytes": 7499,
++        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
++      },
++      "bodyChunks": [
++        7499
++      ]
++    },
++    {
++      "ordinal": 3,
++      "id": "receipt",
++      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
++      "bytes": 15237,
++      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
++      "stageFull9": [
++        "16777244",
++        "72686396",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "15237",
++        "1793964565577342153",
++        "1793964565577348070"
++      ],
++      "sourcePin": null,
++      "bodyChunks": [
++        15237
++      ]
++    }
++  ],
++  "metadataRequests": [
++    "{\n  \"idempotency_key\": \"heptabao-mac-home-r2-readback-ab2f5497-info-01\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py\"\n    }\n  }\n}\n",
++    "{\n  \"idempotency_key\": \"heptabao-mac-home-r2-readback-ab2f5497-info-02\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json\"\n    }\n  }\n}\n",
++    "{\n  \"idempotency_key\": \"heptabao-mac-home-r2-readback-ab2f5497-info-03\",\n  \"operation\": {\n    \"tool\": \"file_info\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json\"\n    }\n  }\n}\n"
++  ],
++  "keyPrefix": "heptabao-mac-home-r2-readback-ab2f5497-",
++  "metadataOperations": 3,
++  "conditionalBodyOperations": 4,
++  "bodyTotalBytes": 96654,
++  "bodyChunkMaximum": 65536,
++  "immutablePageMaximum": 8192,
++  "immutablePayloadMaximum": 1048576,
++  "metadataHashCostIsSeparate": true,
++  "maxStatusesPerOperation": 8,
++  "metadataSubmitted": 0,
++  "bodySubmitted": 0,
++  "runtimeSubmitted": 0,
++  "readThenExecAtomicityClaim": false,
++  "old952f964cScopesNotInherited": true,
++  "oldR1PartialUnchanged": true,
++  "actualRootQualification": {
++    "blob": "00900615411da59bc3d0997bb579a007f832822a",
++    "bytes": 14593,
++    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
++  },
++  "actualRootQualificationPacket": "2c658e597885563aecb0ef9ec12ce163700fa423"
++};
++
++/* Pure fixed-plan validation and body derivation. No tool, import, Native, SDK, file or process invocation. */
++function validateFixedReadbackInfo(plan,index,v){
++ const need=(x,c)=>{if(!x)throw Error(c);};
++ need(Number.isSafeInteger(index)&&index>=0&&index<3,"fixed_info_ordinal");
++ const t=plan.targets[index];
++ need(v&&v.path===t.path&&v.size===t.bytes&&v.sha256===t.sha256,"actual_fixed_info_path_size_sha");
++ need(v.mode===384&&v.metadata?.mode===384&&v.metadata.uid===501&&v.metadata.gid===20
++      &&v.metadata.link_count===1&&v.metadata.metadata_platform==="darwin","actual_regular_0600_owner_single_link");
++ need(typeof v.version==="string"&&/^[0-9]+:[0-9]+:[0-9]+:[0-9]+:[0-9]+$/.test(v.version),"actual_version_opaque_decimal_shape");
++ const z=v.version.split(":");
++ need(z[2]===String(v.size),"version_size_agrees");
++ const full9=[z[0],z[1],String(v.metadata.uid),String(v.metadata.gid),String(32768+v.mode),
++              String(v.metadata.link_count),z[2],z[3],z[4]];
++ need(JSON.stringify(full9)===JSON.stringify(t.stageFull9),"actual_full9_matches_final_inert_observation");
++ return {ordinal:index+1,path:v.path,bytes:v.size,sha256:v.sha256,version:v.version,full9,
++  regularFileTypeSource:"file_info rejects symlinks and non-regular targets; mode is permission bits"};
++}
++
++function deriveFixedReadbackBodies(plan,infos){
++ const need=(x,c)=>{if(!x)throw Error(c);};
++ need(Array.isArray(infos)&&infos.length===3,"all_three_original_infos_required");
++ const validated=infos.map((v,i)=>validateFixedReadbackInfo(plan,i,v));
++ const requests=[];let total=0;
++ for(let i=0;i<3;i++){
++  const t=plan.targets[i],m=validated[i];let offset=0;
++  for(const limit of t.bodyChunks){
++   need(Number.isSafeInteger(limit)&&limit>0&&limit<=65536&&offset+limit<=m.bytes,"fixed_body_chunk_bound");
++   const request={idempotency_key:plan.keyPrefix+"body-"+String(requests.length+1).padStart(2,"0"),
++    operation:{tool:"binary_read",arguments:{host:"mac",path:m.path,offset,limit,expected_version:infos[i].version}}};
++   const raw=JSON.stringify(request,null,2)+"\n";
++   requests.push({ordinal:requests.length+1,targetOrdinal:i+1,target:t.id,requestRaw:raw,requestPin:gitBlobMeta(raw)});
++   offset+=limit;total+=limit;
++  }
++  need(offset===m.bytes,"fixed_complete_target_extent");
++ }
++ need(requests.length===4&&total===plan.bodyTotalBytes&&total===96654,"exact_four_body_total");
++ return {metadata:validated,requests,totalBytes:total,bodyRequestVersionsComeFromActualInfos:true,
++         NativeCalls:0,runtimeGO:false};
++}
++
++function validateFixedReadbackBody(plan,infos,partIndex,q,v,previousParts){
++ const need=(x,c)=>{if(!x)throw Error(c);};
++ const derived=deriveFixedReadbackBodies(plan,infos),e=derived.requests[partIndex];
++ need(e&&JSON.stringify(q)===JSON.stringify(JSON.parse(e.requestRaw)),"exact_derived_body_arguments");
++ const a=q.operation.arguments,t=plan.targets[e.targetOrdinal-1];
++ need(v&&v.path===a.path&&v.version===a.expected_version&&v.size===t.bytes&&v.offset===a.offset,
++      "actual_binary_path_version_size_offset");
++ need(typeof v.data_base64==="string"&&typeof v.chunk_sha256==="string","actual_binary_encoding_and_hash");
++ const bytes=unb64(v.data_base64);
++ need(bytes.length===a.limit&&v.next_offset===a.offset+bytes.length&&v.eof===(v.next_offset===t.bytes),
++      "exact_binary_length_next_eof");
++ need(sha256Latin1(byteString(bytes))===v.chunk_sha256,"actual_chunk_sha256");
++ const part={target:e.target,targetOrdinal:e.targetOrdinal,path:v.path,version:v.version,
++  offset:v.offset,next_offset:v.next_offset,eof:v.eof,base64:v.data_base64,bytes:bytes.length,
++  chunkSha256:v.chunk_sha256};
++ let whole=null;
++ if(v.eof){
++  const selected=previousParts.filter(p=>p.target===e.target).concat(part);
++  let all=[],next=0;
++  for(const p of selected){need(p.offset===next&&p.version===v.version,"same_version_contiguous_whole");all=all.concat(unb64(p.base64));next=p.next_offset;}
++  need(next===t.bytes&&all.length===t.bytes,"whole_file_exact_extent");
++  const raw=utf8Text(all),pin=gitBlobMeta(raw);
++  need(pin.bytes===t.bytes&&pin.sha256===t.sha256,"whole_file_matches_stage_sha256");
++  if(t.sourcePin)need(pin.blob===t.sourcePin.blob,"whole_file_matches_frozen_public_source_blob");
++  whole={target:e.target,path:t.path,version:v.version,full9:derived.metadata[e.targetOrdinal-1].full9,
++   raw,pin,independentOriginalBinaryRead:true};
++ }
++ return {part,whole};
++}
++
+-const GF_SLOT = "owner_authbus_current_home_inert_gitfirst_r2";
+ const GF_REQUEST = {blob:"2cbe610fa2f2264d1eb137d46421069db38655a5",
+  bytes:875394,sha256:"cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"};
+ 
+@@ -26,40 +234,39 @@
+    && /^-?[0-9]+$/.test(value.$exactInteger),"lossless_integer_token");
+  return value.$exactInteger;
+ }
++function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback}){
++ gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_readback_context_must_be_recovered");
++ gfNeed(goWholeReadback===true&&gfMetaEquals(goRaw,goPin),"exact_whole_root_go");
++ const old=load(GF_READBACK_PLAN.oldSlot),oldRaw=JSON.stringify(old,null,2)+"\n";
++ gfNeed(old&&gfMetaEquals(oldRaw,GF_READBACK_PLAN.originalState),"exact_closed_inert_context_unchanged");
++ gfNeed(old.job===GF_READBACK_PLAN.originalJob&&old.startCalled===true&&!old.paused
++  &&old.pending===null&&old.activeObserver===null&&old.nativeCallInFlight===false
++  &&old.completedObservers.length===3&&old.completedObservers.every(x=>x.completedInactive===true),
++  "qualified_original_inert_closed_before_readback");
++ // The old context is neither mutated nor reinitialized. No process_start is allowed here.
++ store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest:old.digest,fingerprint:old.fingerprint,
++  job:old.job,startCalled:true,inheritedOriginalStart:true,processStartsInThisScope:0,
++  originalInertState:GF_READBACK_PLAN.originalState,readbackRequests:GF_READBACK_PLAN.metadataRequests.slice(),
++  readbackInfos:[],readbackParts:[],readbackWholeFiles:[],bodyReturnAccounting:[],
++  pending:null,activeObserver:null,nativeCallInFlight:false,paused:false,calls:{},
++  completedObservers:[],nextStdout:old.nextStdout,nextStderr:old.nextStderr,
+-function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,digest,fingerprint}) {
+- gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_context_must_be_recovered_not_reinitialized");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_root_go");
+- gfNeed(/^[0-9a-f]{64}$/.test(digest) && /^[0-9]{1,20}$/.test(fingerprint),
+-        "root_independently_bound_native_identity");
+- // The caller must supply the separately reviewed actual GO, not the SOURCE contract.
+- store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest,fingerprint,job:null,
+-  startCalled:false,pending:null,activeObserver:null,nativeCallInFlight:false,
+-  paused:false,calls:{},completedObservers:[],nextStdout:0,nextStderr:0,
+   localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+ }
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+  if(kind==="process_start") {
++  throw new Error("readback_scope_never_process_start");
+-  gfNeed(!s.startCalled && s.job===null && s.activeObserver===null
+-    && gfMetaEquals(raw,GF_REQUEST),"one_exact_diagnostic_start");
+  } else if(kind==="operation_start") {
++  const index=s.completedObservers.length,expected=s.readbackRequests[index];
++  gfNeed(s.job===GF_READBACK_PLAN.originalJob&&s.activeObserver===null
++    &&index<7&&typeof expected==="string"&&raw===expected,
++    "one_fixed_sequential_metadata_or_actual_version_body_request");
++  const expectedTool=index<3?"file_info":"binary_read";
++  gfNeed(q.operation?.tool===expectedTool&&q.operation.arguments.host==="mac",
++    "closed_file_read_tool_set");
+-  gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+-  gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+-    && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
+-    && /^heptabao-mac-current-home-launch-inert-19b91f34-/.test(q.idempotency_key),
+-    "bounded_original_observer_key");
+-  const op=q.operation,a=op?.arguments;
+-  gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+-    && a && a.host==="mac" && a.job_id===s.job,"same_original_job_only");
+-  if(op.tool==="process_status") {
+-   gfNeed(Object.keys(a).sort().join(",")==="host,job_id","exact_status_arguments");
+-  } else {
+-   gfNeed(op.tool==="process_read"
+-     && Object.keys(a).sort().join(",")==="host,job_id,limit,stderr_offset,stdout_offset"
+-     && a.limit===16384 && a.stdout_offset===s.nextStdout
+-     && a.stderr_offset===s.nextStderr,"original_stream_cursors_and_cap");
+-  }
+  } else if(kind==="operation_status") {
++  gfNeed(Object.values(s.calls).filter(x=>x.kind==="operation_status"&&x.called===true
++    &&JSON.parse(x.requestRaw).operation_id===s.activeObserver?.id).length<8,"fixed_status_call_bound");
+   gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+    && Object.keys(q).join(",")==="operation_id"
+    && q.operation_id===s.activeObserver.id,"same_live_original_operation_status");
+@@ -233,21 +440,27 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  const index=s.completedObservers.length;
++  gfNeed(index<7&&JSON.stringify(a.request)===JSON.stringify(JSON.parse(s.readbackRequests[index])),
++         "closed_original_exact_readback_request");
++  if(a.tool==="file_info") {
++   validateFixedReadbackInfo(GF_READBACK_PLAN,index,v);
++   s.readbackInfos.push(v);
++   if(s.readbackInfos.length===3) {
++    const derived=deriveFixedReadbackBodies(GF_READBACK_PLAN,s.readbackInfos);
++    s.readbackRequests=s.readbackRequests.concat(derived.requests.map(x=>x.requestRaw));
++    s.derivedBodyPlan=derived;
+-  gfNeed(v.job_id===s.job,"original_job_native_result_binding");
+-  if(a.tool==="process_read") {
+-   for(const stream of ["stdout","stderr"]) {
+-    const row=v[stream],asked=a.request.operation.arguments[stream+"_offset"];
+-    gfNeed(row && row.offset===asked && Number.isSafeInteger(row.next_offset)
+-      && typeof row.text==="string" && typeof row.bytes_hex==="string"
+-      && /^[a-f0-9]*$/.test(row.bytes_hex),"lossless_original_stream_shape");
+-    const b=[];for(let i=0;i<row.bytes_hex.length;i+=2)b.push(parseInt(row.bytes_hex.slice(i,i+2),16));
+-    gfNeed(row.bytes_hex.length%2===0 && b.length<=16384 && row.next_offset===asked+b.length
+-      && utf8Text(b)===row.text && Number.isSafeInteger(row.size)
+-      && row.size>=row.next_offset && typeof row.eof==="boolean"
+-      && (!row.eof||row.next_offset===row.size),
+-      "lossless_original_stream_text_hex_extent");
+-    s[stream==="stdout"?"nextStdout":"nextStderr"]=row.next_offset;
+    }
++  } else {
++   gfNeed(a.tool==="binary_read"&&index>=3,"closed_original_binary_read_only");
++   const accounting={ordinal:index-2,returnedEncodingObserved:typeof v.data_base64==="string",
++                     bytes:null,byteCountUnknown:true};
++   s.bodyReturnAccounting.push(accounting);gfSave(s);
++   const returned=unb64(v.data_base64);
++   accounting.bytes=returned.length;accounting.byteCountUnknown=false;gfSave(s);
++   const result=validateFixedReadbackBody(GF_READBACK_PLAN,s.readbackInfos,index-3,a.request,v,s.readbackParts);
++   s.readbackParts.push(result.part);
++   if(result.whole)s.readbackWholeFiles.push(result.whole);
+   }
+   const original={id:a.id,tool:a.tool,payload:pin,payloadTree:archive.tree,
+     nativeText:gitBlobMeta(nativeRaw),pages:a.pages.length,completedInactive:true};

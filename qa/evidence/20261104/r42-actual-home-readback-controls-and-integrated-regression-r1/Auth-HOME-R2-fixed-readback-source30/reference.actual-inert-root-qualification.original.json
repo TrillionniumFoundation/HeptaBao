@@ -1,0 +1,562 @@
+{
+  "schema": "heptabao.root.mac-home-r2-inert-actual-qualification.r1",
+  "passed": true,
+  "checkCount": 97,
+  "checks": [
+    {
+      "name": "whole_original106_packet",
+      "passed": true
+    },
+    {
+      "name": "whole_manifest105",
+      "passed": true
+    },
+    {
+      "name": "same_whole_minimum9",
+      "passed": true
+    },
+    {
+      "name": "same_exact_root_GO_source_request",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-start",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-start",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p32768",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p32768",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p40960",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p40960",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-01-p49152",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-01-p49152",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-02-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-02-admit",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-02-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-02-state",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-02-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-02-p00000",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_call_home-launch-r2-inert-streams-02-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_armed_tree_home-launch-r2-inert-streams-02-p08192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_observer_d232ae5c1d80130b5ad2338f454a74dcb01cd2880261018c5a830e5054c484da",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_d232ae5c1d80130b5ad2338f454a74dcb01cd2880261018c5a830e5054c484da_0",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_payload_d232ae5c1d80130b5ad2338f454a74dcb01cd2880261018c5a830e5054c484da",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_observer_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_0",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_8192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_16384",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_24576",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_32768",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_40960",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d_49152",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_payload_1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_observer_a2b376fbff063fbd695ba0eba80017aa797fb9db52584c893fad9cf68068a9be",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_a2b376fbff063fbd695ba0eba80017aa797fb9db52584c893fad9cf68068a9be_0",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_page_a2b376fbff063fbd695ba0eba80017aa797fb9db52584c893fad9cf68068a9be_8192",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_payload_a2b376fbff063fbd695ba0eba80017aa797fb9db52584c893fad9cf68068a9be",
+      "passed": true
+    },
+    {
+      "name": "MacR2Inert_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-start",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-status-01-state",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-status-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-state",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p00000",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p08192",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p16384",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p24576",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p32768",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p40960",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-01-p49152",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-02-admit",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-02-state",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-02-p00000",
+      "passed": true
+    },
+    {
+      "name": "SDK_tree_home-launch-r2-inert-streams-02-p08192",
+      "passed": true
+    },
+    {
+      "name": "one_START_17calls_3observers_10pages",
+      "passed": true
+    },
+    {
+      "name": "exact_original_mac_operator_launch",
+      "passed": true
+    },
+    {
+      "name": "typed_body_source_and_stdin",
+      "passed": true
+    },
+    {
+      "name": "whole_original_authority_bound",
+      "passed": true
+    },
+    {
+      "name": "known_success0_full_durable",
+      "passed": true
+    },
+    {
+      "name": "stream_0_exact_original_request",
+      "passed": true
+    },
+    {
+      "name": "stream_0_stdout_contiguous_lossless",
+      "passed": true
+    },
+    {
+      "name": "stream_0_stderr_contiguous_lossless",
+      "passed": true
+    },
+    {
+      "name": "stream_1_exact_original_request",
+      "passed": true
+    },
+    {
+      "name": "stream_1_stdout_contiguous_lossless",
+      "passed": true
+    },
+    {
+      "name": "stream_1_stderr_contiguous_lossless",
+      "passed": true
+    },
+    {
+      "name": "whole20680_stdout_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "author70_reproduced_from_frozen_source_bodies",
+      "passed": true
+    },
+    {
+      "name": "actual_success_with_all_finite_effects_closed",
+      "passed": true
+    },
+    {
+      "name": "actual_HOME_root_own_change_keeps_first5",
+      "passed": true
+    },
+    {
+      "name": "HOME8_returned_descriptors_once_closed",
+      "passed": true
+    },
+    {
+      "name": "HOME_only_two_public_full_copies",
+      "passed": true
+    },
+    {
+      "name": "T5_30public_files_exact_frozen_source",
+      "passed": true
+    },
+    {
+      "name": "T5_original_anchor_and_closure",
+      "passed": true
+    },
+    {
+      "name": "one_original_diskutil86639_reaped",
+      "passed": true
+    },
+    {
+      "name": "pre_final_receipt_identity_only",
+      "passed": true
+    },
+    {
+      "name": "private_inputs_runtime_credentials_not_executed",
+      "passed": true
+    },
+    {
+      "name": "complete_journal_closed",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "6192e0b1a2e5c615e92d45e506a45de44d4cc017",
+    "files": 106,
+    "bytes": 2389948,
+    "merkle": {
+      "root_sha": "6192e0b1a2e5c615e92d45e506a45de44d4cc017",
+      "trees_verified": 1,
+      "leaf_count": 106
+    },
+    "whole": true
+  },
+  "rootGO": {
+    "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+    "bytes": 6762,
+    "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+  },
+  "originalJob": "1a1b09ee29e-fc05-71c4",
+  "actualCalls": 17,
+  "observers": 3,
+  "immutablePages": 10,
+  "authority": {
+    "blob": "dacac533c126bcb5aed0d6b93a2baad9776f6b01",
+    "bytes": 733,
+    "sha256": "7f7513f587d43fecea9b3402d07d2e2e087296a066ce67d69718f5d906e4f077"
+  },
+  "stdout": {
+    "blob": "42e9acab1cfb93c454893bc941b6e01b4b1d87a3",
+    "bytes": 20680,
+    "sha256": "ab2f549764f37c9c39acf305e8d3badb8771fa72c1b72fc180b8bef9cfae2c79"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "inertStageQualified": true,
+  "actualT5PublicObjects": 30,
+  "actualHomePublicCopies": 2,
+  "actualApplicationReturnedHomeFDsClosed": 8,
+  "actualOwnedHelperPid": 86639,
+  "actualHomeControlBinding": {
+    "copies": {
+      "mac_current_phase_owner_r2.py": {
+        "bytes": 25647,
+        "identity": [
+          "16777233",
+          "593160543",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "25647",
+          "1793964565558283285",
+          "1793964565558283285"
+        ],
+        "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_phase_owner_r2.py",
+        "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+      },
+      "mac_current_server_owner_r1.py": {
+        "bytes": 14052,
+        "identity": [
+          "16777233",
+          "593160542",
+          "501",
+          "20",
+          "33152",
+          "1",
+          "14052",
+          "1793964565557957451",
+          "1793964565557957451"
+        ],
+        "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2/mac_current_server_owner_r1.py",
+        "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+      }
+    },
+    "parents": [
+      {
+        "identity": [
+          "16777233",
+          "2",
+          "0",
+          "0",
+          "16877",
+          "22",
+          "704",
+          "1786589515000000000",
+          "1786589515000000000"
+        ],
+        "path": "/"
+      },
+      {
+        "identity": [
+          "16777233",
+          "18326",
+          "0",
+          "80",
+          "16877",
+          "6",
+          "192",
+          "1790904461743063380",
+          "1790904461743063380"
+        ],
+        "path": "/Users"
+      },
+      {
+        "identity": [
+          "16777233",
+          "6929812",
+          "501",
+          "20",
+          "16877",
+          "299",
+          "9568",
+          "1793961504844327955",
+          "1793961504844327955"
+        ],
+        "path": "/Users/qianqi"
+      }
+    ],
+    "root": {
+      "identity": [
+        "16777233",
+        "593160541",
+        "501",
+        "20",
+        "16832",
+        "4",
+        "128",
+        "1793964565558243493",
+        "1793964565558243493"
+      ],
+      "path": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2"
+    },
+    "schema": "heptabao.mac-owned-home-control-binding.r1"
+  },
+  "actualReceipt": {
+    "bytes": 15237,
+    "identity": [
+      "16777244",
+      "72686396",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "15237",
+      "1793964565577342153",
+      "1793964565577348070"
+    ],
+    "kind": "inert_candidate_receipt",
+    "name": "inert-registry-wal-4e808-result.public.json",
+    "readbackUsesSeparateHeldFd": true,
+    "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
+    "wholeReadbackVerified": true
+  },
+  "elapsedSeconds": 0.25172883411869407,
+  "originalDeadlineMetAfterClosure": true,
+  "allFiniteEffectsClosed": true,
+  "currentLaneReleased": true,
+  "NativeCalls": 0,
+  "actualIndependentThreeFileAcceptance": false,
+  "runtimeRequestQualified": false,
+  "credentialsQualified": false,
+  "historicalUnknownsUnchanged": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "allClientsAndBackupsMigrated": false,
+  "legacyCleanup": false
+}

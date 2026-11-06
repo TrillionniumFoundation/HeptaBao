@@ -1,0 +1,11 @@
+--- a/launcher.prebound.py
++++ b/launcher.ready.py
+@@ -11,7 +11,7 @@
+ import subprocess
+ import time
+ 
++BINDING_READY = True
+-BINDING_READY = False
+ assert BINDING_READY, 'formatted source and published controls need separate exact admission'
+ FINAL_COMMIT = '025b05a340de841b8161c1120344e86eae30eb97'
+ FINAL_TREE = '1d8160c9385f8053b9a683cc1834da0f912e2d37'

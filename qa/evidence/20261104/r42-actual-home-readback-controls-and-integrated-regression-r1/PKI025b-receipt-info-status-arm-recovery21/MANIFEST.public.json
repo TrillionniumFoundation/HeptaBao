@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.source-and-original-recovery-packet.v1",
+  "files": [
+    {
+      "path": "state.paused.original.json",
+      "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+      "bytes": 192323,
+      "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+    },
+    {
+      "path": "failure.original.json",
+      "blob": "0d7fbe236f97641d1dbac6b68965ba95cea0963a",
+      "bytes": 245,
+      "sha256": "94a83cd7e5a37a72603f7f38e3a02aa2028705407b6d9c44858694fd40e27e6c"
+    },
+    {
+      "path": "status0.request.original.json",
+      "blob": "7d1b35b0d9380bcc334c25e523088fb9da053233",
+      "bytes": 89,
+      "sha256": "e20f22d9d70ed5029cc45084dcbf5f6815f08ee8b9cdfe8c680cfa4dcbfa763d"
+    },
+    {
+      "path": "status0.intent.original.json",
+      "blob": "66ff5f838b307a13364b28c2a1f8ba270ac05b61",
+      "bytes": 804,
+      "sha256": "37239978eeb4ce6896bcdad85ae3de545387c4355349298fed61fbc810955233"
+    },
+    {
+      "path": "status0.armed.original.json",
+      "blob": "3dea76c2a7e8cd5f8e10a05e3118987ce1175928",
+      "bytes": 941,
+      "sha256": "51327c1e660b1c37b0a29f093a084b5a8165511fdb3cb5e570b0a76ef22fd104"
+    },
+    {
+      "path": "git-create.original.sdk.json",
+      "blob": "2907de11f081a700736f2d797547b1a69deeabab",
+      "bytes": 195,
+      "sha256": "b13adca440d444fdd8f4bc327979bd51d1e54e3d9a7d1d3695fb64facfbe4472"
+    },
+    {
+      "path": "git-tree.original.sdk.json",
+      "blob": "3ecba76ce6b345a3373c8f316671ed33fba3dc89",
+      "bytes": 2799,
+      "sha256": "7683690917599885cfdd9273a62ca148ad78fc379628a399c8cfb59074c04c65"
+    },
+    {
+      "path": "git-partial.original.json",
+      "blob": "cf6bf83c34d8a5b6fb5616f97a854538577c8e1e",
+      "bytes": 768,
+      "sha256": "e932a509c55da7abbbed7cdc6f0985e65faf3a6dfbc4beb119671e066823b968"
+    },
+    {
+      "path": "git-batch0.original.json",
+      "blob": "e80f43dc7a7f1058b8e8f4ab96ce12cb734015a0",
+      "bytes": 391,
+      "sha256": "647cc0330b627f683e8fcd44f3572d40b90c35c7fd1e1a727ac218f569b43af3"
+    },
+    {
+      "path": "readonly-reconcile.result.json",
+      "blob": "4f6c7d5e976e6b9b62a8e302a09f1f94fac2bb8c",
+      "bytes": 877,
+      "sha256": "985238f41dfb3334a35665881d1a65723837e0260fdd55e5ea371c93b3ffb566"
+    },
+    {
+      "path": "readonly-tree.sdk.json",
+      "blob": "3ecba76ce6b345a3373c8f316671ed33fba3dc89",
+      "bytes": 2799,
+      "sha256": "7683690917599885cfdd9273a62ca148ad78fc379628a399c8cfb59074c04c65"
+    },
+    {
+      "path": "restore.source.js",
+      "blob": "6d39f1fee3697dc506e72157c74ac9d6a27b7a43",
+      "bytes": 3174,
+      "sha256": "d4c0b34b6f60978618be80f544daec1f3b3203173a268950814998347fc77712"
+    },
+    {
+      "path": "git-whole-armed.json.original.sdk.json",
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    {
+      "path": "readonly-armed.json.sdk.json",
+      "blob": "eb3490c345c557350bbf4d2c41f4549df9f3d747",
+      "bytes": 1181,
+      "sha256": "7db102d8bd316b45140ce07c316d7ff41fed10f2f045884426b8b62d0071333d"
+    },
+    {
+      "path": "git-whole-intent.json.original.sdk.json",
+      "blob": "7829517bc35224313e0a7e8cb3facf1cf4e931ac",
+      "bytes": 1036,
+      "sha256": "296ebac4e9697034f5f93a6a8eefdcf235a784946b23983eddebc981cb96f8b3"
+    },
+    {
+      "path": "readonly-intent.json.sdk.json",
+      "blob": "7829517bc35224313e0a7e8cb3facf1cf4e931ac",
+      "bytes": 1036,
+      "sha256": "296ebac4e9697034f5f93a6a8eefdcf235a784946b23983eddebc981cb96f8b3"
+    },
+    {
+      "path": "readonly-request.json.sdk.json",
+      "blob": "0210183eeb8d3899c86f508a21f0bd5a6b6a5cae",
+      "bytes": 255,
+      "sha256": "9ad6907500aab4ac10ad91417ededf82d698afdfb43302a096c6134bf83151a3"
+    },
+    {
+      "path": "receipt-info-ACK.original.sdk.json",
+      "blob": "ace00f81a43bee1abef9dbeab1a09b96364f992d",
+      "bytes": 704,
+      "sha256": "faf71f0229490a5922d3df07b0508dbe3a9b2947089d80e04ca6dcb6f25aada0"
+    },
+    {
+      "path": "receipt-info-ACK.original.native.json",
+      "blob": "a04fbed8d4ab9d370a64d549926b67e78f61ce18",
+      "bytes": 543,
+      "sha256": "c8353380040e27d1543d34ee0610aff89b9510a540768df6da351b95d805f596"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "c7d97a96bb3b3e8c03fbc3543b68d1faf27bc08d",
+      "bytes": 2100,
+      "sha256": "a7ba99388fc92ac384b51842045ad85eb457af3902f54a306c6955b3dcfa666e"
+    }
+  ]
+}

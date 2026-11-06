@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_checkpoint_commit_SDK_packet",
+  "records": [
+    {
+      "name": "original.sdk.json",
+      "blob": "3633433297747b3d1c40c7074f19eb8f2e05b8dd",
+      "bytes": 195,
+      "sha256": "3ea256b4f0941f05baf668a33c5702a8c79e8ee401a9766ee792cd4b26fb3940"
+    }
+  ],
+  "expected_data_tree": "42d40cbb50f892334a45c55e518a0ec3a797a297",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

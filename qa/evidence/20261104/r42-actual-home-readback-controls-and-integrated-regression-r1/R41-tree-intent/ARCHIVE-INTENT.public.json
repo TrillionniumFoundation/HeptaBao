@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_checkpoint_tree_intent_packet",
+  "records": [
+    {
+      "name": "request.json",
+      "blob": "a703c669bb19869d931e47703699bca6a9adad39",
+      "bytes": 16732,
+      "sha256": "18282b6e0493535df5571e76edc554d8f5a6835e3cb80ed0e4580c63dfce8adf"
+    },
+    {
+      "name": "intent.json",
+      "blob": "a4cd1aa68464b920d277841a67887a8fdbb30f5b",
+      "bytes": 509,
+      "sha256": "8c7f4ba562846bce82698558a9cb84b3f7f77bfd833b9ed4195b10f36c1f7c00"
+    },
+    {
+      "name": "expected-layer-trees.public.json",
+      "blob": "f1f147facf7dd8ead817c9bade5bbd317da5ba4f",
+      "bytes": 38818,
+      "sha256": "156411a59200dee3b31d8560cc5fc57d283c17b1639aeab961c6e643fa480544"
+    },
+    {
+      "name": "preflight-ref.original.sdk.json",
+      "blob": "41ad5233768b8e01ade0a230fff0360dabf27e29",
+      "bytes": 1753,
+      "sha256": "d2d70f26a53e630f50e21a7e754b79be6e2a27c5d4f9abced68685fdb100a82f"
+    }
+  ],
+  "expected_data_tree": "14fca70b2eb95252a010decd1d8b2524913d5dfd",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\n  \"schema\": \"heptabao.gitfirst.fixed-native-call-armed.r1\",\n  \"callKey\": \"sf23-r1-f07-b01-p0\",\n  \"kind\": \"operation_result\",\n  \"request\": {\n    \"blob\": \"2c7017d653f759a89c1a99340b3aae0d8f1ae28b\",\n    \"bytes\": 122,\n    \"sha256\": \"932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57\"\n  },\n  \"rootGo\": {\n    \"blob\": \"25ea12c4406a12ba5ce263b10a2723f73276d74b\",\n    \"bytes\": 14304,\n    \"sha256\": \"3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1\"\n  },\n  \"originalJob\": \"1a1b02771c2-fc05-6e9f\",\n  \"originalOperation\": \"8d29aac0c040a47a18f5631b618a6aea98568bb05955db0d2ff49c15cdf6fb0b\",\n  \"maximumNativeCalls\": 1,\n  \"nativeNotYetCalled\": true,\n  \"lossOfAcknowledgmentNeverGrantsReplay\": true,\n  \"localFirstExplicitlyReplacedByExactRootGO\": true,\n  \"mayHaveDispatchedAfterThisCheckpoint\": true,\n  \"recovery\": \"Read exact original job/operation only; absence of later ACK is UNKNOWN.\"\n}\n"
+  },
+  "isError": false
+}

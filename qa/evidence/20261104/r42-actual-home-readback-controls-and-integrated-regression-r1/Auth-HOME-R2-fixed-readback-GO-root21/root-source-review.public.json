@@ -1,0 +1,221 @@
+{
+  "schema": "heptabao.root.home-r2-fixed3INFO4BODY-source-review.r1",
+  "passed": true,
+  "checkCount": 21,
+  "checks": [
+    {
+      "name": "whole30_source",
+      "passed": true
+    },
+    {
+      "name": "qualified97_actual_exact",
+      "passed": true
+    },
+    {
+      "name": "all_actual_references_original",
+      "passed": true
+    },
+    {
+      "name": "old_context_and_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "three_strict_forward_and_reverse_hunks",
+      "passed": true
+    },
+    {
+      "name": "author20_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_pin",
+      "passed": true
+    },
+    {
+      "name": "journalBefore_exact_pin",
+      "passed": true
+    },
+    {
+      "name": "pureDeriver_exact_pin",
+      "passed": true
+    },
+    {
+      "name": "runtimeDeriver_exact_pin",
+      "passed": true
+    },
+    {
+      "name": "only_existing_deriver_actual_input",
+      "passed": true
+    },
+    {
+      "name": "three_exact_targets_and_full9",
+      "passed": true
+    },
+    {
+      "name": "exact_outer_and_candidate_Git_bodies",
+      "passed": true
+    },
+    {
+      "name": "exact_metadata_0",
+      "passed": true
+    },
+    {
+      "name": "exact_metadata_1",
+      "passed": true
+    },
+    {
+      "name": "exact_metadata_2",
+      "passed": true
+    },
+    {
+      "name": "7_fixed_operations_96654bytes",
+      "passed": true
+    },
+    {
+      "name": "all3_actual_metadata_before_body_derivation",
+      "passed": true
+    },
+    {
+      "name": "no_process_start_and_old_state_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_bounded_observer_and_no_runtime",
+      "passed": true
+    },
+    {
+      "name": "C_known_closed_lane_available",
+      "passed": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "098ac9cc2039f28b732da0a8f3c0d9efa9a05b57",
+    "files": 30,
+    "bytes": 1204938,
+    "merkle": {
+      "root_sha": "098ac9cc2039f28b732da0a8f3c0d9efa9a05b57",
+      "trees_verified": 1,
+      "leaf_count": 30
+    },
+    "whole": true
+  },
+  "actualInertRoot": {
+    "blob": "00900615411da59bc3d0997bb579a007f832822a",
+    "bytes": 14593,
+    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+  },
+  "journal": {
+    "blob": "f6c9314e003ee344cebb811d84c30966e664b73c",
+    "bytes": 29203,
+    "sha256": "5c02a803779cb9835ce12664ba2d9659ea4ba9f61c15b6b51ff415b6ce435b95"
+  },
+  "deriver": {
+    "blob": "07c54395de82130247a0a40b9d32c18ad4c431c6",
+    "bytes": 4379,
+    "sha256": "a26b2fd45b358afe8b1af486b88e88c981d5cbd89bfcb83227bb02b5fe791729"
+  },
+  "exactMetadata": [
+    {
+      "blob": "7166ecb5c2dc5da4dbb3bc8ce8147d7e36b473c8",
+      "bytes": 297,
+      "sha256": "aa1f5dd840295aca10cca0fc1699ff67ad4f2fb8a7d35e4fd8df99e82c600c1d"
+    },
+    {
+      "blob": "5d736e9e2d582eab2460e828b60e4ecc2ee7af95",
+      "bytes": 311,
+      "sha256": "c8ed33417721adf7fe519d7838ca59148cc24c23812df339427790b697153561"
+    },
+    {
+      "blob": "d393767a9b64cdf42ee18eaa0835f97d990eb051",
+      "bytes": 310,
+      "sha256": "1c7de663efb0f2929d3a55cd5891f4efcdfeb5dde58e507a3e805c5e9e547449"
+    }
+  ],
+  "targets": [
+    {
+      "ordinal": 1,
+      "id": "outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7",
+      "stageFull9": [
+        "16777244",
+        "72686374",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793964565564291379",
+        "1793964565564297212"
+      ],
+      "sourcePin": {
+        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+        "bytes": 73918,
+        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+      },
+      "bodyChunks": [
+        65536,
+        8382
+      ]
+    },
+    {
+      "ordinal": 2,
+      "id": "candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56",
+      "stageFull9": [
+        "16777244",
+        "72686388",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793964565572547394",
+        "1793964565572553103"
+      ],
+      "sourcePin": {
+        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+        "bytes": 7499,
+        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+      },
+      "bodyChunks": [
+        7499
+      ]
+    },
+    {
+      "ordinal": 3,
+      "id": "receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
+      "stageFull9": [
+        "16777244",
+        "72686396",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793964565577342153",
+        "1793964565577348070"
+      ],
+      "sourcePin": null,
+      "bodyChunks": [
+        15237
+      ]
+    }
+  ],
+  "maximumOriginalOperations": 7,
+  "bodyBytes": 96654,
+  "authorChecksReproduced": 20,
+  "NativeCalls": 0,
+  "actualMetadataObserved": false,
+  "actualBodiesObserved": false,
+  "runtimeAuthorized": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

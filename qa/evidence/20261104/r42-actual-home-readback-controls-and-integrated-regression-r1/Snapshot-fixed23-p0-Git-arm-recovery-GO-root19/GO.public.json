@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.root.snapshot-fixed23-existing-page-arm-recovery-GO.r1",
+  "decision": "GO",
+  "scope": "attach_already_created_and_whole_reconciled_original_arm_then_once_invoke_original_page0",
+  "packet": {
+    "tree": "b1bbf1adb7c9ed54f49f8ec2a913ef0c2fae0ccc",
+    "files": 18,
+    "bytes": 45842,
+    "merkle": {
+      "root_sha": "b1bbf1adb7c9ed54f49f8ec2a913ef0c2fae0ccc",
+      "trees_verified": 1,
+      "leaf_count": 18
+    },
+    "whole": true
+  },
+  "rootReview": {
+    "blob": "99231632ec3f575348420dfbbe0d82a774ee92e5",
+    "bytes": 3097,
+    "sha256": "52dfb0e25b69e92e448eaf435c77be1ba849e681d8a8126a20c998eb575c074b"
+  },
+  "rootChecks": 19,
+  "originalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "unchangedJournal": "df89be7651e6d437f7d777a057c9b070a917bbb5",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "pendingKey": "sf23-r1-f07-b01-p0",
+  "exactRequest": {
+    "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+    "bytes": 122,
+    "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57"
+  },
+  "originalOperation": "8d29aac0c040a47a18f5631b618a6aea98568bb05955db0d2ff49c15cdf6fb0b",
+  "offset": 0,
+  "limit": 16384,
+  "existingArmTree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+  "existingArmRecord": {
+    "blob": "fa79c134e59e96aa5f08c82bcfe881dbcd98815e",
+    "bytes": 878,
+    "sha256": "61ec8291826dbe22b0f5cdf7332ee1270fb793d99ffb9274850818a92edca8d7"
+  },
+  "evidence": {
+    "originalGitCreateAcknowledged": true,
+    "originalTreeGetError": {
+      "blob": "ddc8b45cb9056b09ca3a6bc0e94ea3aff95211f2",
+      "bytes": 304,
+      "sha256": "5710b903750ccc9853075a23278fc1cbcc7468c124b9087e9d09c592e5d2bede"
+    },
+    "wholeImmutableReadOnlyReconciliation": true,
+    "originalBinaryReadKnownCompletedInactive": true,
+    "originalPage0NotCalled": true
+  },
+  "requiredLivePreconditions": [
+    "Same exact slot, original GO, unchanged journal and pending key.",
+    "pending cell phase=arming, called=false, exact original request/pin, no SDK or Native invocation for this page.",
+    "activeObserver is the same completed original operation, futureClosed=true, pageCalled=0, nextPageOffset=0, eof=false, pages empty.",
+    "No Native call in flight, paused=true, original archiveFailure and outerFailure unchanged, existing arm record whole."
+  ],
+  "authorizedStateRepair": {
+    "onlyFields": [
+      "calls[pending].armed = exact verified original readonly-reconcile record",
+      "calls[pending].phase = armed_whole",
+      "paused = false"
+    ],
+    "keepOriginalGOAndRequest": true,
+    "keepOriginalFailureHistory": true,
+    "keepOriginalPageCountersUntilOriginalInvoke": true,
+    "doNotResetOrReinitializeSlot": true
+  },
+  "execution": "After whole-reading this GO and retaining a before/after recovery checkpoint, use unchanged gfRun('invoke') once for the original pending page0, then unchanged accept. Continue original same-operation contiguous pages and remaining fixed table only under the original full-scope GO.",
+  "prohibitions": [
+    "Do not call prepare or Git create again for this arm.",
+    "Do not repeat binary_read operation_start, status, completed pages or invent a replacement key.",
+    "Do not replace original rootGo/goRaw, request bytes, body versions, file limits or any old unknown state."
+  ],
+  "allocation": {
+    "line": "B",
+    "maximumNativeCallsInFlight": 1,
+    "maximumOwnedFutures": 1,
+    "globalMaximumNativeLanes": 2,
+    "rootNativeCalls": 0,
+    "activation": "Granted now alongside A's fixed public readback lane; C remains zero. On root's request yield after closing the current original observer so C's normal build can proceed."
+  },
+  "recoveryOnAnyNewUncertainty": "Stop at the original exact record, preserve the original SDK and known ID, and do not replay or reinitialize.",
+  "productRuntimeQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

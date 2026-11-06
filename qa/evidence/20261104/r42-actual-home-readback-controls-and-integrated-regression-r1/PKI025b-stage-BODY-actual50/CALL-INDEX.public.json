@@ -1,0 +1,177 @@
+[
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-start",
+    "kind": "operation_start",
+    "request": {
+      "blob": "b607255d87740a1546b80f61dd3976e2307916d3",
+      "bytes": 442,
+      "sha256": "ca77438f66c8dde836c377de8404252b41fa59230673c7b73ea8c14b4ad110fc"
+    },
+    "armTree": "8b0c74206e6dcd1696bdd9c503b555b5694667cf",
+    "armWhole": true,
+    "sdk": {
+      "blob": "684a687d826403047dbc612a612601a7fc5de488",
+      "bytes": 706,
+      "sha256": "5230b9fe866de97946ec69b6546c246b7899340099a0f2917ec2a30c54f2fb1b"
+    },
+    "sdkTree": "c30a7382dd7d32b21255682ae4607e9380ef984d",
+    "sdkWhole": true,
+    "native": {
+      "blob": "a27cdb9fb0b757d0c83822e66847aa1d37e44428",
+      "bytes": 545,
+      "sha256": "8a9461a651fbec37219f9e2584906b0e8bde614eaf2fea90566ee96f881a4ef6"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-status",
+    "kind": "operation_status",
+    "request": {
+      "blob": "ef1fe2d4e4014a8ecc6bf22444fface6c1a7ee75",
+      "bytes": 89,
+      "sha256": "659a0556932b94266f1736e350081d78befad9f1d063fd7f28849d39fa945b24"
+    },
+    "armTree": "01bae8b5b3481be8223b2b664a75917bb8f998de",
+    "armWhole": true,
+    "sdk": {
+      "blob": "72378f4749703ebb8068197aa1df361a5a9e7b2d",
+      "bytes": 977,
+      "sha256": "13ebbad892e5d87e5cd2e282a7de9b1cdbc3c95d8382db2e285d4debc728afd6"
+    },
+    "sdkTree": "d85538bce10a6f3b71320ad1f74666b362e8f66c",
+    "sdkWhole": true,
+    "native": {
+      "blob": "952d0d288bef35b4e34626aae596739ea2b9a39e",
+      "bytes": 802,
+      "sha256": "2db71663037f3737fef1c76803bbf2fb94f14ea6e37fda64d84a786d77022060"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-page0",
+    "kind": "operation_result",
+    "request": {
+      "blob": "d1944a57447bbec75a85a564607f49e0640252ea",
+      "bytes": 121,
+      "sha256": "57f576b95f46a0eaa2625bcb1e438ece991059636c07eeb56ab03321599b6856"
+    },
+    "armTree": "f3a2106b0631c361999aa54d4f9c17ace89ecdc4",
+    "armWhole": true,
+    "sdk": {
+      "blob": "070eaecec7b5b15478deaa49099a12500a0c51c4",
+      "bytes": 11780,
+      "sha256": "ea762cb5be4cfe6902761c5ace79b91d90cf065103d5dde2acdb2a320374c884"
+    },
+    "sdkTree": "a710cee3773e35c0a5107e7f9e2c99e1078cd61e",
+    "sdkWhole": true,
+    "native": {
+      "blob": "85bbc15fd01867b1159ffb80d043219d602f1f7f",
+      "bytes": 11609,
+      "sha256": "c2dff464c1a4cb8efbe1695a519c8171a64bea0a95f3cd3e615dcdf664d204ca"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-page1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "581037fb8bbd5e006612e42dd01d93efffaedd2a",
+      "bytes": 124,
+      "sha256": "2db444ebb6f500c307f20bb4a9cfda3c16c93493bab64f1270b3598e19488d88"
+    },
+    "armTree": "3444db702d9b7e32212603f4a10d8b84afd019d1",
+    "armWhole": true,
+    "sdk": {
+      "blob": "fc93d6b704c7b50288dac8dcb34996245b8f0ff0",
+      "bytes": 11784,
+      "sha256": "7d46c65f8045268f224582fe9df833f24e432fad0ee943d9d25309a6f0d6a412"
+    },
+    "sdkTree": "943fccabd840dff01dd7efaf14ca5ae8c0fa2e43",
+    "sdkWhole": true,
+    "native": {
+      "blob": "58c8a582216b2bddc86c9e1826bbfa2004806e67",
+      "bytes": 11613,
+      "sha256": "f9a5e9287273d7f8735e35764e7ee8712ae245b8dd6c0ef51255f70677d68a32"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-page2",
+    "kind": "operation_result",
+    "request": {
+      "blob": "e49e43f9dbeab84ce01dbad53ad9df5bf702c873",
+      "bytes": 125,
+      "sha256": "1f89dbbfb44e153d9b928e4384fa1dbdba2ee207275ebbc13229ba92d917c453"
+    },
+    "armTree": "ac75a06779920815049f8c54efab247693322fad",
+    "armWhole": true,
+    "sdk": {
+      "blob": "cf07f460868e0f1573e98c74895f3b1c9c4bec99",
+      "bytes": 11785,
+      "sha256": "3833b0b24c002afba4490377abb71c8fead500176db50ac798d27899706e53b4"
+    },
+    "sdkTree": "54de07caa0fb48e24e54ea49a3ba5ab01cb57cf3",
+    "sdkWhole": true,
+    "native": {
+      "blob": "1c8071a72facf5ce96166b7fd5f82aec3087441a",
+      "bytes": 11614,
+      "sha256": "45f9ffd3bb5a9feef6d1cef0bddd434b888680f4a9f639176f15704c54ef93cc"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-page3",
+    "kind": "operation_result",
+    "request": {
+      "blob": "5aac3419ef992f3994742056b55de94b8a5fca55",
+      "bytes": 125,
+      "sha256": "5d868a4d9d4a014f9e971e0c304463d8103768a794b490fbfe3ac5cad897d9d4"
+    },
+    "armTree": "66a28c69157e409bcffad1f40316a556e378f6a8",
+    "armWhole": true,
+    "sdk": {
+      "blob": "169679f2cd6e3df8d7d0f3f258a0f5ef0cd3f68e",
+      "bytes": 11785,
+      "sha256": "5d5a67868542b873d3024590d13c16c80c758ddafe067b3b9f148d439089cc33"
+    },
+    "sdkTree": "ce1e06c3cfaf487fb95e95bc277744a3e2a28097",
+    "sdkWhole": true,
+    "native": {
+      "blob": "85ff3e697f7ff20e09cf2b0268315d5756ee1db7",
+      "bytes": 11614,
+      "sha256": "f20c4e83ba4abd9673f3aa01c589f91e7232afc49d2337239747edf8a2c418f9"
+    },
+    "phase": "accepted",
+    "called": true
+  },
+  {
+    "key": "jwt-pki-025b05a3-rog-source-report-body0-page4",
+    "kind": "operation_result",
+    "request": {
+      "blob": "907dcb2687101d1f584d1d19f243da7a1107688a",
+      "bytes": 125,
+      "sha256": "3547fcf2f336b7c8419426b86eb3d24d738fcb96ba9e67dcdbc52647f0ded645"
+    },
+    "armTree": "4a4127c345bdc36eac5445ff27afae320bdbc8ce",
+    "armWhole": true,
+    "sdk": {
+      "blob": "3cf4c089dfc1d25ab7a63b82ed4a5c3df9772112",
+      "bytes": 7756,
+      "sha256": "316d865ea5dda96dfe2030ace22fe087e6626208eb32992fc7d2df6b75cdf8fb"
+    },
+    "sdkTree": "42bfc3cda67c84a7e0aa263c067e78ec4548a2f3",
+    "sdkWhole": true,
+    "native": {
+      "blob": "bc0b69bcc90ccef3cb66d3fbe289d5d1afd4a204",
+      "bytes": 7585,
+      "sha256": "cc90d0620953ac1c25eb88b60b308eae04423821af006c0bbdc72aee7de1404b"
+    },
+    "phase": "accepted",
+    "called": true
+  }
+]

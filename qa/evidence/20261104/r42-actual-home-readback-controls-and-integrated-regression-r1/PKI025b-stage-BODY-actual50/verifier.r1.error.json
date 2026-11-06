@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.025b-body-local-verifier-error.r1",
+  "error": "canonical_full_history_and_15_descendants",
+  "cause": "expected.newCommitsFrom495 is the reviewed count, but the first checker compared the actual ordered array directly with that count",
+  "sourceEvidenceUnchanged": true,
+  "Native_calls": 0,
+  "correction": "compare actual array length to count and actual first two commits to exact candidate and sole parent; preserve all 15 original commit strings in actual body"
+}

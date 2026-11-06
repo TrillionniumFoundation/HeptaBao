@@ -1,0 +1,24 @@
+{
+  "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "soleParent": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+  "root": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1",
+  "source": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/source",
+  "stager": {
+    "blob": "c44f495708983936c400ac23a9f05d3b493ab8c1",
+    "bytes": 28897,
+    "sha256": "8964f55e2de874e4559a2113be653e31527c0b21bf4eeac390912aa823cee361"
+  },
+  "carrier": {
+    "blob": "f9166bc801c5b10e12b77274f485d27d61cd499a",
+    "bytes": 79951,
+    "sha256": "85fd6e473ce1e231f1bcfbd2bcf2bef760e6a4e551040c55ee3274606acebb77"
+  },
+  "trackedBytes": 62297399,
+  "indexSha256": "aa43f995605190e7f0f7b6215e17eb73ccd923ff53f54dfcf44ba0c89e70e02b",
+  "newCommitsFrom495": 15,
+  "canonicalHistoryCount": 3767,
+  "sourcePacket": "ca9a176fda2dedc1f73d1cab5d8078f52d60cd0e",
+  "stagePacket": "d607324241907153d146d1ddf16818e71c061b18",
+  "infoPacket": "eaf68e6f316704f84151eafeb020a3bba5411eca"
+}

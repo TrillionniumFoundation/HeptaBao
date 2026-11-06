@@ -1,0 +1,28 @@
+{
+  "packet": {
+    "tree": "af083341815f9dee1b456ce2de7432239e8bd832",
+    "files": 35,
+    "bytes": 788266,
+    "merkle": {
+      "root_sha": "af083341815f9dee1b456ce2de7432239e8bd832",
+      "trees_verified": 1,
+      "leaf_count": 35
+    },
+    "whole": true
+  },
+  "plan": {
+    "blob": "ac7ba24f380622d3f288b0c192e842b5b646544c",
+    "bytes": 7422,
+    "sha256": "8e0d32e4b864a10aad3d497a4dbe773fad4e02dd53658f37be1f7fbd874f40c9"
+  },
+  "request": {
+    "blob": "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+    "bytes": 124154,
+    "sha256": "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"
+  },
+  "journal": {
+    "blob": "510a46984f60f31458cdcb95dc7f36b9b83454ce",
+    "bytes": 19060,
+    "sha256": "6160378d180d4327bff2ba876e1ecdfb391389d1fe502ccbb7a3d73d52540d7f"
+  }
+}

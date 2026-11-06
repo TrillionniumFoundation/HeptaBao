@@ -1,0 +1,8 @@
+{
+  "schema": "heptabao.r41-ref-readback.v1",
+  "ref": "refs/heads/codex/heptabao-validation-20261104",
+  "sha": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+  "expectedParent": "515bfe24879798f0117859c11492112bae9c3cee",
+  "whole": true,
+  "fastForwardOnly": true
+}

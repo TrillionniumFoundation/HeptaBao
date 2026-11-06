@@ -1,0 +1,161 @@
+{
+  "schema": "heptabao.025b.ready-controls-source-verification.r1",
+  "status": "PASS",
+  "checks": 36,
+  "results": [
+    {
+      "code": "separate_actual_stage_qualified_not_build",
+      "pass": true
+    },
+    {
+      "code": "exact_root_qualification_pin",
+      "pass": true
+    },
+    {
+      "code": "exact_candidate_stage_and_parent",
+      "pass": true
+    },
+    {
+      "code": "actual_whole_stage_metadata_binding",
+      "pass": true
+    },
+    {
+      "code": "runner:strict_both_directions",
+      "pass": true
+    },
+    {
+      "code": "runner:one_ready_flag",
+      "pass": true
+    },
+    {
+      "code": "runner:all_other_bytes_and_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "code": "launcher:strict_both_directions",
+      "pass": true
+    },
+    {
+      "code": "launcher:one_ready_flag",
+      "pass": true
+    },
+    {
+      "code": "launcher:all_other_bytes_and_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "code": "publisher:strict_both_directions",
+      "pass": true
+    },
+    {
+      "code": "publisher:one_ready_flag",
+      "pass": true
+    },
+    {
+      "code": "publisher:all_other_bytes_and_definitions_unchanged",
+      "pass": true
+    },
+    {
+      "code": "original_25_top_level_definitions_and_nested_body_preserved",
+      "pass": true
+    },
+    {
+      "code": "original_carrier_schema_and_three_names",
+      "pass": true
+    },
+    {
+      "code": "native_jwt_build.py:publisher_full_pin",
+      "pass": true
+    },
+    {
+      "code": "native_jwt_build.py:carrier_exact_content",
+      "pass": true
+    },
+    {
+      "code": "launch_native_jwt_build.py:publisher_full_pin",
+      "pass": true
+    },
+    {
+      "code": "launch_native_jwt_build.py:carrier_exact_content",
+      "pass": true
+    },
+    {
+      "code": "jwt-test-groups.public.json:publisher_full_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-test-groups.public.json:carrier_exact_content",
+      "pass": true
+    },
+    {
+      "code": "frozen_groups_and_contents_unchanged",
+      "pass": true
+    },
+    {
+      "code": "four_way_groups_digest",
+      "pass": true
+    },
+    {
+      "code": "unchanged_inert_interface_60",
+      "pass": true
+    },
+    {
+      "code": "whole_inline_source_and_payload",
+      "pass": true
+    },
+    {
+      "code": "only_source_payload_key_request_changes",
+      "pass": true
+    },
+    {
+      "code": "actual_payload_budget_and_request_pins",
+      "pass": true
+    },
+    {
+      "code": "correct_typed_stdin_binding",
+      "pass": true
+    },
+    {
+      "code": "journal_strict_both_directions",
+      "pass": true
+    },
+    {
+      "code": "journal_only_three_literal_bindings",
+      "pass": true
+    },
+    {
+      "code": "journal_source_pins",
+      "pass": true
+    },
+    {
+      "code": "fresh_create_only_root_and_failed_attempt_preserved",
+      "pass": true
+    },
+    {
+      "code": "original_149_unique_166_profiles",
+      "pass": true
+    },
+    {
+      "code": "all_original_build_budgets",
+      "pass": true
+    },
+    {
+      "code": "fresh_NB_probe_scope_not_lifetime_lock",
+      "pass": true
+    },
+    {
+      "code": "unobserved_publication_build_not_authorized",
+      "pass": true
+    }
+  ],
+  "Native": 0,
+  "Python": 0,
+  "Cargo": 0,
+  "scope": "literal binding and exact bytes only",
+  "definitionCount": 25,
+  "typedBinding": {
+    "sha256": "0b4e4b75f70c7df66df2bcb04015e6ac6c2e7dddfd209a47a4179d1b762fb2f5",
+    "native_fingerprint": "814671552628686326",
+    "canonicalBytes": 124086
+  }
+}

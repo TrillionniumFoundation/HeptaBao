@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42_pki025b_fixed4_GO_archive_v1",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+      "bytes": 5948,
+      "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+    },
+    {
+      "name": "root-source-review.public.json",
+      "blob": "0b39133e8a5e320e49bca0ed64b4922c96e05617",
+      "bytes": 2966,
+      "sha256": "0b269670077b654af8a4a23d6b6da804690383149d9760f8948e5dcca7658649"
+    },
+    {
+      "name": "root-source-verifier.js",
+      "blob": "2bcfe1e219d65705d859e4dc6923b0bbadacda0d",
+      "bytes": 5609,
+      "sha256": "51795391c5bac26767d9d31b99f3f91941c45eea7564b3fe618d67dd8f8a0621"
+    },
+    {
+      "name": "author73-reproduced.public.json",
+      "blob": "79c8674a535c725b6abaf5ec2fa405d59673e8e2",
+      "bytes": 6460,
+      "sha256": "a2e975b730c0596e557bc78436d408ce390abe7e877d990e0387bf9866264437"
+    },
+    {
+      "name": "A-lane-release-observed.public.json",
+      "blob": "f7286262bbacf658609b95a38506563e17261df2",
+      "bytes": 4958,
+      "sha256": "6e51d7019cc168ffb44acf2da93b9aad9ce7d7ca3661699a369b4e174fe3bf19"
+    },
+    {
+      "name": "lane-allocation.public.json",
+      "blob": "99562491b726cb1a1323880e15280fed9682c1a9",
+      "bytes": 1003,
+      "sha256": "19e411ec19a81175509285fea9f2c1b825dbadb9db0b08ba254bc40a5273935e"
+    },
+    {
+      "name": "root-pure-review-errors.public.json",
+      "blob": "21066ce6a83c35acf26909ce5377dd84db3ac327",
+      "bytes": 387,
+      "sha256": "86b9e5264dbc296fba375ecef4896174a1554f90ac70272f2094d1d0cd883ba4"
+    }
+  ],
+  "expected_data_tree": "e86e857980d4f645a19f17d8436865a21d6b73db",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

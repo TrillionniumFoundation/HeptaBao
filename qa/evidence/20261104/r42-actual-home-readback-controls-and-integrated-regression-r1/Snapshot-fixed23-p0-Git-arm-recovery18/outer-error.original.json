@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+  "action": "prepare",
+  "name": "Error",
+  "message": "git_tree_read_error_preserved",
+  "automaticRetry": false,
+  "newAdmissionAllowed": false,
+  "returnedNormally": true
+}

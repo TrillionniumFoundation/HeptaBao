@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r41_checkpoint_commit_verification_packet",
+  "records": [
+    {
+      "name": "commit-readback.original.sdk.json",
+      "blob": "dda9f44597fa42c9e09d92353e8046949b04ae34",
+      "bytes": 4347,
+      "sha256": "0ffd67117b2bce9f0576cb44e00767e83f361163f1db77a383ba2309b0bc2069"
+    },
+    {
+      "name": "commit-verified.public.json",
+      "blob": "f29af433636395bf00b5ffa6e93902e9ee2ff22a",
+      "bytes": 259,
+      "sha256": "b200e63f8d21c28f38754614dbbcb3ea0a2bc8b72d30fe6c179d18dcb17b0779"
+    }
+  ],
+  "expected_data_tree": "32436b5cac14e059f5142fbccc784afe1b53db0c",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

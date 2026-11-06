@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.authbus-home-r2-inert-original-release.v1",
+  "host": "mac",
+  "job": "1a1b09ee29e-fc05-71c4",
+  "go": {
+    "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+    "bytes": 6762,
+    "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+  },
+  "exactRequest": {
+    "blob": "2cbe610fa2f2264d1eb137d46421069db38655a5",
+    "bytes": 875394,
+    "sha256": "cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"
+  },
+  "rootSourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+  "originalStartCalls": 1,
+  "totalNativeCalls": 17,
+  "returnedObservers": [
+    {
+      "id": "d232ae5c1d80130b5ad2338f454a74dcb01cd2880261018c5a830e5054c484da",
+      "tool": "process_status",
+      "payload": {
+        "blob": "4276856d5f39238727418d5d793628b2b3d31a3f",
+        "bytes": 912,
+        "sha256": "266082da8c01c9e8fca5b2767e338e2e53ef201d24df0ebb3745954f4b9b7cae"
+      },
+      "payloadTree": "b3b1d7f70ec969a2d96a0bee559460e8ee64f79b",
+      "nativeText": {
+        "blob": "dacac533c126bcb5aed0d6b93a2baad9776f6b01",
+        "bytes": 733,
+        "sha256": "7f7513f587d43fecea9b3402d07d2e2e087296a066ce67d69718f5d906e4f077"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1d78ca68555b33b11acfa440514c196eff60322fadd987ad6136eb5c6199215d",
+      "tool": "process_read",
+      "payload": {
+        "blob": "3839ac91757d04213be6355c276362f71ffbb258",
+        "bytes": 55219,
+        "sha256": "cac70a1e10a767f6d496da1823e56ddb78c01ccb02db861ffc1c622f2ddc10ce"
+      },
+      "payloadTree": "31512ebf95b692e6e69df62e16d30e0d9383945b",
+      "nativeText": {
+        "blob": "7bd53162c1f615841cbc8699cbd03d7437d35e5d",
+        "bytes": 51345,
+        "sha256": "e41e71188f78726b6f24c0d396fc549877f0ba2f7b1bbb7ae2c417b9794b2988"
+      },
+      "pages": 7,
+      "completedInactive": true
+    },
+    {
+      "id": "a2b376fbff063fbd695ba0eba80017aa797fb9db52584c893fad9cf68068a9be",
+      "tool": "process_read",
+      "payload": {
+        "blob": "2f668790595a87553c080c3e8ca46534679e7b1d",
+        "bytes": 14556,
+        "sha256": "dce3fed1b549cd2e6868662f710773005a2a7a632a3edc1e496e3320c501d2db"
+      },
+      "payloadTree": "ea1a20a1d868654c7771d119e21af1559c4c2028",
+      "nativeText": {
+        "blob": "5a62845e1339261affc9f96badcf2031bebab883",
+        "bytes": 13617,
+        "sha256": "0b1382d0d0aadce334b84942f95952dabc48ba6709d42320f98675cbabdf472e"
+      },
+      "pages": 2,
+      "completedInactive": true
+    }
+  ],
+  "immutablePages": 10,
+  "nativeCallsInFlight": 0,
+  "knownNativeFuturesActive": 0,
+  "pending": null,
+  "activeObserver": null,
+  "paused": false,
+  "originalAuthority": {
+    "blob": "dacac533c126bcb5aed0d6b93a2baad9776f6b01",
+    "bytes": 733,
+    "sha256": "7f7513f587d43fecea9b3402d07d2e2e087296a066ce67d69718f5d906e4f077"
+  },
+  "stdout": {
+    "blob": "42e9acab1cfb93c454893bc941b6e01b4b1d87a3",
+    "bytes": 20680,
+    "sha256": "ab2f549764f37c9c39acf305e8d3badb8771fa72c1b72fc180b8bef9cfae2c79"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual": {
+    "authorityExitCode": 0,
+    "full": true,
+    "durable": true,
+    "terminalConfirmed": true,
+    "ok": true,
+    "outcomeUnknown": false,
+    "elapsedSeconds": 0.25172883411869407,
+    "originalDeadlineMetAfterClosure": true,
+    "sourceCount": 22,
+    "publicDocumentCount": 8,
+    "T5PublicObjects": 30,
+    "HomePublicCopies": 2,
+    "homeReturnedFdCount": 8,
+    "homeOpenPending": 0,
+    "homeRegistrationUnknown": false,
+    "homeEffectUnknown": false,
+    "allOwnedDescriptorsClosed": true,
+    "allOwnedCommandsStopped": true,
+    "allReturnedHomeControlDescriptorsClosed": true,
+    "homeControlInitializationComplete": true,
+    "ownedDirectCommands": 1,
+    "sourceEntrypointsExecuted": false,
+    "serviceStarted": false,
+    "consumerExecuted": false,
+    "currentPrivateInputsOpened": false,
+    "sqliteExecuted": false,
+    "receipt": {
+      "bytes": 15237,
+      "identity": [
+        "16777244",
+        "72686396",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793964565577342153",
+        "1793964565577348070"
+      ],
+      "kind": "inert_candidate_receipt",
+      "name": "inert-registry-wal-4e808-result.public.json",
+      "readbackUsesSeparateHeldFd": true,
+      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
+      "wholeReadbackVerified": true
+    }
+  },
+  "releaseScope": "Original inert job and its three returned observers are terminal and closed; A observer lane released. Created R2 public controls remain for future explicitly reviewed readback/runtime. This is not an AuthBus runtime or credential result.",
+  "historyPreserved": {
+    "oldR1PartialUntouched": true,
+    "oldR1EffectUnknownUnchanged": true,
+    "oldLabelsAndHelper87650UnknownUnchanged": true,
+    "oldGit8916UnknownUnchanged": true
+  },
+  "next": {
+    "metadataSubmitted": 0,
+    "bodySubmitted": 0,
+    "runtimeSubmitted": 0,
+    "proposedTargets": 3,
+    "proposedBodyChunks": 4,
+    "proposedTotalBytes": 96654,
+    "requiresSeparateExactGO": true
+  }
+}

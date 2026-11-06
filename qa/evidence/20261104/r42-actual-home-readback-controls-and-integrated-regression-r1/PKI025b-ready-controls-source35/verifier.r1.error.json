@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.025b-ready-controls-local-checker-correction.r1",
+  "originalError": {
+    "name": "Error",
+    "message": "original_25_definitions_preserved"
+  },
+  "cause": "The original25 count is top-level definitions. The first checker also counted launcher's one nested git function and compared26 against25.",
+  "correction": "Count the original25 top-level definitions; byte-exact full-file inverse also preserves the one nested git function. Candidate and Runtime unchanged.",
+  "Native": 0
+}

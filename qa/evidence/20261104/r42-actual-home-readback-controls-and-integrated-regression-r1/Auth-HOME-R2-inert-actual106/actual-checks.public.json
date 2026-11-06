@@ -1,0 +1,301 @@
+{
+  "schema": "heptabao.authbus-home-r2-original-inert-actual-checks.v1",
+  "passed": true,
+  "checkCount": 70,
+  "checks": [
+    {
+      "name": "one original start called",
+      "passed": true
+    },
+    {
+      "name": "no in-flight Native call",
+      "passed": true
+    },
+    {
+      "name": "no pending call or active observer",
+      "passed": true
+    },
+    {
+      "name": "all 17 original calls accepted once",
+      "passed": true
+    },
+    {
+      "name": "three completed inactive observers ten pages",
+      "passed": true
+    },
+    {
+      "name": "observer 1 exact ID inactive stored",
+      "passed": true
+    },
+    {
+      "name": "observer 2 exact ID inactive stored",
+      "passed": true
+    },
+    {
+      "name": "observer 3 exact ID inactive stored",
+      "passed": true
+    },
+    {
+      "name": "authority original exact job",
+      "passed": true
+    },
+    {
+      "name": "authority succeeded zero full durable confirmed",
+      "passed": true
+    },
+    {
+      "name": "authority no timeout cancel truncation log error",
+      "passed": true
+    },
+    {
+      "name": "stream 0 original job",
+      "passed": true
+    },
+    {
+      "name": "stream 0 stdout contiguous bytes and hex",
+      "passed": true
+    },
+    {
+      "name": "stream 0 stdout exact authority size",
+      "passed": true
+    },
+    {
+      "name": "stream 0 stderr contiguous bytes and hex",
+      "passed": true
+    },
+    {
+      "name": "stream 0 stderr exact authority size",
+      "passed": true
+    },
+    {
+      "name": "stream 1 original job",
+      "passed": true
+    },
+    {
+      "name": "stream 1 stdout contiguous bytes and hex",
+      "passed": true
+    },
+    {
+      "name": "stream 1 stdout exact authority size",
+      "passed": true
+    },
+    {
+      "name": "stream 1 stderr contiguous bytes and hex",
+      "passed": true
+    },
+    {
+      "name": "stream 1 stderr exact authority size",
+      "passed": true
+    },
+    {
+      "name": "final stream exact EOF",
+      "passed": true
+    },
+    {
+      "name": "whole stdout and empty stderr",
+      "passed": true
+    },
+    {
+      "name": "report actual complete inert only",
+      "passed": true
+    },
+    {
+      "name": "whole input equals exact submitted carrier",
+      "passed": true
+    },
+    {
+      "name": "all reported scoped descriptors and commands closed",
+      "passed": true
+    },
+    {
+      "name": "complete finite HOME initialization",
+      "passed": true
+    },
+    {
+      "name": "HOME conservative closure",
+      "passed": true
+    },
+    {
+      "name": "HOME eight returned FD once-close",
+      "passed": true
+    },
+    {
+      "name": "HOME one actual root exact",
+      "passed": true
+    },
+    {
+      "name": "HOME current named full9 and first5 continuity",
+      "passed": true
+    },
+    {
+      "name": "new T5 roots exact and absence before create",
+      "passed": true
+    },
+    {
+      "name": "exact 22 sources 8 documents and no duplicate",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_auth_rows_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_authbus_cache_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_capture_sqlite_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_capture_sqlite_synthetic_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_capture_entry_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_cycle_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_fixture_materializer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_outer_inputs_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_outer_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_darwin_owned_projection_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_native_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_native_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_native_process_observer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_owned_launchd_r3.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_single_native_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source whole mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "document whole candidate-current-manager-wal-r1.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/native-proc-r2.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/native-proc-r2.child-stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/native-proc-r2.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/registry-wal-r1.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/registry-wal-r1.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/synthetic-r2.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "document whole proofs/synthetic-r2.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "exact HOME two copy list",
+      "passed": true
+    },
+    {
+      "name": "HOME copy mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "HOME copy mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "exact compile-only source sets",
+      "passed": true
+    },
+    {
+      "name": "all execution and private effect gates false",
+      "passed": true
+    },
+    {
+      "name": "one diskutil original closed custody",
+      "passed": true
+    },
+    {
+      "name": "actual candidate receipt bound only from final stdout",
+      "passed": true
+    }
+  ],
+  "stdout": {
+    "blob": "42e9acab1cfb93c454893bc941b6e01b4b1d87a3",
+    "bytes": 20680,
+    "sha256": "ab2f549764f37c9c39acf305e8d3badb8771fa72c1b72fc180b8bef9cfae2c79"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "NativeCalls": 17,
+  "observers": 3,
+  "pages": 10,
+  "scope": "Original inert outcome and original returned observer chain only; no external target read, runtime, selected-owner, credential or product qualification."
+}

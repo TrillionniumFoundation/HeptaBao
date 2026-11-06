@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.root-original-Git-arm-actual-recovery-followup.r1",
+  "C": {
+    "packet": {
+      "tree": "d72f6f0dfd6b8636a45990748981b069c82d7f46",
+      "files": 6,
+      "bytes": 394536,
+      "merkle": {
+        "root_sha": "d72f6f0dfd6b8636a45990748981b069c82d7f46",
+        "trees_verified": 1,
+        "leaf_count": 6
+      },
+      "whole": true
+    },
+    "before": {
+      "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+      "bytes": 192323,
+      "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+    },
+    "after": {
+      "blob": "8205cafc7f5d56b2b6a564587771a6b07729977a",
+      "bytes": 194506,
+      "sha256": "5b8deea1f6aad7d876f0a946918b03d3522bad48817f59d79585df927a8dd8d4"
+    },
+    "changes": [
+      "paused",
+      "calls.jwt-pki-025b05a3-controls-r2-published-info3-status0.phase",
+      "calls.jwt-pki-025b05a3-controls-r2-published-info3-status0.armed",
+      "receiptInfoStatusGitArmRecovery"
+    ],
+    "originalGOAndSourceExact": true
+  },
+  "B": {
+    "packet": {
+      "tree": "a3737417b9c3d484a8577a41df50603dff9d852f",
+      "files": 3,
+      "bytes": 482593,
+      "merkle": {
+        "root_sha": "a3737417b9c3d484a8577a41df50603dff9d852f",
+        "trees_verified": 1,
+        "leaf_count": 3
+      },
+      "whole": true
+    },
+    "changes": [
+      "fullStateDigest.blob",
+      "fullStateDigest.bytes",
+      "fullStateDigest.sha256",
+      "state.paused",
+      "state.calls.sf23-r1-f07-b01-p0.phase",
+      "state.calls.sf23-r1-f07-b01-p0.armed"
+    ],
+    "closurePacket": {
+      "tree": "d887fbe3c3c054dc2d36a5413ad088cb0e45d388",
+      "files": 1,
+      "bytes": 1367,
+      "merkle": {
+        "root_sha": "d887fbe3c3c054dc2d36a5413ad088cb0e45d388",
+        "trees_verified": 1,
+        "leaf_count": 1
+      },
+      "whole": true
+    }
+  },
+  "sourceOrNativeRetryClaim": false
+}

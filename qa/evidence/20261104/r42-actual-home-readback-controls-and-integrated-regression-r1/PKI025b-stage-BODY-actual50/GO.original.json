@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.root.025b-stage-result-BODY-GO.r1",
+  "authorization": "GO",
+  "scope": "stage_result_binary_read_only",
+  "original_job": "1a1b07b7e0b-fc05-70ca",
+  "info_operation": "a8f9b286304cc6fafd99310ef325ec14621741e939929bdd493f45eecd321aa5",
+  "maximum_binary_read_starts": 1,
+  "exact_request": {
+    "blob": "b607255d87740a1546b80f61dd3976e2307916d3",
+    "bytes": 442,
+    "sha256": "ca77438f66c8dde836c377de8404252b41fa59230673c7b73ea8c14b4ad110fc"
+  },
+  "slot": "jwt_pki_025b05a3_rog_source_gitfirst_r1",
+  "source": {
+    "blob": "3d3d0d971b65d251ca2657ee9c3005d5a9e795ed",
+    "bytes": 28270,
+    "sha256": "0a529ed15fc5e743e0efe360ca7b99ef62d14b11d934a08e04f9dd23fa00ca0c"
+  },
+  "source_packet": "f61d379652bd714009f6035ff807a15e70bdbe3d",
+  "attach_action": "authorize_stage_result_body",
+  "reinitialize": false,
+  "rootInfoActual": {
+    "blob": "e3e76d83810f7ffaa175f50d87ce979f9da55950",
+    "bytes": 4221,
+    "sha256": "ce5cd030626c2d9437e257ff95b15dc67aed5268006ed5fcae16f9445913a0d0"
+  },
+  "rootBodySource": {
+    "blob": "8bc091d9829bb3aeb31d1ba19582d0ccfe918ebe",
+    "bytes": 3200,
+    "sha256": "b564150ec3a892b48d9b77d7763407282ee365a043265318b1e6a55bd214a365"
+  },
+  "expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/control/stage-result.public.json",
+    "bytes": 28125,
+    "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf",
+    "version": "66306:31508577:28125:1793962266025244208:1793962266025244208",
+    "infoOperation": "a8f9b286304cc6fafd99310ef325ec14621741e939929bdd493f45eecd321aa5",
+    "infoNative": {
+      "blob": "980b13f824670a6426777d4d7b556bcdfcddd1e8",
+      "bytes": 486,
+      "sha256": "e72056f5517a54687e030d08e4e832f9ab24be6936a68254a5f6525c3587f648"
+    }
+  },
+  "limits": {
+    "offset": 0,
+    "limit": 28125,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "maximum_status_calls": 8,
+    "maximum_pages": 128
+  },
+  "lane": "C: one Native call/future; B may hold one. Global maximum two.",
+  "no_new_file_info": true,
+  "no_new_process": true,
+  "error_rule": "Keep original job, observers, call journal and unknown histories. Unknown ACK or drift stops dependent work; no retry/rekey/reset.",
+  "next_step": "Qualify original whole stage report, then mechanically bind ready controls and normal 149/166 build proposal.",
+  "NativeCallsByRoot": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,25 @@
+{
+  "source": "evidence/actual-verifier.js",
+  "invoke": "eval(pure_helpers + '\\n(' + verifier + ')')(data)",
+  "pureHelpersBlob": "b6890e8b7217c546bec073dcb04988fc37652721",
+  "data": {
+    "state": "JSON.parse(evidence/final-journal.public.json)",
+    "plan": "JSON.parse(evidence/PLAN.original.public.json)",
+    "callOriginals": "Object keyed by calls-path-map.key, each {sdkRaw,nativeRaw} from its exact recorded files",
+    "observerOriginals": "Object keyed by observers-path-map.id, each {payloadRaw,nativeRaw} from its exact recorded files",
+    "originalInertStateRaw": {
+      "blob": "797f2f8c6f3f06a5e7f69f6e2ce74522cd37d69f",
+      "pathInPriorPacket": "final-journal.public.json",
+      "priorPacket": "6192e0b1a2e5c615e92d45e506a45de44d4cc017"
+    }
+  },
+  "expected": {
+    "passed": true,
+    "checkCount": 88,
+    "NativeCalls": 35,
+    "originalOperations": 7,
+    "immutablePages": 21,
+    "bodyBytes": 96654
+  },
+  "execution": "pure data only; no SDK/module/Native/child/candidate execution"
+}

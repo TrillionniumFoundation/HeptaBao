@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.r41-publication-proof.v1",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+  "tree": "097f787317ac775723798b9219c97e0f4ab8b448",
+  "parent": "515bfe24879798f0117859c11492112bae9c3cee",
+  "prefix": "qa/evidence/20261104/r41-compile-fix-home-identity-and-snapshot-report-r1",
+  "cutoff": "2026-11-06 11:27:23 UTC",
+  "rootCurrent": "2f7f67ee87621e9696016211d359bd5b0e644bf6",
+  "packets": {
+    "packets": 70,
+    "files": 1226,
+    "bytes": 24942324,
+    "allWhole": true
+  },
+  "layers": [
+    {
+      "name": "prefix",
+      "sha": "4dcf933ea688f50773f84e48627392bdbd13ac71",
+      "entries": 71,
+      "whole": true
+    },
+    {
+      "name": "day",
+      "sha": "dab98e85fa584396487d1f5aea7fae199c5ea5ff",
+      "entries": 118,
+      "whole": true
+    },
+    {
+      "name": "evidence",
+      "sha": "ea64a1e878c6a9d68c76e1026a423d7ae8f7c4cf",
+      "entries": 1,
+      "whole": true
+    },
+    {
+      "name": "qa",
+      "sha": "486c9cefca2df462e10e8384c2aac14542eea4ea",
+      "entries": 3,
+      "whole": true
+    },
+    {
+      "name": "root",
+      "sha": "097f787317ac775723798b9219c97e0f4ab8b448",
+      "entries": 26,
+      "whole": true
+    }
+  ],
+  "treeVerified": true,
+  "commitVerified": true,
+  "refVerified": true,
+  "originalMutationCounts": {
+    "tree": 1,
+    "commit": 1,
+    "ref": 1
+  },
+  "allMutationSDKWhole": true,
+  "rootNativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "taskContinues": true
+}

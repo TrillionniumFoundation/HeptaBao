@@ -1,0 +1,333 @@
+{
+  "schema": "heptabao.025b-fixed4-actual-info-body-binding.v1",
+  "rootGO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "rootInfoRecoveryGO": {
+    "blob": "690bba2738ceab61defa55e5d86178150774135d",
+    "bytes": 2848,
+    "sha256": "871c0e68780c1a5155156dc274c96b97953dbcc74c91dd20a4116630881abfc3"
+  },
+  "originalJob": "1a1b0ade81d-fc05-7220",
+  "metadata4": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+      "size": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+      "version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+      "nativeText": {
+        "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+        "bytes": 466,
+        "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+      },
+      "originalOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "full9Strings": [
+        "66306",
+        "33212340",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793965550402189411",
+        "1793965550403278461"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+      "size": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c",
+      "version": "66306:33212341:38565:1793965550403677310:1793965550405279309",
+      "nativeText": {
+        "blob": "e916c0d81a20c8b9f32a8ed1bca44130bfa9aa75",
+        "bytes": 473,
+        "sha256": "b41f5f37602cdddced67aec0cac077825fc54b284dd6705b23d71d8f83c7a74f"
+      },
+      "originalOperation": "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "full9Strings": [
+        "66306",
+        "33212341",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793965550403677310",
+        "1793965550405279309"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/jwt-test-groups.public.json",
+      "size": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:33212342:19789:1793965550406347359:1793965550407346912",
+      "nativeText": {
+        "blob": "b34732e457d26b837f6d1b12cfac20da20c73008",
+        "bytes": 474,
+        "sha256": "23290cbbc6f64b88bf6c783667a918e0fb9743f6ad8f671635647cf626e116dc"
+      },
+      "originalOperation": "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "full9Strings": [
+        "66306",
+        "33212342",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793965550406347359",
+        "1793965550407346912"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/inert-stage.result.public.json",
+      "size": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61",
+      "version": "66306:33212343:1854:1793965550408095444:1793965550409072774",
+      "nativeText": {
+        "blob": "0e412fc445cebf2eef7ae5dfd76139fd04fe78ae",
+        "bytes": 475,
+        "sha256": "57458e39109c9ee5bff5bde9e5952e5d300b121f418da69a4e764e477afa1247"
+      },
+      "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "full9Strings": [
+        "66306",
+        "33212343",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793965550408095444",
+        "1793965550409072774"
+      ],
+      "regularFileFromNativeFileInfoContract": true,
+      "binaryReadAuthorized": false
+    }
+  ],
+  "closedMetadataObservers": [
+    {
+      "id": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "tool": "file_info",
+      "payload": {
+        "blob": "2f852a038e9b863a643407395768b7acdfcb33d9",
+        "bytes": 583,
+        "sha256": "b07b8f6c71bfc023c9bf97d31fbfd2b716caf52702c94cb4eb865fb5cb8b62e9"
+      },
+      "payloadTree": "f710522a69c4f8152986a3127e82231a9ac2ad3e",
+      "nativeText": {
+        "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+        "bytes": 466,
+        "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "tool": "file_info",
+      "payload": {
+        "blob": "dee96d2340ed1526322f3de7c5a483bfbe25575b",
+        "bytes": 590,
+        "sha256": "eacde4c31e271bf2f1da88a89d45807face194aa54d01be0357f9228a4cb4831"
+      },
+      "payloadTree": "a28a346e9577cc57973c02d4820c0eef4a0a13ae",
+      "nativeText": {
+        "blob": "e916c0d81a20c8b9f32a8ed1bca44130bfa9aa75",
+        "bytes": 473,
+        "sha256": "b41f5f37602cdddced67aec0cac077825fc54b284dd6705b23d71d8f83c7a74f"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "tool": "file_info",
+      "payload": {
+        "blob": "068e356edd4f1c536dbe9d4c2f425398e4fc1a38",
+        "bytes": 591,
+        "sha256": "f130fe867e38d9a2407c579aee74ae065430f666895af11ec70fcd5d87de76d6"
+      },
+      "payloadTree": "db4eeb7b2384c53e7435659d7b2fa19c125b26b9",
+      "nativeText": {
+        "blob": "b34732e457d26b837f6d1b12cfac20da20c73008",
+        "bytes": 474,
+        "sha256": "23290cbbc6f64b88bf6c783667a918e0fb9743f6ad8f671635647cf626e116dc"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "tool": "file_info",
+      "payload": {
+        "blob": "17ddbc3f39c635e1ab98703f1550d067cea1181d",
+        "bytes": 592,
+        "sha256": "b6cdab6d6d88194d8a858ed6660f614a436bce843b11788e8f852243f2fdeb43"
+      },
+      "payloadTree": "cafb6925a6cbe134a439cdee46c2b51a361b8ba9",
+      "nativeText": {
+        "blob": "0e412fc445cebf2eef7ae5dfd76139fd04fe78ae",
+        "bytes": 475,
+        "sha256": "57458e39109c9ee5bff5bde9e5952e5d300b121f418da69a4e764e477afa1247"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "metadataNativeReads": 4,
+  "allMetadataClosed": true,
+  "priorGitWholeReadFailurePreserved": true,
+  "oldMutationNeverRepeated": true,
+  "originalStatusCallInvokedOnceAfterExactRestore": true,
+  "derivedJournal": {
+    "blob": "97cd6f0f4dbe616295114bd47d21483d8d60e309",
+    "bytes": 35548,
+    "sha256": "498212d35bf4f7fadb3540e51c0fb5b84b510b49938cf1c74e166a3e147999a7"
+  },
+  "deriver": {
+    "blob": "86be8f6bf5b498bdf6ca811e41345de36ec87d6b",
+    "bytes": 8101,
+    "sha256": "a698ae5dd323997c67ff63d4dc08755d1c010d9308522ab5004ca3974507651b"
+  },
+  "template": {
+    "blob": "2f3cce0d06d30978b28d36e39936f8125a2f977f",
+    "bytes": 32519,
+    "sha256": "79cb54f0d8f661a445493bd20b8907ab80086d09ca58626aa84e7eda8a8761b8"
+  },
+  "requests": [
+    {
+      "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+      "bytes": 417,
+      "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+    },
+    {
+      "blob": "cbb19d88d1c320f5d64f2f0c6538b25c4b8fd24c",
+      "bytes": 424,
+      "sha256": "084b9b2538c9c1b2d8ec4701a27a9d03c435c499fb89208bfd35e42c80e89601"
+    },
+    {
+      "blob": "29839c6f79c2776a342285f460a81b51c9e95df8",
+      "bytes": 425,
+      "sha256": "62f4c3fc9db8fed091de7085146949c215d87e005b879ddd89c88039dc8d32b7"
+    },
+    {
+      "blob": "91f3b78e35f484c0aed8064b6d6e872ddf3d7a1c",
+      "bytes": 426,
+      "sha256": "dc6dc5728f3102ffcf8c19d56290e73dbd1e62e9833b071945562ded604f2e3d"
+    }
+  ],
+  "expected": [
+    {
+      "index": 0,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py",
+      "bytes": 30397,
+      "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50",
+      "version": "66306:33212340:30397:1793965550402189411:1793965550403278461",
+      "full9Strings": [
+        "66306",
+        "33212340",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30397",
+        "1793965550402189411",
+        "1793965550403278461"
+      ],
+      "infoOperation": "e0b3516213ca2ce013bfc0288d2f641511f811b71f8ed4e08db682938e13860a",
+      "infoNative": {
+        "blob": "9cfffd12c038026416fcae6370c78cff0c17dd46",
+        "bytes": 466,
+        "sha256": "81fbf8bffb465a57091b6ca15842f92ac5f9536b3ede652ea7a94c4ec193f6d4"
+      }
+    },
+    {
+      "index": 1,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py",
+      "bytes": 38565,
+      "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c",
+      "version": "66306:33212341:38565:1793965550403677310:1793965550405279309",
+      "full9Strings": [
+        "66306",
+        "33212341",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "38565",
+        "1793965550403677310",
+        "1793965550405279309"
+      ],
+      "infoOperation": "e8c754906784dc95c7d6f9f9db323c75f28d346c125b3b374a50b517ab950f87",
+      "infoNative": {
+        "blob": "e916c0d81a20c8b9f32a8ed1bca44130bfa9aa75",
+        "bytes": 473,
+        "sha256": "b41f5f37602cdddced67aec0cac077825fc54b284dd6705b23d71d8f83c7a74f"
+      }
+    },
+    {
+      "index": 2,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/jwt-test-groups.public.json",
+      "bytes": 19789,
+      "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869",
+      "version": "66306:33212342:19789:1793965550406347359:1793965550407346912",
+      "full9Strings": [
+        "66306",
+        "33212342",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "19789",
+        "1793965550406347359",
+        "1793965550407346912"
+      ],
+      "infoOperation": "1b398fc015b5d944a3e80c2b4eb0fadd0d343fcf29e265cdedb600c77ae316ad",
+      "infoNative": {
+        "blob": "b34732e457d26b837f6d1b12cfac20da20c73008",
+        "bytes": 474,
+        "sha256": "23290cbbc6f64b88bf6c783667a918e0fb9743f6ad8f671635647cf626e116dc"
+      }
+    },
+    {
+      "index": 3,
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/inert-stage.result.public.json",
+      "bytes": 1854,
+      "sha256": "30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61",
+      "version": "66306:33212343:1854:1793965550408095444:1793965550409072774",
+      "full9Strings": [
+        "66306",
+        "33212343",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1854",
+        "1793965550408095444",
+        "1793965550409072774"
+      ],
+      "infoOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+      "infoNative": {
+        "blob": "0e412fc445cebf2eef7ae5dfd76139fd04fe78ae",
+        "bytes": 475,
+        "sha256": "57458e39109c9ee5bff5bde9e5952e5d300b121f418da69a4e764e477afa1247"
+      }
+    }
+  ],
+  "bodyReadsSubmitted": 0,
+  "actualBodies": null,
+  "buildAuthorized": false
+}

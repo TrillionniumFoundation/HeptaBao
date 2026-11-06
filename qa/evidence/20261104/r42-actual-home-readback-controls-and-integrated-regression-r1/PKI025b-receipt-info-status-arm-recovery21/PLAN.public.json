@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.025b-receipt-info-status-preparation-recovery.v1",
+  "status": "SOURCE_REVIEW_REQUIRED_ORIGINAL_SLOT_PAUSED",
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "originalJob": "1a1b0ade81d-fc05-7220",
+  "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+  "originalCall": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+  "originalRequest": {
+    "blob": "7d1b35b0d9380bcc334c25e523088fb9da053233",
+    "bytes": 89,
+    "sha256": "e20f22d9d70ed5029cc45084dcbf5f6815f08ee8b9cdfe8c680cfa4dcbfa763d"
+  },
+  "expectedTree": "0cba6dbd80682e8418edad3f685e02dd0f3aacb6",
+  "state": {
+    "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+    "bytes": 192323,
+    "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+  },
+  "restoreSource": {
+    "blob": "6d39f1fee3697dc506e72157c74ac9d6a27b7a43",
+    "bytes": 3174,
+    "sha256": "d4c0b34b6f60978618be80f544daec1f3b3203173a268950814998347fc77712"
+  },
+  "failure": {
+    "blob": "0d7fbe236f97641d1dbac6b68965ba95cea0963a",
+    "bytes": 245,
+    "sha256": "94a83cd7e5a37a72603f7f38e3a02aa2028705407b6d9c44858694fd40e27e6c"
+  },
+  "classification": "Original Git mutation and tree were ACKed. One whole read failed after creation. Original status Native was not called. Exactly the same three Git files were then read-only reconciled whole; old errors are retained. The receipt file_info future is not yet proven closed.",
+  "originalStatusCalled": false,
+  "allHistoricalErrorsPreserved": true,
+  "GitMutationRepeated": false,
+  "NativeCallsInRecovery": 0,
+  "newNativeAuthorized": false,
+  "infoStarted": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "infoClosed": 3,
+  "nextNativeAfterSeparateRootGOOnly": {
+    "kind": "operation_status",
+    "callKey": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+    "request": {
+      "blob": "7d1b35b0d9380bcc334c25e523088fb9da053233",
+      "bytes": 89,
+      "sha256": "e20f22d9d70ed5029cc45084dcbf5f6815f08ee8b9cdfe8c680cfa4dcbfa763d"
+    }
+  },
+  "oldSlotRemainsPausedUntilRootGO": true
+}

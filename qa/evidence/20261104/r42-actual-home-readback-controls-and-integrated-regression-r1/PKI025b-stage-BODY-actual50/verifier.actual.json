@@ -1,0 +1,383 @@
+{
+  "schema": "heptabao.025b-stage-result-BODY-actual-verification.r1",
+  "status": "PASS",
+  "checks": 91,
+  "results": [
+    {
+      "code": "seven_original_BODY_calls",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-start:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-status:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page0:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page1:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page2:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page3:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:request_pin",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:sdk_whole_before_parse",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:original_sdk_success",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:native_byteexact",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:once_whole_arm",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:pre_dispatch_records",
+      "pass": true
+    },
+    {
+      "code": "jwt-pki-025b05a3-rog-source-report-body0-page4:exact_BODY_GO",
+      "pass": true
+    },
+    {
+      "code": "exact_separate_body_GO",
+      "pass": true
+    },
+    {
+      "code": "one_actual_version_body_range",
+      "pass": true
+    },
+    {
+      "code": "original_binary_ACK_no_replay",
+      "pass": true
+    },
+    {
+      "code": "same_original_closed_future",
+      "pass": true
+    },
+    {
+      "code": "page0:original_contiguous_query",
+      "pass": true
+    },
+    {
+      "code": "page0:same_payload_identity",
+      "pass": true
+    },
+    {
+      "code": "page0:extent_EOF",
+      "pass": true
+    },
+    {
+      "code": "page1:original_contiguous_query",
+      "pass": true
+    },
+    {
+      "code": "page1:same_payload_identity",
+      "pass": true
+    },
+    {
+      "code": "page1:extent_EOF",
+      "pass": true
+    },
+    {
+      "code": "page2:original_contiguous_query",
+      "pass": true
+    },
+    {
+      "code": "page2:same_payload_identity",
+      "pass": true
+    },
+    {
+      "code": "page2:extent_EOF",
+      "pass": true
+    },
+    {
+      "code": "page3:original_contiguous_query",
+      "pass": true
+    },
+    {
+      "code": "page3:same_payload_identity",
+      "pass": true
+    },
+    {
+      "code": "page3:extent_EOF",
+      "pass": true
+    },
+    {
+      "code": "page4:original_contiguous_query",
+      "pass": true
+    },
+    {
+      "code": "page4:same_payload_identity",
+      "pass": true
+    },
+    {
+      "code": "page4:extent_EOF",
+      "pass": true
+    },
+    {
+      "code": "complete_payload_bytes_SHA",
+      "pass": true
+    },
+    {
+      "code": "original_complete_native_success",
+      "pass": true
+    },
+    {
+      "code": "original_native_pin",
+      "pass": true
+    },
+    {
+      "code": "whole_fixed_body_version_extent",
+      "pass": true
+    },
+    {
+      "code": "whole_decoded_body_SHA",
+      "pass": true
+    },
+    {
+      "code": "all_original_observers_closed_counts",
+      "pass": true
+    },
+    {
+      "code": "released_lane_no_Cargo",
+      "pass": true
+    },
+    {
+      "code": "actual_prepared_source_report",
+      "pass": true
+    },
+    {
+      "code": "exact_candidate_parent_fetch",
+      "pass": true
+    },
+    {
+      "code": "exact_owned_paths_and_source_carrier",
+      "pass": true
+    },
+    {
+      "code": "whole_3916_candidate_worktree_index",
+      "pass": true
+    },
+    {
+      "code": "independent_clean_full_fsck_source",
+      "pass": true
+    },
+    {
+      "code": "canonical_full_history_and_15_descendants",
+      "pass": true
+    },
+    {
+      "code": "60_original_direct_children_reaped_empty_remaining",
+      "pass": true
+    },
+    {
+      "code": "unchanged_deadlines_actual_completion",
+      "pass": true
+    },
+    {
+      "code": "lossless_epoch_order",
+      "pass": true
+    },
+    {
+      "code": "original_495_source_unchanged",
+      "pass": true
+    },
+    {
+      "code": "historical_12_failure_artifacts_unchanged",
+      "pass": true
+    },
+    {
+      "code": "actual_canonical_incremental_bundle",
+      "pass": true
+    },
+    {
+      "code": "bundle_reported_full9",
+      "pass": true
+    },
+    {
+      "code": "historical_stager_control_counts_not_build_denominators",
+      "pass": true
+    },
+    {
+      "code": "stage_only_no_build_or_runtime_test_qualification",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "product_tests": 0,
+  "scope": "7 original calls/5 pages and existing original stage report; not fresh runtime execution",
+  "actualBody": {
+    "blob": "3455e904127e4e85c79bc5b84c939873c57dea17",
+    "bytes": 28125,
+    "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf"
+  },
+  "children": 60,
+  "sourceCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "sourceTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "buildQualified": false
+}

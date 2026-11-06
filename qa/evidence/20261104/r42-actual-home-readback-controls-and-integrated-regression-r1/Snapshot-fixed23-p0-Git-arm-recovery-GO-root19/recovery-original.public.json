@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.formatted23.git-arm-readback-recovery.r1",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "source": "df89be7651e6d437f7d777a057c9b070a917bbb5",
+  "originalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "pending": "sf23-r1-f07-b01-p0",
+  "pendingRequest": {
+    "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+    "bytes": 122,
+    "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57"
+  },
+  "expectedTree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+  "originalGitCreateAcknowledgedExpectedTree": true,
+  "originalGitTreeGetFailurePreserved": true,
+  "readonlyReconciliation": {
+    "ok": true,
+    "action": "git_readonly_reconcile",
+    "value": {
+      "tree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+      "entries": [
+        {
+          "path": "armed.json",
+          "blob": "3b1c332f1bd58e838266c625554f3bd0d026ac43",
+          "bytes": 909,
+          "sha256": "12c05bbaad6a276d46a5e352ff37131caa264f7f7eb61c330876641bc6cf80e7",
+          "whole": true
+        },
+        {
+          "path": "intent.json",
+          "blob": "5e4aa8a85e4b5b8abf01f287e2f8b0a11971ee2e",
+          "bytes": 772,
+          "sha256": "6974d241e0fe43b5deaa64866d362bd0fa9a99bb9fc57e22e1db9586435f6727",
+          "whole": true
+        },
+        {
+          "path": "request.json",
+          "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+          "bytes": 122,
+          "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57",
+          "whole": true
+        }
+      ],
+      "count": 3,
+      "bytes": 1803,
+      "whole": true,
+      "recoveryReadOnly": true,
+      "mutationRepeated": false,
+      "nativeCalled": false
+    }
+  },
+  "originalNativePageCalled": false,
+  "pageCalled": 0,
+  "nativeFutureCompletedInactive": true,
+  "nativeCallInFlight": false,
+  "pausedRemains": true,
+  "completedFiles": 7,
+  "completedObservers": 17,
+  "bodyBytes": 228924,
+  "nextProposedStep": {
+    "requiresNewRootGO": true,
+    "noSourceChange": true,
+    "onlyAttachReconciledArmAndMarkArmedWhole": true,
+    "originalPendingKey": "sf23-r1-f07-b01-p0",
+    "clearPausedOnlyAfterNewRootGO": true,
+    "preserveArchiveFailureAndOuterHistory": true,
+    "invokeOriginalPageAtMostOnce": true,
+    "operation_id": "8d29aac0c040a47a18f5631b618a6aea98568bb05955db0d2ff49c15cdf6fb0b",
+    "offset": 0,
+    "limit": 16384,
+    "noPrepareAgain": true,
+    "noCreateAgain": true,
+    "noOperationStartAgain": true,
+    "noPageReplay": true
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "schema": "heptabao.root.025b-whole-independent-source-stage-qualification.r1",
+  "passed": true,
+  "checkCount": 41,
+  "checks": [
+    {
+      "name": "whole50_original_BODY_packet",
+      "passed": true
+    },
+    {
+      "name": "whole_original_GO_and_prior_INFO",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-start",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-status",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-page0",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-page1",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-page2",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-page3",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_call_jwt-pki-025b05a3-rog-source-report-body0-page4",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_observer_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_page_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6_0",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_page_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6_8192",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_page_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6_16384",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_page_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6_24576",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_page_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6_32768",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_payload_1e393ec758b4159be7407a65c437e3dbeb54d2cd5dbabb3655d637c920e656c6",
+      "passed": true
+    },
+    {
+      "name": "025b_BODY_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_and_five_pages",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_0",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_1",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_2",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_3",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_4",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_5",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_tree_6",
+      "passed": true
+    },
+    {
+      "name": "same_exact28125_range",
+      "passed": true
+    },
+    {
+      "name": "whole28125_original_body",
+      "passed": true
+    },
+    {
+      "name": "author91_independently_reproduced",
+      "passed": true
+    },
+    {
+      "name": "frozen_product_commit_parent_tree",
+      "passed": true
+    },
+    {
+      "name": "source_request_and_executable_pins",
+      "passed": true
+    },
+    {
+      "name": "all3916_actual_worktree_index_matches_root_Git",
+      "passed": true
+    },
+    {
+      "name": "clean_independent_full_fsck",
+      "passed": true
+    },
+    {
+      "name": "original_history_15_descendants",
+      "passed": true
+    },
+    {
+      "name": "60_owned_children_reaped_no_remaining",
+      "passed": true
+    },
+    {
+      "name": "all_original_deadlines_preserved",
+      "passed": true
+    },
+    {
+      "name": "old_sources_and12_failure_artifacts_preserved",
+      "passed": true
+    },
+    {
+      "name": "canonical_bundle_declared_identity_only",
+      "passed": true
+    },
+    {
+      "name": "historical_controls_not149_runtime_claim",
+      "passed": true
+    },
+    {
+      "name": "all4_observers_closed_and_unchanged_prior",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "4c65e465c3140720c5767ad306f617eb0f1798df",
+    "files": 50,
+    "bytes": 288352,
+    "merkle": {
+      "root_sha": "4c65e465c3140720c5767ad306f617eb0f1798df",
+      "trees_verified": 1,
+      "leaf_count": 50
+    },
+    "whole": true
+  },
+  "job": "1a1b07b7e0b-fc05-70ca",
+  "sourceCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "sourceTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+  "sourceRoot": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1",
+  "sourcePath": "/home/qian-qi/heptabao-native-jwt-pki-source-025b05a3-20261106-r1/source",
+  "report": {
+    "blob": "3455e904127e4e85c79bc5b84c939873c57dea17",
+    "bytes": 28125,
+    "sha256": "0a0b29dd3616b48b7f0ef5c04c1ffe53ebe752f6c2876671474da5a4eeab2eaf"
+  },
+  "terminalRoot": {
+    "blob": "16091afbb8e0cdce0a8720e626317d28830c180e",
+    "bytes": 6436,
+    "sha256": "b00c586b1f583bf7f341ad36d1ddfccbe053401d3b567916ab7d02e33954edd5"
+  },
+  "metadataRoot": {
+    "blob": "e3e76d83810f7ffaa175f50d87ce979f9da55950",
+    "bytes": 4221,
+    "sha256": "ce5cd030626c2d9437e257ff95b15dc67aed5268006ed5fcae16f9445913a0d0"
+  },
+  "completeActualStage": true,
+  "actualWorktreeLeaves": 3916,
+  "actualWorktreeBytes": 62297399,
+  "actualLeafIndexSha256": "aa43f995605190e7f0f7b6215e17eb73ccd923ff53f54dfcf44ba0c89e70e02b",
+  "closedOwnedChildren": 60,
+  "actualElapsedSeconds": 14.787500928970985,
+  "originalStageCalls": 7,
+  "originalInfoCalls": 3,
+  "originalBodyCalls": 7,
+  "totalCalls": 17,
+  "totalClosedObservers": 4,
+  "bundleReportedOnly": {
+    "bytes": 70271,
+    "sha256": "4c874ab55c7395b08ac792116703e6dc681d93becef3756778fdc1e5a22aa89b",
+    "bodyIndependentlyRead": false
+  },
+  "readyControlsMayBeBound": true,
+  "normalBuildQualified": false,
+  "tests149_166Run": false,
+  "NativeCalls": 0,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

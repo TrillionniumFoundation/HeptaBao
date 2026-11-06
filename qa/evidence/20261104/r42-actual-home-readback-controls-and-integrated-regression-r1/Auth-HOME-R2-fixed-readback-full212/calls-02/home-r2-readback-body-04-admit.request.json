@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-home-r2-readback-ab2f5497-body-04",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "offset": 0,
+      "limit": 15237,
+      "expected_version": "16777244:72686396:15237:1793964565577342153:1793964565577348070"
+    }
+  }
+}

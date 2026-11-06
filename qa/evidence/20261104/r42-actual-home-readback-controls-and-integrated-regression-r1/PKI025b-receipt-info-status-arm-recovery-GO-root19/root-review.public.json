@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.root-review.receipt-info-status-Git-arm-recovery.r1",
+  "pass": true,
+  "checks": 19,
+  "rows": [
+    {
+      "id": "whole21_original_recovery_packet",
+      "pass": true
+    },
+    {
+      "id": "exact_paused_original_state",
+      "pass": true
+    },
+    {
+      "id": "same_explicit_fixed4_GO",
+      "pass": true
+    },
+    {
+      "id": "original_info_ACK_whole_and_unique",
+      "pass": true
+    },
+    {
+      "id": "receipt_info_original_future_still_unclosed",
+      "pass": true
+    },
+    {
+      "id": "exact_original_status_request",
+      "pass": true
+    },
+    {
+      "id": "original_CREATE_positive_ACK",
+      "pass": true
+    },
+    {
+      "id": "Git_GET_original_UNKNOWN_preserved",
+      "pass": true
+    },
+    {
+      "id": "git-tree.original.sdk.json_same_original_tree",
+      "pass": true
+    },
+    {
+      "id": "readonly-tree.sdk.json_same_original_tree",
+      "pass": true
+    },
+    {
+      "id": "reconciled_original_3_files_only",
+      "pass": true
+    },
+    {
+      "id": "same_whole_armed.json",
+      "pass": true
+    },
+    {
+      "id": "same_whole_intent.json",
+      "pass": true
+    },
+    {
+      "id": "same_whole_request.json",
+      "pass": true
+    },
+    {
+      "id": "armed_one_original_status",
+      "pass": true
+    },
+    {
+      "id": "intent_one_original_status",
+      "pass": true
+    },
+    {
+      "id": "frozen_local_restore_source",
+      "pass": true
+    },
+    {
+      "id": "pure_restore_exact_known_arm",
+      "pass": true
+    },
+    {
+      "id": "all_original_state_and_errors_preserved",
+      "pass": true
+    }
+  ],
+  "packet": {
+    "tree": "7d41c7d6372d8c426d38016c84525d42059a45a5",
+    "files": 21,
+    "bytes": 217050,
+    "merkle": {
+      "root_sha": "7d41c7d6372d8c426d38016c84525d42059a45a5",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "originalFixed4GO": {
+    "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+    "bytes": 5948,
+    "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+  },
+  "originalPausedState": {
+    "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+    "bytes": 192323,
+    "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+  },
+  "restoreSource": {
+    "blob": "6d39f1fee3697dc506e72157c74ac9d6a27b7a43",
+    "bytes": 3174,
+    "sha256": "d4c0b34b6f60978618be80f544daec1f3b3203173a268950814998347fc77712"
+  },
+  "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+  "callKey": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+  "request": {
+    "blob": "7d1b35b0d9380bcc334c25e523088fb9da053233",
+    "bytes": 89,
+    "sha256": "e20f22d9d70ed5029cc45084dcbf5f6815f08ee8b9cdfe8c680cfa4dcbfa763d"
+  },
+  "expectedTree": "0cba6dbd80682e8418edad3f685e02dd0f3aacb6",
+  "originalStatusInvoked": false,
+  "receiptInfoFutureClosed": false,
+  "NativeCalls": 0,
+  "onlyExistingArmAttached": true,
+  "fullReplacement": false
+}

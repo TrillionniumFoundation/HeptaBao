@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.jwt-pki-025b-pending-binding-source-packet.r1",
+  "files": {
+    "body-binder.source.js": {
+      "blob": "f4cdd9f528d3d49932b409a4d91fcb464c0f0f9e",
+      "bytes": 2612,
+      "sha256": "962a15ea684bcc781d0df27c443a4bd829f52dde7aaf1a0b2a4b81b7d561bd65"
+    },
+    "body-pending-template.public.json": {
+      "blob": "edfcbe5535d0c7d4c447d0612c1716bf9b74f574",
+      "bytes": 1574,
+      "sha256": "a41d0fcedbc77f427a4b370bc2c8b02617851a758ca87778ca69edeb55204e97"
+    },
+    "ready-controls-binder.source.js": {
+      "blob": "c5896d570b4457d38b6f3dd204fdb660a86ead9b",
+      "bytes": 2898,
+      "sha256": "ba9316052fb97d03ec62ab99ab6c589376204ee41123cc6aab1ee99f6826ad84"
+    },
+    "controls-pending-template.public.json": {
+      "blob": "1fec1298d183dc22e9eaed8a43a50349e385d70a",
+      "bytes": 1904,
+      "sha256": "e4f3decf59c7a3fab289a1ffb43b9a221b1b0ece25b19b5c9d47d690eb859b5b"
+    },
+    "build-pending-template.public.json": {
+      "blob": "e694d699a91a22cd14ca6e8e2a97a3ee4181ff2f",
+      "bytes": 1207,
+      "sha256": "1e17fbb92b382b0de27152476933430e6f57ec51c3ce335a68038046c60640c9"
+    },
+    "REFERENCES.public.json": {
+      "blob": "db64761c378cb730239febdf7b60245ac2d36e0a",
+      "bytes": 395,
+      "sha256": "74d807dbee035d8239fac8322a608560267671d66e51f2881131edb3180aa36d"
+    }
+  },
+  "Runtime": false,
+  "actualSlotsBound": false
+}

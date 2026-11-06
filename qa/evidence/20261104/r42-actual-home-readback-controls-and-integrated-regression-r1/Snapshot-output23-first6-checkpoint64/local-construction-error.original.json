@@ -1,0 +1,10 @@
+{
+  "error": {
+    "message": "flat_public_text_entry",
+    "newAdmissionAllowed": false
+  },
+  "errorClass": "local_archive_argument_validation_before_create",
+  "originalArchiveAdmitted": false,
+  "rawContentChanged": false,
+  "correction": "Flat archive entry names only; no original SDK or Native operation replay."
+}

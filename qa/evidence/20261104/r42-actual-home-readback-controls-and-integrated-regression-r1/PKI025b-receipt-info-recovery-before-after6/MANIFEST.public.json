@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.025b-pending-status-restoration-actual.v1",
+  "files": [
+    {
+      "path": "before.original.json",
+      "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+      "bytes": 192323,
+      "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+    },
+    {
+      "path": "after.restored.json",
+      "blob": "8205cafc7f5d56b2b6a564587771a6b07729977a",
+      "bytes": 194506,
+      "sha256": "5b8deea1f6aad7d876f0a946918b03d3522bad48817f59d79585df927a8dd8d4"
+    },
+    {
+      "path": "restore.actual.json",
+      "blob": "ba1697c9248c2d073aa0859e353b5fe930269173",
+      "bytes": 520,
+      "sha256": "4abe761c156ecf79c302f411e4d4a2e45ad9fde4563c0a0b8f4038e9a383c607"
+    },
+    {
+      "path": "GO.original.json",
+      "blob": "690bba2738ceab61defa55e5d86178150774135d",
+      "bytes": 2848,
+      "sha256": "871c0e68780c1a5155156dc274c96b97953dbcc74c91dd20a4116630881abfc3"
+    },
+    {
+      "path": "restore.source.js",
+      "blob": "6d39f1fee3697dc506e72157c74ac9d6a27b7a43",
+      "bytes": 3174,
+      "sha256": "d4c0b34b6f60978618be80f544daec1f3b3203173a268950814998347fc77712"
+    }
+  ],
+  "NativeCalls": 0
+}

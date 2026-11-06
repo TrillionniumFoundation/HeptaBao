@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.jwt-pki-025b-ready-controls-binding-template.r1",
+  "status": "SOURCE_ONLY_WAITING_ACTUAL_STAGE",
+  "basePacket": "f16eb025529a6e78d5ff5fd2d24201aa242ef3ba",
+  "baseRootReview": null,
+  "baseCandidate": {
+    "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37"
+  },
+  "binder": {
+    "blob": "c5896d570b4457d38b6f3dd204fdb660a86ead9b",
+    "bytes": 2898,
+    "sha256": "ba9316052fb97d03ec62ab99ab6c589376204ee41123cc6aab1ee99f6826ad84"
+  },
+  "actualStage": null,
+  "actualControls": null,
+  "actualBuild": null,
+  "existingThreeReadyFlags": false,
+  "dispatchAllowed": false,
+  "allowedMechanicalChanges": [
+    "runner ready False to True",
+    "launcher ready False to True",
+    "publisher ready False to True",
+    "publisher exact three file PINS from actual resulting source bytes",
+    "carrier base64 of same three named files only",
+    "exact existing5argv publisher request code/stdin/key bound to derived payload"
+  ],
+  "all25FunctionsUnchanged": true,
+  "groups": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "unique149": 149,
+  "profiles166": 166,
+  "publisher": {
+    "seconds": 60,
+    "stdinCap": 262144,
+    "newOwnedRoot": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2"
+  },
+  "build": {
+    "outerSeconds": 12000,
+    "releaseSeconds": 1800,
+    "compileSharedSeconds": 3600,
+    "familySeconds600": 4,
+    "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "originalProbeOnlyClosedBeforeExec": true
+  },
+  "nextSteps": "After exact stage whole body and root qualification, execute the pure binder, freeze literal diffs/request/journal, then seek separate exact INERT GO; four independent publications observations precede BUILD."
+}

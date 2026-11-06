@@ -1,0 +1,178 @@
+{
+  "schema": "heptabao.future-home-runtime-binding-inputs.v1",
+  "oldRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1",
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+  "homeRoot": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+  "regularPython": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "publisherPayload": {
+    "blob": "0845ae0870655ac081312c28e5c0e000cfc58250",
+    "bytes": 837520,
+    "sha256": "f68c2a291856da7fe9d2145d420b16fbcd68f1b9b165af509f9881bd996ba423"
+  },
+  "sourcePins": {
+    "mac_auth_rows_cas_r1.mjs": {
+      "blob": "e1054c6a5786280e901f7f94661d06187021e774",
+      "bytes": 3108,
+      "sha256": "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73"
+    },
+    "mac_authbus_cache_cas_r1.mjs": {
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    "mac_capture_sqlite_synthetic_r1.py": {
+      "blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+    },
+    "mac_capture_sqlite_synthetic_r2.py": {
+      "blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+    },
+    "mac_current_capture_entry_wal_r1.py": {
+      "blob": "80b204f30eaba8f77970da8d829bab6c707c924b",
+      "bytes": 42083,
+      "sha256": "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203"
+    },
+    "mac_current_cycle_r2.mjs": {
+      "blob": "6b0765788c4718e5cc57f069bcfa4b0c8d2c5a5c",
+      "bytes": 24012,
+      "sha256": "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092"
+    },
+    "mac_current_fixture_materializer_r1.py": {
+      "blob": "b4a71d3cd6f619af4041bfc06b8142da9b97c7c2",
+      "bytes": 25973,
+      "sha256": "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e"
+    },
+    "mac_current_outer_inputs_r2.py": {
+      "blob": "83014d12575d853b5fca8f149d4ce49c7fb6509c",
+      "bytes": 33001,
+      "sha256": "cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d"
+    },
+    "mac_current_outer_wal_r1.py": {
+      "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+      "bytes": 73918,
+      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+    },
+    "mac_current_phase_owner_r2.py": {
+      "blob": "60cdb68fa9f0a436b3b3ab7a1114493ca9739594",
+      "bytes": 25647,
+      "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+    },
+    "mac_current_server_owner_r1.py": {
+      "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+      "bytes": 14052,
+      "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+    },
+    "mac_darwin_owned_projection_r1.py": {
+      "blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+      "bytes": 12858,
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+    },
+    "mac_guarded_current_capture_r3.py": {
+      "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    },
+    "mac_native_owned_commands_r1.py": {
+      "blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+      "bytes": 5972,
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    "mac_native_owned_unreaped_r1.py": {
+      "blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+      "bytes": 10761,
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+    },
+    "mac_native_process_observer_r1.py": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "mac_owned_commands_r1.py": {
+      "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    "mac_owned_launchd_r3.py": {
+      "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+      "bytes": 58452,
+      "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    "mac_registry_readonly_wal_r1.py": {
+      "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+      "bytes": 31776,
+      "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+    },
+    "mac_single_native_r2.mjs": {
+      "blob": "f5395025f281c2b35015ede1d9ff3beb3826a671",
+      "bytes": 33148,
+      "sha256": "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "blob": "d1725fcdb850fa457d8e19906838d46f1b409ee5",
+      "bytes": 13392,
+      "sha256": "1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7"
+    }
+  },
+  "documentPins": {
+    "candidate-current-manager-wal-r1.public.json": {
+      "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+      "bytes": 7499,
+      "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+    },
+    "proofs/native-proc-r2.authority.public.json": {
+      "blob": "da54efb279857250790f0ed946c55aaad405d505",
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23"
+    },
+    "proofs/native-proc-r2.child-stdout.public.json": {
+      "blob": "b5277782c948051b4483afe62c9951a1aa80096b",
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644"
+    },
+    "proofs/native-proc-r2.stdout.public.json": {
+      "blob": "08056cb82289a44037c771b0ea03982ea11064be",
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f"
+    },
+    "proofs/registry-wal-r1.authority.public.json": {
+      "blob": "fa0eeaed83c335a12ac508e06a3a484cc3e9895e",
+      "bytes": 733,
+      "sha256": "b564093e2300cdc44b2ae4724e869d5b24bfe3d94d269f8ebfa977e08b07505f"
+    },
+    "proofs/registry-wal-r1.stdout.public.json": {
+      "blob": "d96c74efb2b56e29c3f0f5aed63223cc67e81540",
+      "bytes": 62662,
+      "sha256": "7d08a18c21a5d754ea9fbe7711e6315daf8fbd80c7b5a6937756fea7ba4d1c82"
+    },
+    "proofs/synthetic-r2.authority.public.json": {
+      "blob": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+    },
+    "proofs/synthetic-r2.stdout.public.json": {
+      "blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    }
+  },
+  "sourcePinsRaw": "{\n  \"mac_auth_rows_cas_r1.mjs\": \"f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73\",\n  \"mac_authbus_cache_cas_r1.mjs\": \"91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8\",\n  \"mac_capture_sqlite_synthetic_r1.py\": \"108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c\",\n  \"mac_capture_sqlite_synthetic_r2.py\": \"f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2\",\n  \"mac_current_capture_entry_wal_r1.py\": \"f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203\",\n  \"mac_current_cycle_r2.mjs\": \"04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092\",\n  \"mac_current_fixture_materializer_r1.py\": \"070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e\",\n  \"mac_current_outer_inputs_r2.py\": \"cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d\",\n  \"mac_current_outer_wal_r1.py\": \"c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7\",\n  \"mac_current_phase_owner_r2.py\": \"3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855\",\n  \"mac_current_server_owner_r1.py\": \"34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1\",\n  \"mac_darwin_owned_projection_r1.py\": \"77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740\",\n  \"mac_guarded_current_capture_r3.py\": \"606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693\",\n  \"mac_native_owned_commands_r1.py\": \"717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd\",\n  \"mac_native_owned_unreaped_r1.py\": \"880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c\",\n  \"mac_native_process_observer_r1.py\": \"cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b\",\n  \"mac_owned_commands_r1.py\": \"eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867\",\n  \"mac_owned_launchd_r3.py\": \"8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4\",\n  \"mac_owned_unreaped_r1.py\": \"a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d\",\n  \"mac_registry_readonly_wal_r1.py\": \"60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed\",\n  \"mac_single_native_r2.mjs\": \"d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef\",\n  \"mac_t5_volume_guard_r1.py\": \"1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7\"\n}\n",
+  "candidate": {
+    "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+    "bytes": 7499,
+    "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+  },
+  "outer": {
+    "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+    "bytes": 73918,
+    "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+  },
+  "originalRuntimeRequestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_outer_wal_r1.py\",\n    \"--candidate\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/candidate-current-manager-wal-r1.public.json\",\n    \"--candidate-sha256\",\n    \"1dcbc2953731c9c29db6a1f599777d3a7b2b4c237b80cf540afafadebb509932\",\n    \"--public-source-pins-base64\",\n    \"ewogICJtYWNfYXV0aF9yb3dzX2Nhc19yMS5tanMiOiAiZGQzZDAyNjc1MjEyZjZlNTEzYTRmOTM1NzM1NjY2NDZjNTVhMWQyN2NiMjFhYzdiYmI1MjgwNThhOTZkYjhiNyIsCiAgIm1hY19hdXRoYnVzX2NhY2hlX2Nhc19yMS5tanMiOiAiOTE2NDRiOTdhZTdkZWI0ZWRlNDY4ODMyZDNmOTE2NDZiYjAwY2Q5MTkxNDlhNTEwYmZmZmUzOGQyMzU0NGFmOCIsCiAgIm1hY19jYXB0dXJlX3NxbGl0ZV9zeW50aGV0aWNfcjEucHkiOiAiMTA4Zjk1NmViMzc3OWZjZTMxZTAxZDYzMDU0NzM0NGUyMjM2MjgzOTA0MWFmZWNiMzgyMWJmODA1M2ZmMzkyYyIsCiAgIm1hY19jYXB0dXJlX3NxbGl0ZV9zeW50aGV0aWNfcjIucHkiOiAiZjNjNmJiMzM2ODE0NDExYWE0YTI0NDkwZjA5MDRjZGJkMGZhYzJiYjg5ZGJjYzM2ZDYxNTFhZGExM2E1MWJhMiIsCiAgIm1hY19jdXJyZW50X2NhcHR1cmVfZW50cnlfd2FsX3IxLnB5IjogImYwNjAwZTBiOGZlMWYwMWEzZDY4NTU5ZTcyNGUxOWQwZjc2MjcyYzJmZWJkNGQzNjJiOTAxMmQ4NGIxMTc3ZTIiLAogICJtYWNfY3VycmVudF9jeWNsZV9yMi5tanMiOiAiZDhjZTA3NmI3NTc5NGIyY2E0OTVlZjM3YzMxMGQ5OTk1ZjA5MmMwNTYzZWFlMjYyZmNhYWIxNTgyYzU0Mzg3OCIsCiAgIm1hY19jdXJyZW50X2ZpeHR1cmVfbWF0ZXJpYWxpemVyX3IxLnB5IjogImNmMGI3OGVkNTQ2NDg1MjViODczZDkxNDczZDYwM2YxMTVlODQwMTNjMzhiYTRhYmFhNDI3NzFkZmE1ZDFjY2YiLAogICJtYWNfY3VycmVudF9vdXRlcl9pbnB1dHNfcjIucHkiOiAiOTdkYjk1M2U3MzI0ZTMxYTliYjE2MmQxZWU1MDhlZDVmMmUyYTU4Yzk4YTE4MTEzMTk4OGU5ZGQzYzNjZmRjZSIsCiAgIm1hY19jdXJyZW50X291dGVyX3dhbF9yMS5weSI6ICI2YWQxYjgwYWMwNmM5MDc1OWMyYWM1ZmQwMWRmOWM3NTBiMDc3ZmZhNDMyNTM0ODZjMDc2NThiNmUxZGRkNGQ1IiwKICAibWFjX2N1cnJlbnRfcGhhc2Vfb3duZXJfcjIucHkiOiAiYmI2NzRlZDFhNjBiMjA0MjA3YWYyZGJhYjRkN2IwNmE3NmU0N2ZkZWJiMTk5OTFlMmYyYzNkZGE3YmVhYzRhNSIsCiAgIm1hY19jdXJyZW50X3NlcnZlcl9vd25lcl9yMS5weSI6ICJmYjM4YmQ3Y2UzMGU5YTBiNjI1MzlkNDU5OTM5YjJlYzIwZDk2Zjg0ZmQwOGQ1NzE5OWFhMDk1ZmQzZmM1ZWY2IiwKICAibWFjX2Rhcndpbl9vd25lZF9wcm9qZWN0aW9uX3IxLnB5IjogIjc3YjYzMjg2ZDc5ODI3NjcxMDA5ZDU2ZDIzODQ5NGM0NzJmMzdlMzY3NGJmOTAzYWIyZGEwOTJiNDI3MzM3NDAiLAogICJtYWNfZ3VhcmRlZF9jdXJyZW50X2NhcHR1cmVfcjMucHkiOiAiNjA2YjVkZjU4OTA5ZWJlZGMwMzVlYmJmZjZhNGFhNWU3NTRkMTljNmE3ZTBmNWU0ZTg4YzlkZGZjNTdjMjY5MyIsCiAgIm1hY19uYXRpdmVfb3duZWRfY29tbWFuZHNfcjEucHkiOiAiNzE3ZmVmZjBhODcxOWE2YzIwOGIxNGFhMTU5OGNlZmQ1OTg4MWZmZmEwOWQxOWM3ODFhODk2ODliMDI1YjljZCIsCiAgIm1hY19uYXRpdmVfb3duZWRfdW5yZWFwZWRfcjEucHkiOiAiODgwNzk0ZDVlMGYwMWY0NWU5YzU1OTY4OGIyZWJkMzNjMmM5NjM5OTEyNGVhM2VjYjllNTg3MjBhMjQyNGQwYyIsCiAgIm1hY19uYXRpdmVfcHJvY2Vzc19vYnNlcnZlcl9yMS5weSI6ICJjYzBmYTk5MTdkMDVjNmRjMmMyOTU1OTRmOTgwYzFmNzdkMDg5YzExOTZlNjI3OWExNGYyZmRhZjJkNzdhZTliIiwKICAibWFjX293bmVkX2NvbW1hbmRzX3IxLnB5IjogImViNjc2ZTZkZWRiNmQ1OTRkOTQ0ZTkyMTczOGNmOWIzODRmMmE5OGEzN2VlMmJkMWZhNTQzM2I4NDhhMzY4NjciLAogICJtYWNfb3duZWRfbGF1bmNoZF9yMy5weSI6ICI0OTg5YjU4MjQ4Zjc5NTFmODI1YzAyMTQwMmJlZjYxMTcwOGI4NjEzMjkxZDMyODI3NjFjOGM5N2QwYjRhZGY2IiwKICAibWFjX293bmVkX3VucmVhcGVkX3IxLnB5IjogImExNDNiYTMzNDE1OTkzMWQ1MzBiNDlhNTVjMjQ0NzFmNTZmYTFiNjJmMWUxMDEyZTEyYzc1ZTIxZjNjMjJiMWQiLAogICJtYWNfcmVnaXN0cnlfcmVhZG9ubHlfd2FsX3IxLnB5IjogIjYwZDVlNTg3NGMyODFhZjJlMTlmZWU1NWJjNGIyMjQyNjI3ZjY5YjUwMGYxYWYxZDZiNWIyMmUxNjEyMGJmZWQiLAogICJtYWNfc2luZ2xlX25hdGl2ZV9yMi5tanMiOiAiYzJjZjBlYWEwYzJiNGI5MjViY2EwMmU4MjA1OTE1MmNmZTQyODg3ODZlMTVjNzFkNDlmYzA5ZmM1NDQ5NGM0YiIsCiAgIm1hY190NV92b2x1bWVfZ3VhcmRfcjEucHkiOiAiNTVhMDA3YWU5MjVjNmNhYjZlZTIyOGVjNTE1NGNmZjc5YmFhNmMyYmMzOGZiNjU4NjhmZDE5MmRmYzI5ZDI4OCIKfQo=\",\n    \"--public-source-pins-sha256\",\n    \"324c0b19ad8bf92c99536dd32a8a1b3994f398f34b74d39f056e14bc626b83b3\",\n    \"--public-volume-anchor-base64\",\n    \"ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==\",\n    \"--public-volume-anchor-sha256\",\n    \"dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 1080,\n  \"idempotency_key\": \"heptabao-mac-current-five-agent-owner-renew-6ad1b80a-20261105-r1\"\n}\n"
+}

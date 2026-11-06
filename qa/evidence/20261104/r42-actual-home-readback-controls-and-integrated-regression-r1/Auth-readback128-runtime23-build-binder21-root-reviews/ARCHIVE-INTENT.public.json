@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42_Auth_readback128_runtime23_build_binder21_roots_v1",
+  "records": [
+    {
+      "name": "Auth-fixed-readback-root128.public.json",
+      "blob": "866acf24015da851652481fb46ae7add95284489",
+      "bytes": 16511,
+      "sha256": "7b7b6bab1898eaed9cfa7b2e1a92d3d384b08ce61daad22855b17ea18b6b1c3e"
+    },
+    {
+      "name": "Auth-fixed-readback-root-verifier.js",
+      "blob": "5ffcf7a9de0133ee820d56cbb97f34a44809f234",
+      "bytes": 5065,
+      "sha256": "7f3bca0497983ff2c2af5c7226cc033dab57140034742a44e334ef50fa2dc00a"
+    },
+    {
+      "name": "Auth-fixed-readback-author88-reproduced.public.json",
+      "blob": "d99f37d2707814ba9ef1671f89ca82dfa64feb64",
+      "bytes": 9625,
+      "sha256": "db1e4fc172d16f3cd62bcb105629ccc6ed5e5e1d640daa39dcc30407d953e456"
+    },
+    {
+      "name": "Auth-runtime-source-root23.public.json",
+      "blob": "dd3af30370ce7f30406f1a16c60741f91f723a69",
+      "bytes": 3906,
+      "sha256": "f476f20c6026f0c90375c6f9c200f23e064fb596a15c1e178ef952ff0ec953d4"
+    },
+    {
+      "name": "Auth-runtime-source-root-verifier.js",
+      "blob": "bb212e43b48bb84a2cf6b0ff827196be3444d038",
+      "bytes": 6113,
+      "sha256": "34048427bc5b6b350241a78522763d0a07e24d5222fe82b4b4dd1c66d8fbdd79"
+    },
+    {
+      "name": "PKI025b-build-binder-root21.public.json",
+      "blob": "4cfebe039892124306c7b9abc5d38f5e72368d2e",
+      "bytes": 2340,
+      "sha256": "c2c3b3f5e99e8b9fd073edfa9a73a6b846288d59ce626b21888f2c604e088a17"
+    },
+    {
+      "name": "root-review-history.public.json",
+      "blob": "20fa4c1fab75ec6bce81246c54557605bd4a3406",
+      "bytes": 241,
+      "sha256": "0cbe4b30e7285b0a73b9d2a9699c52748c25229f31dcdaf7700176e3b5415027"
+    }
+  ],
+  "expected_data_tree": "776f523049091a52efa537a018b7200ff9264f05",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

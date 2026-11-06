@@ -1,0 +1,48 @@
+{
+  "syntheticOnly": true,
+  "infos": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
+      "size": 73918,
+      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7",
+      "version": "16777244:72686374:73918:1793964565564291379:1793964565564297212",
+      "mode": 384,
+      "metadata": {
+        "mode": 384,
+        "uid": 501,
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin"
+      }
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
+      "size": 7499,
+      "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56",
+      "version": "16777244:72686388:7499:1793964565572547394:1793964565572553103",
+      "mode": 384,
+      "metadata": {
+        "mode": 384,
+        "uid": 501,
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin"
+      }
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "size": 15237,
+      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
+      "version": "16777244:72686396:15237:1793964565577342153:1793964565577348070",
+      "mode": 384,
+      "metadata": {
+        "mode": 384,
+        "uid": 501,
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin"
+      }
+    }
+  ],
+  "nativeNotSubmitted": true
+}

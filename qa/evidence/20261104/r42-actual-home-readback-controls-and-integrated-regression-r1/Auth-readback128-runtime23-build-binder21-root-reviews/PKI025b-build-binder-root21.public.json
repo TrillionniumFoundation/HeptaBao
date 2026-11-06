@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.root-source-review.025b-original-build-binder.r1",
+  "pass": true,
+  "checks": 21,
+  "rows": [
+    {
+      "id": "whole_source6",
+      "pass": true
+    },
+    {
+      "id": "strict3_both_directions",
+      "pass": true
+    },
+    {
+      "id": "original_binder_exact98c",
+      "pass": true
+    },
+    {
+      "id": "literal_0",
+      "pass": true
+    },
+    {
+      "id": "literal_1",
+      "pass": true
+    },
+    {
+      "id": "literal_2",
+      "pass": true
+    },
+    {
+      "id": "literal_3",
+      "pass": true
+    },
+    {
+      "id": "literal_4",
+      "pass": true
+    },
+    {
+      "id": "literal_5",
+      "pass": true
+    },
+    {
+      "id": "literal_6",
+      "pass": true
+    },
+    {
+      "id": "literal_7",
+      "pass": true
+    },
+    {
+      "id": "literal_8",
+      "pass": true
+    },
+    {
+      "id": "literal_9",
+      "pass": true
+    },
+    {
+      "id": "literal_10",
+      "pass": true
+    },
+    {
+      "id": "literal_12",
+      "pass": true
+    },
+    {
+      "id": "literal_13",
+      "pass": true
+    },
+    {
+      "id": "literal_14",
+      "pass": true
+    },
+    {
+      "id": "literal_15",
+      "pass": true
+    },
+    {
+      "id": "entire_binder_only16_literal_replacements",
+      "pass": true
+    },
+    {
+      "id": "request_unbound_18args",
+      "pass": true
+    },
+    {
+      "id": "old_149_166_no_test_execution",
+      "pass": true
+    }
+  ],
+  "packet": {
+    "tree": "d9253bf4168363a94cf2888139e8d5b3aa05d4d7",
+    "files": 6,
+    "bytes": 23023,
+    "merkle": {
+      "root_sha": "d9253bf4168363a94cf2888139e8d5b3aa05d4d7",
+      "trees_verified": 1,
+      "leaf_count": 6
+    },
+    "whole": true
+  },
+  "before": {
+    "blob": "98c4c9f9d9457e1cf3a483ba54df6c5f17012f4f",
+    "bytes": 4322,
+    "sha256": "5eebfacb2aad1b2db66e802f22279c7b9541e80602cebef386ffa51f9280c1d5"
+  },
+  "after": {
+    "blob": "39cddccd158ae9072c9dc049d08ef6de14877a3a",
+    "bytes": 4322,
+    "sha256": "9f39cf6de8a09318ccac864db0bde084e0c0ff382fb9477a66c1c4acbc02be1b"
+  },
+  "strictHunks": 3,
+  "literalOccurrences": 16,
+  "requestTemplate": {
+    "blob": "2de9bd7eaa50ee2f6f1dcd63e48f49660ad83d64",
+    "bytes": 3082,
+    "sha256": "0e99a7ae2e23193d4a1dd80d11d989b46a66a6ed738e30ccb9fb41361ae02392"
+  },
+  "NativeCalls": 0,
+  "actualFourFiles": false,
+  "normalBuild": false
+}

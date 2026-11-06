@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root.HTTP12-ACL23-draft-request-count-analysis.r1",
+  "sourcePacket": "836a9272666da067063ddf3d1149ae97ceb4a1ec",
+  "uniqueRoleNames": 12,
+  "snapshotCalls": 14,
+  "setupCalls": 26,
+  "normalPerCaseCalls": 34,
+  "normalAllCaseCalls": 782,
+  "maximumConditionalConfigResetCalls": 45,
+  "maximumAclRequestsBeforeCleanup": 853,
+  "actualRequests": 0,
+  "fixtureBudgetStillPending": true,
+  "sourceOnly": true,
+  "stalePreviousRecordFinding": {
+    "function": "run_original_pki12.observe",
+    "failureBranch": "calls.records[-1] may refer to an earlier case if this call raises before creating a record",
+    "requestedFix": "capture pre-call record length and select only this call's same-case new record; otherwise null"
+  }
+}

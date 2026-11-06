@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.r41-checkpoint-tree-intent.v1",
+  "expectedTree": "097f787317ac775723798b9219c97e0f4ab8b448",
+  "parentCommit": "515bfe24879798f0117859c11492112bae9c3cee",
+  "baseTree": "a527113b4645b61081a386d718c9f93a5ef7c77e",
+  "rootCurrent": "2f7f67ee87621e9696016211d359bd5b0e644bf6",
+  "packetTotals": {
+    "packets": 70,
+    "files": 1226,
+    "bytes": 24942324,
+    "allWhole": true
+  },
+  "mutationCount": 1,
+  "called": false,
+  "unknownAcknowledgmentNoReplay": true,
+  "NativeCalls": 0
+}

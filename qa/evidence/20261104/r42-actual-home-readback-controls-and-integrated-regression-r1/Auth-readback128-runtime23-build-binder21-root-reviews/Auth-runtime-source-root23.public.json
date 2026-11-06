@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.root-source-review.actual-home-bound-runtime.r1",
+  "pass": true,
+  "checks": 23,
+  "rows": [
+    {
+      "id": "source20_whole",
+      "pass": true
+    },
+    {
+      "id": "original_unchanged_47c_deriver",
+      "pass": true
+    },
+    {
+      "id": "original_input_unchanged",
+      "pass": true
+    },
+    {
+      "id": "root97_exact_actual_provenance",
+      "pass": true
+    },
+    {
+      "id": "actual_authority_exact",
+      "pass": true
+    },
+    {
+      "id": "actual_stdout_exact",
+      "pass": true
+    },
+    {
+      "id": "actual_receipt_independent_whole",
+      "pass": true
+    },
+    {
+      "id": "actual_release_same",
+      "pass": true
+    },
+    {
+      "id": "actual_derivation_exact_reproduced",
+      "pass": true
+    },
+    {
+      "id": "exact_derived_request",
+      "pass": true
+    },
+    {
+      "id": "exact_actual_home_binding",
+      "pass": true
+    },
+    {
+      "id": "strict2_forward_reverse",
+      "pass": true
+    },
+    {
+      "id": "prior_journal_exact52c",
+      "pass": true
+    },
+    {
+      "id": "all13_definitions_only_literal_bindings",
+      "pass": true
+    },
+    {
+      "id": "new_journal_exact_pin",
+      "pass": true
+    },
+    {
+      "id": "exact_original_runtime_envelope",
+      "pass": true
+    },
+    {
+      "id": "outer_actual_frozen_body",
+      "pass": true
+    },
+    {
+      "id": "candidate_actual_frozen_body",
+      "pass": true
+    },
+    {
+      "id": "actual_home_binding_in_argv",
+      "pass": true
+    },
+    {
+      "id": "frozen_source_manifest_in_argv",
+      "pass": true
+    },
+    {
+      "id": "fresh_exact_runtime_key",
+      "pass": true
+    },
+    {
+      "id": "five_agent_and_budgets_preserved_contract",
+      "pass": true
+    },
+    {
+      "id": "stage_readback_not_credentials",
+      "pass": true
+    }
+  ],
+  "sourcePacket": {
+    "tree": "fd1b2c30bb1fb390e562b55c727513e9d2c1c44d",
+    "files": 20,
+    "bytes": 169319,
+    "merkle": {
+      "root_sha": "fd1b2c30bb1fb390e562b55c727513e9d2c1c44d",
+      "trees_verified": 1,
+      "leaf_count": 20
+    },
+    "whole": true
+  },
+  "priorFixedReadSource": {
+    "tree": "098ac9cc2039f28b732da0a8f3c0d9efa9a05b57",
+    "files": 30,
+    "bytes": 1204938,
+    "merkle": {
+      "root_sha": "098ac9cc2039f28b732da0a8f3c0d9efa9a05b57",
+      "trees_verified": 1,
+      "leaf_count": 30
+    },
+    "whole": true
+  },
+  "actualReadbackMinimum": {
+    "tree": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+    "files": 12,
+    "bytes": 199416,
+    "merkle": {
+      "root_sha": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+      "trees_verified": 1,
+      "leaf_count": 12
+    },
+    "whole": true
+  },
+  "actualInertQualification": {
+    "blob": "00900615411da59bc3d0997bb579a007f832822a",
+    "bytes": 14593,
+    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+  },
+  "request": {
+    "blob": "0b9abcf80bc8bd27ced95abfb66bee3ebf837b32",
+    "bytes": 8207,
+    "sha256": "a4fc7391b4b280b97ba06a0e71fd4951b1e282d3e5d89ae42c7519ad6505bbea"
+  },
+  "homeBinding": {
+    "blob": "d968e0ade288f62cd8294dd9b097e3c50f96cdd0",
+    "bytes": 2029,
+    "sha256": "521e45f51f5b780b4951a0b6c84ec3c8bba2899159f29115951c05c1e9da3cf7"
+  },
+  "journal": {
+    "blob": "7c17ea14858c4801b205d8c91aa250b250558b9b",
+    "bytes": 19052,
+    "sha256": "2e501ef98b5d2c29acfccbd21128f18da2a8bfa49e59429f52591986c384f6f9"
+  },
+  "typedRequestDigest": "75273532b25e4d9f8cccc838b6c924ae0e4d3c1bdb40c3c98ca64a22454e05fb",
+  "typedRequestFingerprint": "8441774518386445727",
+  "canonicalBytes": 8076,
+  "baselineCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "sourceOnly": true,
+  "fullReadbackTransportQualificationPending": true,
+  "NativeCalls": 0,
+  "actualCredentialsProven": false,
+  "qualificationTransfersToFutureCombinedCandidate": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

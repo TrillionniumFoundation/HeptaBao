@@ -1,0 +1,6 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "parent_sha": "515bfe24879798f0117859c11492112bae9c3cee",
+  "tree_sha": "097f787317ac775723798b9219c97e0f4ab8b448",
+  "message": "docs(qa): preserve R41 compile fix, HOME identity and snapshot evidence\n\nPreserve the original compiler failures and the separately frozen minimal two-None fix, complete Mac partial-HOME observations and the fresh R2 source, and the full snapshot formatter report with its bounded output-read scope. All original unknowns remain distinct from current observations. Record 70 whole evidence packets; no full replacement, production cutover or legacy cleanup is claimed."
+}

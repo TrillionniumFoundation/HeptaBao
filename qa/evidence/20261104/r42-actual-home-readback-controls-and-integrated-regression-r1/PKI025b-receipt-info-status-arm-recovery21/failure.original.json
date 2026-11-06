@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.gitfirst.outer-caught-failure.r1",
+  "action": "prepare",
+  "name": "Error",
+  "message": "whole_read_incomplete_no_mutation_retry",
+  "automaticRetry": false,
+  "newAdmissionAllowed": false,
+  "returnedNormally": true
+}

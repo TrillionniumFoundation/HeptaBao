@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.HTTP12-case-local-status-source-review.r1",
+  "passed": true,
+  "packet": {
+    "tree": "7bb6ad797e440c0de7e096c67f05c6189f5e2323",
+    "files": 5,
+    "bytes": 31240,
+    "merkle": {
+      "root_sha": "7bb6ad797e440c0de7e096c67f05c6189f5e2323",
+      "trees_verified": 1,
+      "leaf_count": 5
+    },
+    "whole": true
+  },
+  "before": {
+    "blob": "6a40dccac98b8b888d1d740156334931d27e2c58",
+    "bytes": 13412,
+    "sha256": "228ff946c0838fcb9be0c64d6b0d9f0e0487d2002f58a15a04a39ef6408c7495"
+  },
+  "after": {
+    "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+    "bytes": 13664,
+    "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+  },
+  "hunks": 2,
+  "scope": "Only the observed request record selection was changed. Original HTTP semantics, pki_cases and ACL23 matrix remain frozen. Python execution and four failure-path runtime cases remain pending.",
+  "sourceFinding": {
+    "schema": "heptabao.root.HTTP12-ACL23-draft-request-count-analysis.r1",
+    "sourcePacket": "836a9272666da067063ddf3d1149ae97ceb4a1ec",
+    "uniqueRoleNames": 12,
+    "snapshotCalls": 14,
+    "setupCalls": 26,
+    "normalPerCaseCalls": 34,
+    "normalAllCaseCalls": 782,
+    "maximumConditionalConfigResetCalls": 45,
+    "maximumAclRequestsBeforeCleanup": 853,
+    "actualRequests": 0,
+    "fixtureBudgetStillPending": true,
+    "sourceOnly": true,
+    "stalePreviousRecordFinding": {
+      "function": "run_original_pki12.observe",
+      "failureBranch": "calls.records[-1] may refer to an earlier case if this call raises before creating a record",
+      "requestedFix": "capture pre-call record length and select only this call's same-case new record; otherwise null"
+    }
+  },
+  "PythonExecuted": false,
+  "RuntimeCalls": 0
+}

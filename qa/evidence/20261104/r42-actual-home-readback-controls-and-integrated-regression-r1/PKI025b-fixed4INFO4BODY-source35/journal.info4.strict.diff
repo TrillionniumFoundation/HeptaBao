@@ -1,0 +1,44 @@
+--- a/info4.original.js
++++ b/info4.current.js
+@@ -5,24 +5,24 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
++const GF_SLOT = "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2";
++const GF_REQUEST = {blob:"4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
++ bytes:124154,sha256:"4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"};
+-const GF_SLOT = "jwt_pki_33b814c7_build_controls_inert_gitfirst_r1";
+-const GF_REQUEST = {blob:"b304be2ede7fccc0c7013e7b2974d2637a7f7667",
+- bytes:124154,sha256:"b3982988fe15b71e804524b13c1d5e5ac5b462930446ef492e3f65585dac9e03"};
+ 
+ 
+ /* Four fixed public metadata observations after this exact publisher closes.
+  * All original state/history is retained. This scope admits no binary_read.
+  */
++const GF_CONTROLS_INFO_REQUESTS = [{"blob":"78c9767df0ed826a7bab3d868787f33281960da6","bytes":284,"sha256":"b3c0790bc7e3a4df7715e3e6fc2f1c8519e4c76b89d2dcf88ca2960b8a7f61a3"},{"blob":"0f0487c4d2e64d6474f0c321a4f56fc4c800d00d","bytes":291,"sha256":"33f596d548fcab8f1c1eae1c855f04cbe38e45eb6f6ff8febbb0bee57a3b3779"},{"blob":"3cedb52ffcacd7820b98d9c80a022bfcb0e2aff5","bytes":292,"sha256":"81da20525aa4e777753bc5c4b0ad5a72f1efde628787d4cc55b3905e705c3905"},{"blob":"55b50cccf3fa7c3948a04ae310bd9107639c56b6","bytes":295,"sha256":"d494099f252df35e1daf90e03505095d9e1a2cdf7aed1fcd957b584b5faf6751"}];
++const GF_CONTROLS_EXPECTED = [{"index":0,"name":"native_jwt_build.py","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py","bytes":30397,"sha256":"d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50","publisherFull9":["66306","33212340","1000","1000","33152","1","30397","1793965550402189411","1793965550403278461"]},{"index":1,"name":"launch_native_jwt_build.py","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/launch_native_jwt_build.py","bytes":38565,"sha256":"efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c","publisherFull9":["66306","33212341","1000","1000","33152","1","38565","1793965550403677310","1793965550405279309"]},{"index":2,"name":"jwt-test-groups.public.json","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/jwt-test-groups.public.json","bytes":19789,"sha256":"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869","publisherFull9":["66306","33212342","1000","1000","33152","1","19789","1793965550406347359","1793965550407346912"]},{"index":3,"name":"inert-stage.result.public.json","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/inert-stage.result.public.json","bytes":1854,"sha256":"30cd7315341a685f3bf0b95b3938dd12e717d880ded7161d462f14e75c0eac61","publisherFull9":null}];
++const GF_CONTROLS_INFO_PREREQUISITES = [{"id":"4edb38378654d826ed10313b7defc623e5cd18154a4030de8dee724ad2c5118a","tool":"process_status","nativeText":{"blob":"15690bdf2a0078dcce3bb2d76863cf353d76b2dc","bytes":731,"sha256":"97cfc86ef059ff751ae6757738144695ae5015175d305678fa72d3c44057a277"}},{"id":"b9383d8a659cfe3ed84c7d1baf6cf9171d442c7ef812b88c2878280826d74786","tool":"process_read","nativeText":{"blob":"4142bf162a672bf0553a6a17815442ff09f1bd9c","bytes":4748,"sha256":"843b12b77805de709e2aa8704f4f9bd23b05ba9b19c43f8d673314eb21e8e97c"}}];
++const GF_CONTROLS_STDOUT = {"blob":"444fb9941c8dae52784e0b0fe99b238206024b36","bytes":1444,"sha256":"f002a8cb103ad8b4080883e31980a29edfda6640cbf65985dc6ad025b8858665"};
+-const GF_CONTROLS_INFO_REQUESTS = [{"blob":"55d9c9eaa0088e989ec9f1493e4bfca35b2a1a1a","bytes":284,"sha256":"d3deedf47dd60afe119e822d3548dcd97f3fbbe61f9cca0f428d0bbac2e4eb9e"},{"blob":"46a7b2b225b3b8460dc5f9124b2d3e97a37ba091","bytes":291,"sha256":"06ffb83fac7970aa4fd42093451c6abcfb077cc597d17eb19b2cefad2a235c9d"},{"blob":"13f5a8c7882754691900ddb68f720e8551cc5f5f","bytes":292,"sha256":"652a352f9db5be57f4ac069b23fac29f3ba0ab3f633fed0a8b1421a653e2130c"},{"blob":"dc830aea81d620fb0ba59d29cd562f6d90bada27","bytes":295,"sha256":"22170fdedd1b25f061dfdf8cb145c01bf0fb8f5b7c62d6d0d345787340e0a753"}];
+-const GF_CONTROLS_EXPECTED = [{"index":0,"name":"native_jwt_build.py","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/native_jwt_build.py","bytes":30397,"sha256":"023f6f3ad71b8909a46da632767044de44ec2ea6fcb11692a2160e2cec518add","publisherFull9":["66306","31235924","1000","1000","33152","1","30397","1793954281105928260","1793954281106897967"]},{"index":1,"name":"launch_native_jwt_build.py","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/launch_native_jwt_build.py","bytes":38565,"sha256":"5d639fbde4aa09663be694d9322bc4f598f4cd9594f9a3c09c61c21013b98056","publisherFull9":["66306","31235925","1000","1000","33152","1","38565","1793954281107963513","1793954281108998030"]},{"index":2,"name":"jwt-test-groups.public.json","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/jwt-test-groups.public.json","bytes":19789,"sha256":"35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869","publisherFull9":["66306","31235926","1000","1000","33152","1","19789","1793954281109723489","1793954281110748800"]},{"index":3,"name":"inert-stage.result.public.json","path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r1/inert-stage.result.public.json","bytes":1854,"sha256":"f1e1f3a2576fcb2ecd05cdb9b8f4fbebd6bb849eddb48536eb5c66ed5be109e2","publisherFull9":null}];
+-const GF_CONTROLS_INFO_PREREQUISITES = [{"id":"3e2c145fb3866ba0828fa38d07632e63795b01a1abcff64ebd38e3ffaa8f18be","tool":"process_status","nativeText":{"blob":"b71ae954e7acc32d8f0c05e2f8b69c1883ec06bf","bytes":731,"sha256":"f423c12f146b81a7ddfb5b99bf8ba0052fa03163a5bdbc3d1bb49ff0090dfe5c"}},{"id":"cfb862c2bb678ca32654d72f13d2777cac430b9f1d4409a88478a2b9e803a067","tool":"process_read","nativeText":{"blob":"31e1b3f5a45b7fd244b15664b4794841a061ef7e","bytes":4748,"sha256":"58b926c8274f5bcaf13c13adc9382b5bf3850c7318d57e50b376f05c88de1876"}}];
+-const GF_CONTROLS_STDOUT = {"blob":"46e216e8b2120303dbc4f1a1e08aeccc41a29ef3","bytes":1444,"sha256":"a7cd7fa6220225c3b47fc543a4db218bfc06d27c8660765ebfb6c6c129a2fac0"};
+ 
+ function gfAuthorizePublishedControlsInfoOnly({goRaw,goPin,goWholeReadback}) {
+  const s=gfState();
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
+    && s.activeObserver===null && s.startCalled===true
++   && s.job==="1a1b0ade81d-fc05-7220" && s.controlsInfoGO===undefined
+-   && s.job==="1a1b001e788-fc05-6d66" && s.controlsInfoGO===undefined
+    && s.publishedInfoStarted===undefined && s.publishedInfos===undefined,
+    "closed_exact_publisher_before_fixed4_info_GO");
+  gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
+@@ -100,7 +100,7 @@
+   gfNeed(s.job!==null && s.activeObserver===null,"original_job_no_unclosed_observer");
+   gfNeed(Object.keys(q).sort().join(",")==="idempotency_key,operation"
+     && typeof q.idempotency_key==="string" && q.idempotency_key.length<=128
++    && /^heptabao-native-jwt-pki-025b05a3-controls-observe-r2-/.test(q.idempotency_key),
+-    && /^heptabao-native-jwt-pki-33b814c7-controls-observe-r1-/.test(q.idempotency_key),
+     "bounded_original_observer_key");
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"

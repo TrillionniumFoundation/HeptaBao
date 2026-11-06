@@ -1,0 +1,511 @@
+{
+  "schema": "heptabao.r42-root-current-state.v1",
+  "as_of_UTC": "2026-11-06 12:38:19 UTC",
+  "previous_validation_commit": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+  "prefix": "qa/evidence/20261104/r42-actual-home-readback-controls-and-integrated-regression-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "prior_real_LAN_scope": "Mac192.168.0.8/ROG.10/Pocket4.9 real-process SIGKILL, election, ReadIndex, quorum loss, durable cold restart98+12; not physical power removal; no transfer of qualification to new uncompiled source.",
+  "AuthBus": {
+    "originalInert": {
+      "job": "mac/1a1b0702e84-fc05-708a",
+      "exitCode": 1,
+      "predicate": "home_own_create_preserves_root_object",
+      "effectUnknown": true,
+      "originalFailurePointTuplesRecovered": false,
+      "root": {
+        "blob": "d30cfb9acc09966661e4739c19517dc518b7a43a"
+      }
+    },
+    "currentReadOnlyProbe": {
+      "job": "mac/1a1b0889605-fc05-7138",
+      "knownExit": 0,
+      "fullDurable": true,
+      "root": {
+        "blob": "29e35663b15d624c7dcc90d7d3dc01fdb6e3ece7",
+        "bytes": 7672,
+        "sha256": "d4ff8b3ca6189311150dbf643912bc300e4ffd3392882eff69365117a7b78da1"
+      },
+      "currentRootFull9": [
+        "16777233",
+        "593068531",
+        "501",
+        "20",
+        "16832",
+        "3",
+        "96",
+        "1793961504844444664",
+        "1793961504844444664"
+      ],
+      "copyWholeBytes": 14052,
+      "exactAbsenceChecks": 38,
+      "FDsClosedOnce": 5,
+      "originalUnknownPreserved": true
+    },
+    "first5Fix": {
+      "root": {
+        "blob": "eb9eb5165b73c0475e885ee77057953ae21fee2f",
+        "bytes": 2570,
+        "sha256": "3b6bce1b11956fad3eae10c025f666791085ac28fb4b1a7722320e041747a682"
+      },
+      "onlyFunctionalChange": "Directory identity after own exclusive leaf creation uses dev/ino/uid/gid/mode; current held/name still full9; original pre-operation full9 and file nlink1 retained."
+    },
+    "R2": {
+      "actualInertJob": "1a1b09ee29e-fc05-71c4",
+      "actualInertExit": 0,
+      "actualInertRoot97": {
+        "blob": "00900615411da59bc3d0997bb579a007f832822a",
+        "bytes": 14593,
+        "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+      },
+      "actualInertFull106": "6192e0b1a2e5c615e92d45e506a45de44d4cc017",
+      "actualPublicStagingQualified": true,
+      "T5PublicFiles": 30,
+      "HOMEPublicCopies": 2,
+      "allReturnedHOMEFdsClosed": 8,
+      "actualFixedReadback": {
+        "root128": {
+          "blob": "866acf24015da851652481fb46ae7add95284489",
+          "bytes": 16511,
+          "sha256": "7b7b6bab1898eaed9cfa7b2e1a92d3d384b08ce61daad22855b17ea18b6b1c3e"
+        },
+        "full212": "01728b1ee0d44a1b4cf2458502ef70a796cf99df",
+        "minimal12": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+        "NativeCalls": 35,
+        "operations": 7,
+        "immutablePages": 21,
+        "bodyBytes": 96654,
+        "metadataFull9Qualified": 3,
+        "wholeFiles": 3,
+        "originalOperationsAllClosed": true,
+        "readThenExecAtomicityClaim": false
+      },
+      "runtimeSource20": "fd1b2c30bb1fb390e562b55c727513e9d2c1c44d",
+      "runtimeSourceRoot23": {
+        "blob": "dd3af30370ce7f30406f1a16c60741f91f723a69",
+        "bytes": 3906,
+        "sha256": "f476f20c6026f0c90375c6f9c200f23e064fb596a15c1e178ef952ff0ec953d4"
+      },
+      "runtimeActualBoundRequest": {
+        "blob": "0b9abcf80bc8bd27ced95abfb66bee3ebf837b32",
+        "bytes": 8207,
+        "sha256": "a4fc7391b4b280b97ba06a0e71fd4951b1e282d3e5d89ae42c7519ad6505bbea"
+      },
+      "runtimeActualBoundHome": {
+        "blob": "d968e0ade288f62cd8294dd9b097e3c50f96cdd0",
+        "bytes": 2029,
+        "sha256": "521e45f51f5b780b4951a0b6c84ec3c8bba2899159f29115951c05c1e9da3cf7"
+      },
+      "runtimeGO": null,
+      "runtimeJob": null,
+      "actualCredentialQualification": false,
+      "qualificationTransfersToCombinedCandidate": false,
+      "originalBudgets": {
+        "worker": 900,
+        "controller": 1080,
+        "manager": 600,
+        "phase": 120,
+        "http": 10,
+        "capture": 45
+      },
+      "currentAgents": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "J3160Dependency": false,
+      "R41HistoricalSnapshot": {
+        "sourceTree": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+        "root": {
+          "blob": "389205b2d32c865b27db356b1b2c6f0982e80cf6",
+          "bytes": 11301,
+          "sha256": "4bbfab6454295d0b8bae1061e1fab30a07a524dab5d784c7d0741284e64d2a7b"
+        },
+        "sourceChecks": 80,
+        "pureAuthorChecks": 182,
+        "inertGO": {
+          "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+          "bytes": 6762,
+          "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+        },
+        "actualInertResultAtCutoff": null,
+        "runtimeRequestAtCutoff": null,
+        "actualCredentialsQualified": false,
+        "selectedOwnerQualified": false,
+        "initialColdRollbackRenewRevokeQualified": false,
+        "activation": "Source qualified; await lane grant after C's current BODY observer closes."
+      },
+      "originalSource125": "9204bd66dad2f266dd56cece33f455c5ffea9e2d"
+    }
+  },
+  "snapshot": {
+    "candidateCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "originalFormatterJob": "rog/1a1b02771c2-fc05-6e9f",
+    "wholeReport": {
+      "blob": "b99fe67dc434a0d856a8caff6fe75de597d6d5ed",
+      "bytes": 118925,
+      "sha256": "5755903ce5696b6745d7af2b27a69a30e0d001697eeb85282df75eb25cea40d8"
+    },
+    "wholeReportRoot": {
+      "blob": "8ebf3731052711fcdb86d2f99997a47f975def89",
+      "bytes": 17845,
+      "sha256": "cb7f9ce030af80e7f539b526cc38cfe8fd6c4ae52783ca7f8528b45b229212b2"
+    },
+    "originalFormatterFiles": 49,
+    "sourceInputsUnchanged": true,
+    "formatterChildrenStopped": 49,
+    "changedOutputs": 23,
+    "changedBytes": 1346637,
+    "unchangedWholeSourceReuse": 26,
+    "unchangedBytes": 686814,
+    "outputReadGO": {
+      "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+      "bytes": 14304,
+      "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+    },
+    "outputReadCompleteAtCutoff": false,
+    "newFormattedOutputFull9NotInReport": true,
+    "compileQualified": false,
+    "newBehaviorTestsRun": false,
+    "historicalBODY0Admission": "Original timeout remains UNKNOWN; separate exact-key reconciliation observed reused=true and closed immutable range. BODY1 and whole report separately qualified.",
+    "remainingFunctionalFailure": "Original standby SAVE incomplete_snapshot and standby RESTORE no baseline match remain unresolved by new runtime evidence.",
+    "newFormattedOutputsWholeAtCutoff": 10,
+    "latestWholeBoundary": "d3c0538a542a856595ec6b4c0d1fe6eb748b59dc",
+    "originalGitReadbackRecovery": {
+      "packet": "b1bbf1adb7c9ed54f49f8ec2a913ef0c2fae0ccc",
+      "root19": {
+        "blob": "99231632ec3f575348420dfbbe0d82a774ee92e5",
+        "bytes": 3097,
+        "sha256": "52dfb0e25b69e92e448eaf435c77be1ba849e681d8a8126a20c998eb575c074b"
+      },
+      "GO": {
+        "blob": "cfe99cdee399d804d29acc17b6c83b0495774f89",
+        "bytes": 4073,
+        "sha256": "ea672ce90ece5f7f6a69f6f6b2c8c33b006fb3aa3bf210a004b4f64a753f12f2"
+      },
+      "beforeAfter": "a3737417b9c3d484a8577a41df50603dff9d852f",
+      "originalBodyClosed": "d887fbe3c3c054dc2d36a5413ad088cb0e45d388",
+      "noMutationOrNativeReplay": true
+    },
+    "wholeFormattedOutputBytesAtCutoff": 574522,
+    "file10InfoPageError": {
+      "originalOperation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+      "originalFutureCompletedInactive": true,
+      "payloadDelivery": "UNKNOWN",
+      "originalPageRequest": {
+        "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+        "bytes": 121,
+        "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+      },
+      "originalPageError": {
+        "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+        "bytes": 248,
+        "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+      },
+      "root14": {
+        "blob": "4d4272b3ccab6523e3004f9d95623b15606fa8a6",
+        "bytes": 2575,
+        "sha256": "e3d331c8327a884e2ec7701b4286a921da1e256691a8ebe986c52b2d0a101eb0"
+      },
+      "exactSameImmutablePageRecoveryNotYetRun": true
+    }
+  },
+  "JWT_PKI": {
+    "originalFailedCommit": "33b814c7034ec853151b1ff13e7529c83f65ea70",
+    "originalCargoExit": 101,
+    "originalCompilerErrors": [
+      "E0061: service_native_pki.rs missing 14th lifetime-output argument",
+      "E0061: service_native_ssh.rs missing 14th lifetime-output argument"
+    ],
+    "minimalFixCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "minimalFixTree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "minimalFixBranch": "codex/heptabao-jwt-pki-compile-fix-20261106",
+    "changedFiles": 2,
+    "addedBytes": 52,
+    "unchangedLeaves": 3914,
+    "newStageJob": "rog/1a1b07b7e0b-fc05-70ca",
+    "newStageTerminalExit": 0,
+    "newStageTerminalRoot": {
+      "blob": "16091afbb8e0cdce0a8720e626317d28830c180e",
+      "bytes": 6436,
+      "sha256": "b00c586b1f583bf7f341ad36d1ddfccbe053401d3b567916ab7d02e33954edd5"
+    },
+    "newStageINFO": {
+      "blob": "e3e76d83810f7ffaa175f50d87ce979f9da55950",
+      "bytes": 4221,
+      "sha256": "ce5cd030626c2d9437e257ff95b15dc67aed5268006ed5fcae16f9445913a0d0"
+    },
+    "newStageBODY_GO": {
+      "blob": "226dd0823db8d6e496d521ffc4f892c32c4129c3",
+      "bytes": 2505,
+      "sha256": "c1ef8c791331e324e48348aa58f6ecd3c7eb0e71e9406f699ce90efcc053bb72"
+    },
+    "newStageWholeReportQualifiedAtCutoff": true,
+    "normalBuildQualified": false,
+    "selectedUniqueTests": 149,
+    "selectedProfileInstances": 166,
+    "actualRuntimeTestsNewCandidateAtCutoff": 0,
+    "ACLSuccessorMerged": false,
+    "officialJWTPolicyFinding": "Official 2.7.1 role storage permits supplied-empty token_policies without default injection and has no role-handler actor-policy-subset gate. Legacy nil ParsePolicies default exception remains. Endpoint ACL still applies; root-token issuance is not inferred.",
+    "newActualOfficialOracleRun": false,
+    "stageWholeRoot41": {
+      "blob": "6779c65882fc265ae6c4c0ba055b2f42132e59d8",
+      "bytes": 5974,
+      "sha256": "c3410ce8dc065f88258c9ac2960c0a098725721a0c316406c5207a21785ffcf7"
+    },
+    "controls": {
+      "job": "1a1b0ade81d-fc05-7220",
+      "exit": 0,
+      "inertFull52": "c560f2bd444d25f7b7392e4735e69f00343f5670",
+      "root43": {
+        "blob": "3c520b3bfa6814f16b27e30f03fe2f9873e2daa6",
+        "bytes": 7848,
+        "sha256": "461de77b42f40a1885c62466fbc526a55fe5c288ae55f7067697aa21eced9c17"
+      },
+      "threePublicControlsPublished": true,
+      "fixed4Source35": "92cc5fcc4111411ac5028728cb3773506920a057",
+      "fixed4GO": {
+        "blob": "e8fc1a9e9d8b09411bc8a47f19da1bce5aa27d32",
+        "bytes": 5948,
+        "sha256": "aadd1bcd39e4c86448352d48fcce1c6258332edabee69b0a370b127589365ef9"
+      },
+      "fixed4RootSourceChecks": 30,
+      "actualFourINFOReportedClosed": true,
+      "actualFourBodiesRootQualified": false,
+      "receiptStatusArmRecovery": {
+        "originalFuture": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+        "source21": "7d41c7d6372d8c426d38016c84525d42059a45a5",
+        "root19": {
+          "blob": "51014de45760a1aafc94fd0bcf18584c19634b1d",
+          "bytes": 2990,
+          "sha256": "505bcc2f2baabaf24df01b7c970f18cf136e4577170eefa05bf3e208f795f21e"
+        },
+        "GO": {
+          "blob": "690bba2738ceab61defa55e5d86178150774135d",
+          "bytes": 2848,
+          "sha256": "871c0e68780c1a5155156dc274c96b97953dbcc74c91dd20a4116630881abfc3"
+        },
+        "beforeAfter": "d72f6f0dfd6b8636a45990748981b069c82d7f46",
+        "originalErrorsPreserved": true
+      },
+      "originalBuildBinder6": "d9253bf4168363a94cf2888139e8d5b3aa05d4d7",
+      "binderRoot21": {
+        "blob": "4cfebe039892124306c7b9abc5d38f5e72368d2e",
+        "bytes": 2340,
+        "sha256": "c2c3b3f5e99e8b9fd073edfa9a73a6b846288d59ce626b21888f2c604e088a17"
+      },
+      "exactBuildGO": null,
+      "buildJob": null,
+      "actual4InfoBindingPacket": "e8412710d414a5dac4e53c1f33b8dd4dade2cb35",
+      "body0Unknown": {
+        "packet": "4169bee13a26dafcce26cf156e490d03c9c91d1a",
+        "request": {
+          "blob": "b9e3c37da6a88ed78fe36893d8bf373e5213fdff",
+          "bytes": 417,
+          "sha256": "ba148cdadb1d9e0cb1147107cbe5be442c1b15873b4a1f8aec23ece70faba8be"
+        },
+        "errorSDK": {
+          "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+          "bytes": 247,
+          "sha256": "20bc68d840783af5cc8e791289d5ac77c6941d45f79768c397c95e629784e3fa"
+        },
+        "operationID": null,
+        "called": true,
+        "paused": true,
+        "ownedFutureClosureUnknown": true,
+        "bodies1to3Unsubmitted": true,
+        "newExactSameKeyConditionalReconciliationPending": true
+      }
+    }
+  },
+  "history_preserved": {
+    "C_original_local_page_prepare_failure_and_once_root_authorized_local_resume": true,
+    "C_body_semantic_precheck_before_separate_decoded_leaf_order_exception": true,
+    "all_final_C_root51_semantics_after_whole_original_report": true,
+    "superseded_b694_GO_source_packet_object_corrected_to_SHA_before_dispatch": true,
+    "superseded_2379_GO_one_sequence_sentence_corrected_before_initialize": true,
+    "B2379_pure_Git_helper_argument_error_and_unpublished_release_draft_correction": true,
+    "old_UNKNOWN_records_not_replayed_or_rekeyed": true,
+    "source_verifier_corrections_not_changes_to_candidate_source": true,
+    "A_current_cleanup_local_checker_kind_and_shape_errors_preserved": true,
+    "B_original_BODY0_admission_timeout_preserved": true,
+    "C_original_BODY_page2_timeout_preserved": true,
+    "C_unexecuted_local_unpause_proposal_preserved_and_not_authorized": true,
+    "root_C_runner_envelope_vs_body_pin_verifier_correction_preserved": true,
+    "JWT_test_initial_missing_default_precondition_and_R2_exact_fix_preserved": true,
+    "root_local_executor_pre_exec_failure_not_retried": true,
+    "root_README_pure_local_missing_tot_binding_corrected_before_write": true
+  },
+  "additional_history_preserved": [
+    "Original HOME R1 partial-effectUnknown and omitted failure point tuples",
+    "Original BODY0 timeout admission and exact original SDK",
+    "Original PKI33b failed build and body-read pause history",
+    "All source-construction and root-only verifier mistakes kept in referenced packets"
+  ],
+  "remaining_gates": [
+    "CLI standby save and restore exact cause and repair",
+    "AuthBus actual trusted owner credential chain and five current consumers",
+    "Native JWT actual compilation/test plus precise official role ACL create/update/delete semantics",
+    "Other native auth/provider routes including OIDC/Kubernetes/MFA and SDK owners",
+    "Database/RabbitMQ/Kubernetes secret external effects",
+    "ACME/EAB/externalKMS/HSM PKI and Transit integration",
+    "Rekey/root generation/rotation and runtime plugin mutation",
+    "Protected namespace/nondefault Raft administration",
+    "Two exact PKI expired/revoked status oracles",
+    "Current per-client credential read/write, restart, rollback and traffic cutover",
+    "All current backup-path migration evidence before legacy cleanup"
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Recover the existing B known-ID immutable metadata page and C exact same-key body0 admission with original failures preserved; verify transport before the new Mac worker.",
+    "Execute the already actual-bound five-agent AuthBus worker with original900/1080 budgets after a verified released lane.",
+    "Finish actual four control-file acceptance and execute the unchanged normal release build plus149 unique/166 profile instances.",
+    "Complete all23 independent formatted bodies, overlay exact49 onto025b, freeze one combined candidate preserving PKI and strict status assertions.",
+    "Run snapshot-forward CLI regression, retained normal61, strict PKI12 and ACL23 official-oracle comparison, then Mac/X230 and necessary real LAN regressions on the same latest candidate.",
+    "Verify each current client with real credentials, restart and rollback; prove all backup paths before production cutover and legacy cleanup."
+  ],
+  "publication": {
+    "branch": "codex/heptabao-validation-20261104",
+    "expectedParent": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+    "checkpoint": "R42",
+    "commit": null,
+    "published": false
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "local_executor_available": false,
+  "current_lanes_at_cutoff": {
+    "A": "0 calls/futures; actual-bound runtime SOURCE23/root readback128 ready; new process held during original-read transport recovery",
+    "B": "0 calls/futures; file10 INFO native future completed/inactive; page0 payload delivery UNKNOWN; preparing known-ID immutable retrieval recovery",
+    "C": "0 current calls; body0 admission returned MCP timeout without operation_id; retain one UNKNOWN lane; no build yet"
+  },
+  "HTTP12_ACL23": {
+    "draft16": "836a9272666da067063ddf3d1149ae97ceb4a1ec",
+    "caseLocalStatusFix5": "7bb6ad797e440c0de7e096c67f05c6189f5e2323",
+    "fixedModule": {
+      "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+      "bytes": 13664,
+      "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+    },
+    "strictHunks": 2,
+    "originalPkiCases": 12,
+    "originalAclCases": 23,
+    "sourceMaximumAclRequestsBeforeCleanup": 853,
+    "actualRequests": 0,
+    "oracleRuntimeQualified": false
+  },
+  "integratedCandidate": {
+    "strategy": "Overlay actual formatted49 onto025b, preserving five newer disjoint PKI and strict acceptance leaves.",
+    "sourceFactsPacket": "d81b842ace618d1b48ccaea34bb22df70b16aae3",
+    "sourceChecks": 9,
+    "baseCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "snapshotSourceCommit": "2379d02ba1ee3e88989815d5a978f998822bac4f",
+    "overlayFiles": 49,
+    "formattedChangedBodiesRequired": 23,
+    "reusedWholeSources": 26,
+    "protectedLeaves": [
+      {
+        "path": "crates/heptabao-server/src/engines/pki.rs",
+        "keepFrom025b": {
+          "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+          "bytes": 136672
+        },
+        "oldB": {
+          "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+          "bytes": 136453
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki.rs",
+        "keepFrom025b": {
+          "blob": "b11309ef29cc1328657b4645045008fc57bcd628",
+          "bytes": 29631
+        },
+        "oldB": {
+          "blob": "281f74233d0d7ab36aec9e03ec2830f099a9988d",
+          "bytes": 29605
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "keepFrom025b": {
+          "blob": "23b2c1344eec6ad1cc659f665df14d6379687a49",
+          "bytes": 42909
+        },
+        "oldB": {
+          "blob": "47fc159b1d32b259c784b40f16a463b0739227be",
+          "bytes": 40170
+        }
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh.rs",
+        "keepFrom025b": {
+          "blob": "6d347777f8fa6a45eb570bd080aed96a5487e975",
+          "bytes": 20022
+        },
+        "oldB": {
+          "blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075",
+          "bytes": 19996
+        }
+      },
+      {
+        "path": "qa/openbao-acceptance/acceptance.py",
+        "keepFrom025b": {
+          "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+          "bytes": 36333
+        },
+        "oldB": {
+          "blob": "928d7ceca52f3e8ee418d9d2028b376f5c1dd7c5",
+          "bytes": 36827
+        }
+      }
+    ],
+    "expectedTrackedLeaves": 3930,
+    "expectedTrackedBytes": 62498221,
+    "exactFormattedCandidateTree": null,
+    "exactFormattedCandidateCommit": null,
+    "proposedRegressionDenominator": {
+      "unique": 237,
+      "profileInstances": 254,
+      "originalNative": 149,
+      "snapshotNew": 27,
+      "normalRegression": 61,
+      "sourceSetProofRootPending": true,
+      "actualRuns": 0
+    },
+    "qualificationsTransferred": false,
+    "MacQualified": false,
+    "X230Qualified": false,
+    "LANQualified": false
+  }
+}

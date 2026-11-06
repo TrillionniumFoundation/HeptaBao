@@ -1,0 +1,311 @@
+{
+  "schema": "heptabao.home-r2-fixed-public-readback-release.v1",
+  "go": {
+    "blob": "fd259b3d3dc060a4cf22efd44d276a1ed0814a3c",
+    "bytes": 8810,
+    "sha256": "0040a5f9acd0d6ef8711417c728498afcffd049228c5e6828c1cc95605f6722c"
+  },
+  "sourcePacket": "098ac9cc2039f28b732da0a8f3c0d9efa9a05b57",
+  "originalInertJob": "1a1b09ee29e-fc05-71c4",
+  "originalInertQualification": {
+    "blob": "00900615411da59bc3d0997bb579a007f832822a",
+    "bytes": 14593,
+    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+  },
+  "originalInertContextUnchanged": true,
+  "NativeCalls": 35,
+  "processStarts": 0,
+  "originalOperations": 7,
+  "originalImmutablePages": 21,
+  "operations": [
+    {
+      "id": "3be03e1e84b9383fd64cd9dffe41dbefde6887032bb01d10f0cd78663e095a1e",
+      "tool": "file_info",
+      "payload": {
+        "blob": "69e5064301e4b9eb0816b99d252c2893208ad5e9",
+        "bytes": 619,
+        "sha256": "859a8e1a1cb6aba96778136eac69ffa747054bf18b5d67e880e5917a8d20dee6"
+      },
+      "payloadTree": "7d2bd1eef825898fff7cb7e66cb6c3e80679f562",
+      "nativeText": {
+        "blob": "4a51b7ee33aede67e3502a1c2eb15f40b9c4be43",
+        "bytes": 502,
+        "sha256": "977de3d85f1e0e553df277786294f300c0a4a30966997befec104690778a3fde"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "9d102a2981f4554962c0d408eb5ba64fe4497bcd86d0fa4d3307e9c507e29243",
+      "tool": "file_info",
+      "payload": {
+        "blob": "e720919270cc94f939ebde47a55ae1bcf8f4b1e5",
+        "bytes": 631,
+        "sha256": "035b38be1d18d2c2230a0f13f9c4d0020d1b3cf180653a89f8521f2561635a91"
+      },
+      "payloadTree": "1ffebe32cb66016f5948b0e9cfd2791223693e45",
+      "nativeText": {
+        "blob": "98dc95078a68b64a0fe8813257329f6757bb1b2d",
+        "bytes": 514,
+        "sha256": "5d5c63c8058f59af233b6d8a109c9a8d3e280f1d6af89c9d192ed2f5cb53ce81"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "3a8bce6d24f349ba2c09925ed9809af0fa1c9de1318ca99894c3b24e6573ca7d",
+      "tool": "file_info",
+      "payload": {
+        "blob": "260db14e4003b108caef5688ac48dcaad8893d53",
+        "bytes": 632,
+        "sha256": "efad800db99ca64656a52ed523cf487980bf91c4abdf334380cf31faf7c40686"
+      },
+      "payloadTree": "0573f496d132c495f731e9b1da64922d930df5e5",
+      "nativeText": {
+        "blob": "c6820d0c553f98bb9906f7c90ce4cde5d62e9485",
+        "bytes": 515,
+        "sha256": "b91e23a72f8ba1e3cb34e9dd676c57e7cfd78a5ea7fea21ebf1cc7b401164ec0"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "ef85891e2d223388241490607de2e526b3343a22b6170a33fc4df2973004efb4",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "3a5c1582b1d1b935a275ff171ec80d02f0c81fab",
+        "bytes": 87842,
+        "sha256": "508f7435e43f72faeea20e68df29fd7bc3fc1f64f8768b13571379cc5cd82778"
+      },
+      "payloadTree": "a04013fcf91414bafcbb5430f28a6ac1b26683a6",
+      "nativeText": {
+        "blob": "0940eacf3521fd0f81f15d14bd69fd6c55b4836e",
+        "bytes": 87739,
+        "sha256": "d0e212004f96b74451db0f61aff1018c7aa8e35e64d8fa2c808597f51b806c77"
+      },
+      "pages": 11,
+      "completedInactive": true
+    },
+    {
+      "id": "cc01c25ddda9ced9af290ca3f961254908ef5f17a3b85ed343e3d514c8f51ff1",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "7500064bd4ce0d4745eec3fbdcf1da7615d9b235",
+        "bytes": 11637,
+        "sha256": "e1fe256ddeae1fe56066ee90757046faa0326326a7e7aa810c58579dbde0e99c"
+      },
+      "payloadTree": "72f2dccd0da4d3ebcf7b58315dc747ae92f7e425",
+      "nativeText": {
+        "blob": "bfb34e5ad171801910ac6901b92dfb3577535963",
+        "bytes": 11534,
+        "sha256": "c0c62d9e509433ef46cac1a3ac0ac5bb15c658b0aeefef8b19a93c7fa015df79"
+      },
+      "pages": 2,
+      "completedInactive": true
+    },
+    {
+      "id": "50d3ad04e1b1c08826f7d3d27b412a30eede04112776a40bf285653c88e7c695",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "751c51bb15a6a0a638b14f61202ad882478871a9",
+        "bytes": 10468,
+        "sha256": "41377fd4c73acd9ed5b221687be05c101bd0f346332d096f91eb9c40c5b24206"
+      },
+      "payloadTree": "1dde04805c689b6b2b579c75c7ed5a25aeb16707",
+      "nativeText": {
+        "blob": "28fb1ab084615e916053cd08219ca387eb66e9b2",
+        "bytes": 10365,
+        "sha256": "0612e91154e92c20889c512d82612b44b085668346e1657d9fe37305a1f7ed05"
+      },
+      "pages": 2,
+      "completedInactive": true
+    },
+    {
+      "id": "4f9046af53a3b3e742cf80c6085219b76928912a137d955c94eb3070844db912",
+      "tool": "binary_read",
+      "payload": {
+        "blob": "893b976cc4a06d5578bedbda9f08f189deb5dd2b",
+        "bytes": 20786,
+        "sha256": "2304eb4a234d188b5b7792a68682f4460dd68841aac8c79354f86bd7cf311cd8"
+      },
+      "payloadTree": "dfefe172975df9a48bb61794f9b270f08893939d",
+      "nativeText": {
+        "blob": "742172f555c5db303c1707e87729f571cde0f638",
+        "bytes": 20683,
+        "sha256": "0accf8b01107144b6fbcd96cfc77c44a0e917177ea4237e185b7461dd82d1de7"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "nativeCallInFlight": false,
+  "activeObserver": null,
+  "pending": null,
+  "paused": false,
+  "knownNativeFuturesActive": 0,
+  "metadata": [
+    {
+      "ordinal": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
+      "bytes": 73918,
+      "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7",
+      "version": "16777244:72686374:73918:1793964565564291379:1793964565564297212",
+      "full9": [
+        "16777244",
+        "72686374",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793964565564291379",
+        "1793964565564297212"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 2,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
+      "bytes": 7499,
+      "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56",
+      "version": "16777244:72686388:7499:1793964565572547394:1793964565572553103",
+      "full9": [
+        "16777244",
+        "72686388",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793964565572547394",
+        "1793964565572553103"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    },
+    {
+      "ordinal": 3,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "bytes": 15237,
+      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9",
+      "version": "16777244:72686396:15237:1793964565577342153:1793964565577348070",
+      "full9": [
+        "16777244",
+        "72686396",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793964565577342153",
+        "1793964565577348070"
+      ],
+      "regularFileTypeSource": "file_info rejects symlinks and non-regular targets; mode is permission bits"
+    }
+  ],
+  "bodyReturnedAccounting": [
+    {
+      "ordinal": 1,
+      "returnedEncodingObserved": true,
+      "bytes": 65536,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 2,
+      "returnedEncodingObserved": true,
+      "bytes": 8382,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 3,
+      "returnedEncodingObserved": true,
+      "bytes": 7499,
+      "byteCountUnknown": false
+    },
+    {
+      "ordinal": 4,
+      "returnedEncodingObserved": true,
+      "bytes": 15237,
+      "byteCountUnknown": false
+    }
+  ],
+  "bodyTotalBytes": 96654,
+  "wholeFiles": [
+    {
+      "target": "outer",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/qa/mac_current_outer_wal_r1.py",
+      "version": "16777244:72686374:73918:1793964565564291379:1793964565564297212",
+      "full9": [
+        "16777244",
+        "72686374",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "73918",
+        "1793964565564291379",
+        "1793964565564297212"
+      ],
+      "pin": {
+        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+        "bytes": 73918,
+        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+      },
+      "independentOriginalBinaryRead": true
+    },
+    {
+      "target": "candidate",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/candidate-current-manager-wal-r1.public.json",
+      "version": "16777244:72686388:7499:1793964565572547394:1793964565572553103",
+      "full9": [
+        "16777244",
+        "72686388",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "7499",
+        "1793964565572547394",
+        "1793964565572553103"
+      ],
+      "pin": {
+        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+        "bytes": 7499,
+        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+      },
+      "independentOriginalBinaryRead": true
+    },
+    {
+      "target": "receipt",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2/inert-registry-wal-4e808-result.public.json",
+      "version": "16777244:72686396:15237:1793964565577342153:1793964565577348070",
+      "full9": [
+        "16777244",
+        "72686396",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "15237",
+        "1793964565577342153",
+        "1793964565577348070"
+      ],
+      "pin": {
+        "blob": "b26fbb690d751160ebeb67e421311c787cab2623",
+        "bytes": 15237,
+        "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9"
+      },
+      "independentOriginalBinaryRead": true
+    }
+  ],
+  "allThreeMetadataFull9MatchStage": true,
+  "allFourBodyVersionAndHashesMatch": true,
+  "receiptRemainsPrefinallyOkFalse": true,
+  "readThenExecAtomicityClaim": false,
+  "runtimeSubmitted": false,
+  "SDKExecuted": false,
+  "privateInputsOpened": false,
+  "credentialsQualified": false,
+  "oldR1PartialAndAllHistoricalUnknownsUnchanged": true,
+  "laneAReleased": true,
+  "scope": "Seven fixed public read operations only; all original immutable payloads and exact files complete. No process_start or runtime/credential qualification."
+}

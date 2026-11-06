@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-native-jwt-pki-025b05a3-controls-observe-r2-published-info0",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/native_jwt_build.py"
+    }
+  }
+}

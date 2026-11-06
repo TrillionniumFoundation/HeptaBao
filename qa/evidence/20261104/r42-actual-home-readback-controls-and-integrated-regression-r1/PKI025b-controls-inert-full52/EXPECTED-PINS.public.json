@@ -1,0 +1,32 @@
+{
+  "native_jwt_build.py": {
+    "blob": "f8b36c8adccb493dfc6aa507856150ce8a6a764d",
+    "bytes": 30397,
+    "sha256": "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+  },
+  "launch_native_jwt_build.py": {
+    "blob": "419a805247448d46180890fb9cdd69c2832d4811",
+    "bytes": 38565,
+    "sha256": "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+  },
+  "jwt-test-groups.public.json": {
+    "blob": "5d563b1c7a1b7070395f6d8a03b512ddb019fae0",
+    "bytes": 19789,
+    "sha256": "35153ff5e90b582f83e4fbbb66ff5c9fb295e95153f08df152cefedecdb50869"
+  },
+  "publisher": {
+    "blob": "4410a8dd3fdd2ca7556d96b3cb9a7bbb74effe81",
+    "bytes": 5182,
+    "sha256": "1c7a650c1fcf7c909f4071341286ae6fcbbbade55cca9a550b2508bb8d238b87"
+  },
+  "carrier": {
+    "blob": "202a0beb718996add70f7cccce4482568a053ecb",
+    "bytes": 118531,
+    "sha256": "712b5ce14c6920fa35935109be44d1ca027a8d02259fbf172b783efa8ec6c08d"
+  },
+  "request": {
+    "blob": "4ef00cfaaeb93943db9aa93d7f3a864db4ec12ea",
+    "bytes": 124154,
+    "sha256": "4730410592ed61808d13341ef5dd4f22f4317ff2947c27697f258b9fea56fb07"
+  }
+}

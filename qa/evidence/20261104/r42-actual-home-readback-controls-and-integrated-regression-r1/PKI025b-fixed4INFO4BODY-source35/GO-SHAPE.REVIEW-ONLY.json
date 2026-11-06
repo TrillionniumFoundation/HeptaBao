@@ -1,0 +1,68 @@
+{
+  "authorization": "REVIEW_ONLY_NOT_GO",
+  "scope": "build_controls_fixed_four_file_info_only",
+  "original_job": "1a1b0ade81d-fc05-7220",
+  "maximum_file_info_starts": 4,
+  "binary_read_authorized": false,
+  "exact_requests": [
+    {
+      "blob": "78c9767df0ed826a7bab3d868787f33281960da6",
+      "bytes": 284,
+      "sha256": "b3c0790bc7e3a4df7715e3e6fc2f1c8519e4c76b89d2dcf88ca2960b8a7f61a3"
+    },
+    {
+      "blob": "0f0487c4d2e64d6474f0c321a4f56fc4c800d00d",
+      "bytes": 291,
+      "sha256": "33f596d548fcab8f1c1eae1c855f04cbe38e45eb6f6ff8febbb0bee57a3b3779"
+    },
+    {
+      "blob": "3cedb52ffcacd7820b98d9c80a022bfcb0e2aff5",
+      "bytes": 292,
+      "sha256": "81da20525aa4e777753bc5c4b0ad5a72f1efde628787d4cc55b3905e705c3905"
+    },
+    {
+      "blob": "55b50cccf3fa7c3948a04ae310bd9107639c56b6",
+      "bytes": 295,
+      "sha256": "d494099f252df35e1daf90e03505095d9e1a2cdf7aed1fcd957b584b5faf6751"
+    }
+  ],
+  "conditional_body_authorization": {
+    "authorization": "REVIEW_ONLY_NOT_GO",
+    "scope": "build_controls_fixed_four_binary_reads_only",
+    "maximum_binary_read_starts": 4,
+    "immutable_page_bytes": 16384,
+    "maximum_total_body_bytes": 90605,
+    "deriver": {
+      "blob": "86be8f6bf5b498bdf6ca811e41345de36ec87d6b",
+      "bytes": 8101,
+      "sha256": "a698ae5dd323997c67ff63d4dc08755d1c010d9308522ab5004ca3974507651b"
+    },
+    "journal_template": {
+      "blob": "2f3cce0d06d30978b28d36e39936f8125a2f977f",
+      "bytes": 32519,
+      "sha256": "79cb54f0d8f661a445493bd20b8907ab80086d09ca58626aa84e7eda8a8761b8"
+    },
+    "exact_templates": [
+      {
+        "blob": "80a2bb969a1e900632b0c353f1f25d51ac185da6",
+        "bytes": 359,
+        "sha256": "d5e2d625af69662c7bd4821c87271fd3e8ae559c7118aee90da3d6142ab48d4a"
+      },
+      {
+        "blob": "be6adb2545856ef4d79815398997f851ec6753f2",
+        "bytes": 366,
+        "sha256": "6da8004c00f48beb173f5820b19642c3d551ed5ca8bb4066e51464efc43c16b1"
+      },
+      {
+        "blob": "64128cff9cbf613bf3c974119e583c22531327c9",
+        "bytes": 367,
+        "sha256": "bf39e9259fdc787d1f6f4215255a6e7317d072a97ec5a42e3c69d47291494ee0"
+      },
+      {
+        "blob": "108256126445a7a0a384c611f4b1871fd8a11fc0",
+        "bytes": 369,
+        "sha256": "d3204a7a76ad55e140b906233036cb4515883748627ac859ac2847071477194b"
+      }
+    ]
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao.mac-current-home-r2-actual-bound-runtime-source.v1",
+  "status": "SOURCE_ONLY_RUNTIME_NOT_SUBMITTED",
+  "sourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+  "actualInertQualification": {
+    "blob": "00900615411da59bc3d0997bb579a007f832822a",
+    "bytes": 14593,
+    "sha256": "abc4baffb90712b8af7e6f9a43aab7fb15f4dc5f8d2b24b5e46431457085b214"
+  },
+  "actualReadbackMinimum": "349641321f0f33e7f91570dcaeb6ee27882de3c9",
+  "actualReadbackRelease": {
+    "blob": "7f4363a4434e4c836b4853854a86e0630e585302",
+    "bytes": 10534,
+    "sha256": "fa211b20f3442f6dc29eeb365a7920982da218319b29c014ec469c623b20ef19"
+  },
+  "unchangedDeriver": {
+    "blob": "47c30a8833171ecc52679a25a913c71ca7a35eac",
+    "bytes": 7131,
+    "sha256": "67b551c147ccfd0fa42d3e37da1c547a94308e03da3a03d3f4fce9565b9a4dbe"
+  },
+  "derivationInputPins": {
+    "authority": {
+      "blob": "dacac533c126bcb5aed0d6b93a2baad9776f6b01",
+      "bytes": 733,
+      "sha256": "7f7513f587d43fecea9b3402d07d2e2e087296a066ce67d69718f5d906e4f077"
+    },
+    "stdout": {
+      "blob": "42e9acab1cfb93c454893bc941b6e01b4b1d87a3",
+      "bytes": 20680,
+      "sha256": "ab2f549764f37c9c39acf305e8d3badb8771fa72c1b72fc180b8bef9cfae2c79"
+    },
+    "receipt": {
+      "blob": "b26fbb690d751160ebeb67e421311c787cab2623",
+      "bytes": 15237,
+      "sha256": "9ccd1a9929f1a19f0b9fbdba4ec6de5d96e849b5454b1428f542374da93848f9"
+    }
+  },
+  "request": {
+    "blob": "0b9abcf80bc8bd27ced95abfb66bee3ebf837b32",
+    "bytes": 8207,
+    "sha256": "a4fc7391b4b280b97ba06a0e71fd4951b1e282d3e5d89ae42c7519ad6505bbea"
+  },
+  "actualHomeBinding": {
+    "blob": "d968e0ade288f62cd8294dd9b097e3c50f96cdd0",
+    "bytes": 2029,
+    "sha256": "521e45f51f5b780b4951a0b6c84ec3c8bba2899159f29115951c05c1e9da3cf7"
+  },
+  "journal": {
+    "blob": "7c17ea14858c4801b205d8c91aa250b250558b9b",
+    "bytes": 19052,
+    "sha256": "2e501ef98b5d2c29acfccbd21128f18da2a8bfa49e59429f52591986c384f6f9"
+  },
+  "beforeJournal": {
+    "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+    "bytes": 19050,
+    "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+  },
+  "strictForwardHunks": 2,
+  "strictReverseHunks": 2,
+  "journalChangedLiteralsOnly": [
+    "GF_SLOT",
+    "GF_REQUEST exact request pin",
+    "original observer key prefix"
+  ],
+  "newSlot": "owner_authbus_current_home_runtime_gitfirst_r2",
+  "observerKeyPrefix": "heptabao-mac-current-home-launch-runtime-c67d6fe6-",
+  "originalBusinessPreserved": {
+    "fiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "fullOriginalConfigAndProviderModelFlags": true,
+    "originalLoaderSelectorAndRegistryInstanceGuards": true,
+    "source22AndSevenProofPreflights": true,
+    "privateCaptureAndBusinessDataStayOnT5": true,
+    "publicLaunchControlsAndStdioStayAtExactHome": true,
+    "originalAppRoleTLSKVPolicyRenewRevokeRestartRollback": true,
+    "renewPreAndPostLookup": true,
+    "renewBodyEmptyObject": true,
+    "noSleepOrRetry": true,
+    "workerSeconds": 900,
+    "controllerSeconds": 1080,
+    "currentCaptureSeconds": 45,
+    "registryQuerySeconds": 3,
+    "registryWalCapBytes": 5969912,
+    "rowCapBytes": 1048576,
+    "aggregateCapBytes": 8388608
+  },
+  "observationMechanism": {
+    "sameJournalNativeFunctions": true,
+    "exactExternalIntentBeforeOneStart": true,
+    "SDKWholeBeforeParse": true,
+    "originalJobAndOperationsOnly": true,
+    "processReadLimit": 16384,
+    "immutablePageLimit": 8192,
+    "maximumImmutablePayload": 1048576,
+    "oneCallOneFuture": true,
+    "workerStdoutCapBytes": 2097152,
+    "rootExactGOStillRequired": true
+  },
+  "limits": {
+    "stagingAndReadbackDoNotProveSelectedOwner": true,
+    "credentialsNotQualified": true,
+    "productionCutover": false,
+    "legacyCleanup": false,
+    "allHistoricalUnknownsUnchanged": true,
+    "noReadThenExecAtomicityClaim": true
+  }
+}

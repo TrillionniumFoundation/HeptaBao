@@ -1,0 +1,27 @@
+function review025bInfoStatusGitRecovery(p,originalGO,h){
+ const f=p.raw,plan=JSON.parse(f["PLAN.public.json"]),s=JSON.parse(f["state.paused.original.json"]),r=JSON.parse(f["readonly-reconcile.result.json"]),c=s.calls[plan.originalCall],q=JSON.parse(f["status0.request.original.json"]);
+ const rows=[],ck=(id,v)=>{rows.push({id,pass:!!v});if(!v)throw Error(id);},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),pin=h.gitBlobMeta;
+ ck("whole21_original_recovery_packet",p.audit.whole&&p.audit.files===21&&p.audit.tree==="7d41c7d6372d8c426d38016c84525d42059a45a5");
+ ck("exact_paused_original_state",same(pin(f["state.paused.original.json"]),plan.state)&&s.paused===true&&!s.nativeCallInFlight&&s.pending===plan.originalCall&&c.kind==="operation_status"&&c.called===false&&c.phase==="arming"&&c.armed===undefined);
+ ck("same_explicit_fixed4_GO",s.controlsInfoGO.raw===originalGO.text&&same(s.controlsInfoGO.pin,pin(originalGO.text)));
+ const ackSDK=JSON.parse(f["receipt-info-ACK.original.sdk.json"]),ack=JSON.parse(f["receipt-info-ACK.original.native.json"]);
+ ck("original_info_ACK_whole_and_unique",ackSDK.isError===false&&ackSDK.content.length===1&&ackSDK.content[0].text===f["receipt-info-ACK.original.native.json"]&&ack.operation_id===plan.originalOperation&&ack.tool_name==="file_info"&&ack.reused===false&&ack.automatic_retry===false);
+ ck("receipt_info_original_future_still_unclosed",s.activeObserver.id===plan.originalOperation&&s.activeObserver.tool==="file_info"&&s.activeObserver.futureClosed===false&&s.activeObserver.nextPageOffset===0&&s.activeObserver.pages.length===0&&s.publishedInfos.length===3&&s.publishedInfoStarted.every(x=>x===true));
+ ck("exact_original_status_request",same(q,{operation_id:plan.originalOperation})&&c.requestRaw===f["status0.request.original.json"]&&same(pin(c.requestRaw),plan.originalRequest));
+ const create=JSON.parse(f["git-create.original.sdk.json"]),err=JSON.parse(f["git-whole-armed.json.original.sdk.json"]);
+ ck("original_CREATE_positive_ACK",create.isError===false&&create.structuredContent.sha===plan.expectedTree);
+ ck("Git_GET_original_UNKNOWN_preserved",err.isError===true&&err.structuredContent.error_code==="UNKNOWN"&&err.structuredContent.error.includes("RemoteProtocolError")&&c.archiveFailure==="Error: whole_read_incomplete_no_mutation_retry"&&s.outerFailure.message==="whole_read_incomplete_no_mutation_retry");
+ for(const k of ["git-tree.original.sdk.json","readonly-tree.sdk.json"]){const sdk=JSON.parse(f[k]),t=JSON.parse(sdk.structuredContent.content),a=h.gitTreeAudit(t);ck(k+"_same_original_tree",sdk.isError===false&&a.root_sha===plan.expectedTree&&a.leaf_count===3);}
+ ck("reconciled_original_3_files_only",r.whole===true&&r.recoveryReadOnly===true&&!r.mutationRepeated&&!r.nativeCalled&&r.count===3&&r.bytes===1834&&r.tree===plan.expectedTree&&h.immediateTreeSha(r.entries.map(x=>({path:x.path,mode:"100644",type:"blob",sha:x.blob})))===plan.expectedTree);
+ for(const x of r.entries){const raw=f["status0."+x.path.replace(".json","")+".original.json"],sdk=JSON.parse(f["readonly-"+x.path+".sdk.json"]);ck("same_whole_"+x.path,sdk.isError===false&&sdk.structuredContent.content===raw&&same(pin(raw),{blob:x.blob,bytes:x.bytes,sha256:x.sha256}));}
+ for(const k of ["armed","intent"]){const x=JSON.parse(f["status0."+k+".original.json"]);ck(k+"_one_original_status",x.callKey===plan.originalCall&&x.kind==="operation_status"&&same(x.request,plan.originalRequest)&&same(x.rootGo,pin(originalGO.text))&&x.originalOperation===plan.originalOperation&&x.maximumNativeCalls===1&&x.nativeNotYetCalled===true);}
+ ck("frozen_local_restore_source",same(pin(f["restore.source.js"]),plan.restoreSource)&&plan.restoreSource.blob==="6d39f1fee3697dc506e72157c74ac9d6a27b7a43");
+ const dummy={authorization:"GO",scope:"025b_receipt_info3_status_git_arm_recovery_only",slot:plan.slot,callKey:plan.originalCall,originalOperation:plan.originalOperation,expectedTree:plan.expectedTree,originalRequest:plan.originalRequest};
+ const gr=JSON.stringify(dummy,null,2)+"\n",m=new Map(),ss=JSON.parse(f["state.paused.original.json"]),prefix="pure_git_once:gfa-"+plan.originalCall;
+ m.set(plan.slot,ss);m.set(prefix,{expectedTree:plan.expectedTree,texts:Object.fromEntries(r.entries.map(x=>[x.path,f["status0."+x.path.replace(".json","")+".original.json"]]))});m.set(prefix+":recovery_complete",r);
+ const fn=new Function("load","store",f["restore.source.js"]+"\nreturn restore025bReceiptInfoStatusArm;")(k=>m.get(k),(k,v)=>m.set(k,v)),res=fn({goRaw:gr,goPin:pin(gr),goWholeReadback:true},{gitBlobMeta:pin});
+ ck("pure_restore_exact_known_arm",res.restored===true&&res.called===false&&res.phase==="armed_whole"&&res.NativeCalls===0&&same(ss.calls[plan.originalCall].armed,r)&&!ss.paused);
+ delete ss.calls[plan.originalCall].armed;ss.calls[plan.originalCall].phase="arming";ss.paused=true;delete ss.receiptInfoStatusGitArmRecovery;
+ ck("all_original_state_and_errors_preserved",same(ss,s));
+ return {schema:"heptabao.root-review.receipt-info-status-Git-arm-recovery.r1",pass:true,checks:rows.length,rows,packet:p.audit,originalFixed4GO:pin(originalGO.text),originalPausedState:plan.state,restoreSource:plan.restoreSource,originalOperation:plan.originalOperation,callKey:plan.originalCall,request:plan.originalRequest,expectedTree:plan.expectedTree,originalStatusInvoked:false,receiptInfoFutureClosed:false,NativeCalls:0,onlyExistingArmAttached:true,fullReplacement:false};
+}

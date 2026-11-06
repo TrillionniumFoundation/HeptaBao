@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.formatted23.authorized-original-arm-attachment.r1",
+  "rootGO": {
+    "blob": "cfe99cdee399d804d29acc17b6c83b0495774f89",
+    "bytes": 4073,
+    "sha256": "ea672ce90ece5f7f6a69f6f6b2c8c33b006fb3aa3bf210a004b4f64a753f12f2"
+  },
+  "originalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "pendingKey": "sf23-r1-f07-b01-p0",
+  "onlyFields": [
+    "calls[pending].armed",
+    "calls[pending].phase",
+    "paused"
+  ],
+  "originalRequest": {
+    "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+    "bytes": 122,
+    "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57"
+  },
+  "originalArm": {
+    "tree": "2c9943bd00cb04e94b6b357739b3c7efea35faba",
+    "entries": [
+      {
+        "path": "armed.json",
+        "blob": "3b1c332f1bd58e838266c625554f3bd0d026ac43",
+        "bytes": 909,
+        "sha256": "12c05bbaad6a276d46a5e352ff37131caa264f7f7eb61c330876641bc6cf80e7",
+        "whole": true
+      },
+      {
+        "path": "intent.json",
+        "blob": "5e4aa8a85e4b5b8abf01f287e2f8b0a11971ee2e",
+        "bytes": 772,
+        "sha256": "6974d241e0fe43b5deaa64866d362bd0fa9a99bb9fc57e22e1db9586435f6727",
+        "whole": true
+      },
+      {
+        "path": "request.json",
+        "blob": "2c7017d653f759a89c1a99340b3aae0d8f1ae28b",
+        "bytes": 122,
+        "sha256": "932e5d98e10ca779c82e9bf2bedfd7b69a23310d0e66b305d4c44c88f2063a57",
+        "whole": true
+      }
+    ],
+    "count": 3,
+    "bytes": 1803,
+    "whole": true,
+    "recoveryReadOnly": true,
+    "mutationRepeated": false,
+    "nativeCalled": false
+  },
+  "before": {
+    "blob": "d9c26564386efddf87fc4b5a2f0613ae12372141",
+    "bytes": 532487,
+    "sha256": "a621b027b615379b23f35ac39ddfa4192c6f2db8feb6471c143626fb59c1b18e"
+  },
+  "after": {
+    "blob": "4c9719f3bd4e619ea7ab33ba135dc5492fe20a51",
+    "bytes": 533573,
+    "sha256": "525d73dbf80ada84b34527263dbe9cf63c31011458f12ecce3339122129ca6eb"
+  },
+  "sourceUnchanged": true,
+  "NativeCallsDuringRepair": 0,
+  "oldFailuresPreserved": true
+}

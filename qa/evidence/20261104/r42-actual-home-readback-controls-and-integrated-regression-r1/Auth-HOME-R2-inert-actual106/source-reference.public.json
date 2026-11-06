@@ -1,0 +1,40 @@
+{
+  "source": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+  "go": {
+    "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+    "bytes": 6762,
+    "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+  },
+  "request": {
+    "blob": "2cbe610fa2f2264d1eb137d46421069db38655a5",
+    "bytes": 875394,
+    "sha256": "cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"
+  },
+  "publisher": {
+    "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+    "bytes": 36514,
+    "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+  },
+  "journal": {
+    "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+    "bytes": 19050,
+    "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+  },
+  "laneGrant": {
+    "rootExplicitGrantReceived": true,
+    "releaseBlob": "2ebe4fc0d7c205a4f427f84af33996391a832daa",
+    "releaseBytes": 5362,
+    "releaseSha256": "6ed9e8008562fab375306c3981f81de832c1e7f2b60b04d1a387b28fbd3ad960",
+    "originalGO": "d572d75506b56c1e67f9f804462d621e915d67b1",
+    "originalArm": "522dece629c34104262b76e2d6d0a7b60eeeddad",
+    "callKey": "home-launch-r2-inert-start",
+    "ACallLane": 1,
+    "CActiveCalls": 0,
+    "CActiveFutures": 0,
+    "BMaximumLanes": 1,
+    "rootNativeCalls": 0
+  },
+  "historyUnchanged": true,
+  "rootSource80AndAuthor182PreviouslyQualified": true,
+  "actualChecksAreDataOnly": true
+}

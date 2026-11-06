@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root.Native-lane-grant.r1",
+  "GO": {
+    "blob": "d572d75506b56c1e67f9f804462d621e915d67b1",
+    "bytes": 6762,
+    "sha256": "4a580a12dc4b26c74182cb529dd823584b38346be8b5b35d4d5b1229483c4bc8"
+  },
+  "to": "A",
+  "maximumNativeCalls": 1,
+  "maximumOwnedFutures": 1,
+  "globalMaximum": 2,
+  "COriginalBodyClosedRelease": {
+    "blob": "2ebe4fc0d7c205a4f427f84af33996391a832daa",
+    "bytes": 5362,
+    "sha256": "6ed9e8008562fab375306c3981f81de832c1e7f2b60b04d1a387b28fbd3ad960"
+  },
+  "CNativeLane": 0,
+  "BMaximumLane": 1,
+  "scope": "Only the already armed original R2 inert request and its original job/observers."
+}

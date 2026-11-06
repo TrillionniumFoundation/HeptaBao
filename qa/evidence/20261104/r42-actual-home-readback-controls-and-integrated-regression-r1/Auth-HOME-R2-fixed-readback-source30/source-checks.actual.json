@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.home-r2-fixed-readback-source-checks.v1",
+  "passed": true,
+  "checkCount": 20,
+  "checks": [
+    {
+      "name": "journal parses without invocation",
+      "passed": true
+    },
+    {
+      "name": "pure deriver parses without invocation",
+      "passed": true
+    },
+    {
+      "name": "exact 3 forward hunks strict",
+      "passed": true
+    },
+    {
+      "name": "exact 3 reverse hunks strict",
+      "passed": true
+    },
+    {
+      "name": "13 old journal definitions 10 exact unchanged",
+      "passed": true
+    },
+    {
+      "name": "only 3 finite pure functions added",
+      "passed": true
+    },
+    {
+      "name": "new slot remains uninitialized",
+      "passed": true
+    },
+    {
+      "name": "old final context exact byte unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual root qualification bound",
+      "passed": true
+    },
+    {
+      "name": "actual receipt only final stdout pin",
+      "passed": true
+    },
+    {
+      "name": "3 exact metadata closed tool args only",
+      "passed": true
+    },
+    {
+      "name": "exact total and chunks",
+      "passed": true
+    },
+    {
+      "name": "synthetic metadata derives exactly 4 fixed bodies",
+      "passed": true
+    },
+    {
+      "name": "body versions come exactly from supplied metadata",
+      "passed": true
+    },
+    {
+      "name": "synthetic drift SHA refuses",
+      "passed": true
+    },
+    {
+      "name": "synthetic drift full9 version refuses",
+      "passed": true
+    },
+    {
+      "name": "synthetic receipt multi-link refuses",
+      "passed": true
+    },
+    {
+      "name": "synthetic body stale version refuses",
+      "passed": true
+    },
+    {
+      "name": "synthetic chunks reconstruct exact frozen outer",
+      "passed": true
+    },
+    {
+      "name": "unchanged original runtime deriver",
+      "passed": true
+    }
+  ],
+  "unchangedOldFunctions": [
+    "gfNeed",
+    "gfMetaEquals",
+    "gfState",
+    "gfSave",
+    "gfIntegerText",
+    "gfPrepareOne",
+    "gfInvokePreparedOnce",
+    "gfAcceptArchivedSDK",
+    "gfReconcileSameGitArchiveReadOnly",
+    "gfRun"
+  ],
+  "changedOldFunctions": [
+    "gfInitializeOnlyAfterRootGO",
+    "gfValidateRequest",
+    "gfCloseOriginalObserver"
+  ],
+  "addedPureFunctions": [
+    "validateFixedReadbackInfo",
+    "deriveFixedReadbackBodies",
+    "validateFixedReadbackBody"
+  ],
+  "sourceOnly": true,
+  "fixtureMetadataNotHostObservation": true,
+  "NativeCalls": 0,
+  "SDKExecuted": false,
+  "newSlotInitialized": false,
+  "runtimeGO": false
+}

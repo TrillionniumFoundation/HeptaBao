@@ -1,0 +1,9 @@
+{
+  "phase": "pure SOURCE plan construction before any request or source was saved",
+  "kind": "SyntaxError",
+  "originalToolText": "Script error:\nSyntaxError: Unexpected token ':'",
+  "exactFaultFragment": "sourcePin:i===0?c.sourcePins[\"mac_current_outer_wal_r1.py\"]:i===1:c.documentPins[name]:null",
+  "correction": "sourcePin:i===0?c.sourcePins[\"mac_current_outer_wal_r1.py\"]:i===1?c.documentPins[name]:null",
+  "NativeCalls": 0,
+  "originalStageUnchanged": true
+}

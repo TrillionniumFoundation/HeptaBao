@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42-pki025b-ready-controls-GO",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "e1450da7f349b70269b69be4d40befd8109f226f",
+      "bytes": 9414,
+      "sha256": "819df193168a2fb1e8a69d8af1b573ec7fdfd4550293c3066beeec0c0d454e5f"
+    },
+    {
+      "name": "root-ready-source-review.public.json",
+      "blob": "4ead3302bd7f5829910b7dc49a6b0a4b7497e6ea",
+      "bytes": 4493,
+      "sha256": "098a793c09c13e0be1dc207b7160f89d78cbc37b590111238cd0ebe0ed48b2db"
+    },
+    {
+      "name": "root-ready-source-verifier.js",
+      "blob": "0d67f53e4a40b9e436a25440d36f559453bab2f7",
+      "bytes": 6652,
+      "sha256": "3d1ac87eee5da1f5c693b771143a351005e905cee382b02d4f752b0b7a81db1f"
+    },
+    {
+      "name": "root-prebound-review.public.json",
+      "blob": "849fffaf727c4259b4138f51640cef0cb96f43d2",
+      "bytes": 3431,
+      "sha256": "4c3c1f9015f382f61ee27576dc54d6aa8b4cb194059815df557689c73e44c5d8"
+    },
+    {
+      "name": "root-prebound-verifier.js",
+      "blob": "7ab1f56d07cdc285702236c0a834c5b50a54ed21",
+      "bytes": 3333,
+      "sha256": "d2491be0b2a20ea872233eaaed863835ad9366091c6ae404c449dbcf214a5611"
+    },
+    {
+      "name": "author36-root-reproduced.public.json",
+      "blob": "b2b080d68e82aed33cd2b6920059be9a90355d41",
+      "bytes": 3534,
+      "sha256": "1ac14136c7050b92643d7388715b970a20676786ccd2504a0ffcbfbbd6011859"
+    },
+    {
+      "name": "A-original-lane-release.public.json",
+      "blob": "31a32eea228334fe9fe3d101ef572852f104626d",
+      "bytes": 5258,
+      "sha256": "dce0ed7acf012e255a608cf0fc67bff4c62e75abace1bade078df17240a76f32"
+    },
+    {
+      "name": "source-packet-reference.public.json",
+      "blob": "70b2c783d6da2e5acd533d5264c8851fd05cb933",
+      "bytes": 797,
+      "sha256": "03aa866bc0a4ce4561ca52b2e9120b433a4a52b6ce29ce39b9017c7c014c0bab"
+    }
+  ],
+  "expected_data_tree": "6d8825d25e6931a6a30594c9f88216b72a95ea0f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

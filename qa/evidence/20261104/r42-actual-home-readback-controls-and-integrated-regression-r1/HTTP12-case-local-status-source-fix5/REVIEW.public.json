@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.http-pki12-local-status-source-correction.v1",
+  "status": "SOURCE_ONLY_UNCOMPILED_UNEXECUTED",
+  "before": {
+    "blob": "6a40dccac98b8b888d1d740156334931d27e2c58",
+    "bytes": 13412,
+    "sha256": "228ff946c0838fcb9be0c64d6b0d9f0e0487d2002f58a15a04a39ef6408c7495"
+  },
+  "after": {
+    "blob": "c928d3750a3cdb05d3702f269b31026136e7a496",
+    "bytes": 13664,
+    "sha256": "1952270dba831b0e21e2291df8178e9557e7ff76fc83a2e8dc70cbf46eb7d4e9"
+  },
+  "diff": {
+    "blob": "cdaf159596321ea2f52b7fee5c445d61042edc6a",
+    "bytes": 1071,
+    "sha256": "12dfbc481931adf9f1b42387212df4d997fe05cdfcb1a736ae490346eafa9430"
+  },
+  "hunks": 2,
+  "rootFinding": "A case failing before it appends a new request record must not borrow the previous case status.",
+  "change": "Capture records length immediately before this case calls RawStatusCalls.call. On BaoError, consider only appended rows with this case_id; exactly one gives its actual status, zero or multiple gives null.",
+  "boundaries": [
+    "Original suite.pki_cases and the immutable ACL23 matrix remain byte-identical.",
+    "No new request/retry/normalization/default policy or runtime fixture.",
+    "The original caller restoration finally and private HTTP owner remain unchanged.",
+    "The write-opt-in check is still before request registration; no new observed status is fabricated if it fails.",
+    "Both supplied sources remain uncompiled; this is a narrow correction to an unexecuted draft."
+  ],
+  "runtimeCasesStillRequired": [
+    "Previous case has status; current validation/seconds_left fails before append -> null.",
+    "New row belongs to another case -> null.",
+    "Exactly one new matching row -> that row status, including null.",
+    "Two matching new rows -> null rather than choosing an ambiguous status."
+  ],
+  "acl23StaticRequestUpperBound": {
+    "setup": 26,
+    "perCase": 34,
+    "cases": 23,
+    "maxConfigResets": 3,
+    "perConfigReset": 15,
+    "total": 853,
+    "excludes": [
+      "fixture",
+      "cleanup"
+    ],
+    "sourceDerivedNotObserved": true
+  },
+  "NativeCalls": 0,
+  "PythonExecuted": false
+}

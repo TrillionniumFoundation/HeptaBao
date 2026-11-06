@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r42_checkpoint_root_current_v1",
+  "records": [
+    {
+      "name": "README.md",
+      "blob": "eeb1cb7c09d2947506844f577fcf01fa936cf693",
+      "bytes": 9553,
+      "sha256": "d83f7f600e7978291458f0438ef115ee32a4fc230456afb1cff7a62906331461"
+    },
+    {
+      "name": "STATE.public.json",
+      "blob": "992eaf33f8bdf83a9f1225735ae1733025cce1df",
+      "bytes": 21779,
+      "sha256": "1cd3f6d277987241e8d798920e8f387d1a9c19659153e05ea05c8b9b423b0290"
+    },
+    {
+      "name": "EVIDENCE-INDEX.public.json",
+      "blob": "ba217d59fa156d938e888205b4ed70656c459ef7",
+      "bytes": 236194,
+      "sha256": "961bfa31133dd7bb99c894ef91571a7ee66198da5c7a509c5f4125487cfed72d"
+    },
+    {
+      "name": "root-index-qualification.public.json",
+      "blob": "4b036feab4b6a373769459fe07d876ee84abddf2",
+      "bytes": 9588,
+      "sha256": "c2849a6597d77d20b0f6846bf89587f174611a3b90e6f07bbc3a7c277c15f906"
+    },
+    {
+      "name": "root-index-verifier.js",
+      "blob": "cc293e6c496cc20bdecec9707b69d51d13d5abf2",
+      "bytes": 1125,
+      "sha256": "453e3f7a68083c17f0d8d5a64f66f5cdb2af3785dcd65f249099afa3035cc332"
+    },
+    {
+      "name": "root-pure-checker-history.public.json",
+      "blob": "8378dee6605c888206344385f8a5b7385f9f0718",
+      "bytes": 196,
+      "sha256": "172a7eb48608bc3db30a839c2baef4542a1dae45a187ef07d50eb4843b6bb09a"
+    }
+  ],
+  "expected_data_tree": "ad604adeb6442790f327becbc576313e5fc1b522",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

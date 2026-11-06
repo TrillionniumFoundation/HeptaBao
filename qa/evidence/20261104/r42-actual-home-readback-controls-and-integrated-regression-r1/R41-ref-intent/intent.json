@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.r41-ref-intent.v1",
+  "expectedOld": "515bfe24879798f0117859c11492112bae9c3cee",
+  "newCommit": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+  "fastForwardOnly": true,
+  "maximumUpdates": 1,
+  "called": false,
+  "unknownAcknowledgmentNoReplay": true
+}

@@ -1,0 +1,47 @@
+{
+  "slot": "jwt_pki_025b05a3_build_controls_inert_gitfirst_r2",
+  "job": "1a1b0ade81d-fc05-7220",
+  "callsTotal": 7,
+  "completedObservers": [
+    {
+      "id": "4edb38378654d826ed10313b7defc623e5cd18154a4030de8dee724ad2c5118a",
+      "tool": "process_status",
+      "payload": {
+        "blob": "5925fb2fe2bb7207729523b8b7429a61b593843d",
+        "bytes": 910,
+        "sha256": "f6a6c78ca36696ff7bbe1b7f77e0c038c89764fccbd81257faf08d336a945e93"
+      },
+      "payloadTree": "67ebebce4b68e5b60115097ae1e3c77704b21544",
+      "nativeText": {
+        "blob": "15690bdf2a0078dcce3bb2d76863cf353d76b2dc",
+        "bytes": 731,
+        "sha256": "97cfc86ef059ff751ae6757738144695ae5015175d305678fa72d3c44057a277"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b9383d8a659cfe3ed84c7d1baf6cf9171d442c7ef812b88c2878280826d74786",
+      "tool": "process_read",
+      "payload": {
+        "blob": "5c0c0ddea1b314f3b412d4c665c945dce66e192b",
+        "bytes": 5073,
+        "sha256": "c9aebe1055fe567be520275a09fd9c51b8cec8715e44290ece01a70ee01fb388"
+      },
+      "payloadTree": "689c595da5b8a5d0eeb2d7b5da4c40e46a9cebbe",
+      "nativeText": {
+        "blob": "4142bf162a672bf0553a6a17815442ff09f1bd9c",
+        "bytes": 4748,
+        "sha256": "843b12b77805de709e2aa8704f4f9bd23b05ba9b19c43f8d673314eb21e8e97c"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "controlsFilesObserved": false,
+  "buildStarted": false
+}

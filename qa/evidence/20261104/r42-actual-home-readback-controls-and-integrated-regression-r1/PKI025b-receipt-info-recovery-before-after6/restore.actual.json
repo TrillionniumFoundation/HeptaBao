@@ -1,0 +1,15 @@
+{
+  "restored": true,
+  "pending": "jwt-pki-025b05a3-controls-r2-published-info3-status0",
+  "called": false,
+  "phase": "armed_whole",
+  "originalFailurePreserved": true,
+  "originalState": {
+    "blob": "bf02278326d0499eed9acc0ccf43aae7689348ff",
+    "bytes": 192323,
+    "sha256": "d9546451d179601caa63cabf69dbf17795002ec2d894a2a66713c853426fa735"
+  },
+  "originalOperation": "9f565be95050449328b40b589e82270d644f88dc95a192de202c8de1f7e57a5a",
+  "NativeCalls": 0,
+  "nextAction": "invoke_same_original_status_once"
+}

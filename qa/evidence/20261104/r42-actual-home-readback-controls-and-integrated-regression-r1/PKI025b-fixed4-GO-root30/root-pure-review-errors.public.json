@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root-pure-review-errors.r1",
+  "first": "Error: expected_receipt_reproduced_not_host_body",
+  "second": "Error: body_template_0",
+  "archiveDependency": {
+    "error": "ReferenceError: immediateTreeSha is not defined",
+    "beforeAnyGitMutation": true,
+    "resolved": "Included the existing tree helper dependency."
+  },
+  "resolved": true,
+  "NativeCalls": 0
+}

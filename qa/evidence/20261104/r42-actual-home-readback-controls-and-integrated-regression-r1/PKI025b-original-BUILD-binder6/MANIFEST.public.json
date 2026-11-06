@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.source-only-packet.v1",
+  "files": [
+    {
+      "path": "build-binder.before.js",
+      "blob": "98c4c9f9d9457e1cf3a483ba54df6c5f17012f4f",
+      "bytes": 4322,
+      "sha256": "5eebfacb2aad1b2db66e802f22279c7b9541e80602cebef386ffa51f9280c1d5"
+    },
+    {
+      "path": "build-binder.025b.js",
+      "blob": "39cddccd158ae9072c9dc049d08ef6de14877a3a",
+      "bytes": 4322,
+      "sha256": "9f39cf6de8a09318ccac864db0bde084e0c0ff382fb9477a66c1c4acbc02be1b"
+    },
+    {
+      "path": "build-binder.strict.diff",
+      "blob": "2b9fd9a2ed08c40ae84734ee812c55df5d386e04",
+      "bytes": 5288,
+      "sha256": "4216dfb666cfeca78c6abdf96c0bd1048374a3206dcd31538a4acd75dca52342"
+    },
+    {
+      "path": "BUILD.UNBOUND.template.json",
+      "blob": "2de9bd7eaa50ee2f6f1dcd63e48f49660ad83d64",
+      "bytes": 3082,
+      "sha256": "0e99a7ae2e23193d4a1dd80d11d989b46a66a6ed738e30ccb9fb41361ae02392"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "164b0079afde8108678761a40591e35730babee9",
+      "bytes": 4869,
+      "sha256": "1510ad47fd0c6e85c65973d0b725555db466147901a8eb3818a7165b58d0177f"
+    }
+  ]
+}

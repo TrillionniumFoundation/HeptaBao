@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"node_id\":\"C_kwDOUGncwNoAKDNlOWFlMzVhNWE2MzcxYmQxODBmM2I5MzI0OGUwYzRkNGVjZjUwMmI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T11:30:34Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T11:30:34Z\"},\"tree\":{\"sha\":\"097f787317ac775723798b9219c97e0f4ab8b448\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/097f787317ac775723798b9219c97e0f4ab8b448\"},\"message\":\"docs(qa): preserve R41 compile fix, HOME identity and snapshot evidence\\n\\nPreserve the original compiler failures and the separately frozen minimal two-None fix, complete Mac partial-HOME observations and the fresh R2 source, and the full snapshot formatter report with its bounded output-read scope. All original unknowns remain distinct from current observations. Record 70 whole evidence packets; no full replacement, production cutover or legacy cleanup is claimed.\",\"parents\":[{\"sha\":\"515bfe24879798f0117859c11492112bae9c3cee\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/515bfe24879798f0117859c11492112bae9c3cee\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+    "display_title": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+    "structuredContent": {
+      "title": "3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b",
+      "content": "{\"sha\":\"3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"node_id\":\"C_kwDOUGncwNoAKDNlOWFlMzVhNWE2MzcxYmQxODBmM2I5MzI0OGUwYzRkNGVjZjUwMmI\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T11:30:34Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-06T11:30:34Z\"},\"tree\":{\"sha\":\"097f787317ac775723798b9219c97e0f4ab8b448\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/097f787317ac775723798b9219c97e0f4ab8b448\"},\"message\":\"docs(qa): preserve R41 compile fix, HOME identity and snapshot evidence\\n\\nPreserve the original compiler failures and the separately frozen minimal two-None fix, complete Mac partial-HOME observations and the fresh R2 source, and the full snapshot formatter report with its bounded output-read scope. All original unknowns remain distinct from current observations. Record 70 whole evidence packets; no full replacement, production cutover or legacy cleanup is claimed.\",\"parents\":[{\"sha\":\"515bfe24879798f0117859c11492112bae9c3cee\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/515bfe24879798f0117859c11492112bae9c3cee\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/515bfe24879798f0117859c11492112bae9c3cee\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/3e9ae35a5a6371bd180f3b93248e0c4d4ecf502b"
+    }
+  },
+  "isError": false
+}

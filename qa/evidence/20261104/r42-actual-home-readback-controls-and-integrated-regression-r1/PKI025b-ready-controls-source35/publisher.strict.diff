@@ -1,0 +1,28 @@
+--- a/publisher.prebound.py
++++ b/publisher.ready.py
+@@ -3,7 +3,7 @@
+ from pathlib import Path
+ import base64, hashlib, json, os, stat, sys, time
+ 
++BINDING_READY = True
+-BINDING_READY = False
+ assert BINDING_READY, 'final formatted source and build control pins are not yet bound'
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi')
+@@ -12,12 +12,12 @@
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+     "native_jwt_build.py": [
++        30397,
++        "d76b3d392c20bf4a7bbb7e8d8ea69abdfe3bb11f71a35075ba26ab948e778a50"
+-        30398,
+-        "21e68720529b134a6734e15817a803bcf36efef60b638da5b00e752310ac1bbd"
+     ],
+     "launch_native_jwt_build.py": [
++        38565,
++        "efec176c08804a91adfd0160cdc092fad879d64ff594debe2fffe8008488d00c"
+-        38566,
+-        "021a072bd346c0f590e53c5e49604990ef5435301994d2ba3eaafec914b269f9"
+     ],
+     "jwt-test-groups.public.json": [
+         19789,
