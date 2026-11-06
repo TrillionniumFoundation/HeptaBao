@@ -221,10 +221,9 @@ class Suite:
         time.sleep(2.3)
         expired = self.call("pki.lease_expire_lookup", "POST", "/v1/sys/leases/lookup",
                             {"lease_id": short_id})
-        self.check("pki.lease_expire_lookup", expired, (400, 404),
+        self.check("pki.lease_expire_lookup", expired, 400,
                    errors_present=isinstance(expired.body.get("errors"), list)
                    and bool(expired.body["errors"]))
-        self.results["pki.lease_expire_lookup"]["http_status"] = "rejected_after_ttl"
         r = self.call("pki.cert_lookup", "GET", path + "/cert/" + serial)
         self.requests["pki.cert_lookup"]["path_template"] = "/v1/{pki}/cert/{serial}"
         self.check("pki.cert_lookup", r, 200,
@@ -232,13 +231,8 @@ class Suite:
         self.perform("pki.lease_revoke", "POST", "/v1/sys/leases/revoke",
                      {"lease_id": lease_id, "sync": True}, status=204)
         r = self.call("pki.revoked_lease_absent", "POST", "/v1/sys/leases/lookup", {"lease_id": lease_id})
-        self.check("pki.revoked_lease_absent", r, (400, 404),
+        self.check("pki.revoked_lease_absent", r, 400,
                    errors_present=isinstance(r.body.get("errors"), list) and bool(r.body["errors"]))
-        # Both implementations reject an already-revoked lease lookup; OpenBao
-        # uses 400 while the bounded candidate uses 404. Normalize only this
-        # explicitly admitted rejection class so differential equality compares
-        # the security effect instead of one allowed status spelling.
-        self.results["pki.revoked_lease_absent"]["http_status"] = "rejected_400_or_404"
         r = self.call("pki.crl_json", "GET", path + "/cert/crl")
         self.check("pki.crl_json", r, 200,
                    crl=r.data().get("certificate", "").startswith("-----BEGIN X509 CRL-----"))

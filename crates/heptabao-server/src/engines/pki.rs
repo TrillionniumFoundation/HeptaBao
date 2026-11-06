@@ -694,12 +694,17 @@ impl Pki {
         clock: u64,
         observed: Option<crate::auth::Timestamp>,
     ) -> Result<Value> {
-        let lease = self.issued.get(serial).ok_or_else(not_found)?;
+        // OpenBao 2.7.1 treats an absent lease as an invalid lookup request.
+        // Retained certificate records do not make retired leases observable.
+        let lease = self
+            .issued
+            .get(serial)
+            .ok_or_else(|| bad("invalid lease"))?;
         let at = std::time::Duration::from_secs(clock)
             .max(observed.map_or(std::time::Duration::ZERO, |at| at.duration_since_epoch()));
         let deadline = lease.lease_deadline();
         if !lease.leased || lease.revoked_at.is_some() || deadline <= at {
-            return Err(not_found());
+            return Err(bad("invalid lease"));
         }
         Ok(json!({
             "id": lease.lease_id,
