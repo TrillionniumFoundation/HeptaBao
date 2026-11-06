@@ -1,0 +1,217 @@
+{
+  "schema": "heptabao.025b-failed-test2-two-small-log-bodies.SOURCE.r2",
+  "status": "SOURCE_ONLY_NOT_AUTHORIZED",
+  "scope": "build_failed_test2_logs_binary_read_only",
+  "original_job": "1a1b10cad9b-fc05-7560",
+  "slot": "jwt_pki_025b05a3_build149_failed_test2_logs_info_gitfirst_r1",
+  "entry_action": "authorize_failed_test_log_bodies",
+  "initialize": false,
+  "source": {
+    "blob": "d2000cdc23f6a71d6c076dd1da2db42370a6a10d",
+    "bytes": 31518,
+    "sha256": "c6f87b29e6cb96eb1ffce321c6b571e66602db738e3921f5b1376e85be27cc74"
+  },
+  "before": {
+    "blob": "ae8aebd99035e038de6fe65d963878e72a4bb245",
+    "bytes": 24478,
+    "sha256": "2578abe066b44fdf049b21141b0d10201a9544e86085010e6cd5ab3843dbb737"
+  },
+  "strict_hunks": 8,
+  "metadata_actual": {
+    "tree": "b2909bcbd96212c17c97b32fd004bbb52d713141",
+    "state": {
+      "blob": "82d759bca4a3d51ab4052ac31d77c0f2adf7a563",
+      "bytes": 23958,
+      "sha256": "223a073a1d3848a4b51258c3b6b109594c1d693c159626e5de8c8c184a6a4a37"
+    },
+    "infos": [
+      {
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+        "bytes": 191,
+        "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+        "version": "66306:33202269:191:1793974566577453065:1793974566577453065",
+        "infoOperation": "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+        "infoNative": {
+          "blob": "b1b5c5c6831ff668ce0443043a92d65483acf5bd",
+          "bytes": 488,
+          "sha256": "f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"
+        },
+        "full9Strings": [
+          "66306",
+          "33202269",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "191",
+          "1793974566577453065",
+          "1793974566577453065"
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+        "bytes": 375,
+        "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+        "version": "66306:33202268:375:1793974566577453065:1793974566577453065",
+        "infoOperation": "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+        "infoNative": {
+          "blob": "98463cbd918907c6051a36bef453efe2136a48d3",
+          "bytes": 488,
+          "sha256": "43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"
+        },
+        "full9Strings": [
+          "66306",
+          "33202268",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "375",
+          "1793974566577453065",
+          "1793974566577453065"
+        ]
+      }
+    ]
+  },
+  "original_build_report": {
+    "blob": "5bf4476672f08c251826efc1dc9833af30bdd5b4",
+    "bytes": 49775,
+    "sha256": "47748eadb948f08973d7de202272823cd5f031ed99ec62286868236a8cbaa318"
+  },
+  "references": {
+    "previous_single_body_source": {
+      "blob": "52fccacedef3382ee1db167d7fe47fead3a8da4a",
+      "bytes": 29496,
+      "sha256": "66c1ef69c178d88f392e84427a7025fa1d0b85eab7cceaf61f2c0d9f689851e3"
+    },
+    "previous_single_body_GO": "e8aabd26cfd0b5d6a41b63e3958e8d3847be2f6e",
+    "current_info_GO": {
+      "blob": "974549696545a0f5c3a4348458c0e124cb93ff89",
+      "bytes": 4014,
+      "sha256": "db09623a2a136c00a9fb5d3b71bf70047726fb1da5b484215c04e09c1e88d041"
+    }
+  },
+  "exact_requests": [
+    {
+      "blob": "b8a6cdfc57c4af38b09c17308cf3e3b82e61ba80",
+      "bytes": 440,
+      "sha256": "6f608f38a8ae79f43a09f98c5dd5120736ee9687ce16ce3194b66d58db24240c"
+    },
+    {
+      "blob": "3b9d51d53f0b10ef67077bb34d7805196b45cd3b",
+      "bytes": 440,
+      "sha256": "10e36468d51b3976bc8d52c2a16eca8356e19025de8e641597bdf0070bde6f47"
+    }
+  ],
+  "expected": [
+    {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+      "bytes": 191,
+      "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+      "version": "66306:33202269:191:1793974566577453065:1793974566577453065",
+      "infoOperation": "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+      "infoNative": {
+        "blob": "b1b5c5c6831ff668ce0443043a92d65483acf5bd",
+        "bytes": 488,
+        "sha256": "f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"
+      },
+      "full9Strings": [
+        "66306",
+        "33202269",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "191",
+        "1793974566577453065",
+        "1793974566577453065"
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+      "bytes": 375,
+      "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+      "version": "66306:33202268:375:1793974566577453065:1793974566577453065",
+      "infoOperation": "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+      "infoNative": {
+        "blob": "98463cbd918907c6051a36bef453efe2136a48d3",
+        "bytes": 488,
+        "sha256": "43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"
+      },
+      "full9Strings": [
+        "66306",
+        "33202268",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "375",
+        "1793974566577453065",
+        "1793974566577453065"
+      ]
+    }
+  ],
+  "limits": {
+    "binary_read_starts": 2,
+    "file_info_starts": 0,
+    "process_start_calls": 0,
+    "total_body_bytes": 566,
+    "one_original_future": 1,
+    "new_binary_page_bytes": 16384,
+    "old_metadata_page_bytes": 8192,
+    "retained_payload_bytes": 1048576,
+    "operation_status_per_original_id": 8,
+    "pages_per_original_id": 128,
+    "automatic_retry": false
+  },
+  "sequence": [
+    "whole separate exact GO",
+    "attach existing closed INFO context only; old6 calls and prior BUILD41calls unchanged",
+    "stderr191 exact version body once; returned originalID completed/inactive/fullpages/wholeSHA/EOF",
+    "stdout375 exact version body once only after first closed; same whole conditions",
+    "raw SDK whole before isError; serialized payload whole before binary envelope parse; complete raw log whole before diagnostics"
+  ],
+  "closed_scope": {
+    "directory_scan": false,
+    "new_build": false,
+    "target_reuse": false,
+    "production_change": false,
+    "extra_probe": false
+  },
+  "notes": [
+    "Uses the previously approved compiler-stderr-body journal pattern as the narrow reference. Extends it only to these two independently observed small files, with sequential per-file once markers.",
+    "One source-generator exact-string selector failed before saving candidate or any Git/Native mutation; preserved separately. The final generator uses actual INFO source bytes.",
+    "Original root/body/INFO qualifications do not authorize this new BODY scope. Await separate root GO.",
+    "R2 changes only gfPrepareOne rootGo selection relative to preserved R1, matching the original compiler-stderr-body reference. Explicitly counted as a changed function; seven original functions remain byte-equal."
+  ],
+  "R1": {
+    "tree": "0bac28564b650ac44f8a5b6da52f371f6b0c50a6",
+    "source": {
+      "blob": "7e4332a15642b9bed13804656996c2637bddecfe",
+      "bytes": 31488,
+      "sha256": "ff917a9994cd365fd3cad7d404226a78b7c67386814e67bde701fb346a3c275d"
+    },
+    "executed": false,
+    "finding": "502e64c2eb1a361ed25321d7f07f4f6565fe4c0c",
+    "issue": "R1 graft omitted reference gfPrepareOne BODY-GO rootGo selection",
+    "delta_hunks": 1
+  },
+  "authorization_binding": {
+    "before_explicit_BODY_authorize": "original INFO GO",
+    "after_validated_whole_BODY_authorize": "failedTestLogBodiesGO.pin",
+    "applies_to": [
+      "new binary admission intent+armed",
+      "same-ID operation_status intent+armed",
+      "same-ID operation_result intent+armed"
+    ],
+    "prior_archived_calls_and_arms_unchanged": true
+  },
+  "whole_unchanged_functions": 7,
+  "pure_checks": {
+    "source": 31,
+    "actual_prepare_capture": 26,
+    "Native": 0,
+    "Git": 0,
+    "product": 0
+  }
+}

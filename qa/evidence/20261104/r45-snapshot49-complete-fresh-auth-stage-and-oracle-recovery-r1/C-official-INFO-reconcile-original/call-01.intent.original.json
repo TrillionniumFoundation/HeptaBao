@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-intent.r1",
+  "callKey": "official271-x230-acl23-report-info-reconciled-page0-r1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "49a4a1d9b84783de72aced94fc7803723def24bd",
+    "bytes": 121,
+    "sha256": "55904ebd681bb5dbb61ec7308a6f2f6a28e32d5b3601f115434cfe2fe6994ed1"
+  },
+  "rootGo": {
+    "blob": "33c5afe418b230d2eea32456f626da35d08d30d7",
+    "bytes": 4493,
+    "sha256": "3bed8fc3437fc6240785c5bc5709b805986e98a456f97d1087011d669999e678"
+  },
+  "originalJob": "1a1b17f9eff-fc05-7932",
+  "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true
+}

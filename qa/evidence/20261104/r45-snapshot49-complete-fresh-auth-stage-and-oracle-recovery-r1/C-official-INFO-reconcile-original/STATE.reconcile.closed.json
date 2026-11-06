@@ -1,0 +1,223 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root-official271-original-INFO-status-reconcile-GO.r45\",\n  \"authorization\": \"GO\",\n  \"scope\": \"official271_original_report_info_same_id_status_reconciliation_only\",\n  \"original_job\": \"1a1b17f9eff-fc05-7932\",\n  \"original_operation_id\": \"a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8\",\n  \"original_slot\": \"official271_x230_acl23_oracle_gitfirst_r1\",\n  \"new_slot\": \"official271_x230_acl23_report_info_status_reconcile_r1\",\n  \"source\": {\n    \"blob\": \"2ac1f78dd4076b31c8eaaaba4c1e344f70c807e0\",\n    \"bytes\": 22284,\n    \"sha256\": \"08286fd7361a523198d96fe96f02d021a153a47c9e5d8a41776380d5d99a9ff4\"\n  },\n  \"before\": {\n    \"blob\": \"ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef\",\n    \"bytes\": 23027,\n    \"sha256\": \"10739a5286bb58b85a5b83b16b38081264df4371926f186d27cdcc757084d783\"\n  },\n  \"diff\": {\n    \"blob\": \"a495f8a265e77b1ca666366b7902d7c6fabea400\",\n    \"bytes\": 14098,\n    \"sha256\": \"bdcfea075afdbae3cf3e02280cf43114ac7d96c43677d2f2b4255a4be3c9fe03\"\n  },\n  \"exact_status_request\": {\n    \"blob\": \"218e1601e3925e6e4923aee8a43b9cb8ed1e3c31\",\n    \"bytes\": 89,\n    \"sha256\": \"862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14\"\n  },\n  \"original_state\": {\n    \"blob\": \"6c825b1f09d8584aafef83e153a7470679cae7cb\",\n    \"bytes\": 223583,\n    \"sha256\": \"af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d\"\n  },\n  \"original_failed_status_key\": \"official271-x230-acl23-report-info-status0-r1\",\n  \"original_failed_status_SDK\": {\n    \"blob\": \"0cede4881f37869cfd279b69b738c87eb62b4889\",\n    \"bytes\": 248,\n    \"sha256\": \"b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70\"\n  },\n  \"original_UNKNOWN_packet\": \"96a9cd95df6acf8b1483befb9e2fc604c16932e5\",\n  \"maximum_new_operation_status_calls\": 1,\n  \"original_operation_status_calls\": 1,\n  \"maximum_combined_operation_status_calls\": 8,\n  \"maximum_operation_result_calls\": 128,\n  \"maximum_operation_start_calls\": 0,\n  \"maximum_process_start_calls\": 0,\n  \"immutable_page_bytes\": 8192,\n  \"maximum_payload_bytes\": 1048576,\n  \"original_slot_byte_identical\": true,\n  \"new_status_is_not_missing_old_status_recovery\": true,\n  \"on_running_or_queued\": \"No second new status is authorized; hold same original future.\",\n  \"on_unknown\": \"Preserve new and old failures, pause only independent reconciliation context; no automatic retry.\",\n  \"on_closed\": \"Read only contiguous immutable pages of the same returned ID, then whole payload/native and exact original report INFO metadata.\",\n  \"BODY_authorized\": false,\n  \"report_target\": {\n    \"path\": \"/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json\",\n    \"bytes\": 36658,\n    \"sha256\": \"4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece\",\n    \"full9Strings\": [\n      \"2053\",\n      \"3318893\",\n      \"1000\",\n      \"1000\",\n      \"33152\",\n      \"1\",\n      \"36658\",\n      \"1793979309530036044\",\n      \"1793979309530036044\"\n    ]\n  },\n  \"owner\": \"/root/ha_validation\",\n  \"sourcePacket\": \"3606a8a328fae0c3d093dbdac298325de87da4a5\",\n  \"sourceQualification\": {\n    \"blob\": \"5af5662e9675268edb9b32699f88a529abab21ca\",\n    \"bytes\": 1380,\n    \"sha256\": \"ecbf958a0be82efd19d85368795fa92ef16fb57cbd1b620534c84390ba3d17dd\"\n  },\n  \"originalUnknownQualification\": {\n    \"blob\": \"801be7b97227ad0975a6d037a2d563bbecb08e70\",\n    \"bytes\": 2044,\n    \"sha256\": \"58df71b3c272666733e73dfc193249ebd2b73aed606bff4877061b511b2f383a\"\n  },\n  \"author37ExactlyReproduced\": true,\n  \"new_context_only_original_slot_unchanged\": true,\n  \"new_status_recovers_original_future_state_only\": true,\n  \"original_failed_status_remains_UNKNOWN\": true,\n  \"maximum_total_new_status_calls\": 1,\n  \"maximum_observed_status_call_rows_after_this_step\": 2,\n  \"lane\": {\n    \"A\": 1,\n    \"B\": 0,\n    \"C\": 1,\n    \"root\": 0,\n    \"maximum\": 2\n  },\n  \"procedure\": \"Whole separate GO, original paused bytes and failed SDK, fresh independent reconciliation slot, original exact89-byte status request plus whole3-leaf arm, independent model boundary, once new read-only status. Whole SDK before parse. Only if original future is observed completed/inactive may contiguous original8K pages be requested.\",\n  \"after\": \"Close the original INFO payload, require exact original report full9/size/SHA/mode. Keep original paused slot unchanged. No report BODY or new fixture until separate actual-version-bound scope.\",\n  \"noAutomaticReplay\": true,\n  \"noCargo\": true,\n  \"noProductionMutation\": true,\n  \"fullReplacement\": false,\n  \"productionCutover\": false,\n  \"legacyCleanup\": false\n}\n",
+  "goPin": {
+    "blob": "33c5afe418b230d2eea32456f626da35d08d30d7",
+    "bytes": 4493,
+    "sha256": "3bed8fc3437fc6240785c5bc5709b805986e98a456f97d1087011d669999e678"
+  },
+  "digest": null,
+  "fingerprint": null,
+  "job": "1a1b17f9eff-fc05-7932",
+  "startCalled": false,
+  "pending": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "official271-x230-acl23-report-info-status-reconcile1-r1": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8\"\n}\n",
+      "requestPin": {
+        "blob": "218e1601e3925e6e4923aee8a43b9cb8ed1e3c31",
+        "bytes": 89,
+        "sha256": "862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "1ce7d6de0d06af1296b64c899ea3cd8fe0da7dd1",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "81e9cffd7896e134af88cc2c775debd3aac26d27",
+            "bytes": 944,
+            "sha256": "0e31ec3df2448e4ef0dd9a6dbe6f7688f2f990253de4a537fdd2b4bc4e226141",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "44c9f599d6f1933a1b56a56231615836bfb1a7fe",
+            "bytes": 807,
+            "sha256": "e11009c2a50e4806cbbdc7ad65c94ec15ea95f2f6e8a8d8cb06defb566eb83c8",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "218e1601e3925e6e4923aee8a43b9cb8ed1e3c31",
+            "bytes": 89,
+            "sha256": "862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1840,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c1611e099cd50d10c891204cd97e4a79b8f13c9d",
+        "bytes": 975,
+        "sha256": "c2fc37a2db92bfc624c9fb58dd729a242f5cf03aeb2248d185c2baac893fee32"
+      },
+      "sdkArchive": {
+        "tree": "a100f8e1c81adcca38e3fce0376b2b9b63a1b099",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c1611e099cd50d10c891204cd97e4a79b8f13c9d",
+            "bytes": 975,
+            "sha256": "c2fc37a2db92bfc624c9fb58dd729a242f5cf03aeb2248d185c2baac893fee32",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 975,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c5974aed5fc56bc3db5514ca40b10300f084abcf",
+        "bytes": 800,
+        "sha256": "3c54bdbf440fb94851de8083d4b94f2a9f5b16b70e264eebe1e1d15a51e36725"
+      }
+    },
+    "official271-x230-acl23-report-info-reconciled-page0-r1": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "49a4a1d9b84783de72aced94fc7803723def24bd",
+        "bytes": 121,
+        "sha256": "55904ebd681bb5dbb61ec7308a6f2f6a28e32d5b3601f115434cfe2fe6994ed1"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "d6602b9bb914f67442e22794323f131d0c89c236",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "cfa88d9c96ccacfad0b26b07b97a86b811c8ee08",
+            "bytes": 944,
+            "sha256": "d8ba5aec6a05d337feb2b4ba5420932a0582906485d7b09777aa578e7c0e13e7",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "2ab23225e6ac071357e3f31c4aa261c29212c9b6",
+            "bytes": 807,
+            "sha256": "1051d421f0d00893faf78a39c1a5dbc36d080f2c0cf074da60604871a5aee19e",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "49a4a1d9b84783de72aced94fc7803723def24bd",
+            "bytes": 121,
+            "sha256": "55904ebd681bb5dbb61ec7308a6f2f6a28e32d5b3601f115434cfe2fe6994ed1",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1872,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "0101857d31a3d94cd1064d14af5340ca2a15ff44",
+        "bytes": 1624,
+        "sha256": "437fc8cec9d396d42db4f0c3d18cda54edb0a7bc0b4de9b048eab700ddceee7f"
+      },
+      "sdkArchive": {
+        "tree": "18bac243ccb85ce17c0a666cfcd8a0a52c98a69a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "0101857d31a3d94cd1064d14af5340ca2a15ff44",
+            "bytes": 1624,
+            "sha256": "437fc8cec9d396d42db4f0c3d18cda54edb0a7bc0b4de9b048eab700ddceee7f",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1624,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "20d021f0d200a8f78183fabdcde775653b9f04ed",
+        "bytes": 1453,
+        "sha256": "7fa33152041e04ab8436a5e9458a71fb9f16d05fd260c6dc26c05baf4dddfc10"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+      "tool": "file_info",
+      "payload": {
+        "blob": "d14f5e1b796b06d5dda0a3427ff7bc0c0a56f648",
+        "bytes": 578,
+        "sha256": "bb12e8f440f278323c150290601fbb9374cd1b01d0fa129867e8cb533c8d4241"
+      },
+      "payloadTree": "4cbb34dcafcb504da490c28a0884735fc1c2f587",
+      "nativeText": {
+        "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+        "bytes": 461,
+        "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 0,
+  "nextStderr": 0,
+  "activeObserver": null,
+  "reconcileStatusCalls": 1,
+  "originalStatusCalls": 1,
+  "originalPausedContext": {
+    "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+    "state": {
+      "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+      "bytes": 223583,
+      "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+    },
+    "failedStatusKey": "official271-x230-acl23-report-info-status0-r1",
+    "failedStatusSDK": {
+      "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+      "bytes": 248,
+      "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+    }
+  },
+  "onlyOracleReportInfo": true,
+  "oracleReportInfoStarted": true,
+  "oracleReportInfo": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "size": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "version": "2053:3318893:36658:1793979309530036044:1793979309530036044",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ],
+    "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+    "nativeText": {
+      "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+      "bytes": 461,
+      "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "bodyReadAuthorized": false
+  },
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

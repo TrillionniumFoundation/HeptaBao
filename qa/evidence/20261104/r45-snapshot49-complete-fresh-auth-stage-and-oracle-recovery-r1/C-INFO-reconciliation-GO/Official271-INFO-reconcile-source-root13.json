@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.root-official271-INFO-same-ID-status-reconcile-source.r1",
+  "passed": true,
+  "checks": 13,
+  "rows": [
+    {
+      "name": "author37_exact",
+      "passed": true
+    },
+    {
+      "name": "root13_original_UNKNOWN_retained",
+      "passed": true
+    },
+    {
+      "name": "exact_original_paused_state",
+      "passed": true
+    },
+    {
+      "name": "exact_original_error_SDK",
+      "passed": true
+    },
+    {
+      "name": "before_is_exact_executed_INFO_journal",
+      "passed": true
+    },
+    {
+      "name": "strict7_hunk_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "only_original89_byte_status_request",
+      "passed": true
+    },
+    {
+      "name": "new_context_preserves_original_every_entry",
+      "passed": true
+    },
+    {
+      "name": "Native_tools_only_status_result",
+      "passed": true
+    },
+    {
+      "name": "once_status_then_original_bounded_pages",
+      "passed": true
+    },
+    {
+      "name": "new_arms_use_new_GO",
+      "passed": true
+    },
+    {
+      "name": "old_failure_not_reclassified",
+      "passed": true
+    },
+    {
+      "name": "metadata_only_no_body",
+      "passed": true
+    }
+  ],
+  "sourceTree": "3606a8a328fae0c3d093dbdac298325de87da4a5",
+  "author37Exact": true,
+  "sourceOnly": true,
+  "originalFutureClosed": false,
+  "originalUNKNOWNUnchanged": true,
+  "newNativeCalls": 0
+}

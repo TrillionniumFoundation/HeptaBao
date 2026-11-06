@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.gitfirst.closed-immutable-page-recovery-intent.r1",
+  "callKey": "sf23-r1-f16-b00-p0-recovery1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+    "bytes": 122,
+    "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+  },
+  "rootRecoveryGo": {
+    "blob": "748716dc20b7d61a5fe773aaefc44ba9d4a9ddac",
+    "bytes": 3876,
+    "sha256": "affe4439b1649e907d1df5be0a4bed06a0ed59d27ae6e8dba14d91d4527ca593"
+  },
+  "originalRootGo": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "originalOperation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "originalFailedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "originalFailedCall": {
+    "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+    "bytes": 2066,
+    "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+  },
+  "originalCompletedStatus": {
+    "blob": "237b2709d1ca13c6b56fdd4be8012920bac38b7a",
+    "bytes": 802,
+    "sha256": "9b667dd791f4fb7a67710f127b0b4475d9c15ca9b5e09b45c67f22410bc769b3"
+  },
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "noNativeAdmission": true,
+  "notRecoveryOfOriginalSDK": true,
+  "originalFailureRemains": true,
+  "before": {
+    "pending": "sf23-r1-f16-b00-p0",
+    "paused": true,
+    "failedCall": {
+      "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+      "bytes": 2066,
+      "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+    },
+    "admissionsCalled": 47,
+    "bodyBytes": 1184165,
+    "pageCalled": 1,
+    "completedObservers": 46,
+    "wholeFiles": 16
+  }
+}

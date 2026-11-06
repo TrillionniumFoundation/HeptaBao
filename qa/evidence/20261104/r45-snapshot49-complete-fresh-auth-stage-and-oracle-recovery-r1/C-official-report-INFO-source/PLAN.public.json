@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.official271.oracle-report-info-SOURCE.r1",
+  "authorization": "NONE",
+  "scope": "official271_oracle_result_file_info_only",
+  "host": "x230",
+  "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "original_job": "1a1b17f9eff-fc05-7932",
+  "action": "authorize_oracle_report_info",
+  "originalState": {
+    "blob": "79d77bf0c3c347a504641becf40670db09cf2bac",
+    "bytes": 213768,
+    "sha256": "bb7c9bca85b753a5ce96f767043d02ef23a801473b7f252809f8343f3e7d5906"
+  },
+  "originalStdout": {
+    "blob": "4cadde347ce3fb4b3dd8a175dea060bb73ccb1db",
+    "bytes": 782,
+    "sha256": "a423a851fc982b94aa352315f29a5c30f099988b820421a43f84c369d42ec426"
+  },
+  "originalActualPacket": "e5a1f1c0f0a00fb0b71720012e31e633ab4e640a",
+  "source": {
+    "blob": "ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef",
+    "bytes": 23027,
+    "sha256": "10739a5286bb58b85a5b83b16b38081264df4371926f186d27cdcc757084d783"
+  },
+  "before": {
+    "blob": "131bdd5fd616cc1e9e7d182b51cbf7ad7fe1d9db",
+    "bytes": 19055,
+    "sha256": "a2371e0a1dd8931d6e539a577d92079760714f79e07ea6ff77c6e3ba1976b15b"
+  },
+  "strictDiff": {
+    "blob": "6f01bc9e8f2e2f580732584c76fa79b1033d2743",
+    "bytes": 8963,
+    "sha256": "4feed7c700293bca3072b0ba41cccd79fa6bbf130797ad2b150a159b59351a2a"
+  },
+  "exact_request": {
+    "blob": "3d4b0ac9b5e642da091ae07c6e446c2c4947b817",
+    "bytes": 267,
+    "sha256": "4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"
+  },
+  "maximum_file_info_operations": 1,
+  "maximum_process_start_calls": 0,
+  "maximum_binary_read_operations": 0,
+  "target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ]
+  },
+  "actualVersionBeforeInfo": null,
+  "regularModeExpected": "0600",
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "maximumDeclaredFileSize": 1048576,
+  "maximumOperationStatusCalls": 8,
+  "maximumImmutablePages": 128,
+  "immutablePageBytes": 8192,
+  "maximumPayloadBytes": 1048576,
+  "oldSevenCallsAndTwoObserversUnchanged": true,
+  "noReinitialize": true,
+  "newArmsUseSeparateWholeInfoGO": true,
+  "SDKWholeBeforeParse": true,
+  "payloadWholeBeforeInterpretation": true,
+  "bodyRequiresSeparateVersionBoundSourceAndGO": true,
+  "ownerChildClosureNotYetObserved": true,
+  "plannedAfter": "Only attach one exact metadata observation; no body/fixture rerun/Cargo."
+}

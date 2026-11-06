@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.formatted23-final-aggregate-seal.v1",
+  "tree": "7163d1bc4cb7b8dd4bda0b584964c55d27cc9054",
+  "whole": true,
+  "leafOccurrences": 1281,
+  "leafBytes": 15834032,
+  "merkleNodes": 648,
+  "finalVerifier": {
+    "blob": "925ccfea78d179432a35a394427e140c82644db2",
+    "bytes": 43822,
+    "sha256": "cbaf02c30ed80a6b1f68a54c08f490eff3e9dcfb512ec8b979d0f7140f3f1380"
+  },
+  "fullVerification": {
+    "blob": "5e68cfc89ea040c5f7e9026e01e6c8a3deee272f",
+    "bytes": 1715447,
+    "sha256": "caf49813f795bb83b3a87c4c501bcdafbf3adec1ded44368f8ec24085c5e89f3",
+    "checks": 18051
+  },
+  "targetedCases": 28,
+  "rawBlobsRequired": 1548,
+  "exactDerivedNativeParentMappings": 330,
+  "originalNativeScopeFinished": true,
+  "B0": true,
+  "newNativeCalls": 0,
+  "originalGitAggregateUNKNOWNPreserved": "4c07a3c51544435ed297c427c4222cd0634c4192",
+  "oldRawOriginalCallsUnchanged": true,
+  "finalCandidate": null,
+  "CargoAuthorized": false
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-official271-public-PEM-trim-primary-chain",
+  "records": [
+    {
+      "name": "official-field-data.go",
+      "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+      "bytes": 14785,
+      "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+    },
+    {
+      "name": "official-root.go.mod",
+      "blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+      "bytes": 16740,
+      "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56"
+    },
+    {
+      "name": "official-sdk.go.mod",
+      "blob": "fa79b2793128af6e73d011d9f01889ada0614c45",
+      "bytes": 4857,
+      "sha256": "54bb893f3412c11b1ef3e131ccba9c8ed58533d629eaf0f054c17ab75ed52de4"
+    },
+    {
+      "name": "locked-parseutil.go",
+      "blob": "815c993b86117e3ad359bdda047bf2a9a7959f5c",
+      "bytes": 13706,
+      "sha256": "8f02f47737ffce9f4440bab70d3852b777220c502233b315806294f0a98d23ed"
+    },
+    {
+      "name": "locked-strutil.go",
+      "blob": "102462dc60eca9bd69264a4fbb0f4d00d0ec76da",
+      "bytes": 12857,
+      "sha256": "ad43df1a1300b8f7a8a001be02a1337bda1f5df24035cddf333d79a6d596ff5f"
+    },
+    {
+      "name": "official-JWT-config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80"
+    },
+    {
+      "name": "current-JWT-pem.rs",
+      "blob": "9ea3ae19b523bd9e0b05e08feca98e8be338464c",
+      "bytes": 7687,
+      "sha256": "418e033a050fc13433d7351b47b40f4f2a648411252282007e979bdad5571254"
+    },
+    {
+      "name": "official-field-data.original-sdk.json",
+      "blob": "ab1f9c296eba4dc105795464e206e2bc9f51a010",
+      "bytes": 33269,
+      "sha256": "540ee86f337cf4a1356d181d89fb764d9f3db383c3c2082c4e70d48253477fc1"
+    },
+    {
+      "name": "official-root-go-mod.original-sdk.json",
+      "blob": "3b1683b9f1a8e0670df2770aee64c891651da3c3",
+      "bytes": 35481,
+      "sha256": "bdee4248f5e9b6c77a32900f167597f8a2fb299034a62844043eeac9947fee49"
+    },
+    {
+      "name": "official-sdk-go-mod.original-sdk.json",
+      "blob": "311568b51ebd9b1a87a3ad9c87c5c66dcb6fdcec",
+      "bytes": 10831,
+      "sha256": "8c944bbc114e5b1907f5a421b863176ddcd7b99c3b8261a47b2c3d53913895c0"
+    },
+    {
+      "name": "locked-parseutil.original-sdk.json",
+      "blob": "6e935c4a91805343a3730a8f243e6ce784b6cc7f",
+      "bytes": 30672,
+      "sha256": "5a5127eb487051a18d8a5e81838788db6bb4c97cded45d02989409a0dc4afaa2"
+    },
+    {
+      "name": "locked-strutil.original-sdk.json",
+      "blob": "a4f0596717e41c7dbb73f641002d5111ee93afff",
+      "bytes": 28516,
+      "sha256": "13c0a916dbf6ff8982dbe9bf17246916c02acfbdff7cdce9bf02d1ea2aa93b69"
+    },
+    {
+      "name": "SOURCE-FINDING.public.json",
+      "blob": "006481a13c93ccce1a343b4c2ec70669fec63f46",
+      "bytes": 4062,
+      "sha256": "f21a4dc0f45eea8cd8dc41d2b3fae6ddfd41a1b9d54f3eac492b829e0a32b391"
+    },
+    {
+      "name": "source-reader-correction.public.json",
+      "blob": "dacf0ae75f71bffb833ddb4f84b03342a55b6558",
+      "bytes": 277,
+      "sha256": "fb44ded6c0c122712fbdae97deec91721c9e4a8d0020d38132cdafd0c3e43252"
+    }
+  ],
+  "expected_data_tree": "7becc42648a109303a70f6efa39a90403abb4c3f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

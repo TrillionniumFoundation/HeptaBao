@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-A-R3-closed-B-BODY20-recovery-GO",
+  "records": [
+    {
+      "name": "Auth-PID-R2-original-full-root34.json",
+      "blob": "545cdd4383a35217f531ab854a7da4378c38a9cb",
+      "bytes": 5029,
+      "sha256": "98d1ebeae528d830a7e1b52c2e637c24830fabe8257b6d36cf81ed06affb4ded"
+    },
+    {
+      "name": "Auth-PID-R2-original-full-root34.verifier.js",
+      "blob": "7143cc7bd7829501626a54819c24af90abc76eb5",
+      "bytes": 1792,
+      "sha256": "666e957ef09a61636a2a879f1e47b097fc1a2a451273b54147ec325ca6d97fc8"
+    },
+    {
+      "name": "Auth-PID-ABI-R3-minimum-root20.json",
+      "blob": "603e29f94d83b604fe3578cfdebe3974a29073a9",
+      "bytes": 2151,
+      "sha256": "2ca210d449b21e878c77fdad5eff68cbfd61335cdfcf11602ff2ab96e9bf179b"
+    },
+    {
+      "name": "Auth-PID-ABI-R3-minimum-root20.verifier.js",
+      "blob": "6fea34343c4fe35de62e0091401f408d07e7ba73",
+      "bytes": 4786,
+      "sha256": "a1d8279a8fb288db587aa651936302b76dce7f87afb93c52ecbc72cf4f8f9fb1"
+    },
+    {
+      "name": "Snapshot2379-BODY20-recovery-source-root21.json",
+      "blob": "c532a2bd4aa46edf685cf034740d53f592c4f6e6",
+      "bytes": 1865,
+      "sha256": "74fcfb8a9cc067a9248e14d23b8b149a6af7273e1521d56885d1abe993041c1d"
+    },
+    {
+      "name": "Snapshot2379-BODY20-recovery-source-root21.verifier.js",
+      "blob": "e940b553e2a601c4437b8cc980848af679780926",
+      "bytes": 3753,
+      "sha256": "523a896f12d92a9a9d00ddcf6acd2aabfdc1a7f126619a60cd29306efa0f23ff"
+    },
+    {
+      "name": "Snapshot2379-BODY20-recovery-GO.json",
+      "blob": "41b9b735676e83d5b8c779ec00950fe030ff59e2",
+      "bytes": 4567,
+      "sha256": "9bf988308ccecc4dcff6fb452c4c77d852477c0c56bbbae87778a9dd03a49164"
+    }
+  ],
+  "expected_data_tree": "85a398e82e51f1c220443c20cc5e170616aad092",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

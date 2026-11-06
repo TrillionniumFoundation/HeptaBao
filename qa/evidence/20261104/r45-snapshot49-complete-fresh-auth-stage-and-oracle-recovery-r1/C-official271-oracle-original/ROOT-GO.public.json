@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.root-official271-X230-ACL23-oracle-GO.r45",
+  "authorization": "GO",
+  "decision": "GO_ONE_EXACT_OFFICIAL271_ORACLE_FIXTURE",
+  "owner": "/root/ha_validation",
+  "userAuthorization": "Continue user-authorized complete OpenBao2.7.1 replacement validation with an isolated official reference fixture on X230.",
+  "sourcePacket": "4558f286a88f1d56e7df91b1aa2259dbf23f17dc",
+  "journalPacket": "66c39b32bef91db80ac5c630958aba6958205284",
+  "rootSourceQualification": {
+    "blob": "34db965e0e915052ba5da3a5b0ed804e3da6bdc6",
+    "bytes": 4185,
+    "sha256": "3e8dd8bba9e6804f6cdd4d055fac2f8f0c2cd1981236ce8c3643c1b8097f1495"
+  },
+  "rootSourceChecks": 32,
+  "authorEntry24ExactlyReproduced": true,
+  "exactProcessStart": {
+    "blob": "90b68f243c6dfc77cedce08b6d1095ffdd1a79a1",
+    "bytes": 164440,
+    "sha256": "f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"
+  },
+  "exactEntry": {
+    "blob": "0c4aac9d0494a0f42014606ecad96887ff391dde",
+    "bytes": 18330,
+    "sha256": "03f5f32674767bd55cd52e50606fd3f430dc8c87bd953778398888df6834f1e3"
+  },
+  "exactPublicPayload": {
+    "blob": "2ee56776f68a733f94dff17671fe32c1a5b8b6b0",
+    "bytes": 134374,
+    "sha256": "49e17724c2087cbc6f15fd5a37f8fc0e0d37c649ebc0273627540aabe75141d0"
+  },
+  "nativeBinding": {
+    "sha256": "416c6f5326e8343b637bc06c6a80ab2c9aec439ff85e953b908ac2838cc9b94b",
+    "native_fingerprint": "4714265312875787323",
+    "canonicalBytes": 164376
+  },
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian",
+  "argvShape": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "exactEntry",
+    "exactEntrySHA256"
+  ],
+  "stdinExactPublicPayload": true,
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-r1-03f5f326",
+  "maximumProcessStarts": 1,
+  "maximumOracleServiceStarts": 1,
+  "maximumCandidateStarts": 0,
+  "journal": {
+    "blob": "131bdd5fd616cc1e9e7d182b51cbf7ad7fe1d9db",
+    "bytes": 19055,
+    "sha256": "a2371e0a1dd8931d6e539a577d92079760714f79e07ea6ff77c6e3ba1976b15b"
+  },
+  "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "observerKeyPrefix": "heptabao-official271-x230-acl23-oracle-observe-r1-",
+  "fixedRoot": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1",
+  "run_id": "official271-acl23-r1",
+  "ports": {
+    "https": 23623,
+    "cluster": 23624,
+    "loopbackOnly": true
+  },
+  "budgets": {
+    "originalOwnerSeconds": 360,
+    "deadlineAtEntryMonotonicStart": true,
+    "cleanupWithinOriginalDeadline": true,
+    "httpMaximumSeconds": 15,
+    "startupOriginalHealthPollMaximum": 100,
+    "aclHTTPMaximum": 853,
+    "launcherStartupSourceUpperBound": 103,
+    "extraSelectedHealthMaximum": 1,
+    "sourceInputBytes": 127119,
+    "stdinExactBytes": 134374,
+    "reportMaximumBytes": 1048576,
+    "newEntryDescriptorsMaximum": 12,
+    "perReadWriteChunkMaximum": 65536,
+    "maximumReadbackBytes": 1175695,
+    "RuntimeOuterSecondsProposal": 390,
+    "outerNote": "This is a new explicit SOURCE proposal, not an inherited or approved budget. The semantic Owner/entry success deadline remains absolute360 including cleanup and publication; 390 is only proposed transport outer cap.",
+    "RuntimeOuterSecondsApproved": 390,
+    "originalOwnerAbsoluteSecondsApproved": 360,
+    "noOwnerDeadlineReset": true,
+    "rawRequestMaximumIsStaticNotActual": true
+  },
+  "controls": {
+    "createOnlyRoot0700": true,
+    "elevenExactPublicInputs0600": true,
+    "nineModulesFromFreshFixedLayoutOnly": true,
+    "freshCanonicalPathsFull9AndWholeHashes": true,
+    "officialArchiveUniqueRegularBaoMember": true,
+    "selectedLiveTLSVersion271": true,
+    "noDownloadOrHistoricalCheckoutImport": true,
+    "privateFixtureCredentialsNotPublished": true,
+    "allOwnedChildrenAndEntryFDsWithinOriginal360": true,
+    "noForeignSignal": true,
+    "oldRootsUntouched": true,
+    "CargoTargetUntouched": true
+  },
+  "officialArtifacts": {
+    "archiveBytes": 74865426,
+    "archiveSHA256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binaryBytes": 181760103,
+    "binarySHA256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "freshPresenceAndVersionRequired": true
+  },
+  "cases": {
+    "officialACL": 23,
+    "rawStatusesAndBeforeAfterTransitions": true,
+    "realIssuedNoDefaultNonrootActors": true,
+    "noExpectedStatusNormalization": true,
+    "noDefaultPolicyAddedToActor": true,
+    "unknownMutationStopsPreservingPartial": true,
+    "candidateHTTP12": 0,
+    "currentRecordComponent": "4 classes / 8 fixed fake component cases inside the original fixture; not product API cases"
+  },
+  "report": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "mode": "0600",
+    "createOnly": true,
+    "postFinallyVerdict": "terminal stdout after bootstrap signal restoration and all12 entry FDs closed; original Owner receipt independently contains child closure.",
+    "actualSize": null,
+    "actualSHA": null,
+    "actualVersion": null,
+    "separateINFOAndBODYAuthorityRequired": true
+  },
+  "observations": {
+    "maximumProcessStatusObservers": 32,
+    "maximumProcessReadObservers": 129,
+    "maximumOperationStatusCallsPerObserver": 8,
+    "maximumImmutablePagesPerObserver": 128,
+    "immutablePageBytes": 8192,
+    "maximumSerializedPayloadBytes": 1048576,
+    "processReadPerStreamBytes": 16384,
+    "maximumObservedBytesPerStream": 2097152,
+    "onlyOriginalReturnedJobAndOperations": true,
+    "oneNativeCallOrOwnedFuture": true,
+    "unknownKeepsLane": true,
+    "noAutomaticReplay": true,
+    "closeEachObserverBeforeNext": true
+  },
+  "archive": {
+    "wholeGOAndRequestBeforeFreshSlotInitialize": true,
+    "wholeRequestIntentArmedBeforeOneCall": true,
+    "originalSDKWholeBeforeInterpretation": true,
+    "wholePayloadBeforeDecode": true,
+    "originalTerminalAuthorityAndContiguousStreamsRequired": true
+  },
+  "lane": {
+    "before": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "root": 0
+    },
+    "during": {
+      "A": 1,
+      "B": 0,
+      "C": 1,
+      "root": 0
+    },
+    "maximum": 2,
+    "BClosedQualification": {
+      "blob": "d41bf8571fe1b67d1d621fd20b0d09f1ae4d40ee",
+      "bytes": 2666,
+      "sha256": "0e2d355c633cc961d5c1602ad4ee7c727c6d8a9b16f5bbd4c0a835c4dba71d12"
+    },
+    "CPriorLogClosure": {
+      "blob": "c4aa020033d99ab688ccec8fe4ccd6f8084d5327",
+      "bytes": 4143,
+      "sha256": "93b84dbebd26fe76f77898f3621c886c88a58e4e79b9838129738d49de2a93cd"
+    },
+    "BRecoveryHold": true
+  },
+  "after": "Return original terminal status, complete public streams and own-process closure evidence; preserve actual partial or failed fixture. Hold before new report INFO/BODY. Original ROG failed test source diagnosis may continue through pure Git reads while this independent X230 original job runs.",
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "allClientsAndBackupsMigrated": false,
+  "fullReplacement": false
+}

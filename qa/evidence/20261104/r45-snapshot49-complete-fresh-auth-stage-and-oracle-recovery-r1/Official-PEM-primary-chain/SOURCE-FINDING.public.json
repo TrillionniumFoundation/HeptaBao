@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root-official271-public-PEM-input-trim-primary-source.r1",
+  "sources": [
+    {
+      "label": "official-field-data.go",
+      "repo": "openbao/openbao",
+      "ref": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "sdk/framework/field_data.go",
+      "pin": {
+        "blob": "19fb31d8f2fcded26049ea9e08d08503d8271726",
+        "bytes": 14785,
+        "sha256": "ba1b41f770e0b9e784f4afe4d1758e608be91b2a2adaeef63446b7f5542bb109"
+      }
+    },
+    {
+      "label": "official-root.go.mod",
+      "repo": "openbao/openbao",
+      "ref": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "go.mod",
+      "pin": {
+        "blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+        "bytes": 16740,
+        "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56"
+      }
+    },
+    {
+      "label": "official-sdk.go.mod",
+      "repo": "openbao/openbao",
+      "ref": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "sdk/go.mod",
+      "pin": {
+        "blob": "fa79b2793128af6e73d011d9f01889ada0614c45",
+        "bytes": 4857,
+        "sha256": "54bb893f3412c11b1ef3e131ccba9c8ed58533d629eaf0f054c17ab75ed52de4"
+      }
+    },
+    {
+      "label": "locked-parseutil.go",
+      "repo": "hashicorp/go-secure-stdlib",
+      "ref": "parseutil/v0.2.0",
+      "path": "parseutil/parseutil.go",
+      "pin": {
+        "blob": "815c993b86117e3ad359bdda047bf2a9a7959f5c",
+        "bytes": 13706,
+        "sha256": "8f02f47737ffce9f4440bab70d3852b777220c502233b315806294f0a98d23ed"
+      }
+    },
+    {
+      "label": "locked-strutil.go",
+      "repo": "hashicorp/go-secure-stdlib",
+      "ref": "strutil/v0.1.2",
+      "path": "strutil/strutil.go",
+      "pin": {
+        "blob": "102462dc60eca9bd69264a4fbb0f4d00d0ec76da",
+        "bytes": 12857,
+        "sha256": "ad43df1a1300b8f7a8a001be02a1337bda1f5df24035cddf333d79a6d596ff5f"
+      }
+    },
+    {
+      "label": "official-JWT-config.go",
+      "repo": "openbao/openbao",
+      "ref": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "path": "internal/builtin/credential/jwt/path_config.go",
+      "pin": {
+        "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+        "bytes": 24654,
+        "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80"
+      }
+    },
+    {
+      "label": "current-JWT-pem.rs",
+      "repo": "TrillionniumFoundation/HeptaBao",
+      "ref": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "path": "crates/heptabao-server/src/auth_jwt_pem.rs",
+      "pin": {
+        "blob": "9ea3ae19b523bd9e0b05e08feca98e8be338464c",
+        "bytes": 7687,
+        "sha256": "418e033a050fc13433d7351b47b40f4f2a648411252282007e979bdad5571254"
+      }
+    }
+  ],
+  "finding": "Official JWT field is TypeCommaStringSlice; exact v2.7.1 framework delegates to parseutil v0.2.0, which returns strutil.TrimStrings; exact strutil v0.1.2 applies strings.TrimSpace per item. Existing HeptaBao PEM parser also stores value.trim().to_owned().",
+  "fixtureMismatchInference": "The fixed451-byte PEM input has terminal LF, while FixedAcl23.baseline_config directly keeps public_pem. Both official and candidate source remove surrounding whitespace before storage/readback. This is a source-supported fixture expectation defect, not an independently recovered original config response.",
+  "actualLimit": "Original setup config body was not retained; original report can establish raw status and owner closure but cannot recover missing exact config bytes.",
+  "proposedNarrowRepair": "Keep original451-byte source file and source hash. Send one explicitly canonical450-byte public PEM string, removing its single terminal LF before request construction; compare actual readback strictly to this same request input. Do not normalize statuses, token_policies or any response.",
+  "recommendedEvidence": "Retain the bounded public COMMON_CONFIG_FIELDS projection before setup comparison in the next independently owned fixture report, including partial failure output.",
+  "newRuntimeCalls": 0,
+  "newProductTests": 0
+}

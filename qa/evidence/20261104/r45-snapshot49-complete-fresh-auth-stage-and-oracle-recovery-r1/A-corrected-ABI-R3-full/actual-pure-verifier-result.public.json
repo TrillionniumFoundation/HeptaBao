@@ -1,0 +1,812 @@
+{
+  "schema": "heptabao.current-home-r2-independent-pid-original-chain-verification.r3",
+  "passed": true,
+  "checkCount": 197,
+  "checks": [
+    {
+      "name": "original_job",
+      "pass": true
+    },
+    {
+      "name": "journal_closed",
+      "pass": true
+    },
+    {
+      "name": "eleven_original_calls",
+      "pass": true
+    },
+    {
+      "name": "two_original_observers",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-start:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "exact_request",
+      "pass": true
+    },
+    {
+      "name": "actual_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:original_job",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-admit:fresh_observer_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-state-01:sameID_closed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:original_job",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-admit:fresh_observer_ACK",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-state-01:sameID_closed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:called_once_accepted",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:request_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:SDK_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:native_whole",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:SDK_nonerror_exact_native",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:intent",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:armed",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:whole_armed_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:whole_SDK_Merkle",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:immutable_identity",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:page_bound",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:extent_EOF",
+      "pass": true
+    },
+    {
+      "name": "exact_call_counts",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:admission_tool",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:status_closed",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:page_count",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-status-01-page-000000:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:payload_tree",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:native_envelope",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:native_whole",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:native_job",
+      "pass": true
+    },
+    {
+      "name": "937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb:authority",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:admission_tool",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:status_closed",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:page_count",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-000000:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-008192:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-016384:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-024576:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:contiguous",
+      "pass": true
+    },
+    {
+      "name": "current-home-r2-pid-observation-r3-streams-01-page-032768:stable_total_digest",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:whole_payload",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:payload_tree",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:native_envelope",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:native_whole",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:native_job",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:native_read_cap",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stdout:hex_text",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stdout:extent",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stdout:contiguous",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stdout:EOF",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stderr:hex_text",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stderr:extent",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stderr:contiguous",
+      "pass": true
+    },
+    {
+      "name": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5:stderr:EOF",
+      "pass": true
+    },
+    {
+      "name": "observer_counts",
+      "pass": true
+    },
+    {
+      "name": "complete_original_streams",
+      "pass": true
+    },
+    {
+      "name": "terminal_authority",
+      "pass": true
+    },
+    {
+      "name": "terminal_full_lengths",
+      "pass": true
+    },
+    {
+      "name": "completed_observation_unknown_preserved",
+      "pass": true
+    },
+    {
+      "name": "managed_scope_unknown_preserved",
+      "pass": true
+    },
+    {
+      "name": "history_preserved",
+      "pass": true
+    },
+    {
+      "name": "read_only_scope",
+      "pass": true
+    },
+    {
+      "name": "original_budget",
+      "pass": true
+    },
+    {
+      "name": "all22_FDs",
+      "pass": true
+    },
+    {
+      "name": "two_direct_helpers",
+      "pass": true
+    },
+    {
+      "name": "both_helpers_exact_missing",
+      "pass": true
+    },
+    {
+      "name": "signals_restored",
+      "pass": true
+    },
+    {
+      "name": "two_fresh_missing_registration_observations",
+      "pass": true
+    },
+    {
+      "name": "two_independent_missing_classifications",
+      "pass": true
+    },
+    {
+      "name": "complete_finite_numeric_sampling",
+      "pass": true
+    },
+    {
+      "name": "self_complete_136_errno0",
+      "pass": true
+    },
+    {
+      "name": "four_fixed_target_ESRCH_results",
+      "pass": true
+    },
+    {
+      "name": "ordinal_sample_order",
+      "pass": true
+    },
+    {
+      "name": "two_ESRCH_pairs_no_identity",
+      "pass": true
+    },
+    {
+      "name": "no_path_or_child_read_after_incomplete_first",
+      "pass": true
+    },
+    {
+      "name": "no_unknown_path_child_argv_exports",
+      "pass": true
+    },
+    {
+      "name": "identity_unknown_not_absence_qualification",
+      "pass": true
+    },
+    {
+      "name": "fixed_public_files_all_observed",
+      "pass": true
+    },
+    {
+      "name": "ready_exact_ENOENT",
+      "pass": true
+    },
+    {
+      "name": "stdout_present_empty_firstLF",
+      "pass": true
+    },
+    {
+      "name": "stderr_metadata_only_empty",
+      "pass": true
+    },
+    {
+      "name": "three_exact_public_controls",
+      "pass": true
+    },
+    {
+      "name": "no_write_and_exact_read_counts",
+      "pass": true
+    }
+  ],
+  "nativeCalls": {
+    "process_start": 1,
+    "operation_start": 2,
+    "operation_status": 2,
+    "operation_result": 6
+  },
+  "statusObservers": 1,
+  "readObservers": 1,
+  "stdoutBytes": 11778,
+  "stderrBytes": 0,
+  "scope": "completed_current_bounded_observations_and_own_closure_historical_managed_UNKNOWN",
+  "observationComplete": true,
+  "currentIdentityQualified": false,
+  "managedScopeQualifiedClosed": false,
+  "historicalReapQualified": false,
+  "productSuccess": false,
+  "newNativeCalls": 0
+}

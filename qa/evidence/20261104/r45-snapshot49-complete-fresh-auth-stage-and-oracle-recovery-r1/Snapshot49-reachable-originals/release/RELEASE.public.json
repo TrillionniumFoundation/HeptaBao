@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.snapshot-formatted23-final-owner-release.v1",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "originalGO": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "latestRecoveryGO": {
+    "blob": "41b9b735676e83d5b8c779ec00950fe030ff59e2",
+    "bytes": 4567,
+    "sha256": "9bf988308ccecc4dcff6fb452c4c77d852477c0c56bbbae87778a9dd03a49164"
+  },
+  "finalState": {
+    "blob": "f3191a61911b6ace4d72074c1595c8d24c39d61d",
+    "bytes": 2645327,
+    "sha256": "2153e9ec1da3df829f1919a64a8656983b2ca4103ae3875b0f78388dbbffe921"
+  },
+  "originalAdmissions": 59,
+  "completedOriginalObservers": 59,
+  "wholeChangedFiles": 23,
+  "wholeChangedBytes": 1346637,
+  "totalCallRecords": 274,
+  "statusCallRecords": 59,
+  "pageCallRecords": 156,
+  "successfulImmutablePages": 153,
+  "failedDeliveryCallKeys": [
+    "sf23-r1-f10-info-p0",
+    "sf23-r1-f16-b00-p0",
+    "sf23-r1-f20-b00-p3"
+  ],
+  "recoveryCallKeys": [
+    "sf23-r1-f10-info-p0-recovery1",
+    "sf23-r1-f16-b00-p0-recovery1",
+    "sf23-r1-f20-b00-p3-recovery1"
+  ],
+  "knownGitArmFailureRetained": "Error: git_tree_read_error_preserved",
+  "allCompletedRecordsInactive": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "B0": true,
+  "originalScopeComplete": true,
+  "NativeLaneReleased": true,
+  "remainingOriginalNativeRequests": 0,
+  "final23VerifierPassed": false,
+  "final49MappingQualified": false,
+  "combinedCandidate": null,
+  "CargoAuthorized": false,
+  "oldFailuresAndUnknownsRetained": true
+}

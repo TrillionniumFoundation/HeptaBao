@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.official271.original-report-info-status-reconcile-SOURCE.r1",
+  "authorization": "NONE",
+  "scope": "official271_original_report_info_same_id_status_reconciliation_only",
+  "original_job": "1a1b17f9eff-fc05-7932",
+  "original_operation_id": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+  "original_slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "new_slot": "official271_x230_acl23_report_info_status_reconcile_r1",
+  "source": {
+    "blob": "2ac1f78dd4076b31c8eaaaba4c1e344f70c807e0",
+    "bytes": 22284,
+    "sha256": "08286fd7361a523198d96fe96f02d021a153a47c9e5d8a41776380d5d99a9ff4"
+  },
+  "before": {
+    "blob": "ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef",
+    "bytes": 23027,
+    "sha256": "10739a5286bb58b85a5b83b16b38081264df4371926f186d27cdcc757084d783"
+  },
+  "diff": {
+    "blob": "a495f8a265e77b1ca666366b7902d7c6fabea400",
+    "bytes": 14098,
+    "sha256": "bdcfea075afdbae3cf3e02280cf43114ac7d96c43677d2f2b4255a4be3c9fe03"
+  },
+  "exact_status_request": {
+    "blob": "218e1601e3925e6e4923aee8a43b9cb8ed1e3c31",
+    "bytes": 89,
+    "sha256": "862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14"
+  },
+  "original_state": {
+    "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+    "bytes": 223583,
+    "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+  },
+  "original_failed_status_key": "official271-x230-acl23-report-info-status0-r1",
+  "original_failed_status_SDK": {
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+  },
+  "original_UNKNOWN_packet": "96a9cd95df6acf8b1483befb9e2fc604c16932e5",
+  "maximum_new_operation_status_calls": 1,
+  "original_operation_status_calls": 1,
+  "maximum_combined_operation_status_calls": 8,
+  "maximum_operation_result_calls": 128,
+  "maximum_operation_start_calls": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_page_bytes": 8192,
+  "maximum_payload_bytes": 1048576,
+  "original_slot_byte_identical": true,
+  "new_status_is_not_missing_old_status_recovery": true,
+  "on_running_or_queued": "No second new status is authorized; hold same original future.",
+  "on_unknown": "Preserve new and old failures, pause only independent reconciliation context; no automatic retry.",
+  "on_closed": "Read only contiguous immutable pages of the same returned ID, then whole payload/native and exact original report INFO metadata.",
+  "BODY_authorized": false,
+  "report_target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ]
+  }
+}

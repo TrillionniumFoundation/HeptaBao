@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-report-body-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "x230",
+      "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+      "offset": 0,
+      "limit": 36658,
+      "expected_version": "2053:3318893:36658:1793979309530036044:1793979309530036044"
+    }
+  }
+}

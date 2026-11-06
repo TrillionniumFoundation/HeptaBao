@@ -1,0 +1,181 @@
+{
+  "schema": "heptabao.formatted23-final-verifier-R3-targeted-tests.v1",
+  "passed": true,
+  "cases": 28,
+  "positiveCases": 1,
+  "historicalNegativeCases": 26,
+  "incompleteFinalCase": 1,
+  "rows": [
+    {
+      "name": "all_three_exact_original_failures_and_recoveries",
+      "passed": true,
+      "checks": 1179
+    },
+    {
+      "name": "INFO10_failed_row_still_required",
+      "passed": true,
+      "error": "known_failed_row_required",
+      "expected": "known_failed_row_required"
+    },
+    {
+      "name": "BODY16_failed_row_deleted_rejected",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "BODY16_failed_row_accepted_rejected",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "BODY16_failed_called_reset_rejected",
+      "passed": true,
+      "error": "body16_original_failed_row_required",
+      "expected": "body16_original_failed_row_required"
+    },
+    {
+      "name": "BODY16_failed_row_rewritten_rejected",
+      "passed": true,
+      "error": "body16_failed_row_exact_snapshot",
+      "expected": "body16_failed_row_exact_snapshot"
+    },
+    {
+      "name": "shared_timeout_SDK_omitted_rejected",
+      "passed": true,
+      "error": "original_timeout_SDK:text_present",
+      "expected": "original_timeout_SDK:text_present"
+    },
+    {
+      "name": "BODY16_recovery_wrong_request_rejected",
+      "passed": true,
+      "error": "body16_separate_recovery_exact_request",
+      "expected": "body16_separate_recovery_exact_request"
+    },
+    {
+      "name": "BODY16_fourth_arm_leaf_missing_rejected",
+      "passed": true,
+      "error": "body16_exact_four_leaf_arm:exact_paths",
+      "expected": "body16_exact_four_leaf_arm:exact_paths"
+    },
+    {
+      "name": "fourth_recovery_call_rejected",
+      "passed": true,
+      "error": "no_unapproved_recovery_keys",
+      "expected": "no_unapproved_recovery_keys"
+    },
+    {
+      "name": "fourth_nonaccepted_call_rejected",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "BODY16_recovery_SDK_changed_rejected",
+      "passed": true,
+      "error": "body16_recovery_actual_SDK_pin",
+      "expected": "body16_recovery_actual_SDK_pin"
+    },
+    {
+      "name": "BODY16_old_failure_flag_cleared_rejected",
+      "passed": true,
+      "error": "body16_recovery_state_no_history_rewrite",
+      "expected": "body16_recovery_state_no_history_rewrite"
+    },
+    {
+      "name": "INFO10_old_failure_flag_cleared_rejected",
+      "passed": true,
+      "error": "recovery_state_does_not_clear_old",
+      "expected": "recovery_state_does_not_clear_old"
+    },
+    {
+      "name": "file7_archive_error_erased_rejected",
+      "passed": true,
+      "error": "file7_final_original_call_preserved",
+      "expected": "file7_final_original_call_preserved"
+    },
+    {
+      "name": "BODY16_recovery_origin_rewritten_rejected",
+      "passed": true,
+      "error": "body16_separate_recovery_exact_request",
+      "expected": "body16_separate_recovery_exact_request"
+    },
+    {
+      "name": "BODY16_recovery_called_reset_rejected",
+      "passed": true,
+      "error": "body16_separate_recovery_exact_request",
+      "expected": "body16_separate_recovery_exact_request"
+    },
+    {
+      "name": "BODY16_recovery_error_is_not_allowed",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "BODY16_next_counter_not_reset_to_p1",
+      "passed": true,
+      "error": "sf23-r1-f16-b00-p1:intent_exact_bytes",
+      "expected": "sf23-r1-f16-b00-p1:intent_exact_bytes"
+    },
+    {
+      "name": "BODY20_failed_row_deleted_rejected",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "BODY20_original_called_reset_rejected",
+      "passed": true,
+      "error": "body20_original_failed_row_required",
+      "expected": "body20_original_failed_row_required"
+    },
+    {
+      "name": "BODY20_failed_row_rewritten_rejected",
+      "passed": true,
+      "error": "body20_failed_row_exact_snapshot",
+      "expected": "body20_failed_row_exact_snapshot"
+    },
+    {
+      "name": "BODY20_wrong_recovery_origin_rejected",
+      "passed": true,
+      "error": "body20_separate_recovery_exact_request",
+      "expected": "body20_separate_recovery_exact_request"
+    },
+    {
+      "name": "BODY20_fourth_arm_leaf_required",
+      "passed": true,
+      "error": "body20_exact_four_leaf_arm:exact_paths",
+      "expected": "body20_exact_four_leaf_arm:exact_paths"
+    },
+    {
+      "name": "BODY20_original_prefix_page_required",
+      "passed": true,
+      "error": "body20_prior_page_1_row_required",
+      "expected": "body20_prior_page_1_row_required"
+    },
+    {
+      "name": "BODY20_history_preservation_flag_required",
+      "passed": true,
+      "error": "body20_recovery_state_no_history_rewrite",
+      "expected": "body20_recovery_state_no_history_rewrite"
+    },
+    {
+      "name": "BODY20_recovery_cannot_be_error",
+      "passed": true,
+      "error": "only_three_exact_nonaccepted_historical_calls",
+      "expected": "only_three_exact_nonaccepted_historical_calls"
+    },
+    {
+      "name": "not_all23_rejected",
+      "passed": true,
+      "error": "final23_requires_all_files",
+      "expected": "final23_requires_all_files"
+    }
+  ],
+  "fixtureUnchanged": true,
+  "newNativeCalls": 0,
+  "productCasesRun": 0,
+  "final23Qualified": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.source-layout-verifier-interface.r3",
+  "entryPoint": "verifyFixedBsdInfoGuardCorrection",
+  "definitions": [
+    "pure-helpers.original.js",
+    "strict-diff-helpers.original.js",
+    "verify-layout-and-binding.js"
+  ],
+  "inputs": {
+    "before": "source-before.r2.py",
+    "after": "source-after.r3.py",
+    "donor": "existing-BsdInfo-donor.original.py",
+    "appleHeader": "primary-Apple-proc_info.h",
+    "requestBefore": "request-before.r2.json",
+    "requestAfter": "request-after.r3.json",
+    "journalBefore": "journal-before.r2.js",
+    "journalAfter": "journal-after.r3.js",
+    "sourceDiff": "source-forward.diff",
+    "sourceReverse": "source-inverse.diff",
+    "journalDiff": "journal-forward.diff",
+    "journalReverse": "journal-inverse.diff"
+  },
+  "result": "actual-pure-layout-result.public.json",
+  "modelOnly": "Explicit ctypes fixed-width fields and native 4/8 alignment model. Current kernel returns/ctypes runtime not measured by this test.",
+  "notProductTest": true
+}

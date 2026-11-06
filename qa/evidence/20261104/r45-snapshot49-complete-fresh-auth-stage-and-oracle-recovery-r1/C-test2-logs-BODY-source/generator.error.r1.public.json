@@ -1,0 +1,8 @@
+{
+  "schema": "source-generation-error.r1",
+  "phase": "exact textual replacement",
+  "error": "unique replacement of old compiler-body file_info marker",
+  "native_calls": 0,
+  "source_changed": false,
+  "note": "Current INFO initializer uses an unconditional operation_start marker; use its actual bytes. Failed generator had no Git mutation or saved candidate."
+}

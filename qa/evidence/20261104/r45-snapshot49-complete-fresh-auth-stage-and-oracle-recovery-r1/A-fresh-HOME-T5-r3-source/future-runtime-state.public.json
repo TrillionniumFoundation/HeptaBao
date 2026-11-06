@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.fresh-home-runtime-unbound-state.v1",
+  "actualHomeBinding": null,
+  "runtimeExactRequest": null,
+  "actualPort": null,
+  "readyForRuntime": false,
+  "NativeCalls": 0,
+  "reason": "Actual new inert evidence is required; old R2 runtime bindings and private capsules are not supplied to this new generation."
+}

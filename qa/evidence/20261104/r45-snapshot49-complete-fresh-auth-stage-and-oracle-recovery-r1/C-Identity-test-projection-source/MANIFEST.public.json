@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.source.packet-manifest.r1",
+  "files": [
+    {
+      "path": "engine_identity.before.rs",
+      "blob": "54067536bc2d81a6dacf991bd1a0d6a9e15a8d82",
+      "bytes": 8980,
+      "sha256": "50c6520d55f126c25e2ae9ab8b8a06d41d18736d90be357383acc78800b9cc05"
+    },
+    {
+      "path": "engine_identity.after.rs",
+      "blob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+      "bytes": 9316,
+      "sha256": "38ceaaae5ed821b3ef5e0fde67ef6ed968966a808fab8bab6ec1c2393349807f"
+    },
+    {
+      "path": "engine_identity.strict.diff",
+      "blob": "be6f690806a9c378ee4866e47b321680d847d3d6",
+      "bytes": 669,
+      "sha256": "753f4ded9fd5014f70c10f9e6ff9e8c9b2d90d3cff2c8415e89ccbb3d9b8a9df"
+    },
+    {
+      "path": "service_native_jwt_tests.before.rs",
+      "blob": "e2f9097b9715b535ba1c4ef49d95fc46f0482a63",
+      "bytes": 37377,
+      "sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb"
+    },
+    {
+      "path": "service_native_jwt_tests.after.rs",
+      "blob": "57dd3760335f245f2a37540899b338a8b9b56189",
+      "bytes": 37451,
+      "sha256": "ab4b610f7bc1a74287710b3461c3f212ad6c6f7aabcf642c3302ea66dc51c57c"
+    },
+    {
+      "path": "service_native_jwt_tests.strict.diff",
+      "blob": "c07d8c08e0f93602e7a5a055af152afa50fbe197",
+      "bytes": 1866,
+      "sha256": "2943294e5185e47263e86f3fc4c8e604ddc2e807f90fe63d0e901683d341a90a"
+    },
+    {
+      "path": "REVIEW.public.json",
+      "blob": "36ee47ba279dbf653c2c5685ac78cb0f8951acd4",
+      "bytes": 7241,
+      "sha256": "c91688c2ae29cf7f9a29a561c13b380e1728e3c0b48ec01337f29e2d95fc7cac"
+    }
+  ],
+  "nonManifestFiles": 7,
+  "nonManifestBytes": 102900,
+  "runtime": false
+}

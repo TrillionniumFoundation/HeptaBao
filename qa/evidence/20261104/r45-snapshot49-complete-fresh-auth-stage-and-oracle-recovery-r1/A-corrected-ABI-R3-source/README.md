@@ -1,0 +1,7 @@
+# One-literal BsdInfo guard correction, SOURCE R3
+
+The original R2 run is preserved in full70 tree8a2a4c0b3dde3e7912cbf0ccd62a09c93e0d5a53. It failed at the composite ABI constructor guard after one exact missing-registration print; it did not produce a current PID sample or the later public-file observations. Its own Native observers, application FDs and direct helper are closed; the managed scope is still UNKNOWN.
+
+Apple primary proc_info.h 59–82 and the existing whole donor BsdInfo 34–44 have the same 22 fields in the same order. A pure V8 alignment calculation from the actual declarations gives pgid=100 and ttydev=108, with size136 and birth120/128. The definition is unchanged. This corrects only the erroneous guard literal108→100. It does not weaken or skip ABI/platform/self/errno/complete-count checks; the runtime must still pass them before target observation. The prior report did not publish actual individual ctypes offsets, so the layout proof is explicitly source-model evidence rather than a new kernel measurement.
+
+One source hunk each direction; two journal hunks each direction with new request/slot/prefix only. Requests still use typed stdin. Schema and all classification/UNKNOWN, deadlines, fixed paths, output privacy, resource-closure and no-cleanup semantics remain byte-exact. No generic probe, host call, source module, Python test or SDK ran while preparing this packet. Slot remains uninitialized until a separate exact GO and lane.

@@ -1,0 +1,147 @@
+--- a/journal
++++ b/journal
+@@ -15,6 +15,49 @@
+ const GF_REQUESTS = [{"blob":"9544655b6318cbce522c99f5e3249cb2778abbbe","bytes":311,"sha256":"89191105baec90a3834d074985a5f6b8a028e47e34f5ad7c8fa8b300d6dcfa13"},{"blob":"f54c0e83145aa26e5482738b6c4ddcdc9b956dd3","bytes":311,"sha256":"88db304a9452f4d97155de290025c34facb9749ed23dcb50dc7cf352cf214458"}];
+ const GF_LOG_METADATA_MAX_BYTES = 1048576;
+ 
++/* Separate exact GO: failed-test stderr191 then stdout375, total566.
++ * Both original INFOs closed. Only new binary payload pages use16KiB.
++ */
++const GF_LOG_BODY_REQUESTS = [{"blob":"b8a6cdfc57c4af38b09c17308cf3e3b82e61ba80","bytes":440,"sha256":"6f608f38a8ae79f43a09f98c5dd5120736ee9687ce16ce3194b66d58db24240c"},{"blob":"3b9d51d53f0b10ef67077bb34d7805196b45cd3b","bytes":440,"sha256":"10e36468d51b3976bc8d52c2a16eca8356e19025de8e641597bdf0070bde6f47"}];
++const GF_LOG_BODY_EXPECTED = [{"path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr","bytes":191,"sha256":"9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf","version":"66306:33202269:191:1793974566577453065:1793974566577453065","infoOperation":"c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085","infoNative":{"blob":"b1b5c5c6831ff668ce0443043a92d65483acf5bd","bytes":488,"sha256":"f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"},"full9Strings":["66306","33202269","1000","1000","33152","1","191","1793974566577453065","1793974566577453065"]},{"path":"/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout","bytes":375,"sha256":"baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad","version":"66306:33202268:375:1793974566577453065:1793974566577453065","infoOperation":"e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1","infoNative":{"blob":"98463cbd918907c6051a36bef453efe2136a48d3","bytes":488,"sha256":"43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"},"full9Strings":["66306","33202268","1000","1000","33152","1","375","1793974566577453065","1793974566577453065"]}];
++const GF_LOG_INFO_PREREQUISITES = [{"id":"c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085","tool":"file_info","nativeText":{"blob":"b1b5c5c6831ff668ce0443043a92d65483acf5bd","bytes":488,"sha256":"f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"}},{"id":"e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1","tool":"file_info","nativeText":{"blob":"98463cbd918907c6051a36bef453efe2136a48d3","bytes":488,"sha256":"43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"}}];
++function gfAuthorizeFailedTestLogBodiesOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState();
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
++   && s.onlyFixedCompilerLogInfos===true && s.logInfos.length===2
++   && s.completedObservers.length===2 && s.logInfoStarted.every(x=>x===true)
++   && Object.keys(s.calls).length===6 && Object.values(s.calls).every(c=>c.phase==="accepted"&&c.sdkArchive.whole===true)
++   && s.failedTestLogBodiesGO===undefined && s.failedTestLogBodies===undefined,
++   "both_original_log_infos_closed_before_two_bodies");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin) && goPin.blob!==s.goPin.blob,
++   "separate_whole_two_log_bodies_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="build_failed_test2_logs_binary_read_only"
++   && g.original_job==="1a1b10cad9b-fc05-7560"
++   && g.maximum_binary_read_starts===2 && g.maximum_file_info_starts===0
++   && g.maximum_process_start_calls===0 && g.immutable_body_page_bytes===16384
++   && Array.isArray(g.exact_requests) && g.exact_requests.length===2
++   && g.exact_requests.every((x,i)=>x.blob===GF_LOG_BODY_REQUESTS[i].blob
++    && x.bytes===GF_LOG_BODY_REQUESTS[i].bytes && x.sha256===GF_LOG_BODY_REQUESTS[i].sha256)
++   && JSON.stringify(g.info_operations)===JSON.stringify(GF_LOG_INFO_PREREQUISITES.map(x=>x.id)),
++   "two_exact_original_test_bodies_only_scope");
++ for(let i=0;i<2;i++) {
++  const p=GF_LOG_INFO_PREREQUISITES[i],o=s.completedObservers[i],info=s.logInfos[i],need=GF_LOG_BODY_EXPECTED[i];
++  gfNeed(o?.id===p.id && o.completedInactive===true && o.tool==="file_info"
++   && o.nativeText.blob===p.nativeText.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+p.id),p.nativeText),
++   "both_independent_log_infos_whole");
++  gfNeed(info.path===need.path && info.size===need.bytes && info.sha256===need.sha256
++   && info.version===need.version && info.originalOperation===need.infoOperation
++   && JSON.stringify(info.full9Strings)===JSON.stringify(need.full9Strings)
++   && need.bytes===[191,375][i] && need.bytes<=65536,"whole_actual_log_info_binding");
++ }
++ s.failedTestLogBodiesGO={pin:goPin,raw:goRaw,whole:true};
++ s.failedTestLogBodies=[];s.failedTestLogBodyStarted=[false,false];
++ gfSave(s);
++ return {exactRequests:GF_LOG_BODY_REQUESTS,maximumBinaryReads:2,bytes:566};
++}
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -91,6 +134,21 @@
+  if(kind==="process_start") {
+   throw new Error("metadata_scope_has_no_process_start_authorization");
+  } else if(kind==="operation_start") {
++  if(s.failedTestLogBodiesGO?.whole===true) {
++   const i=s.failedTestLogBodies.length,need=GF_LOG_BODY_EXPECTED[i],a=q.operation?.arguments;
++   gfNeed(i<2 && s.activeObserver===null && s.failedTestLogBodyStarted[i]===false
++     && s.logInfos.length===2 && s.completedObservers.length===2+i
++     && Object.values(s.calls).filter(c=>c.kind==="operation_start").length===2+i
++     && gfMetaEquals(raw,GF_LOG_BODY_REQUESTS[i])
++     && Object.keys(q).sort().join(",")==="idempotency_key,operation"
++     && q.operation?.tool==="binary_read"
++     && Object.keys(q.operation).sort().join(",")==="arguments,tool"
++     && a && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++     && a.host==="rog" && a.path===need.path && a.offset===0
++     && a.limit===need.bytes && a.expected_version===need.version,
++     "two_sequential_exact_log_bodies_no_path_or_version_fallback");
++   return;
++  }
+   const i=s.logInfos.length,need=GF_LOG_TARGETS[i];
+   gfNeed(s.onlyFixedCompilerLogInfos===true && s.job===null && s.activeObserver===null
+     && i<2 && s.completedObservers.length===i && s.logInfoStarted[i]===false
+@@ -111,7 +169,7 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
++   && q.operation_id===s.activeObserver.id && q.limit===(s.activeObserver.tool==="binary_read"?16384:8192)
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -123,7 +181,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.failedTestLogBodiesGO?.pin??s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -153,7 +211,8 @@
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
+- if(c.kind==="operation_start")s.logInfoStarted[s.logInfos.length]=true;
++ if(c.kind==="operation_start" && q.operation.tool==="file_info")s.logInfoStarted[s.logInfos.length]=true;
++ if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.failedTestLogBodyStarted[s.failedTestLogBodies.length]=true;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -237,7 +296,7 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
++   gfNeed(b.length<=(a.tool==="binary_read"?16384:8192) && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -279,7 +338,24 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
+-  if(a.tool==="file_info") {
++  if(a.tool==="binary_read") {
++   const i=s.failedTestLogBodies.length,need=GF_LOG_BODY_EXPECTED[i];
++   gfNeed(i<2 && s.failedTestLogBodiesGO?.whole===true && s.failedTestLogBodyStarted[i]===true
++    && a.request.operation.arguments.path===need.path
++    && v.path===need.path && v.size===need.bytes && v.offset===0
++    && v.next_offset===need.bytes && v.eof===true
++    && v.version===need.version && v.chunk_sha256===need.sha256,
++    "exact_versioned_original_test_log_body");
++   const b=unb64(v.data_base64),bodyRaw=utf8Text(b),bodyPin=gitBlobMeta(bodyRaw);
++   gfNeed(b.length===need.bytes && bodyPin.bytes===need.bytes
++     && bodyPin.sha256===need.sha256,"whole_original_test_log_bytes");
++   const bodyArchive=await archiveFlatPublicTextsOnce({
++    key:"gcc-testlog-"+a.id,repository:"TrillionniumFoundation/HeptaBao",
++    texts:{[GF_LOG_TARGETS[i].role+".original.txt"]:bodyRaw,"native.original.json":nativeRaw}});
++   s.failedTestLogBodies.push({...bodyPin,index:i,role:GF_LOG_TARGETS[i].role,
++     archiveTree:bodyArchive.tree,whole:true,originalOperation:a.id,version:need.version,path:need.path});
++   store(GF_SLOT+":test_log_original:"+i,bodyRaw);
++  } else if(a.tool==="file_info") {
+    const i=s.logInfos.length,need=GF_LOG_TARGETS[i],md=v.metadata;
+    const parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(i<2 && s.onlyFixedCompilerLogInfos===true && s.logInfoStarted[i]===true
+@@ -381,7 +457,8 @@
+ async function gfRun(action,args) {
+  try {
+   let value;
+-  if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  if(action==="authorize_failed_test_log_bodies")value=gfAuthorizeFailedTestLogBodiesOnly(args);
++  else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

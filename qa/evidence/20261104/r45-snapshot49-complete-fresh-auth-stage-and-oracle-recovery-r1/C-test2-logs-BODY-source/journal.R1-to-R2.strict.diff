@@ -1,0 +1,11 @@
+--- a/journal-r1-to-r2
++++ b/journal-r1-to-r2
+@@ -181,7 +181,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.failedTestLogBodiesGO?.pin??s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};

@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.root-formatted23-file20-third-failed-page.r1",
+  "passed": true,
+  "checks": 28,
+  "rows": [
+    {
+      "name": "exact_original_future",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_0",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_0",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_exact_0",
+      "passed": true
+    },
+    {
+      "name": "one_original_admission",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_1",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_1",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_exact_1",
+      "passed": true
+    },
+    {
+      "name": "original_status_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_2",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_2",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_exact_2",
+      "passed": true
+    },
+    {
+      "name": "original_contiguous_retained_page_2",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_3",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_3",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_exact_3",
+      "passed": true
+    },
+    {
+      "name": "original_contiguous_retained_page_3",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_4",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_4",
+      "passed": true
+    },
+    {
+      "name": "SDK_native_exact_4",
+      "passed": true
+    },
+    {
+      "name": "original_contiguous_retained_page_4",
+      "passed": true
+    },
+    {
+      "name": "whole_request_SDK_arm_5",
+      "passed": true
+    },
+    {
+      "name": "original_once_phase_5",
+      "passed": true
+    },
+    {
+      "name": "exact_third_failed_request_and_SDK",
+      "passed": true
+    },
+    {
+      "name": "partial_pages_preserved_no_decode",
+      "passed": true
+    },
+    {
+      "name": "no_call_or_future",
+      "passed": true
+    },
+    {
+      "name": "paused_at_original_failed_call",
+      "passed": true
+    },
+    {
+      "name": "earlier_errors_preserved",
+      "passed": true
+    }
+  ],
+  "tree": "36dc9674f97cff520e471587acf5800437300723",
+  "originalOperation": "2d748c65bb3394cc8a97b59b24027a4f3ee24a18885a04523c98435b3fefc1fe",
+  "receivedPayloadBytes": 49152,
+  "payloadTotal": 63251,
+  "originalFailedPageCalled": true,
+  "originalFutureClosed": true,
+  "observationLaneReleased": true,
+  "immutableLastPageDeliveryUnknown": true,
+  "productFailureInferred": false,
+  "final23Qualified": false
+}

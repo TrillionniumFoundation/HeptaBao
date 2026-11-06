@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.original.unknown.packet.r1",
+  "files": [
+    {
+      "path": "ROOT-GO.original.public.json",
+      "blob": "aa4fa36c2ca7ed712278b931131bff42ce2be499",
+      "bytes": 3343,
+      "sha256": "4fe5f0056e70e5401dde09bf991e164233e22879a6c33459391c38629ec47165"
+    },
+    {
+      "path": "journal.original.js",
+      "blob": "ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef",
+      "bytes": 23027,
+      "sha256": "10739a5286bb58b85a5b83b16b38081264df4371926f186d27cdcc757084d783"
+    },
+    {
+      "path": "STATE.paused.original.json",
+      "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+      "bytes": 223583,
+      "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+    },
+    {
+      "path": "ADMISSION.original.sdk.json",
+      "blob": "d25c6287df0569fd0ba825ed6e5d23f72aca6140",
+      "bytes": 704,
+      "sha256": "8e02ffead7322e9747b0ee818de5a33cc45b31f07bec4d948cd7dba1ccfd012c"
+    },
+    {
+      "path": "ADMISSION.native.original.json",
+      "blob": "f326ffb97555d99815e8cf26b843f076b675609f",
+      "bytes": 543,
+      "sha256": "02b40892a1f81da8b85aa8aa9301b2c267173b1b8db0ba01b632b9ee57bdd2bf"
+    },
+    {
+      "path": "STATUS.original.sdk.json",
+      "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+      "bytes": 248,
+      "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"
+    },
+    {
+      "path": "FAILURE.original.json",
+      "blob": "9698fce36007ca93a05dde1121690a74747a16af",
+      "bytes": 237,
+      "sha256": "1dfda1fd3bdc3a38f8121639317a01b437f34e554ee5dc7417c40da8602c4643"
+    },
+    {
+      "path": "ADMISSION.request.json",
+      "blob": "3d4b0ac9b5e642da091ae07c6e446c2c4947b817",
+      "bytes": 267,
+      "sha256": "4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"
+    },
+    {
+      "path": "ADMISSION.intent.json",
+      "blob": "9e57f74798cb741b8d4100ac3927717759e00069",
+      "bytes": 733,
+      "sha256": "fbb42d6b7d690d7a677e1e20eb5dd924c1728f35139d72466323048316671658"
+    },
+    {
+      "path": "ADMISSION.armed.json",
+      "blob": "2cc252c9055fd4e116cb1a80c1c348a7a38f7181",
+      "bytes": 870,
+      "sha256": "6a0db890ae0653e5c6d3e0b24e968b662342189b507e300cc5e68949588b9f89"
+    },
+    {
+      "path": "STATUS.request.json",
+      "blob": "218e1601e3925e6e4923aee8a43b9cb8ed1e3c31",
+      "bytes": 89,
+      "sha256": "862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14"
+    },
+    {
+      "path": "STATUS.intent.json",
+      "blob": "37ff454dfd3378252ad2d18ad7e5fb63aaf25349",
+      "bytes": 797,
+      "sha256": "f9e1497d4c3c5c66bbfaeea8788ff1279a1e5867df66843732703e4179884e83"
+    },
+    {
+      "path": "STATUS.armed.json",
+      "blob": "0da045af1e6285f42f9bef21f9820f1ba66cd212",
+      "bytes": 934,
+      "sha256": "397d0da72cbe1196097092508fa8c70a7886a4903a0e8ea561c79a86d008c2cf"
+    },
+    {
+      "path": "UNKNOWN.public.json",
+      "blob": "314a476e3e365063e4ac632b2dcc9fa8173f357c",
+      "bytes": 1816,
+      "sha256": "752d1edbc09722dc8067f2bfd6544cb999e9b94c46c54a7597757a21f60a6b86"
+    }
+  ]
+}

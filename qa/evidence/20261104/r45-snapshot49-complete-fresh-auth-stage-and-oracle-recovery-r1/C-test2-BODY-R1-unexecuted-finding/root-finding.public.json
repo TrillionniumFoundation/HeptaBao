@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root-test2-log-body-source-GO-association-finding.r1",
+  "sourcePacket": "0bac28564b650ac44f8a5b6da52f371f6b0c50a6",
+  "source": {
+    "blob": "7e4332a15642b9bed13804656996c2637bddecfe",
+    "bytes": 31488,
+    "sha256": "ff917a9994cd365fd3cad7d404226a78b7c67386814e67bde701fb346a3c275d"
+  },
+  "author32": {
+    "exact": true,
+    "pass": true,
+    "scope": "ranges, sequential guards and original-function invariance; does not test actual arm GO association"
+  },
+  "finding": "After gfAuthorizeFailedTestLogBodiesOnly stores the separate BODY GO in s.failedTestLogBodiesGO, unchanged gfPrepareOne records rootGo:s.goPin. The latter is the older INFO-only GO, so new binary_read/status/result arms do not bind the scope that authorizes them.",
+  "basis": "Exact source control flow only; no BODY dispatched.",
+  "requiredChange": "Use the validated separate BODY GO pin for new calls after BODY authorization; retain original INFO pin before authorization and all archived old call bytes. Add a selected prepare-function fake-archive test that inspects the actual arm/intent GO pin for new admission/status/result.",
+  "runtimeGOIssued": false,
+  "productFailureInferred": false,
+  "NativeCalls": 0,
+  "fullReplacement": false
+}

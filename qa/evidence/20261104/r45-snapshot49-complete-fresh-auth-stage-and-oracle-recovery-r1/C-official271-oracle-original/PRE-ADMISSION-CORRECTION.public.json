@@ -1,0 +1,12 @@
+{
+  "scope": "local_pure_GO_pin_check",
+  "firstError": "checked pin.sha instead of actual gitBlobMeta.blob",
+  "corrected": "pin.blob",
+  "candidateChanged": false,
+  "nativeAdmission": false,
+  "goPin": {
+    "blob": "f2ad9c134f825e4a3d01b6b26f7e389e5586f4ce",
+    "bytes": 6932,
+    "sha256": "1c878e4714ad614af5b745159a9b2afab5c53c0780daf09e79c3b8b90f464fb0"
+  }
+}

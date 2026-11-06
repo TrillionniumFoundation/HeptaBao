@@ -1,0 +1,223 @@
+{
+  "schema": "heptabao.fixed-current-independent-label-pid-ABI-guard-correction-source.r3",
+  "status": "SOURCE_ONLY_NO_ROOT_RUNTIME_GO_SLOT_NOT_INITIALIZED",
+  "source": {
+    "blob": "3673a9582878d49378eb137d6beca5b178536680",
+    "bytes": 97960,
+    "sha256": "171610eee5cc2a27603755824320b5a7ead3f0bea9b34f2073a13cdc8e4f9f58"
+  },
+  "request": {
+    "blob": "cc19ffd0289089abf1c9d4bb0ca9034399cd4766",
+    "bytes": 100604,
+    "sha256": "59276c235f034970a2d636a3ae99ea53da32bc7df0eef7e1e80a1a2388f5b6bc"
+  },
+  "journal": {
+    "blob": "99c8925a6db3b3aceeb7ac8944e6d829e08bb7f2",
+    "bytes": 19066,
+    "sha256": "37f3efb5196fccf75654e1db2d2ca6a15cf8916a1813c25738fda6c13d1fac6d"
+  },
+  "slot": "owner_authbus_home_r2_current_pid_observation_gitfirst_r3",
+  "requestKey": "heptabao-mac-current-home-pid-observation-171610ee-20261106-r3",
+  "observerPrefix": "heptabao-mac-current-home-pid-observation-171610ee-",
+  "base": {
+    "sourceTree": "9bfe0ab239cc4920b51e18797accc8debab77b72",
+    "source": {
+      "blob": "873fd511a30f70bfeba0a661f13952e122e40d94",
+      "bytes": 97960,
+      "sha256": "a414b14bc90f9b1839331a4d1414b195e3ac675811944eb3a274537c531fe1c4"
+    },
+    "request": {
+      "blob": "a5848db0ad380f240dc6f780f612034c3b76475a",
+      "bytes": 100604,
+      "sha256": "9925e3cc5e0bb691d5e0e144db9747c1e57989bf87da6151120e30dbca637ee7"
+    },
+    "journal": {
+      "blob": "bacb6c8837b11a3c3e879c7cef8da5a7bce69124",
+      "bytes": 19066,
+      "sha256": "69ec43c2da1007248ecd1874e5c33a35e5c8ced05b08f839fefdde72b26bff82"
+    },
+    "sourceRootQualification": "acbf98a5eecee3b444b70ab54761e39839fc1922"
+  },
+  "actualTrigger": {
+    "fullTree": "8a2a4c0b3dde3e7912cbf0ccd62a09c93e0d5a53",
+    "minimumTree": "0609cf6640223472d354f68319ee79f075785b1b",
+    "job": "mac/1a1b16dddc3-fc05-78a6",
+    "stdout": {
+      "blob": "33264a7b25737c70cbdb14b2a43046ec89ab2527",
+      "bytes": 7147,
+      "sha256": "95b554068c597e9e447da7986523e2428497d6b30db0e1235571b6d0d841167b"
+    },
+    "authority": {
+      "blob": "dfdbcd00cf4cb5f618601b5eaab17ae3f2479ff7",
+      "bytes": 728,
+      "sha256": "511d07d599ec598337f54e6f15de1b04041802f369a6a7ec988e9028323ccdab"
+    },
+    "exitCode": 1,
+    "errorCode": "current_pid_exact_bsdinfo_abi",
+    "stage": "fixed_current_pid_before",
+    "observationComplete": false,
+    "outcomeUnknown": true,
+    "currentPidMetadata": null,
+    "firstCurrentRegistration": "exact_missing_registration",
+    "ownApplicationDescriptorsClosed": true,
+    "ownDirectHelpersClosed": true,
+    "observationLaneReleased": true,
+    "historicalStateRewritten": false
+  },
+  "onlySourceChange": {
+    "path": "FixedCurrentPid.__init__",
+    "line": 597,
+    "before": "BsdInfo.pgid.offset == 108",
+    "after": "BsdInfo.pgid.offset == 100",
+    "forwardHunks": 1,
+    "reverseHunks": 1,
+    "allOtherSourceBytesUnchanged": true,
+    "publicProtocolSchemaUnchanged": true
+  },
+  "layoutEvidence": {
+    "primaryHeader": {
+      "blob": "718a69fcf5340f547893ed8dc85908f253c1ce81",
+      "bytes": 31682,
+      "sha256": "f898ba1f6acecf128f6bb960bf07c7029fdd936620e03b6206419834cf2941fa"
+    },
+    "primaryLines": [
+      59,
+      82
+    ],
+    "donor": {
+      "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    "donorLines": [
+      34,
+      44
+    ],
+    "originalAndCorrectedDefinitionEqualDonor": true,
+    "fieldCount": 22,
+    "explicitCtypesModel": {
+      "uint32Bytes": 4,
+      "uint64Bytes": 8,
+      "uidGidBytes": 4,
+      "charBytes": 1,
+      "commChars": 16,
+      "nameChars": 32,
+      "largestAlignment": 8
+    },
+    "arithmetic": "12 uint32 fields =48; comm16 and name32 reach96; nfiles96; pgid100; jobc104; ttydev108; tty_pgid112; nice116; birth120/128; size136",
+    "originalGuardMismatches": [
+      "pgid"
+    ],
+    "correctedGuardMismatches": [],
+    "sourceLayoutOnlyNotCurrentKernelMeasurement": true,
+    "actualIndividualCtypesOffsetsPublishedByPriorRun": false,
+    "originalFailureHasCompositeGuardCode": true
+  },
+  "target": {
+    "host": "mac",
+    "jobLabel": "org.heptabao.qa.mac-authbus-4e808-home-r2.server",
+    "pid": 32527,
+    "pidSource": "fresh current registration diagnostic c984004abb7a5259246308a4c95af7de675f058c; both prints",
+    "historicalBirth": null,
+    "signalAuthorized": false,
+    "bootoutAuthorized": false,
+    "currentRegistrationRequiredToReadFixedPid": false,
+    "currentRegistrationRequiredForFutureIdentityQualification": true
+  },
+  "budgets": {
+    "sharedSeconds": 45,
+    "helperAdmissionEndSeconds": 35,
+    "outerSeconds": 60,
+    "applicationFdAttemptCap": 64,
+    "applicationMetadataCap": 4096,
+    "applicationReadBytes": 262144,
+    "applicationReadCalls": 256,
+    "applicationWriteBytes": 0,
+    "applicationWriteCalls": 0,
+    "launchctlPrintCalls": 2,
+    "eachPrintSeconds": 10,
+    "addedExplicitLibproc": {
+      "bsdinfoArg1": 6,
+      "pidpath": 2,
+      "directChildCount": 2,
+      "totalCalls": 10,
+      "knownPidTargets": [
+        "self",
+        32527
+      ],
+      "blocks": [
+        {
+          "kind": "self-two-plus-first-target-pair",
+          "maxSeconds": 4
+        },
+        {
+          "kind": "second-target-pair",
+          "maxSeconds": 4
+        }
+      ],
+      "clippedToOriginal35And45": true,
+      "individualSynchronousCCallPreemptionClaimed": false,
+      "excludesOriginalCommandsInternalOperations": true
+    },
+    "nativeObserver": {
+      "processStatusMax": 8,
+      "processReadMax": 8,
+      "eachObserverStatusMax": 8,
+      "eachObserverPageMax": 128,
+      "pageBytes": 8192,
+      "serializedPayloadCap": 1048576,
+      "processReadBytes": 16384,
+      "eachStreamObservedCap": 131072
+    }
+  },
+  "classificationBoundary": "observationComplete may describe completed fixed observations while outcomeUnknown remains true and exit is nonzero. ESRCH returned twice or exact label missing twice does not establish historical exit/reap/managed closure. A current stable identity is not the original ready identity.",
+  "eligibility": {
+    "beforeAndAfterSameLifetime": true,
+    "currentLabelMappingSameFixedPid": true,
+    "uid501": true,
+    "pgidMatchesPid": true,
+    "kernelImageExactBoolean": true,
+    "directChildrenZeroBoth": true,
+    "actualResultRequired": true,
+    "noCurrentCleanupAuthorization": true,
+    "allOriginalFinalFencesAndOwnClosureStillRequired": true,
+    "oldBirthKnown": false
+  },
+  "privateBoundary": "The same seven fixed application paths include the private stdout container: only the original bounded first prefix/first-LF allowlist is read/projected. Tail may enter that first bounded block but is not exported; stderr remains metadata-only. No private plan/capsule/credential body.",
+  "history": {
+    "currentManagedScopeStillUnknown": true,
+    "originalFailureRewritten": false,
+    "originalRegistrationClosureClaimed": false,
+    "originalPrivateCapsuleRead": false
+  },
+  "unchanged": [
+    "BsdInfo field declaration and original embedded Commands/Signals/FixedIO",
+    "Darwin/platform, total136 and all other fixed offset guards",
+    "self two-sample numeric checks and complete136/errno/shape handling",
+    "only self and fixed32527, six numeric/two path/two child-count maximum",
+    "independent exact label/PID branches and two original print order",
+    "all seven fixed application paths, full9/source hashes, final fences",
+    "45/35/60 and all original I/O/FD/helper/output/immutable-page caps",
+    "strict original parse_print, private output allowlists and original cleanup/UNKNOWN derivation"
+  ],
+  "requestDifference": "Only exact stdin whole source and fresh stable idempotency key; host, regular interpreter, argv, cwd, timeout unchanged.",
+  "journalDifference": "Only fixed request pin, fresh GF_SLOT and observer-prefix literals; 2 forward/2 inverse hunks. No native dispatch/recovery logic changed.",
+  "validation": {
+    "actualPureV8Checks": 41,
+    "passed": true,
+    "old62Rerun": false,
+    "pythonCompiled": false,
+    "pythonExecuted": false,
+    "ctypesLoaded": false,
+    "libprocCalled": false,
+    "newNativeCalls": 0
+  },
+  "rootRuntimeGo": null,
+  "mayInitializeSlot": false,
+  "newService": false,
+  "bootstrap": false,
+  "bootout": false,
+  "managedSignals": false,
+  "credentialRead": false,
+  "privatePlanOrCapsuleRead": false
+}

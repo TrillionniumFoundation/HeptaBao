@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.formatted23.aggregate-original-UNKNOWN.v1",
+  "expectedTree": "4c07a3c51544435ed297c427c4222cd0634c4192",
+  "createInvokedOnce": true,
+  "createResult": "ReadTimeout UNKNOWN",
+  "createOriginalSDK": {
+    "blob": "5b899231bee4585be68efe3224c54e52874e4d18",
+    "bytes": 194,
+    "sha256": "c9e8fcc415695e46f1dbd3d5bca4161cd054987a342569d29826ceea270c76d1"
+  },
+  "exactReadonlyReconcileCalls": 1,
+  "readResult": "GitHub 422 Invalid object requested",
+  "readOriginalSDK": {
+    "blob": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+    "bytes": 786,
+    "sha256": "38e2155511441400086c4eeea86ff4ba61623c5050c5b38231936dfeefa047ea"
+  },
+  "originalCreateDisposition": "UNKNOWN remains; read rejection is not proof create never happened",
+  "sameCreateMustNotReplay": true,
+  "newPlan": "A distinct grouped reference aggregate using small immutable subtree groups and a new explicit layout; original source/SDK/arm/payload/body bytes remain unchanged.",
+  "originalNativeScopeAllClosed": true,
+  "NativeCallsFromThisArchive": 0,
+  "final23Checks": 18051,
+  "targetedCases": 28
+}

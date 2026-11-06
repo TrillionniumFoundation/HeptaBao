@@ -1,0 +1,18 @@
+function rootFormatted23FinalQualification(repro,targeted,rawPool,sourceQ,recoveryQ,aggregate,state) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},v=repro.value;
+ ck("exact_original18051_reproduced",repro.exactOriginal&&v.passed&&v.checks===18051&&repro.pins.blob==="5e68cfc89ea040c5f7e9026e01e6c8a3deee272f");
+ ck("all1548_raw_bytes_independently_whole",rawPool.allWhole&&rawPool.count===1548&&rawPool.bytes===11833720&&rawPool.derivedParentsExactlyReproduced===330&&rawPool.NativeCalls===0);
+ ck("exact28_targeted_cases",targeted.exact&&targeted.value.passed&&targeted.value.cases===28&&targeted.value.positiveCases===1&&targeted.value.historicalNegativeCases===26&&targeted.value.incompleteFinalCase===1);
+ ck("source35_and_actual_recovery19",sourceQ.value.passed&&sourceQ.value.checks===35&&recoveryQ.value.passed&&recoveryQ.value.checks===19&&recoveryQ.value.originalThreePagesPreserved);
+ ck("exact_original_call_geometry",v.totalOriginalCallRecords===274&&v.originalAdmissions===59&&v.originalObservers===59&&v.originalStatusCalls===59&&v.successfulImmutablePages===153);
+ ck("three_failures_and_recoveries_preserved",v.historicalNativeErrorCalls===3&&v.separateImmutablePageRecoveryCalls===3&&v.historicalGitArmReadErrors===1&&v.unknownRecordsPreserved);
+ ck("all23_changed_files_whole",v.changedFiles===23&&v.changedBodyBytes===1346637&&state.outputFiles.length===23);
+ ck("26_frozen_whole_reuses",v.unchangedWholeSourceReuses===26&&v.unchangedBodyBytes===686814);
+ ck("distinct49_actual_mapping",v.canonicalMapping.length===49&&new Set(v.canonicalMapping.map(x=>x.canonicalPath)).size===49);
+ ck("fresh_metadata_and_reuse_distinguished",v.canonicalMapping.filter(x=>x.evidenceKind==="fresh_changed_output_INFO_and_version_bound_body").length===23&&v.canonicalMapping.filter(x=>x.independentOutputMetadataObserved===false&&x.version===null).length===26);
+ ck("final_original_slot_closed",state.pending===null&&state.activeObserver===null&&!state.nativeCallInFlight&&!state.paused&&state.completedObservers.length===59&&state.completedObservers.every(x=>x.completedInactive===true));
+ ck("reachable_aggregate_whole",aggregate.audit.whole&&aggregate.audit.tree==="7163d1bc4cb7b8dd4bda0b584964c55d27cc9054"&&aggregate.audit.files===1281&&aggregate.audit.bytes===15834032&&aggregate.audit.merkle.trees_verified===648);
+ ck("aggregate_original_final_state",aggregate.raw["owner-release/STATE.original.json"]===undefined||gitBlobMeta(aggregate.raw["owner-release/STATE.original.json"]).blob===gitBlobMeta(JSON.stringify(state,null,2)+"\n").blob);
+ ck("no_product_test_or_build_claim",v.newRuntimeCalls===0&&v.productTestOrBuildQualification===false);
+ return{schema:"heptabao.root-final-formatted23-49-original-evidence.r1",passed:true,checks:rows.length,rows,aggregateTree:aggregate.audit.tree,fullResult:repro.pins,originalCallRows:274,originalAdmissions:59,originalStatuses:59,originalObservers:59,successfulImmutablePages:153,historicalFailedDeliveries:3,separateRecoveryCalls:3,changedFiles:23,changedBytes:1346637,frozenWholeReuses:26,reusedBytes:686814,canonicalMapping:49,all49SourceEvidenceQualified:true,sourceBaselineIntegrationPending:true,productTestOrBuildQualification:false,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

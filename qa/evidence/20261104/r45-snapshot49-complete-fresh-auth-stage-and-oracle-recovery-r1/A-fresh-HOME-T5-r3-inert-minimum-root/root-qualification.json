@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.root-fresh-HOME-T5-r3-inert-minimum.r1",
+  "passed": true,
+  "checks": 21,
+  "rows": [
+    {
+      "name": "whole_minimum9",
+      "passed": true
+    },
+    {
+      "name": "source47_qualified",
+      "passed": true
+    },
+    {
+      "name": "exact_inert_GO",
+      "passed": true
+    },
+    {
+      "name": "whole_original_START",
+      "passed": true
+    },
+    {
+      "name": "unique_exact_START",
+      "passed": true
+    },
+    {
+      "name": "original_authority_success",
+      "passed": true
+    },
+    {
+      "name": "complete_durable_confirmed_output",
+      "passed": true
+    },
+    {
+      "name": "exact_whole_streams",
+      "passed": true
+    },
+    {
+      "name": "original_observer1_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "original_observer2_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "original_observer3_completed_inactive",
+      "passed": true
+    },
+    {
+      "name": "post_finally_success_known",
+      "passed": true
+    },
+    {
+      "name": "22_sources8_documents2_HOME",
+      "passed": true
+    },
+    {
+      "name": "18_Python_sources_compiled_only",
+      "passed": true
+    },
+    {
+      "name": "fresh_explicit_namespace",
+      "passed": true
+    },
+    {
+      "name": "HOME_8_returned_descriptors_closed",
+      "passed": true
+    },
+    {
+      "name": "T5_anchors_closed",
+      "passed": true
+    },
+    {
+      "name": "single_helper_reaped",
+      "passed": true
+    },
+    {
+      "name": "receipt_observed15237_not_yet_independently_read",
+      "passed": true
+    },
+    {
+      "name": "no_business_service_or_private_capture",
+      "passed": true
+    },
+    {
+      "name": "closed_lane_history_preserved",
+      "passed": true
+    }
+  ],
+  "packet": "c6210845399f86719380b87de175055fe1ee403d",
+  "job": "1a1b19aef7b-fc05-79d3",
+  "publicInertStageSucceeded": true,
+  "sourceFiles": 22,
+  "publicDocuments": 8,
+  "homeCopies": 2,
+  "currentNativeCalls": 0,
+  "currentOwnedFutures": 0,
+  "receiptBodyIndependentlyRead": false,
+  "fullOriginalChainQualificationPending": true,
+  "credentialsQualified": false,
+  "businessRuntimeStarted": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

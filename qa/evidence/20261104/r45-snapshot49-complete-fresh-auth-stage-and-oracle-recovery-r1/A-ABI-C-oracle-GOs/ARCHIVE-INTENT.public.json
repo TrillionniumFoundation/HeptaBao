@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-original-logs-B-page20-closed-A-ABI-and-C-oracle-GOs",
+  "records": [
+    {
+      "name": "A-ABI-source-root-verifier.js",
+      "blob": "a224a18de87ea7fa99b43fad22a955f7528f623d",
+      "bytes": 2012,
+      "sha256": "707593deb8f260ab6db234db070156c52652a1f7d5a41ce2174545abf723222b"
+    },
+    {
+      "name": "A-ABI-source-root8.public.json",
+      "blob": "314e3f22b96e67184fa1e727d627604b566fa330",
+      "bytes": 1553,
+      "sha256": "dcf67bf4cce67e4e5ca6e5adfdc1758c7e63e2b2acf6bfb53426b27ef8e7b2be"
+    },
+    {
+      "name": "A-declared-ctypes-layout.public.json",
+      "blob": "91bd282ba38bf80ff297735e04f922440169aebd",
+      "bytes": 3375,
+      "sha256": "413c98836f13b9d1d6c6b0ad798ca24c3753b0b96cc40260511b6b54acfc8d4a"
+    },
+    {
+      "name": "B-page20-closed-root-verifier.js",
+      "blob": "f9187c4d5ee0492aabcb117c6f08f8fbc4b79ba6",
+      "bytes": 3777,
+      "sha256": "f98e34d022f61add8dfda76c125c296fdf49607c76c9d1771e1a561ed6688ae4"
+    },
+    {
+      "name": "B-page20-closed-root28.public.json",
+      "blob": "d41bf8571fe1b67d1d621fd20b0d09f1ae4d40ee",
+      "bytes": 2666,
+      "sha256": "0e2d355c633cc961d5c1602ad4ee7c727c6d8a9b16f5bbd4c0a835c4dba71d12"
+    },
+    {
+      "name": "C-original-logs-root-verifier.js",
+      "blob": "44e6b7a3024dad2d6cbb5b69e1c2267f79083bd3",
+      "bytes": 2975,
+      "sha256": "b836880205a6a2d733354a87d5cf9fb9829e0cbe1af3ae6e8edefdc58f208ffc"
+    },
+    {
+      "name": "C-original-logs-root31.public.json",
+      "blob": "c4aa020033d99ab688ccec8fe4ccd6f8084d5327",
+      "bytes": 4143,
+      "sha256": "93b84dbebd26fe76f77898f3621c886c88a58e4e79b9838129738d49de2a93cd"
+    },
+    {
+      "name": "A-ABI-R3-GO.public.json",
+      "blob": "b2d36503432568f92c7a2d97f91e620c80a5bf87",
+      "bytes": 17800,
+      "sha256": "a9c40a5c5cfb1e4cd629d8ea39335e41a7b418458317581e65f7d80fb48c0562"
+    },
+    {
+      "name": "C-official271-ACL23-GO.public.json",
+      "blob": "f2ad9c134f825e4a3d01b6b26f7e389e5586f4ce",
+      "bytes": 6932,
+      "sha256": "1c878e4714ad614af5b745159a9b2afab5c53c0780daf09e79c3b8b90f464fb0"
+    }
+  ],
+  "expected_data_tree": "6ed0178ffeae9784d4222f9bdd710a6413f7bc50",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

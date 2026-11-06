@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.root-independent-PID-R2-actual-minimum.r1",
+  "passed": true,
+  "checks": 15,
+  "rows": [
+    {
+      "name": "exact_original_job",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_binding",
+      "passed": true
+    },
+    {
+      "name": "original_failed_terminal",
+      "passed": true
+    },
+    {
+      "name": "whole7147_stdout_and_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_0",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_1",
+      "passed": true
+    },
+    {
+      "name": "registration_classified_missing",
+      "passed": true
+    },
+    {
+      "name": "specific_ABI_constructor_refusal",
+      "passed": true
+    },
+    {
+      "name": "no_PID_or_later_file_result",
+      "passed": true
+    },
+    {
+      "name": "17_returned_FDs_closed",
+      "passed": true
+    },
+    {
+      "name": "one_print_helper_reaped",
+      "passed": true
+    },
+    {
+      "name": "no_managed_exit_reuse_or_cleanup_claim",
+      "passed": true
+    },
+    {
+      "name": "no_private_business_writes",
+      "passed": true
+    },
+    {
+      "name": "signals_restored_deadline_met",
+      "passed": true
+    },
+    {
+      "name": "explicit_lane_release",
+      "passed": true
+    }
+  ],
+  "tree": "0609cf6640223472d354f68319ee79f075785b1b",
+  "stdout": {
+    "blob": "33264a7b25737c70cbdb14b2a43046ec89ab2527",
+    "bytes": 7147,
+    "sha256": "95b554068c597e9e447da7986523e2428497d6b30db0e1235571b6d0d841167b"
+  },
+  "ownObservationLaneReleased": true,
+  "failure": "current_pid_exact_bsdinfo_abi",
+  "PIDStateQualified": false,
+  "historicalManagedScopeClosed": false,
+  "fullReplacement": false
+}

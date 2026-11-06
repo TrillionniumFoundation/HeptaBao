@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root-JWT-full-Identity-test-projection-source.r1",
+  "passed": true,
+  "checks": 15,
+  "rows": [
+    {
+      "name": "engine_identity_exact_025b_base",
+      "passed": true
+    },
+    {
+      "name": "engine_identity_one_exact_hunk",
+      "passed": true
+    },
+    {
+      "name": "service_native_jwt_tests_exact_025b_base",
+      "passed": true
+    },
+    {
+      "name": "service_native_jwt_tests_one_exact_hunk",
+      "passed": true
+    },
+    {
+      "name": "engine_only_test_helper_added",
+      "passed": true
+    },
+    {
+      "name": "all_source_outside_snapshot_exact",
+      "passed": true
+    },
+    {
+      "name": "original_fifteen_test_names_unchanged",
+      "passed": true
+    },
+    {
+      "name": "same_bounded_owner_serializer",
+      "passed": true
+    },
+    {
+      "name": "missing_root_explicit_failure",
+      "passed": true
+    },
+    {
+      "name": "whole_identity_taken_no_subset",
+      "passed": true
+    },
+    {
+      "name": "auth_mount_JWT_token_whole_preserved",
+      "passed": true
+    },
+    {
+      "name": "same_zeroization_flow",
+      "passed": true
+    },
+    {
+      "name": "explicit_native_guard_intact",
+      "passed": true
+    },
+    {
+      "name": "full_identity_serialize_type_intact",
+      "passed": true
+    },
+    {
+      "name": "source_only_claims",
+      "passed": true
+    }
+  ],
+  "sourceTree": "4a424e3a39f96a1fb94fc2b721478673a4afa58d",
+  "baseCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "files": {
+    "crates/heptabao-server/src/engine_identity.rs": {
+      "blob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+      "bytes": 9316,
+      "sha256": "38ceaaae5ed821b3ef5e0fde67ef6ed968966a808fab8bab6ec1c2393349807f"
+    },
+    "crates/heptabao-server/src/service_native_jwt_tests.rs": {
+      "blob": "57dd3760335f245f2a37540899b338a8b9b56189",
+      "bytes": 37451,
+      "sha256": "ab4b610f7bc1a74287710b3461c3f212ad6c6f7aabcf642c3302ea66dc51c57c"
+    }
+  },
+  "productSourceBehaviorChanged": false,
+  "completeRootIdentityComparisonRetained": true,
+  "originalStatusAssertionsUnchanged": true,
+  "rustFormatted": false,
+  "rustCompiled": false,
+  "newProductTests": 0,
+  "fullReplacement": false
+}

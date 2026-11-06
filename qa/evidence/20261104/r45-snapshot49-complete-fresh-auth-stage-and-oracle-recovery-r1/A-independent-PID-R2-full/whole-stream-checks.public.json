@@ -1,0 +1,16 @@
+{
+  "allCallsAccepted": true,
+  "noNativeInFlight": true,
+  "noPending": true,
+  "noObserver": true,
+  "notPaused": true,
+  "twoObservers": true,
+  "allObserversClosed": true,
+  "terminal": true,
+  "stdoutWhole": true,
+  "stderrEmpty": true,
+  "ownFDsClosed": true,
+  "ownHelpersClosed": true,
+  "signalsRestored": true,
+  "managedNotClosed": true
+}

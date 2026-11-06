@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.pure-v8-observed-execution.r3",
+  "invokedEntryPoint": "verifyIndependentPidObservationR3OriginalEvidence(input)",
+  "source": {
+    "blob": "e041b8c5d3192a60c4f4cb5d5aee6fee698459e5",
+    "bytes": 13176,
+    "sha256": "30048911210ac22b8052a450add624f59d6c3657c4bff9a98595f58d9edbe228"
+  },
+  "pureHelper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "result": {
+    "blob": "0638cb27a63fd4e5ccb9879dbed025b204562660",
+    "bytes": 22698,
+    "sha256": "62995571ee8322da23ca03111d525a0b8f79798f64038e35e9b86a2929daac4a"
+  },
+  "passed": true,
+  "actualCheckCount": 197,
+  "sourceOnlyStaticTestsRun": false,
+  "productModuleExecuted": false,
+  "pythonExecuted": false,
+  "newNativeCalls": 0,
+  "qualificationScope": "completed_current_bounded_observations_and_own_closure_historical_managed_UNKNOWN"
+}

@@ -1,0 +1,36 @@
+--- a/crates/heptabao-server/src/service_native_jwt_tests.rs
++++ b/crates/heptabao-server/src/service_native_jwt_tests.rs
+@@ -306,23 +306,27 @@
+         let state = self.service.state.as_ref().ok_or("native state")?;
+         let auth_bytes =
+             owner_store::serialize_owner(&state.auth).map_err(|_| "Auth projection")?;
+-        let engine_bytes =
+-            owner_store::serialize_owner(&state.engines).map_err(|_| "Identity projection")?;
++        let identity = state
++            .engines
++            .fixture_root_identity()
++            .ok_or("root Identity absent")?;
++        let identity_bytes =
++            owner_store::serialize_owner(identity).map_err(|_| "Identity projection")?;
+         let mut auth: Value = serde_json::from_slice(&auth_bytes)?;
+-        let mut engines: Value = serde_json::from_slice(&engine_bytes)?;
++        let mut identity: Value = serde_json::from_slice(&identity_bytes)?;
+         assert!(auth["auth_mounts"].is_object());
+         assert!(auth["jwt_mounts"].is_object());
+         assert!(auth["tokens"].is_object());
+-        assert!(engines["namespaces"][""]["identity"].is_object());
++        assert!(identity.is_object());
+         // Exclude only unrelated terminal-clock metadata. Compare complete
+         // auth mount/JWT/token and Identity objects, not a handpicked count.
+         let mut projection = json!({"mounts":auth["auth_mounts"].take(),
+             "jwt":auth["jwt_mounts"].take(),"tokens":auth["tokens"].take(),
+-            "identity":engines["namespaces"][""]["identity"].take()});
++            "identity":identity.take()});
+         let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);
+         erase_json(&mut projection);
+         erase_json(&mut auth);
+-        erase_json(&mut engines);
++        erase_json(&mut identity);
+         Ok(bytes)
+     }
+     fn begin_login(

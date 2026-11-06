@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root-qualification-exact-state-path-correction.r1",
+  "oldResult": {
+    "blob": "9fe35df276555f6e7b5f39579e772bc5c968c314",
+    "bytes": 2051,
+    "sha256": "21aec7cb6f03e3536fbba73b2ef2df1886b205579eb094e4f55d29ac56567157"
+  },
+  "newResult": {
+    "blob": "3d05ca4d13fa2ba581c5f704ba59a9f3e7958da7",
+    "bytes": 2051,
+    "sha256": "8f2158426ce618f21190d5c9f324e2930e13f05e4d30b6fb78141a00fd5633ff"
+  },
+  "actualPath": "release/STATE.original.json",
+  "changedOnlyPurePredicate": true,
+  "missingRefused": true,
+  "wrongRefused": true,
+  "original18051ResultUnchanged": true,
+  "NativeCalls": 0
+}

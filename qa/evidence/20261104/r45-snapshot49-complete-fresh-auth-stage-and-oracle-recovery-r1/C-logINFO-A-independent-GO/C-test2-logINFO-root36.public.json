@@ -1,0 +1,218 @@
+{
+  "schema": "heptabao.root-test2-log-info-original-full.r1",
+  "passed": true,
+  "checks": 36,
+  "rows": [
+    {
+      "name": "author78_exact",
+      "passed": true
+    },
+    {
+      "name": "GO_exact_whole",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_executed",
+      "passed": true
+    },
+    {
+      "name": "original41_context_whole_unchanged",
+      "passed": true
+    },
+    {
+      "name": "six_once_accepted_calls",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stderr-info-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stderr-info-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stderr-info-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stderr-info-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stderr-info-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stderr-info-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stdout-info-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stdout-info-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stdout-info-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stdout-info-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_call_jwt-pki-025b-test2-stdout-info-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_armed_tree_jwt-pki-025b-test2-stdout-info-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_observer_c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_page_c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085_0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_payload_c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_observer_e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_page_e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1_0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_payload_e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_INFO_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "two_exact_INFO_requests",
+      "passed": true
+    },
+    {
+      "name": "exact_two_metadata_rows",
+      "passed": true
+    },
+    {
+      "name": "INFO_current_identity_stderr",
+      "passed": true
+    },
+    {
+      "name": "full9_and_mode_stderr",
+      "passed": true
+    },
+    {
+      "name": "actual_native_pin_stderr",
+      "passed": true
+    },
+    {
+      "name": "INFO_current_identity_stdout",
+      "passed": true
+    },
+    {
+      "name": "full9_and_mode_stdout",
+      "passed": true
+    },
+    {
+      "name": "actual_native_pin_stdout",
+      "passed": true
+    },
+    {
+      "name": "closed_state",
+      "passed": true
+    },
+    {
+      "name": "no_body_build_or_target_reuse",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "b2909bcbd96212c17c97b32fd004bbb52d713141",
+  "actual": [
+    {
+      "index": 0,
+      "role": "test-stderr",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+      "size": 191,
+      "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+      "version": "66306:33202269:191:1793974566577453065:1793974566577453065",
+      "full9Strings": [
+        "66306",
+        "33202269",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "191",
+        "1793974566577453065",
+        "1793974566577453065"
+      ],
+      "originalOperation": "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+      "nativeText": {
+        "blob": "b1b5c5c6831ff668ce0443043a92d65483acf5bd",
+        "bytes": 488,
+        "sha256": "f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"
+      },
+      "regularFileFromNativeFileInfoContract": true,
+      "expectedVersionBeforeObservation": null,
+      "bodyReadAuthorized": false
+    },
+    {
+      "index": 1,
+      "role": "test-stdout",
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+      "size": 375,
+      "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+      "version": "66306:33202268:375:1793974566577453065:1793974566577453065",
+      "full9Strings": [
+        "66306",
+        "33202268",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "375",
+        "1793974566577453065",
+        "1793974566577453065"
+      ],
+      "originalOperation": "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+      "nativeText": {
+        "blob": "98463cbd918907c6051a36bef453efe2136a48d3",
+        "bytes": 488,
+        "sha256": "43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"
+      },
+      "regularFileFromNativeFileInfoContract": true,
+      "expectedVersionBeforeObservation": null,
+      "bodyReadAuthorized": false
+    }
+  ],
+  "originalCalls": 6,
+  "originalObservers": 2,
+  "originalPages": 2,
+  "wholeLogBytesPending": 566,
+  "observationLaneReleased": true,
+  "newBuild": false,
+  "targetReuseQualified": false,
+  "fullReplacement": false
+}

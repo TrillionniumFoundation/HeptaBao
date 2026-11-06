@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.flat-public-source-verifier-interface.v1",
+  "entry": "verifyFreshHomeR3(files)",
+  "files": "A plain object mapping every flat file name in this package to its exact UTF-8 string; no host input.",
+  "prelude": [
+    "pure-helpers.original.js",
+    "strict-diff.original.js"
+  ],
+  "actualExecution": "Both preludes plus verify-source-bindings.js were evaluated in V8; only verifyFreshHomeR3 was called. No Python/module/SDK/candidate functions were executed.",
+  "baselineSourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+  "scope": "Complete 22-source inverse normalization plus approved three-line parser and exact public carrier/publisher/journal/deferred runtime bindings.",
+  "resultFile": "actual-pure-binding-result.public.json",
+  "noNeedToRerunOriginalComponentSuites": true
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.gitfirst.closed-immutable-page-recovery-intent.r1",
+  "callKey": "sf23-r1-f20-b00-p3-recovery1",
+  "kind": "operation_result",
+  "request": {
+    "blob": "1ca4e7299a552ab1594a1c26a02909a56e808e5e",
+    "bytes": 126,
+    "sha256": "3e7d6ccdd56784adfb70e42d88e4bd0ccf122e6de69d6b28ffd403165b77084a"
+  },
+  "rootRecoveryGo": {
+    "blob": "41b9b735676e83d5b8c779ec00950fe030ff59e2",
+    "bytes": 4567,
+    "sha256": "9bf988308ccecc4dcff6fb452c4c77d852477c0c56bbbae87778a9dd03a49164"
+  },
+  "originalRootGo": {
+    "blob": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+    "bytes": 14304,
+    "sha256": "3a763b6eeef5ace6f210d059d860ad315fc8302a5326d499a24ca16a7dbf05f1"
+  },
+  "originalOperation": "2d748c65bb3394cc8a97b59b24027a4f3ee24a18885a04523c98435b3fefc1fe",
+  "originalFailedSDK": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "originalFailedCall": {
+    "blob": "4911defb28498915832ce3202103a7f6541bcac7",
+    "bytes": 2070,
+    "sha256": "782cd589df161244a0c0e0452f0ed8ab54f274cb536c58ff04d2f7a606becd46"
+  },
+  "originalCompletedStatus": {
+    "blob": "7dab61f4aeded51aff5f7db244935bb4082e092b",
+    "bytes": 802,
+    "sha256": "4684defb10483cba79917d47a3337f9b1a739a7c5eb83b142877449dbb453708"
+  },
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "noNativeAdmission": true,
+  "notRecoveryOfOriginalSDK": true,
+  "originalFailureRemains": true,
+  "before": {
+    "pending": "sf23-r1-f20-b00-p3",
+    "paused": true,
+    "failedCall": {
+      "blob": "4911defb28498915832ce3202103a7f6541bcac7",
+      "bytes": 2070,
+      "sha256": "782cd589df161244a0c0e0452f0ed8ab54f274cb536c58ff04d2f7a606becd46"
+    },
+    "admissionsCalled": 55,
+    "bodyBytes": 1277974,
+    "pageCalled": 4,
+    "completedObservers": 54,
+    "wholeFiles": 20,
+    "nextPageOffset": 49152,
+    "payloadTotal": 63251,
+    "payloadSHA256": "bce3955483b6d29d658e121b03cec9a94f71eccf44d7b49e5b704b7bf6f64787",
+    "successfulPages": 3,
+    "originalPages": {
+      "blob": "fb9d5d834822d46ad7344cafebe47aa12850c259",
+      "bytes": 66600,
+      "sha256": "f05ff4ac9fb138c8f4553ca5064e33640db9375cd1edd6f71080f9b044d99182"
+    }
+  }
+}

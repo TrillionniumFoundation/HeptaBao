@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.root-final-formatted23-third-exception-source.r1",
+  "passed": true,
+  "checks": 35,
+  "rows": [
+    {
+      "name": "R2_before_root_qualified_SOURCE12",
+      "passed": true
+    },
+    {
+      "name": "R2_strict_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_new_exact_case_constants_unbound",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_unbound_refusal",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_two_only",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_body16_exact_failure_and_actual_binding",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_four_leaf_exact_set",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_intent_specializations",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_two_original_error_rows",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_exact_recovery_origin",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_history_counts",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_two_page_call_counts",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_body16_monotonic_counter_no_p1_reset",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_body16_successor_same_page_not_original_failure",
+      "passed": true
+    },
+    {
+      "name": "R2_unique_final_counts",
+      "passed": true
+    },
+    {
+      "name": "R2_only13_structural_edits",
+      "passed": true
+    },
+    {
+      "name": "R2_literal_predecessor_exact",
+      "passed": true
+    },
+    {
+      "name": "R2_literal_binding_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "BODY16_actual_binding_exact",
+      "passed": true
+    },
+    {
+      "name": "R3_strict9_hunk_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_exact_case_constants",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_unbound_refusal",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_only_three_exact_nonaccepted",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_failure_actual_binding_and_prefix",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_four_leaf_set",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_recovery_intent_specialization",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_failed_SDK_row",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_exact_origin",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_history_counts",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_page_attempt_accounting",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_successor_page_substitution",
+      "passed": true
+    },
+    {
+      "name": "R3_unique_third_final_counts",
+      "passed": true
+    },
+    {
+      "name": "R3_only12_structural_edits",
+      "passed": true
+    },
+    {
+      "name": "R3_unbound_refuses_history",
+      "passed": true
+    },
+    {
+      "name": "R3_unbound_refuses_final",
+      "passed": true
+    }
+  ],
+  "R2SourceTree": "ea92d27e12a7b4540f275a9e5c422084ae60016a",
+  "R3SourceTree": "2267531443d68cfe073c92feb118a332d323721e",
+  "sourceOnly": true,
+  "actualThirdBindingPresent": false,
+  "targeted28Executed": false,
+  "final23Qualified": false,
+  "newNativeCalls": 0
+}

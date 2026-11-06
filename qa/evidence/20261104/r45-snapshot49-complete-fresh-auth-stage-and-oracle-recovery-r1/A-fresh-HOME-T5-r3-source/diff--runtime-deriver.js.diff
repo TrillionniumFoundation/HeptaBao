@@ -1,0 +1,11 @@
+--- a/a/runtime-deriver.js
++++ b/b/runtime-deriver.js
+@@ -82,7 +82,7 @@
+  set('--public-source-pins-sha256',gitBlobMeta(sourcePinsRaw).sha256);
+  request.args.push('--public-home-control-binding-base64',encodeBase64Bytes(utf8Bytes(bindingRaw)),
+                    '--public-home-control-binding-sha256',gitBlobMeta(bindingRaw).sha256);
++ request.idempotency_key='heptabao-mac-current-five-agent-home-launch-'+input.outer.sha256.slice(0,8)+'-20261106-r3';
+- request.idempotency_key='heptabao-mac-current-five-agent-home-launch-'+input.outer.sha256.slice(0,8)+'-20261106-r2';
+  need(request.executable===input.regularPython&&request.args[3]===input.newRoot+'/qa/mac_current_outer_wal_r1.py',
+       'actual_regular_interpreter_fresh_outer');
+  const requestRaw=JSON.stringify(request,null,2)+'\n';

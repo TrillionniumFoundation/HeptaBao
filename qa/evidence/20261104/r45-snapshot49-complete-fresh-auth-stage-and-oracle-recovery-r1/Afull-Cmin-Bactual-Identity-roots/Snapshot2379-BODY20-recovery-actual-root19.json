@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.root-original-body20-page-recovery.r1",
+  "passed": true,
+  "checks": 19,
+  "rows": [
+    {
+      "name": "exact_root_recovery_GO",
+      "passed": true
+    },
+    {
+      "name": "original_failed_call_exact",
+      "passed": true
+    },
+    {
+      "name": "original_failed_called_not_accepted",
+      "passed": true
+    },
+    {
+      "name": "four_leaf_recovery_arm",
+      "passed": true
+    },
+    {
+      "name": "same_original_closed_future",
+      "passed": true
+    },
+    {
+      "name": "three_original_page_rows_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_contiguous_page_0",
+      "passed": true
+    },
+    {
+      "name": "prior_contiguous_page_1",
+      "passed": true
+    },
+    {
+      "name": "prior_contiguous_page_2",
+      "passed": true
+    },
+    {
+      "name": "original_SDK_native",
+      "passed": true
+    },
+    {
+      "name": "called_accepted_once",
+      "passed": true
+    },
+    {
+      "name": "exact_request_and_key",
+      "passed": true
+    },
+    {
+      "name": "single_last_immutable_page",
+      "passed": true
+    },
+    {
+      "name": "recovery_separate_GO_old_failure",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload",
+      "passed": true
+    },
+    {
+      "name": "whole_original_body",
+      "passed": true
+    },
+    {
+      "name": "original_version_path_range",
+      "passed": true
+    },
+    {
+      "name": "closed_file_boundary",
+      "passed": true
+    },
+    {
+      "name": "historical_failures_still_explicit",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "a10e3d28536ea89fe8d3faf40ca27a18bba0f716",
+  "file": {
+    "index": 20,
+    "name": "service_snapshot_v6_ha_restore.rs",
+    "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/service_snapshot_v6_ha_restore.rs",
+    "body": {
+      "blob": "9c5ccafbb9ae7d1f3ec1de8c05d97411630f3e98",
+      "bytes": 47093,
+      "sha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920"
+    },
+    "bodyTree": "e97d41f19c1b231187d10b2d3142c653db34d349",
+    "version": "66306:31236028:47093:1793956738999594862:1793956738999594862",
+    "full9Strings": [
+      "66306",
+      "31236028",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "47093",
+      "1793956738999594862",
+      "1793956738999594862"
+    ],
+    "metadataOperation": "744c0aefbc3d0c2a1e80464983de610f5ee978abf56d432fe37882fb0d5ca600",
+    "ranges": [
+      {
+        "offset": 0,
+        "next": 47093,
+        "limit": 47093,
+        "chunkSha256": "3027326105fd9865bc9dc66b3bd6fe1561de3a9a7f9c7e7efeb16bfa01ed2920",
+        "originalOperation": "2d748c65bb3394cc8a97b59b24027a4f3ee24a18885a04523c98435b3fefc1fe",
+        "nativeText": {
+          "blob": "8c2739966320c5d6a03fabf5b923a530491b34b8",
+          "bytes": 63148,
+          "sha256": "c43e7a47d3f5c80eceb4a0f02a7d085e41def904a653431e1d1351946e843d2b"
+        }
+      }
+    ],
+    "wholeUTF8DecodedAfterByteSHA": true,
+    "semanticQualification": false
+  },
+  "successfulPayloadPages": 4,
+  "newRecoveryPageCalls": 1,
+  "additionalOriginalFileAdmissions": 0,
+  "additionalStatusCalls": 0,
+  "originalFailedPageStillCalled": true,
+  "originalThreePagesPreserved": true,
+  "originalOperationClosed": true,
+  "wholeFilesAtBoundary": 21,
+  "wholeBytesAtBoundary": 1325067,
+  "final23Qualified": false,
+  "newProductTests": 0
+}

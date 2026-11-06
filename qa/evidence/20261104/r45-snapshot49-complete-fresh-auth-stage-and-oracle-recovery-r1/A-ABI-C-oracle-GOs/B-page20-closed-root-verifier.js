@@ -1,0 +1,19 @@
+function rootBody20FailedPage(f){
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},p=gitBlobMeta,r=JSON.parse(f["RELEASE.public.json"]),a=JSON.parse(f["active-observer.original.json"]),id=r.originalOperation;
+ ck("exact_original_future",id==="2d748c65bb3394cc8a97b59b24027a4f3ee24a18885a04523c98435b3fefc1fe"&&a.id===id&&a.futureClosed===true);
+ let offset=0;for(let i=0;i<6;i++){
+  const s="call"+i+"-",c=JSON.parse(f[s+"record.json"]),q=JSON.parse(f[s+"request.json"]),sdk=JSON.parse(f[s+"original.sdk.json"]),arm=JSON.parse(f[s+"armed.json"]);
+  ck("whole_request_SDK_arm_"+i,p(f[s+"request.json"]).blob===c.requestPin.blob&&p(f[s+"original.sdk.json"]).blob===c.sdkPin.blob&&arm.rootGo.blob===r.originalGo.blob&&immediateTreeSha(["armed.json","intent.json","request.json"].map(k=>({path:k,mode:"100644",type:"blob",sha:p(f[s+k]).blob})))===c.armed.tree);
+  ck("original_once_phase_"+i,c.called===true&&c.phase===(i===5?"native_interpretation_refused":"accepted"));
+  if(i<5){const n=JSON.parse(f[s+"native.json"]);ck("SDK_native_exact_"+i,sdk.isError===false&&sdk.content.length===1&&sdk.content[0].text===f[s+"native.json"]&&p(f[s+"native.json"]).blob===c.nativePin.blob);
+   if(i===0)ck("one_original_admission",c.kind==="operation_start"&&n.operation_id===id&&n.reused===false&&q.operation.tool==="binary_read"&&q.operation.arguments.limit===47093&&q.operation.arguments.expected_version==="66306:31236028:47093:1793956738999594862:1793956738999594862");
+   if(i===1)ck("original_status_completed_inactive",n.operation_id===id&&n.async_state==="completed"&&n.owned_future_active===false&&n.payload_available&&p(f[s+"native.json"]).blob===r.originalClosedStatus.blob);
+   if(i>=2){const b=unb64(n.data_base64),page=a.pages[i-2];ck("original_contiguous_retained_page_"+i,c.kind==="operation_result"&&q.operation_id===id&&q.offset===offset&&q.limit===16384&&n.offset===offset&&b.length===16384&&n.next_offset===offset+16384&&n.total_bytes===63251&&n.result_sha256===a.digest&&n.immutable_snapshot===true&&n.eof===false&&page.offset===offset&&page.next===n.next_offset&&page.base64===n.data_base64);offset+=b.length;}
+  }else{ck("exact_third_failed_request_and_SDK",c.kind==="operation_result"&&q.operation_id===id&&q.offset===49152&&q.limit===16384&&p(f[s+"request.json"]).blob==="1ca4e7299a552ab1594a1c26a02909a56e808e5e"&&p(f[s+"record.json"]).blob==="4911defb28498915832ce3202103a7f6541bcac7"&&p(f[s+"original.sdk.json"]).blob==="923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011"&&sdk.isError===true);}
+ }
+ ck("partial_pages_preserved_no_decode",offset===49152&&a.pages.length===3&&a.nextPageOffset===49152&&a.total===63251&&a.pageCalled===4&&a.statusCalled===1&&!a.eof&&r.bodyDecoded===false&&!r.output20Whole);
+ ck("no_call_or_future",r.nativeCallInFlight===false&&r.ownedFutureActive===false&&r.originalFutureCompletedInactive===true);
+ ck("paused_at_original_failed_call",r.paused===true&&r.pending==="sf23-r1-f20-b00-p3"&&r.failedCallPreserved&&r.completedFiles===20&&r.completedObservers===54&&r.admissions===55&&r.callRows===260&&!r.nextInfo21Submitted);
+ ck("earlier_errors_preserved",r.oldInfo10FailurePreserved==="native_interpretation_refused"&&r.oldBody16FailurePreserved==="native_interpretation_refused"&&r.oldBody16RecoveryPreserved==="accepted"&&r.oldGitArmErrorPreserved==="Error: git_tree_read_error_preserved");
+ return {schema:"heptabao.root-formatted23-file20-third-failed-page.r1",passed:true,checks:rows.length,rows,tree:"36dc9674f97cff520e471587acf5800437300723",originalOperation:id,receivedPayloadBytes:49152,payloadTotal:63251,originalFailedPageCalled:true,originalFutureClosed:true,observationLaneReleased:true,immutableLastPageDeliveryUnknown:true,productFailureInferred:false,final23Qualified:false};
+ }

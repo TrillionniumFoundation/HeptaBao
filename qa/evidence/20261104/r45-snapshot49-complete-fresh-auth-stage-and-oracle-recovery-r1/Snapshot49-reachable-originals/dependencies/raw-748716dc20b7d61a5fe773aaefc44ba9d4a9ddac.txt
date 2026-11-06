@@ -1,0 +1,94 @@
+{
+  "authorization": "GO",
+  "scope": "snapshot_formatted23_body16_page0_retrieval_recovery",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "original_operation": "9037480fbf014345c1d2bbe1894020e30602a9adb2d8c1a864f6eff35368f1b0",
+  "failed_call_key": "sf23-r1-f16-b00-p0",
+  "recovery_call_key": "sf23-r1-f16-b00-p0-recovery1",
+  "request": {
+    "blob": "bfd96536330ccc3704a2ba596203edf3680a0702",
+    "bytes": 122,
+    "sha256": "ede3d944c75b34dbcc7cf3b644e9d8374496f8348d375e792d565141c92b2ef5"
+  },
+  "failed_sdk": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "failed_call": {
+    "blob": "593f02daca6b8ac9511ed460af8919eed0b7bc32",
+    "bytes": 2066,
+    "sha256": "f70e2ae9bac4c87df0faac3a2fbd4e507a64db29d4d1b010b3771028465d7776"
+  },
+  "maximum_recovery_page_calls": 1,
+  "page_bytes": 16384,
+  "native_payload_cap": 1048576,
+  "operation_start_authorized": false,
+  "operation_status_authorized": false,
+  "failed_call_preserved": true,
+  "continue_original_observer_after_recovered_page": true,
+  "continue_original_table_only_after_file_whole": true,
+  "original_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "schema": "heptabao.root-formatted23-body16-page0-recovery-GO.r44",
+  "owner": "/root/compatibility_audit",
+  "source_packet": "f1370549e1d3ff48bd9f0fa4adcd22172078dcb5",
+  "journal": {
+    "blob": "3397c4e1b8743273af9209c5074170e855491cc1",
+    "bytes": 87063,
+    "sha256": "08fd91a8804b4868851a81541fa25d2fb247fc5db4774827ab0c12a733df9710"
+  },
+  "source_qualification": {
+    "blob": "261e09f09361670a534a2faa3770c8fab84f9f13",
+    "bytes": 1634,
+    "sha256": "584e63e5ffcb367229d4045017d72f0898071b262af2a40cbd564888558d00e7"
+  },
+  "original_closed_qualification": {
+    "blob": "557023960b1b922cb2862745a1ccf10265ba0488",
+    "bytes": 3428,
+    "sha256": "cc93adf690ff35d2b8b7cceaf14d7b90d04e7289ff3385c4a6503dbea02e4b03"
+  },
+  "original_slot_reinitialize": false,
+  "original_failed_call_rewrite": false,
+  "additional_binary_read_for_file16": false,
+  "original_page_counter_reset": false,
+  "next_regular_page_label": "sf23-r1-f16-b00-p2",
+  "next_regular_offset": "actual recovered page next_offset only",
+  "original_per_body_page_attempt_cap": 64,
+  "whole_file_before_INFO17": true,
+  "remaining_original_table_scope": "Resume original remaining INFO17..22/BODY17..22 only after original file16 whole; exact original GO 25ea12c and remaining11 table 614d59 apply without widened paths, ranges or caps.",
+  "arm": "A fresh exact request/intent/armed/original-failed-call four-leaf whole tree before the single recovery call; original SDK whole before accept.",
+  "failures": "Keep original p0 called=true and nonaccepted, prior INFO10 failed/recovery and file7 Git error intact. Any new unknown call pauses and keeps lane; no replay.",
+  "lane": {
+    "before": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "root": 0
+    },
+    "during": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "maximum": 2,
+    "A_release": {
+      "blob": "abcedc9dcfa325948984ff6cc31c75cecf0cda6b",
+      "bytes": 1937,
+      "sha256": "c94c958a9c14d02a86694c5db04f90819f15861d59fd9757961e7dbd4ab0854c"
+    },
+    "C_release": {
+      "blob": "525294a9961a1550000aec907c7bc217f89bda16",
+      "bytes": 1832,
+      "sha256": "0ffb759948abc62a9dd16dce4ba777366d80e383ec6059f418b3b2f8f60c381b"
+    },
+    "oneNativeCallOrOwnedFuturePerLane": true
+  },
+  "final_verifier": "Bind successor only to actual new recovery GO/4-leaf arm/SDK/p2, with exact historical negative cases; no final23 claim until all actual bytes root-qualified.",
+  "noCargo": true,
+  "noProductRuntime": true,
+  "noProductionMutation": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

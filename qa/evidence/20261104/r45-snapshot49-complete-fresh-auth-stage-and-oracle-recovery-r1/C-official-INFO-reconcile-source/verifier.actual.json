@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.official271.same-ID-status.source-checks.r1",
+  "pass": true,
+  "check_count": 37,
+  "checks": [
+    {
+      "name": "strict forward source",
+      "passed": true
+    },
+    {
+      "name": "strict reverse source",
+      "passed": true
+    },
+    {
+      "name": "exact after source",
+      "passed": true
+    },
+    {
+      "name": "exact old paused state",
+      "passed": true
+    },
+    {
+      "name": "exact failed status SDK retained",
+      "passed": true
+    },
+    {
+      "name": "exact same request bytes not a new operation",
+      "passed": true
+    },
+    {
+      "name": "one returned original ID",
+      "passed": true
+    },
+    {
+      "name": "original unknown future preserved",
+      "passed": true
+    },
+    {
+      "name": "old 9 calls and two closed historical observers",
+      "passed": true
+    },
+    {
+      "name": "new independent slot not reset",
+      "passed": true
+    },
+    {
+      "name": "no Native admission tool in candidate",
+      "passed": true
+    },
+    {
+      "name": "one status total remains two under eight",
+      "passed": true
+    },
+    {
+      "name": "original 8K pages/1MiB cap",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfCloseOriginalObserver",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "new context initializes only once from original pinned state",
+      "passed": true
+    },
+    {
+      "name": "old context byte-identical after initialize",
+      "passed": true
+    },
+    {
+      "name": "actual status prepare only",
+      "passed": true
+    },
+    {
+      "name": "new status arm exact GO and original operation",
+      "passed": true
+    },
+    {
+      "name": "one virtual status dispatch same ID",
+      "passed": true
+    },
+    {
+      "name": "whole SDK before acceptance",
+      "passed": true
+    },
+    {
+      "name": "actual accept records original future closed",
+      "passed": true
+    },
+    {
+      "name": "combined status count exactly two",
+      "passed": true
+    },
+    {
+      "name": "old failed status and SDK still exact",
+      "passed": true
+    },
+    {
+      "name": "original page allowed only after known closure",
+      "passed": true
+    },
+    {
+      "name": "second new status rejected",
+      "passed": true
+    },
+    {
+      "name": "different operation status rejected",
+      "passed": true
+    },
+    {
+      "name": "new file_info admission rejected",
+      "passed": true
+    },
+    {
+      "name": "new process start rejected",
+      "passed": true
+    },
+    {
+      "name": "original page before closure rejected",
+      "passed": true
+    },
+    {
+      "name": "changed page cursor rejected",
+      "passed": true
+    },
+    {
+      "name": "new transport unknown pauses only new context",
+      "passed": true
+    },
+    {
+      "name": "both old and new original errors preserved",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "pureVirtualStatusCalls": 2,
+  "oldSlotNotWritten": true,
+  "RuntimeAuthorized": false
+}

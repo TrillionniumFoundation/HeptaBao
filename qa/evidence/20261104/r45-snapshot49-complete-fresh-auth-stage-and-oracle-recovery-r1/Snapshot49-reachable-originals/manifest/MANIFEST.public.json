@@ -1,0 +1,175 @@
+{
+  "schema": "heptabao.formatted23-final-reachable-aggregate-r2.v1",
+  "scope": "Original fixed23 actual output chain plus exact historical errors/recoveries; all raw original arms/SDKs/payloads/bodies remain directly Git reachable.",
+  "totals": {
+    "originalCallRows": 274,
+    "originalAdmissionObservers": 59,
+    "originalStatusCalls": 59,
+    "successfulImmutablePages": 153,
+    "failedDeliveryCalls": 3,
+    "separateImmutableRecoveryCalls": 3,
+    "knownGitArmReadErrors": 1,
+    "wholeChangedFiles": 23,
+    "wholeChangedBytes": 1346637,
+    "unchangedSourceWholeReuses": 26,
+    "unchangedSourceWholeBytes": 686814,
+    "canonicalOutputs": 49
+  },
+  "verification": {
+    "boundVerifier": "925ccfea78d179432a35a394427e140c82644db2",
+    "fullResult": "5e68cfc89ea040c5f7e9026e01e6c8a3deee272f",
+    "fullChecks": 18051,
+    "targetedResult": "1bbe73b2becd9173e6aa0f76cbea1338aebdc3b8",
+    "targetedCases": 28
+  },
+  "rawIndex": {
+    "blob": "e2e2071190c3b303499c3221ce7d7932a32a04ed",
+    "bytes": 894372,
+    "sha256": "b10ed7b660d8d0fc004b80e152fbf3bde6351e8c3bf9485b7474200e1e2f3524"
+  },
+  "derivedParentMap": {
+    "blob": "4fceec6d0e18547775a1475bdf99193b3b65d986",
+    "bytes": 196122,
+    "sha256": "24b0daccfba6b8294a8aa9421dbb0d68712249837a5c4c9d259c13be267c5c9b",
+    "count": 330,
+    "standaloneDerivedGitBlobRequired": false
+  },
+  "finalState": {
+    "blob": "f3191a61911b6ace4d72074c1595c8d24c39d61d",
+    "bytes": 2645327,
+    "sha256": "2153e9ec1da3df829f1919a64a8656983b2ca4103ae3875b0f78388dbbffe921"
+  },
+  "allOriginalSubtreesWereWholeBeforeAggregation": true,
+  "NativeLaneReleased": true,
+  "newNativeCalls": 0,
+  "CargoAuthorized": false,
+  "combinedCandidate": null,
+  "productQualification": false,
+  "previousEvidenceNeverRewritten": true,
+  "originalProposedFlatAggregate": {
+    "expectedTree": "4c07a3c51544435ed297c427c4222cd0634c4192",
+    "createSDK": "5b899231bee4585be68efe3224c54e52874e4d18",
+    "readonlyReconcileSDK": "738250ce2f4ed06b398bcc6884a32c31e5c7b288",
+    "disposition": "Original create UNKNOWN retained; no repeated mutation. This is a new grouped artifact."
+  },
+  "grouping": {
+    "maxRefs": 64,
+    "originalGroups": [
+      {
+        "path": "group-00",
+        "tree": "02099a860345436268b84b8200dbdc171db5147b",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 284063,
+        "whole": true
+      },
+      {
+        "path": "group-01",
+        "tree": "b7fa6a6c0ea5f0813d5013a49879eed112b140d3",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 276512,
+        "whole": true
+      },
+      {
+        "path": "group-02",
+        "tree": "6c9e7fd6f40bdf3143bf76a8686d589f5d86b45c",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 428760,
+        "whole": true
+      },
+      {
+        "path": "group-03",
+        "tree": "549a24fc1a8677c66578e04dd48c4c880f2cc27c",
+        "leaves": 129,
+        "merkle": 65,
+        "bytes": 466021,
+        "whole": true
+      },
+      {
+        "path": "group-04",
+        "tree": "4e5fb75a678bbb6372afb4021ae79e5b7eacdd82",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 503421,
+        "whole": true
+      },
+      {
+        "path": "group-05",
+        "tree": "f3cc1d1d06f248000ebb17500c5ea67520d84180",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 554252,
+        "whole": true
+      },
+      {
+        "path": "group-06",
+        "tree": "93d7f5335bf14f5faec384cf202b575cfa4e29e6",
+        "leaves": 128,
+        "merkle": 65,
+        "bytes": 227246,
+        "whole": true
+      },
+      {
+        "path": "group-07",
+        "tree": "44977cde93772a4cfd9f5261793f6c2fc13c2e5a",
+        "leaves": 129,
+        "merkle": 65,
+        "bytes": 262001,
+        "whole": true
+      },
+      {
+        "path": "group-08",
+        "tree": "df936a360b035742f6d60b82f3d68eebec590f8d",
+        "leaves": 101,
+        "merkle": 65,
+        "bytes": 1009838,
+        "whole": true
+      },
+      {
+        "path": "group-09",
+        "tree": "24430bdd7209e50e27cd5f88eab2b2139b7812e3",
+        "leaves": 54,
+        "merkle": 55,
+        "bytes": 2340900,
+        "whole": true
+      }
+    ],
+    "originalSubtreeReferences": 630,
+    "layout": {
+      "blob": "cf401521364ea2d6becda053b6d843683e25b90d",
+      "bytes": 99376,
+      "sha256": "35c7cbe36e54e81a77c53bbd8a5ac7ce1cb4fda9ad2aa0ace49dab57043d6ef2"
+    }
+  },
+  "rootPackets": [
+    {
+      "path": "dependencies",
+      "tree": "5e3ef34fc12ed77dcb85be4e023859583e68fdf2"
+    },
+    {
+      "path": "proof-source",
+      "tree": "233abfe639d2e9a5159c284bbfaf7cfd3e53a1a5"
+    },
+    {
+      "path": "proof-validation",
+      "tree": "51ac48df082acb2c99071a470ef485d96e3760df"
+    },
+    {
+      "path": "release",
+      "tree": "2c3c31f57ec2cd998158077cd707487b64aac030"
+    },
+    {
+      "path": "original-aggregate-error",
+      "tree": "e8be01f1ed27a4d9bc91434b254210699b5d6d1c"
+    },
+    {
+      "path": "assembly-source",
+      "tree": "35b36b4b34d224f1c6f8a4121526cf5e9567e38b"
+    }
+  ],
+  "proofSource": "233abfe639d2e9a5159c284bbfaf7cfd3e53a1a5",
+  "proofValidation": "51ac48df082acb2c99071a470ef485d96e3760df",
+  "allGroupsWholeAndMerkleVerified": true
+}

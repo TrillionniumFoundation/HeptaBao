@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.official271.report-info.source-checks.r1",
+  "pass": true,
+  "check_count": 36,
+  "checks": [
+    {
+      "name": "strict forward whole",
+      "passed": true
+    },
+    {
+      "name": "strict reverse whole",
+      "passed": true
+    },
+    {
+      "name": "exact after source",
+      "passed": true
+    },
+    {
+      "name": "exact original journal",
+      "passed": true
+    },
+    {
+      "name": "exact original prior state",
+      "passed": true
+    },
+    {
+      "name": "actual stdout exact",
+      "passed": true
+    },
+    {
+      "name": "one exact request",
+      "passed": true
+    },
+    {
+      "name": "fixed one file_info",
+      "passed": true
+    },
+    {
+      "name": "actual size SHA full9 binding",
+      "passed": true
+    },
+    {
+      "name": "no body authority",
+      "passed": true
+    },
+    {
+      "name": "same closed seven-call slot",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfNeed",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfMetaEquals",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfSave",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfIntegerText",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfAcceptArchivedSDK",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "actual authorize function passes closed original fixture",
+      "passed": true
+    },
+    {
+      "name": "original call map unchanged by attachment",
+      "passed": true
+    },
+    {
+      "name": "original observer history unchanged by attachment",
+      "passed": true
+    },
+    {
+      "name": "actual prepare accepts exact once request",
+      "passed": true
+    },
+    {
+      "name": "actual new admit intent selects new GO",
+      "passed": true
+    },
+    {
+      "name": "prepare does not invoke Native",
+      "passed": true
+    },
+    {
+      "name": "old seven calls byte-values remain",
+      "passed": true
+    },
+    {
+      "name": "reject changed report path",
+      "passed": true
+    },
+    {
+      "name": "reject binary_read instead of metadata",
+      "passed": true
+    },
+    {
+      "name": "reject process_status instead of metadata",
+      "passed": true
+    },
+    {
+      "name": "reject new calls before separate GO",
+      "passed": true
+    },
+    {
+      "name": "reject second info admission",
+      "passed": true
+    },
+    {
+      "name": "reject process_start",
+      "passed": true
+    },
+    {
+      "name": "actual operation_status new scope arm",
+      "passed": true
+    },
+    {
+      "name": "actual operation_status preserves original historical calls",
+      "passed": true
+    },
+    {
+      "name": "actual operation_result new scope arm",
+      "passed": true
+    },
+    {
+      "name": "actual operation_result preserves original historical calls",
+      "passed": true
+    }
+  ],
+  "NativeCalls": 0,
+  "productExecuted": false,
+  "newCandidateExecuted": false,
+  "fakeJournalFunctionsExecuted": [
+    "authorize_oracle_report_info",
+    "prepare"
+  ],
+  "allToolsThrow": true
+}

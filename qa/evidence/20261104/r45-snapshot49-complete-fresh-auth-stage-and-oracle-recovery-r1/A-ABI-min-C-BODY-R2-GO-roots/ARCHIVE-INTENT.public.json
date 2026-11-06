@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-A-ABI-refusal-closed-C-test2-two-log-BODY-GO",
+  "records": [
+    {
+      "name": "A-original-ABI-refusal-root-verifier.js",
+      "blob": "46ce6adc99b5963f20676df2be1aaf5650460c27",
+      "bytes": 3500,
+      "sha256": "597a20472d11311da027172289e03feaec8adefa973f3d0419f0eed63813da51"
+    },
+    {
+      "name": "A-original-ABI-refusal-root15.public.json",
+      "blob": "fcfe2f5e0cfd2d2a2dac0b0c1fbf876de7686760",
+      "bytes": 1706,
+      "sha256": "d22a0f2f92c92800fb4efed5a5862c9cf73320d6f539f559a27a489684538784"
+    },
+    {
+      "name": "C-two-log-BODY-source-root-verifier.js",
+      "blob": "c676313e1fc22678d929d67de92cbc15cac8f8f2",
+      "bytes": 3902,
+      "sha256": "c2fe3de8bb693045fd30aa8d25515d11ec727fca03641a79ca2d35d922b9b5dd"
+    },
+    {
+      "name": "C-two-log-BODY-source-root17.public.json",
+      "blob": "4e17658e457cf97147ac4aad7671a1551f3c3283",
+      "bytes": 2215,
+      "sha256": "38d1e2cf51e72abbc7064525b5db52ffce0978ed0173f805285d4dd7eab7b7c8"
+    },
+    {
+      "name": "C-two-log-BODY-GO.public.json",
+      "blob": "f4d560a49ead6a4860f25a08d7c5b5a8b02c8600",
+      "bytes": 5086,
+      "sha256": "a5fa4a3e66487f8c38429bed8c7d5919fbb35f6c836958d7b4b69e2d052c3148"
+    }
+  ],
+  "expected_data_tree": "0bc75469d9ecfc1c3bd6b071f367a2d4602be1d9",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

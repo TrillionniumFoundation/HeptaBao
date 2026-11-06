@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.root-test2-two-log-bodies-source.r2",
+  "passed": true,
+  "checks": 17,
+  "rows": [
+    {
+      "name": "source31_and_prepare26_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_root36",
+      "passed": true
+    },
+    {
+      "name": "R1_preserved_exact",
+      "passed": true
+    },
+    {
+      "name": "only_one_line_GO_pin_fix",
+      "passed": true
+    },
+    {
+      "name": "one_exact_hunk_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "all_new_source_strict_from_original_INFO",
+      "passed": true
+    },
+    {
+      "name": "exact_source_pin",
+      "passed": true
+    },
+    {
+      "name": "INFO_state_actual_whole",
+      "passed": true
+    },
+    {
+      "name": "BUILD_state_actual_whole",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_versions_and_hashes",
+      "passed": true
+    },
+    {
+      "name": "request_original_unchanged_0",
+      "passed": true
+    },
+    {
+      "name": "request_original_unchanged_1",
+      "passed": true
+    },
+    {
+      "name": "566_total_only",
+      "passed": true
+    },
+    {
+      "name": "old_slot_attached_not_initialized",
+      "passed": true
+    },
+    {
+      "name": "whole_validated_GO_before_pin_selection",
+      "passed": true
+    },
+    {
+      "name": "prior_donor_already_had_same_pattern",
+      "passed": true
+    },
+    {
+      "name": "page_and_payload_caps",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "943b982b8e1ea3b8f37343e59206500b32ad9822",
+  "source": {
+    "blob": "d2000cdc23f6a71d6c076dd1da2db42370a6a10d",
+    "bytes": 31518,
+    "sha256": "c6f87b29e6cb96eb1ffce321c6b571e66602db738e3921f5b1376e85be27cc74"
+  },
+  "requests": [
+    {
+      "blob": "b8a6cdfc57c4af38b09c17308cf3e3b82e61ba80",
+      "bytes": 440,
+      "sha256": "6f608f38a8ae79f43a09f98c5dd5120736ee9687ce16ce3194b66d58db24240c"
+    },
+    {
+      "blob": "3b9d51d53f0b10ef67077bb34d7805196b45cd3b",
+      "bytes": 440,
+      "sha256": "10e36468d51b3976bc8d52c2a16eca8356e19025de8e641597bdf0070bde6f47"
+    }
+  ],
+  "authorSource31Exact": true,
+  "actualPrepareFake26Exact": true,
+  "R1FindingResolvedInSourceOnly": true,
+  "NativeCalls": 0,
+  "actualLogBodiesRead": false
+}

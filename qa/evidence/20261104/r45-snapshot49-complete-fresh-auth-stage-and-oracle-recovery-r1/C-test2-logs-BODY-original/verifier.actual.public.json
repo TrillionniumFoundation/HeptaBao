@@ -1,0 +1,300 @@
+{
+  "schema": "heptabao.actual-failed-test2-log-bodies-original-chain.r1",
+  "pass": true,
+  "check_count": 72,
+  "checks": [
+    {
+      "name": "exact-body-GO",
+      "pass": true
+    },
+    {
+      "name": "old-six-calls-preserved",
+      "pass": true
+    },
+    {
+      "name": "closed-four-observers",
+      "pass": true
+    },
+    {
+      "name": "both-actual-bodies",
+      "pass": true
+    },
+    {
+      "name": "whole-BODY-go-pin",
+      "pass": true
+    },
+    {
+      "name": "prior-BUILD-immutable-pin",
+      "pass": true
+    },
+    {
+      "name": "six-new-original-calls",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-admit:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-status0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-body-page0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-admit:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-status0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:request",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:whole-SDK",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:native",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:whole-arm",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-body-page0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "stderr:request-pin",
+      "pass": true
+    },
+    {
+      "name": "stderr:actual-version-bound",
+      "pass": true
+    },
+    {
+      "name": "stderr:ACK",
+      "pass": true
+    },
+    {
+      "name": "stderr:original-status",
+      "pass": true
+    },
+    {
+      "name": "stderr:same-ID-status-page",
+      "pass": true
+    },
+    {
+      "name": "stderr:immutable-page",
+      "pass": true
+    },
+    {
+      "name": "stderr:whole-payload",
+      "pass": true
+    },
+    {
+      "name": "stderr:original-envelope",
+      "pass": true
+    },
+    {
+      "name": "stderr:binary-native",
+      "pass": true
+    },
+    {
+      "name": "stderr:whole-log",
+      "pass": true
+    },
+    {
+      "name": "stderr:whole-closed-record",
+      "pass": true
+    },
+    {
+      "name": "stdout:request-pin",
+      "pass": true
+    },
+    {
+      "name": "stdout:actual-version-bound",
+      "pass": true
+    },
+    {
+      "name": "stdout:ACK",
+      "pass": true
+    },
+    {
+      "name": "stdout:original-status",
+      "pass": true
+    },
+    {
+      "name": "stdout:same-ID-status-page",
+      "pass": true
+    },
+    {
+      "name": "stdout:immutable-page",
+      "pass": true
+    },
+    {
+      "name": "stdout:whole-payload",
+      "pass": true
+    },
+    {
+      "name": "stdout:original-envelope",
+      "pass": true
+    },
+    {
+      "name": "stdout:binary-native",
+      "pass": true
+    },
+    {
+      "name": "stdout:whole-log",
+      "pass": true
+    },
+    {
+      "name": "stdout:whole-closed-record",
+      "pass": true
+    },
+    {
+      "name": "exact-total566",
+      "pass": true
+    }
+  ],
+  "newCalls": 6,
+  "newObservers": 2,
+  "newPages": 2,
+  "totalBodyBytes": 566,
+  "newProductExecutions": 0
+}

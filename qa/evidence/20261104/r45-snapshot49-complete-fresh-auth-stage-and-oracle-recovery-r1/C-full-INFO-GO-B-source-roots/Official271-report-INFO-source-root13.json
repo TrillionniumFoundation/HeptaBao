@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root-official271-original-report-INFO-source.r1",
+  "passed": true,
+  "checks": 13,
+  "rows": [
+    {
+      "name": "author36_exact",
+      "passed": true
+    },
+    {
+      "name": "root_original13_closed",
+      "passed": true
+    },
+    {
+      "name": "before_actual_journal_exact",
+      "passed": true
+    },
+    {
+      "name": "actual_prior_state_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_failed_stdout_unchanged",
+      "passed": true
+    },
+    {
+      "name": "strict_six_hunk_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "exact_fixed_request_pin",
+      "passed": true
+    },
+    {
+      "name": "one_exact_public_report_INFO",
+      "passed": true
+    },
+    {
+      "name": "reported_file_identity_bound",
+      "passed": true
+    },
+    {
+      "name": "original7_2_closed_no_reinitialize",
+      "passed": true
+    },
+    {
+      "name": "new_arm_separate_INFO_GO",
+      "passed": true
+    },
+    {
+      "name": "original_budget_and_single_file",
+      "passed": true
+    },
+    {
+      "name": "no_child_or_body_qualification",
+      "passed": true
+    }
+  ],
+  "sourceTree": "244182a0e6e5d07dc47effcf3b0cd6160a76fecc",
+  "author36Exact": true,
+  "sourceOnly": true,
+  "newNativeCalls": 0
+}

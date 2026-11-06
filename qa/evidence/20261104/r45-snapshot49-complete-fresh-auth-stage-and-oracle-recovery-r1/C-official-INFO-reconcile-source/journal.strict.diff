@@ -1,0 +1,205 @@
+--- a/oracle.gitfirst.original-info-status-reconcile.js
++++ b/oracle.gitfirst.original-info-status-reconcile.js
+@@ -5,7 +5,13 @@
+  * Every original SDK is store'd, serialized, Git-created once and whole-read
+  * before isError or native text is inspected.
+  */
+-const GF_SLOT = "official271_x230_acl23_oracle_gitfirst_r1";
++const GF_SLOT = "official271_x230_acl23_report_info_status_reconcile_r1";
++const GF_ORIGINAL_SLOT = "official271_x230_acl23_oracle_gitfirst_r1";
++const GF_ORIGINAL_PAUSED_STATE = {"blob":"6c825b1f09d8584aafef83e153a7470679cae7cb","bytes":223583,"sha256":"af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"};
++const GF_ORIGINAL_INFO_OPERATION = "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8";
++const GF_ORIGINAL_FAILED_STATUS_KEY = "official271-x230-acl23-report-info-status0-r1";
++const GF_ORIGINAL_FAILED_STATUS_SDK = {"blob":"0cede4881f37869cfd279b69b738c87eb62b4889","bytes":248,"sha256":"b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70"};
++const GF_RECONCILE_STATUS_REQUEST = {"blob":"218e1601e3925e6e4923aee8a43b9cb8ed1e3c31","bytes":89,"sha256":"862f3d441b53b066a88880b5d652afc0a842368c9e88fa868b011a05b3600d14"};
+ const GF_REQUEST = {"blob":"90b68f243c6dfc77cedce08b6d1095ffdd1a79a1","bytes":164440,"sha256":"f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"};
+ 
+ const GF_ORACLE_REPORT_INFO_REQUEST = {"blob":"3d4b0ac9b5e642da091ae07c6e446c2c4947b817","bytes":267,"sha256":"4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"};
+@@ -21,6 +27,8 @@
+ function gfState() {
+  const s=load(GF_SLOT);
+  gfNeed(s && s.rootGoWhole===true, "root_go_not_initialized");
++ gfNeed(gfMetaEquals(JSON.stringify(load(GF_ORIGINAL_SLOT),null,2)+"\n",GF_ORIGINAL_PAUSED_STATE),
++        "original_paused_status_error_context_byte_identical");
+  return s;
+ }
+ function gfSave(s) { store(GF_SLOT,s); }
+@@ -30,73 +38,58 @@
+    && /^-?[0-9]+$/.test(value.$exactInteger),"lossless_integer_token");
+  return value.$exactInteger;
+ }
+-function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,digest,fingerprint}) {
+- gfNeed(load(GF_SLOT)===undefined,"existing_or_armed_context_must_be_recovered_not_reinitialized");
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"exact_whole_root_go");
+- gfNeed(/^[0-9a-f]{64}$/.test(digest) && /^[0-9]{1,20}$/.test(fingerprint),
+-        "root_independently_bound_native_identity");
+- // The caller must supply the separately reviewed actual GO, not the SOURCE contract.
+- store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest,fingerprint,job:null,
+-  startCalled:false,pending:null,activeObserver:null,nativeCallInFlight:false,
+-  paused:false,calls:{},completedObservers:[],nextStdout:0,nextStderr:0,
+-  localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+-}
+-function gfAuthorizeOracleReportInfo({goRaw,goPin,goWholeReadback,priorStateRaw,stdoutRaw}) {
+- const s=gfState();
+- gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"whole_report_info_GO");
++function gfInitializeOnlyAfterRootGO({goRaw,goPin,goWholeReadback,originalStateRaw}) {
++ gfNeed(load(GF_SLOT)===undefined,"new_readonly_reconciliation_context_once");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin),"whole_same_ID_reconciliation_GO");
+  const g=JSON.parse(goRaw);
+- gfNeed(g.authorization==="GO" && g.scope==="official271_oracle_result_file_info_only"
+-   && g.original_job==="1a1b17f9eff-fc05-7932"
+-   && g.maximum_file_info_operations===1 && g.maximum_process_start_calls===0
+-   && g.maximum_binary_read_operations===0
+-   && JSON.stringify(g.exact_request)===JSON.stringify(GF_ORACLE_REPORT_INFO_REQUEST),
+-   "one_exact_oracle_report_info_authority");
+- gfNeed(gfMetaEquals(priorStateRaw,GF_ORACLE_REPORT_PRIOR_STATE)
+-   && JSON.stringify(s,null,2)+"\n"===priorStateRaw
+-   && s.job==="1a1b17f9eff-fc05-7932" && s.startCalled===true
+-   && !s.paused && !s.nativeCallInFlight && s.pending===null && s.activeObserver===null
+-   && Object.keys(s.calls).length===7 && s.completedObservers.length===2
+-   && s.completedObservers.every(o=>o.completedInactive===true)
+-   && Object.values(s.calls).every(c=>c.phase==="accepted"&&c.sdkArchive?.whole===true)
+-   && s.oracleReportInfoGO===undefined,"original_failed_fixture_whole_closed_boundary");
+- gfNeed(gfMetaEquals(stdoutRaw,GF_ORACLE_REPORT_STDOUT),"actual_terminal_stdout_whole");
+- const terminal=JSON.parse(stdoutRaw),r=terminal.report;
+- gfNeed(terminal.capture_complete===false && terminal.failure?.code==="common_config_projection_mismatch"
+-   && terminal.all_entry_file_descriptors_closed===true && terminal.entry_fd_count===12
+-   && terminal.pending_signal===null && r?.relative==="result.public.json" && r.closed===true
+-   && r.bytes===GF_ORACLE_REPORT_INFO_TARGET.bytes && r.sha256===GF_ORACLE_REPORT_INFO_TARGET.sha256
+-   && JSON.stringify(r.full9_decimal)===JSON.stringify(GF_ORACLE_REPORT_INFO_TARGET.full9Strings),
+-   "actual_failed_terminal_binds_one_report_only");
+- s.oracleReportInfoGO={raw:goRaw,pin:goPin,whole:true};
+- s.onlyOracleReportInfo=true;s.oracleReportInfoStarted=false;s.oracleReportInfo=null;
+- gfSave(s);
+- return {authorized:true,scope:g.scope,maximumNativeAdmissions:1,processStartAllowed:false,binaryReadAllowed:false};
++ gfNeed(g.authorization==="GO" && g.scope==="official271_original_report_info_same_id_status_reconciliation_only"
++  && g.original_job==="1a1b17f9eff-fc05-7932" && g.original_operation_id===GF_ORIGINAL_INFO_OPERATION
++  && g.maximum_new_operation_status_calls===1 && g.original_operation_status_calls===1
++  && g.maximum_combined_operation_status_calls===8 && g.maximum_operation_result_calls===128
++  && g.maximum_operation_start_calls===0 && g.maximum_process_start_calls===0
++  && g.immutable_page_bytes===8192 && g.maximum_payload_bytes===1048576
++  && JSON.stringify(g.exact_status_request)===JSON.stringify(GF_RECONCILE_STATUS_REQUEST),
++  "one_new_status_then_only_original_payload_if_closed");
++ gfNeed(gfMetaEquals(originalStateRaw,GF_ORIGINAL_PAUSED_STATE)
++  && JSON.stringify(load(GF_ORIGINAL_SLOT),null,2)+"\n"===originalStateRaw,"old_paused_context_whole_unchanged");
++ const prior=JSON.parse(originalStateRaw),oldCall=prior.calls[GF_ORIGINAL_FAILED_STATUS_KEY],observer=prior.activeObserver;
++ gfNeed(prior.paused===true && prior.pending===GF_ORIGINAL_FAILED_STATUS_KEY
++  && prior.nativeCallInFlight===false && Object.keys(prior.calls).length===9
++  && prior.completedObservers.length===2 && prior.job==="1a1b17f9eff-fc05-7932"
++  && observer.id===GF_ORIGINAL_INFO_OPERATION && observer.tool==="file_info"
++  && observer.futureClosed===false && observer.nextPageOffset===0 && observer.pages.length===0
++  && observer.eof===false && gfMetaEquals(JSON.stringify(observer.request,null,2)+"\n",GF_ORACLE_REPORT_INFO_REQUEST)
++  && oldCall.called===true && oldCall.phase==="native_interpretation_refused"
++  && oldCall.sdkArchive?.whole===true
++  && gfMetaEquals(load(GF_ORIGINAL_SLOT+":original_sdk_raw:"+GF_ORIGINAL_FAILED_STATUS_KEY),GF_ORIGINAL_FAILED_STATUS_SDK),
++  "returned_original_INFO_ACK_and_unknown_status_not_reset");
++ gfNeed(Object.values(prior.calls).filter(c=>c.kind==="operation_status"
++  && JSON.parse(c.requestRaw).operation_id===GF_ORIGINAL_INFO_OPERATION).length===1,
++  "one_original_status_query_before_one_new_query");
++ store(GF_SLOT,{rootGoWhole:true,goRaw,goPin,digest:null,fingerprint:null,
++  job:prior.job,startCalled:false,pending:null,nativeCallInFlight:false,paused:false,
++  calls:{},completedObservers:[],nextStdout:0,nextStderr:0,
++  activeObserver:observer,reconcileStatusCalls:0,originalStatusCalls:1,
++  originalPausedContext:{slot:GF_ORIGINAL_SLOT,state:GF_ORIGINAL_PAUSED_STATE,
++   failedStatusKey:GF_ORIGINAL_FAILED_STATUS_KEY,failedStatusSDK:GF_ORIGINAL_FAILED_STATUS_SDK},
++  onlyOracleReportInfo:true,oracleReportInfoStarted:true,oracleReportInfo:null,
++  localJournalAvailable:false,gitFirstExplicitlyRequiredByThisRootGO:true});
+ }
+ function gfValidateRequest(s,kind,q,raw) {
+  gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null,"single_call_boundary");
+- gfNeed(s.oracleReportInfoGO?.whole===true && s.onlyOracleReportInfo===true,
+-        "separate_report_info_GO_before_any_new_call");
+- if(kind==="process_start") {
+-  throw new Error("report_info_has_no_process_start_authorization");
+- } else if(kind==="operation_start") {
+-  gfNeed(s.activeObserver===null && s.oracleReportInfo===null
+-   && s.oracleReportInfoStarted===false && s.completedObservers.length===2
+-   && Object.values(s.calls).filter(c=>c.kind==="operation_start").length===2
+-   && gfMetaEquals(raw,GF_ORACLE_REPORT_INFO_REQUEST)
+-   && q.operation?.tool==="file_info" && q.operation.arguments.host==="x230"
+-   && q.operation.arguments.path===GF_ORACLE_REPORT_INFO_TARGET.path,
+-   "one_exact_fixed_oracle_report_metadata_request");
+- } else if(kind==="operation_status") {
+-  gfNeed(s.activeObserver && !s.activeObserver.futureClosed
+-   && Object.keys(q).join(",")==="operation_id"
+-   && q.operation_id===s.activeObserver.id,"same_live_original_operation_status");
++ if(kind==="operation_status") {
++  gfNeed(s.reconcileStatusCalls===0 && s.originalStatusCalls===1 && s.originalStatusCalls+s.reconcileStatusCalls<8
++   && s.activeObserver?.id===GF_ORIGINAL_INFO_OPERATION && !s.activeObserver.futureClosed
++   && gfMetaEquals(raw,GF_RECONCILE_STATUS_REQUEST)
++   && Object.keys(q).join(",")==="operation_id" && q.operation_id===GF_ORIGINAL_INFO_OPERATION,
++   "one_new_readonly_status_for_same_returned_original_ID");
+  } else if(kind==="operation_result") {
+-  gfNeed(s.activeObserver?.futureClosed===true
+-   && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+-   && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+-   "same_closed_original_operation_next_page");
+- } else throw new Error("closed_native_tool_set");
++  gfNeed(s.reconcileStatusCalls===1 && s.activeObserver?.futureClosed===true
++   && s.activeObserver.id===GF_ORIGINAL_INFO_OPERATION && !s.activeObserver.eof
++   && s.activeObserver.pages.length<128 && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++   && q.operation_id===GF_ORIGINAL_INFO_OPERATION && q.limit===8192
++   && q.offset===s.activeObserver.nextPageOffset,"closed_original_immutable_next_page_only");
++ } else throw new Error("only_same_ID_status_and_original_result_no_admission");
+ }
+ async function gfPrepareOne({callKey,kind,requestRaw}) {
+  const s=gfState();
+@@ -105,7 +98,7 @@
+  gfValidateRequest(s,kind,q,requestRaw);
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+-  callKey,kind,request:requestPin,rootGo:s.oracleReportInfoGO?.pin??s.goPin,originalJob:s.job,
++  callKey,kind,request:requestPin,rootGo:s.goPin,originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+   localFirstExplicitlyReplacedByExactRootGO:true};
+@@ -134,14 +127,11 @@
+  const q=JSON.parse(c.requestRaw);
+  gfNeed(gfMetaEquals(c.requestRaw,c.requestPin),"armed_request_unchanged");
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+- if(c.kind==="process_start")s.startCalled=true;
+- if(c.kind==="operation_start")s.oracleReportInfoStarted=true;
++ if(c.kind==="operation_status")s.reconcileStatusCalls++;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+-  if(c.kind==="process_start")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_process_start(q);
+-  else if(c.kind==="operation_start")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_start(q);
+-  else if(c.kind==="operation_status")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_status(q);
++  if(c.kind==="operation_status")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_status(q);
+   else if(c.kind==="operation_result")sdk=await tools.mcp__codex_apps__heptaruntime_mac_controller_operation_result(q);
+   else throw new Error("unreachable_closed_dispatch_kind");
+  } catch(error) {
+@@ -188,20 +178,7 @@
+   const nativeRaw=sdk.content[0].text;
+   store(GF_SLOT+":native_raw:"+callKey,nativeRaw);
+   const v=parseLosslessIntegers(nativeRaw),q=JSON.parse(c.requestRaw);
+-  if(c.kind==="process_start") {
+-   gfNeed(v.audit_recorded===true && v.local_record_pending===false && v.reused===false
+-    && v.launch?.ok===true && v.job?.host==="x230" && v.job.execution_mode==="operator"
+-    && v.job.idempotency_key===q.idempotency_key && v.job.executable===q.executable
+-    && v.job.cwd===q.cwd && JSON.stringify(v.job.args)===JSON.stringify(q.args)
+-    && v.job.request_digest===s.digest && gfIntegerText(v.job.request_fingerprint)===s.fingerprint
+-    && /^[a-z0-9-]{1,100}$/.test(v.job.id),"exact_unique_native_start_binding");
+-   s.job=v.job.id;
+-  } else if(c.kind==="operation_start") {
+-   gfNeed(/^[a-f0-9]{64}$/.test(v.operation_id) && v.tool_name===q.operation.tool
+-     && v.reused===false && v.automatic_retry===false,"original_observer_admission");
+-   s.activeObserver={id:v.operation_id,request:q,tool:v.tool_name,futureClosed:false,
+-    nextPageOffset:0,eof:false,pages:[],total:null,digest:null};
+-  } else if(c.kind==="operation_status") {
++  if(c.kind==="operation_status") {
+    const a=s.activeObserver;
+    gfNeed(v.operation_id===a.id && v.tool_name===a.tool && v.automatic_retry===false,
+           "same_original_status");
+@@ -359,8 +336,7 @@
+ async function gfRun(action,args) {
+  try {
+   let value;
+-  if(action==="authorize_oracle_report_info")value=gfAuthorizeOracleReportInfo(args);
+-  else if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
++  if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

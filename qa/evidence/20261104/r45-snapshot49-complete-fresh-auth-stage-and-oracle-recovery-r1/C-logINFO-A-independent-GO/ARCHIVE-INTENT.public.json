@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-C-logINFO-closed-A-independent-PID-GO",
+  "records": [
+    {
+      "name": "C-test2-logINFO-root-verifier.js",
+      "blob": "e94dc04910d5909a5b1c2a5a46b815c49941eef3",
+      "bytes": 3312,
+      "sha256": "4dbfa48009a1bcce0ef2afe0e3fc7e75da4281d1f6c6acf302aea822c13b6802"
+    },
+    {
+      "name": "C-test2-logINFO-root36.public.json",
+      "blob": "6932dfb1a4fe7368cea6385d22f6ed2390275f11",
+      "bytes": 6151,
+      "sha256": "c7657ec4bb234ff5e2988014e90c79ac0467fe7765680a93741eb26e84a06820"
+    },
+    {
+      "name": "A-independent-PID-GO.public.json",
+      "blob": "f3a4ebc683c46b2c33570c51677ce09edfee0f29",
+      "bytes": 16753,
+      "sha256": "0041c5c5d929b59ddeb0f303edffe82b85223bc97b1f6e915e54a8399ce993da"
+    }
+  ],
+  "expected_data_tree": "763afb352eff2c1977c50ca43f492b549cae617d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

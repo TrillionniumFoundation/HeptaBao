@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.r45-root-qualifications.v1",
+  "items": [
+    {
+      "key": "r45_B_final23_root_qualification",
+      "blob": "3d05ca4d13fa2ba581c5f704ba59a9f3e7958da7",
+      "bytes": 2051,
+      "sha256": "8f2158426ce618f21190d5c9f324e2930e13f05e4d30b6fb78141a00fd5633ff"
+    },
+    {
+      "key": "r45_Auth_fresh_HOME_R3_root_qualification",
+      "blob": "51660e6c8679f241b49924f88bc26bdc288defe6",
+      "bytes": 4623,
+      "sha256": "1160f197ce52334e9e3784016f606d02daa72af0aefa866e40f7da3e81d5a0de"
+    },
+    {
+      "key": "r45_Auth_fresh_HOME_R3_inert_min_root_qualification",
+      "blob": "07b2174103187f13defd220ed65207b8011d7f84",
+      "bytes": 2263,
+      "sha256": "34729bb8311ca8218e0b865c9603cc1a65af0aba68486a84f94066545722caa9"
+    },
+    {
+      "key": "r45_Auth_PID_ABI_R3_actual_full_root_qualification",
+      "blob": "5de81788c85c578e48b13e738930bcb9ade2d4a5",
+      "bytes": 6083,
+      "sha256": "c56fe209438476501235f349d2e0da94284d6c83dbde56e9e8ac6bf430e54a85"
+    },
+    {
+      "key": "r45_JWT_identity_fixture_root_qualification",
+      "blob": "942e283005fab611f1e8a510213ac24f1c0d4ddb",
+      "bytes": 2205,
+      "sha256": "892e826e0a491bba7c0ac12f09d95bf5e286dedc8a549a271219c6fdf8eec603"
+    },
+    {
+      "key": "r45_official271_original_full_root_qualification",
+      "blob": "b97cf59432550ba4b07b39c465038da03979c748",
+      "bytes": 3626,
+      "sha256": "9fb98660aab5d5b9edae69ae4102dbdb38269472f2ad041547e28afdc597f2d7"
+    },
+    {
+      "key": "r45_official271_INFO_reconcile_actual_root_qualification",
+      "blob": "57dbb0090b056fd394e70b4e636067c5d2cd6d73",
+      "bytes": 1897,
+      "sha256": "0c04fde3024ec40af07a880724d1b9a5e1f82879b864dbc008adb1a67c188870"
+    },
+    {
+      "key": "r45_official271_report_BODY_root_qualification",
+      "blob": "292f20edda65b6498cad14053ce9cc50dc960dda",
+      "bytes": 1266,
+      "sha256": "8dc6663a6ebead993817b2b642dfa161782c5119bcd97e6c481d139b30478f72"
+    }
+  ],
+  "allAreSourceOrEvidenceScopeOnly": true
+}

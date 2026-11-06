@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.r44-publication-proof.v1",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "47b25ff07c1ec7e83f392cb60dc62d7c74b472ed",
+  "parent": "5733a11714677d542fa9a8dbed260364c68f14cf",
+  "tree": "79c5ebd644ac951f7548d373410d1afa7171c763",
+  "prefix": "qa/evidence/20261104/r44-original-test-failure-and-immutable-recovery-r1",
+  "cutoffUTC": "2026-11-06 15:08:00 UTC",
+  "indexTotals": {
+    "packets": 37,
+    "files": 773,
+    "bytes": 13399936,
+    "allWhole": true
+  },
+  "indexChecks": 76,
+  "allFiveTreeLayersWhole": true,
+  "commitParentTreeMessageExact": true,
+  "branchRefExact": true,
+  "mutations": {
+    "tree": 1,
+    "commit": 1,
+    "ref": 1
+  },
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false,
+  "taskContinues": true
+}

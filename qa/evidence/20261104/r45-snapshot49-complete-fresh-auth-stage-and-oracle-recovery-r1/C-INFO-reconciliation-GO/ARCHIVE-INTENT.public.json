@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-C-original-INFO-status-reconcile-GO",
+  "records": [
+    {
+      "name": "Official271-INFO-reconcile-source-root13.json",
+      "blob": "5af5662e9675268edb9b32699f88a529abab21ca",
+      "bytes": 1380,
+      "sha256": "ecbf958a0be82efd19d85368795fa92ef16fb57cbd1b620534c84390ba3d17dd"
+    },
+    {
+      "name": "Official271-INFO-reconcile-source-root13.verifier.js",
+      "blob": "8fe011e64d5d399efc3936e8add95645f1511b0d",
+      "bytes": 3299,
+      "sha256": "3dc390759b6ab321f66231fe799979d5d5b813e9ab39cbe98546eb32e439e956"
+    },
+    {
+      "name": "Official271-INFO-reconcile-GO.json",
+      "blob": "33c5afe418b230d2eea32456f626da35d08d30d7",
+      "bytes": 4493,
+      "sha256": "3bed8fc3437fc6240785c5bc5709b805986e98a456f97d1087011d669999e678"
+    }
+  ],
+  "expected_data_tree": "1d3c2d8e0dce297d9cfb739355645a6da48ed880",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.root-final-formatted23-49-original-evidence.r2",
+  "passed": true,
+  "checks": 14,
+  "rows": [
+    {
+      "name": "exact_original18051_reproduced",
+      "passed": true
+    },
+    {
+      "name": "all1548_raw_bytes_independently_whole",
+      "passed": true
+    },
+    {
+      "name": "exact28_targeted_cases",
+      "passed": true
+    },
+    {
+      "name": "source35_and_actual_recovery19",
+      "passed": true
+    },
+    {
+      "name": "exact_original_call_geometry",
+      "passed": true
+    },
+    {
+      "name": "three_failures_and_recoveries_preserved",
+      "passed": true
+    },
+    {
+      "name": "all23_changed_files_whole",
+      "passed": true
+    },
+    {
+      "name": "26_frozen_whole_reuses",
+      "passed": true
+    },
+    {
+      "name": "distinct49_actual_mapping",
+      "passed": true
+    },
+    {
+      "name": "fresh_metadata_and_reuse_distinguished",
+      "passed": true
+    },
+    {
+      "name": "final_original_slot_closed",
+      "passed": true
+    },
+    {
+      "name": "reachable_aggregate_whole",
+      "passed": true
+    },
+    {
+      "name": "aggregate_original_final_state",
+      "passed": true
+    },
+    {
+      "name": "no_product_test_or_build_claim",
+      "passed": true
+    }
+  ],
+  "aggregateTree": "7163d1bc4cb7b8dd4bda0b584964c55d27cc9054",
+  "fullResult": {
+    "blob": "5e68cfc89ea040c5f7e9026e01e6c8a3deee272f",
+    "bytes": 1715447,
+    "sha256": "caf49813f795bb83b3a87c4c501bcdafbf3adec1ded44368f8ec24085c5e89f3"
+  },
+  "originalCallRows": 274,
+  "originalAdmissions": 59,
+  "originalStatuses": 59,
+  "originalObservers": 59,
+  "successfulImmutablePages": 153,
+  "historicalFailedDeliveries": 3,
+  "separateRecoveryCalls": 3,
+  "changedFiles": 23,
+  "changedBytes": 1346637,
+  "frozenWholeReuses": 26,
+  "reusedBytes": 686814,
+  "canonicalMapping": 49,
+  "all49SourceEvidenceQualified": true,
+  "sourceBaselineIntegrationPending": true,
+  "productTestOrBuildQualification": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

@@ -1,0 +1,11 @@
+--- a/diagnostic.r2.py
++++ b/diagnostic.r3.py
+@@ -594,7 +594,7 @@
+         self.pairs = []
+         need(sys.platform == 'darwin' and ctypes.sizeof(BsdInfo) == 136
+              and BsdInfo.pid.offset == 12 and BsdInfo.ppid.offset == 16
++             and BsdInfo.uid.offset == 20 and BsdInfo.pgid.offset == 100
+-             and BsdInfo.uid.offset == 20 and BsdInfo.pgid.offset == 108
+              and BsdInfo.birth_sec.offset == 120 and BsdInfo.birth_usec.offset == 128,
+              'current_pid_exact_bsdinfo_abi')
+         self.lib = ctypes.CDLL('/usr/lib/libproc.dylib', use_errno=True)

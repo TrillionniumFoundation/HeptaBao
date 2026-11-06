@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.fixed-public-PEM-request-input-canonical-source.r1",
+  "original": {
+    "blob": "0699a557f6f8b51d1b9a8187b1ed89084f76aa25",
+    "bytes": 451,
+    "sha256": "db4837a2caba18729628ca629eeb44f452a55d5a9aa1f7bad7c2357ed0217938"
+  },
+  "wireInput": {
+    "blob": "f6ede40e46f5f1b5dadedb045f88ae987661e632",
+    "bytes": 450,
+    "sha256": "0d800d674a53560c9bdb69c20d16f0c84be727a0f37910ba4297f6941697f96c"
+  },
+  "exactChange": "Remove only the single final LF from the fixed451-byte public PEM before JSON request construction.",
+  "responseNormalized": false,
+  "actualHTTPRun": false,
+  "newNativeCalls": 0
+}

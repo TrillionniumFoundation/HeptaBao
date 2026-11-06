@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.root-version-bound-original-report-body-source.r1",
+  "passed": true,
+  "checks": 12,
+  "rows": [
+    {
+      "name": "whole_SOURCE17",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_independently_closed",
+      "passed": true
+    },
+    {
+      "name": "author44_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_reconciliation_source",
+      "passed": true
+    },
+    {
+      "name": "eight_hunk_forward_reverse",
+      "passed": true
+    },
+    {
+      "name": "closed_state_same_as_actual",
+      "passed": true
+    },
+    {
+      "name": "original_paused_state_same",
+      "passed": true
+    },
+    {
+      "name": "actual_INFO_same",
+      "passed": true
+    },
+    {
+      "name": "one_exact_versioned_binary_read",
+      "passed": true
+    },
+    {
+      "name": "bounded_read_no_new_process_or_INFO",
+      "passed": true
+    },
+    {
+      "name": "new_arms_bind_separate_BODY_GO",
+      "passed": true
+    },
+    {
+      "name": "source_only_no_owner_closure_claim",
+      "passed": true
+    }
+  ],
+  "sourcePacket": "9f78fb5999f0cd1d3b7265e4eb38d13b315ce50a",
+  "readOnly": true,
+  "maximumBinaryReads": 1,
+  "maximumBodyBytes": 36658,
+  "NativeCalls": 0,
+  "ownerChildClosureQualified": false
+}

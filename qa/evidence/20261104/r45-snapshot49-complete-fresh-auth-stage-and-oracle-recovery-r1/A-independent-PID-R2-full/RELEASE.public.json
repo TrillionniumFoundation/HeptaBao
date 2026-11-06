@@ -1,0 +1,154 @@
+{
+  "schema": "heptabao.current-home-r2-independent-label-pid.original-observation-release.r2",
+  "job": {
+    "host": "mac",
+    "id": "1a1b16dddc3-fc05-78a6"
+  },
+  "exactRequest": {
+    "blob": "a5848db0ad380f240dc6f780f612034c3b76475a",
+    "bytes": 100604,
+    "sha256": "9925e3cc5e0bb691d5e0e144db9747c1e57989bf87da6151120e30dbca637ee7"
+  },
+  "source": {
+    "blob": "873fd511a30f70bfeba0a661f13952e122e40d94",
+    "bytes": 97960,
+    "sha256": "a414b14bc90f9b1839331a4d1414b195e3ac675811944eb3a274537c531fe1c4"
+  },
+  "rootGO": {
+    "blob": "f3a4ebc683c46b2c33570c51677ce09edfee0f29",
+    "bytes": 16753,
+    "sha256": "0041c5c5d929b59ddeb0f303edffe82b85223bc97b1f6e915e54a8399ce993da"
+  },
+  "originalNativeCalls": 9,
+  "originalObservers": 2,
+  "originalImmutablePages": 4,
+  "allOriginalCallsAccepted": true,
+  "allOriginalObserversCompletedInactive": true,
+  "allOriginalPayloadsWhole": true,
+  "nativeCallInFlight": 0,
+  "ownedNativeFuturesInFlight": 0,
+  "activeNativeObserver": null,
+  "pendingNativeCall": null,
+  "observationLaneReleased": true,
+  "authority": {
+    "blob": "dfdbcd00cf4cb5f618601b5eaab17ae3f2479ff7",
+    "bytes": 728,
+    "sha256": "511d07d599ec598337f54e6f15de1b04041802f369a6a7ec988e9028323ccdab"
+  },
+  "stdout": {
+    "blob": "33264a7b25737c70cbdb14b2a43046ec89ab2527",
+    "bytes": 7147,
+    "sha256": "95b554068c597e9e447da7986523e2428497d6b30db0e1235571b6d0d841167b"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal": {
+    "state": "failed",
+    "exitCode": 1,
+    "full": true,
+    "durable": true,
+    "confirmed": true,
+    "timedOut": false
+  },
+  "actual": {
+    "ok": false,
+    "error": {
+      "code": "current_pid_exact_bsdinfo_abi",
+      "errno": null,
+      "type": "ProbeRefused"
+    },
+    "stage": "fixed_current_pid_before",
+    "observationComplete": false,
+    "outcomeUnknown": true,
+    "registrationMappings": [
+      {
+        "classification": "exact_missing_registration",
+        "sameFixedRunningPid": false
+      }
+    ],
+    "prints": [
+      {
+        "knownCommand": true,
+        "ordinal": 1,
+        "projection": null,
+        "registrationAbsent": true
+      }
+    ],
+    "currentPidMetadata": null,
+    "currentPidSamplingCompleted": false,
+    "currentIdentityQualifiedForFutureCleanupReview": false,
+    "publicFiles": {}
+  },
+  "ownResourceClosure": {
+    "allReturnedApplicationFdsClosed": true,
+    "fdRows": 17,
+    "openLedger": {
+      "attempts": 17,
+      "knownNoReturnErrors": 0,
+      "pending": 0,
+      "registered": 17,
+      "registrationUnknown": false
+    },
+    "allDirectHelpersClosed": true,
+    "helperAttempts": 1,
+    "helperPids": [
+      34573
+    ],
+    "pendingSignalAfterRestore": null,
+    "signalRestoreErrors": [],
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 0.054907042
+  },
+  "managedScope": {
+    "currentManagedScopeStillUnknown": true,
+    "registrationClosureClaimed": false,
+    "managedProcessReaped": false,
+    "pidExitOrReapClaimed": false,
+    "historicalFailureRewritten": false,
+    "currentPidReuseClaimed": false
+  },
+  "nativeRecoveryCalls": 0,
+  "businessRetry": false,
+  "newService": false,
+  "cleanupAuthorizedByThisRelease": false,
+  "credentialValuesPublished": false,
+  "observers": [
+    {
+      "id": "31b6c635b9cc6ddbccae45675159761725ea36df2e9311ec7f403149ff49a1cd",
+      "tool": "process_status",
+      "payload": {
+        "blob": "2b5fb839241dbdc95e73db89d170fce001e7f391",
+        "bytes": 907,
+        "sha256": "7dcd5cc60e30ba67ec9af1add6cf315fb51b15a04351e79c0fd303032370334e"
+      },
+      "payloadTree": "17216f24c2982765229ea241e5ce0d6d50dad063",
+      "nativeText": {
+        "blob": "dfdbcd00cf4cb5f618601b5eaab17ae3f2479ff7",
+        "bytes": 728,
+        "sha256": "511d07d599ec598337f54e6f15de1b04041802f369a6a7ec988e9028323ccdab"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668",
+      "tool": "process_read",
+      "payload": {
+        "blob": "64834897527292806a6664f2a1a1c32299f3f808",
+        "bytes": 23970,
+        "sha256": "374e1a6f167a2d56f3a5b43b2958d86b6becaa62667593bda7c76edad747f2c5"
+      },
+      "payloadTree": "a6da2082e44de0c8538bfc7d086d9897f1f6b2de",
+      "nativeText": {
+        "blob": "9210fc5ef758e1f843e398a509b44966306041ef",
+        "bytes": 22453,
+        "sha256": "090c3bc8bced218e563224b35bb0f2e335ca8cedcbc06f20e438b4dffd1c2afb"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ]
+}

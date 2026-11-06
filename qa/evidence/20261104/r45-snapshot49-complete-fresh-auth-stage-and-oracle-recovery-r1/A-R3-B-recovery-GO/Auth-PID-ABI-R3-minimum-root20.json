@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.root-independent-PID-R3-actual-minimum.r1",
+  "passed": true,
+  "checks": 20,
+  "rows": [
+    {
+      "name": "exact_original_job",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_binding",
+      "passed": true
+    },
+    {
+      "name": "original_unknown_terminal",
+      "passed": true
+    },
+    {
+      "name": "whole11778_stdout_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_0",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_1",
+      "passed": true
+    },
+    {
+      "name": "complete_observation_conservative_UNKNOWN",
+      "passed": true
+    },
+    {
+      "name": "both_label_samples_missing",
+      "passed": true
+    },
+    {
+      "name": "actual_self_ABI_crosscheck",
+      "passed": true
+    },
+    {
+      "name": "four_fixed_PID_ESRCH",
+      "passed": true
+    },
+    {
+      "name": "two_ESRCH_pairs_no_history_inference",
+      "passed": true
+    },
+    {
+      "name": "no_path_child_follow_or_args",
+      "passed": true
+    },
+    {
+      "name": "current_ready_files_absent_only",
+      "passed": true
+    },
+    {
+      "name": "22_returned_FDs_closed",
+      "passed": true
+    },
+    {
+      "name": "two_print_helpers_reaped",
+      "passed": true
+    },
+    {
+      "name": "no_managed_exit_reuse_or_cleanup_claim",
+      "passed": true
+    },
+    {
+      "name": "no_private_business_writes",
+      "passed": true
+    },
+    {
+      "name": "signals_restored_deadline_met",
+      "passed": true
+    },
+    {
+      "name": "explicit_lane_release",
+      "passed": true
+    },
+    {
+      "name": "counts_match_release",
+      "passed": true
+    }
+  ],
+  "tree": "7781b7c0d1f3e2e722ea1b07405994b17b77d7fb",
+  "stdout": {
+    "blob": "2eb4a1866ccbb32d2a70d074d351939d5b2fb2f8",
+    "bytes": 11778,
+    "sha256": "52f7de52d535f36a46206e56c935e2a9a73b7c120ad16577821c900ec0f04a9b"
+  },
+  "ownObservationLaneReleased": true,
+  "completeReadOnlyObservation": true,
+  "currentFixedPidESRCHFourSamples": true,
+  "currentLabelMissingTwoSamples": true,
+  "historicalManagedScopeClosed": false,
+  "fullReplacement": false
+}

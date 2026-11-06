@@ -1,0 +1,460 @@
+{
+  "schema": "heptabao.pure-fixed-BsdInfo-source-layout-check.r3",
+  "passed": true,
+  "checkCount": 41,
+  "checks": [
+    {
+      "name": "primary_header_whole",
+      "pass": true
+    },
+    {
+      "name": "existing_ctypes_donor_whole",
+      "pass": true
+    },
+    {
+      "name": "original_failed_source_whole",
+      "pass": true
+    },
+    {
+      "name": "BsdInfo_declaration_byte_exact_donor",
+      "pass": true
+    },
+    {
+      "name": "no_pack_or_alignment_override",
+      "pass": true
+    },
+    {
+      "name": "22_primary_and_ctypes_fields",
+      "pass": true
+    },
+    {
+      "name": "field_0_flags",
+      "pass": true
+    },
+    {
+      "name": "field_1_status",
+      "pass": true
+    },
+    {
+      "name": "field_2_xstatus",
+      "pass": true
+    },
+    {
+      "name": "field_3_pid",
+      "pass": true
+    },
+    {
+      "name": "field_4_ppid",
+      "pass": true
+    },
+    {
+      "name": "field_5_uid",
+      "pass": true
+    },
+    {
+      "name": "field_6_gid",
+      "pass": true
+    },
+    {
+      "name": "field_7_ruid",
+      "pass": true
+    },
+    {
+      "name": "field_8_rgid",
+      "pass": true
+    },
+    {
+      "name": "field_9_svuid",
+      "pass": true
+    },
+    {
+      "name": "field_10_svgid",
+      "pass": true
+    },
+    {
+      "name": "field_11_reserved",
+      "pass": true
+    },
+    {
+      "name": "field_12_comm",
+      "pass": true
+    },
+    {
+      "name": "field_13_name",
+      "pass": true
+    },
+    {
+      "name": "field_14_nfiles",
+      "pass": true
+    },
+    {
+      "name": "field_15_pgid",
+      "pass": true
+    },
+    {
+      "name": "field_16_jobc",
+      "pass": true
+    },
+    {
+      "name": "field_17_ttydev",
+      "pass": true
+    },
+    {
+      "name": "field_18_tty_pgid",
+      "pass": true
+    },
+    {
+      "name": "field_19_nice",
+      "pass": true
+    },
+    {
+      "name": "field_20_birth_sec",
+      "pass": true
+    },
+    {
+      "name": "field_21_birth_usec",
+      "pass": true
+    },
+    {
+      "name": "fixed_sizes_and_offsets",
+      "pass": true
+    },
+    {
+      "name": "independent_prefix_arithmetic",
+      "pass": true
+    },
+    {
+      "name": "old_guard_has_exactly_pgid_source_mismatch",
+      "pass": true
+    },
+    {
+      "name": "corrected_guard_all_offsets_match_model",
+      "pass": true
+    },
+    {
+      "name": "only_one_literal_change",
+      "pass": true
+    },
+    {
+      "name": "strict_source_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_source_reverse",
+      "pass": true
+    },
+    {
+      "name": "strict_journal_forward",
+      "pass": true
+    },
+    {
+      "name": "strict_journal_reverse",
+      "pass": true
+    },
+    {
+      "name": "exact_source_stdin",
+      "pass": true
+    },
+    {
+      "name": "same_host_interpreter_cwd_args_timeout",
+      "pass": true
+    },
+    {
+      "name": "fresh_exact_key",
+      "pass": true
+    },
+    {
+      "name": "journal_only_identity_bindings",
+      "pass": true
+    }
+  ],
+  "model": {
+    "uint32Bytes": 4,
+    "uint64Bytes": 8,
+    "uidGidBytes": 4,
+    "charBytes": 1,
+    "MAXCOMLEN": 16,
+    "nativeAlignmentModel": 8,
+    "sourceOnlyNotCurrentKernelMeasurement": true
+  },
+  "primaryHeader": {
+    "blob": "718a69fcf5340f547893ed8dc85908f253c1ce81",
+    "bytes": 31682,
+    "sha256": "f898ba1f6acecf128f6bb960bf07c7029fdd936620e03b6206419834cf2941fa"
+  },
+  "ctypesDonor": {
+    "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+    "bytes": 13423,
+    "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+  },
+  "fieldRows": [
+    {
+      "name": "flags",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 0,
+      "bytes": 4,
+      "primaryName": "pbi_flags",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "status",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 4,
+      "bytes": 4,
+      "primaryName": "pbi_status",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "xstatus",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 8,
+      "bytes": 4,
+      "primaryName": "pbi_xstatus",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "pid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 12,
+      "bytes": 4,
+      "primaryName": "pbi_pid",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "ppid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 16,
+      "bytes": 4,
+      "primaryName": "pbi_ppid",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "uid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 20,
+      "bytes": 4,
+      "primaryName": "pbi_uid",
+      "primaryType": "uid_t"
+    },
+    {
+      "name": "gid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 24,
+      "bytes": 4,
+      "primaryName": "pbi_gid",
+      "primaryType": "gid_t"
+    },
+    {
+      "name": "ruid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 28,
+      "bytes": 4,
+      "primaryName": "pbi_ruid",
+      "primaryType": "uid_t"
+    },
+    {
+      "name": "rgid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 32,
+      "bytes": 4,
+      "primaryName": "pbi_rgid",
+      "primaryType": "gid_t"
+    },
+    {
+      "name": "svuid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 36,
+      "bytes": 4,
+      "primaryName": "pbi_svuid",
+      "primaryType": "uid_t"
+    },
+    {
+      "name": "svgid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 40,
+      "bytes": 4,
+      "primaryName": "pbi_svgid",
+      "primaryType": "gid_t"
+    },
+    {
+      "name": "reserved",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 44,
+      "bytes": 4,
+      "primaryName": "rfu_1",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "comm",
+      "type": "c_char",
+      "count": 16,
+      "width": 1,
+      "align": 1,
+      "offset": 48,
+      "bytes": 16,
+      "primaryName": "pbi_comm",
+      "primaryType": "char"
+    },
+    {
+      "name": "name",
+      "type": "c_char",
+      "count": 32,
+      "width": 1,
+      "align": 1,
+      "offset": 64,
+      "bytes": 32,
+      "primaryName": "pbi_name",
+      "primaryType": "char"
+    },
+    {
+      "name": "nfiles",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 96,
+      "bytes": 4,
+      "primaryName": "pbi_nfiles",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "pgid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 100,
+      "bytes": 4,
+      "primaryName": "pbi_pgid",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "jobc",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 104,
+      "bytes": 4,
+      "primaryName": "pbi_pjobc",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "ttydev",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 108,
+      "bytes": 4,
+      "primaryName": "e_tdev",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "tty_pgid",
+      "type": "c_uint32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 112,
+      "bytes": 4,
+      "primaryName": "e_tpgid",
+      "primaryType": "uint32_t"
+    },
+    {
+      "name": "nice",
+      "type": "c_int32",
+      "count": 1,
+      "width": 4,
+      "align": 4,
+      "offset": 116,
+      "bytes": 4,
+      "primaryName": "pbi_nice",
+      "primaryType": "int32_t"
+    },
+    {
+      "name": "birth_sec",
+      "type": "c_uint64",
+      "count": 1,
+      "width": 8,
+      "align": 8,
+      "offset": 120,
+      "bytes": 8,
+      "primaryName": "pbi_start_tvsec",
+      "primaryType": "uint64_t"
+    },
+    {
+      "name": "birth_usec",
+      "type": "c_uint64",
+      "count": 1,
+      "width": 8,
+      "align": 8,
+      "offset": 128,
+      "bytes": 8,
+      "primaryName": "pbi_start_tvusec",
+      "primaryType": "uint64_t"
+    }
+  ],
+  "size": 136,
+  "oldGuard": {
+    "pid": 12,
+    "ppid": 16,
+    "uid": 20,
+    "pgid": 108,
+    "birth_sec": 120,
+    "birth_usec": 128
+  },
+  "newGuard": {
+    "pid": 12,
+    "ppid": 16,
+    "uid": 20,
+    "pgid": 100,
+    "birth_sec": 120,
+    "birth_usec": 128
+  },
+  "oldMismatches": [
+    "pgid"
+  ],
+  "newMismatches": [],
+  "pythonExecuted": false,
+  "ctypesLoaded": false,
+  "libprocCalled": false,
+  "productOrSdkExecuted": false,
+  "newNativeCalls": 0
+}

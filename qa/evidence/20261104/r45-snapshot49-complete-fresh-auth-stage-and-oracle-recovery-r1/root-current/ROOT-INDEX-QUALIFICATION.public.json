@@ -1,0 +1,271 @@
+{
+  "schema": "heptabao.r45-root-index-qualification.v1",
+  "passed": true,
+  "checkCount": 64,
+  "checks": [
+    {
+      "name": "all_unique_packet_labels",
+      "passed": true
+    },
+    {
+      "name": "whole_members_R44-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_R44-publication-proof",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-logINFO-A-independent-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-logINFO-A-independent-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-ABI-C-oracle-GOs",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-ABI-C-oracle-GOs",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-R3-B-recovery-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-R3-B-recovery-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Afull-Cmin-Bactual-Identity-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Afull-Cmin-Bactual-Identity-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-full-INFO-GO-B-source-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-full-INFO-GO-B-source-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Official-PEM-primary-chain",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Official-PEM-primary-chain",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-fresh-inert-GO-C-unknown",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-fresh-inert-GO-C-unknown",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-INFO-reconciliation-GO",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-INFO-reconciliation-GO",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-BODY-GO-B-final49-root",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-BODY-GO-B-final49-root",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot49-reachable-originals",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot49-reachable-originals",
+      "passed": true
+    },
+    {
+      "name": "whole_members_Snapshot49-original-aggregate-seal",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_Snapshot49-original-aggregate-seal",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-independent-PID-R2-full",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-independent-PID-R2-full",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-corrected-ABI-R3-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-corrected-ABI-R3-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-corrected-ABI-R3-full",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-corrected-ABI-R3-full",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-fresh-owner-scope-comparison",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-fresh-owner-scope-comparison",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-fresh-HOME-T5-r3-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-fresh-HOME-T5-r3-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-test2-logs-INFO-original",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-test2-logs-INFO-original",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-test2-logs-BODY-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-test2-logs-BODY-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-test2-logs-BODY-original",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-test2-logs-BODY-original",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-Identity-test-projection-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-Identity-test-projection-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official271-oracle-original",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official271-oracle-original",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official-report-INFO-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official-report-INFO-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official-INFO-status0-unknown",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official-INFO-status0-unknown",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official-INFO-reconcile-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official-INFO-reconcile-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official-INFO-reconcile-original",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official-INFO-reconcile-original",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-official-report-BODY-source",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-official-report-BODY-source",
+      "passed": true
+    },
+    {
+      "name": "whole_members_C-test2-BODY-R1-unexecuted-finding",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_C-test2-BODY-R1-unexecuted-finding",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-ABI-min-C-BODY-R2-GO-roots",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-ABI-min-C-BODY-R2-GO-roots",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-fresh-HOME-T5-r3-inert-minimum",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-fresh-HOME-T5-r3-inert-minimum",
+      "passed": true
+    },
+    {
+      "name": "whole_members_A-fresh-HOME-T5-r3-inert-minimum-root",
+      "passed": true
+    },
+    {
+      "name": "full_Merkle_A-fresh-HOME-T5-r3-inert-minimum-root",
+      "passed": true
+    },
+    {
+      "name": "exact_totals",
+      "passed": true
+    }
+  ],
+  "totals": {
+    "packets": 31,
+    "files": 1943,
+    "bytes": 26872728,
+    "allWhole": true
+  },
+  "scope": "Complete previously whole packet members and Merkle identities; no source/runtime qualification is inferred from archival.",
+  "NativeCalls": 0
+}

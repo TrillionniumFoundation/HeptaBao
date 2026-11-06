@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.public-inert-request-mechanical-delta.v1",
+  "before": {
+    "blob": "2cbe610fa2f2264d1eb137d46421069db38655a5",
+    "bytes": 875394,
+    "sha256": "cbb10074d91b254d2205f037e976f4dbbb377c0c4e37a36dd930432bd8a65314"
+  },
+  "after": {
+    "blob": "a9b40fb0c03bbda404e8bdbbef2e398e34c2f8af",
+    "bytes": 875570,
+    "sha256": "c85ff3e246279e367039128a59f0b2a894bda727577e0d2de317a972696ca9de"
+  },
+  "changes": [
+    {
+      "field": "args[4]",
+      "before": {
+        "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+        "bytes": 36514,
+        "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+      },
+      "after": {
+        "blob": "77f84c87e203714bc8e809df51aa0900653b6260",
+        "bytes": 36514,
+        "sha256": "47a67e1894b8dd2b7dab4875e324711052375aa5c8feff7b8a9f5042330b9ba7"
+      }
+    },
+    {
+      "field": "stdin",
+      "before": {
+        "blob": "0845ae0870655ac081312c28e5c0e000cfc58250",
+        "bytes": 837520,
+        "sha256": "f68c2a291856da7fe9d2145d420b16fbcd68f1b9b165af509f9881bd996ba423"
+      },
+      "after": {
+        "blob": "aff137a45af0d8f529f94cf2d93ba2a754eac527",
+        "bytes": 837696,
+        "sha256": "757f8262c8ad1c206d888d40a3b9d38a9e15821a9ade01bda1409309a8e2c7f1"
+      }
+    },
+    {
+      "field": "idempotency_key",
+      "before": "heptabao-mac-current-home-launch-inert-19b91f34-20261106-r2",
+      "after": "heptabao-mac-current-home-launch-inert-47a67e18-20261106-r3"
+    }
+  ],
+  "allOtherFieldsByteEquivalent": true,
+  "wholeBeforeRequestIncludesOriginalStdin": true,
+  "requestReconstruction": "JSON.parse(before); replace args[4], stdin, idempotency_key only; JSON.stringify(_,null,2)+'\\n' equals exact after request",
+  "noRuntimeExecution": true
+}

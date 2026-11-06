@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-snapshot2379-format23-observe-20261106-r1-body08-00",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-snapshot-forward-2379d02b-format-20261106-r1/formatted/ha_snapshot_forward.rs",
+      "offset": 0,
+      "limit": 6680,
+      "expected_version": "66306:31235976:6680:1793956738686596850:1793956738686596850"
+    }
+  }
+}

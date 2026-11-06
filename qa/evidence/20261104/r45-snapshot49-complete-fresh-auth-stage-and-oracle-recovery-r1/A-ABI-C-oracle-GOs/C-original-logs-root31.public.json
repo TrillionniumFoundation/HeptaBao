@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.root-original-test2-two-log-bodies.r1",
+  "passed": true,
+  "checks": 31,
+  "rows": [
+    {
+      "name": "author72_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_BODY_GO_and_R2_journal",
+      "passed": true
+    },
+    {
+      "name": "old_six_calls_exact",
+      "passed": true
+    },
+    {
+      "name": "old_two_INFO_observers_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_BUILD41_exact",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stderr-body-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stderr-body-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stderr-body-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stderr-body-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stderr-body-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stderr-body-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stdout-body-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stdout-body-admit",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stdout-body-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stdout-body-status0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_call_jwt-pki-025b-test2-stdout-body-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_armed_tree_jwt-pki-025b-test2-stdout-body-page0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_observer_f8c55d57540b357bf4b3e6e7bfcb020c219d08fa7ef155722902455e504771c9",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_page_f8c55d57540b357bf4b3e6e7bfcb020c219d08fa7ef155722902455e504771c9_0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_payload_f8c55d57540b357bf4b3e6e7bfcb020c219d08fa7ef155722902455e504771c9",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_observer_7f082f3c0271a5fd08eb6b02496640b5dcafb92b26bd4bd356618301a4d098ca",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_page_7f082f3c0271a5fd08eb6b02496640b5dcafb92b26bd4bd356618301a4d098ca_0",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_payload_7f082f3c0271a5fd08eb6b02496640b5dcafb92b26bd4bd356618301a4d098ca",
+      "passed": true
+    },
+    {
+      "name": "original_test2_log_BODY_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "exact_two_requests",
+      "passed": true
+    },
+    {
+      "name": "exact_versioned_whole_stderr",
+      "passed": true
+    },
+    {
+      "name": "exact_versioned_whole_stdout",
+      "passed": true
+    },
+    {
+      "name": "actual_error_preserved",
+      "passed": true
+    },
+    {
+      "name": "all_closed",
+      "passed": true
+    }
+  ],
+  "tree": "27fa5080fa0e3ee02a872463fa694707896b9ec1",
+  "stderr": {
+    "blob": "b8ccd2c0e53c0dca8a7a3d6a2fefe74956ec68d3",
+    "bytes": 191,
+    "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf"
+  },
+  "stdout": {
+    "blob": "d89c99243197d7623de7ed55703b759f10bddd8f",
+    "bytes": 375,
+    "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad"
+  },
+  "exactObservedError": "Identity projection",
+  "underlyingSerializationCauseProven": false,
+  "newCalls": 6,
+  "newObservers": 2,
+  "newPages": 2,
+  "observationLaneReleased": true,
+  "oldBuildNotRerun": true,
+  "targetReuseQualified": false,
+  "fullReplacement": false
+}

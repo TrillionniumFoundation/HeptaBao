@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.pure-v8-execution-record.v1",
+  "verifier": {
+    "blob": "cb414cbbb1f97c973c2650095058fd6a4193932e",
+    "bytes": 15407,
+    "sha256": "2081a5bf89f0fd342d0b42e8c488367fb2f19abf94afd25f0ca0ebea59e8c14b"
+  },
+  "result": {
+    "blob": "6fc90e8469d1f5c2d6079539be78299fb91d5f78",
+    "bytes": 20273,
+    "sha256": "4f57ccb5b2e495e4e946bf3fd13b9f54a6722251ca0102c96b88c14a0171d387"
+  },
+  "invocation": "verifyFreshHomeR3(flatFiles)",
+  "status": "PASS",
+  "checkCount": 206,
+  "functionsExecCompleted": true,
+  "NativeCalls": 0,
+  "pythonExecuted": false,
+  "sdkExecuted": false,
+  "productExecuted": false,
+  "candidateSourceChangedByVerification": false,
+  "notAnExternalProductExecutionRecord": true
+}

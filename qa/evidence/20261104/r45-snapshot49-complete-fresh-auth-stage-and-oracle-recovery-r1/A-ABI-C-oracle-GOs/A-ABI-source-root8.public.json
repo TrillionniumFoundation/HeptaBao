@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.root-PID-declared-ABI-guard-source.r3",
+  "passed": true,
+  "checks": 8,
+  "rows": [
+    {
+      "name": "author41_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_source",
+      "passed": true
+    },
+    {
+      "name": "only_wrong_guard_corrected",
+      "passed": true
+    },
+    {
+      "name": "strict_one_hunk",
+      "passed": true
+    },
+    {
+      "name": "independent_declared_layout",
+      "passed": true
+    },
+    {
+      "name": "primary_header_exact",
+      "passed": true
+    },
+    {
+      "name": "request_source_and_unchanged_runtime",
+      "passed": true
+    },
+    {
+      "name": "journal_only_two_binding_hunks",
+      "passed": true
+    }
+  ],
+  "tree": "d6715818ee514bdbe1cd4ad5e0866cc5c723069f",
+  "source": {
+    "blob": "3673a9582878d49378eb137d6beca5b178536680",
+    "bytes": 97960,
+    "sha256": "171610eee5cc2a27603755824320b5a7ead3f0bea9b34f2073a13cdc8e4f9f58"
+  },
+  "request": {
+    "blob": "cc19ffd0289089abf1c9d4bb0ca9034399cd4766",
+    "bytes": 100604,
+    "sha256": "59276c235f034970a2d636a3ae99ea53da32bc7df0eef7e1e80a1a2388f5b6bc"
+  },
+  "journal": {
+    "blob": "99c8925a6db3b3aceeb7ac8944e6d829e08bb7f2",
+    "bytes": 19066,
+    "sha256": "37f3efb5196fccf75654e1db2d2ca6a15cf8916a1813c25738fda6c13d1fac6d"
+  },
+  "binding": {
+    "sha256": "338bc717ca456dbe1c991e316011be158c63df7101aad265c080beb31b60d71a",
+    "native_fingerprint": "3714281222688828862",
+    "canonicalBytes": 100538
+  },
+  "sourceOnly": true,
+  "NativeABIObserved": false,
+  "NativeCalls": 0
+}

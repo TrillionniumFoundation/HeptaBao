@@ -1,0 +1,184 @@
+{
+  "schema": "heptabao.oracle-original-info-reconcile-actual-check.r1",
+  "passed": true,
+  "check_count": 42,
+  "checks": [
+    {
+      "name": "exact original paused bytes",
+      "passed": true
+    },
+    {
+      "name": "original paused context byteidentical",
+      "passed": true
+    },
+    {
+      "name": "original status remains called unknown",
+      "passed": true
+    },
+    {
+      "name": "original status SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original status SDK timeout",
+      "passed": true
+    },
+    {
+      "name": "original ACK recovered operation identity",
+      "passed": true
+    },
+    {
+      "name": "new scope status only no admission",
+      "passed": true
+    },
+    {
+      "name": "exact authorized journal",
+      "passed": true
+    },
+    {
+      "name": "new two calls only status and result",
+      "passed": true
+    },
+    {
+      "name": "new context closed",
+      "passed": true
+    },
+    {
+      "name": "one new plus one original status within eight",
+      "passed": true
+    },
+    {
+      "name": "call-00 request whole",
+      "passed": true
+    },
+    {
+      "name": "call-00 intent root binding",
+      "passed": true
+    },
+    {
+      "name": "call-00 arm byte derivation",
+      "passed": true
+    },
+    {
+      "name": "call-00 three leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-00 SDK whole",
+      "passed": true
+    },
+    {
+      "name": "call-00 SDK accepted after archive",
+      "passed": true
+    },
+    {
+      "name": "call-00 native byteexact",
+      "passed": true
+    },
+    {
+      "name": "call-00 same original ID",
+      "passed": true
+    },
+    {
+      "name": "same exact89 status request",
+      "passed": true
+    },
+    {
+      "name": "original future now closed",
+      "passed": true
+    },
+    {
+      "name": "call-01 request whole",
+      "passed": true
+    },
+    {
+      "name": "call-01 intent root binding",
+      "passed": true
+    },
+    {
+      "name": "call-01 arm byte derivation",
+      "passed": true
+    },
+    {
+      "name": "call-01 three leaf arm Merkle",
+      "passed": true
+    },
+    {
+      "name": "call-01 SDK whole",
+      "passed": true
+    },
+    {
+      "name": "call-01 SDK accepted after archive",
+      "passed": true
+    },
+    {
+      "name": "call-01 native byteexact",
+      "passed": true
+    },
+    {
+      "name": "call-01 same original ID",
+      "passed": true
+    },
+    {
+      "name": "exact original page zero8192",
+      "passed": true
+    },
+    {
+      "name": "one whole immutable payload",
+      "passed": true
+    },
+    {
+      "name": "native whole payload successful",
+      "passed": true
+    },
+    {
+      "name": "INFO exact expected path size SHA",
+      "passed": true
+    },
+    {
+      "name": "INFO mode owner link",
+      "passed": true
+    },
+    {
+      "name": "INFO empty ACL and xattrs",
+      "passed": true
+    },
+    {
+      "name": "INFO decimal version fields",
+      "passed": true
+    },
+    {
+      "name": "INFO full9 exact original stdout",
+      "passed": true
+    },
+    {
+      "name": "closed observer whole exact pins",
+      "passed": true
+    },
+    {
+      "name": "actual version recorded",
+      "passed": true
+    },
+    {
+      "name": "release exact state pin",
+      "passed": true
+    },
+    {
+      "name": "release zero calls/futures",
+      "passed": true
+    },
+    {
+      "name": "release does not invent child closure",
+      "passed": true
+    }
+  ],
+  "new_calls": 2,
+  "new_status_queries": 1,
+  "original_status_queries": 1,
+  "immutable_pages": 1,
+  "payload_bytes": 578,
+  "body_bytes_observed": 0,
+  "original_unknown_preserved": true,
+  "old_context_byte_identical": true,
+  "product_cases": 0
+}

@@ -1,0 +1,11 @@
+
+running 1 test
+test service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta ... FAILED
+
+failures:
+
+failures:
+    service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3574 filtered out; finished in 0.06s
+

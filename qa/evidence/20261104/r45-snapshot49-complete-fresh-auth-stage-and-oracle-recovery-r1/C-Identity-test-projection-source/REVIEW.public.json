@@ -1,0 +1,139 @@
+{
+  "schema": "heptabao.native-jwt-test-full-Identity-projection-SOURCE.r1",
+  "base": {
+    "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37"
+  },
+  "decision": "SOURCE_ONLY_TEST_PROJECTION_REPAIR",
+  "actual": {
+    "job": "rog/1a1b10cad9b-fc05-7560",
+    "test": "service::native_auth::jwt_tests::native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "exit": 101,
+    "stderr": {
+      "blob": "b8ccd2c0e53c0dca8a7a3d6a2fefe74956ec68d3",
+      "bytes": 191,
+      "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf"
+    },
+    "message": "Error: \"Identity projection\"",
+    "observedUnderlyingSerdeCategory": null
+  },
+  "sourceFinding": {
+    "fixture": "Native FileV6 activation, then successful jwt-kv KV2 mount/write, precede snapshot.",
+    "oldSnapshot": "serialize_owner(&state.engines) serializes all live owners before extracting only namespaces[\"\"][\"identity\"].",
+    "nativeGuard": "NativeReadView Serialize always returns the error native KV2 owner requires separate authenticated records; the guard remains byte-exact.",
+    "identity": "IdentityState derives Serialize over its whole stored graph with String map keys; the transient uuid_namespace field was already serde(skip). The failure label is not an Identity validity check.",
+    "inference": "The exact source path reaches an intentional native-container serialization rejection. Original stderr erased the underlying serde cause, so no new runtime trace or status assertion is claimed."
+  },
+  "patch": {
+    "files": {
+      "beforeEngine": {
+        "blob": "54067536bc2d81a6dacf991bd1a0d6a9e15a8d82",
+        "bytes": 8980,
+        "sha256": "50c6520d55f126c25e2ae9ab8b8a06d41d18736d90be357383acc78800b9cc05"
+      },
+      "afterEngine": {
+        "blob": "e98d3580ac3fc8cb90eb9d1317d1cc3e5133eaee",
+        "bytes": 9316,
+        "sha256": "38ceaaae5ed821b3ef5e0fde67ef6ed968966a808fab8bab6ec1c2393349807f"
+      },
+      "engineDiff": {
+        "blob": "be6f690806a9c378ee4866e47b321680d847d3d6",
+        "bytes": 669,
+        "sha256": "753f4ded9fd5014f70c10f9e6ff9e8c9b2d90d3cff2c8415e89ccbb3d9b8a9df"
+      },
+      "beforeTest": {
+        "blob": "e2f9097b9715b535ba1c4ef49d95fc46f0482a63",
+        "bytes": 37377,
+        "sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb"
+      },
+      "afterTest": {
+        "blob": "57dd3760335f245f2a37540899b338a8b9b56189",
+        "bytes": 37451,
+        "sha256": "ab4b610f7bc1a74287710b3461c3f212ad6c6f7aabcf642c3302ea66dc51c57c"
+      },
+      "testDiff": {
+        "blob": "c07d8c08e0f93602e7a5a055af152afa50fbe197",
+        "bytes": 1866,
+        "sha256": "2943294e5185e47263e86f3fc4c8e604ddc2e807f90fe63d0e901683d341a90a"
+      }
+    },
+    "helpersAdded": 1,
+    "testOnlyAttribute": "cfg(test)",
+    "productionFunctionsChanged": 0,
+    "existingTestFunctionsChanged": 0,
+    "fixtureMethodChanged": "snapshot",
+    "missingRoot": "Option::None becomes the explicit root Identity absent error; no default.",
+    "visibility": "Opaque &impl serde::Serialize avoids exposing private IdentityState or adding an Engine dependency on Service owner_store.",
+    "budgetAndZeroization": "The caller still invokes the same owner_store::serialize_owner with its existing bounded Zeroizing<Vec<u8>>; the parsed complete Identity object is taken into the same projection and erased by the unchanged erase_json flow.",
+    "comparison": "Whole root Identity Serialize output plus complete auth_mounts/jwt_mounts/tokens; no field subset, counts, normalized values, or production metadata digest substitution.",
+    "testInventory": [
+      "native_jwt_local_service_token_identity_renewal_and_cold_reopen",
+      "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+      "native_jwt_role_operations_keep_the_existing_legacy_acl_contract",
+      "native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh",
+      "native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic",
+      "native_jwt_native_owner_capacity_veto_after_authentication_keeps_the_old_root",
+      "native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback",
+      "native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required",
+      "native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound",
+      "native_jwt_post_audit_revocation_cannot_replace_the_original_publication_proof",
+      "native_jwt_token_api_service_descendants_keep_own_renewal_and_parent_revocation",
+      "native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen",
+      "native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes",
+      "native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions",
+      "native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph"
+    ],
+    "planned149Unique166ProfilesUnchanged": true,
+    "original501And400AssertionsByteExact": true
+  },
+  "formalReference": {
+    "nativeIdentityMetadataDigest": {
+      "blob": "43b134fb5a3a31617629c29c3bee5c7b6e16e79d",
+      "bytes": 10841,
+      "sha256": "456835be77ce50b41c96188b8327c0b7105d983be4243301a0e67220cc3cba37"
+    },
+    "distinction": "The formal owner handles authenticated KV roots separately; its metadata normalization is not called or modified by this patch. The partial IdentityProjection struct is not used.",
+    "fullIdentityType": {
+      "blob": "ff2f31625ebe4023716afae8225a2f87092928e7",
+      "bytes": 60602,
+      "sha256": "1a8cece1b4e4dedcb75c9c70f9695ee2caa0295d2e8ce4601834592201639898"
+    },
+    "nativeGuard": {
+      "blob": "f96c4cb6e19bd78d436060c81115423fda9bc8cc",
+      "bytes": 44180,
+      "sha256": "ee03505cd562b4ee25f0cf12f8abd9968a4f45c88e32990100c2b2eb2f8cceb3"
+    },
+    "serializer": {
+      "blob": "bb3a3cd21bdbf2ebc82e2add124489e76598afee",
+      "bytes": 40637,
+      "sha256": "5dc7104af742a6b88428b6f2e72a099c6e65695f4d110b6e8627c3c1685179bb"
+    },
+    "secretSerializer": {
+      "blob": "b274af01873f6987b8ffe94d2d860613478a87d3",
+      "bytes": 8785,
+      "sha256": "338e804a2130cdbcd221fdb9f96e9c49616f6a9f6598eebfcb8e71f72d4fd819"
+    }
+  },
+  "validation": {
+    "strictForwardAndReverseBothFiles": true,
+    "existing15TestDeclarationsByteExact": true,
+    "entireTestSourceOutsideSnapshotByteExact": true,
+    "allOldEngineBytesPreservedAroundAdditiveTestHelper": true,
+    "rustfmtExecuted": false,
+    "rustCompiled": false,
+    "testsExecuted": false,
+    "productCommitCreated": false,
+    "NativeCallsForPatch": 0
+  },
+  "priorPureGeneratorFailure": [
+    {
+      "kind": "pure source generator",
+      "error": "engine insertion identity",
+      "cause": "assumed one impl EngineState in full file; existing file has multiple impl blocks",
+      "mutationSubmitted": false,
+      "sourceChanged": false,
+      "fix": "use unique existing fixture_rebind declaration context"
+    }
+  ],
+  "nextGate": "Root source review, isolated successor freeze, explicit formatter/build/test authorization. Current product and target remain unchanged."
+}

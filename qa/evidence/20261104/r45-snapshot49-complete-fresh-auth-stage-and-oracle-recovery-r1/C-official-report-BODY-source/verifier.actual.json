@@ -1,0 +1,187 @@
+{
+  "schema": "heptabao.oracle-report-body-source-check.r1",
+  "passed": true,
+  "check_count": 44,
+  "checks": [
+    {
+      "name": "strict forward",
+      "passed": true
+    },
+    {
+      "name": "strict reverse",
+      "passed": true
+    },
+    {
+      "name": "exact after source",
+      "passed": true
+    },
+    {
+      "name": "exact fixed request",
+      "passed": true
+    },
+    {
+      "name": "actual closed state exact",
+      "passed": true
+    },
+    {
+      "name": "actual independent INFO exact",
+      "passed": true
+    },
+    {
+      "name": "old paused state exact",
+      "passed": true
+    },
+    {
+      "name": "original 223583 bytes preserved",
+      "passed": true
+    },
+    {
+      "name": "closed new context two accepted calls",
+      "passed": true
+    },
+    {
+      "name": "original one completed INFO",
+      "passed": true
+    },
+    {
+      "name": "original unknown not reset",
+      "passed": true
+    },
+    {
+      "name": "one actual body offset length",
+      "passed": true
+    },
+    {
+      "name": "same actual path host version",
+      "passed": true
+    },
+    {
+      "name": "same whole SHA size",
+      "passed": true
+    },
+    {
+      "name": "actual deriver byteexact",
+      "passed": true
+    },
+    {
+      "name": "payload body fixed SHA and EOF",
+      "passed": true
+    },
+    {
+      "name": "body archive before stored semantic value",
+      "passed": true
+    },
+    {
+      "name": "original slot check remains every step",
+      "passed": true
+    },
+    {
+      "name": "no process_start tool dispatch",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfState",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfInitializeOnlyAfterRootGO",
+      "passed": true
+    },
+    {
+      "name": "unchanged gfReconcileSameGitArchiveReadOnly",
+      "passed": true
+    },
+    {
+      "name": "actual authorization succeeds",
+      "passed": true
+    },
+    {
+      "name": "authorization preserves original history",
+      "passed": true
+    },
+    {
+      "name": "exact body has distinct GO",
+      "passed": true
+    },
+    {
+      "name": "actual prepare succeeds operation_start",
+      "passed": true
+    },
+    {
+      "name": "three leaf arm uses BODY GO operation_start",
+      "passed": true
+    },
+    {
+      "name": "prior INFO calls unchanged operation_start",
+      "passed": true
+    },
+    {
+      "name": "actual prepare succeeds operation_status",
+      "passed": true
+    },
+    {
+      "name": "three leaf arm uses BODY GO operation_status",
+      "passed": true
+    },
+    {
+      "name": "prior INFO calls unchanged operation_status",
+      "passed": true
+    },
+    {
+      "name": "actual prepare succeeds operation_result",
+      "passed": true
+    },
+    {
+      "name": "three leaf arm uses BODY GO operation_result",
+      "passed": true
+    },
+    {
+      "name": "prior INFO calls unchanged operation_result",
+      "passed": true
+    },
+    {
+      "name": "refuses process",
+      "passed": true
+    },
+    {
+      "name": "refuses new INFO",
+      "passed": true
+    },
+    {
+      "name": "refuses version drift",
+      "passed": true
+    },
+    {
+      "name": "refuses duplicate binary marker",
+      "passed": true
+    },
+    {
+      "name": "refuses old INFO status",
+      "passed": true
+    },
+    {
+      "name": "refuses ninth body status",
+      "passed": true
+    },
+    {
+      "name": "refuses page before closed",
+      "passed": true
+    },
+    {
+      "name": "refuses wrong page offset",
+      "passed": true
+    },
+    {
+      "name": "prepare before BODY authority refuses",
+      "passed": true
+    },
+    {
+      "name": "no fake native tool available",
+      "passed": true
+    }
+  ],
+  "native_calls": 0,
+  "python_runs": 0,
+  "product_cases": 0,
+  "actual_body_observed": false
+}

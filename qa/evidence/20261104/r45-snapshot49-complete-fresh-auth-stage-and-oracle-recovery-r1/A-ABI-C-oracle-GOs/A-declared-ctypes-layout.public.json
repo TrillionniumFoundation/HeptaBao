@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.root-declared-ctypes-BsdInfo-layout.r1",
+  "source": {
+    "blob": "873fd511a30f70bfeba0a661f13952e122e40d94",
+    "bytes": 97960,
+    "sha256": "a414b14bc90f9b1839331a4d1414b195e3ac675811944eb3a274537c531fe1c4"
+  },
+  "declaration": {
+    "blob": "204422600c9ea54ac522776175ea67880997b400",
+    "bytes": 560,
+    "sha256": "c556f3e664ce2847222bb89b4be7a8489d6e66d7f8d1d5dfeffb322b2e38adb3"
+  },
+  "fields": [
+    {
+      "name": "flags",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 0,
+      "bytes": 4
+    },
+    {
+      "name": "status",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 4,
+      "bytes": 4
+    },
+    {
+      "name": "xstatus",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 8,
+      "bytes": 4
+    },
+    {
+      "name": "pid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 12,
+      "bytes": 4
+    },
+    {
+      "name": "ppid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 16,
+      "bytes": 4
+    },
+    {
+      "name": "uid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 20,
+      "bytes": 4
+    },
+    {
+      "name": "gid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 24,
+      "bytes": 4
+    },
+    {
+      "name": "ruid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 28,
+      "bytes": 4
+    },
+    {
+      "name": "rgid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 32,
+      "bytes": 4
+    },
+    {
+      "name": "svuid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 36,
+      "bytes": 4
+    },
+    {
+      "name": "svgid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 40,
+      "bytes": 4
+    },
+    {
+      "name": "reserved",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 44,
+      "bytes": 4
+    },
+    {
+      "name": "comm",
+      "type": "c_char",
+      "count": 16,
+      "offset": 48,
+      "bytes": 16
+    },
+    {
+      "name": "name",
+      "type": "c_char",
+      "count": 32,
+      "offset": 64,
+      "bytes": 32
+    },
+    {
+      "name": "nfiles",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 96,
+      "bytes": 4
+    },
+    {
+      "name": "pgid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 100,
+      "bytes": 4
+    },
+    {
+      "name": "jobc",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 104,
+      "bytes": 4
+    },
+    {
+      "name": "ttydev",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 108,
+      "bytes": 4
+    },
+    {
+      "name": "tty_pgid",
+      "type": "c_uint32",
+      "count": 1,
+      "offset": 112,
+      "bytes": 4
+    },
+    {
+      "name": "nice",
+      "type": "c_int32",
+      "count": 1,
+      "offset": 116,
+      "bytes": 4
+    },
+    {
+      "name": "birth_sec",
+      "type": "c_uint64",
+      "count": 1,
+      "offset": 120,
+      "bytes": 8
+    },
+    {
+      "name": "birth_usec",
+      "type": "c_uint64",
+      "count": 1,
+      "offset": 128,
+      "bytes": 8
+    }
+  ],
+  "size": 136,
+  "alignment": 8,
+  "derivedFromExactSource": true,
+  "NativeABIObserved": false,
+  "expectedPGID": 100,
+  "guardInSource": 108,
+  "ttydevOffset": 108,
+  "note": "Pure declared-field layout; pgid is the second uint32 after 12 uint32 + comm16 + name32. Current runtime only proves constructor guard refusal, not a libproc kernel sample."
+}

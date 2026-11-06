@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-A-R3-full-C-oracle-min-B-recovery-actual-Identity-source",
+  "records": [
+    {
+      "name": "Auth-PID-R3-original-full-root40.json",
+      "blob": "5de81788c85c578e48b13e738930bcb9ade2d4a5",
+      "bytes": 6083,
+      "sha256": "c56fe209438476501235f349d2e0da94284d6c83dbde56e9e8ac6bf430e54a85"
+    },
+    {
+      "name": "Auth-PID-R3-original-full-root40.verifier.js",
+      "blob": "eb24d5fb3cae04832b250eee24992b1e2de6d8bd",
+      "bytes": 1850,
+      "sha256": "731b6efe56b1ea71112e9ed18cc5265fd81fd6850e905dbb322002f02df0fa1f"
+    },
+    {
+      "name": "Official271-X230-original-minimum-root13.json",
+      "blob": "ab4fad81befd3a9f72a3053c959819b75865b57c",
+      "bytes": 1903,
+      "sha256": "bb5f59663a8d2c6ba40d978750f5a99a86e228ecf10f61826601c9815985b7cd"
+    },
+    {
+      "name": "Official271-X230-original-minimum-root13.verifier.js",
+      "blob": "21a17c1f13aa967774a748482971d05e13472dd6",
+      "bytes": 3471,
+      "sha256": "491bf0082c570b125e75cfd43b670fb23f454e23784e2f5288e4f0199ae6b796"
+    },
+    {
+      "name": "Snapshot2379-BODY20-recovery-actual-root19.json",
+      "blob": "17d4a3ac9384d75bbc396849c0540ef1e1842e8f",
+      "bytes": 3402,
+      "sha256": "4df4aef296bfd883600a52715492b4f0138909e555b85e5eae3a3fd155d9ae32"
+    },
+    {
+      "name": "Snapshot2379-BODY20-recovery-actual-root19.verifier.js",
+      "blob": "39018ccd61f16c025ca0332427f37a22a5b32fe1",
+      "bytes": 4961,
+      "sha256": "b765467a4176be31d74cf7daa9f57793b5fd5a82a01fee4eb66ed61484911656"
+    },
+    {
+      "name": "JWT-Identity-fixture-source-root15.json",
+      "blob": "942e283005fab611f1e8a510213ac24f1c0d4ddb",
+      "bytes": 2205,
+      "sha256": "892e826e0a491bba7c0ac12f09d95bf5e286dedc8a549a271219c6fdf8eec603"
+    },
+    {
+      "name": "JWT-Identity-fixture-source-root15.verifier.js",
+      "blob": "850c5712d37a4676cd94d03bc0121e73c5f9f862",
+      "bytes": 4329,
+      "sha256": "f032cf6007772a028f8443331159e7679d058bd0f181c4b06d728b43d69fec34"
+    }
+  ],
+  "expected_data_tree": "86b1e95904db9eb37f907b353f37eb9638d47087",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

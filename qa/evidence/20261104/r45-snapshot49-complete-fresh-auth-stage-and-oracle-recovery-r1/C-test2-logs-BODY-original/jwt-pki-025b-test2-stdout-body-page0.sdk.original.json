@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJjaHVua19zaGEyNTZcIjpcImJhYWZmYmNjZDYwY2QzNmY1MzgxMGE0YTQ5ZGMxY2E5YWU1NTg4M2ExYWJiMjEyNTNkMjk5NzBkOGRiZjc5YWRcIixcImRhdGFfYmFzZTY0XCI6XCJDbkoxYm01cGJtY2dNU0IwWlhOMENuUmxjM1FnYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tcDNkRjkwWlhOMGN6bzZibUYwYVhabFgycDNkRjl5WldwbFkzUnpYM0psYlc5MFpWOWlZWFJqYUY5aGJtUmZZbUZrWDNOcFoyNWhkSFZ5WlY5M2FYUm9iM1YwWDJOaGJtUnBaR0YwWlY5a1pXeDBZU0F1TGk0Z1JrRkpURVZFQ2dwbVlXbHNkWEpsY3pvS0NtWmhhV3gxY21Wek9nb2dJQ0FnYzJWeWRtbGpaVG82Ym1GMGFYWmxYMkYxZEdnNk9tcDNkRjkwWlhOMGN6bzZibUYwYVhabFgycDNkRjl5WldwbFkzUnpYM0psYlc5MFpWOWlZWFJqYUY5aGJtUmZZbUZrWDNOcFoyNWhkSFZ5WlY5M2FYUm9iM1YwWDJOaGJtUnBaR0YwWlY5a1pXeDBZUW9LZEdWemRDQnlaWE4xYkhRNklFWkJTVXhGUkM0Z01DQndZWE56WldRN0lERWdabUZwYkdWa095QXdJR2xuYm05eVpXUTdJREFnYldWaGMzVnlaV1E3SURNMU56UWdabWxzZEdWeVpXUWdiM1YwT3lCbWFXNXBjMmhsWkNCcGJpQXdMakEyY3dvS1wiLFwiZW9mXCI6dHJ1ZSxcIm5leHRfb2Zmc2V0XCI6Mzc1LFwib2Zmc2V0XCI6MCxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGVwdGFiYW8tbmF0aXZlLWp3dC1wa2ktY29udHJvbHMtMjAyNjExMDYtcjIvYnVpbGQtdGVzdHMtcjEvbmF0aXZlLWp3dC1wa2ktZmlsZTE3LTIuc3Rkb3V0XCIsXCJzaXplXCI6Mzc1LFwidmVyc2lvblwiOlwiNjYzMDY6MzMyMDIyNjg6Mzc1OjE3OTM5NzQ1NjY1Nzc0NTMwNjU6MTc5Mzk3NDU2NjU3NzQ1MzA2NVwifSJ9XSwiaXNFcnJvciI6ZmFsc2V9\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":939,\"offset\":0,\"operation_id\":\"7f082f3c0271a5fd08eb6b02496640b5dcafb92b26bd4bd356618301a4d098ca\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"c5818f335f986e5f8ff486ccd0b6c56459cd176a45663c68f261f04c7a102ae5\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":939}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "current-home-r2-pid-observation-r3-streams-01-page-024576",
+  "kind": "operation_result",
+  "request": {
+    "blob": "d887fe5673feda4b9db992500b7e0bd38a2948e0",
+    "bytes": 111,
+    "sha256": "f829202651ea5125ed1e8b9451a4814006e3827a3ccea16ae2f8c77b6188d811"
+  },
+  "rootGo": {
+    "blob": "b2d36503432568f92c7a2d97f91e620c80a5bf87",
+    "bytes": 17800,
+    "sha256": "a9c40a5c5cfb1e4cd629d8ea39335e41a7b418458317581e65f7d80fb48c0562"
+  },
+  "originalJob": "1a1b17e6d6f-fc05-7924",
+  "originalOperation": "7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5",
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

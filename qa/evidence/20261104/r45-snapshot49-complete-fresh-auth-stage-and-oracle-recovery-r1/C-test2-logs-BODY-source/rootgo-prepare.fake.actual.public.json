@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.two-log-bodies-rootgo-actual-prepare-fake.r2",
+  "pass": true,
+  "check_count": 26,
+  "checks": [
+    {
+      "check": "INFO-intent.json-old-rootGo",
+      "pass": true
+    },
+    {
+      "check": "INFO-armed.json-old-rootGo",
+      "pass": true
+    },
+    {
+      "check": "authorize-preserves-old-calls",
+      "pass": true
+    },
+    {
+      "check": "authorize-preserves-old-observers",
+      "pass": true
+    },
+    {
+      "check": "operation_start-one-captured-archive",
+      "pass": true
+    },
+    {
+      "check": "operation_start-intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_start-intent.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_start-armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_start-armed.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_start-request-exact",
+      "pass": true
+    },
+    {
+      "check": "operation_status-one-captured-archive",
+      "pass": true
+    },
+    {
+      "check": "operation_status-intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_status-intent.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_status-armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_status-armed.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_status-request-exact",
+      "pass": true
+    },
+    {
+      "check": "operation_result-one-captured-archive",
+      "pass": true
+    },
+    {
+      "check": "operation_result-intent.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_result-intent.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_result-armed.json-BODY-rootGo",
+      "pass": true
+    },
+    {
+      "check": "operation_result-armed.json-one-call",
+      "pass": true
+    },
+    {
+      "check": "operation_result-request-exact",
+      "pass": true
+    },
+    {
+      "check": "old-six-calls-still-byte-values",
+      "pass": true
+    },
+    {
+      "check": "original-info-arms-still-old-rootGo",
+      "pass": true
+    },
+    {
+      "check": "prior-build-context-exact",
+      "pass": true
+    },
+    {
+      "check": "new-source-selects-validated-body",
+      "pass": true
+    }
+  ],
+  "actualCapturedArchiveCalls": 4,
+  "Native_calls": 0,
+  "Git_calls": 0,
+  "product_cases": 0
+}

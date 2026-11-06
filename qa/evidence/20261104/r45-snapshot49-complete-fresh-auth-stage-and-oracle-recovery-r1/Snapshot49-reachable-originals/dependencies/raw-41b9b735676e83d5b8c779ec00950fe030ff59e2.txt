@@ -1,0 +1,105 @@
+{
+  "authorization": "GO",
+  "scope": "snapshot_formatted23_body20_page3_retrieval_recovery",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "original_operation": "2d748c65bb3394cc8a97b59b24027a4f3ee24a18885a04523c98435b3fefc1fe",
+  "failed_call_key": "sf23-r1-f20-b00-p3",
+  "recovery_call_key": "sf23-r1-f20-b00-p3-recovery1",
+  "request": {
+    "blob": "1ca4e7299a552ab1594a1c26a02909a56e808e5e",
+    "bytes": 126,
+    "sha256": "3e7d6ccdd56784adfb70e42d88e4bd0ccf122e6de69d6b28ffd403165b77084a"
+  },
+  "failed_sdk": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "failed_call": {
+    "blob": "4911defb28498915832ce3202103a7f6541bcac7",
+    "bytes": 2070,
+    "sha256": "782cd589df161244a0c0e0452f0ed8ab54f274cb536c58ff04d2f7a606becd46"
+  },
+  "maximum_recovery_page_calls": 1,
+  "page_bytes": 16384,
+  "native_payload_cap": 1048576,
+  "operation_start_authorized": false,
+  "operation_status_authorized": false,
+  "failed_call_preserved": true,
+  "continue_original_observer_after_recovered_page": true,
+  "continue_original_table_only_after_file_whole": true,
+  "original_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "schema": "heptabao.root-formatted23-body20-page3-recovery-GO.r45",
+  "sourceJournal": {
+    "blob": "d2154d558749bc51f9f1aa37d69372fedfd9392c",
+    "bytes": 97330,
+    "sha256": "7d2baa160df3e174109d1278347593158606afd43a280e3547e6a71101003085"
+  },
+  "expected_offset": 49152,
+  "expected_payload_total": 63251,
+  "expected_payload_sha256": "bce3955483b6d29d658e121b03cec9a94f71eccf44d7b49e5b704b7bf6f64787",
+  "expected_successful_pages": 3,
+  "expected_page_attempts_before_recovery": 4,
+  "original_pages": {
+    "blob": "fb9d5d834822d46ad7344cafebe47aa12850c259",
+    "bytes": 66600,
+    "sha256": "f05ff4ac9fb138c8f4553ca5064e33640db9375cd1edd6f71080f9b044d99182"
+  },
+  "owner": "/root/compatibility_audit",
+  "source_packet": "a07cb54144ba6ed1bc001b84cfbfa692f5e9e177",
+  "journal": {
+    "blob": "d2154d558749bc51f9f1aa37d69372fedfd9392c",
+    "bytes": 97330,
+    "sha256": "7d2baa160df3e174109d1278347593158606afd43a280e3547e6a71101003085"
+  },
+  "source_qualification": {
+    "blob": "c532a2bd4aa46edf685cf034740d53f592c4f6e6",
+    "bytes": 1865,
+    "sha256": "74fcfb8a9cc067a9248e14d23b8b149a6af7273e1521d56885d1abe993041c1d"
+  },
+  "original_closed_qualification": {
+    "blob": "d41bf8571fe1b67d1d621fd20b0d09f1ae4d40ee",
+    "bytes": 2666,
+    "sha256": "0e2d355c633cc961d5c1602ad4ee7c727c6d8a9b16f5bbd4c0a835c4dba71d12"
+  },
+  "original_slot_reinitialize": false,
+  "original_failed_call_rewrite": false,
+  "additional_binary_read_for_file20": false,
+  "original_page_counter_reset": false,
+  "next_regular_page_label": "sf23-r1-f20-b00-p5 only if required by unchanged exact observer, expected recovery EOF",
+  "next_regular_offset": "actual recovered page next_offset only",
+  "original_per_body_page_attempt_cap": 64,
+  "whole_file_before_INFO21": true,
+  "remaining_original_table_scope": "Resume exact original INFO21..22 and BODY21..22 only after original file20 whole; original GO25ea12c and remaining11 table614d59 apply unchanged, no new paths/ranges/caps.",
+  "arm": "New exact request/intent/armed/original-failed-call four-leaf whole tree before the single recovery result call, independent model boundary, original SDK whole before accept.",
+  "failures": "Keep original p3 called=true and nonaccepted, original retained three payload pages byte-exact, INFO10 and BODY16 failures/recoveries and file7 Git error intact. Unknown call pauses and keeps lane; no replay.",
+  "lane": {
+    "before": {
+      "A": 0,
+      "B": 0,
+      "C": 1,
+      "root": 0
+    },
+    "during": {
+      "A": 0,
+      "B": 1,
+      "C": 1,
+      "root": 0
+    },
+    "maximum": 2,
+    "A_release": {
+      "blob": "603e29f94d83b604fe3578cfdebe3974a29073a9",
+      "bytes": 2151,
+      "sha256": "2ca210d449b21e878c77fdad5eff68cbfd61335cdfcf11602ff2ab96e9bf179b"
+    },
+    "C_scope": "Only original X230 oracle job1a1b17f9eff-fc05-7932 authority/streams until closure; no ROG target use.",
+    "oneNativeCallOrOwnedFuturePerLane": true
+  },
+  "final_verifier": "Bind third-exception successor only to actual new recovery GO/4-leaf arm/SDK and original three pages. No final23 qualification until all actual bytes and history pass.",
+  "noCargo": true,
+  "noProductRuntime": true,
+  "noProductionMutation": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

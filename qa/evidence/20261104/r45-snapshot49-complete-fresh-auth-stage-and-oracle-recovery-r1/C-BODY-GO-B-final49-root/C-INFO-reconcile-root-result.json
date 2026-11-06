@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.root-original-INFO-reconcile-actual.r1",
+  "passed": true,
+  "checks": 18,
+  "rows": [
+    {
+      "name": "whole26_original_packet",
+      "passed": true
+    },
+    {
+      "name": "author42_exact",
+      "passed": true
+    },
+    {
+      "name": "separate_reconciliation_GO_exact",
+      "passed": true
+    },
+    {
+      "name": "old_unknown_state_exact_preserved",
+      "passed": true
+    },
+    {
+      "name": "original_error_not_overwritten",
+      "passed": true
+    },
+    {
+      "name": "only_two_readonly_calls",
+      "passed": true
+    },
+    {
+      "name": "call0_whole_original_bindings",
+      "passed": true
+    },
+    {
+      "name": "call0_same_ID_new_GO",
+      "passed": true
+    },
+    {
+      "name": "call1_whole_original_bindings",
+      "passed": true
+    },
+    {
+      "name": "call1_same_ID_new_GO",
+      "passed": true
+    },
+    {
+      "name": "same_original_future_closed",
+      "passed": true
+    },
+    {
+      "name": "original_page_exact_578_EOF",
+      "passed": true
+    },
+    {
+      "name": "whole_original_payload_and_native",
+      "passed": true
+    },
+    {
+      "name": "exact_report_version_size_SHA",
+      "passed": true
+    },
+    {
+      "name": "full9_lossless_permissions",
+      "passed": true
+    },
+    {
+      "name": "new_context_fully_closed",
+      "passed": true
+    },
+    {
+      "name": "old_failed_status_remains_unknown",
+      "passed": true
+    },
+    {
+      "name": "release_does_not_claim_body_or_child_closure",
+      "passed": true
+    }
+  ],
+  "packet": "64f0eb10c1471522d682f16c27fb34bc16fa46bd",
+  "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+  "newCalls": 2,
+  "bodyBytesObserved": 0,
+  "originalUnknownPreserved": true,
+  "ownerChildClosureQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

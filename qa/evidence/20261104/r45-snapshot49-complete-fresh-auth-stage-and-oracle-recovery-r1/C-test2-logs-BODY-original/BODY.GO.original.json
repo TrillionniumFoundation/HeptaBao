@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.root-original-test2-two-log-bodies-GO.r45",
+  "authorization": "GO",
+  "scope": "build_failed_test2_logs_binary_read_only",
+  "owner": "/root/ha_validation",
+  "original_job": "1a1b10cad9b-fc05-7560",
+  "maximum_binary_read_starts": 2,
+  "maximum_file_info_starts": 0,
+  "maximum_process_start_calls": 0,
+  "immutable_body_page_bytes": 16384,
+  "exact_requests": [
+    {
+      "blob": "b8a6cdfc57c4af38b09c17308cf3e3b82e61ba80",
+      "bytes": 440,
+      "sha256": "6f608f38a8ae79f43a09f98c5dd5120736ee9687ce16ce3194b66d58db24240c"
+    },
+    {
+      "blob": "3b9d51d53f0b10ef67077bb34d7805196b45cd3b",
+      "bytes": 440,
+      "sha256": "10e36468d51b3976bc8d52c2a16eca8356e19025de8e641597bdf0070bde6f47"
+    }
+  ],
+  "info_operations": [
+    "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+    "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1"
+  ],
+  "sourcePacket": "943b982b8e1ea3b8f37343e59206500b32ad9822",
+  "source": {
+    "blob": "d2000cdc23f6a71d6c076dd1da2db42370a6a10d",
+    "bytes": 31518,
+    "sha256": "c6f87b29e6cb96eb1ffce321c6b571e66602db738e3921f5b1376e85be27cc74"
+  },
+  "rootSourceQualification": {
+    "blob": "4e17658e457cf97147ac4aad7671a1551f3c3283",
+    "bytes": 2215,
+    "sha256": "38d1e2cf51e72abbc7064525b5db52ffce0978ed0173f805285d4dd7eab7b7c8"
+  },
+  "rootSourceChecks": 17,
+  "author31andPrepare26ExactlyReproduced": true,
+  "actualINFO": {
+    "blob": "6932dfb1a4fe7368cea6385d22f6ed2390275f11",
+    "bytes": 6151,
+    "sha256": "c7657ec4bb234ff5e2988014e90c79ac0467fe7765680a93741eb26e84a06820"
+  },
+  "slot": "jwt_pki_025b05a3_build149_failed_test2_logs_info_gitfirst_r1",
+  "entryAction": "authorize_failed_test_log_bodies",
+  "initialize": false,
+  "expected": [
+    {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+      "bytes": 191,
+      "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+      "version": "66306:33202269:191:1793974566577453065:1793974566577453065",
+      "infoOperation": "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+      "infoNative": {
+        "blob": "b1b5c5c6831ff668ce0443043a92d65483acf5bd",
+        "bytes": 488,
+        "sha256": "f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"
+      },
+      "full9Strings": [
+        "66306",
+        "33202269",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "191",
+        "1793974566577453065",
+        "1793974566577453065"
+      ]
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+      "bytes": 375,
+      "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+      "version": "66306:33202268:375:1793974566577453065:1793974566577453065",
+      "infoOperation": "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+      "infoNative": {
+        "blob": "98463cbd918907c6051a36bef453efe2136a48d3",
+        "bytes": 488,
+        "sha256": "43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"
+      },
+      "full9Strings": [
+        "66306",
+        "33202268",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "375",
+        "1793974566577453065",
+        "1793974566577453065"
+      ]
+    }
+  ],
+  "limits": {
+    "binary_read_starts": 2,
+    "file_info_starts": 0,
+    "process_start_calls": 0,
+    "total_body_bytes": 566,
+    "one_original_future": 1,
+    "new_binary_page_bytes": 16384,
+    "old_metadata_page_bytes": 8192,
+    "retained_payload_bytes": 1048576,
+    "operation_status_per_original_id": 8,
+    "pages_per_original_id": 128,
+    "automatic_retry": false
+  },
+  "history": {
+    "old6INFOCallsAnd2ObserversPreserved": true,
+    "originalBUILD41CallsAnd12ObserversPreserved": true,
+    "sourceR1UnexecutedFindingPreserved": "502e64c2eb1a361ed25321d7f07f4f6565fe4c0c",
+    "R2WholeArmGOAssociationRequired": true
+  },
+  "archive": {
+    "exactRequestIntentArmedWholeBeforeOneCall": true,
+    "armRootGoMustEqualThisSeparateBODYGo": true,
+    "SDKWholeBeforeIsError": true,
+    "serializedPayloadWholeBeforeDecode": true,
+    "logBodyWholeBeforeDiagnosis": true
+  },
+  "lane": {
+    "before": {
+      "A": 0,
+      "B": 1,
+      "C": 0,
+      "root": 0
+    },
+    "during": {
+      "A": 0,
+      "B": 1,
+      "C": 1,
+      "root": 0
+    },
+    "maximum": 2,
+    "verifiedARelease": {
+      "blob": "fcfe2f5e0cfd2d2a2dac0b0c1fbf876de7686760",
+      "bytes": 1706,
+      "sha256": "d22a0f2f92c92800fb4efed5a5862c9cf73320d6f539f559a27a489684538784"
+    },
+    "oneNativeCallOrOwnedFuture": true,
+    "unknownKeepsLane": true
+  },
+  "after": "Close both exact original body observers, archive whole stderr191 and stdout375, then diagnose the exact failed assertion. No rerun or source expectation change is authorized merely by receiving bytes.",
+  "buildReplay": false,
+  "targetReuse": false,
+  "newService": false,
+  "productionChange": false,
+  "fullReplacement": false
+}

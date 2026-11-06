@@ -1,0 +1,261 @@
+{
+  "schema": "heptabao.fresh-home-r3.strict-change-map.v1",
+  "sources": [
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "before": {
+        "blob": "e1054c6a5786280e901f7f94661d06187021e774",
+        "bytes": 3108,
+        "sha256": "f77ecb7fd607b2cc377619e050f89c7460420df96d42110de142bdadbf33ce73"
+      },
+      "after": {
+        "blob": "408959d22873855f79f28570c611d24db44005cd",
+        "bytes": 3108,
+        "sha256": "a1acc944965a6fbc018d8991cd6852c2c83f9fca1dea7860602a306838ef46c5"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py",
+      "before": {
+        "blob": "80b204f30eaba8f77970da8d829bab6c707c924b",
+        "bytes": 42083,
+        "sha256": "f13e9a727d51d91184e97ee0b2042824706664db5ac7366ee7adf26bffa43203"
+      },
+      "after": {
+        "blob": "e9c9d0c30a06681ba8e97c10f27a098ca6fbd6b6",
+        "bytes": 42083,
+        "sha256": "783573e6c4dce62132baffb31c8abf49d45e4b00c901c5faa093719e1020c935"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "before": {
+        "blob": "6b0765788c4718e5cc57f069bcfa4b0c8d2c5a5c",
+        "bytes": 24012,
+        "sha256": "04ab9aab3b6ee292835c97f2b208c054e3089814ecc40a493ce21a157e41f092"
+      },
+      "after": {
+        "blob": "9bbc3d403a4fb65176e9398cc71ef2464f94dc5a",
+        "bytes": 24012,
+        "sha256": "f57fb90955342ecbbc6e8d5423d99f16bdd51dfe7a1d23076f8b78016a78837b"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "before": {
+        "blob": "b4a71d3cd6f619af4041bfc06b8142da9b97c7c2",
+        "bytes": 25973,
+        "sha256": "070642a2fecc974794ace1b1cba8eac4672b789aecd4d00a3b4944fb773e853e"
+      },
+      "after": {
+        "blob": "198feabe7aef20b302e5989fd72e99e0bc0d36c3",
+        "bytes": 25973,
+        "sha256": "1a2ba260cb9659cb52f429f77de1e7d5c40ecb4f36af37d6b245d1b11cc277c9"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "before": {
+        "blob": "83014d12575d853b5fca8f149d4ce49c7fb6509c",
+        "bytes": 33001,
+        "sha256": "cd7fcc48fc6eff9c4d166eab996e40723e6918fabf4815e55e2080096129734d"
+      },
+      "after": {
+        "blob": "c59271a6852e4ccba17aaa2cb8357704092d3a11",
+        "bytes": 33001,
+        "sha256": "54a5a023b4f3af34e14c6617ee97c5bb2e38fd4bf843398e437c5c95fd45f673"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py",
+      "before": {
+        "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+        "bytes": 73918,
+        "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+      },
+      "after": {
+        "blob": "6952e205d0cb50f2066c0d2bf56a567239aa8a1e",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "before": {
+        "blob": "60cdb68fa9f0a436b3b3ab7a1114493ca9739594",
+        "bytes": 25647,
+        "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+      },
+      "after": {
+        "blob": "57b38b5d7072cb425898159f1f5d491fc2b1647a",
+        "bytes": 25647,
+        "sha256": "438578c430cdb86a22babfb76b7ed60a0bca8b486834378e34c54ffa85200c60"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "before": {
+        "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+        "bytes": 14052,
+        "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+      },
+      "after": {
+        "blob": "75653caa4a98e77ae62750bf9557083c1abb9d82",
+        "bytes": 14052,
+        "sha256": "e4c868bfbda0d6357581925b6a09a59b9f8eac1f61e12154e4ecd86cbcede277"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "before": {
+        "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+        "bytes": 58452,
+        "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+      },
+      "after": {
+        "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+        "bytes": 58584,
+        "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+      },
+      "forwardHunks": 3,
+      "inverseHunks": 3,
+      "change": "fixed_namespace_and_approved_three_line_parser"
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "before": {
+        "blob": "f5395025f281c2b35015ede1d9ff3beb3826a671",
+        "bytes": 33148,
+        "sha256": "d89f77d412c4394b40f0eba09e17354234cf7362b79bf1450521ff0a390b33ef"
+      },
+      "after": {
+        "blob": "2b7aee5224a9129441396ae88664b4670af1fd50",
+        "bytes": 33148,
+        "sha256": "e1b85fd42d637a2cdccb4e8ab958d4c8a99898725b3bca4558cdc2ff984da630"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "before": {
+        "blob": "d1725fcdb850fa457d8e19906838d46f1b409ee5",
+        "bytes": 13392,
+        "sha256": "1480cc85311f39a037ccd7ab3f7bb51b847fbd1211eccb77d92b4d3e592d4dd7"
+      },
+      "after": {
+        "blob": "8bc381b89b599e0cab9e2eed5fc1e9f331920225",
+        "bytes": 13392,
+        "sha256": "28bba28ee22a70002f47ab6cbb75a4af30d56806a85307dc585d533ce3a9f4d7"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1,
+      "change": "fixed_namespace_only"
+    }
+  ],
+  "bindingChanges": [
+    {
+      "name": "publisher.py",
+      "before": {
+        "blob": "ea84d70d3c434a33d0f216de8b0b002633650a0a",
+        "bytes": 36514,
+        "sha256": "19b91f34d98b8056a4921e400dc3e87200581043ce7df7531db81be6a0982a69"
+      },
+      "after": {
+        "blob": "77f84c87e203714bc8e809df51aa0900653b6260",
+        "bytes": 36514,
+        "sha256": "47a67e1894b8dd2b7dab4875e324711052375aa5c8feff7b8a9f5042330b9ba7"
+      },
+      "forwardHunks": 6,
+      "inverseHunks": 6
+    },
+    {
+      "name": "journal.js",
+      "before": {
+        "blob": "52c2735d9eae38cf4745f89802fcf25c3b5738c1",
+        "bytes": 19050,
+        "sha256": "70254ca18f378f03ce6abe2788d1cfbf512989671a26ee83fbe33c60ca814b9f"
+      },
+      "after": {
+        "blob": "53cc60330a8c4f6ba6aa40a2bf235783e9e52c31",
+        "bytes": 19050,
+        "sha256": "0685fb023ba92aedb161012975d46028067106c1031d5d019951542d14319612"
+      },
+      "forwardHunks": 2,
+      "inverseHunks": 2
+    },
+    {
+      "name": "runtime-deriver.js",
+      "before": {
+        "blob": "47c30a8833171ecc52679a25a913c71ca7a35eac",
+        "bytes": 7131,
+        "sha256": "67b551c147ccfd0fa42d3e37da1c547a94308e03da3a03d3f4fce9565b9a4dbe"
+      },
+      "after": {
+        "blob": "6c36bdd55a2ea4442c5eec1fbf9b62d990226080",
+        "bytes": 7131,
+        "sha256": "9cae37de4fafceb24269dc3eda108fc4b2adc7d8e0f8d7722b14446ea79e67c4"
+      },
+      "forwardHunks": 1,
+      "inverseHunks": 1
+    },
+    {
+      "name": "candidate.public.json",
+      "before": {
+        "blob": "268c8540cc67174bcf5f94b4d4fafc8dff4adf75",
+        "bytes": 7499,
+        "sha256": "4194d61794ec066d23ca17863d2323674a918779f9524cf20fb2109e334d1e56"
+      },
+      "after": {
+        "blob": "c5a520313563ec821c1b80d49249a8cef1573709",
+        "bytes": 7499,
+        "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81"
+      },
+      "forwardHunks": 2,
+      "inverseHunks": 2
+    }
+  ],
+  "unchangedSources": [
+    "mac_authbus_cache_cas_r1.mjs",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py",
+    "mac_darwin_owned_projection_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_native_owned_commands_r1.py",
+    "mac_native_owned_unreaped_r1.py",
+    "mac_native_process_observer_r1.py",
+    "mac_owned_commands_r1.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_registry_readonly_wal_r1.py"
+  ],
+  "approvedParserSemanticDeltaBytes": 132,
+  "allOtherSourceDifferences": "Only the five explicit R2-to-R3 namespace literals; complete inverse normalization returns the prior raw bytes.",
+  "sourceCount": 22,
+  "changed": 11,
+  "unchanged": 11
+}

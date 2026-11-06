@@ -1,0 +1,282 @@
+{
+  "schema": "heptabao.r45-validation-checkpoint.v1",
+  "as_of_UTC": "2026-11-06 16:22:23 UTC",
+  "previous_validation_commit": "47b25ff07c1ec7e83f392cb60dc62d7c74b472ed",
+  "prefix": "qa/evidence/20261104/r45-snapshot49-complete-fresh-auth-stage-and-oracle-recovery-r1",
+  "task_continues": true,
+  "full_OpenBao_2_7_1_replacement": false,
+  "production_cutover": false,
+  "all_current_clients_and_backup_paths_migrated": false,
+  "legacy_cleanup": false,
+  "qualified_product_baseline": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "qualified_prior_scopes": {
+      "Mac_normal": 61,
+      "ROG_normal": 61,
+      "Mac_KV2_full34": 31,
+      "X230_KV2_full34": 31,
+      "real_Mac_ROG_Pocket4_HA": 98,
+      "independent_cold_restart": 12,
+      "X230_comparison": {
+        "profiles": 69,
+        "numeric_status_exact": 67,
+        "normalized_PKI_cases": 2
+      }
+    },
+    "no_qualification_transfer_to_unbuilt_JWT_candidate": true
+  },
+  "current_product_candidate": {
+    "commit": "025b05a340de841b8161c1120344e86eae30eb97",
+    "tree": "1d8160c9385f8053b9a683cc1834da0f912e2d37",
+    "combined_snapshot_candidate_frozen": false,
+    "new_production_release_built": true,
+    "new_full_suite_passed": false
+  },
+  "snapshot": {
+    "status": "49-source-mappings-whole-and-independently-qualified-integration-and-runtime-pending",
+    "freshChangedFiles": 23,
+    "freshChangedBytes": 1346637,
+    "explicitFrozenReuses": 26,
+    "frozenBytes": 686814,
+    "canonicalFiles": 49,
+    "totalBytes": 2033451,
+    "rootOriginalEvidenceChecks": 18051,
+    "rootResult": {
+      "blob": "5e68cfc89ea040c5f7e9026e01e6c8a3deee272f",
+      "bytes": 1715447,
+      "sha256": "caf49813f795bb83b3a87c4c501bcdafbf3adec1ded44368f8ec24085c5e89f3"
+    },
+    "rootTargetedCases": 28,
+    "rootConciseQualification": {
+      "blob": "3d05ca4d13fa2ba581c5f704ba59a9f3e7958da7",
+      "bytes": 2051,
+      "sha256": "8f2158426ce618f21190d5c9f324e2930e13f05e4d30b6fb78141a00fd5633ff"
+    },
+    "wholeUniqueRawBlobs": 1548,
+    "wholeUniqueRawBytes": 11833720,
+    "originalCalls": 274,
+    "originalAdmissions": 59,
+    "originalStatuses": 59,
+    "immutablePageCalls": 156,
+    "successfulImmutablePages": 153,
+    "originalDeliveryFailures": 3,
+    "individuallyBoundRecoveryCalls": 3,
+    "aggregateTree": "7163d1bc4cb7b8dd4bda0b584964c55d27cc9054",
+    "aggregateOriginalCreateTimeoutPreserved": true,
+    "oldNativeFailuresPreserved": true,
+    "sourceChecksAreNotProductTests": true,
+    "finalCandidateRuntimeQualified": false
+  },
+  "AuthBus": {
+    "originalBusinessJob": "1a1b0e85206-fc05-73e1",
+    "originalBusinessHTTPPhases": 0,
+    "originalManagedState": "UNKNOWN",
+    "neverExitedParserFix": "source-qualified-three-lines-no-later-runtime-pass",
+    "R2WrongABIAssertionPreserved": true,
+    "R3ReadOnlyObservation": {
+      "job": "1a1b17e6d6f-fc05-7924",
+      "complete": true,
+      "selfBSDInfoBytes": 136,
+      "fixedPID": 32527,
+      "fourSamplesESRCH": true,
+      "historicalPIDReapOrReuseProven": false,
+      "oldManagedUnknownPreserved": true
+    },
+    "freshInert": {
+      "job": "1a1b19aef7b-fc05-79d3",
+      "state": "succeeded",
+      "exitCode": 0,
+      "sourcePacket": "1b9f6f07249d0757ac0efa0227827e834a750260",
+      "minimumPacket": "c6210845399f86719380b87de175055fe1ee403d",
+      "minimumRootQualification": {
+        "blob": "07b2174103187f13defd220ed65207b8011d7f84",
+        "bytes": 2263,
+        "sha256": "34729bb8311ca8218e0b865c9603cc1a65af0aba68486a84f94066545722caa9"
+      },
+      "sourceFiles": 22,
+      "publicDocuments": 8,
+      "homeCopies": 2,
+      "stdoutBytes": 20680,
+      "stderrBytes": 0,
+      "originalCalls": 17,
+      "originalObservers": 3,
+      "originalPages": 10,
+      "allApplicationOwnedDescriptorsClosed": true,
+      "ownedHelperReaped": true,
+      "elapsedSeconds": 0.24067879235371947,
+      "receiptBytes": 15237,
+      "receiptSHA256": "d64535852bd697b0fd8f1cf314621d50236c0f398c068f8f4e276d480a1eedd3",
+      "receiptBodyIndependentlyRead": false,
+      "fullOriginalChainQualificationPending": true,
+      "serviceStarts": 0,
+      "businessRuntimeStarts": 0,
+      "currentCredentialReads": 0
+    },
+    "credentialsProvenanceQualified": false,
+    "productionCutover": false
+  },
+  "JWT_PKI": {
+    "originalBuildJob": "1a1b10cad9b-fc05-7560",
+    "productionReleaseBuilt": true,
+    "planned149Unique166ProfilesNotPassed": true,
+    "failedTest": "native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta",
+    "exactError": "Identity projection",
+    "exactOriginalStderrBytes": 191,
+    "originalTestCommandExit": 101,
+    "sourceDiagnosis": "Whole EngineState serialization attempts to serialize live NativeReadView, which intentionally refuses inline KV2 persistence.",
+    "minimalRepair": {
+      "sourcePacket": "4a424e3a39f96a1fb94fc2b721478673a4afa58d",
+      "rootQualification": {
+        "blob": "942e283005fab611f1e8a510213ac24f1c0d4ddb",
+        "bytes": 2205,
+        "sha256": "892e826e0a491bba7c0ac12f09d95bf5e286dedc8a549a271219c6fdf8eec603"
+      },
+      "files": 2,
+      "behavior": "cfg(test) opaque whole root Identity projection with existing bounded Zeroizing serializer",
+      "all15TestsOutsideSnapshotUnchanged": true,
+      "productionKV2SerializationUnchanged": true,
+      "compiled": false
+    },
+    "newStrictHTTP12Passed": false
+  },
+  "official271_oracle": {
+    "originalJob": "1a1b17f9eff-fc05-7932",
+    "originalFailed": true,
+    "error": "BaoError/common_config_projection_mismatch",
+    "outerOriginalChainClosed": true,
+    "ownerChildClosureQualified": false,
+    "actualACLCaseCount": null,
+    "actualReport": {
+      "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+      "bytes": 36658,
+      "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+      "version": "2053:3318893:36658:1793979309530036044:1793979309530036044",
+      "bodyObserved": false
+    },
+    "INFO": {
+      "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+      "originalStatus0DeliveryUnknownPreserved": true,
+      "originalPausedStateByteIdentical": true,
+      "oneSeparateSameIDStatusCompletedInactive": true,
+      "originalPayloadWhole": true,
+      "full9Matched": true,
+      "rootQualification": {
+        "blob": "57dbb0090b056fd394e70b4e636067c5d2cd6d73",
+        "bytes": 1897,
+        "sha256": "0c04fde3024ec40af07a880724d1b9a5e1f82879b864dbc008adb1a67c188870"
+      }
+    },
+    "BODY": {
+      "GO": {
+        "blob": "59b705a3a5bae8ea80e668bccffd84964114af70",
+        "bytes": 3626,
+        "sha256": "ecfb18964d8f40d5f3f228f0e0a97b36a51379044c6ad2c08c91991a0120a0a2"
+      },
+      "source": "9f78fb5999f0cd1d3b7265e4eb38d13b315ce50a",
+      "maximumReads": 1,
+      "actualVersionBound": true,
+      "originalOperationInProgressAtCutoff": true
+    },
+    "PEMFixtureRepair": {
+      "primarySourceChain": "909136da6be72cddc66cf81f986a978b7f9508ea",
+      "sourceFileBytes451Unchanged": true,
+      "proposedWireValueBytes": 450,
+      "removeOnlySingleFinalLF": true,
+      "strictResponseAndStatusComparisonUnchanged": true,
+      "firstRunConfigBodyWasNotRetained": true,
+      "exactRuntimeCauseNotYetProven": true,
+      "successorRunNotStarted": true
+    }
+  },
+  "integratedCandidate": {
+    "snapshot49Ready": true,
+    "identityTestRepair2Ready": true,
+    "officialACL23ResultPending": true,
+    "JWTLocalPolicyRepairPending": true,
+    "provisionalFiles": 3930,
+    "finalCommit": null,
+    "finalTree": null,
+    "plannedUniqueTests": 237,
+    "plannedProfiles": 254,
+    "executed": false
+  },
+  "inventory": {
+    "currentMacAndROGBoundedSnapshotsExist": true,
+    "currentPocket4AndX230Complete": false,
+    "backupPathsComplete": false,
+    "historicalSyntheticArtifactsNotProductionInventory": true,
+    "readOnlyDiscoverySourceInPreparation": true
+  },
+  "history_preserved": {
+    "R42_cutoff_unknowns_not_rewritten": true,
+    "old_BODY0_lost_ACK_record_immutable": true,
+    "actual_reconciliation_reused_true_kept_separate": true,
+    "INFO10_original_page_delivery_error_kept": true,
+    "Mac_original_failed_runtime_kept": true,
+    "pure_verifier_errors_kept_separate_from_Native_or_product_outcomes": true,
+    "root_INFO4_blob_reader_errors_recovered_only_from_whole_original_SDKs": true,
+    "no_uncertain_Native_mutation_replayed": true,
+    "threeSnapshotDeliveryFailuresPreserved": true,
+    "BFinalPredicateWrongAssumedPathCorrectedWithMissingAndChangedLeafRefusal": true,
+    "AIncorrectABIAssertionPreserved": true,
+    "COriginalStatusQueryTimeoutPreserved": true,
+    "COriginalPausedStateByteIdentical": true,
+    "originalOracleConfigurationMismatchPreserved": true
+  },
+  "remaining_gates": [
+    {
+      "gate": "KV2",
+      "current": "Historical4e808 formal34MiB Mac31/31 and X23031/31 retained; new49 source mappings now whole and independently qualified.",
+      "required": "Final integrated binary exact offline migration/export/import/snapshot/restore/cold-CAS/delete/undelete/destroy and CLI leader/standby paths; complete backup path migration."
+    },
+    {
+      "gate": "HA",
+      "current": "Historical4e808 real Mac/ROG/Pocket4 98+12 retained; SIGKILL/election/quorum/ReadIndex/cold restart scope.",
+      "required": "Repeat with final candidate bytes on all three hosts, persistence/restart and original failure cases. Existing result does not claim physical power loss."
+    },
+    {
+      "gate": "AuthBus",
+      "current": "Fresh HOME/T5 r3 inert stage succeeded and closed; original managed UNKNOWN remains; actual business phases remain zero.",
+      "required": "Current independent label/PID/public-file observation, evidenced fresh owned scope, then trusted AppRole/TLS/KV/Policy/renew/revoke/restart/rollback without J3160."
+    },
+    {
+      "gate": "per-client-cutover",
+      "current": "No production cutover qualified.",
+      "required": "Every current Mac/ROG/Pocket4/X230 consumer inventory and real credential R/W/restart/rollback, then individually switch with evidence."
+    },
+    {
+      "gate": "legacy-cleanup",
+      "current": "Not authorized by completed migration evidence; no deletion performed.",
+      "required": "All current clients and backup paths migrated first; preserve required evidence/recovery assets and keep only latest qualified service after gate."
+    }
+  ],
+  "baseline_evidence_limits_preserved": [
+    "Mac/X230 formal34MiB31/31 is scoped to4e808 baseline; no current candidate qualification inheritance.",
+    "X23069 remains67 exact plus2 normalized PKI until actual new HTTP oracle.",
+    "RealLAN prior98+12 does not cover new snapshot forwarding, rawOpenBao archive interoperability or current production cutover.",
+    "H2 prior H01-H03 small archive/ALPN scope does not establish34MiB H2 or multi-host new CLI restore.",
+    "Native database,Kubernetes,RabbitMQ,ACME/EAB,KMS/HSM,root/rekey/plugin/namespace/admin capability gaps remain.",
+    "Current inventory and every real client restart/rollback plus every backup migration must precede old-service and asset removal."
+  ],
+  "next_work": [
+    "Read exactly three newly staged public AuthBus inputs, bind actual HOME identity, then new owned real credential phases.",
+    "Read original version-bound official report and qualify owner closure; then narrow PEM-input fixture repair and fresh official ACL23.",
+    "Freeze combined snapshot49 plus Identity test repair plus evidence-derived JWT-local policy repair; run237 unique/254 profiles and strictHTTP12.",
+    "Rebuild and rerun formal34MiB migration/recovery on Mac and X230 plus same-candidate real Mac/ROG/Pocket4 HA.",
+    "Finish current consumer and backup inventory, per-client real credential R/W/restart/rollback, then individual cutover. Cleanup only after all migration gates."
+  ],
+  "publication": {
+    "index_totals": {
+      "packets": 31,
+      "files": 1943,
+      "bytes": 26872728,
+      "allWhole": true
+    },
+    "source_checks_are_not_product_tests": true,
+    "checkpoint_not_completion": true
+  },
+  "root_Runtime_calls": 0,
+  "maximum_Runtime_lanes": 2,
+  "executor_unavailable": true
+}

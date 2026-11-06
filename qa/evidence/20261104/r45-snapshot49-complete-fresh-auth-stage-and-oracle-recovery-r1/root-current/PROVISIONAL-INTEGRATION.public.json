@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root-provisional-snapshot49-and-Identity-overlay.r1",
+  "baseCommit": "025b05a340de841b8161c1120344e86eae30eb97",
+  "snapshot": {
+    "leafCount": 3930,
+    "totalBytes": 62498221,
+    "snapshotChanges": 49,
+    "added": 14
+  },
+  "withIdentity": {
+    "leafCount": 3930,
+    "totalBytes": 62498631,
+    "additionalTestProjectionFiles": 2
+  },
+  "finalCandidate": false,
+  "commit": null,
+  "tree": null,
+  "requiredBeforeFreeze": "Official271 ACL23 observations and resulting JWT ACL fix, then final exact source freeze.",
+  "newProductTests": 0
+}

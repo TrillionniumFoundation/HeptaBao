@@ -1,0 +1,7 @@
+{
+  "firstError": "SyntaxError parsing raw Git fetch file text as Contents JSON",
+  "sourceSDKUnchanged": true,
+  "readOnly": true,
+  "additionalGitRequest": 0,
+  "correction": "Use returned UTF-8 file content directly and record its independent Git blob/byte/SHA identity."
+}

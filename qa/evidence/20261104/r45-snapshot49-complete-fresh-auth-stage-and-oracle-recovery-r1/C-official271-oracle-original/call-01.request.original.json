@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-official271-x230-acl23-oracle-observe-r1-authority0",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "x230",
+      "job_id": "1a1b17f9eff-fc05-7932"
+    }
+  }
+}

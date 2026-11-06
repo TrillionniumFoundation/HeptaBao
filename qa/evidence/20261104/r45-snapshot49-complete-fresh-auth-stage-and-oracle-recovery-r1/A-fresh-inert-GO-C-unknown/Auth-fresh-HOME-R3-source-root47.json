@@ -1,0 +1,207 @@
+{
+  "schema": "heptabao.root-fresh-AuthBus-HOME-r3-inert-source.r1",
+  "passed": true,
+  "checks": 47,
+  "rows": [
+    {
+      "name": "author206_exact",
+      "passed": true
+    },
+    {
+      "name": "root_current_diagnostic40_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_current_diagnostic_stdout",
+      "passed": true
+    },
+    {
+      "name": "same_approved_parser",
+      "passed": true
+    },
+    {
+      "name": "complete22_source_carriers",
+      "passed": true
+    },
+    {
+      "name": "source_mac_auth_rows_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "source_mac_authbus_cache_cas_r1.mjs",
+      "passed": true
+    },
+    {
+      "name": "source_mac_capture_sqlite_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_capture_sqlite_synthetic_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_capture_entry_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_cycle_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_fixture_materializer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_outer_inputs_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_outer_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_phase_owner_r2.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_current_server_owner_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_darwin_owned_projection_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_native_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_native_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_native_process_observer_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_owned_launchd_r3.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "source_mac_single_native_r2.mjs",
+      "passed": true
+    },
+    {
+      "name": "source_mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "only11_changed_11_unchanged",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/native-proc-r2.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/native-proc-r2.child-stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/native-proc-r2.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/registry-wal-r1.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/registry-wal-r1.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/synthetic-r2.authority.public.json",
+      "passed": true
+    },
+    {
+      "name": "unchanged_proofs/synthetic-r2.stdout.public.json",
+      "passed": true
+    },
+    {
+      "name": "seven_original_proofs_only",
+      "passed": true
+    },
+    {
+      "name": "only_three_request_field_changes",
+      "passed": true
+    },
+    {
+      "name": "exact_request_source_payload_pins",
+      "passed": true
+    },
+    {
+      "name": "bounded_inert_only_60_45_30",
+      "passed": true
+    },
+    {
+      "name": "strict_publisher.py",
+      "passed": true
+    },
+    {
+      "name": "strict_journal.js",
+      "passed": true
+    },
+    {
+      "name": "strict_runtime-deriver.js",
+      "passed": true
+    },
+    {
+      "name": "strict_candidate.public.json",
+      "passed": true
+    },
+    {
+      "name": "runtime_deriver_only_key_suffix",
+      "passed": true
+    },
+    {
+      "name": "fresh_roots_and_labels_unobserved",
+      "passed": true
+    },
+    {
+      "name": "future_runtime_unbound",
+      "passed": true
+    },
+    {
+      "name": "old_business_budgets_not_inert_authority",
+      "passed": true
+    }
+  ],
+  "sourceTree": "1b9f6f07249d0757ac0efa0227827e834a750260",
+  "author206Exact": true,
+  "sourceFiles": 22,
+  "changedByNamespaceAndApprovedParser": 11,
+  "unchangedSourceFiles": 11,
+  "proofDocumentsUnchanged": 7,
+  "sourceOnly": true,
+  "newNativeCalls": 0,
+  "inertSourceReady": true,
+  "businessRuntimeBound": false,
+  "productBaseline": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "fullReplacement": false
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.official271.original-info-reconciliation.release.r1",
+  "currentNativeCalls": 0,
+  "currentActiveFutures": 0,
+  "laneReleased": true,
+  "newContext": "official271_x230_acl23_report_info_status_reconcile_r1",
+  "originalJob": "1a1b17f9eff-fc05-7932",
+  "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+  "originalPausedContext": {
+    "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+    "bytes": 223583,
+    "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+  },
+  "originalPausedContextByteIdentical": true,
+  "originalStatus0DeliveryErrorRemainsUnknown": true,
+  "newStatusQueries": 1,
+  "originalStatusQueries": 1,
+  "totalStatusQueries": 2,
+  "maximumAllowedStatusQueries": 8,
+  "operationStartCalls": 0,
+  "processStartCalls": 0,
+  "newCalls": 2,
+  "pages": 1,
+  "futureCompletedInactive": true,
+  "payload": {
+    "blob": "d14f5e1b796b06d5dda0a3427ff7bc0c0a56f648",
+    "bytes": 578,
+    "sha256": "bb12e8f440f278323c150290601fbb9374cd1b01d0fa129867e8cb533c8d4241"
+  },
+  "native": {
+    "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+    "bytes": 461,
+    "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+  },
+  "actualMetadata": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "size": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "version": "2053:3318893:36658:1793979309530036044:1793979309530036044",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ],
+    "originalOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+    "nativeText": {
+      "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+      "bytes": 461,
+      "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "bodyReadAuthorized": false
+  },
+  "go": {
+    "blob": "33c5afe418b230d2eea32456f626da35d08d30d7",
+    "bytes": 4493,
+    "sha256": "3bed8fc3437fc6240785c5bc5709b805986e98a456f97d1087011d669999e678"
+  },
+  "state": {
+    "blob": "a4b8f2cbee6e575453b936db6e4d9cc833bf96b7",
+    "bytes": 12503,
+    "sha256": "9875df5c00c897f7a8841adb12cb2d231d29b54ba273d7f66663ed791089d38b"
+  },
+  "bodyReadAuthorized": false,
+  "ownerChildClosureObserved": false
+}

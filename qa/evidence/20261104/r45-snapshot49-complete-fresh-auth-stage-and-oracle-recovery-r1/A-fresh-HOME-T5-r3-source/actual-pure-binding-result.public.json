@@ -1,0 +1,834 @@
+{
+  "schema": "heptabao.fresh-home-r3.pure-source-binding-checks.v1",
+  "status": "PASS",
+  "passed": true,
+  "checkCount": 206,
+  "checks": [
+    {
+      "name": "baseline_source_pin_table",
+      "pass": true
+    },
+    {
+      "name": "baseline_document_pin_table",
+      "pass": true
+    },
+    {
+      "name": "source_names_exact_22",
+      "pass": true
+    },
+    {
+      "name": "approved_parser_after_exact",
+      "pass": true
+    },
+    {
+      "name": "approved_parser_original_diff",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_native_process_observer_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_process_observer_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_native_process_observer_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:before_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:after_whole",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:only_namespace_plus_one_approved_parser",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:strict_forward",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:strict_inverse",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:diff_counts_and_pins",
+      "pass": true
+    },
+    {
+      "name": "changed_11_unchanged_11",
+      "pass": true
+    },
+    {
+      "name": "change_map_exact_names",
+      "pass": true
+    },
+    {
+      "name": "semantic_added_bytes_only_132",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:no_stale_literal_hash_reference",
+      "pass": true
+    },
+    {
+      "name": "parser_three_line_diff_forward",
+      "pass": true
+    },
+    {
+      "name": "parser_three_line_diff_inverse",
+      "pass": true
+    },
+    {
+      "name": "consumer_success_stays_strict_zero",
+      "pass": true
+    },
+    {
+      "name": "exact_never_exit_None_only_once",
+      "pass": true
+    },
+    {
+      "name": "strict_integer_and_existing_EX_CONFIG_rule",
+      "pass": true
+    },
+    {
+      "name": "home_control_exact_normalized",
+      "pass": true
+    },
+    {
+      "name": "home_control_same_manager_publisher",
+      "pass": true
+    },
+    {
+      "name": "old_candidate_whole",
+      "pass": true
+    },
+    {
+      "name": "candidate_only_pins_and_HOME_root",
+      "pass": true
+    },
+    {
+      "name": "candidate_embedded_document_exact",
+      "pass": true
+    },
+    {
+      "name": "source_hash_map_exact",
+      "pass": true
+    },
+    {
+      "name": "document_names_8_same",
+      "pass": true
+    },
+    {
+      "name": "candidate-current-manager-wal-r1.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "candidate-current-manager-wal-r1.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.authority.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.authority.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.authority.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.child-stdout.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.child-stdout.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.child-stdout.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.stdout.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.stdout.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/native-proc-r2.stdout.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.authority.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.authority.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.authority.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.stdout.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.stdout.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/registry-wal-r1.stdout.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.authority.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.authority.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.authority.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.stdout.public.json:new_document_whole",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.stdout.public.json:payload_document_exact",
+      "pass": true
+    },
+    {
+      "name": "proofs/synthetic-r2.stdout.public.json:unchanged_original_proof",
+      "pass": true
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_capture_entry_wal_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_outer_wal_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_current_server_owner_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_darwin_owned_projection_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_commands_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_native_owned_unreaped_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_native_process_observer_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_commands_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_launchd_r3.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_registry_readonly_wal_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_single_native_r2.mjs:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py:public_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "carrier_shape_schema_anchor_unchanged",
+      "pass": true
+    },
+    {
+      "name": "old_request_whole",
+      "pass": true
+    },
+    {
+      "name": "old_publisher_whole",
+      "pass": true
+    },
+    {
+      "name": "old_journal_whole",
+      "pass": true
+    },
+    {
+      "name": "old_runtime_deriver_whole",
+      "pass": true
+    },
+    {
+      "name": "old_runtime_inputs_whole",
+      "pass": true
+    },
+    {
+      "name": "publisher_inverse_only_exact_bindings",
+      "pass": true
+    },
+    {
+      "name": "publisher.py:strict_binding_forward",
+      "pass": true
+    },
+    {
+      "name": "publisher.py:strict_binding_inverse",
+      "pass": true
+    },
+    {
+      "name": "journal.js:strict_binding_forward",
+      "pass": true
+    },
+    {
+      "name": "journal.js:strict_binding_inverse",
+      "pass": true
+    },
+    {
+      "name": "runtime-deriver.js:strict_binding_forward",
+      "pass": true
+    },
+    {
+      "name": "runtime-deriver.js:strict_binding_inverse",
+      "pass": true
+    },
+    {
+      "name": "candidate.public.json:strict_binding_forward",
+      "pass": true
+    },
+    {
+      "name": "candidate.public.json:strict_binding_inverse",
+      "pass": true
+    },
+    {
+      "name": "exact_request_only_three_fields",
+      "pass": true
+    },
+    {
+      "name": "correct_stdin_schema_not_stdin_text",
+      "pass": true
+    },
+    {
+      "name": "request_regular_interpreter_and_original_limits",
+      "pass": true
+    },
+    {
+      "name": "journal_only_slot_request_and_prefix",
+      "pass": true
+    },
+    {
+      "name": "runtime_deriver_only_unique_r3_key_suffix",
+      "pass": true
+    },
+    {
+      "name": "runtime_binding_input_exact_mechanical",
+      "pass": true
+    },
+    {
+      "name": "original_runtime_template_exact",
+      "pass": true
+    },
+    {
+      "name": "actual_slots_null_and_unready",
+      "pass": true
+    },
+    {
+      "name": "all_original_candidate_budgets_preserved",
+      "pass": true
+    },
+    {
+      "name": "fresh_actual_ephemeral_loopback_bind_retained",
+      "pass": true
+    },
+    {
+      "name": "renew_empty_JSON_retained",
+      "pass": true
+    },
+    {
+      "name": "strict_expiry_extension_after_closure_retained",
+      "pass": true
+    },
+    {
+      "name": "source_commit_and_tree_not_future_product",
+      "pass": true
+    },
+    {
+      "name": "source_only_contract",
+      "pass": true
+    },
+    {
+      "name": "readback_future_null_and_finite",
+      "pass": true
+    },
+    {
+      "name": "historical_unknown_not_upgraded",
+      "pass": true
+    }
+  ],
+  "scope": "Pure source/carrier binding only; no candidate, Python, SDK or Runtime execution.",
+  "NativeCalls": 0
+}

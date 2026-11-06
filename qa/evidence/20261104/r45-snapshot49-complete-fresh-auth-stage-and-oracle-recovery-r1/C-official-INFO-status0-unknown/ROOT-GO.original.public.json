@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root-official271-original-report-INFO-GO.r45",
+  "authorization": "GO",
+  "scope": "official271_oracle_result_file_info_only",
+  "owner": "/root/ha_validation",
+  "sourcePacket": "244182a0e6e5d07dc47effcf3b0cd6160a76fecc",
+  "sourceQualification": {
+    "blob": "f4b1bf32778dcaa23ef1c56aad75bca8dbc8669e",
+    "bytes": 1277,
+    "sha256": "b6b748d4b212eb3c870d606df7fcdc221c85b9e8801bd434ff8b72a3feb8ca1d"
+  },
+  "originalFullQualification": {
+    "blob": "b97cf59432550ba4b07b39c465038da03979c748",
+    "bytes": 3626,
+    "sha256": "9fb98660aab5d5b9edae69ae4102dbdb38269472f2ad041547e28afdc597f2d7"
+  },
+  "originalMinQualification": {
+    "blob": "ab4fad81befd3a9f72a3053c959819b75865b57c",
+    "bytes": 1903,
+    "sha256": "bb5f59663a8d2c6ba40d978750f5a99a86e228ecf10f61826601c9815985b7cd"
+  },
+  "original_job": "1a1b17f9eff-fc05-7932",
+  "journal": {
+    "blob": "ecd8f1dad7bf090ee8749c139bb0cfc2c972dfef",
+    "bytes": 23027,
+    "sha256": "10739a5286bb58b85a5b83b16b38081264df4371926f186d27cdcc757084d783"
+  },
+  "slot": "official271_x230_acl23_oracle_gitfirst_r1",
+  "action": "authorize_oracle_report_info",
+  "prior_state": {
+    "blob": "79d77bf0c3c347a504641becf40670db09cf2bac",
+    "bytes": 213768,
+    "sha256": "bb7c9bca85b753a5ce96f767043d02ef23a801473b7f252809f8343f3e7d5906"
+  },
+  "original_stdout": {
+    "blob": "4cadde347ce3fb4b3dd8a175dea060bb73ccb1db",
+    "bytes": 782,
+    "sha256": "a423a851fc982b94aa352315f29a5c30f099988b820421a43f84c369d42ec426"
+  },
+  "exact_request": {
+    "blob": "3d4b0ac9b5e642da091ae07c6e446c2c4947b817",
+    "bytes": 267,
+    "sha256": "4a98bc7695715f1cdc1e50ba56ffe85a16511f11af6305d356eaf2092a1b3094"
+  },
+  "target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ]
+  },
+  "maximum_file_info_operations": 1,
+  "maximum_process_start_calls": 0,
+  "maximum_binary_read_operations": 0,
+  "maximumOperationStatusCalls": 8,
+  "maximumImmutablePages": 128,
+  "immutablePageBytes": 8192,
+  "maximumPayloadBytes": 1048576,
+  "originalSlotReinitialize": false,
+  "newArmsUseSeparateInfoGO": true,
+  "oldSevenCallsAndTwoObserversRemainExact": true,
+  "oneCallOrOwnedFuturePerLane": true,
+  "lane": {
+    "A": 0,
+    "B": 1,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "procedure": "Whole GO/request and exact old closed state/stdout, attach once, new whole three-leaf arm, independent boundary, once exact original INFO admission, whole SDK before parse; close only returned operation and whole immutable result.",
+  "onUnknown": "Keep original call/future and lane, stop new admissions; no automatic replay.",
+  "after": "Current file_info must match all original size/SHA/full9/mode fields; no BODY until separate actual-version-bound source and GO. Do not rerun original fixture or infer owner child closure from outer exit.",
+  "noCargo": true,
+  "noProductionMutation": true,
+  "ownerChildClosureQualified": false,
+  "parityQualified": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

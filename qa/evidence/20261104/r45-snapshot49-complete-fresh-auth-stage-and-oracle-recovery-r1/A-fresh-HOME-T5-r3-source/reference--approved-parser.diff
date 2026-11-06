@@ -1,0 +1,12 @@
+--- a/before/mac_owned_launchd_r3.py
++++ b/after/mac_owned_launchd_r3.py
+@@ -76,6 +76,9 @@
+     for name in ('pid','runs','last exit code'):
+         if name in fields:
+             typed_value=fields[name]
++            if name=='last exit code' and typed_value=='(never exited)':
++                fields[name]=None
++                continue
+             if name=='last exit code' and typed_value=='78: EX_CONFIG':
+                 typed_value='78'
+             need(re.fullmatch(r'-?[0-9]{1,10}',typed_value) is not None,'typed_launchctl_integer')

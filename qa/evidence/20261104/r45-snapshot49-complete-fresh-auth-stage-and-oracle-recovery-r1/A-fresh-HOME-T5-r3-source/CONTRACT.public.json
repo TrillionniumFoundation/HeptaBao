@@ -1,0 +1,228 @@
+{
+  "schema": "heptabao.mac-authbus-fresh-home-r3-source-contract.v1",
+  "status": "SOURCE_ONLY_NO_NATIVE_ADMISSION",
+  "reason": "Fresh independent generation after qualified current missing-label/ESRCH observations; historical exit/reap, original failures and UNKNOWN are preserved. The only semantic code change is the already reviewed exact never-exited sentinel mapping.",
+  "fixedNamespace": {
+    "oldT5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2",
+    "newT5": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3",
+    "oldHome": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r2",
+    "newHome": "/Users/qianqi/heptabao-mac-authbus-4e808-home-launch-20261106-r3",
+    "serverLabel": "org.heptabao.qa.mac-authbus-4e808-home-r3.server",
+    "consumerPrefix": "org.heptabao.qa.mac-authbus-4e808-home-r3.consumer"
+  },
+  "namespaceEvidence": {
+    "newRootsExistence": "NOT_OBSERVED",
+    "newLabelAbsence": "NOT_OBSERVED",
+    "enforcement": "Original exclusive create / existing-entry refusal and registration predicates remain byte-exact after namespace normalization; no alternate name, retry or fallback.",
+    "historicalClosureClaim": false
+  },
+  "semanticChange": {
+    "source": "mac_owned_launchd_r3.py",
+    "approvedBefore": {
+      "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+      "bytes": 58452,
+      "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+    },
+    "approvedParserAfter": {
+      "blob": "3f259a4b085394fba0658359575aa0d74b9757e2",
+      "bytes": 58584,
+      "sha256": "1d69a93a3111238424f90b02ffe44f6f3e9c3eb704aa8044625de7c17978f78f"
+    },
+    "freshAfter": {
+      "blob": "d26e2aff28d8e26f62d9aeb3229cfbd9c8fe083d",
+      "bytes": 58584,
+      "sha256": "db5803e9697552f7795aceb5779a510bdff91350c525599632477815997ee4cc"
+    },
+    "meaning": "Only last exit code == '(never exited)' becomes None (no known exit code). pid and runs remain strict integers; the existing 78: EX_CONFIG rule remains; consumer success requires strict last_exit == 0.",
+    "nextRunEffect": "A matching current never-exited field no longer aborts parse_print before _ready reads readiness. This does not establish readiness, execution or completion."
+  },
+  "inert": {
+    "request": {
+      "blob": "a9b40fb0c03bbda404e8bdbbef2e398e34c2f8af",
+      "bytes": 875570,
+      "sha256": "c85ff3e246279e367039128a59f0b2a894bda727577e0d2de317a972696ca9de"
+    },
+    "publisher": {
+      "blob": "77f84c87e203714bc8e809df51aa0900653b6260",
+      "bytes": 36514,
+      "sha256": "47a67e1894b8dd2b7dab4875e324711052375aa5c8feff7b8a9f5042330b9ba7"
+    },
+    "payload": {
+      "blob": "aff137a45af0d8f529f94cf2d93ba2a754eac527",
+      "bytes": 837696,
+      "sha256": "757f8262c8ad1c206d888d40a3b9d38a9e15821a9ade01bda1409309a8e2c7f1"
+    },
+    "journal": {
+      "blob": "53cc60330a8c4f6ba6aa40a2bf235783e9e52c31",
+      "bytes": 19050,
+      "sha256": "0685fb023ba92aedb161012975d46028067106c1031d5d019951542d14319612"
+    },
+    "slot": "owner_authbus_current_home_inert_gitfirst_r3",
+    "idempotencyKey": "heptabao-mac-current-home-launch-inert-47a67e18-20261106-r3",
+    "interpreter": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "timeoutSeconds": 60,
+    "publisherDeadlineSeconds": 45,
+    "diskutilSeconds": 30,
+    "files": 22,
+    "publicDocuments": 8,
+    "homePublicWrapperCopies": 2,
+    "loaderScope": "Only the original three pinned import-safe custody libraries used by the publisher.",
+    "sdkOrBusinessEntrypointsExecuted": false
+  },
+  "preserved": {
+    "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "serverBinaryBytes": 92398928,
+    "serverBinarySha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+    "sources": 22,
+    "proofDocuments": 7,
+    "budgets": {
+      "outer": 900,
+      "manager": 600,
+      "managerFailureCleanup": 60,
+      "phase": 120,
+      "native": [
+        15,
+        8,
+        3
+      ],
+      "http": 10,
+      "capture": 45,
+      "listenerReady": 30,
+      "tlsCommand": 30
+    },
+    "outerRuntimeNativeTimeoutSeconds": 1080,
+    "walByteLimit": 5969912,
+    "rowByteLimit": 1048576,
+    "aggregateByteLimit": 8388608,
+    "legacyByteLimit": 4194304,
+    "querySeconds": 3,
+    "roleTtlSeconds": 180,
+    "roleMaxTtlSeconds": 600,
+    "renewRequestBody": {},
+    "renewIncrementAdded": false,
+    "sleepOrRetryAdded": false,
+    "fiveAgents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "fourConnectionFields": [
+      "address",
+      "caFile",
+      "roleIdFile",
+      "secretIdFile"
+    ],
+    "fullConfigAndAllOtherFieldsPreserved": true,
+    "oldSourceOwnerAndGlobalInstanceAssertionsPreserved": true,
+    "homeFirst5AfterExclusiveCreateAndCurrentNamedFull9Preserved": true,
+    "leafNlinkOneAndAllFdCustodyPreserved": true,
+    "providerAndModelFields": "Retained from the original complete captured configuration; no source substitution or caller override."
+  },
+  "actualPort": {
+    "value": null,
+    "sourceFunction": "mac_current_outer_wal_r1.py:reserve_port",
+    "method": "Original one fresh socket bind(('127.0.0.1',0)); getsockname; existing descriptor lifecycle unchanged.",
+    "oldPortReused": false,
+    "reservationThroughLaterExecClaimed": false
+  },
+  "trustedCurrentFlow": {
+    "beforeAndAfterCapture": "Two original bounded current observations of fixed public/config/SQLite inputs; fresh private capsule under this new T5 root. It is never exported.",
+    "sameInstance": "Original selected harness, global registered record, owner manifest/root/code full pins and actual same-instance assertions retained.",
+    "tls": "New owned CA/leaf on T5 and original exact TLS peer SHA validation.",
+    "appRole": "Actual fresh isolated server init/unseal, policy/KV operations and AppRole role/secret issuance; generated credentials stay on T5 in the original private paths.",
+    "phases": [
+      "initial",
+      "cold-new-process",
+      "initial-inverse",
+      "cold-new-process-inverse"
+    ],
+    "nativeLineagesRequired": 10,
+    "renewal": "Same credential/accessor before lookup, original KV/Policy operations, empty JSON renew, after lookup, revoke204 and denied403; positive expiry delta required after inverse and manager closure.",
+    "qualificationLimit": "This 4e808 isolated fixture does not supply production registration/CA/AppRole provenance or qualify a later combined product binary."
+  },
+  "futureRuntime": {
+    "bindingDeriver": {
+      "blob": "6c36bdd55a2ea4442c5eec1fbf9b62d990226080",
+      "bytes": 7131,
+      "sha256": "9cae37de4fafceb24269dc3eda108fc4b2adc7d8e0f8d7722b14446ea79e67c4"
+    },
+    "bindingInputs": {
+      "blob": "0e212e5102247b6e289e873a718eb271f115a651",
+      "bytes": 15274,
+      "sha256": "ae310e9777aa18ec702f9330b6b499af7f5b88d8cb9db42f039042a497732952"
+    },
+    "actualHomeBinding": null,
+    "actualRuntimeRequest": null,
+    "actualPort": null,
+    "readyForRuntime": false,
+    "requiredBeforeDerivation": [
+      "Successful original inert authority and post-finally stdout with exact 30 T5 +2 HOME bindings and complete closure.",
+      "Independent whole outer, candidate and inert receipt using actual version/full9; the receipt remains honestly pre-finally ok:false.",
+      "Apply unchanged actual-result predicates in the pure deriver; a separate exact runtime GO is required."
+    ],
+    "readbackTargets": [
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/qa/mac_current_outer_wal_r1.py",
+        "bytes": 73918,
+        "sha256": "7f3bec1e572b624844fe5ba477dea895a2fcd94d6c9e4a88b5001f4d957a05d0",
+        "chunks": [
+          65536,
+          8382
+        ]
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/candidate-current-manager-wal-r1.public.json",
+        "bytes": 7499,
+        "sha256": "2ca16e7421d9cfba8802029e6125a2efbdae39ac0a6a52ef1962fca864871d81",
+        "chunks": [
+          7499
+        ]
+      },
+      {
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3/inert-registry-wal-4e808-result.public.json",
+        "bytes": null,
+        "sha256": null,
+        "maximumBytes": 65536,
+        "chunksMaximum": 1
+      }
+    ],
+    "readbackBodyMaximumIfSeparatelyAuthorized": 146953,
+    "readbackMetadataHashWorkSeparate": true,
+    "noOldReadBudgetOrAuthorizationInherited": true,
+    "readThenExecAtomicityClaim": false
+  },
+  "effectsAuthorizedByThisSource": false,
+  "NativeCalls": 0,
+  "historicalUnknownsRemain": [
+    "Original home-r2 managed runtime/history, including old PID32527 birth/exit/reap.",
+    "R4 probe and direct helper87650 history.",
+    "Earlier EX_CONFIG QA label/lineage and private capture.",
+    "Git8916 archival UNKNOWN and original R1 partial HOME root.",
+    "Old business relay UNKNOWN."
+  ],
+  "prohibited": [
+    "No old-scope cleanup, signal, bootout, replacement or private-capsule read.",
+    "No J3160, provider/model/refresh/quota changes.",
+    "No production cutover or old-product deletion.",
+    "No new Runtime before exact GO; no reusing any old key or rerunning old business."
+  ],
+  "references": {
+    "baselineSourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+    "originalFailedRuntimePacket": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+    "originalFailedRuntimeRootReview": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+    "freshRegistrationDiagnosticPacket": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+    "freshRegistrationDiagnosticRootReview": "74562ffa04fbb190508857fb3b4d483a6a255ca9",
+    "approvedParserSourcePacket": "5245358633c2cf458b56578e586840d34fc930d1",
+    "approvedParserRootReview": "6894db9c0fd311ae098fd9aaa2ac3e30747cf9fe",
+    "currentIndependentObservationPacket": "880dee2a385f90a92b2ad579adbb97fe5c6789c4",
+    "currentIndependentObservationMinimum": "7781b7c0d1f3e2e722ea1b07405994b17b77d7fb",
+    "currentIndependentObservationRootMinimumReview": "603e29f94d83b604fe3578cfdebe3974a29073a9",
+    "currentIndependentObservationRootMinimumReviewSha256": "2ca210d449b21e878c77fdad5eff68cbfd61335cdfcf11602ff2ab96e9bf179b",
+    "chosenFreshScopeComparison": "f509391ae475e58101bbf52563cacd52c456ea9b",
+    "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  }
+}

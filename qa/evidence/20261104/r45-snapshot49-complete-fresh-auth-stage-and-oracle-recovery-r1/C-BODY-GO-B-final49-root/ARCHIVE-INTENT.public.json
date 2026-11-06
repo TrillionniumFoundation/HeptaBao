@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_C_BODY_GO_B_final49_strict",
+  "records": [
+    {
+      "name": "C-INFO-reconcile-root-verifier.js",
+      "blob": "3afb1f3a3f740c86ee1488609e5554e56fd91869",
+      "bytes": 4283,
+      "sha256": "e1c34e4d994b5213e32a5e91777107f84a9f4d9f374013a5587cf06c6de439fb"
+    },
+    {
+      "name": "C-INFO-reconcile-root-result.json",
+      "blob": "57dbb0090b056fd394e70b4e636067c5d2cd6d73",
+      "bytes": 1897,
+      "sha256": "0c04fde3024ec40af07a880724d1b9a5e1f82879b864dbc008adb1a67c188870"
+    },
+    {
+      "name": "C-report-BODY-source-root-verifier.js",
+      "blob": "6c3464760418b76cc6c100f1c5d509de9ae90c36",
+      "bytes": 2543,
+      "sha256": "dead98160358f6ecde2e5c739406526880ad52aaed3cfacd96a172d7014b7bd5"
+    },
+    {
+      "name": "C-report-BODY-source-root-result.json",
+      "blob": "292f20edda65b6498cad14053ce9cc50dc960dda",
+      "bytes": 1266,
+      "sha256": "8dc6663a6ebead993817b2b642dfa161782c5119bcd97e6c481d139b30478f72"
+    },
+    {
+      "name": "C-report-BODY-GO.json",
+      "blob": "59b705a3a5bae8ea80e668bccffd84964114af70",
+      "bytes": 3626,
+      "sha256": "ecfb18964d8f40d5f3f228f0e0a97b36a51379044c6ad2c08c91991a0120a0a2"
+    },
+    {
+      "name": "B-final49-root-verifier.js",
+      "blob": "f409fd2568d4f7566408a7bc4ed2341b9cbbceec",
+      "bytes": 3539,
+      "sha256": "f7bd8b2a940d4748a61cc211f55279f8717f1e5ab3e49742c01e6bda85b1e0b3"
+    },
+    {
+      "name": "B-final49-root-result.json",
+      "blob": "3d05ca4d13fa2ba581c5f704ba59a9f3e7958da7",
+      "bytes": 2051,
+      "sha256": "8f2158426ce618f21190d5c9f324e2930e13f05e4d30b6fb78141a00fd5633ff"
+    },
+    {
+      "name": "B-final49-root-verifier-original-permissive.js",
+      "blob": "53c286829c1ab9a8150bc99250987fe6e97bfd6d",
+      "bytes": 3313,
+      "sha256": "700698ccc51c105f2e37857ef26fca431026329f578d6233f4a0d4a187e66494"
+    },
+    {
+      "name": "B-final49-root-result-original-permissive.json",
+      "blob": "9fe35df276555f6e7b5f39579e772bc5c968c314",
+      "bytes": 2051,
+      "sha256": "21aec7cb6f03e3536fbba73b2ef2df1886b205579eb094e4f55d29ac56567157"
+    },
+    {
+      "name": "B-final49-root-predicate-correction.json",
+      "blob": "7f80850812fbfb83b6364e214e877e5ac8ef27fe",
+      "bytes": 626,
+      "sha256": "a1b301a0ebb071d33126b8153997d31f8d2778341346227aaf67c990bb2ebfd1"
+    }
+  ],
+  "expected_data_tree": "e01b3ab50a0c42707e715efdfc6c290bf2d2e866",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

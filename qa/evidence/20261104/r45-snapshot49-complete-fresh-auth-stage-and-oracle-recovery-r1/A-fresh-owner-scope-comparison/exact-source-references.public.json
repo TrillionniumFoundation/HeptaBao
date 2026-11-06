@@ -1,0 +1,41 @@
+{
+  "foreground": {
+    "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b",
+    "bytes": 41618,
+    "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
+  },
+  "foregroundQualification": {
+    "blob": "0f4bccd7b70b5d68e0d07e9fa7e8fb40d8fe892b",
+    "bytes": 5084,
+    "sha256": "bdf159bad0e6e1c7ffe27ee313379aeaa882c4dda42b19e61505f0ae9d924205"
+  },
+  "manager": {
+    "blob": "03c8f2e6472a2b52dad789c28bacc28022c87dc0",
+    "bytes": 58452,
+    "sha256": "8feb3f9db05fa59986409c6c1306b48213102c7deaae6035219afa959add5ae4"
+  },
+  "serverWrapper": {
+    "blob": "031d410286a2aa4ed26c6512af3ee57be17ce687",
+    "bytes": 14052,
+    "sha256": "34aa6a9799419573dfc8cf6b63f479162b3e9e316dc391d54c5f0c0c54cdedb1"
+  },
+  "phaseWrapper": {
+    "blob": "60cdb68fa9f0a436b3b3ab7a1114493ca9739594",
+    "bytes": 25647,
+    "sha256": "3a28e7877782e8627a41a41c62973ee348d89e96a8bb05b0abe8ad52c792c855"
+  },
+  "outer": {
+    "blob": "da4f46f6bee24d3bd8befe6558964d5bdb7cfe15",
+    "bytes": 73918,
+    "sha256": "c67d6fe6444e52acfa909912232233e893aa1e1e7278dbb8fe5793a84c50f0a7"
+  },
+  "sourceApprovedParser": {
+    "blob": "3f259a4b085394fba0658359575aa0d74b9757e2",
+    "bytes": 58584,
+    "sha256": "1d69a93a3111238424f90b02ffe44f6f3e9c3eb704aa8044625de7c17978f78f"
+  },
+  "parserRootQualification": "6894db9c0fd311ae098fd9aaa2ac3e30747cf9fe",
+  "originalFailedRuntimeRootQualification": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+  "currentIndependentObservationSourceTree": "9bfe0ab239cc4920b51e18797accc8debab77b72",
+  "currentIndependentObservationRootSourceQualification": "acbf98a5eecee3b444b70ab54761e39839fc1922"
+}

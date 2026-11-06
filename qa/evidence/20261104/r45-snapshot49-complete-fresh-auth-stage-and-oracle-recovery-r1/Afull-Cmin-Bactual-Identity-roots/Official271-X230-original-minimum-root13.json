@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.root-official271-X230-original-minimum.r1",
+  "passed": true,
+  "checks": 13,
+  "rows": [
+    {
+      "name": "exact_GO",
+      "passed": true
+    },
+    {
+      "name": "exact_original_job",
+      "passed": true
+    },
+    {
+      "name": "exact_typed_binding",
+      "passed": true
+    },
+    {
+      "name": "original_failed_terminal",
+      "passed": true
+    },
+    {
+      "name": "whole782_stdout_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "stream_exact_whole",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_0",
+      "passed": true
+    },
+    {
+      "name": "original_observer_closed_1",
+      "passed": true
+    },
+    {
+      "name": "specific_failure_retained",
+      "passed": true
+    },
+    {
+      "name": "entry_FD_closure_only",
+      "passed": true
+    },
+    {
+      "name": "exact_report_metadata_announced",
+      "passed": true
+    },
+    {
+      "name": "no_candidate_or_parity_claim",
+      "passed": true
+    },
+    {
+      "name": "explicit_transport_lane_closed",
+      "passed": true
+    }
+  ],
+  "tree": "6c9de6056d41ef241e0685512a61b84ac3592ed8",
+  "originalJob": "1a1b17f9eff-fc05-7932",
+  "originalCalls": 7,
+  "originalObservers": 2,
+  "originalPages": 2,
+  "transportLaneReleased": true,
+  "reportedFailure": {
+    "class": "BaoError",
+    "code": "common_config_projection_mismatch",
+    "stage": "original_launcher_and_acl23"
+  },
+  "report": {
+    "bytes": 36658,
+    "closed": true,
+    "full9_decimal": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ],
+    "relative": "result.public.json",
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"
+  },
+  "ownerChildClosureQualified": false,
+  "actualAclCaseCount": null,
+  "fullReplacement": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.pure-v8-observed-execution.r2",
+  "invokedEntryPoint": "verifyIndependentPidObservationOriginalEvidence(input)",
+  "source": {
+    "blob": "d99ecbc7206ec20beec78bd570bce13670534b77",
+    "bytes": 10748,
+    "sha256": "7ffbebb782a4d008ba35db995550f87ecab4b4b1d7e7ff99ba47b43e5b44f778"
+  },
+  "pureHelper": {
+    "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+    "bytes": 6685,
+    "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+  },
+  "result": {
+    "blob": "da2f7d8f05fe6447f66e3fd7ecb0fd327f9749ff",
+    "bytes": 18215,
+    "sha256": "36fa96cbbb0e71234836291853869cac9cf8c63e3d0f72b8d71b9f36c938647a"
+  },
+  "passed": true,
+  "actualCheckCount": 161,
+  "sourceOnlyStaticTestsRun": false,
+  "productModuleExecuted": false,
+  "pythonExecuted": false,
+  "newNativeCalls": 0,
+  "qualificationScope": "original_known_failure_full_streams_and_direct_observation_closure_only"
+}

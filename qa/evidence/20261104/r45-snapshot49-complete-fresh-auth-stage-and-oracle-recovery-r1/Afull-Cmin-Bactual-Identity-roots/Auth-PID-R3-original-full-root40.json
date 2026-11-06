@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.root-A-independent-R3-original-full.r1",
+  "passed": true,
+  "checks": 40,
+  "rows": [
+    {
+      "name": "author197_exact",
+      "passed": true
+    },
+    {
+      "name": "root20_minimum_original",
+      "passed": true
+    },
+    {
+      "name": "original_exact_GO",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-start",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-start",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-status-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-status-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-status-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-status-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-page-024576",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_call_current-home-r2-pid-observation-r3-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_armed_tree_current-home-r2-pid-observation-r3-streams-01-page-032768",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_observer_937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb_0",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_payload_937b602ba4378e82b5d0b09d9fb7cba35279ef85beee2ee579b47d69a98aebfb",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_observer_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5_0",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5_8192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5_16384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5_24576",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_page_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5_32768",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_payload_7d63030ff623d63c309db465ee604be3222799f41376e3e9216e481d58a8d1b5",
+      "passed": true
+    },
+    {
+      "name": "A_original_R3_independent_diagnostic_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "original_exact_START_request",
+      "passed": true
+    },
+    {
+      "name": "all_closed_and_unknown_preserved",
+      "passed": true
+    }
+  ],
+  "tree": "880dee2a385f90a92b2ad579adbb97fe5c6789c4",
+  "originalCalls": 11,
+  "originalObservers": 2,
+  "originalPages": 6,
+  "author197Exact": true,
+  "currentObservationComplete": true,
+  "currentFixedPidESRCHFourSamples": true,
+  "currentLabelMissingTwoSamples": true,
+  "historicalManagedScopeClosed": false,
+  "newNativeCalls": 0
+}

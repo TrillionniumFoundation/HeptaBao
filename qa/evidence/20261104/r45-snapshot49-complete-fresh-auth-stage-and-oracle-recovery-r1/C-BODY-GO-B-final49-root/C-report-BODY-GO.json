@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root-official271-original-report-BODY-GO.r45",
+  "authorization": "GO",
+  "scope": "official271_oracle_result_binary_read_only",
+  "owner": "/root/ha_validation",
+  "original_job": "1a1b17f9eff-fc05-7932",
+  "sourcePacket": "9f78fb5999f0cd1d3b7265e4eb38d13b315ce50a",
+  "sourceQualification": {
+    "blob": "292f20edda65b6498cad14053ce9cc50dc960dda",
+    "bytes": 1266,
+    "sha256": "8dc6663a6ebead993817b2b642dfa161782c5119bcd97e6c481d139b30478f72"
+  },
+  "actualInfoPacket": "64f0eb10c1471522d682f16c27fb34bc16fa46bd",
+  "actualInfoQualification": {
+    "blob": "57dbb0090b056fd394e70b4e636067c5d2cd6d73",
+    "bytes": 1897,
+    "sha256": "0c04fde3024ec40af07a880724d1b9a5e1f82879b864dbc008adb1a67c188870"
+  },
+  "journal": {
+    "blob": "f89ded14223e15fd2779a5e05e60d00c85946044",
+    "bytes": 28053,
+    "sha256": "e68c69e0b18835702ea9ffe3046d453f1c127a39394ee49538e11a979c6882a3"
+  },
+  "slot": "official271_x230_acl23_report_info_status_reconcile_r1",
+  "action": "authorize_oracle_report_body",
+  "prior_state": {
+    "blob": "a4b8f2cbee6e575453b936db6e4d9cc833bf96b7",
+    "bytes": 12503,
+    "sha256": "9875df5c00c897f7a8841adb12cb2d231d29b54ba273d7f66663ed791089d38b"
+  },
+  "original_paused_state": {
+    "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+    "bytes": 223583,
+    "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+  },
+  "info_operation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+  "exact_request": {
+    "blob": "1420c634a44df2e1002eaeb58b8fb9be1ea7954a",
+    "bytes": 398,
+    "sha256": "ea73ce50f94509fd1ebcf4c97dc6eb07b736e6f44e3539dd1868afad63acc1dd"
+  },
+  "target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "version": "2053:3318893:36658:1793979309530036044:1793979309530036044",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ],
+    "infoOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+    "infoNative": {
+      "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+      "bytes": 461,
+      "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+    }
+  },
+  "maximum_binary_read_operations": 1,
+  "maximum_file_info_operations": 0,
+  "maximum_process_start_calls": 0,
+  "maximum_operation_status_calls": 8,
+  "maximum_operation_result_calls": 128,
+  "maximum_payload_bytes": 1048576,
+  "immutable_body_page_bytes": 16384,
+  "originalSlotReinitialize": false,
+  "originalPausedStateMustRemainByteExact": true,
+  "oneCallOrOwnedFuturePerLane": true,
+  "lane": {
+    "A": 1,
+    "B": 0,
+    "C": 1,
+    "root": 0,
+    "maximum": 2
+  },
+  "procedure": "Whole GO and request readback, attach to exact closed reconciliation state once; whole new three-leaf arm, independent boundary, invoke one exact binary_read. Store whole SDK before interpretation. Observe only returned operation ID, assemble contiguous original immutable payload and hash exact report before semantics.",
+  "onUnknown": "Preserve original call and context; hold lane. No new admission or replay.",
+  "after": "Hold after full report and observer closure; qualify exact report including owner child closure before any successor fixture. Preserve old failed status0 as UNKNOWN.",
+  "noProductionMutation": true,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

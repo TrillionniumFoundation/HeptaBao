@@ -1,0 +1,325 @@
+{
+  "schema": "heptabao.failed-test2-log-info-original-chain-checks.r1",
+  "pass": true,
+  "check_count": 78,
+  "checks": [
+    {
+      "name": "new-info-GO",
+      "pass": true
+    },
+    {
+      "name": "original-context-binding",
+      "pass": true
+    },
+    {
+      "name": "prior-closed",
+      "pass": true
+    },
+    {
+      "name": "new-context-closed",
+      "pass": true
+    },
+    {
+      "name": "six-calls-two-observers",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-admit:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-status0:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stderr-info-page0:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-admit:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-status0:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:request-pin",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:SDK-pin-and-success",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:native-original-text",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:whole-before-accepted",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:intent",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:armed",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:arm-Merkle",
+      "pass": true
+    },
+    {
+      "name": "jwt-pki-025b-test2-stdout-info-page0:arm-whole-bytes",
+      "pass": true
+    },
+    {
+      "name": "stderr:exact-request",
+      "pass": true
+    },
+    {
+      "name": "stderr:ACK",
+      "pass": true
+    },
+    {
+      "name": "stderr:status",
+      "pass": true
+    },
+    {
+      "name": "stderr:same-ID-requests",
+      "pass": true
+    },
+    {
+      "name": "stderr:page-request",
+      "pass": true
+    },
+    {
+      "name": "stderr:page-identity",
+      "pass": true
+    },
+    {
+      "name": "stderr:page-whole",
+      "pass": true
+    },
+    {
+      "name": "stderr:envelope",
+      "pass": true
+    },
+    {
+      "name": "stderr:metadata-shape",
+      "pass": true
+    },
+    {
+      "name": "stderr:version",
+      "pass": true
+    },
+    {
+      "name": "stderr:full9",
+      "pass": true
+    },
+    {
+      "name": "stderr:actual-table",
+      "pass": true
+    },
+    {
+      "name": "stdout:exact-request",
+      "pass": true
+    },
+    {
+      "name": "stdout:ACK",
+      "pass": true
+    },
+    {
+      "name": "stdout:status",
+      "pass": true
+    },
+    {
+      "name": "stdout:same-ID-requests",
+      "pass": true
+    },
+    {
+      "name": "stdout:page-request",
+      "pass": true
+    },
+    {
+      "name": "stdout:page-identity",
+      "pass": true
+    },
+    {
+      "name": "stdout:page-whole",
+      "pass": true
+    },
+    {
+      "name": "stdout:envelope",
+      "pass": true
+    },
+    {
+      "name": "stdout:metadata-shape",
+      "pass": true
+    },
+    {
+      "name": "stdout:version",
+      "pass": true
+    },
+    {
+      "name": "stdout:full9",
+      "pass": true
+    },
+    {
+      "name": "stdout:actual-table",
+      "pass": true
+    },
+    {
+      "name": "actual191-and375",
+      "pass": true
+    }
+  ],
+  "calls": 6,
+  "observers": 2,
+  "pages": 2,
+  "body_observed": false,
+  "new_BUILD": false,
+  "product_cases": 0
+}

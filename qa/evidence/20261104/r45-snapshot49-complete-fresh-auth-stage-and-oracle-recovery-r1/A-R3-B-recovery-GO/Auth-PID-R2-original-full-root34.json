@@ -1,0 +1,152 @@
+{
+  "schema": "heptabao.root-A-independent-R2-original-full.r1",
+  "passed": true,
+  "checks": 34,
+  "rows": [
+    {
+      "name": "author161_exact",
+      "passed": true
+    },
+    {
+      "name": "root15_minimum_original",
+      "passed": true
+    },
+    {
+      "name": "original_exact_GO",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-start",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-start",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-status-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-status-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-status-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-status-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-status-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-streams-01-admit",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-streams-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-streams-01-state-01",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-streams-01-page-000000",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-streams-01-page-008192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_call_current-home-r2-pid-observation-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_armed_tree_current-home-r2-pid-observation-streams-01-page-016384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_observer_31b6c635b9cc6ddbccae45675159761725ea36df2e9311ec7f403149ff49a1cd",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_page_31b6c635b9cc6ddbccae45675159761725ea36df2e9311ec7f403149ff49a1cd_0",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_payload_31b6c635b9cc6ddbccae45675159761725ea36df2e9311ec7f403149ff49a1cd",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_observer_8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_page_8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668_0",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_page_8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668_8192",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_page_8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668_16384",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_payload_8d2473bc6ed7ac48ad775fff4a1e658429227da8f9e73c02a9fcc49b33629668",
+      "passed": true
+    },
+    {
+      "name": "A_original_R2_independent_diagnostic_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "original_exact_START_request",
+      "passed": true
+    },
+    {
+      "name": "all_closed_and_unknown_preserved",
+      "passed": true
+    }
+  ],
+  "tree": "8a2a4c0b3dde3e7912cbf0ccd62a09c93e0d5a53",
+  "originalCalls": 9,
+  "originalObservers": 2,
+  "originalPages": 4,
+  "author161Exact": true,
+  "sourceConstructorABIRefusalObserved": true,
+  "managedScopeClosed": false,
+  "PIDStateQualified": false,
+  "newNativeCalls": 0
+}

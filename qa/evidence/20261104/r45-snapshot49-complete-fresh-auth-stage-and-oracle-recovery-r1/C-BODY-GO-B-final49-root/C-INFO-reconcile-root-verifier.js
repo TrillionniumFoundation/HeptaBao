@@ -1,0 +1,22 @@
+function rootOracleInfoReconciliation(p,author,goPin) {
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},f=p.raw,s=JSON.parse(f["STATE.reconcile.closed.json"]),r=JSON.parse(f["RELEASE.public.json"]),idx=JSON.parse(f["CALL-INDEX.public.json"]),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),id="a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8";
+ ck("whole26_original_packet",p.audit.whole&&p.audit.files===26&&p.audit.bytes===524499);
+ ck("author42_exact",author.exact&&author.value.passed&&author.value.check_count===42);
+ ck("separate_reconciliation_GO_exact",same(gitBlobMeta(f["ROOT-GO.public.json"]),goPin));
+ ck("old_unknown_state_exact_preserved",f["ORIGINAL.paused-state.before.json"]===f["ORIGINAL.paused-state.after.json"]&&gitBlobMeta(f["ORIGINAL.paused-state.before.json"]).blob==="6c825b1f09d8584aafef83e153a7470679cae7cb");
+ ck("original_error_not_overwritten",gitBlobMeta(f["ORIGINAL.failed-status.sdk.json"]).blob==="0cede4881f37869cfd279b69b738c87eb62b4889");
+ ck("only_two_readonly_calls",idx.length===2&&idx[0].kind==="operation_status"&&idx[1].kind==="operation_result");
+ for(let k=0;k<2;k++){const c=idx[k],pre="call-0"+k,req=JSON.parse(f[pre+".request.original.json"]),sdk=JSON.parse(f[pre+".sdk.original.json"]),intent=JSON.parse(f[pre+".intent.original.json"]),armed=JSON.parse(f[pre+".armed.original.json"]);
+ ck("call"+k+"_whole_original_bindings",same(gitBlobMeta(f[pre+".request.original.json"]),c.request)&&same(gitBlobMeta(f[pre+".sdk.original.json"]),c.sdk)&&same(gitBlobMeta(f[pre+".native.original.json"]),c.native)&&sdk.content[0].text===f[pre+".native.original.json"]&&c.called&&c.phase==="accepted");
+ ck("call"+k+"_same_ID_new_GO",req.operation_id===id&&same(intent.rootGo,goPin)&&same(armed.rootGo,goPin)&&intent.maximumNativeCalls===1&&armed.lossOfAcknowledgmentNeverGrantsReplay===true);}
+ const st=JSON.parse(f["call-00.native.original.json"]),page=JSON.parse(f["call-01.native.original.json"]),payload=utf8Text(unb64(page.data_base64)),env=JSON.parse(payload),info=JSON.parse(f["INFO.native.original.json"]),rq=JSON.parse(f["call-01.request.original.json"]);
+ ck("same_original_future_closed",st.operation_id===id&&st.async_state==="completed"&&st.owned_future_active===false&&st.result_state==="stored_observed"&&st.tool_name==="file_info");
+ ck("original_page_exact_578_EOF",rq.offset===0&&rq.limit===8192&&page.operation_id===id&&page.offset===0&&page.next_offset===578&&page.total_bytes===578&&page.eof===true&&page.immutable_snapshot===true);
+ ck("whole_original_payload_and_native",payload===f["INFO.payload.original.json"]&&gitBlobMeta(payload).sha256===page.result_sha256&&env.resultType==="complete"&&env.isError===false&&env.content.length===1&&env.content[0].text===f["INFO.native.original.json"]);
+ ck("exact_report_version_size_SHA",info.path==="/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json"&&info.size===36658&&info.sha256==="4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"&&info.version==="2053:3318893:36658:1793979309530036044:1793979309530036044");
+ ck("full9_lossless_permissions",same(r.actualMetadata.full9Strings,["2053","3318893","1000","1000","33152","1","36658","1793979309530036044","1793979309530036044"])&&info.mode===384&&info.metadata.uid===1000&&info.metadata.gid===1000&&info.metadata.link_count===1);
+ ck("new_context_fully_closed",s.pending===null&&s.activeObserver===null&&!s.nativeCallInFlight&&!s.paused&&Object.keys(s.calls).length===2&&s.completedObservers.length===1&&s.completedObservers[0].completedInactive===true);
+ ck("old_failed_status_remains_unknown",r.originalStatus0DeliveryErrorRemainsUnknown===true&&r.originalStatusQueries===1&&r.newStatusQueries===1&&r.totalStatusQueries===2);
+ ck("release_does_not_claim_body_or_child_closure",r.laneReleased&&r.currentNativeCalls===0&&r.currentActiveFutures===0&&r.bodyReadAuthorized===false&&r.ownerChildClosureObserved===false);
+ return{schema:"heptabao.root-original-INFO-reconcile-actual.r1",passed:true,checks:rows.length,rows,packet:p.audit.tree,originalOperation:id,newCalls:2,bodyBytesObserved:0,originalUnknownPreserved:true,ownerChildClosureQualified:false,fullReplacement:false,productionCutover:false,legacyCleanup:false};
+}

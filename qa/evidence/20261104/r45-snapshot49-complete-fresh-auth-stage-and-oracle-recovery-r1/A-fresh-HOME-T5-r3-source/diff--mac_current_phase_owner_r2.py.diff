@@ -1,0 +1,11 @@
+--- a/a/mac_current_phase_owner_r2.py
++++ b/b/mac_current_phase_owner_r2.py
+@@ -15,7 +15,7 @@
+ UNTIL = START + 120
+ PYTHON_LAUNCHER = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+ PYTHON_KERNEL_IMAGE = "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r3')
+-ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-home-launch-r2')
+ AGENTS = ('main','trnm','hepta-ui','hepta','hepta-backend')
+ UUID = 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+ NODE = '/opt/homebrew/bin/node'

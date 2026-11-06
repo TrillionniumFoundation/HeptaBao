@@ -1,0 +1,139 @@
+{
+  "schema": "heptabao.official271.X230.ACL23.original-lane-release.r1",
+  "scope": "Original exact fixture terminal/streams only",
+  "job": {
+    "host": "x230",
+    "id": "1a1b17f9eff-fc05-7932",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "rootGO": {
+    "blob": "f2ad9c134f825e4a3d01b6b26f7e389e5586f4ce",
+    "bytes": 6932,
+    "sha256": "1c878e4714ad614af5b745159a9b2afab5c53c0780daf09e79c3b8b90f464fb0"
+  },
+  "originalRequest": {
+    "blob": "90b68f243c6dfc77cedce08b6d1095ffdd1a79a1",
+    "bytes": 164440,
+    "sha256": "f03764a69cd820e1e31409fb5c9d08523f4df98c4c28078eb5bf7ed8b56df9d8"
+  },
+  "callCount": 7,
+  "returnedObservers": [
+    {
+      "id": "4f0b7e7ee60e56e2c2bc980538beac05fcb1c26be6843613e23bbaeb40b0efef",
+      "tool": "process_status",
+      "payload": {
+        "blob": "0568b54ba6087af426cd5ac4823ff0267b3440d2",
+        "bytes": 905,
+        "sha256": "a5436ff6e53131a587d51121180834e88368aae6c559bcfe6110cd9488165419"
+      },
+      "payloadTree": "86078b4af988c4f47bf76cd64725142e6e4e5822",
+      "nativeText": {
+        "blob": "49034892fc691146da020571fb54ab07df9a340d",
+        "bytes": 726,
+        "sha256": "6e82042e4219ab1dbc07768076660f2bd79ab2d590f98523dbb9287d6198eb6e"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "63e60476428efa2e84ab173bb8ae4a00e80f80713f6ab833f7ce296e807b54ce",
+      "tool": "process_read",
+      "payload": {
+        "blob": "a968642903b73d9977fdd8cc93a17fc57deddabd",
+        "bytes": 3031,
+        "sha256": "82272ba8d160e37cd189d31adc4615391906eace6399961bd994870416ecd088"
+      },
+      "payloadTree": "39529d0c976a055c9e7b78a76c0c2b126ee96ed0",
+      "nativeText": {
+        "blob": "0eb43c67b0296161e60cca33e438b51cdfa9b278",
+        "bytes": 2742,
+        "sha256": "a8dc21375c5d2729fbb9093d312fa7b319fece91b991f439ce4997083f98cef7"
+      },
+      "pages": 1,
+      "completedInactive": true
+    }
+  ],
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "originalStdout": {
+    "blob": "4cadde347ce3fb4b3dd8a175dea060bb73ccb1db",
+    "bytes": 782,
+    "sha256": "a423a851fc982b94aa352315f29a5c30f099988b820421a43f84c369d42ec426"
+  },
+  "originalStderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminalSummary": {
+    "all_entry_file_descriptors_closed": true,
+    "candidate_started": false,
+    "capture_complete": false,
+    "component_product_cases": 0,
+    "entry_fd_count": 12,
+    "failure": {
+      "class": "BaoError",
+      "code": "common_config_projection_mismatch",
+      "stage": "original_launcher_and_acl23"
+    },
+    "matrix_case_denominator": 23,
+    "original_owner_receipt_present": true,
+    "parity_qualified": false,
+    "pending_signal": null,
+    "report": {
+      "bytes": 36658,
+      "closed": true,
+      "full9_decimal": [
+        "2053",
+        "3318893",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "36658",
+        "1793979309530036044",
+        "1793979309530036044"
+      ],
+      "relative": "result.public.json",
+      "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece"
+    },
+    "report_cap": 1048576,
+    "schema": "heptabao.official271.acl23.oracle-only.terminal.v1",
+    "source_bytes": 127119
+  },
+  "qualification": {
+    "transportAndTerminalOnly": true,
+    "allEntryFDsClosed": true,
+    "ownerReceiptPresenceOnly": true,
+    "ownerChildClosureIndependentlyObserved": false,
+    "reportBodyObserved": false,
+    "reportIndependentMetadataObserved": false,
+    "aclCaseCountObserved": null,
+    "parityQualified": false
+  },
+  "nativeCallsRemainingAuthorized": 0,
+  "laneReleased": true,
+  "productOrTargetChanges": false,
+  "history": {
+    "preAdmissionPinSelectorCorrection": {
+      "scope": "local_pure_GO_pin_check",
+      "firstError": "checked pin.sha instead of actual gitBlobMeta.blob",
+      "corrected": "pin.blob",
+      "candidateChanged": false,
+      "nativeAdmission": false,
+      "goPin": {
+        "blob": "f2ad9c134f825e4a3d01b6b26f7e389e5586f4ce",
+        "bytes": 6932,
+        "sha256": "1c878e4714ad614af5b745159a9b2afab5c53c0780daf09e79c3b8b90f464fb0"
+      }
+    },
+    "statusCallsWereSlowButEventuallyReturnedWithoutRetry": true
+  },
+  "next": "Fixed actual report INFO/BODY need separate exact SOURCE/GO; do not rerun fixture."
+}

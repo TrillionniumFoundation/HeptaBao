@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45-test2-logBODY-source-GO-association-finding",
+  "records": [
+    {
+      "name": "root-finding.public.json",
+      "blob": "502e64c2eb1a361ed25321d7f07f4f6565fe4c0c",
+      "bytes": 1255,
+      "sha256": "b8e7e87e59014a14a75ff8f89a394015d6bb22505c147fd18d5315fb08c8d85f"
+    },
+    {
+      "name": "author32-reproduced.public.json",
+      "blob": "87565fc3e59574e83b785b30158565c4db695537",
+      "bytes": 2871,
+      "sha256": "8c9517596a148b7ef8066f7f62594c63dc02d3988a1aa88c8af2a6aa05a9ed5d"
+    }
+  ],
+  "expected_data_tree": "6bfd19285d6605fbf4c2aee322b282ba17e1e953",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

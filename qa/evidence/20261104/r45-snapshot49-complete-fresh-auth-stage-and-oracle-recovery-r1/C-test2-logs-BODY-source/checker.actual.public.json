@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.failed-test2-two-body-source-checks.r1",
+  "pass": true,
+  "check_count": 31,
+  "checks": [
+    {
+      "check": "strict-forward",
+      "pass": true
+    },
+    {
+      "check": "strict-reverse",
+      "pass": true
+    },
+    {
+      "check": "two-ranges-566",
+      "pass": true
+    },
+    {
+      "check": "request-pin-0",
+      "pass": true
+    },
+    {
+      "check": "exact-versioned-range-0",
+      "pass": true
+    },
+    {
+      "check": "request-pin-1",
+      "pass": true
+    },
+    {
+      "check": "exact-versioned-range-1",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfNeed",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfMetaEquals",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfState",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfSave",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfIntegerText",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfInitializeOnlyAfterRootGO",
+      "pass": true
+    },
+    {
+      "check": "whole-function-gfReconcileSameGitArchiveReadOnly",
+      "pass": true
+    },
+    {
+      "check": "actual-two-infos-authorized",
+      "pass": true
+    },
+    {
+      "check": "old-callmap-preserved",
+      "pass": true
+    },
+    {
+      "check": "prior-build-context-preserved",
+      "pass": true
+    },
+    {
+      "check": "first-fixed-body-allowed",
+      "pass": true
+    },
+    {
+      "check": "process-start-rejected",
+      "pass": true
+    },
+    {
+      "check": "new-INFO-rejected",
+      "pass": true
+    },
+    {
+      "check": "second-before-first-closed-rejected",
+      "pass": true
+    },
+    {
+      "check": "version-drift-rejected",
+      "pass": true
+    },
+    {
+      "check": "path-drift-rejected",
+      "pass": true
+    },
+    {
+      "check": "repeated-first-body-rejected",
+      "pass": true
+    },
+    {
+      "check": "second-after-first-closed-allowed",
+      "pass": true
+    },
+    {
+      "check": "no-third-body",
+      "pass": true
+    },
+    {
+      "check": "whole-payload-before-parse",
+      "pass": true
+    },
+    {
+      "check": "whole-body-before-store",
+      "pass": true
+    },
+    {
+      "check": "exact-body-SHA-and-EOF",
+      "pass": true
+    },
+    {
+      "check": "old8K-new16K",
+      "pass": true
+    },
+    {
+      "check": "oneMiB-payload-preserved",
+      "pass": true
+    }
+  ],
+  "Native_calls": 0,
+  "Git_mutations": 0,
+  "product_cases": 0
+}

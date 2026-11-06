@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.official271.actual-reconciled-info-to-report-body.source.r1",
+  "source": {
+    "blob": "f89ded14223e15fd2779a5e05e60d00c85946044",
+    "bytes": 28053,
+    "sha256": "e68c69e0b18835702ea9ffe3046d453f1c127a39394ee49538e11a979c6882a3"
+  },
+  "before": {
+    "blob": "2ac1f78dd4076b31c8eaaaba4c1e344f70c807e0",
+    "bytes": 22284,
+    "sha256": "08286fd7361a523198d96fe96f02d021a153a47c9e5d8a41776380d5d99a9ff4"
+  },
+  "diff": {
+    "blob": "c4fe6715e9692a6b6d6a5dd4dc132e692eb40486",
+    "bytes": 12118,
+    "sha256": "41658adc597e1cd2349172ee96b7f6c1851754184af3aa1096ac2b64d8aa01b6"
+  },
+  "request": {
+    "blob": "1420c634a44df2e1002eaeb58b8fb9be1ea7954a",
+    "bytes": 398,
+    "sha256": "ea73ce50f94509fd1ebcf4c97dc6eb07b736e6f44e3539dd1868afad63acc1dd"
+  },
+  "slot": "official271_x230_acl23_report_info_status_reconcile_r1",
+  "action": "authorize_oracle_report_body",
+  "closedInfoState": {
+    "blob": "a4b8f2cbee6e575453b936db6e4d9cc833bf96b7",
+    "bytes": 12503,
+    "sha256": "9875df5c00c897f7a8841adb12cb2d231d29b54ba273d7f66663ed791089d38b"
+  },
+  "infoNative": {
+    "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+    "bytes": 461,
+    "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+  },
+  "originalPausedState": {
+    "blob": "6c825b1f09d8584aafef83e153a7470679cae7cb",
+    "bytes": 223583,
+    "sha256": "af2add9ab483ad2c95c09da48e9307eb30ab78e864bf7e015edbfb2ae323268d"
+  },
+  "actualInfoMinimalTree": "c0c02912878d1c5ab4435ca7300e1823a829b3b4",
+  "originalUnknownTree": "96a9cd95df6acf8b1483befb9e2fc604c16932e5",
+  "target": {
+    "path": "/home/qian/heptabao-official271-acl23-oracle-20261106-r1/result.public.json",
+    "bytes": 36658,
+    "sha256": "4b72f600f6b794c5cf7198ebe76696179cd2477da587113a5ee7bfe81be3eece",
+    "version": "2053:3318893:36658:1793979309530036044:1793979309530036044",
+    "full9Strings": [
+      "2053",
+      "3318893",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36658",
+      "1793979309530036044",
+      "1793979309530036044"
+    ],
+    "infoOperation": "a0a962c286bd8b5d4eeb3df9b6d075c3651ac317544ee6a25737be98cd29efc8",
+    "infoNative": {
+      "blob": "ae824e96ceecb3ab93738c3f00fdc029203ec199",
+      "bytes": 461,
+      "sha256": "195b009ae043f2665e1e779f155da769a01cc64fe80667934dfbd69debade8b9"
+    }
+  },
+  "maximumBinaryReads": 1,
+  "maximumMetadataReads": 0,
+  "maximumProcessStarts": 0,
+  "maximumBodyBytes": 36658,
+  "maximumStatusPerReturnedID": 8,
+  "maximumPagesPerReturnedID": 128,
+  "newBodyPageBytes": 16384,
+  "originalInfoPageBytes": 8192,
+  "maximumPayloadBytes": 1048576,
+  "preserveOriginalPausedStateByteIdentical": true,
+  "preserveReconciliationTwoCalls": true,
+  "sourceOnly": true,
+  "bodyGo": null,
+  "noRuntimeCalls": true,
+  "previousPreTimeoutDeriverNotApplicable": true
+}

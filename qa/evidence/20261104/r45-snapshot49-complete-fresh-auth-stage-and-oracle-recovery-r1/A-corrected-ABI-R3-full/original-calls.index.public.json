@@ -1,0 +1,79 @@
+{
+  "current-home-r2-pid-observation-r3-start": {
+    "requestRaw": "call-01-request.original.json",
+    "intentRaw": "call-01-intent.original.json",
+    "armedRaw": "call-01-armed.original.json",
+    "sdkRaw": "call-01-sdk.original.json",
+    "nativeRaw": "call-01-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-status-01-admit": {
+    "requestRaw": "call-02-request.original.json",
+    "intentRaw": "call-02-intent.original.json",
+    "armedRaw": "call-02-armed.original.json",
+    "sdkRaw": "call-02-sdk.original.json",
+    "nativeRaw": "call-02-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-status-01-state-01": {
+    "requestRaw": "call-03-request.original.json",
+    "intentRaw": "call-03-intent.original.json",
+    "armedRaw": "call-03-armed.original.json",
+    "sdkRaw": "call-03-sdk.original.json",
+    "nativeRaw": "call-03-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-status-01-page-000000": {
+    "requestRaw": "call-04-request.original.json",
+    "intentRaw": "call-04-intent.original.json",
+    "armedRaw": "call-04-armed.original.json",
+    "sdkRaw": "call-04-sdk.original.json",
+    "nativeRaw": "call-04-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-admit": {
+    "requestRaw": "call-05-request.original.json",
+    "intentRaw": "call-05-intent.original.json",
+    "armedRaw": "call-05-armed.original.json",
+    "sdkRaw": "call-05-sdk.original.json",
+    "nativeRaw": "call-05-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-state-01": {
+    "requestRaw": "call-06-request.original.json",
+    "intentRaw": "call-06-intent.original.json",
+    "armedRaw": "call-06-armed.original.json",
+    "sdkRaw": "call-06-sdk.original.json",
+    "nativeRaw": "call-06-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-page-000000": {
+    "requestRaw": "call-07-request.original.json",
+    "intentRaw": "call-07-intent.original.json",
+    "armedRaw": "call-07-armed.original.json",
+    "sdkRaw": "call-07-sdk.original.json",
+    "nativeRaw": "call-07-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-page-008192": {
+    "requestRaw": "call-08-request.original.json",
+    "intentRaw": "call-08-intent.original.json",
+    "armedRaw": "call-08-armed.original.json",
+    "sdkRaw": "call-08-sdk.original.json",
+    "nativeRaw": "call-08-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-page-016384": {
+    "requestRaw": "call-09-request.original.json",
+    "intentRaw": "call-09-intent.original.json",
+    "armedRaw": "call-09-armed.original.json",
+    "sdkRaw": "call-09-sdk.original.json",
+    "nativeRaw": "call-09-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-page-024576": {
+    "requestRaw": "call-10-request.original.json",
+    "intentRaw": "call-10-intent.original.json",
+    "armedRaw": "call-10-armed.original.json",
+    "sdkRaw": "call-10-sdk.original.json",
+    "nativeRaw": "call-10-native.original.json"
+  },
+  "current-home-r2-pid-observation-r3-streams-01-page-032768": {
+    "requestRaw": "call-11-request.original.json",
+    "intentRaw": "call-11-intent.original.json",
+    "armedRaw": "call-11-armed.original.json",
+    "sdkRaw": "call-11-sdk.original.json",
+    "nativeRaw": "call-11-native.original.json"
+  }
+}

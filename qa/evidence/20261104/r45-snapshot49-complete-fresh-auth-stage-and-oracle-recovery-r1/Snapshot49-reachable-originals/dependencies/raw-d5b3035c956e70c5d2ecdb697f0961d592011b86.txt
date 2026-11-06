@@ -1,0 +1,73 @@
+{
+  "authorization": "GO",
+  "scope": "snapshot_formatted23_info10_page0_retrieval_recovery",
+  "slot": "snapshot_2379_formatted23_readonly_gitfirst_r1",
+  "original_operation": "37a07e380c8f74019d9b6c20c86cfa339d409e3b6d01b42b3a4230cb767777dc",
+  "failed_call_key": "sf23-r1-f10-info-p0",
+  "recovery_call_key": "sf23-r1-f10-info-p0-recovery1",
+  "request": {
+    "blob": "916332b53c58b018404b00324cb5aa1588975b52",
+    "bytes": 121,
+    "sha256": "17f7fcfad72f016c11d8d7b0be379eb4f2043b20b9c33cc4698bb78d74173edd"
+  },
+  "failed_sdk": {
+    "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+    "bytes": 248,
+    "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+  },
+  "maximum_recovery_page_calls": 1,
+  "page_bytes": 8192,
+  "native_payload_cap": 1048576,
+  "operation_start_authorized": false,
+  "operation_status_authorized": false,
+  "failed_call_preserved": true,
+  "continue_original_table_only_after_info_closed": true,
+  "original_go": "25ea12c4406a12ba5ce263b10a2723f73276d74b",
+  "schema": "heptabao.root-exact-GO.snapshot-info10-immutable-page0-recovery.r1",
+  "sourcePacket": {
+    "tree": "e75127cf63a2ce32b19aeb6cf75c33e1ac0db78e",
+    "files": 21,
+    "bytes": 259666,
+    "merkle": {
+      "root_sha": "e75127cf63a2ce32b19aeb6cf75c33e1ac0db78e",
+      "trees_verified": 1,
+      "leaf_count": 21
+    },
+    "whole": true
+  },
+  "sourceJournal": {
+    "blob": "a154e8b3e4bbce818471dd10fe434e4ded570c8b",
+    "bytes": 79062,
+    "sha256": "8ad44f98b72e37ae7037451eada7cf9c5616609ec5123f7bc8cef3b4fcf4f9d9"
+  },
+  "rootSourceReview": {
+    "blob": "36da6a59db1ebba0a5704477b6db51bc214ef6c5",
+    "bytes": 1905,
+    "sha256": "139edc7946f3efc4b344fd66a2f078a376b174fad2a1de922efbd5ddc10d2b13"
+  },
+  "rootSourceChecks": 12,
+  "authorChecksReproduced": 36,
+  "actualBoundary": {
+    "blob": "4d4272b3ccab6523e3004f9d95623b15606fa8a6",
+    "bytes": 2575,
+    "sha256": "e3d331c8327a884e2ec7701b4286a921da1e256691a8ebe986c52b2d0a101eb0"
+  },
+  "allocation": {
+    "line": "B",
+    "granted": true,
+    "maximumNativeCallsInFlight": 1,
+    "newNativeFuturesAuthorized": 0,
+    "globalMaximumNativeLanes": 2,
+    "otherLane": "C original body0 UNKNOWN retained",
+    "A": 0,
+    "rootNativeCalls": 0
+  },
+  "execution": "Only one separately armed operation_result call for the exact known original ID, offset0, limit8192. Whole original SDK before interpretation. Successful single-page EOF must reconstruct the original immutable payload, close the original observer and pass existing metadata gates.",
+  "preservation": "Keep the failed original call, called flag, SDK, original GO and all errors unchanged. This is a separate retrieval attempt and never recovery of the missing original transport reply.",
+  "afterRecoveredInfo": "Stop immediately after INFO closure, publish a minimal original result and lane-release record, and leave file10 BODY and file11 INFO unsubmitted. Existing fixed23 table authorization remains but its Native lane pauses for Mac runtime.",
+  "afterFailure": "Preserve the new error and pause; no second retrieval, Native admission or original state reset under this GO.",
+  "normalBuildAuthorized": false,
+  "fullReplacement": false,
+  "productionCutover": false,
+  "legacyCleanup": false
+}

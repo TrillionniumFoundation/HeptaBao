@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r45_A_fresh_inert_min_root",
+  "records": [
+    {
+      "name": "root-verifier.js",
+      "blob": "25aa9e959c18b37a58f15c8cc0b45f55e0a35dda",
+      "bytes": 5140,
+      "sha256": "7c1a43638a0f779e7eeaab0e3bc884d676f50a30405a16d10705a47d09535f61"
+    },
+    {
+      "name": "root-qualification.json",
+      "blob": "07b2174103187f13defd220ed65207b8011d7f84",
+      "bytes": 2263,
+      "sha256": "34729bb8311ca8218e0b865c9603cc1a65af0aba68486a84f94066545722caa9"
+    }
+  ],
+  "expected_data_tree": "de3cb2311d2e03906ea37628d60879e66b85302a",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

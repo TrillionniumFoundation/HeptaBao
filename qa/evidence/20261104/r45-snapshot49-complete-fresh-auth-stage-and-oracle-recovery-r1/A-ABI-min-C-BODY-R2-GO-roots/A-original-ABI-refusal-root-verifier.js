@@ -1,0 +1,18 @@
+function rootIndependentPidActualMinimum(f,go){
+ const rows=[],ck=(name,v)=>{rows.push({name,passed:v===true});if(v!==true)throw Error(name);},p=gitBlobMeta,rel=JSON.parse(f["RELEASE.public.json"]),t=parseLosslessIntegers(f["authority.original.json"]),ack=parseLosslessIntegers(f["start-ack.original.native.json"]),r=JSON.parse(f["stdout.original.txt"]);
+ ck("exact_original_job",ack.job.id===t.job_id&&t.job_id==="1a1b16dddc3-fc05-78a6"&&ack.reused===false);
+ ck("exact_typed_binding",ack.job.request_digest===go.value.nativeBinding.sha256&&ack.job.request_fingerprint.$exactInteger===go.value.nativeBinding.native_fingerprint);
+ ck("original_failed_terminal",t.state==="failed"&&t.exit_code===1&&t.timed_out===false&&t.output_complete&&t.output_durable&&t.terminal_publication_confirmed);
+ ck("whole7147_stdout_and_empty_stderr",p(f["stdout.original.txt"]).blob==="33264a7b25737c70cbdb14b2a43046ec89ab2527"&&p(f["stdout.original.txt"]).bytes===7147&&f["stderr.original.txt"]===""&&t.log_bytes.stdout.stored===7147&&t.log_bytes.stderr.stored===0&&!t.log_truncated.stdout&&!t.log_truncated.stderr);
+ for(const [i,name]of ["status-observer-state.original.json","streams-observer-state.original.json"].entries()){const n=JSON.parse(f[name]);ck("original_observer_closed_"+i,n.operation_id===rel.observers[i].id&&n.async_state==="completed"&&n.owned_future_active===false&&n.payload_available&&n.result_state==="stored_observed");}
+ ck("registration_classified_missing",r.prints.length===1&&r.prints[0].registrationAbsent&&r.registrationMappings.length===1&&r.registrationMappings[0].classification==="exact_missing_registration");
+ ck("specific_ABI_constructor_refusal",r.error.code==="current_pid_exact_bsdinfo_abi"&&r.error.type==="ProbeRefused"&&r.stage==="fixed_current_pid_before");
+ ck("no_PID_or_later_file_result",r.currentPidMetadata===null&&r.currentPidSamplingCompleted===false&&Object.keys(r.publicFiles).length===0&&r.observationComplete===false);
+ ck("17_returned_FDs_closed",r.allReturnedApplicationFdsClosed&&r.io.fdRows.length===17&&r.io.fdRows.every(x=>x.closed)&&r.io.openLedger.pending===0&&!r.io.openLedger.registrationUnknown);
+ ck("one_print_helper_reaped",r.allDirectHelpersClosed&&r.directHelpers.commands.length===1&&r.directHelpers.commands[0].exitCode===113&&r.directHelpers.commands[0].cleanup.directChildReaped);
+ ck("no_managed_exit_reuse_or_cleanup_claim",r.currentManagedScopeStillUnknown&&!r.currentIdentityQualifiedForFutureCleanupReview&&!r.managedProcessReaped&&!r.pidExitOrReapClaimed&&!r.registrationClosureClaimed);
+ ck("no_private_business_writes",!r.privatePlansCapsuleOrCredentialsRead&&!r.productBusinessOrCleanupDispatched&&!r.bootstrapBootoutOrSignalCalled&&r.io.counts.writeBytes===0&&r.io.counts.writeCalls===0);
+ ck("signals_restored_deadline_met",r.pendingSignalAfterRestore===null&&r.signalRestoreErrors.length===0&&r.deadlineMetAfterClosure&&r.sharedSeconds===45&&r.helperAdmissionEndSeconds===35&&r.outerSeconds===60);
+ ck("explicit_lane_release",rel.nativeCallInFlight===0&&rel.ownedNativeFuturesInFlight===0&&rel.activeNativeObserver===null&&rel.pendingNativeCall===null&&rel.observationLaneReleased);
+ return {schema:"heptabao.root-independent-PID-R2-actual-minimum.r1",passed:true,checks:rows.length,rows,tree:"0609cf6640223472d354f68319ee79f075785b1b",stdout:p(f["stdout.original.txt"]),ownObservationLaneReleased:true,failure:"current_pid_exact_bsdinfo_abi",PIDStateQualified:false,historicalManagedScopeClosed:false,fullReplacement:false};
+ }

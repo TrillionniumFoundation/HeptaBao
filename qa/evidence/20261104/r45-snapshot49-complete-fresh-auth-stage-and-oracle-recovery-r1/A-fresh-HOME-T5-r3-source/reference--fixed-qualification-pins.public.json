@@ -1,0 +1,16 @@
+{
+  "baselineSourcePacket": "9204bd66dad2f266dd56cece33f455c5ffea9e2d",
+  "originalFailedRuntimePacket": "4a3bafecbc966aed7c6b14538c1403a1076598dd",
+  "originalFailedRuntimeRootReview": "1208fbe37f61e01e7324f8bef1b6fc6db9f5b4a5",
+  "freshRegistrationDiagnosticPacket": "061b2fe4336d34e50943fd216c2b2166df1b3a64",
+  "freshRegistrationDiagnosticRootReview": "74562ffa04fbb190508857fb3b4d483a6a255ca9",
+  "approvedParserSourcePacket": "5245358633c2cf458b56578e586840d34fc930d1",
+  "approvedParserRootReview": "6894db9c0fd311ae098fd9aaa2ac3e30747cf9fe",
+  "currentIndependentObservationPacket": "880dee2a385f90a92b2ad579adbb97fe5c6789c4",
+  "currentIndependentObservationMinimum": "7781b7c0d1f3e2e722ea1b07405994b17b77d7fb",
+  "currentIndependentObservationRootMinimumReview": "603e29f94d83b604fe3578cfdebe3974a29073a9",
+  "currentIndependentObservationRootMinimumReviewSha256": "2ca210d449b21e878c77fdad5eff68cbfd61335cdfcf11602ff2ab96e9bf179b",
+  "chosenFreshScopeComparison": "f509391ae475e58101bbf52563cacd52c456ea9b",
+  "sourceCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "sourceTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+}

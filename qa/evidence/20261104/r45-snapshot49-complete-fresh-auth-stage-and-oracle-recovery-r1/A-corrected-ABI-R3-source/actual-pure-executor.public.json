@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.pure-V8-source-layout-execution.r3",
+  "entryPoint": "verifyFixedBsdInfoGuardCorrection(input)",
+  "source": {
+    "blob": "3592098254475b4e7e4c48c0c837b11366194791",
+    "bytes": 6580,
+    "sha256": "aa5ffab1da0797abc5d37220b7c2a3a88fc826056eb6c598da7e29b9f4575d38"
+  },
+  "result": {
+    "blob": "8cdd9ce15cd5694646ec7e699775b8da812f2d2d",
+    "bytes": 8863,
+    "sha256": "a8d651d765e3e9437ec2d2921a0d6fa4ea92da69baf777ec09d75608b2379d66"
+  },
+  "passed": true,
+  "checkCount": 41,
+  "fullBeforeOrAfterModuleExecuted": false,
+  "pythonExecuted": false,
+  "NativeCalls": 0,
+  "previousSourceChecksRerun": false
+}

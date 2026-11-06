@@ -1,0 +1,58 @@
+[
+  {
+    "index": 0,
+    "role": "test-stderr",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stderr",
+    "size": 191,
+    "sha256": "9829d15840c80e4a69ccf1afeab7025cd42dc94c421c3421271c973c801167cf",
+    "version": "66306:33202269:191:1793974566577453065:1793974566577453065",
+    "full9Strings": [
+      "66306",
+      "33202269",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "191",
+      "1793974566577453065",
+      "1793974566577453065"
+    ],
+    "originalOperation": "c105e55622c387d8c53614daf0f7c6f213fe78eacead907abe5b9b1e4ffbb085",
+    "nativeText": {
+      "blob": "b1b5c5c6831ff668ce0443043a92d65483acf5bd",
+      "bytes": 488,
+      "sha256": "f9447947dcd44bbf9be9397f5cd3a49c1e4d49d746ce0cfd9266f771c1c23892"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "expectedVersionBeforeObservation": null,
+    "bodyReadAuthorized": false
+  },
+  {
+    "index": 1,
+    "role": "test-stdout",
+    "path": "/home/qian-qi/heptabao-native-jwt-pki-controls-20261106-r2/build-tests-r1/native-jwt-pki-file17-2.stdout",
+    "size": 375,
+    "sha256": "baaffbccd60cd36f53810a4a49dc1ca9ae55883a1abb21253d29970d8dbf79ad",
+    "version": "66306:33202268:375:1793974566577453065:1793974566577453065",
+    "full9Strings": [
+      "66306",
+      "33202268",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "375",
+      "1793974566577453065",
+      "1793974566577453065"
+    ],
+    "originalOperation": "e1460c7b8a33765b4b451f76157fd1603bc8a659e324125542f5318c816924c1",
+    "nativeText": {
+      "blob": "98463cbd918907c6051a36bef453efe2136a48d3",
+      "bytes": 488,
+      "sha256": "43c902958091f331f4fdb1b749957832b6d96dac93544a4298901ef0e6a4fc15"
+    },
+    "regularFileFromNativeFileInfoContract": true,
+    "expectedVersionBeforeObservation": null,
+    "bodyReadAuthorized": false
+  }
+]
