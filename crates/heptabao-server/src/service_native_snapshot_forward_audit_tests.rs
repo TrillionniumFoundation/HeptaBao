@@ -7,22 +7,29 @@ use crate::service::snapshot_transfer::forward::{SnapshotForwardPlan, test_fault
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn register_snapshot_handlers(
-    pipeline: &Pipeline, forged_leader: Option<usize>,
+    pipeline: &Pipeline,
+    forged_leader: Option<usize>,
 ) -> TestResult<Vec<Arc<AtomicUsize>>> {
     let mut counts = Vec::new();
     for index in 0..3 {
-        let service = pipeline.services[index].as_ref().ok_or("snapshot fixture Service")?;
+        let service = pipeline.services[index]
+            .as_ref()
+            .ok_or("snapshot fixture Service")?;
         let weak = Arc::downgrade(service);
         let count = Arc::new(AtomicUsize::new(0));
         counts.push(Arc::clone(&count));
-        pipeline.processes[index].as_ref().ok_or("snapshot fixture process")?
-            .lock_for_request().map_err(|_| "snapshot fixture handler lock")?
+        pipeline.processes[index]
+            .as_ref()
+            .ok_or("snapshot fixture process")?
+            .lock_for_request()
+            .map_err(|_| "snapshot fixture handler lock")?
             .register_snapshot_forward_handler(Arc::new(move |ingress| {
                 count.fetch_add(1, Ordering::SeqCst);
                 if forged_leader == Some(index) {
                     return test_faults::reject_unverified_root_fields(ingress);
                 }
-                let service = weak.upgrade()
+                let service = weak
+                    .upgrade()
                     .ok_or(heptabao_ha_service::HaError::Transport)?;
                 Service::serve_native_snapshot_peer(&service, ingress, REQUEST_BUDGET)
             }))?;
@@ -31,26 +38,49 @@ fn register_snapshot_handlers(
 }
 
 fn count_calls(counts: &[Arc<AtomicUsize>]) -> usize {
-    counts.iter().map(|count| count.load(Ordering::SeqCst)).sum()
+    counts
+        .iter()
+        .map(|count| count.load(Ordering::SeqCst))
+        .sum()
 }
 
 fn prepare_archive(
-    pipeline: &Pipeline, leader: usize,
+    pipeline: &Pipeline,
+    leader: usize,
 ) -> TestResult<(StateIdentity, Zeroizing<Vec<u8>>)> {
     let migration_source = activate(pipeline, leader)?;
-    expect(pipeline.call(
-        leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
-        json!({"options":{"cas":1},"data":{"value":"forward-archive-A"}}),
-    )?, 200, "forward-audit-archive-A")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":1},"data":{"value":"forward-archive-A"}}),
+        )?,
+        200,
+        "forward-audit-archive-A",
+    )?;
     let archive = Zeroizing::new(export(pipeline, leader, pipeline.admin())?);
-    expect(pipeline.call(
-        leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
-        json!({"options":{"cas":2},"data":{"value":"forward-later-B"}}),
-    )?, 200, "forward-audit-later-B")?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"options":{"cas":2},"data":{"value":"forward-later-B"}}),
+        )?,
+        200,
+        "forward-audit-later-B",
+    )?;
     for index in 0..3 {
-        pipeline.assert_history(index, &[
-            (1, "seed-v5"), (2, "forward-archive-A"), (3, "forward-later-B"),
-        ])?;
+        pipeline.assert_history(
+            index,
+            &[
+                (1, "seed-v5"),
+                (2, "forward-archive-A"),
+                (3, "forward-later-B"),
+            ],
+        )?;
         pipeline.with_service(index, |service| {
             assert!(service.native_root.is_some());
             assert!(service.native_candidate_profile.is_none());
@@ -65,30 +95,45 @@ fn finite_original_token(pipeline: &Pipeline, leader: usize) -> TestResult<Zeroi
     // Created AFTER the archive. The restored Auth graph does not contain it.
     // One final use is enough only if the original Actor is retained; a second
     // authentication or validation against restored Auth must not pass.
-    let mut response = expect(pipeline.call(
-        leader, "POST", "auth/token/create", pipeline.admin(),
-        json!({"policies":["root"],"ttl":"60s","num_uses":1,
+    let mut response = expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "auth/token/create",
+            pipeline.admin(),
+            json!({"policies":["root"],"ttl":"60s","num_uses":1,
             "no_default_policy":true,"no_parent":true}),
-    )?, 200, "forward-audit-one-use-original-token")?;
+        )?,
+        200,
+        "forward-audit-one-use-original-token",
+    )?;
     assert_eq!(response.body["auth"]["num_uses"], 1);
     secret_field(&mut response, "/auth/client_token")
 }
 
 fn admit_forward(
-    service: &mut Service, token: &str, until: Instant,
+    service: &mut Service,
+    token: &str,
+    until: Instant,
 ) -> TestResult<Box<SnapshotForwardPlan>> {
     match service.begin_native_snapshot_before(
-        ServiceRequest::new("POST", SNAPSHOT, "", token, json!({})), until,
+        ServiceRequest::new("POST", SNAPSHOT, "", token, json!({})),
+        until,
     ) {
         NativeSnapshotAdmission::Forward(plan) => Ok(plan),
-        NativeSnapshotAdmission::Execute(_) => Err("standby snapshot did not select forwarding".into()),
+        NativeSnapshotAdmission::Execute(_) => {
+            Err("standby snapshot did not select forwarding".into())
+        }
         NativeSnapshotAdmission::Redirect(_) => Err("standby snapshot used legacy redirect".into()),
     }
 }
 
 fn assert_private_lease_released(pipeline: &Pipeline, index: usize) -> TestResult {
     pipeline.with_service(index, |service| {
-        let spool = service.snapshot_spool.as_ref().ok_or("actual private snapshot spool")?;
+        let spool = service
+            .snapshot_spool
+            .as_ref()
+            .ok_or("actual private snapshot spool")?;
         // The real spool's exclusive transfer lease is available only after
         // every actual plan and private file from the completed request drops.
         let lease = spool.lease()?;
@@ -110,20 +155,31 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
     let before = selection(&pipeline, leader, migration_source)?;
     assert_eq!(before.0, 0);
     assert!(before.1.epoch_transitions().is_empty());
-    let fault_node = if point == test_faults::Point::SourceAfterFinalizer { leader } else { ingress };
+    let fault_node = if point == test_faults::Point::SourceAfterFinalizer {
+        leader
+    } else {
+        ingress
+    };
 
     let began = Instant::now();
     let until = began + REQUEST_BUDGET;
     let scope = RequestDeadlineScope::enter(until);
-    let service = Arc::clone(pipeline.services[ingress].as_ref().ok_or("forward ingress Service")?);
+    let service = Arc::clone(
+        pipeline.services[ingress]
+            .as_ref()
+            .ok_or("forward ingress Service")?,
+    );
     let mut writer = lock_until(&service, until).map_err(|_| "forward original admission lock")?;
     let plan = admit_forward(&mut writer, &token, until)?;
     let (nonce, original_peer_deadline) = plan.fixture_request_context();
     assert!(original_peer_deadline <= until);
     drop(writer);
     {
-        let target = pipeline.services[fault_node].as_ref().ok_or("forward fault Service")?;
-        let mut target = lock_until(target, until).map_err(|_| "forward one-shot fault arm lock")?;
+        let target = pipeline.services[fault_node]
+            .as_ref()
+            .ok_or("forward fault Service")?;
+        let mut target =
+            lock_until(target, until).map_err(|_| "forward one-shot fault arm lock")?;
         target.snapshot_forward_test.arm(point, nonce)?;
     }
     // Exactly one real exchange, with the original plan and original archive.
@@ -138,16 +194,23 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
     assert!(denied.consistency_index.is_none());
     assert!(denied.response_headers.is_empty());
     assert!(denied.body.get("wrap_info").is_none());
-    let reference = denied.body["recovery_reference"].as_str()
-        .ok_or("real committed restore recovery reference")?.to_owned();
+    let reference = denied.body["recovery_reference"]
+        .as_str()
+        .ok_or("real committed restore recovery reference")?
+        .to_owned();
     assert_ne!(reference, "native-v6-restore-forged-untrusted-fixture");
     assert!(Instant::now() < until, "original15 second request bound");
     assert_eq!(count_calls(&counts), 1);
     assert_eq!(counts[leader].load(Ordering::SeqCst), 1);
     let observation = {
-        let target = pipeline.services[fault_node].as_ref().ok_or("faulted Service")?;
+        let target = pipeline.services[fault_node]
+            .as_ref()
+            .ok_or("faulted Service")?;
         let target = lock_until(target, until).map_err(|_| "fault observation lock")?;
-        let observed = target.snapshot_forward_test.observed().ok_or("fault boundary not reached")?;
+        let observed = target
+            .snapshot_forward_test
+            .observed()
+            .ok_or("fault boundary not reached")?;
         assert_eq!(target.snapshot_forward_test.hits(), 1);
         assert!(!target.snapshot_forward_test.pending());
         assert!(observed.injected);
@@ -163,11 +226,17 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
         assert!(observed.installed_auth.is_some());
         assert_ne!(observed.installed_auth, Some(observed.original_auth));
         assert_eq!(target.audit_sequence, observed.audit_sequence);
-        assert_eq!(target.audit.metadata()?.len(), observed.audit_bytes.ok_or("actual audit metadata")?);
+        assert_eq!(
+            target.audit.metadata()?.len(),
+            observed.audit_bytes.ok_or("actual audit metadata")?
+        );
         assert!(target.recovery_required);
         assert!(target.ha_activation.is_none());
         assert!(target.native_request_binding.is_none());
-        assert_eq!(target.state.as_ref().ok_or("faulted State")?.replay_epoch, 1);
+        assert_eq!(
+            target.state.as_ref().ok_or("faulted State")?.replay_epoch,
+            1
+        );
         observed.clone()
     };
     drop(service);
@@ -181,18 +250,34 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
     let committed = selection(&pipeline, leader, migration_source)?;
     assert_eq!(committed.0, 1);
     assert_eq!(committed.1.epoch_transitions().len(), 1);
-    let transition = committed.1.epoch_transitions().last().ok_or("actual restore transition")?;
-    assert_eq!(transition.source_root_digest(), observation.original_identity.digest());
+    let transition = committed
+        .1
+        .epoch_transitions()
+        .last()
+        .ok_or("actual restore transition")?;
+    assert_eq!(
+        transition.source_root_digest(),
+        observation.original_identity.digest()
+    );
     assert_eq!(transition.source_enrollment().epoch(), 0);
     assert_eq!(transition.target_enrollment().epoch(), 1);
-    assert_eq!(transition.operation_digest(), committed.1.intent().operation_digest);
+    assert_eq!(
+        transition.operation_digest(),
+        committed.1.intent().operation_digest
+    );
     let operation = transition.operation_digest();
     let expected_reference = format!(
         "native-v6-restore-{}",
-        operation.iter().map(|byte| format!("{byte:02x}")).collect::<String>(),
+        operation
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>(),
     );
     assert_eq!(reference, expected_reference);
-    assert_ne!(committed.1.root_digest(), observation.original_identity.digest());
+    assert_ne!(
+        committed.1.root_digest(),
+        observation.original_identity.digest()
+    );
 
     // Drop/reopen the actual faulted Service and Raft owner, without resubmitting
     // an archive or reseeding its files. This is not a physical SIGKILL claim.
@@ -208,14 +293,35 @@ fn run_published_audit_veto(point: test_faults::Point) -> TestResult {
         assert!(!service.recovery_required);
         assert!(!service.audit_failed);
         assert_eq!(service.state.as_ref().ok_or("cold State")?.replay_epoch, 1);
-        assert_eq!(service.durable.as_ref().ok_or("cold Durable")?.replay_epoch(), 1);
+        assert_eq!(
+            service
+                .durable
+                .as_ref()
+                .ok_or("cold Durable")?
+                .replay_epoch(),
+            1
+        );
         Ok(())
     })?;
     pipeline.assert_history(fault_node, &[(1, "seed-v5"), (2, "forward-archive-A")])?;
-    expect(pipeline.call(
-        fault_node, "GET", "secret/data/pipeline/history", pipeline.admin(), json!({"version":3}),
-    )?, 404, "forward-audit-cold-future-absent")?;
-    assert_eq!(selection(&pipeline, fault_node, migration_source)?.1.epoch_transitions().len(), 1);
+    expect(
+        pipeline.call(
+            fault_node,
+            "GET",
+            "secret/data/pipeline/history",
+            pipeline.admin(),
+            json!({"version":3}),
+        )?,
+        404,
+        "forward-audit-cold-future-absent",
+    )?;
+    assert_eq!(
+        selection(&pipeline, fault_node, migration_source)?
+            .1
+            .epoch_transitions()
+            .len(),
+        1
+    );
     assert_eq!(count_calls(&counts), 1);
     Ok(())
 }
@@ -248,8 +354,13 @@ fn run_unverified_attempt(attempt: bool) -> TestResult {
     let before = selection(&pipeline, leader, migration_source)?;
     let until = Instant::now() + REQUEST_BUDGET;
     let scope = RequestDeadlineScope::enter(until);
-    let service = Arc::clone(pipeline.services[ingress].as_ref().ok_or("unverified ingress Service")?);
-    let mut writer = lock_until(&service, until).map_err(|_| "unverified original admission lock")?;
+    let service = Arc::clone(
+        pipeline.services[ingress]
+            .as_ref()
+            .ok_or("unverified ingress Service")?,
+    );
+    let mut writer =
+        lock_until(&service, until).map_err(|_| "unverified original admission lock")?;
     let plan = admit_forward(&mut writer, pipeline.admin(), until)?;
     let audit_sequence = writer.audit_sequence;
     let audit_bytes = writer.audit.metadata()?.len();

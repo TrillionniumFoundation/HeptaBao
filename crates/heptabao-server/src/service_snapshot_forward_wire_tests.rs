@@ -23,14 +23,24 @@ fn body(bytes: &[u8]) -> TestResult<(EncodedSnapshotBody, VerifiedSnapshotBody)>
     Ok((encoded, verified))
 }
 fn prefix(index: u64) -> TestResult<CommittedApplicationPrefix> {
-    Ok(serde_json::from_value(json!({"term": 1, "node": 2, "index": index}))?)
+    Ok(serde_json::from_value(
+        json!({"term": 1, "node": 2, "index": index}),
+    )?)
 }
 fn request() -> RequestWire {
     RequestWire {
-        version: 1, cluster: "snapshot-component".to_owned(), ingress: 1, leader: 2, hop: 1,
-        nonce: [1; 32], method: "GET".to_owned(),
-        path: "sys/storage/raft/snapshot".to_owned(), namespace: String::new(),
-        token: String::new(), wrap_ttl_seconds: None, origin_peer: None,
+        version: 1,
+        cluster: "snapshot-component".to_owned(),
+        ingress: 1,
+        leader: 2,
+        hop: 1,
+        nonce: [1; 32],
+        method: "GET".to_owned(),
+        path: "sys/storage/raft/snapshot".to_owned(),
+        namespace: String::new(),
+        token: String::new(),
+        wrap_ttl_seconds: None,
+        origin_peer: None,
         client_certificates: None,
     }
 }
@@ -52,66 +62,119 @@ impl Fixture {
             request.path = "sys/storage/raft/snapshot-force".to_owned();
         }
         let (auth, token) = AuthState::bootstrap(100).map_err(|_| "bootstrap")?;
-        let actor = auth.authenticate_read_only(&token, 100)
-            .map_err(|_| "actual root Actor")?.ok_or("root Actor missing")?;
+        let actor = auth
+            .authenticate_read_only(&token, 100)
+            .map_err(|_| "actual root Actor")?
+            .ok_or("root Actor missing")?;
         request.token = token;
-        let actor = auth.snapshot_forward_actor(&actor, "", AuthorityTime::Coarse(100))
+        let actor = auth
+            .snapshot_forward_actor(&actor, "", AuthorityTime::Coarse(100))
             .map_err(|_| "actual root witness")?;
         let metadata = gate(encode(&request))?;
         let key = [12; 32];
-        let admission = gate(AdmissionWire::seal(AdmissionData {
-            cluster: request.cluster.clone(), ingress: request.ingress, leader: request.leader,
-            nonce: request.nonce, metadata_sha256: digest(&metadata),
-            operation: gate(request.operation())?,
-            original_identity: StateIdentity::RecordsV6([4; 32]), original_epoch: 7,
-            original_auth: auth.forward_owner_projection_digest().map_err(|_| "auth projection")?,
-            source_activation: [5; 32], seal_identity: [6; 32], prefix: prefix(9)?, actor,
-        }, &key))?;
+        let admission = gate(AdmissionWire::seal(
+            AdmissionData {
+                cluster: request.cluster.clone(),
+                ingress: request.ingress,
+                leader: request.leader,
+                nonce: request.nonce,
+                metadata_sha256: digest(&metadata),
+                operation: gate(request.operation())?,
+                original_identity: StateIdentity::RecordsV6([4; 32]),
+                original_epoch: 7,
+                original_auth: auth
+                    .forward_owner_projection_digest()
+                    .map_err(|_| "auth projection")?,
+                source_activation: [5; 32],
+                seal_identity: [6; 32],
+                prefix: prefix(9)?,
+                actor,
+            },
+            &key,
+        ))?;
         gate(admission.verify(&request, &metadata, &key))?;
         let ready = gate(encode(&admission))?;
         let archive = vec![0x31; 65_539];
         let (upload, actual_upload) = body(if restore { &archive } else { &[] })?;
         let (actual_download, download) = body(if restore { &[] } else { &archive })?;
         let uploaded = gate(BodyDescriptor::from_verified(
-            &actual_upload, if restore { BodyRole::NativeArchive } else { BodyRole::Empty },
+            &actual_upload,
+            if restore {
+                BodyRole::NativeArchive
+            } else {
+                BodyRole::Empty
+            },
         ))?;
         let downloaded = gate(BodyDescriptor::from_encoded(
-            &actual_download, if restore { BodyRole::Empty } else { BodyRole::NativeArchive },
+            &actual_download,
+            if restore {
+                BodyRole::Empty
+            } else {
+                BodyRole::NativeArchive
+            },
         ))?;
         let reply = gate(ReplyData::from_response(
-            Response::ok(if restore { json!({"data": {"restored": true}}) } else { Value::Null }),
+            Response::ok(if restore {
+                json!({"data": {"restored": true}})
+            } else {
+                Value::Null
+            }),
             &request.cluster,
         ))?;
         let data = CompletionData {
             admission_sha256: digest(&ready),
             request_digest: gate(request_digest(admission.data.metadata_sha256, uploaded))?,
             response_digest: gate(response_digest(&reply, downloaded))?,
-            uploaded, downloaded,
+            uploaded,
+            downloaded,
             terminal: if restore {
                 TerminalKind::HistoricalRestore {
-                    operation: [10; 32], original_identity: admission.data.original_identity,
-                    original_epoch: 7, restored_identity: StateIdentity::RecordsV6([11; 32]),
+                    operation: [10; 32],
+                    original_identity: admission.data.original_identity,
+                    original_epoch: 7,
+                    restored_identity: StateIdentity::RecordsV6([11; 32]),
                     restored_epoch: 8,
                 }
             } else {
-                TerminalKind::Download { exported_identity: admission.data.original_identity }
+                TerminalKind::Download {
+                    exported_identity: admission.data.original_identity,
+                }
             },
             terminal_identity: StateIdentity::RecordsV6(if restore { [11; 32] } else { [4; 32] }),
             terminal_epoch: if restore { 8 } else { 7 },
             source_activation: if restore { [13; 32] } else { [5; 32] },
-            original_auth: admission.data.original_auth, owner_projection: [7; 32],
-            prefix: prefix(11)?, floor: None, precise: false, audit_sequence: 2, audit_mac: [8; 32],
+            original_auth: admission.data.original_auth,
+            owner_projection: [7; 32],
+            prefix: prefix(11)?,
+            floor: None,
+            precise: false,
+            audit_sequence: 2,
+            audit_mac: [8; 32],
         };
         let completion = gate(encode(&gate(CompletionWire::seal(reply, data, &key))?))?;
-        Ok(Self { request, admission, ready, completion, upload, download, key })
+        Ok(Self {
+            request,
+            admission,
+            ready,
+            completion,
+            upload,
+            download,
+            key,
+        })
     }
     fn parsed(&self) -> TestResult<CompletionWire> {
         gate(decode(&self.completion))
     }
     fn accepts(&self, value: CompletionWire) -> bool {
-        value.authenticate(
-            &self.admission, &self.ready, &self.upload, &self.download, &self.key,
-        ).is_ok()
+        value
+            .authenticate(
+                &self.admission,
+                &self.ready,
+                &self.upload,
+                &self.download,
+                &self.key,
+            )
+            .is_ok()
     }
 }
 
@@ -122,9 +185,18 @@ fn snapshot_publication_actual_byte_witnesses_bind_save_and_restore() -> TestRes
         assert!(fixture.accepts(fixture.parsed()?));
         let mut wrong_key = fixture.key;
         wrong_key[0] ^= 1;
-        assert!(fixture.parsed()?.authenticate(
-            &fixture.admission, &fixture.ready, &fixture.upload, &fixture.download, &wrong_key,
-        ).is_err());
+        assert!(
+            fixture
+                .parsed()?
+                .authenticate(
+                    &fixture.admission,
+                    &fixture.ready,
+                    &fixture.upload,
+                    &fixture.download,
+                    &wrong_key,
+                )
+                .is_err()
+        );
     }
     Ok(())
 }
@@ -137,7 +209,8 @@ fn snapshot_publication_valid_mac_cannot_substitute_a_binary_body() -> TestResul
         if restore {
             wire.data.uploaded.sha256[0] ^= 1;
             wire.data.request_digest = gate(request_digest(
-                fixture.admission.data.metadata_sha256, wire.data.uploaded,
+                fixture.admission.data.metadata_sha256,
+                wire.data.uploaded,
             ))?;
         } else {
             wire.data.downloaded.sha256[0] ^= 1;
@@ -154,7 +227,9 @@ fn snapshot_publication_valid_mac_cannot_substitute_a_binary_body() -> TestResul
 #[test]
 fn snapshot_publication_metadata_and_original_owner_mutations_are_rejected() -> TestResult {
     let fixture = Fixture::new(false)?;
-    for field in ["audit", "owner", "status", "ready", "response", "index", "headers"] {
+    for field in [
+        "audit", "owner", "status", "ready", "response", "index", "headers",
+    ] {
         let mut wire = fixture.parsed()?;
         match field {
             "audit" => wire.data.audit_sequence += 1,
@@ -163,9 +238,10 @@ fn snapshot_publication_metadata_and_original_owner_mutations_are_rejected() -> 
             "ready" => wire.data.admission_sha256[0] ^= 1,
             "response" => wire.reply.body = json!({"changed": true}),
             "index" => wire.reply.consistency_index = Some(22),
-            "headers" => wire.reply.headers = serde_json::from_value(
-                json!({"X-Test-Snapshot": ["changed"]}),
-            )?,
+            "headers" => {
+                wire.reply.headers =
+                    serde_json::from_value(json!({"X-Test-Snapshot": ["changed"]}))?
+            }
             _ => return Err("closed test mutation".into()),
         }
         assert!(!fixture.accepts(wire), "mutation {field}");
@@ -179,7 +255,9 @@ fn snapshot_publication_metadata_and_original_owner_mutations_are_rejected() -> 
             "original_auth" => wire.data.original_auth[0] ^= 1,
             "reference" => {
                 let TerminalKind::HistoricalRestore { operation, .. } = &mut wire.data.terminal
-                    else { return Err("restore kind".into()); };
+                else {
+                    return Err("restore kind".into());
+                };
                 *operation = [0; 32];
             }
             _ => return Err("closed restore mutation".into()),
@@ -193,7 +271,16 @@ fn snapshot_publication_metadata_and_original_owner_mutations_are_rejected() -> 
 #[test]
 fn snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes() -> TestResult {
     let fixture = Fixture::new(false)?;
-    for field in ["nonce", "leader", "token", "method", "path", "namespace", "hop", "wrap"] {
+    for field in [
+        "nonce",
+        "leader",
+        "token",
+        "method",
+        "path",
+        "namespace",
+        "hop",
+        "wrap",
+    ] {
         let mut changed: RequestWire = gate(decode(&gate(encode(&fixture.request))?))?;
         match field {
             "nonce" => changed.nonce[0] ^= 1,
@@ -207,7 +294,13 @@ fn snapshot_ready_rejects_retarget_replay_and_non_snapshot_routes() -> TestResul
             _ => return Err("closed request mutation".into()),
         }
         let metadata = gate(encode(&changed))?;
-        assert!(fixture.admission.verify(&changed, &metadata, &fixture.key).is_err(), "{field}");
+        assert!(
+            fixture
+                .admission
+                .verify(&changed, &metadata, &fixture.key)
+                .is_err(),
+            "{field}"
+        );
     }
     Ok(())
 }

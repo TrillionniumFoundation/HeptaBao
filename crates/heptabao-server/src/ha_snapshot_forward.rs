@@ -5,8 +5,9 @@ use heptabao_ha_service::{
     AuthenticatedSnapshotPeer, SnapshotBodyLimits, SnapshotPeerRequest, SnapshotPeerResponse,
 };
 
-pub(crate) type SnapshotForwardHandler =
-    Arc<dyn for<'a> Fn(SnapshotIngress<'a>) -> Result<(), heptabao_ha_service::HaError> + Send + Sync>;
+pub(crate) type SnapshotForwardHandler = Arc<
+    dyn for<'a> Fn(SnapshotIngress<'a>) -> Result<(), heptabao_ha_service::HaError> + Send + Sync,
+>;
 
 /// Only the real listener's enrolled NodeId mapping constructs this owner.
 pub(crate) struct SnapshotIngress<'a> {
@@ -16,10 +17,18 @@ pub(crate) struct SnapshotIngress<'a> {
     target: u64,
 }
 impl<'a> SnapshotIngress<'a> {
-    pub(crate) fn cluster(&self) -> &str { &self.cluster }
-    pub(crate) fn source(&self) -> u64 { self.source }
-    pub(crate) fn target(&self) -> u64 { self.target }
-    pub(crate) fn into_peer(self) -> AuthenticatedSnapshotPeer<'a> { self.peer }
+    pub(crate) fn cluster(&self) -> &str {
+        &self.cluster
+    }
+    pub(crate) fn source(&self) -> u64 {
+        self.source
+    }
+    pub(crate) fn target(&self) -> u64 {
+        self.target
+    }
+    pub(crate) fn into_peer(self) -> AuthenticatedSnapshotPeer<'a> {
+        self.peer
+    }
 }
 
 pub(super) fn dispatch<'a>(
@@ -30,17 +39,23 @@ pub(super) fn dispatch<'a>(
     slots: &Arc<Semaphore>,
     handler: &Arc<Mutex<Option<SnapshotForwardHandler>>>,
 ) -> Result<(), heptabao_ha_service::HaError> {
-    let source = *ids.get(peer.peer()).ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
+    let source = *ids
+        .get(peer.peer())
+        .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
     if source == local || cluster.is_empty() {
         return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
     }
     // No new thread or detached task. The original peer worker and capacity
     // permit live until the complete body/response and callback have returned.
-    let _permit = slots.clone().try_acquire_owned()
+    let _permit = slots
+        .clone()
+        .try_acquire_owned()
         .map_err(|_| heptabao_ha_service::HaError::WriterBusy)?;
-    let callback = handler.lock()
+    let callback = handler
+        .lock()
         .map_err(|_| heptabao_ha_service::HaError::Transport)?
-        .clone().ok_or(heptabao_ha_service::HaError::NotLeader)?;
+        .clone()
+        .ok_or(heptabao_ha_service::HaError::NotLeader)?;
     callback(SnapshotIngress {
         peer,
         cluster: cluster.to_owned(),
@@ -62,10 +77,18 @@ pub(crate) struct SnapshotEndpoint {
     deadline: Instant,
 }
 impl SnapshotEndpoint {
-    pub(crate) fn cluster(&self) -> &str { &self.cluster }
-    pub(crate) fn source(&self) -> u64 { self.source }
-    pub(crate) fn target(&self) -> u64 { self.target }
-    pub(crate) fn deadline(&self) -> Instant { self.deadline }
+    pub(crate) fn cluster(&self) -> &str {
+        &self.cluster
+    }
+    pub(crate) fn source(&self) -> u64 {
+        self.source
+    }
+    pub(crate) fn target(&self) -> u64 {
+        self.target
+    }
+    pub(crate) fn deadline(&self) -> Instant {
+        self.deadline
+    }
 
     pub(crate) fn exchange(
         self,
@@ -76,9 +99,8 @@ impl SnapshotEndpoint {
         admission: impl FnOnce(&[u8]) -> Result<(), heptabao_ha_service::HaError>,
     ) -> Result<SnapshotPeerResponse, heptabao_ha_service::HaError> {
         let request = SnapshotPeerRequest::new(metadata, &self.pins, limits, self.deadline)?;
-        self.transport.exchange_snapshot_before(
-            &self.node, request, upload, response, admission,
-        )
+        self.transport
+            .exchange_snapshot_before(&self.node, request, upload, response, admission)
     }
 }
 
@@ -90,7 +112,9 @@ impl HaProcess {
         if !self.native_v6_enabled() {
             return Err("snapshot peer handler requires native HA".into());
         }
-        let mut slot = self.snapshot_forward_handler.lock()
+        let mut slot = self
+            .snapshot_forward_handler
+            .lock()
             .map_err(|_| "snapshot peer registry unavailable".to_owned())?;
         if slot.is_some() {
             return Err("snapshot peer handler already registered".into());
@@ -116,9 +140,16 @@ impl HaProcess {
         if Instant::now() >= deadline {
             return Err("snapshot forwarding deadline elapsed".into());
         }
-        let node = self.peers.get(&target).ok_or("snapshot leader not enrolled")?.clone();
-        let pins = self.snapshot_server_pins.get(&target)
-            .ok_or("snapshot leader leaf pin unavailable")?.clone();
+        let node = self
+            .peers
+            .get(&target)
+            .ok_or("snapshot leader not enrolled")?
+            .clone();
+        let pins = self
+            .snapshot_server_pins
+            .get(&target)
+            .ok_or("snapshot leader leaf pin unavailable")?
+            .clone();
         Ok(SnapshotEndpoint {
             transport: self.forward_transport.clone(),
             node,
@@ -153,13 +184,18 @@ impl HaProcess {
                 return Err("native snapshot original deadline elapsed".into());
             }
             let seen = self.leader_status()?;
-            if seen.committed_index.is_some_and(|index| index >= prefix.index())
-                && seen.applied_index.is_some_and(|index| index >= prefix.index())
+            if seen
+                .committed_index
+                .is_some_and(|index| index >= prefix.index())
+                && seen
+                    .applied_index
+                    .is_some_and(|index| index >= prefix.index())
             {
                 return Ok(());
             }
-            thread::sleep(Duration::from_millis(5)
-                .min(deadline.saturating_duration_since(Instant::now())));
+            thread::sleep(
+                Duration::from_millis(5).min(deadline.saturating_duration_since(Instant::now())),
+            );
         }
     }
 }

@@ -2380,7 +2380,9 @@ impl Service {
         let (started, observed) = self.native_snapshot_clock.unwrap_or_else(|| {
             (
                 std::time::Instant::now(),
-                SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::MAX),
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::MAX),
             )
         });
         let clock = match RequestClock::anchored(observed, started) {

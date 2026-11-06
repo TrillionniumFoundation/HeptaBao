@@ -14,14 +14,13 @@ use std::time::{Duration, Instant};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
-use heptabao_ha_service::{
-    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
-    TlsPeerEndpoint,
-};
 #[cfg(not(feature = "native-v6-ha"))]
 use heptabao_ha_service::serve_one_mtls_authenticated_peer_frame;
 #[cfg(feature = "native-v6-ha")]
 use heptabao_ha_service::serve_one_mtls_peer_frame_or_snapshot;
+use heptabao_ha_service::{
+    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL, TlsPeerEndpoint,
+};
 use heptabao_raft_runtime::{
     CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
     RemoteNetworkFactory, RemoteRaftError, ReplicatedEnvelope,
@@ -839,11 +838,15 @@ impl HaProcess {
             .map(|peer| (peer.node.clone(), peer.endpoint.clone()))
             .collect::<BTreeMap<_, _>>();
         #[cfg(feature = "native-v6-ha")]
-        let snapshot_server_pins = parsed_peers.iter().map(|peer| {
-            let pins = std::iter::once(peer.certificate_sha256)
-                .chain(peer.certificate_sha256_next).collect();
-            (peer.id, pins)
-        }).collect();
+        let snapshot_server_pins = parsed_peers
+            .iter()
+            .map(|peer| {
+                let pins = std::iter::once(peer.certificate_sha256)
+                    .chain(peer.certificate_sha256_next)
+                    .collect();
+                (peer.id, pins)
+            })
+            .collect();
         let pinned = parsed_peers
             .iter()
             .filter(|peer| peer.id != config.node_id || native_candidate)

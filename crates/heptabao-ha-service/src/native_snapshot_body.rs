@@ -37,7 +37,9 @@ pub struct SnapshotBodyLimits {
 impl SnapshotBodyLimits {
     pub fn new(maximum_bytes: u64) -> io::Result<Self> {
         if maximum_bytes > MAX_SNAPSHOT_BODY_BYTES {
-            return Err(invalid("snapshot body limit exceeds the native archive bound"));
+            return Err(invalid(
+                "snapshot body limit exceeds the native archive bound",
+            ));
         }
         Ok(Self { maximum_bytes })
     }
@@ -47,7 +49,8 @@ impl SnapshotBodyLimits {
     }
 
     fn maximum_frames(self) -> u64 {
-        self.maximum_bytes.div_ceil(SNAPSHOT_BODY_CHUNK_BYTES as u64)
+        self.maximum_bytes
+            .div_ceil(SNAPSHOT_BODY_CHUNK_BYTES as u64)
     }
 }
 
@@ -299,11 +302,7 @@ impl<R: Read> fmt::Debug for SnapshotBodyReader<R> {
 }
 
 impl<R: Read> SnapshotBodyReader<R> {
-    pub fn new(
-        mut input: R,
-        limits: SnapshotBodyLimits,
-        deadline: Instant,
-    ) -> io::Result<Self> {
+    pub fn new(mut input: R, limits: SnapshotBodyLimits, deadline: Instant) -> io::Result<Self> {
         within(deadline)?;
         let mut magic = [0_u8; 8];
         read_exact(&mut input, &mut magic, deadline)?;
@@ -369,14 +368,11 @@ impl<R: Read> SnapshotBodyReader<R> {
                 read_exact(&mut self.input, &mut fields, self.deadline)?;
                 let frames = u32::from_be_bytes([fields[0], fields[1], fields[2], fields[3]]);
                 let bytes = u64::from_be_bytes([
-                    fields[4], fields[5], fields[6], fields[7],
-                    fields[8], fields[9], fields[10], fields[11],
+                    fields[4], fields[5], fields[6], fields[7], fields[8], fields[9], fields[10],
+                    fields[11],
                 ]);
                 let sha256 = hash_value(&self.hash);
-                if frames != self.frames
-                    || bytes != self.total
-                    || fields[12..44] != sha256
-                {
+                if frames != self.frames || bytes != self.total || fields[12..44] != sha256 {
                     return Err(invalid("snapshot body terminal binding differs"));
                 }
                 let mut tail = [0_u8; 1];

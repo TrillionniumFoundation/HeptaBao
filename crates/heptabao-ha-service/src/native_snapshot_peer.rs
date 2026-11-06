@@ -109,22 +109,14 @@ fn time_left(deadline: Instant) -> Result<Duration, HaError> {
     forward_remaining(deadline).map_err(|_| HaError::Transport)
 }
 
-fn exact_read(
-    input: &mut impl Read,
-    output: &mut [u8],
-    deadline: Instant,
-) -> Result<(), HaError> {
+fn exact_read(input: &mut impl Read, output: &mut [u8], deadline: Instant) -> Result<(), HaError> {
     time_left(deadline)?;
     input.read_exact(output).map_err(|_| HaError::Transport)?;
     time_left(deadline)?;
     Ok(())
 }
 
-fn exact_write(
-    output: &mut impl Write,
-    input: &[u8],
-    deadline: Instant,
-) -> Result<(), HaError> {
+fn exact_write(output: &mut impl Write, input: &[u8], deadline: Instant) -> Result<(), HaError> {
     time_left(deadline)?;
     output.write_all(input).map_err(|_| HaError::Transport)?;
     time_left(deadline)?;
@@ -138,10 +130,7 @@ fn flush_before(output: &mut impl Write, deadline: Instant) -> Result<(), HaErro
     Ok(())
 }
 
-fn metadata_read(
-    input: &mut impl Read,
-    deadline: Instant,
-) -> Result<Zeroizing<Vec<u8>>, HaError> {
+fn metadata_read(input: &mut impl Read, deadline: Instant) -> Result<Zeroizing<Vec<u8>>, HaError> {
     let mut length = [0_u8; 4];
     exact_read(input, &mut length, deadline)?;
     let length = u32::from_be_bytes(length) as usize;
@@ -236,8 +225,8 @@ impl MutualTlsPeerTransport {
         if !request.server_leaves.contains(&leaf) {
             return Err(HaError::PeerAuthenticationFailed);
         }
-        let remaining = u64::try_from(time_left(deadline)?.as_nanos())
-            .map_err(|_| HaError::Transport)?;
+        let remaining =
+            u64::try_from(time_left(deadline)?.as_nanos()).map_err(|_| HaError::Transport)?;
         exact_write(&mut tls, STREAM_PREFIX, deadline)?;
         exact_write(&mut tls, STREAM_VERSION, deadline)?;
         exact_write(&mut tls, &remaining.to_be_bytes(), deadline)?;
@@ -268,9 +257,8 @@ impl MutualTlsPeerTransport {
         let ready_metadata = metadata_read(&mut tls, deadline)?;
         admission(&ready_metadata)?;
         time_left(deadline)?;
-        let request_body =
-            encode_snapshot_body(upload, &mut tls, request.upload_limit, deadline)
-                .map_err(|_| HaError::Transport)?;
+        let request_body = encode_snapshot_body(upload, &mut tls, request.upload_limit, deadline)
+            .map_err(|_| HaError::Transport)?;
         // END has no same-direction completion trailer. Actual rustls EOF at
         // the receiver is authenticated close-notify, not bare TCP shutdown.
         tls.conn.send_close_notify();
@@ -293,12 +281,8 @@ impl MutualTlsPeerTransport {
         if decision[0] != COMPLETED || !matches!(status, 200 | 204) {
             return Err(HaError::InvalidFrame);
         }
-        let mut body = SnapshotBodyReader::new(
-            &mut tls,
-            request.response_limit,
-            deadline,
-        )
-        .map_err(|_| HaError::Transport)?;
+        let mut body = SnapshotBodyReader::new(&mut tls, request.response_limit, deadline)
+            .map_err(|_| HaError::Transport)?;
         let mut buffer = Zeroizing::new(vec![0_u8; SNAPSHOT_BODY_CHUNK_BYTES]);
         loop {
             time_left(deadline)?;

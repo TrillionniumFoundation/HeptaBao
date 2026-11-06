@@ -1,18 +1,24 @@
 //! Snapshot-only application bindings. No ordinary JSON completion is accepted.
 use super::*;
-use serde::{Deserialize, Serialize};
 use heptabao_ha_service::{EncodedSnapshotBody, VerifiedSnapshotBody};
 use heptabao_raft_runtime::CommittedApplicationPrefix;
+use serde::{Deserialize, Serialize};
 
 pub(super) const MAX_METADATA: usize = 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub(super) enum Operation { Download, HistoricalRestore }
+pub(super) enum Operation {
+    Download,
+    HistoricalRestore,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub(super) enum BodyRole { Empty, NativeArchive }
+pub(super) enum BodyRole {
+    Empty,
+    NativeArchive,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -24,7 +30,12 @@ pub(super) struct BodyDescriptor {
 }
 impl BodyDescriptor {
     pub(super) fn empty() -> Self {
-        Self { role: BodyRole::Empty, bytes: 0, frames: 0, sha256: digest(&[]) }
+        Self {
+            role: BodyRole::Empty,
+            bytes: 0,
+            frames: 0,
+            sha256: digest(&[]),
+        }
     }
     pub(super) fn valid(&self) -> bool {
         self.bytes <= MAX_NATIVE_ARCHIVE
@@ -35,15 +46,27 @@ impl BodyDescriptor {
             }
     }
     pub(super) fn from_verified(
-        witness: &VerifiedSnapshotBody, role: BodyRole,
+        witness: &VerifiedSnapshotBody,
+        role: BodyRole,
     ) -> Result<Self, Response> {
-        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
+        let result = Self {
+            role,
+            bytes: witness.bytes(),
+            frames: witness.frames(),
+            sha256: witness.sha256(),
+        };
         result.valid().then_some(result).ok_or_else(unavailable)
     }
     pub(super) fn from_encoded(
-        witness: &EncodedSnapshotBody, role: BodyRole,
+        witness: &EncodedSnapshotBody,
+        role: BodyRole,
     ) -> Result<Self, Response> {
-        let result = Self { role, bytes: witness.bytes(), frames: witness.frames(), sha256: witness.sha256() };
+        let result = Self {
+            role,
+            bytes: witness.bytes(),
+            frames: witness.frames(),
+            sha256: witness.sha256(),
+        };
         result.valid().then_some(result).ok_or_else(unavailable)
     }
 }
@@ -76,26 +99,34 @@ impl Drop for RequestWire {
 }
 impl RequestWire {
     pub(super) fn operation(&self) -> Result<Operation, Response> {
-        if self.version != 1 || self.hop != 1
-            || self.cluster.is_empty() || self.cluster.len() > 128
-            || self.ingress == 0 || self.leader == 0 || self.ingress == self.leader
-            || self.nonce == [0; 32] || !self.namespace.is_empty()
+        if self.version != 1
+            || self.hop != 1
+            || self.cluster.is_empty()
+            || self.cluster.len() > 128
+            || self.ingress == 0
+            || self.leader == 0
+            || self.ingress == self.leader
+            || self.nonce == [0; 32]
+            || !self.namespace.is_empty()
             || self.token.len() > 16 * 1024
             || self.wrap_ttl_seconds.is_some_and(|ttl| ttl != 0)
         {
             return Err(unavailable());
         }
         if let Some(chain) = &self.client_certificates
-            && (chain.is_empty() || chain.len() > 8
-                || chain.iter().any(|certificate|
-                    certificate.is_empty() || certificate.len() > 64 * 1024))
+            && (chain.is_empty()
+                || chain.len() > 8
+                || chain
+                    .iter()
+                    .any(|certificate| certificate.is_empty() || certificate.len() > 64 * 1024))
         {
             return Err(unavailable());
         }
         match (self.method.as_str(), self.path.as_str()) {
             ("GET" | "HEAD", "sys/storage/raft/snapshot") => Ok(Operation::Download),
-            ("POST" | "PUT", "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force") =>
-                Ok(Operation::HistoricalRestore),
+            ("POST" | "PUT", "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force") => {
+                Ok(Operation::HistoricalRestore)
+            }
             _ => Err(unavailable()),
         }
     }
@@ -131,15 +162,23 @@ impl AdmissionWire {
         Ok(Self { data, mac })
     }
     pub(super) fn verify(
-        &self, request: &RequestWire, metadata: &[u8], barrier: &[u8],
+        &self,
+        request: &RequestWire,
+        metadata: &[u8],
+        barrier: &[u8],
     ) -> Result<(), Response> {
         let data = &self.data;
-        if data.cluster != request.cluster || data.ingress != request.ingress
-            || data.leader != request.leader || data.nonce != request.nonce
-            || data.metadata_sha256 != digest(metadata) || data.operation != request.operation()?
+        if data.cluster != request.cluster
+            || data.ingress != request.ingress
+            || data.leader != request.leader
+            || data.nonce != request.nonce
+            || data.metadata_sha256 != digest(metadata)
+            || data.operation != request.operation()?
             || !matches!(data.original_identity, StateIdentity::RecordsV6(digest) if digest != [0; 32])
-            || data.original_auth == [0; 32] || data.source_activation == [0; 32]
-            || data.seal_identity == [0; 32] || !data.prefix.valid()
+            || data.original_auth == [0; 32]
+            || data.source_activation == [0; 32]
+            || data.seal_identity == [0; 32]
+            || !data.prefix.valid()
         {
             return Err(unavailable());
         }
@@ -158,7 +197,9 @@ pub(super) struct ReplyData {
     pub(super) consistency_index: Option<u64>,
 }
 impl Drop for ReplyData {
-    fn drop(&mut self) { erase_json(&mut self.body); }
+    fn drop(&mut self) {
+        erase_json(&mut self.body);
+    }
 }
 impl ReplyData {
     pub(super) fn from_response(mut response: Response, cluster: &str) -> Result<Self, Response> {
@@ -166,7 +207,11 @@ impl ReplyData {
             return Err(unavailable());
         }
         let consistency_index = match response.consistency_index.as_ref() {
-            Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
+            Some(index) => Some(
+                index
+                    .raft_index_for_cluster(cluster)
+                    .ok_or_else(unavailable)?,
+            ),
             None => None,
         };
         // The owned response is consumed. Header custody is never cloned and a
@@ -180,8 +225,11 @@ impl ReplyData {
     }
     pub(super) fn into_response(mut self, cluster: &str) -> Result<Response, Response> {
         let consistency_index = match self.consistency_index {
-            Some(index) => Some(crate::http::consistency::IndexValue::for_raft(cluster, index)
-                .wire().ok_or_else(unavailable)?),
+            Some(index) => Some(
+                crate::http::consistency::IndexValue::for_raft(cluster, index)
+                    .wire()
+                    .ok_or_else(unavailable)?,
+            ),
             None => None,
         };
         Ok(Response {
@@ -197,7 +245,9 @@ impl ReplyData {
 #[derive(Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
 pub(super) enum TerminalKind {
-    Download { exported_identity: StateIdentity },
+    Download {
+        exported_identity: StateIdentity,
+    },
     HistoricalRestore {
         operation: [u8; 32],
         original_identity: StateIdentity,
@@ -242,7 +292,9 @@ pub(super) struct AuthenticatedCompletion {
 }
 impl CompletionWire {
     pub(super) fn seal(
-        reply: ReplyData, data: CompletionData, barrier: &[u8],
+        reply: ReplyData,
+        data: CompletionData,
+        barrier: &[u8],
     ) -> Result<Self, Response> {
         let bytes = encode(&("native-snapshot-completion-v1", &reply, &data))?;
         let mac = sign(barrier, &bytes);
@@ -272,12 +324,16 @@ impl CompletionWire {
         if data.admission_sha256 != digest(admission_bytes)
             || data.request_digest != request_digest(original.metadata_sha256, uploaded)?
             || data.response_digest != response_digest(&self.reply, downloaded)?
-            || data.uploaded != uploaded || data.downloaded != downloaded
-            || !data.prefix.valid() || data.prefix.index() < original.prefix.index()
+            || data.uploaded != uploaded
+            || data.downloaded != downloaded
+            || !data.prefix.valid()
+            || data.prefix.index() < original.prefix.index()
             || data.terminal_identity.digest() == [0; 32]
             || data.original_auth != original.original_auth
-            || data.owner_projection == [0; 32] || data.audit_sequence == 0
-            || data.audit_mac == [0; 32] || data.source_activation == [0; 32]
+            || data.owner_projection == [0; 32]
+            || data.audit_sequence == 0
+            || data.audit_mac == [0; 32]
+            || data.source_activation == [0; 32]
             || (data.precise && data.floor.is_none())
         {
             return Err(unavailable());
@@ -288,15 +344,23 @@ impl CompletionWire {
                     && data.terminal_epoch == original.original_epoch
                     && data.source_activation == original.source_activation
                     && self.reply.status == 200 => {}
-            (TerminalKind::HistoricalRestore { operation, original_identity, original_epoch,
-                restored_identity, restored_epoch }, Operation::HistoricalRestore)
-                if *operation != [0; 32] && *original_identity == original.original_identity
-                    && *original_epoch == original.original_epoch
-                    && original.original_epoch.checked_add(1) == Some(*restored_epoch)
-                    && data.terminal_epoch == *restored_epoch
-                    && restored_identity.digest() != [0; 32]
-                    && data.source_activation != original.source_activation
-                    && matches!(self.reply.status, 200 | 204) => {}
+            (
+                TerminalKind::HistoricalRestore {
+                    operation,
+                    original_identity,
+                    original_epoch,
+                    restored_identity,
+                    restored_epoch,
+                },
+                Operation::HistoricalRestore,
+            ) if *operation != [0; 32]
+                && *original_identity == original.original_identity
+                && *original_epoch == original.original_epoch
+                && original.original_epoch.checked_add(1) == Some(*restored_epoch)
+                && data.terminal_epoch == *restored_epoch
+                && restored_identity.digest() != [0; 32]
+                && data.source_activation != original.source_activation
+                && matches!(self.reply.status, 200 | 204) => {}
             _ => return Err(unavailable()),
         }
         let bytes = encode(&("native-snapshot-completion-v1", &self.reply, data))?;
@@ -320,17 +384,21 @@ pub(super) fn encode<T: Serialize>(value: &T) -> Result<Zeroizing<Vec<u8>>, Resp
     crate::secret_serde::to_vec(value, MAX_METADATA).map_err(|_| unavailable())
 }
 pub(super) fn decode<'de, T: Deserialize<'de>>(bytes: &'de [u8]) -> Result<T, Response> {
-    if bytes.is_empty() || bytes.len() > MAX_METADATA { return Err(unavailable()); }
+    if bytes.is_empty() || bytes.len() > MAX_METADATA {
+        return Err(unavailable());
+    }
     serde_json::from_slice(bytes).map_err(|_| unavailable())
 }
 pub(super) fn request_digest(
-    metadata_sha256: [u8; 32], body: BodyDescriptor,
+    metadata_sha256: [u8; 32],
+    body: BodyDescriptor,
 ) -> Result<[u8; 32], Response> {
     let bytes = encode(&("native-snapshot-request-body-v1", metadata_sha256, body))?;
     Ok(digest(&bytes))
 }
 pub(super) fn response_digest(
-    response: &ReplyData, body: BodyDescriptor,
+    response: &ReplyData,
+    body: BodyDescriptor,
 ) -> Result<[u8; 32], Response> {
     let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
     Ok(digest(&bytes))
@@ -358,17 +426,27 @@ struct BorrowedReply<'a> {
     consistency_index: Option<u64>,
 }
 pub(super) fn observed_response_digest(
-    response: &Response, cluster: &str, body: BodyDescriptor,
+    response: &Response,
+    cluster: &str,
+    body: BodyDescriptor,
 ) -> Result<[u8; 32], Response> {
     if response.unwrapped_json.is_some() || response.response_headers.has_local_redirect() {
         return Err(unavailable());
     }
     let consistency_index = match response.consistency_index.as_ref() {
-        Some(index) => Some(index.raft_index_for_cluster(cluster).ok_or_else(unavailable)?),
+        Some(index) => Some(
+            index
+                .raft_index_for_cluster(cluster)
+                .ok_or_else(unavailable)?,
+        ),
         None => None,
     };
-    let response = BorrowedReply { status: response.status, body: &response.body,
-        headers: &response.response_headers, consistency_index };
+    let response = BorrowedReply {
+        status: response.status,
+        body: &response.body,
+        headers: &response.response_headers,
+        consistency_index,
+    };
     let bytes = encode(&("native-snapshot-response-body-v1", response, body))?;
     Ok(digest(&bytes))
 }

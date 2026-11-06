@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Pinned OpenBao CLI transports candidate-native snapshots on a local TLS server.
 
+Select an official release explicitly; the historical default remains 2.6.2.
+
 Native HBB2 state is deliberately not an OpenBao state.bin. Native v2 binds the
 seal: ordinary rollback succeeds within that seal, and rekey rejects old archives
 on both restore paths. No HA restore or cross-seal force compatibility claim.
@@ -28,7 +30,10 @@ import time
 from bao_http import Client, SafeArgumentParser, private_write
 from heptabao.private_state import _descriptor_walk_path
 from core_isolation import ROOT, ScenarioFailure, file_hash
-from official_openbao_launcher import verify_inputs, oracle_environment
+from official_openbao_launcher import (
+    SUPPORTED_VERSIONS, VERSION as DEFAULT_OFFICIAL_VERSION,
+    oracle_environment, pinned_artifact, verify_inputs,
+)
 from online_evidence import admit_output, source_identity
 
 MIB = 1024 * 1024
@@ -597,20 +602,24 @@ def run(binary, bao, work, checks, observations, postgres_bin=None):
             if pg is not None: pg.stop()
 
 
-def main():
+def main(argv=None):
     parser=SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary',required=True,type=Path)
     parser.add_argument('--build-source-commit',required=True)
     parser.add_argument('--work-parent',required=True,type=Path)
     parser.add_argument('--output',required=True,type=Path)
     parser.add_argument('--postgres-bin',type=Path,help='Fresh PostgreSQL 17 durable storage; no local fallback')
-    args=parser.parse_args()
+    parser.add_argument('--official-version',choices=SUPPORTED_VERSIONS,default=DEFAULT_OFFICIAL_VERSION,
+                        help='Pinned OpenBao CLI release; historical default: %(default)s')
+    args=parser.parse_args(argv)
     if not re.fullmatch(r'[0-9a-f]{40}',args.build_source_commit):parser.error('full build commit required')
     binary,output=args.binary.resolve(strict=True),args.output.absolute()
     parent=private_parent(args.work_parent);admitted=admit_output(output)
     pg_bin=args.postgres_bin.resolve(strict=True) if args.postgres_bin is not None else None
     pg_before=postgres_identity(pg_bin) if pg_bin is not None else None
-    bao=verify_inputs();bao_hash=file_hash(bao)
+    bao=verify_inputs(version=args.official_version);bao_hash=file_hash(bao)
+    cli_pin=pinned_artifact(version=args.official_version)
+    if bao_hash!=cli_pin['binary_sha256']:raise ValueError('official_cli_changed_after_verification')
     before=source_identity(ROOT,binary);runner_hash=file_hash(Path(__file__))
     work=Path(tempfile.mkdtemp(prefix='native-snapshot-cli-',dir=parent))
     checks,observations,failure=[],{},None
@@ -630,7 +639,9 @@ def main():
         'postgres_restore_profile_covered':pg_bin is not None and failure is None,
         'failure':failure,'checks':checks,'observations':observations,'source_identity':before,'source_identity_after':after,
         'source_and_binary_unchanged':before==after,'build_source_commit':args.build_source_commit,
-        'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_cli_version':'2.6.2',
+        'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_cli_version':args.official_version,
+        'official_cli_pinned_artifact':cli_pin,
+        'official_cli_provenance_url':'https://github.com/openbao/openbao/releases/tag/v'+args.official_version,
         'official_cli_sha256':bao_hash,'official_cli_unchanged':cli_unchanged,
         'retained_failure_work_dir':str(work) if failure else None,'native_archive_only':True,'native_archive_version':2,
         'same_seal_ordinary_rollback_covered':failure is None,

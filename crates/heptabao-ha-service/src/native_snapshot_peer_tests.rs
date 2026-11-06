@@ -139,7 +139,12 @@ fn tls_fixture(path: &Path) -> TestResult<TlsFixture> {
     }
     fs::set_permissions(path.join("ca.key"), fs::Permissions::from_mode(0o600))?;
     let mut roots = RootCertStore::empty();
-    roots.add(certificates(&path.join("ca.crt"))?.first().ok_or("CA chain empty")?.clone())?;
+    roots.add(
+        certificates(&path.join("ca.crt"))?
+            .first()
+            .ok_or("CA chain empty")?
+            .clone(),
+    )?;
     let provider = Arc::new(rustls::crypto::ring::default_provider());
     let client_chain = certificates(&path.join("client.crt"))?;
     let client_pin = sha256(client_chain.first().ok_or("client chain empty")?.as_ref());
@@ -153,16 +158,10 @@ fn tls_fixture(path: &Path) -> TestResult<TlsFixture> {
     let mut server = ServerConfig::builder_with_provider(provider.clone())
         .with_safe_default_protocol_versions()?
         .with_client_cert_verifier(
-            rustls::server::WebPkiClientVerifier::builder_with_provider(
-                Arc::new(roots),
-                provider,
-            )
-            .build()?,
+            rustls::server::WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider)
+                .build()?,
         )
-        .with_single_cert(
-            server_chain,
-            private_key(&path.join("server.key"))?,
-        )?;
+        .with_single_cert(server_chain, private_key(&path.join("server.key"))?)?;
     server.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
     Ok(TlsFixture {
         client: Arc::new(client),
@@ -171,7 +170,6 @@ fn tls_fixture(path: &Path) -> TestResult<TlsFixture> {
         server_pin,
     })
 }
-
 
 const TEST_TIMEOUT: Duration = Duration::from_secs(8);
 
@@ -266,10 +264,11 @@ fn snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download() -> T
             {
                 return Err(HaError::InvalidFrame);
             }
-            let (parsed, verified) = peer.accept_body(limits, b"original admission checkpoint", |reader| {
-                let mut bytes = Vec::new();
-                reader.read_to_end(&mut bytes).map(|_| bytes)
-            })?;
+            let (parsed, verified) =
+                peer.accept_body(limits, b"original admission checkpoint", |reader| {
+                    let mut bytes = Vec::new();
+                    reader.read_to_end(&mut bytes).map(|_| bytes)
+                })?;
             let parsed = parsed.map_err(|_| HaError::Transport)?;
             if parsed != expected_source
                 || verified.bytes() != parsed.len() as u64
@@ -313,11 +312,24 @@ fn snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download() -> T
     let result = result?;
     assert_eq!(result.status(), 200);
     assert_eq!(result.metadata(), b"public synthetic completion metadata");
-    assert_eq!(result.request_body().ok_or("request END missing")?.sha256(), sha256(&source));
-    assert_eq!(result.response_body().ok_or("response END missing")?.sha256(), sha256(&response));
+    assert_eq!(
+        result.request_body().ok_or("request END missing")?.sha256(),
+        sha256(&source)
+    );
+    assert_eq!(
+        result
+            .response_body()
+            .ok_or("response END missing")?
+            .sha256(),
+        sha256(&response)
+    );
     assert_eq!(received, response);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 
@@ -340,9 +352,10 @@ fn snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload() -> TestResult
     let worker = thread::spawn(move || {
         serve_snapshot_once(listener, server, identities, server_done, |mut peer| {
             server_calls.fetch_add(1, Ordering::SeqCst);
-            let (parsed, _) = peer.accept_body(limits, b"original admission checkpoint", |reader| {
-                io::copy(reader, &mut io::sink())
-            })?;
+            let (parsed, _) =
+                peer.accept_body(limits, b"original admission checkpoint", |reader| {
+                    io::copy(reader, &mut io::sink())
+                })?;
             parsed.map_err(|_| HaError::Transport)?;
             server_finalized.fetch_add(1, Ordering::SeqCst);
             peer.complete(204, b"completion", &mut io::empty(), limits)?;
@@ -356,10 +369,8 @@ fn snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload() -> TestResult
             fixture.client.clone(),
             rustls::pki_types::ServerName::try_from("localhost")?,
         )?;
-        let mut tls = rustls::StreamOwned::new(
-            connection,
-            ForwardDeadlineStream { stream, deadline },
-        );
+        let mut tls =
+            rustls::StreamOwned::new(connection, ForwardDeadlineStream { stream, deadline });
         tls.conn.complete_io(&mut tls.sock)?;
         assert_eq!(tls.conn.alpn_protocol(), Some(RAFT_ALPN_PROTOCOL));
         exact_write(&mut tls, STREAM_PREFIX, deadline)?;
@@ -370,7 +381,10 @@ fn snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload() -> TestResult
         let mut decision = [0_u8; 1];
         exact_read(&mut tls, &mut decision, deadline)?;
         assert_eq!(decision, [READY]);
-        assert_eq!(metadata_read(&mut tls, deadline)?.as_slice(), b"original admission checkpoint");
+        assert_eq!(
+            metadata_read(&mut tls, deadline)?.as_slice(),
+            b"original admission checkpoint"
+        );
         encode_snapshot_body(&mut io::Cursor::new(b"archive"), &mut tls, limits, deadline)?;
         tls.sock.stream.shutdown(std::net::Shutdown::Write)?;
         // Deliberately omit close-notify. The server must not treat the valid
@@ -383,7 +397,11 @@ fn snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload() -> TestResult
     assert_eq!(served, Err(HaError::Transport));
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert_eq!(finalized.load(Ordering::SeqCst), 0);
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 
@@ -418,9 +436,10 @@ fn snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body() -> TestResu
     });
     let mut source = io::Cursor::new(b"never sent");
     let mut sink = Vec::new();
-    let result = transport.exchange_snapshot_before(&target, request, &mut source, &mut sink, |_| {
-        Err(HaError::InvalidFrame)
-    });
+    let result =
+        transport.exchange_snapshot_before(&target, request, &mut source, &mut sink, |_| {
+            Err(HaError::InvalidFrame)
+        });
     done.store(true, Ordering::SeqCst);
     let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
     assert!(matches!(result, Err(HaError::PeerAuthenticationFailed)));
@@ -428,7 +447,11 @@ fn snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body() -> TestResu
     assert_eq!(source.position(), 0);
     assert!(sink.is_empty());
     assert_eq!(calls.load(Ordering::SeqCst), 0);
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 
@@ -461,9 +484,10 @@ fn snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload() -> TestResu
     });
     let mut upload = io::Cursor::new(b"never uploaded");
     let mut response = Vec::new();
-    let result = transport.exchange_snapshot_before(&target, request, &mut upload, &mut response, |_| {
-        Err(HaError::InvalidFrame)
-    });
+    let result =
+        transport.exchange_snapshot_before(&target, request, &mut upload, &mut response, |_| {
+            Err(HaError::InvalidFrame)
+        });
     done.store(true, Ordering::SeqCst);
     let (served, listener) = worker.join().map_err(|_| "snapshot receiver panic")?;
     assert_eq!(served, Ok(()));
@@ -475,7 +499,11 @@ fn snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload() -> TestResu
     assert_eq!(upload.position(), 0);
     assert!(response.is_empty());
     assert_eq!(calls.load(Ordering::SeqCst), 1);
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 
@@ -527,18 +555,19 @@ fn snapshot_peer_original_frame_still_uses_only_old_callback() -> TestResult {
             thread::sleep(Duration::from_millis(1));
         }
     });
-    let result = transport.exchange_before(
-        &target,
-        b"legacy request",
-        Instant::now() + TEST_TIMEOUT,
-    );
+    let result =
+        transport.exchange_before(&target, b"legacy request", Instant::now() + TEST_TIMEOUT);
     done.store(true, Ordering::SeqCst);
     let (served, listener) = worker.join().map_err(|_| "legacy receiver panic")?;
     assert_eq!(served, Ok(()));
     assert_eq!(result?, b"legacy response");
     assert_eq!(old_calls.load(Ordering::SeqCst), 1);
     assert_eq!(new_calls.load(Ordering::SeqCst), 0);
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 
@@ -562,7 +591,10 @@ fn snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline() -> Test
     let pins = [fixture.server_pin];
     let limits = SnapshotBodyLimits::new(1024)?;
     let request = SnapshotPeerRequest::new(
-        b"public synthetic request", &pins, (limits, limits), Instant::now() + TEST_TIMEOUT,
+        b"public synthetic request",
+        &pins,
+        (limits, limits),
+        Instant::now() + TEST_TIMEOUT,
     )?;
     let done = Arc::new(AtomicBool::new(false));
     let server_done = done.clone();
@@ -598,7 +630,11 @@ fn snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline() -> Test
     let mut received = Vec::new();
     let admission_calls = AtomicUsize::new(0);
     let result = transport.exchange_snapshot_before(
-        &target, request, &mut upload, &mut received, |metadata| {
+        &target,
+        request,
+        &mut upload,
+        &mut received,
+        |metadata| {
             admission_calls.fetch_add(1, Ordering::SeqCst);
             if metadata != b"rejected original owner" {
                 return Err(HaError::InvalidFrame);
@@ -616,6 +652,10 @@ fn snapshot_peer_ready_veto_reads_no_upload_and_cannot_extend_deadline() -> Test
     assert_eq!(completed.load(Ordering::SeqCst), 0);
     assert_eq!(upload.position(), 0);
     assert!(received.is_empty());
-    assert!(listener.accept().is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock));
+    assert!(
+        listener
+            .accept()
+            .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }

@@ -32,24 +32,36 @@ struct OriginalCheckpoint {
 
 impl Service {
     pub(in crate::service::snapshot_transfer) fn begin_snapshot_forward(
-        &mut self, mut request: ServiceRequest<'_>, original_deadline: Instant,
+        &mut self,
+        mut request: ServiceRequest<'_>,
+        original_deadline: Instant,
     ) -> Result<SnapshotForwardPlan, Response> {
         if !eligible(&request)? || !self.native_ha_snapshot_transport_enabled() {
             erase_json(&mut request.body);
             return Err(unavailable());
         }
         let started = Instant::now();
-        let wall = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| unavailable())?;
+        let wall = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| unavailable())?;
         let clock = RequestClock::anchored(wall, started).map_err(|_| unavailable())?;
         let fingerprint = self.request_fingerprint(
-            request.method, request.path, request.namespace, request.token,
+            request.method,
+            request.path,
+            request.namespace,
+            request.token,
         );
         self.audit_event("request", &fingerprint, wall.as_secs(), None)
             .map_err(|_| unavailable())?;
         let admitted: Result<SnapshotForwardPlan, Response> = (|| {
-            let endpoint = self.ha.as_ref().ok_or_else(unavailable)?
-                .lock_for_request().map_err(|_| unavailable())?
-                .snapshot_endpoint_before(original_deadline).map_err(|_| unavailable())?;
+            let endpoint = self
+                .ha
+                .as_ref()
+                .ok_or_else(unavailable)?
+                .lock_for_request()
+                .map_err(|_| unavailable())?
+                .snapshot_endpoint_before(original_deadline)
+                .map_err(|_| unavailable())?;
             let owner = LocalOwner::capture(self, endpoint.deadline())?;
             erase_json(&mut request.body);
             let request = wire::RequestWire {
@@ -71,7 +83,11 @@ impl Service {
             let metadata = wire::encode(&request)?;
             Ok(SnapshotForwardPlan {
                 endpoint: Some(endpoint),
-                request, metadata, owner, clock, fingerprint: fingerprint.clone(),
+                request,
+                metadata,
+                owner,
+                clock,
+                fingerprint: fingerprint.clone(),
                 transport_attempted: false,
                 initial_activation: Zeroizing::new(self.unseal_nonce.clone()),
             })
@@ -79,9 +95,15 @@ impl Service {
         match admitted {
             Ok(plan) => Ok(plan),
             Err(mut response) => {
-                if self.audit_event(
-                    "response", &fingerprint, wall.as_secs(), Some(response.status),
-                ).is_err() {
+                if self
+                    .audit_event(
+                        "response",
+                        &fingerprint,
+                        wall.as_secs(),
+                        Some(response.status),
+                    )
+                    .is_err()
+                {
                     erase_json(&mut response.body);
                     self.recovery_required = true;
                     self.ha_activation = None;
@@ -101,7 +123,9 @@ impl SnapshotForwardPlan {
     }
 
     fn accept_ready(
-        &self, service: &mut Service, bytes: &[u8],
+        &self,
+        service: &mut Service,
+        bytes: &[u8],
     ) -> Result<OriginalCheckpoint, Response> {
         self.owner.check(service)?;
         if service.unseal_nonce != *self.initial_activation {
@@ -114,10 +138,17 @@ impl SnapshotForwardPlan {
         }
         // Only native authenticated catch-up can install this source checkpoint.
         // We hold its actual Auth COW before transmitting any archive byte.
-        sync_prefix(service, &self.owner, &admission.data, &admission.data.prefix)?;
+        sync_prefix(
+            service,
+            &self.owner,
+            &admission.data,
+            &admission.data.prefix,
+        )?;
         let auth = service.state.as_ref().ok_or_else(unavailable)?.auth.clone();
-        if auth.forward_owner_projection_digest().map_err(|_| unavailable())?
-                != admission.data.original_auth
+        if auth
+            .forward_owner_projection_digest()
+            .map_err(|_| unavailable())?
+            != admission.data.original_auth
             || service.current_state_identity()? != admission.data.original_identity
             || service.state.as_ref().ok_or_else(unavailable)?.replay_epoch
                 != admission.data.original_epoch
@@ -125,8 +156,12 @@ impl SnapshotForwardPlan {
             return Err(unavailable());
         }
         let (identity, witness) = fresh_native(
-            service, &self.owner.ha, &auth, &admission.data.actor,
-            self.clock, self.owner.deadline,
+            service,
+            &self.owner.ha,
+            &auth,
+            &admission.data.actor,
+            self.clock,
+            self.owner.deadline,
         )?;
         if identity != admission.data.original_identity
             || !witness.covers_completed_prefix(&admission.data.prefix)
@@ -134,18 +169,30 @@ impl SnapshotForwardPlan {
             return Err(unavailable());
         }
         self.owner.check(service)?;
-        original_actor(&auth, &admission.data.actor, self.clock, self.owner.deadline)?;
+        original_actor(
+            &auth,
+            &admission.data.actor,
+            self.clock,
+            self.owner.deadline,
+        )?;
         Ok(OriginalCheckpoint {
-            admission, bytes: Zeroizing::new(bytes.to_vec()), auth,
+            admission,
+            bytes: Zeroizing::new(bytes.to_vec()),
+            auth,
         })
     }
 
     fn audit_failure(
-        &self, service: &mut Service, mut response: Response,
+        &self,
+        service: &mut Service,
+        mut response: Response,
         authenticated: Option<&wire::CompletionData>,
     ) -> CompletedSnapshotForward {
         let now = self.clock.admitted_at().duration_since_epoch().as_secs();
-        if service.audit_event("response", &self.fingerprint, now, Some(response.status)).is_err() {
+        if service
+            .audit_event("response", &self.fingerprint, now, Some(response.status))
+            .is_err()
+        {
             erase_json(&mut response.body);
             service.recovery_required = true;
             service.ha_activation = None;
@@ -154,7 +201,10 @@ impl SnapshotForwardPlan {
             // Only authenticated completion data can retain those exact fields.
             response = self.audit_veto_response(authenticated);
         }
-        CompletedSnapshotForward { response, file: None }
+        CompletedSnapshotForward {
+            response,
+            file: None,
+        }
     }
 
     fn audit_veto_response(&self, authenticated: Option<&wire::CompletionData>) -> Response {
@@ -170,14 +220,18 @@ impl SnapshotForwardPlan {
             status: 503,
             body: json!({"errors":["native snapshot forwarding outcome requires reconciliation"],
                 "outcome_unknown":true,"retry_allowed":false}),
-            unwrapped_json: None, response_headers: Default::default(), consistency_index: None,
+            unwrapped_json: None,
+            response_headers: Default::default(),
+            consistency_index: None,
         }
     }
 
     /// Same original HTTP BodyReader, consumed at most once. No remote result
     /// can request replay, leader chase, a new deadline or an HTTP redirect.
     pub(crate) fn execute(
-        mut self, service: &Arc<Mutex<Service>>, upload: &mut impl Read,
+        mut self,
+        service: &Arc<Mutex<Service>>,
+        upload: &mut impl Read,
     ) -> CompletedSnapshotForward {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(self.owner.deadline);
         let operation = match self.request.operation() {
@@ -193,7 +247,8 @@ impl SnapshotForwardPlan {
             wire::Operation::HistoricalRestore => 0,
         };
         let limits = match (
-            SnapshotBodyLimits::new(upload_limit), SnapshotBodyLimits::new(response_limit),
+            SnapshotBodyLimits::new(upload_limit),
+            SnapshotBodyLimits::new(response_limit),
         ) {
             (Ok(upload), Ok(response)) => (upload, response),
             _ => return self.finish_failure(service, unavailable()),
@@ -209,17 +264,16 @@ impl SnapshotForwardPlan {
         // This irreversible local marker precedes the single transport call.
         // A failed exchange is never treated as proof that the leader did no work.
         self.transport_attempted = true;
-        let exchange = endpoint.exchange(
-            &self.metadata, upload, &mut file, limits,
-            |metadata| {
-                let mut writer = service.lock_for_request()
-                    .map_err(|_| heptabao_ha_service::HaError::Transport)?;
-                let checkpoint = self.accept_ready(&mut writer, metadata)
-                    .map_err(|_| heptabao_ha_service::HaError::PeerAuthenticationFailed)?;
-                original = Some(checkpoint);
-                Ok(())
-            },
-        );
+        let exchange = endpoint.exchange(&self.metadata, upload, &mut file, limits, |metadata| {
+            let mut writer = service
+                .lock_for_request()
+                .map_err(|_| heptabao_ha_service::HaError::Transport)?;
+            let checkpoint = self
+                .accept_ready(&mut writer, metadata)
+                .map_err(|_| heptabao_ha_service::HaError::PeerAuthenticationFailed)?;
+            original = Some(checkpoint);
+            Ok(())
+        });
         let result = match exchange {
             Ok(result) => result,
             Err(_) => return self.finish_failure(service, self.uncertain()),
@@ -252,18 +306,23 @@ impl SnapshotForwardPlan {
                 return Err(unavailable());
             }
             let completion = wire.authenticate(
-                &original.admission, &original.bytes,
+                &original.admission,
+                &original.bytes,
                 result.request_body().ok_or_else(unavailable)?,
                 result.response_body().ok_or_else(unavailable)?,
                 self.owner.key(&writer)?,
             )?;
             let (reply, data) = completion.into_parts();
-            if file.as_ref().map_or_else(wire::BodyDescriptor::empty, file::SealedSnapshotFile::descriptor)
-                    != data.downloaded
+            if file.as_ref().map_or_else(
+                wire::BodyDescriptor::empty,
+                file::SealedSnapshotFile::descriptor,
+            ) != data.downloaded
             {
                 drop(file);
                 return Ok(self.audit_failure(
-                    &mut writer, self.uncertain_completion(&data), Some(&data),
+                    &mut writer,
+                    self.uncertain_completion(&data),
+                    Some(&data),
                 ));
             }
             let response = match reply.into_response(&self.request.cluster) {
@@ -271,7 +330,9 @@ impl SnapshotForwardPlan {
                 Err(_) => {
                     drop(file);
                     return Ok(self.audit_failure(
-                        &mut writer, self.uncertain_completion(&data), Some(&data),
+                        &mut writer,
+                        self.uncertain_completion(&data),
+                        Some(&data),
                     ));
                 }
             };
@@ -286,20 +347,31 @@ impl SnapshotForwardPlan {
     /// HTTP framing failed before the endpoint could be consumed. This records
     /// the terminal admission error and drops the original owner without I/O.
     pub(crate) fn reject_before_exchange(
-        self, service: &Arc<Mutex<Service>>, response: Response,
+        self,
+        service: &Arc<Mutex<Service>>,
+        response: Response,
     ) -> CompletedSnapshotForward {
         self.finish_failure(service, response)
     }
 
-    fn finish_failure(&self, service: &Arc<Mutex<Service>>, response: Response) -> CompletedSnapshotForward {
+    fn finish_failure(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        response: Response,
+    ) -> CompletedSnapshotForward {
         match service.lock_for_request() {
             Ok(mut writer) => self.audit_failure(&mut writer, response, None),
-            Err(_) => CompletedSnapshotForward { response: self.audit_veto_response(None), file: None },
+            Err(_) => CompletedSnapshotForward {
+                response: self.audit_veto_response(None),
+                file: None,
+            },
         }
     }
 
     fn finish_rejection(
-        &self, service: &Arc<Mutex<Service>>, result: SnapshotPeerResponse,
+        &self,
+        service: &Arc<Mutex<Service>>,
+        result: SnapshotPeerResponse,
     ) -> CompletedSnapshotForward {
         let response = (|| {
             let rejection: wire::RejectionWire = wire::decode(result.metadata())?;
@@ -311,24 +383,33 @@ impl SnapshotForwardPlan {
                 return Err(unavailable());
             }
             rejection.reply.into_response(&self.request.cluster)
-        })().unwrap_or_else(|_| self.uncertain());
+        })()
+        .unwrap_or_else(|_| self.uncertain());
         self.finish_failure(service, response)
     }
 
     fn delivery_check(
-        &self, service: &mut Service, original: &OriginalCheckpoint,
-        data: &wire::CompletionData, response: &Response, activation: &str,
+        &self,
+        service: &mut Service,
+        original: &OriginalCheckpoint,
+        data: &wire::CompletionData,
+        response: &Response,
+        activation: &str,
     ) -> Result<(), Response> {
         if wire::observed_response_digest(response, &self.request.cluster, data.downloaded)?
-                != data.response_digest
+            != data.response_digest
         {
             return Err(unavailable());
         }
         self.owner.check(service)?;
         sync_prefix(service, &self.owner, &original.admission.data, &data.prefix)?;
         let (_, witness) = fresh_native(
-            service, &self.owner.ha, &original.auth, &original.admission.data.actor,
-            self.clock, self.owner.deadline,
+            service,
+            &self.owner.ha,
+            &original.auth,
+            &original.admission.data.actor,
+            self.clock,
+            self.owner.deadline,
         )?;
         let state = service.state.as_ref().ok_or_else(unavailable)?;
         if service.unseal_nonce != activation
@@ -343,11 +424,19 @@ impl SnapshotForwardPlan {
         // Historical restore retains the original Auth owner. Download also
         // requires the current owner, so a concurrent revocation is a veto.
         if original.admission.data.operation == wire::Operation::Download {
-            original_actor(&state.auth, &original.admission.data.actor,
-                self.clock, self.owner.deadline)?;
+            original_actor(
+                &state.auth,
+                &original.admission.data.actor,
+                self.clock,
+                self.owner.deadline,
+            )?;
         }
-        original_actor(&original.auth, &original.admission.data.actor,
-            self.clock, self.owner.deadline)?;
+        original_actor(
+            &original.auth,
+            &original.admission.data.actor,
+            self.clock,
+            self.owner.deadline,
+        )?;
         self.owner.check(service)
     }
 
@@ -366,8 +455,10 @@ impl SnapshotForwardPlan {
             let activation = Zeroizing::new(service.unseal_nonce.clone());
             #[cfg(test)]
             service.fixture_snapshot_forward_fault(
-                test_faults::Point::IngressFirstDelivery, self.request.nonce,
-                self.owner.deadline, &original.admission.data,
+                test_faults::Point::IngressFirstDelivery,
+                self.request.nonce,
+                self.owner.deadline,
+                &original.admission.data,
             );
             self.delivery_check(service, &original, &data, &response, &activation)?;
             Ok::<_, Response>(activation)
@@ -382,31 +473,46 @@ impl SnapshotForwardPlan {
         let now = self.clock.admitted_at().duration_since_epoch().as_secs();
         // The source committed the original terminal clock floor. Ingress
         // validates it and performs its mandatory audit, without another use.
-        if service.audit_event("response", &self.fingerprint, now, Some(response.status)).is_err() {
+        if service
+            .audit_event("response", &self.fingerprint, now, Some(response.status))
+            .is_err()
+        {
             erase_json(&mut response.body);
             drop(file);
             service.recovery_required = true;
             service.ha_activation = None;
             service.ha_read_cache = None;
             return CompletedSnapshotForward {
-                response: self.uncertain_completion(&data), file: None,
+                response: self.uncertain_completion(&data),
+                file: None,
             };
         }
         #[cfg(test)]
         service.fixture_snapshot_forward_fault(
-            test_faults::Point::IngressSecondDelivery, self.request.nonce,
-            self.owner.deadline, &original.admission.data,
+            test_faults::Point::IngressSecondDelivery,
+            self.request.nonce,
+            self.owner.deadline,
+            &original.admission.data,
         );
-        if self.delivery_check(service, &original, &data, &response, &activation).is_err() {
+        if self
+            .delivery_check(service, &original, &data, &response, &activation)
+            .is_err()
+        {
             erase_json(&mut response.body);
             response.response_headers.clear();
             response.consistency_index = None;
             drop(file);
             let error = failed_delivery(
-                service, &self.fingerprint, now, self.uncertain_completion(&data),
+                service,
+                &self.fingerprint,
+                now,
+                self.uncertain_completion(&data),
                 || self.uncertain_completion(&data),
             );
-            return CompletedSnapshotForward { response: error, file: None };
+            return CompletedSnapshotForward {
+                response: error,
+                file: None,
+            };
         }
         let file = file.map(file::SealedSnapshotFile::into_file);
         CompletedSnapshotForward { response, file }
@@ -418,9 +524,10 @@ impl SnapshotForwardPlan {
             && let Some(body) = response.body.as_object_mut()
         {
             body.insert("root_attempted".into(), Value::Bool(true));
-            body.insert("recovery_reference".into(), Value::String(
-                format!("native-v6-restore-{}", hex(operation)),
-            ));
+            body.insert(
+                "recovery_reference".into(),
+                Value::String(format!("native-v6-restore-{}", hex(operation))),
+            );
         }
         response
     }

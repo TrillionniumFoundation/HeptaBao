@@ -416,9 +416,9 @@ impl Service {
                 {
                     return match self.begin_snapshot_forward(request, deadline) {
                         Ok(plan) => NativeSnapshotAdmission::Forward(Box::new(plan)),
-                        Err(response) => NativeSnapshotAdmission::Execute(
-                            RequestExecution::Complete(response),
-                        ),
+                        Err(response) => {
+                            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response))
+                        }
                     };
                 }
                 let now = SystemTime::now()

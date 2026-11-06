@@ -142,7 +142,10 @@ fn snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes() -> TestRes
     let mut reader =
         SnapshotBodyReader::new(Cursor::new(wire), SnapshotBodyLimits::new(9)?, deadline())?;
     assert_eq!(reader.read(&mut [0_u8; 1])?, 1);
-    let error = reader.finish().err().ok_or("partial consumer was accepted")?;
+    let error = reader
+        .finish()
+        .err()
+        .ok_or("partial consumer was accepted")?;
     assert_eq!(error.kind(), io::ErrorKind::InvalidData);
     Ok(())
 }
@@ -168,14 +171,19 @@ impl Read for NoAuthenticatedClose {
 fn snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding() -> TestResult {
     let (wire, _) = encoded(b"full", 4)?;
     let mut reader = SnapshotBodyReader::new(
-        NoAuthenticatedClose { wire: Cursor::new(wire) },
+        NoAuthenticatedClose {
+            wire: Cursor::new(wire),
+        },
         SnapshotBodyLimits::new(4)?,
         deadline(),
     )?;
     let mut exact = [0_u8; 4];
     reader.read_exact(&mut exact)?;
     assert_eq!(&exact, b"full");
-    let error = reader.finish().err().ok_or("unauthenticated closure was accepted")?;
+    let error = reader
+        .finish()
+        .err()
+        .ok_or("unauthenticated closure was accepted")?;
     assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
     Ok(())
 }

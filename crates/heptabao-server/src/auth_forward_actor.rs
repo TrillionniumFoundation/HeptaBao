@@ -124,7 +124,8 @@ impl AuthState {
             return Err(denied());
         }
         let digest = actor.owner.service_digest().ok_or_else(denied)?;
-        let token = self.active_token_observed(digest, self.token_api_observed_time(time), false)?;
+        let token =
+            self.active_token_observed(digest, self.token_api_observed_time(time), false)?;
         if !token.root {
             return Err(denied());
         }

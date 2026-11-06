@@ -64,7 +64,10 @@ pub(super) enum NativeReply {
     HttpBadRequest,
     File(SnapshotFile),
     #[cfg(feature = "native-v6-ha")]
-    ForwardedFile { file: SnapshotFile, response: Response },
+    ForwardedFile {
+        file: SnapshotFile,
+        response: Response,
+    },
     #[cfg(feature = "native-v6-storage")]
     LosslessFile(SnapshotFile),
     Redirect {
@@ -97,8 +100,9 @@ impl NativeReply {
             Self::Ui(reply) => reply.write(writer, head),
             Self::File(file) => write_file_response(writer, file, head, namespace),
             #[cfg(feature = "native-v6-ha")]
-            Self::ForwardedFile { file, response } =>
-                write_forwarded_file_response(writer, file, response, head, namespace),
+            Self::ForwardedFile { file, response } => {
+                write_forwarded_file_response(writer, file, response, head, namespace)
+            }
             #[cfg(feature = "native-v6-storage")]
             Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
             Self::Redirect {
@@ -366,14 +370,19 @@ pub(super) fn execute(
                     if response.status >= 400 {
                         let mut buffer = Zeroizing::new([0; 8192]);
                         while let Ok(count) = body.read(&mut *buffer) {
-                            if count == 0 { break; }
+                            if count == 0 {
+                                break;
+                            }
                         }
                     }
                     (response, file)
                 }
-                Err(_) => (*plan).reject_before_exchange(
-                    service, Response::error(400, "invalid snapshot body framing"),
-                ).into_parts(),
+                Err(_) => (*plan)
+                    .reject_before_exchange(
+                        service,
+                        Response::error(400, "invalid snapshot body framing"),
+                    )
+                    .into_parts(),
             };
             return if response.status == 200 {
                 match file {
@@ -485,8 +494,11 @@ pub(super) fn write_file_response(
 
 #[cfg(feature = "native-v6-ha")]
 fn write_forwarded_file_response(
-    writer: &mut impl Write, mut file: SnapshotFile, response: Response,
-    head: bool, namespace: &str,
+    writer: &mut impl Write,
+    mut file: SnapshotFile,
+    response: Response,
+    head: bool,
+    namespace: &str,
 ) -> io::Result<()> {
     if response.status != 200 {
         return Err(io::Error::other("snapshot completion status changed"));
@@ -509,7 +521,9 @@ fn write_forwarded_file_response(
         let mut buffer = Zeroizing::new([0; 64 * 1024]);
         loop {
             let count = file.read(&mut *buffer)?;
-            if count == 0 { break; }
+            if count == 0 {
+                break;
+            }
             writer.write_all(&buffer[..count])?;
         }
     }

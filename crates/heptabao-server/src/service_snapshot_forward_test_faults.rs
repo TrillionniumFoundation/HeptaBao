@@ -56,7 +56,10 @@ impl State {
 
 impl Service {
     pub(in crate::service::snapshot_transfer::forward) fn fixture_snapshot_forward_fault(
-        &mut self, point: Point, nonce: [u8; 32], deadline: Instant,
+        &mut self,
+        point: Point,
+        nonce: [u8; 32],
+        deadline: Instant,
         original: &wire::AdmissionData,
     ) {
         if self.snapshot_forward_test.armed != Some((point, nonce)) {
@@ -68,13 +71,17 @@ impl Service {
         self.snapshot_forward_test.hits += 1;
         let audit_bytes = self.audit.metadata().ok().map(|info| info.len());
         let observation = Observation {
-            point, nonce, deadline,
+            point,
+            nonce,
+            deadline,
             original_identity: original.original_identity,
             original_epoch: original.original_epoch,
             original_auth: original.original_auth,
             installed_identity: self.current_state_identity().ok(),
             installed_epoch: self.state.as_ref().map(|state| state.replay_epoch),
-            installed_auth: self.state.as_ref()
+            installed_auth: self
+                .state
+                .as_ref()
                 .and_then(|state| state.auth.forward_owner_projection_digest().ok()),
             audit_sequence: self.audit_sequence,
             audit_bytes,
@@ -87,7 +94,8 @@ impl Service {
             // its existing test I/O capacity. No receipt, root, epoch, Actor,
             // completion data, deadline or recovery flag is supplied here.
             self.audit_capacity = bytes;
-            self.unseal_nonce.push_str(":snapshot-forward-audit-fixture");
+            self.unseal_nonce
+                .push_str(":snapshot-forward-audit-fixture");
         }
     }
 }
@@ -103,10 +111,14 @@ pub(crate) fn reject_unverified_root_fields(
     let target = ingress.target();
     let peer = ingress.into_peer();
     let metadata = Zeroizing::new(peer.metadata().to_vec());
-    let request: wire::RequestWire = wire::decode(&metadata)
-        .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
-    if request.cluster != cluster || request.ingress != source || request.leader != target
-        || request.operation().map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?
+    let request: wire::RequestWire =
+        wire::decode(&metadata).map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+    if request.cluster != cluster
+        || request.ingress != source
+        || request.leader != target
+        || request
+            .operation()
+            .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?
             != wire::Operation::HistoricalRestore
     {
         return Err(heptabao_ha_service::HaError::PeerAuthenticationFailed);
@@ -118,7 +130,8 @@ pub(crate) fn reject_unverified_root_fields(
         nonce: request.nonce,
         metadata_sha256: wire::digest(&metadata),
         reply,
-    }).map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+    })
+    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
     peer.reject(503, &bytes)
 }
 
