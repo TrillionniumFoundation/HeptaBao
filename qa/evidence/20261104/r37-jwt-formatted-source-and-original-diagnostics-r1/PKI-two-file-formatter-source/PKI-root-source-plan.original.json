@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.pki-precise-lease-status.SOURCE-r1",
+  "status": "SOURCE_ONLY_UNCOMPILED",
+  "base_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "base_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "old_actual69_report": {
+    "blob": "db965ea9374ddcb7b76c5d21a89036ba9a5d6125",
+    "bytes": 104034,
+    "sha256": "51dbe8ec85e7e18434e48ecf627107267fb49284d18408c448f01a7d38929bc5",
+    "exact_numeric": 67,
+    "normalized_rejections": 2,
+    "original_bytes_unchanged": true,
+    "raw_two_numeric_not_recoverable": true
+  },
+  "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "official_sources": [
+    {
+      "label": "official-logical-system",
+      "blob": "8da5ee4c159e617c57ab20ffe3b1057d0cbe3e0b",
+      "bytes": 174841,
+      "sha256": "766eceff5b7e4a6f47208f9e1501d3db8ae3ac17fe81e83a32117380d122dc6e",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system.go"
+    },
+    {
+      "label": "official-logical-system-paths",
+      "blob": "4082ed97146c7807c50906d7f1c4ad01101ce406",
+      "bytes": 140958,
+      "sha256": "96863601a69c77d83f624266890c3a1566cba60c5e1845f7e19ca2a751d2878c",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/logical_system_paths.go"
+    },
+    {
+      "label": "official-response-util",
+      "blob": "935a91abd12b42ff79eb3a52863a7157512d7843",
+      "bytes": 6637,
+      "sha256": "8c1895af5a380ccf236ad502b2a7f4fff0b14819a6e95622031f41b284a2b8d6",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/sdk/logical/response_util.go"
+    }
+  ],
+  "source_finding": "Official missing lease returns ErrInvalidRequest mapped to HTTP400. Candidate retained expired/revoked PKI record currently takes not_found404 in Pki::lease_lookup; certificate retrieval itself is outside this change.",
+  "changes": [
+    {
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "before": {
+        "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+        "bytes": 136453,
+        "sha256": "c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9"
+      },
+      "after": {
+        "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      },
+      "diff": {
+        "blob": "91bc1bee66434627bd7f8b173dbdcd44d11a58a7",
+        "bytes": 1270,
+        "sha256": "eba6ba8906cdc23a7c4b8bdf771c4ec756ad3868088a0f5893273d8364e482b6"
+      },
+      "strict_hunks": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "before": {
+        "blob": "47fc159b1d32b259c784b40f16a463b0739227be",
+        "bytes": 40170,
+        "sha256": "b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b"
+      },
+      "after": {
+        "blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      },
+      "diff": {
+        "blob": "ec226ad85d1666ee945932c2e756004b6536e662",
+        "bytes": 3003,
+        "sha256": "fb7ab35d9bfdbd21d3e34ca39ffc9eed0fe65fc2d5f62c777b00c9eb19e75a38"
+      },
+      "strict_hunks": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/acceptance.py",
+      "before": {
+        "blob": "928d7ceca52f3e8ee418d9d2028b376f5c1dd7c5",
+        "bytes": 36827,
+        "sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d"
+      },
+      "after": {
+        "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+        "bytes": 36333,
+        "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042"
+      },
+      "diff": {
+        "blob": "6435a72cafeb791cd428d18d81970fcaa18712a3",
+        "bytes": 2827,
+        "sha256": "25c6fc1d989563254b47794a5e0ed7ad79ca0419e580dfbfc6c351713dd84ed4"
+      },
+      "strict_hunks": 1
+    }
+  ],
+  "additional_Rust_tests": [
+    "native_pki_formal_expired_lease_lookup_matches_openbao_271_400_and_cold",
+    "native_pki_formal_revoked_lease_lookup_matches_openbao_271_400_and_cold"
+  ],
+  "tests_scope": "Real normal configured File V6, issued synthetic PKI lease, valid lookup before expiry/revocation, exact400 plus error envelope and absent data, cold reopen repeats400, certificate retained and unrelated native KV sentinel/graphs preserved. Unit clocks are controlled, not LAN or live HTTP proof.",
+  "acceptance_scope": "Tighten the existing two PKI assertions to exact400 and retain actual numeric http_status; remove normalization only. All other acceptance source unchanged.",
+  "future_live_probe": {
+    "status": "NOT_AUTHORIZED_NOT_BOUND",
+    "selection": "Existing --modules pki only: 12 PKI checks comprising the two precise targets plus ten existing setup/crypto/lifecycle checks; no69-case replay",
+    "official_binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "candidate_binary": null,
+    "old_instances_reused": false,
+    "old_ports_reused": false,
+    "ttl": "Original2s issue and original2.3s wait unchanged; preserve first observed numeric response, no retry or wider accepted status set",
+    "expiration_caveat": "OpenBao may still expose a pending lease until asynchronous expiration completes; primary source does not certify the exact live scheduling outcome. An unexpected200 remains a failed observation and requires separate diagnosis.",
+    "requires": "Frozen integrated source, actual compile/tests, original ownership/budget/source fences and new exact launch request reviewed before any live probe"
+  },
+  "native_calls": 0,
+  "compiled": false,
+  "Rust_tests_run": 0,
+  "live_oracle_cases_run": 0,
+  "source_installed": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

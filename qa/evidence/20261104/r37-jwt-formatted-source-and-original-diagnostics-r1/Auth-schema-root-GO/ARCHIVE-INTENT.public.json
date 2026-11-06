@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-auth-fixed-log-schema-source-GO-r1",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "dcc22251299cd6cf05b59fed525633d6ff7fe22c",
+      "bytes": 18538,
+      "sha256": "aae70f855d85b961517553d0d418e49a5cc1dd31e51833e2922f55cb0f5357ef"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "9b6164c593986c874091145a8976209cb32bcf93",
+      "bytes": 10529,
+      "sha256": "6c6a30c93eabdee6e4f09560c81895d7f1fd0157ab9ddd5cbe711fcb304decc4"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "b3876550742a5de32486ce66904939e0da6e224c",
+      "bytes": 8027,
+      "sha256": "e08032174eb4a205ba234c644483001391be761e4383fb8d94dd894eee95641c"
+    },
+    {
+      "name": "root-verifier-r1-original.js",
+      "blob": "f36deeda82021ff72de98258247783e25733c320",
+      "bytes": 8031,
+      "sha256": "9493dc4abee0bb3732b3e88e00098eeb3d762a4e8b0b3bbb30ee6a413a70e41a"
+    },
+    {
+      "name": "root-verifier-r1-original-error.json",
+      "blob": "52ec197040a97cbe770e4139db6b1cd8d67295c9",
+      "bytes": 83,
+      "sha256": "8904b9b8682ea4bc71fb9269bcd8d23c8dbc5c726f1fa2b6e5ab7c311a96f441"
+    },
+    {
+      "name": "original-query-root-qualification.json",
+      "blob": "3052edd4796424a82b909e75c295fd5530836714",
+      "bytes": 6066,
+      "sha256": "6424d64e4bd5524c26df21f6ee10f682b2964fb358bbb1938e42d8bd5cb0f0a1"
+    },
+    {
+      "name": "typed-stdin-binding.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    {
+      "name": "strict-diff-functions.js",
+      "blob": "91382750ef2e93f2e18db45390322e934c0f470d",
+      "bytes": 2239,
+      "sha256": "ba2a9bcdbf46163947e8302c95a4dce78464b905317a6ca90ec4accb4668a032"
+    }
+  ],
+  "expected_data_tree": "aa8e4254d3c82997622e618ff7653d4d75e6d6e0",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

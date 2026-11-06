@@ -1,0 +1,259 @@
+{
+  "schema": "heptabao.root-qualification.Mac-individually-admitted-log-events.v1",
+  "status": "PASS_BOUNDED_EVENT_OBSERVATION_NO_ERROR_VOCABULARY_OR_CAUSE",
+  "evidence_qualified": true,
+  "check_count": 50,
+  "checks": [
+    {
+      "name": "whole65_all497726_bytes",
+      "passed": true
+    },
+    {
+      "name": "executed_exact_GO_source_journal_request",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_call_log-events-r1-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_armed_tree_log-events-r1-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_observer_5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_page_5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a_0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_payload_5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_observer_5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_page_5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733_0",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_page_5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733_8192",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_page_5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733_16384",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_payload_5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733",
+      "passed": true
+    },
+    {
+      "name": "admittedLog_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "nine_calls_one_START_two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "unique_original_START_typed_stdin_lossless_fingerprint",
+      "passed": true
+    },
+    {
+      "name": "only_original_job_observers",
+      "passed": true
+    },
+    {
+      "name": "known_parent_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_sizes_no_errors_truncation",
+      "passed": true
+    },
+    {
+      "name": "whole5487_stdout_exact_hex_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "new_individual_event_observation_success",
+      "passed": true
+    },
+    {
+      "name": "exact2_objects1_admitted1_explicit_unknown",
+      "passed": true
+    },
+    {
+      "name": "ordinal0_passes_original_label_process_window",
+      "passed": true
+    },
+    {
+      "name": "all28_original_closed_vocabulary_booleans_false",
+      "passed": true
+    },
+    {
+      "name": "ordinal1_kept_explicitly_unknown",
+      "passed": true
+    },
+    {
+      "name": "no_whole_log_unknown_semantics_or_startup_cause",
+      "passed": true
+    },
+    {
+      "name": "no_raw_unknown_content_hash_or_names",
+      "passed": true
+    },
+    {
+      "name": "one_actual_exact_query_child0_817bytes",
+      "passed": true
+    },
+    {
+      "name": "child_reaped_owned_group_empty_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "all_four_FDs_handlers_closed",
+      "passed": true
+    },
+    {
+      "name": "same_log_full9_wholeSHA_and_unchanged_budgets",
+      "passed": true
+    },
+    {
+      "name": "quiescent_original_observers_and_lane",
+      "passed": true
+    },
+    {
+      "name": "old_FAIL_817_and_unknown_history_preserved",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "295a35deb4abfd8ec39b299ff1452c6dc900a721",
+    "files": 65,
+    "bytes": 497726,
+    "merkle": {
+      "root_sha": "295a35deb4abfd8ec39b299ff1452c6dc900a721",
+      "trees_verified": 1,
+      "leaf_count": 65
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1af5c959e-fc05-67ee",
+  "authority": {
+    "blob": "ba5eadca5478057a6e2ae3c2c8d32c5905fee02e",
+    "bytes": 731,
+    "sha256": "7581f52cfd051bcdf152eaba3afb19b2e624ab4c0c6d8887c54a95ac6aaf96c9"
+  },
+  "stdout": {
+    "blob": "5472a4c6bb22f63a64c9ec18ad1615cf203fa499",
+    "bytes": 5487,
+    "sha256": "78d38b1f0e8ca4cd69d17e3801cda26ea7977c488470eb162897c1e6e6897f87"
+  },
+  "observed": {
+    "parent_exit": 0,
+    "child_exit": 0,
+    "child_stdout_bytes": 817,
+    "objects": 2,
+    "admitted_events": 1,
+    "rejected_unknown_objects": 1,
+    "ordinal0_all28_vocabulary_booleans": false,
+    "ordinal1_rejection": "one_log_message_semantics",
+    "ordinal1_semantic_type": "UNKNOWN",
+    "actual_elapsed_seconds": 2.1372835002839565,
+    "original_calls": 9,
+    "observers": 2,
+    "immutable_pages": 4
+  },
+  "limitations": [
+    "The admitted event contains none of the tested closed error/errno/known-path vocabulary; this neither identifies nor excludes startup causes.",
+    "The second object is explicitly unknown, not assumed to be a header or harmless metadata.",
+    "This fresh query does not recover or prove byte equality with the prior817 bytes. Original query failure remains unchanged.",
+    "No whole-log classification, startup-cause, service recovery or AuthBus business qualification is granted."
+  ],
+  "one_original_classifier_event_qualified": true,
+  "whole_log_qualified": false,
+  "startup_cause_qualified": false,
+  "old_query_failure_unchanged": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

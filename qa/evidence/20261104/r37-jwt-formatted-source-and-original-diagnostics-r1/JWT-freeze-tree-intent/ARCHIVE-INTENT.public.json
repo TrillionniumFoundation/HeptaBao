@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-jwt-formatted-source-freeze-intent-r1",
+  "records": [
+    {
+      "name": "intent.json",
+      "blob": "c1712e12d7b44f96352a46b2a807b5c9e24d1eec",
+      "bytes": 5972,
+      "sha256": "deeaba684e8fc52c7acb53b39d017a59e7a374cb1ac118fd23dacf3d2b3b7273"
+    },
+    {
+      "name": "exact-tree-request.json",
+      "blob": "c0ae0eba700bb066ccfc72f4049e8ae4827b7810",
+      "bytes": 1219,
+      "sha256": "1cfe40af86701f3fdfa27ca7ff4232367a065d47d46f3f7523b35fe54fb3df09"
+    }
+  ],
+  "expected_data_tree": "9f21031eb5ef0d8f29441d6894eb1d6ea382c61f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

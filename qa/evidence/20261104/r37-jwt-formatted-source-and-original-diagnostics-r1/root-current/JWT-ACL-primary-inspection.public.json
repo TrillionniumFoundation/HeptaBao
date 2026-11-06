@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.root-JWT-ACL-primary-inspection.v1",
+  "status": "SOURCE_ONLY_NO_RUNTIME",
+  "source_packet": "15a9b763cc1163226b392d7b9a93d5a2ff3e5384",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "primary_inputs": [
+    {
+      "path": "internal/builtin/credential/jwt/path_config.go",
+      "blob": "ffbf35fb32bc41f0c1c617e29fb1e1ae5cfdf027",
+      "bytes": 24654,
+      "sha256": "d0c4d8dc1934e0490d918426e6107500482e08616ca9f5d34054fad3b424aa80",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_config.go",
+      "root_direct_bytes_exact": true
+    },
+    {
+      "path": "internal/builtin/credential/jwt/path_role.go",
+      "blob": "558143b0ea43dc030676f05699d49ecb42542fff",
+      "bytes": 25759,
+      "sha256": "76cf4a9d86973e1a7d9a4663fa3f24da6be931387e2b07fb8c7ce0e625ebbb3d",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/path_role.go",
+      "root_direct_bytes_exact": true
+    },
+    {
+      "path": "internal/builtin/credential/jwt/backend.go",
+      "blob": "36117c297614a6e5c38b98c57652d297bee10123",
+      "bytes": 4189,
+      "sha256": "f0756be85b1ef0b9beb41cff3268cd321b47b1c2cf85b14407c338fb8e61784a",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/builtin/credential/jwt/backend.go",
+      "root_direct_bytes_exact": true
+    },
+    {
+      "path": "internal/http/logical.go",
+      "blob": "7c091863ff2496db948ad945060d320d66b4bb7f",
+      "bytes": 15421,
+      "sha256": "5d474557d9dd8a28f0dfa3a83eb3c8e2fac502fae8b3404a3df1cc81c438f451",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/http/logical.go",
+      "root_direct_bytes_exact": true
+    },
+    {
+      "path": "internal/vault/policy/acl.go",
+      "blob": "2251475f3161a7eca462c0098b0ef6f8c970a553",
+      "bytes": 27409,
+      "sha256": "6e75975d1f7ad3dd52eea2e9a87febcd3c4d7ea0c15965c20bf8b7ed6ecc3a17",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/vault/policy/acl.go",
+      "root_direct_bytes_exact": true
+    }
+  ],
+  "response_error_mapper": {
+    "path": "sdk/logical/response_util.go",
+    "blob": "935a91abd12b42ff79eb3a52863a7157512d7843",
+    "bytes": 6637,
+    "sha256": "8c1895af5a380ccf236ad502b2a7f4fff0b14819a6e95622031f41b284a2b8d6",
+    "root_direct_bytes_exact": true
+  },
+  "current_formatted_source": {
+    "commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+    "sole_parent": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "branch": "codex/heptabao-native-jwt-r2-source-20261106",
+    "proof": "1f7a613dd12be0d7ce9b7f778b7befe642628c8d",
+    "changed_files": 6,
+    "unchanged_requested_files": 3,
+    "remaining_tree_leaves_unchanged": 3910,
+    "nonforce_ref_CAS_readback_verified": true,
+    "compiled": false,
+    "tests_executed": false,
+    "production": false
+  },
+  "findings": [
+    "Official named role uses existence-aware Create/Update and separate Read/Delete callbacks; its collection supports List only.",
+    "Official config supports Read/Update without a JWT backend Root path.",
+    "HTTP GET remains Read unless list=true; explicit LIST selects List. ACL capability is selected by the actual operation.",
+    "Permission denied maps403 and unsupported operation405 in the exact official logical response mapper.",
+    "Current native JWT owner and backend both retain legacy sudo/update and collectionGET behavior; a correction must change both custody and handler semantics together."
+  ],
+  "matrix_cases": 23,
+  "predicted_divergences": [
+    {
+      "id": "delete-update-sudo",
+      "official_prediction": 403,
+      "current_prediction": 204
+    },
+    {
+      "id": "delete-delete",
+      "official_prediction": 204,
+      "current_prediction": 403
+    },
+    {
+      "id": "delete-delete-sudo",
+      "official_prediction": 204,
+      "current_prediction": 403
+    },
+    {
+      "id": "collection-bare-get-read",
+      "official_prediction": 405,
+      "current_prediction": 403
+    },
+    {
+      "id": "collection-bare-get-list",
+      "official_prediction": 403,
+      "current_prediction": 200
+    },
+    {
+      "id": "existing-post-update",
+      "official_prediction": 204,
+      "current_prediction": 403
+    },
+    {
+      "id": "fresh-post-create",
+      "official_prediction": 204,
+      "current_prediction": 403
+    },
+    {
+      "id": "fresh-post-update-sudo",
+      "official_prediction": 403,
+      "current_prediction": 204
+    },
+    {
+      "id": "config-post-update",
+      "official_prediction": 204,
+      "current_prediction": 403
+    }
+  ],
+  "actual_oracle_cases": 0,
+  "shared_public_key_and_actual_binary_binding_ready": false,
+  "source_semantics_changed": false
+}

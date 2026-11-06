@@ -1,0 +1,100 @@
+--- a/admitted_log_events.py
++++ b/fixed_log_schema.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
++"""SOURCE proposal: fixed known-key shape diagnostic for the original label/time log query.
+-"""SOURCE proposal: per-object original event admission for the fixed label/time log query.
+ The fixed tool metadata is observed; query execution still requires separate exact GO.
+ The child uses the unchanged retained WNOWAIT owner/Commands contract.
+ Unknown raw log text and hashes are never included in the public projection.
+@@ -337,72 +337,6 @@
+             'freshObservationNotOriginal817ByteRecovery': True,
+             'classificationIsLexicalEvidenceNotRootCauseProof': True}
+ 
+-def log_admitted_event_projection(out, err, row):
+-    need(len(out) + len(err) <= MAX_LOG_STREAM, 'bounded_log_combined_streams')
+-    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']
+-         and row['exitCode'] == 0 and not err, 'log_query_known_zero_complete')
+-    value = out.decode('utf-8', 'strict')
+-    lines = [line for line in value.splitlines() if line.strip()]
+-    need(len(lines) <= MAX_LOG_ROWS, 'bounded_log_record_count')
+-    semantic_refusals = frozenset((
+-        'one_log_message_semantics', 'exact_original_label_in_message',
+-        'typed_log_process', 'typed_log_process_path', 'exact_launchd_process',
+-        'typed_log_timestamp', 'log_timestamp_timezone_required',
+-        'original_three_second_log_window'))
+-    events = []
+-    rejected = []
+-    for ordinal, line in enumerate(lines):
+-        remaining()
+-        line_bytes = line.encode('utf-8')
+-        need(len(line_bytes) <= MAX_LOG_LINE, 'bounded_log_json_line')
+-        # Parse the original line strictly before the semantic-only catch.
+-        # Malformed/duplicate/nonfinite constants/non-object data still fails the observer.
+-        item = json.loads(line, object_pairs_hook=unique_log_object,
+-                          parse_constant=lambda _value: need(False, 'finite_log_json'))
+-        need(type(item) is dict, 'log_record_object')
+-        rejection = None
+-        try:
+-            # Reuse the unchanged classifier on this original complete line.
+-            # This changes neither its message/process/time gates nor vocabulary.
+-            projected = log_projection(line_bytes + b'\n', err, row)
+-        except HelpRefused as error:
+-            if len(error.args) != 1 or error.args[0] not in semantic_refusals:
+-                raise
+-            rejection = error.args[0]
+-        except (ValueError, OverflowError):
+-            # The identical line was already valid JSON above. The original
+-            # timestamp parser's invalid calendar/offset value is not exported.
+-            rejection = 'invalid_log_timestamp_value'
+-        if rejection is not None:
+-            rejected.append({'ordinal': ordinal, 'rejectionReason': rejection,
+-                             'meaning': 'unknown_object_not_admitted'})
+-        else:
+-            need(projected['matchedRows'] == 1 and len(projected['rows']) == 1,
+-                 'one_original_classifier_event')
+-            event = dict(projected['rows'][0])
+-            event['ordinal'] = ordinal
+-            events.append(event)
+-        remaining()
+-    need(len(events) + len(rejected) == len(lines), 'every_object_disposition')
+-    return {'argv': QUERY_ARGV, 'observedObjects': len(lines),
+-            'admittedEvents': len(events), 'rejectedUnknownObjects': len(rejected),
+-            'events': events, 'rejectedObjects': rejected,
+-            'allObservedObjectsAdmitted': not rejected,
+-            'atLeastOneAdmittedEvent': bool(events),
+-            'perEventAdmissionUsesOriginalClassifier': True,
+-            'originalClassifierFunctionUnchanged': True,
+-            'wholeLogFullyClassified': False,
+-            'unknownObjectSemanticsQualified': False,
+-            'startupCauseQualified': False,
+-            'observationScope': 'individually_admitted_events_and_explicit_unknown_rejections',
+-            'originalWholeQueryFailureUnchanged': True,
+-            'freshObservationNotOriginal817ByteRecovery': True,
+-            'rawLogTextExported': False, 'rawOrUnknownLogHashExported': False,
+-            'unknownKeyNamesPublished': False, 'arbitraryFieldValuesPublished': False,
+-            'onlyClosedVocabularyProjection': True, 'originalWindowMilliseconds': 3000,
+-            'noMatchesDoesNotProveAbsence': True, 'queryCompleteBeforeDeadline': True,
+-            'classificationIsLexicalEvidenceNotRootCauseProof': True}
+-
+ def command_public(commands):
+     value = commands.public()
+     # Unexpected child bytes are neither copied nor hashed into the outer public report.
+@@ -432,7 +366,7 @@
+     original_handlers = {}
+     installed = False
+     complete = False
++    result = {'schema': 'heptabao.mac-owned-launchd-fixed-log-schema.r1',
+-    result = {'schema': 'heptabao.mac-owned-launchd-admitted-log-events.r1',
+         'ok': False, 'outcomeUnknown': False, 'newSharedSeconds': 45, 'outerSeconds': 60,
+         'exactLogQueryArgv': QUERY_ARGV, 'logQueryExecuted': False, 'logQueryAttempted': False, 'directoryEnumeration': False,
+         'directApplicationPrivateFileOrCapsuleRead': False, 'serviceMutationAttempted': False,
+@@ -460,7 +394,7 @@
+         result['logQueryAttempted'] = True
+         row, out, err = commands.run('fixed-owned-label-three-second-log', list(QUERY_ARGV),
+             until=min(UNTIL, time.monotonic() + 10.0), maximum=MAX_LOG_STREAM)
++        result['logSchemaObservation'] = log_schema_projection(out, err, row)
+-        result['logEventObservation'] = log_admitted_event_projection(out, err, row)
+         verify_all()
+         remaining()
+         complete = True

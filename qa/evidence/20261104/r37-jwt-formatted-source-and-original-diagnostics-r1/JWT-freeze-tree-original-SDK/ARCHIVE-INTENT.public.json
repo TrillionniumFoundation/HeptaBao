@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-jwt-formatted-source-tree-original-SDK-r1",
+  "records": [
+    {
+      "name": "original-SDK.json",
+      "blob": "204a8b7e012c39b957c04ff211d135a33d76e6a0",
+      "bytes": 195,
+      "sha256": "198ef72d124bd6ccab4a4c38715fceb7336be0306e633dbdd41477af64f67c8c"
+    }
+  ],
+  "expected_data_tree": "a135145300fe274925575f9bb10eb68c0b5e16cf",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

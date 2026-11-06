@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.gitfirst.fixed-native-call-armed.r1",
+  "callKey": "pki-lease400-formatter-start-r1",
+  "kind": "process_start",
+  "request": {
+    "blob": "c9805c31d29bdb19f9d51e5826950d92afbc15b0",
+    "bytes": 204933,
+    "sha256": "1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a"
+  },
+  "rootGo": {
+    "blob": "fb19cc66b84b047d66973f416baac83b88262ad4",
+    "bytes": 10982,
+    "sha256": "9c48e8301a29b849585dae8748a95689be2d375c5b8d6baaf3bf7ce92149b25c"
+  },
+  "originalJob": null,
+  "originalOperation": null,
+  "maximumNativeCalls": 1,
+  "nativeNotYetCalled": true,
+  "lossOfAcknowledgmentNeverGrantsReplay": true,
+  "localFirstExplicitlyReplacedByExactRootGO": true,
+  "mayHaveDispatchedAfterThisCheckpoint": true,
+  "recovery": "Read exact original job/operation only; absence of later ACK is UNKNOWN."
+}

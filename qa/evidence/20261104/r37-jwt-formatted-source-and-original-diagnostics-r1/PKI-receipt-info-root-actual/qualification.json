@@ -1,0 +1,145 @@
+{
+  "schema": "heptabao.root-qualification.PKI-formatter-receipt-original-file-info.v1",
+  "status": "PASS_ORIGINAL_METADATA_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole23_all298102_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_new_GO_and_prior_qualified_scope",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_call_pki-lease400-formatter-receipt-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_armed_tree_pki-lease400-formatter-receipt-info0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_call_pki-lease400-formatter-receipt-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_armed_tree_pki-lease400-formatter-receipt-info0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_call_pki-lease400-formatter-receipt-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_armed_tree_pki-lease400-formatter-receipt-info0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_observer_d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_page_d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6_0",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_payload_d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+      "passed": true
+    },
+    {
+      "name": "PKI_receipt_info_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "three_calls_one_file_info_one_page",
+      "passed": true
+    },
+    {
+      "name": "exact_file_info_original_request",
+      "passed": true
+    },
+    {
+      "name": "actual_path_size_SHA_original_version",
+      "passed": true
+    },
+    {
+      "name": "actual_private_Linux_metadata",
+      "passed": true
+    },
+    {
+      "name": "lossless_full9_and_original_native_match",
+      "passed": true
+    },
+    {
+      "name": "existing_lane_closed_no_body",
+      "passed": true
+    },
+    {
+      "name": "original_two_observers_retained",
+      "passed": true
+    }
+  ],
+  "check_count": 21,
+  "packet": {
+    "tree": "7a391b1535898da4e61b36029f6c951ccb8e8b50",
+    "files": 23,
+    "bytes": 298102,
+    "merkle": {
+      "root_sha": "7a391b1535898da4e61b36029f6c951ccb8e8b50",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af6d62a1-fc05-686a",
+  "original_operation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+  "native_metadata": {
+    "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+    "bytes": 466,
+    "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+  },
+  "actual_metadata": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "size": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "version": "66306:28071628:4907:1793944550782366173:1793944550782366173",
+    "nativeText": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "originalOperation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "full9Strings": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "original_calls": 3,
+  "immutable_pages": 1,
+  "full9_caveat": "Regular file type comes from the Native file_info contract; no independent held-file fstat is claimed by this metadata observation.",
+  "receipt_body_independently_read": false,
+  "ten_outputs_qualified": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

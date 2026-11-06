@@ -1,0 +1,7 @@
+# Fixed 38-file collector: original terminal and observation transport
+
+This packet preserves the one original ROG collector job, ten original native tool-call records, two completed/inactive read observers and all five immutable payload pages. Each original call request, durable intent, armed checkpoint, unmodified SDK and native projection is included. Both complete observer payload SDKs are included separately. The collector's exact source, journal, shared archive/pure helpers and root GO are preserved for interpretation.
+
+The job exited 0 with complete durable confirmed logs. The original 7,947-byte stdout records all 46 acquisitions closed once, no close error, handler/umask restoration, a 0.061896501982118934-second elapsed time within the original 50/60-second limits, and no child, network, directory enumeration or input write. Its fixed report identity is recorded in RELEASE and stdout. This packet does not yet contain independent file_info or body reads of that report; none has been submitted. Nine formatted source files are not newly qualified by this transport-only packet. Collector report reconstruction and any successor commit, Rust compilation, tests or PKI formatting require their separate reviewed steps.
+
+Current lane is released: zero native calls, zero active native futures, pending null. There is no new runtime dispatch or permission in this archive. Original formatter direct children used the supervisor's process group; no nine independent group-empty claim is made.

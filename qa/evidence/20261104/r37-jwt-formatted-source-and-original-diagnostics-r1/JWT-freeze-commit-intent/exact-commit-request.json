@@ -1,0 +1,6 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "parent_sha": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "tree_sha": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "message": "Format native JWT candidate from verified original rustfmt output\n\nApply the six changed outputs of the isolated Edition 2024 formatter; the other three requested files remain byte identical. Reconstruct every output from the original canonical source and strictly reversible diffs, backed by the complete 38-file observation, original process authority and three version-bound report reads.\n\nThe root evidence qualification is f0d3b1c86ecb637f076936824f82a3345bd7a702. This commit freezes formatted source only. Compiler, feature-profile regression, official JWT ACL parity and production replacement remain separate gates."
+}

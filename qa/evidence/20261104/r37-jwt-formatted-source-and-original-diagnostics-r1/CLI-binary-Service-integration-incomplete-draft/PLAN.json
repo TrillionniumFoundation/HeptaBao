@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.snapshot-forward-integration-source-checkpoint.v1",
+  "runtime_calls": 0,
+  "compile_executed": false,
+  "tests_executed": false,
+  "implementation_complete": false,
+  "base_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "base_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "not_for_product_publication": true,
+  "service_function_edit": {
+    "before_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+    "before_excerpt": {
+      "blob": "56fa197ef9510a09e03f2c59bc50a66231086c0e",
+      "bytes": 1495,
+      "sha256": "61a018a0ba6d7b33964c96142d47ce220f44b093683fe57e28f4afb7f417cfcf"
+    },
+    "after_excerpt": {
+      "blob": "a83d993419ddc8ab0f3ec838cfc88803d016adee",
+      "bytes": 1706,
+      "sha256": "84c791ad5833df3b733c96311198c8123977fded2501f46e8a29c5da55585dd4"
+    },
+    "whole_after": {
+      "blob": "f14322529e6a3cc5e8e510f839bb6c2b38e3e337",
+      "bytes": 518456,
+      "sha256": "4edb4e6367a95b8c46771761926765782d3fb31cff1e3c3c28e02340490743f7"
+    }
+  },
+  "draft_entries": [
+    {
+      "path": "peer.rs",
+      "store": "cli_snapshot_forward_peer_source_draft3",
+      "blob": "4cb00067f4ff3d6a50512a471932e80152619f0b",
+      "bytes": 22601,
+      "sha256": "a987dee7f1ed82df235223473ec4bef5411149b0e3c8a1c4c1b0329f1d3b7e2f"
+    },
+    {
+      "path": "peer-tests.rs",
+      "store": "cli_snapshot_forward_peer_tests_draft2",
+      "blob": "f56883eb59161b282c7f807ed553217be5c9dc9f",
+      "bytes": 20844,
+      "sha256": "7a59b362fc86d021130c3015604fe07586dc598ccfe09a89e99d4da15e475444"
+    },
+    {
+      "path": "ha-boundary.rs",
+      "store": "cli_snapshot_forward_ha_transport_draft2",
+      "blob": "c7bf2359b0ff557ed9a713138cd79f1b2d3b5eb8",
+      "bytes": 6409,
+      "sha256": "4ef0ef863b8cd622b3a27116b32cc7ff5e2364cfa407bcd267c7510396d1fb34"
+    },
+    {
+      "path": "wire.rs",
+      "store": "cli_snapshot_forward_wire_draft4",
+      "blob": "5530dc2f3363ba2ec70b50f2ae87fa573906434e",
+      "bytes": 15525,
+      "sha256": "d3ca57a9c97ab425f8402b866b3c6e73a72fa674ced812778b95eb0c014b7324"
+    },
+    {
+      "path": "sealed-file.rs",
+      "store": "cli_snapshot_forward_file_draft2",
+      "blob": "cc96349fe49fa0ffa067971f2cbda21839804410",
+      "bytes": 1811,
+      "sha256": "36256ca40029f4bdd57d961f4c75d020fa089aa59ebc624d8271d28ff6b8c14e"
+    },
+    {
+      "path": "auth-actor.rs",
+      "store": "cli_snapshot_forward_auth_actor_after",
+      "blob": "230c539ff8d9fa3f60ecd36bdcaa084ee74b56ac",
+      "bytes": 4934,
+      "sha256": "1a58c842346f3d79f1557bf7052c26f094bd203431e77b915ff73c1428f14c8c"
+    },
+    {
+      "path": "snapshot-transfer.rs",
+      "store": "cli_snapshot_forward_transfer_after_draft1",
+      "blob": "50867f6ced7c34594e668a519df9c796fa333b0f",
+      "bytes": 52229,
+      "sha256": "3925de0802e77fc331b6e02a96155040a4bbe580cac0fc5619b135875ffecfd5"
+    },
+    {
+      "path": "forward.rs",
+      "store": "cli_snapshot_forward_common_draft1",
+      "blob": "28d4e2a9d315f9186c2bd77f12d6a9c1243901dd",
+      "bytes": 8602,
+      "sha256": "ec9f33e0480073da54afae3c5588c3db29b78b56a39d2341ec5001dd1011d561"
+    },
+    {
+      "path": "forward-client.rs",
+      "store": "cli_snapshot_forward_client_draft2",
+      "blob": "3cc05c5ca7ab0040d3b234ffe0a9c712514dcd7a",
+      "bytes": 15716,
+      "sha256": "9cfe021bb99a58ded5365713c94e068c0f2d0b09e2676a1d41c617680e7e7988"
+    },
+    {
+      "path": "snapshot-v6-ha.rs",
+      "store": "cli_snapshot_forward_v6ha_after",
+      "blob": "4c111e446031fda7ac88f673298ddfa6322ecc83",
+      "bytes": 13609,
+      "sha256": "43dcba00a64eb1602aa84c7c753199db6a4f748a90426f46a6aa9ea44f29d855"
+    },
+    {
+      "path": "snapshot-historical.rs",
+      "store": "cli_snapshot_forward_historical_after2",
+      "blob": "5b84d175e0e3f419cd6e08dc2f0e7f1ffa5971d9",
+      "bytes": 45615,
+      "sha256": "80f4268f2f8f3044ea66d318f28fdee210c5211cf38528b23f3992378c47ebed"
+    },
+    {
+      "path": "forward-source.rs",
+      "store": "cli_snapshot_forward_source_app_draft2",
+      "blob": "96ffe1ea2c57ab4861448b07c68da2e08b19d784",
+      "bytes": 14403,
+      "sha256": "b644ebb333ab3bbc1e97666b8b3d6bb8a788bc5b453133664c8751eada04e555"
+    },
+    {
+      "path": "ordinary-delivery.rs",
+      "store": "cli_snapshot_forward_delivery_visibility_after",
+      "blob": "e5e2b67dc88ed2a67ee266a1bbdd8b777c42f36c",
+      "bytes": 29010,
+      "sha256": "097371c6ec8a41d95b727fb41be00524dac6a39bdd41f991cbab51b7055d438a"
+    }
+  ],
+  "outstanding": [
+    "HA constructor/listener and HTTP callback/reply integration",
+    "Source post-publication failure and final physical owner recheck",
+    "Review type/privacy/feature boundaries against newer JWT baseline",
+    "Focused source components then separately approved format/compile/test"
+  ]
+}

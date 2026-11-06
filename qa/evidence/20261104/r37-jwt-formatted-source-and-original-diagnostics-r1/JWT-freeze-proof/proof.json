@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.native-JWT-actual-formatted-source-freeze-proof.v1",
+  "status": "SOURCE_FROZEN_AND_BRANCH_READBACK_VERIFIED",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "branch": "codex/heptabao-native-jwt-r2-source-20261106",
+  "commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "sole_parent": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "leaves": 3916,
+  "changed_paths": [
+    "crates/heptabao-server/src/auth.rs",
+    "crates/heptabao-server/src/auth_native_jwt.rs",
+    "crates/heptabao-server/src/federated_native_jwt.rs",
+    "crates/heptabao-server/src/service.rs",
+    "crates/heptabao-server/src/service_native_auth.rs",
+    "crates/heptabao-server/src/service_native_jwt_tests.rs"
+  ],
+  "other3910_leaves_identical": true,
+  "root_qualification": {
+    "blob": "f0d3b1c86ecb637f076936824f82a3345bd7a702",
+    "bytes": 35730,
+    "sha256": "40152646266c4504b932e35ce2ea0a1f74413b855222175c3e15bb0574f9be3a"
+  },
+  "source_and_qualification_packet": "d1e0a86ac6f7a6c6c43bf64905d3f986748376be",
+  "tree_creation_intent": "812b33d57ba22e2ec76d2af21713f69f2ae9f033",
+  "tree_original_SDK": "060d4b35de92b19dae9e6879cd2e611a76242502",
+  "commit_intent": "e74a73a8bc54c6fe673d48f847aeb0c5e83c82ab",
+  "commit_original_SDK": "5f29b9f0043452e1001d4264d696930701d0dc36",
+  "ref_CAS_intent": "c61994e9add2c5075fed1d9c24586ae363d54147",
+  "ref_original_SDK": "e1bb25c6b265268a0cdea0b7a710e45e86edd3e8",
+  "source_frozen": true,
+  "formatted_actual_qualified": true,
+  "independent_final_combined_stage": false,
+  "compiled": false,
+  "component_tests": false,
+  "HTTP_product_tests": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

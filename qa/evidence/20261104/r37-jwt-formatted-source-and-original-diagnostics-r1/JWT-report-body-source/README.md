@@ -1,0 +1,5 @@
+# Fixed collector public report: three binary ranges
+
+SOURCE ONLY. This delta applies to the existing closed collector journal. The prior one-file metadata observation independently matched the complete 167,436-byte report identity, including full9 and version. The original metadata native bytes and complete payload are preserved here. No binary range has been submitted.
+
+The finite sequential-range implementation is adapted from the previously reviewed CLI public-report journal, with its independent report identity and 13-range scope replaced by this collector's actual metadata and exactly three ranges. The old file_info/process observers retain 8,192-byte immutable pages; only the new binary observers use 16,384. Original SDK/payload archival ordering, once-before-call counters, unknown stop, contiguous decoding, chunk and final whole hashes are preserved. No collector or formatter replay, directory scan, product operation, Rust build or PKI action is included. Complete report bytes remain necessary before any actual diff/source reconstruction qualification.

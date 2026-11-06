@@ -1,0 +1,47 @@
+[
+  {
+    "from": "\"jwt_e3af_rog_formatter_gitfirst_r1\"",
+    "to": "\"native_pki_lease400_formatter_gitfirst_r1\"",
+    "count": 1
+  },
+  {
+    "from": "const GF_REQUEST = {\"blob\":\"0ec62f939a62a2a23c73e33d25f1043957aeeb58\",\"bytes\":12372,\"sha256\":\"1ad41c45534f842fdd7010ab184db3f46460f87f8ead786efc142461b709bc91\"};",
+    "to": "const GF_REQUEST = {\"blob\":\"c9805c31d29bdb19f9d51e5826950d92afbc15b0\",\"bytes\":204933,\"sha256\":\"1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a\"};",
+    "count": 1
+  },
+  {
+    "from": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+    "to": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+    "count": 2
+  },
+  {
+    "from": "const GF_FORMATTER_RECEIPT_INFO_REQUEST = {\"blob\":\"2faaeb3baee3581a5161fff11f8f5d60318ff9c4\",\"bytes\":236,\"sha256\":\"5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8\"};",
+    "to": "const GF_FORMATTER_RECEIPT_INFO_REQUEST = {\"blob\":\"1fe1ca6b2a2469499b777f40d2d051c5af260c5d\",\"bytes\":281,\"sha256\":\"fb11514e938b63a3ad45de5e4f2ab65768346559a89fe0be578d2b51a406e2ad\"};",
+    "count": 1
+  },
+  {
+    "from": "const GF_FORMATTER_RECEIPT_INFO_PREREQUISITES = [{\"id\":\"98d70ee2791b5caee12e75ce5def1aa09bc18e57527316a068c6dbfb23bbd8fe\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"9e275b37f8f33d2ede10dd49fc87444d8d2736bf\",\"bytes\":731,\"sha256\":\"cf9eca556bf6c35a47f66c55526af65783ce5274713927e262b0dc24903aaf49\"}},{\"id\":\"5d9dae6568337a91abe3ceb329fe7318c71ae130a63f535451f604d9b82815f0\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"26a01ec7906084181c6406b3e31805d5714f8191\",\"bytes\":10598,\"sha256\":\"0c9ff839b36970601f9cd0f46c37998537d0008dec790113ddb19ff494ddee24\"}}];",
+    "to": "const GF_FORMATTER_RECEIPT_INFO_PREREQUISITES = [{\"id\":\"4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56\",\"tool\":\"process_status\",\"nativeText\":{\"blob\":\"b7e422c999778102955f448c499e406e6bf90e1a\",\"bytes\":729,\"sha256\":\"bb718ef5bbb3f5cbac1ccab023cd6f85cb741d781b57e4e61627a9b03f3652e7\"}},{\"id\":\"4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1\",\"tool\":\"process_read\",\"nativeText\":{\"blob\":\"210c764bdc9aa67c2630232a79f30f5648c5b67d\",\"bytes\":3149,\"sha256\":\"4b805e3d42c76a09b8c4e259d426b5d602a2dd2c83e777316848484ffcb812a9\"}}];",
+    "count": 1
+  },
+  {
+    "from": "s.job===\"1a1af017fae-fc05-64f1\"",
+    "to": "s.job===\"1a1af6d62a1-fc05-686a\"",
+    "count": 1
+  },
+  {
+    "from": "s.nextStdout===3352",
+    "to": "s.nextStdout===921",
+    "count": 1
+  },
+  {
+    "from": "terminal.files.length===9",
+    "to": "terminal.files.length===2",
+    "count": 1
+  },
+  {
+    "from": "^heptabao-native-jwt-e3afc157-formatter-observe-r1-",
+    "to": "^heptabao-native-pki-lease400-formatter-observe-r1-",
+    "count": 1
+  }
+]

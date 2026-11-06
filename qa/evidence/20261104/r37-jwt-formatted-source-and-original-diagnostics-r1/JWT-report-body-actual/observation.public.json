@@ -1,0 +1,3830 @@
+{
+  "all_38_input_fds_once_closed": true,
+  "cargo_executed": false,
+  "changed_files": 6,
+  "child_count": 0,
+  "collector_source_sha256": "104102c9c29e0cf795d20e364a69f4b9c75b78a36191bab720e7095c98b6ff81",
+  "configuration_utf8": "edition = \"2024\"\n",
+  "counters_before_publication": {
+    "fd_acquisition_attempts": 44,
+    "fd_acquisitions": 44,
+    "fsync_calls": 0,
+    "input_read_bytes": 3701083,
+    "metadata_calls": 252,
+    "peak_owned_fds": 44,
+    "read_bytes": 3701083,
+    "read_calls": 112,
+    "report_read_bytes": 0,
+    "write_bytes": 0
+  },
+  "diff_total_bytes": 73228,
+  "diffs": [
+    {
+      "after_bytes": 398266,
+      "after_sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f",
+      "before_bytes": 397709,
+      "before_sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97",
+      "canonical_candidate_blob": "19646b7848e5588d72f5514400d607696549611d",
+      "changed": true,
+      "diff_bytes": 3023,
+      "diff_sha256": "d5a3770228a3545a89d79d1862ff9e9a3bbe1bdc9bb636af1025df8a7126044b",
+      "name": "auth.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/auth.rs\n+++ b/auth.rs\n@@ -4551,8 +4551,17 @@\n         cluster_id: Option<&str>,\n     ) -> Result<Option<AuthResponse>, AuthError> {\n         self.handle_with_connection_clock_and_native_jwt_lifetime_for_cluster(\n-            principal, namespace, method, path, body, time, clock,\n-            peer_certificates, origin_peer, cluster_id, None,\n+            principal,\n+            namespace,\n+            method,\n+            path,\n+            body,\n+            time,\n+            clock,\n+            peer_certificates,\n+            origin_peer,\n+            cluster_id,\n+            None,\n         )\n     }\n \n@@ -4658,7 +4667,13 @@\n                 }\n                 \"jwt\" => match native_jwt_lifetime {\n                     Some(lifetime) => self.jwt_route_with_native_lifetime(\n-                        principal, scope, method, path, body, now, Some(lifetime),\n+                        principal,\n+                        scope,\n+                        method,\n+                        path,\n+                        body,\n+                        now,\n+                        Some(lifetime),\n                     ),\n                     None => self.jwt_route(principal, scope, method, path, body, now),\n                 },\n@@ -6287,14 +6302,27 @@\n             let time_policy = jwt_login::native_time_policy(&config, &role);\n             let user_claim = role.user_claim.as_deref().unwrap_or(\"sub\");\n             let (verified, lifetime) = if native_lifetime.is_some() {\n-                verifier.verify_native_with_user_claim_and_lifetime(\n-                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,\n-                ).map(|(identity, lifetime)| (identity, Some(lifetime)))\n+                verifier\n+                    .verify_native_with_user_claim_and_lifetime(\n+                        jwt,\n+                        now,\n+                        time_policy,\n+                        role.bound_claims.as_ref(),\n+                        user_claim,\n+                    )\n+                    .map(|(identity, lifetime)| (identity, Some(lifetime)))\n             } else {\n-                verifier.verify_native_with_user_claim(\n-                    jwt, now, time_policy, role.bound_claims.as_ref(), user_claim,\n-                ).map(|identity| (identity, None))\n-            }.map_err(|_| bad(\"JWT signature or claims validation failed\"))?;\n+                verifier\n+                    .verify_native_with_user_claim(\n+                        jwt,\n+                        now,\n+                        time_policy,\n+                        role.bound_claims.as_ref(),\n+                        user_claim,\n+                    )\n+                    .map(|identity| (identity, None))\n+            }\n+            .map_err(|_| bad(\"JWT signature or claims validation failed\"))?;\n             let claimed_namespace = verified.namespace.as_deref().unwrap_or(\"\");\n             if claimed_namespace != namespace\n                 || !role.bound_groups.is_subset(&verified.groups)\n"
+    },
+    {
+      "after_bytes": 18771,
+      "after_sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641",
+      "before_bytes": 17391,
+      "before_sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042",
+      "canonical_candidate_blob": "2e76f906edefb92406328459fd6c5711dfa7ad2b",
+      "changed": true,
+      "diff_bytes": 13174,
+      "diff_sha256": "efad409cf1b210e2aba8106f8f07020e8d67339a3592c687d18c110762cc98dd",
+      "name": "auth_native_jwt.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/auth_native_jwt.rs\n+++ b/auth_native_jwt.rs\n@@ -11,9 +11,16 @@\n         tune: bool,\n         route: String,\n     },\n-    Config { mount: String },\n-    Role { mount: String, collection: bool },\n-    Login { mount: String },\n+    Config {\n+        mount: String,\n+    },\n+    Role {\n+        mount: String,\n+        collection: bool,\n+    },\n+    Login {\n+        mount: String,\n+    },\n }\n \n pub(crate) struct NativeJwtOwner {\n@@ -76,13 +83,19 @@\n             return Err(err(503, \"native JWT login mount is unavailable\"));\n         };\n         let role_name = string_field(request, \"role\")?;\n-        let scope = AuthScope { namespace: \"\", mount };\n+        let scope = AuthScope {\n+            namespace: \"\",\n+            mount,\n+        };\n         let state = source.jwt_at(scope).ok_or_else(denied)?;\n         let role = state.roles.get(role_name).ok_or_else(denied)?;\n         if !self.login\n             || self.login_lifetime.is_some()\n             || binding.kind != \"jwt\"\n-            || state.config.as_ref().is_none_or(|config| config.remote.is_some())\n+            || state\n+                .config\n+                .as_ref()\n+                .is_none_or(|config| config.remote.is_some())\n             || source.jwt_uses_batch(scope, role)\n             || reply[\"auth\"][\"token_type\"].as_str() != Some(\"service\")\n         {\n@@ -119,7 +132,10 @@\n     ) -> Result<(), AuthError> {\n         self.check_source(source)?;\n         if !candidate.native_v6_jwt_state_supported() {\n-            return Err(err(501, \"native JWT requires a root local-key service-token owner\"));\n+            return Err(err(\n+                501,\n+                \"native JWT requires a root local-key service-token owner\",\n+            ));\n         }\n         Ok(())\n     }\n@@ -167,24 +183,32 @@\n             && self.validate_token_api_creation_ttl().is_ok()\n             && self.validate_public_origin_state().is_ok()\n             && self.auth_mounts.iter().all(|(namespace, mounts)| {\n-                mounts.values().all(|mount| mount.kind != \"jwt\"\n-                    || (namespace.is_empty()\n-                        && matches!(mount.token_type.unwrap_or_default(),\n-                            batch_issuance::MountTokenType::DefaultService\n-                                | batch_issuance::MountTokenType::Service)))\n+                mounts.values().all(|mount| {\n+                    mount.kind != \"jwt\"\n+                        || (namespace.is_empty()\n+                            && matches!(\n+                                mount.token_type.unwrap_or_default(),\n+                                batch_issuance::MountTokenType::DefaultService\n+                                    | batch_issuance::MountTokenType::Service\n+                            ))\n+                })\n             })\n             && self.jwt_mounts.iter().all(|(namespace, mounts)| {\n                 mounts.is_empty()\n-                    || (namespace.is_empty() && mounts.iter().all(|(mount, state)| {\n-                        self.online_mount_enabled(namespace, mount, \"jwt\")\n-                            && state.config.as_ref().is_none_or(|config| {\n-                                config.remote.is_none()\n-                                    && config.required_namespace.as_deref().is_none_or(str::is_empty)\n-                            })\n-                            && state.roles.values().all(|role| {\n-                                !self.jwt_uses_batch(AuthScope { namespace, mount }, role)\n-                            })\n-                    }))\n+                    || (namespace.is_empty()\n+                        && mounts.iter().all(|(mount, state)| {\n+                            self.online_mount_enabled(namespace, mount, \"jwt\")\n+                                && state.config.as_ref().is_none_or(|config| {\n+                                    config.remote.is_none()\n+                                        && config\n+                                            .required_namespace\n+                                            .as_deref()\n+                                            .is_none_or(str::is_empty)\n+                                })\n+                                && state.roles.values().all(|role| {\n+                                    !self.jwt_uses_batch(AuthScope { namespace, mount }, role)\n+                                })\n+                        }))\n             })\n             && self.native_v6_jwt_token_edges_supported()\n     }\n@@ -201,17 +225,18 @@\n             || token.raw_wrapped_reply_custody.is_some()\n             || token.auth_cert_role.is_some()\n             || token.auth_cert_sha256.is_some()\n-            || !token.auth_mount.as_ref().is_some_and(|mount| {\n-                self.online_mount_enabled(\"\", mount, \"jwt\")\n-            })\n+            || !token\n+                .auth_mount\n+                .as_ref()\n+                .is_some_and(|mount| self.online_mount_enabled(\"\", mount, \"jwt\"))\n         {\n             return false;\n         }\n         match token.auth_provenance {\n             Some(TokenAuthProvenance::Jwt { .. }) => token.parent.is_none(),\n-            Some(TokenAuthProvenance::TokenApi { issued_creation_ttl: Some(_) }) => {\n-                token.public_origin.is_some() && token.validate_public_origin().is_ok()\n-            }\n+            Some(TokenAuthProvenance::TokenApi {\n+                issued_creation_ttl: Some(_),\n+            }) => token.public_origin.is_some() && token.validate_public_origin().is_ok(),\n             _ => false,\n         }\n     }\n@@ -220,9 +245,10 @@\n         let mut supported = BTreeSet::new();\n         for (digest, token) in &self.tokens {\n             let relevant = matches!(token.auth_provenance, Some(TokenAuthProvenance::Jwt { .. }))\n-                || token.auth_mount.as_ref().is_some_and(|mount| {\n-                    self.online_mount_enabled(&token.namespace, mount, \"jwt\")\n-                });\n+                || token\n+                    .auth_mount\n+                    .as_ref()\n+                    .is_some_and(|mount| self.online_mount_enabled(&token.namespace, mount, \"jwt\"));\n             if !relevant || supported.contains(digest.as_str()) {\n                 continue;\n             }\n@@ -235,7 +261,9 @@\n                 if !path.insert(current) {\n                     return false;\n                 }\n-                let Some(member) = self.tokens.get(current) else { return false };\n+                let Some(member) = self.tokens.get(current) else {\n+                    return false;\n+                };\n                 if !self.native_v6_jwt_token_origin(member) {\n                     return false;\n                 }\n@@ -245,7 +273,9 @@\n                     // its own validated issuance/path owner remains mandatory.\n                     break;\n                 };\n-                let Some(parent) = self.tokens.get(parent_digest) else { return false };\n+                let Some(parent) = self.tokens.get(parent_digest) else {\n+                    return false;\n+                };\n                 if parent.namespace != member.namespace\n                     || parent.auth_mount != member.auth_mount\n                     || parent.created_at > member.created_at\n@@ -275,26 +305,41 @@\n         if path.starts_with(\"sys/auth/\") {\n             let (mount, tune, route) = control_groups::auth_mount_route(path).ok()?;\n             if mounts.get(mount).is_some_and(|entry| entry.kind == \"jwt\")\n-                || (!tune && matches!(method, \"POST\" | \"PUT\")\n+                || (!tune\n+                    && matches!(method, \"POST\" | \"PUT\")\n                     && body.get(\"type\").and_then(Value::as_str) == Some(\"jwt\"))\n             {\n-                return Some(JwtRoute::Mount { mount: mount.to_owned(), tune, route });\n+                return Some(JwtRoute::Mount {\n+                    mount: mount.to_owned(),\n+                    tune,\n+                    route,\n+                });\n             }\n             return None;\n         }\n         let auth_path = path.strip_prefix(\"auth/\")?;\n         let (mount, entry, suffix) = mounts.iter().find_map(|(mount, entry)| {\n-            auth_path.strip_prefix(&format!(\"{mount}/\")).map(|suffix| (mount, entry, suffix))\n+            auth_path\n+                .strip_prefix(&format!(\"{mount}/\"))\n+                .map(|suffix| (mount, entry, suffix))\n         })?;\n         if entry.kind != \"jwt\" {\n             return None;\n         }\n         match suffix {\n-            \"login\" => Some(JwtRoute::Login { mount: mount.to_owned() }),\n-            \"config\" => Some(JwtRoute::Config { mount: mount.to_owned() }),\n-            \"role\" => Some(JwtRoute::Role { mount: mount.to_owned(), collection: true }),\n+            \"login\" => Some(JwtRoute::Login {\n+                mount: mount.to_owned(),\n+            }),\n+            \"config\" => Some(JwtRoute::Config {\n+                mount: mount.to_owned(),\n+            }),\n+            \"role\" => Some(JwtRoute::Role {\n+                mount: mount.to_owned(),\n+                collection: true,\n+            }),\n             _ if suffix.starts_with(\"role/\") => Some(JwtRoute::Role {\n-                mount: mount.to_owned(), collection: false,\n+                mount: mount.to_owned(),\n+                collection: false,\n             }),\n             _ => None,\n         }\n@@ -307,7 +352,8 @@\n         path: &str,\n         body: &Value,\n     ) -> bool {\n-        self.selected_native_jwt_route(namespace, method, path, body).is_some()\n+        self.selected_native_jwt_route(namespace, method, path, body)\n+            .is_some()\n     }\n \n     pub(crate) fn capture_native_v6_jwt_owner(\n@@ -373,23 +419,41 @@\n                 let Some(operation) = path.strip_prefix(\"auth/token/\") else {\n                     return Ok(None);\n                 };\n-                if !matches!(operation,\n-                    \"lookup-self\" | \"lookup\" | \"lookup-accessor\"\n-                        | \"renew-self\" | \"renew\" | \"renew-accessor\"\n-                        | \"revoke-self\" | \"revoke\" | \"revoke-accessor\" | \"revoke-orphan\"\n-                        | \"create\" | \"create-orphan\") && !operation.starts_with(\"create/\")\n+                if !matches!(\n+                    operation,\n+                    \"lookup-self\"\n+                        | \"lookup\"\n+                        | \"lookup-accessor\"\n+                        | \"renew-self\"\n+                        | \"renew\"\n+                        | \"renew-accessor\"\n+                        | \"revoke-self\"\n+                        | \"revoke\"\n+                        | \"revoke-accessor\"\n+                        | \"revoke-orphan\"\n+                        | \"create\"\n+                        | \"create-orphan\"\n+                ) && !operation.starts_with(\"create/\")\n                 {\n                     return Ok(None);\n                 }\n                 let from_jwt = |token: &Token| self.native_v6_jwt_token_origin(token);\n-                let actor_origin = actor.and_then(Principal::service_token).is_some_and(from_jwt);\n+                let actor_origin = actor\n+                    .and_then(Principal::service_token)\n+                    .is_some_and(from_jwt);\n                 let target_origin = match operation {\n-                    \"lookup\" | \"renew\" | \"revoke\" | \"revoke-orphan\" => body.get(\"token\")\n-                        .and_then(Value::as_str).and_then(|raw| self.tokens.get(&hash(raw)))\n+                    \"lookup\" | \"renew\" | \"revoke\" | \"revoke-orphan\" => body\n+                        .get(\"token\")\n+                        .and_then(Value::as_str)\n+                        .and_then(|raw| self.tokens.get(&hash(raw)))\n                         .is_some_and(from_jwt),\n-                    \"lookup-accessor\" | \"renew-accessor\" | \"revoke-accessor\" => body.get(\"accessor\")\n-                        .and_then(Value::as_str).is_some_and(|accessor| {\n-                            self.tokens.values().any(|token| token.accessor == accessor && from_jwt(token))\n+                    \"lookup-accessor\" | \"renew-accessor\" | \"revoke-accessor\" => body\n+                        .get(\"accessor\")\n+                        .and_then(Value::as_str)\n+                        .is_some_and(|accessor| {\n+                            self.tokens\n+                                .values()\n+                                .any(|token| token.accessor == accessor && from_jwt(token))\n                         }),\n                     _ => false,\n                 };\n@@ -398,10 +462,14 @@\n                 }\n                 owner.capability = Some(if matches!(operation, \"lookup-self\" | \"lookup\") {\n                     \"read\"\n-                } else { \"update\" });\n+                } else {\n+                    \"update\"\n+                });\n                 owner.sudo = operation == \"revoke-orphan\";\n-                owner.may_retire_actor = matches!(operation,\n-                    \"revoke-self\" | \"revoke\" | \"revoke-accessor\" | \"revoke-orphan\");\n+                owner.may_retire_actor = matches!(\n+                    operation,\n+                    \"revoke-self\" | \"revoke\" | \"revoke-accessor\" | \"revoke-orphan\"\n+                );\n                 None\n             }\n         };\n"
+    },
+    {
+      "after_bytes": 21959,
+      "after_sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "before_bytes": 21959,
+      "before_sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "canonical_candidate_blob": "6bb16ad15f43d0ca908438b4fb26d44d625f476b",
+      "changed": false,
+      "diff_bytes": 0,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "auth_native_v6_routes.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": ""
+    },
+    {
+      "after_bytes": 56677,
+      "after_sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "before_bytes": 56677,
+      "before_sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "canonical_candidate_blob": "21c48f7d50d30076d1aae82d51ce2b782a9739dc",
+      "changed": false,
+      "diff_bytes": 0,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "federated_auth.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": ""
+    },
+    {
+      "after_bytes": 7772,
+      "after_sha256": "beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547",
+      "before_bytes": 7709,
+      "before_sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e",
+      "canonical_candidate_blob": "0b4f4b18be19951e6744e1202f2fb1561351add2",
+      "changed": true,
+      "diff_bytes": 668,
+      "diff_sha256": "3fa32898e33fb311a032fc41b32faae0d05b7dfbf6f93b310c2a97008ab604d9",
+      "name": "federated_native_jwt.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/federated_native_jwt.rs\n+++ b/federated_native_jwt.rs\n@@ -193,14 +193,17 @@\n             return Err(AuthError::ClaimDenied);\n         }\n         let alias = selected_alias.unwrap_or_else(|| subject.clone());\n-        Ok((NativeJwtIdentity {\n-            issuer,\n-            subject,\n-            alias,\n-            audiences,\n-            namespace,\n-            groups,\n-        }, lifetime))\n+        Ok((\n+            NativeJwtIdentity {\n+                issuer,\n+                subject,\n+                alias,\n+                audiences,\n+                namespace,\n+                groups,\n+            },\n+            lifetime,\n+        ))\n     }\n }\n \n"
+    },
+    {
+      "after_bytes": 519132,
+      "after_sha256": "6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d",
+      "before_bytes": 519054,
+      "before_sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a",
+      "canonical_candidate_blob": "c75adfe47637c5b2b559e515a754521e93238445",
+      "changed": true,
+      "diff_bytes": 912,
+      "diff_sha256": "4f6b2ab59f0fc1d79d9bd2fda6e23a563aae7aa344335f848a60c348d0c49a03",
+      "name": "service.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/service.rs\n+++ b/service.rs\n@@ -7015,7 +7015,9 @@\n                 client_certificates,\n                 origin_peer,\n                 Some(&state.cluster_id),\n-                native_jwt_lifetime.is_some().then_some(&mut authenticated_jwt_lifetime),\n+                native_jwt_lifetime\n+                    .is_some()\n+                    .then_some(&mut authenticated_jwt_lifetime),\n             )\n         };\n         match auth_result {\n@@ -7122,7 +7124,9 @@\n                     state.engines = engines;\n                     state.namespaces = namespaces;\n                 }\n-                if response.status == 200 && let Some(output) = native_jwt_lifetime {\n+                if response.status == 200\n+                    && let Some(output) = native_jwt_lifetime\n+                {\n                     *output = authenticated_jwt_lifetime;\n                 }\n                 return Response {\n"
+    },
+    {
+      "after_bytes": 143153,
+      "after_sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165",
+      "before_bytes": 142316,
+      "before_sha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2",
+      "canonical_candidate_blob": "c4b356de7c082b396e7e26024f567fb5337a55bb",
+      "changed": true,
+      "diff_bytes": 7109,
+      "diff_sha256": "4e71b188c05871c484d4ad0c02119913dea5c2119ace58d2b51c23889bdcf331",
+      "name": "service_native_auth.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/service_native_auth.rs\n+++ b/service_native_auth.rs\n@@ -388,7 +388,8 @@\n                 .map_err(|error| Response::error(error.status, &error.message))?;\n         }\n         if let Some(owner) = self.jwt_owner.as_ref() {\n-            owner.check_source(auth)\n+            owner\n+                .check_source(auth)\n                 .and_then(|()| owner.check_login_lifetime(time))\n                 .map_err(|error| Response::error(error.status, &error.message))?;\n         }\n@@ -1082,7 +1083,8 @@\n                 .map_err(|error| Response::error(error.status, &error.message))?;\n         }\n         if let Some(owner) = self.jwt_owner.as_ref() {\n-            owner.authorize_reply(auth, self.principal.as_ref(), status, time)\n+            owner\n+                .authorize_reply(auth, self.principal.as_ref(), status, time)\n                 .map_err(|error| Response::error(error.status, &error.message))?;\n         }\n         if let Some(owner) = self.batch_issuer_owner.as_ref() {\n@@ -1112,7 +1114,9 @@\n                 .userpass_owner\n                 .as_ref()\n                 .is_some_and(|owner| !owner.permits_empty_actor_retirement())\n-            || self.jwt_owner.as_ref()\n+            || self\n+                .jwt_owner\n+                .as_ref()\n                 .is_some_and(|owner| !owner.permits_empty_actor_retirement())\n             || self.wrapping_owner.is_some()\n             || self.mount_owner.is_some()\n@@ -1323,7 +1327,11 @@\n             ) {\n                 Ok(Some(owner)) => NativeLocalOwner::Userpass(Box::new(owner)),\n                 Ok(None) => match source.auth.capture_native_v6_jwt_owner(\n-                    principal.as_ref(), request.namespace, request.method, request.path, request.body,\n+                    principal.as_ref(),\n+                    request.namespace,\n+                    request.method,\n+                    request.path,\n+                    request.body,\n                 ) {\n                     Ok(Some(owner)) => NativeLocalOwner::Jwt(Box::new(owner)),\n                     Ok(None) => NativeLocalOwner::Auth,\n@@ -1759,8 +1767,7 @@\n             jwt_owner,\n         ) = match owner {\n             NativeLocalOwner::Auth => (\n-                None, None, None, None, None, None, None, None, None, None, None, None, None,\n-                None,\n+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,\n             ),\n             NativeLocalOwner::Userpass(owner) => (\n                 None,\n@@ -1971,8 +1978,20 @@\n                 None,\n             ),\n             NativeLocalOwner::Jwt(owner) => (\n-                None, None, None, None, None, None, None,\n-                None, None, None, None, None, None, Some(*owner),\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                None,\n+                Some(*owner),\n             ),\n         };\n         if self.pending_native_auth_delivery.is_some()\n@@ -2412,7 +2431,10 @@\n                 request.client_certificates,\n                 request.origin_peer,\n                 &mut consumption,\n-                delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login())\n+                delivery\n+                    .jwt_owner\n+                    .as_ref()\n+                    .is_some_and(|owner| owner.is_login())\n                     .then_some(&mut jwt_lifetime),\n             )\n         };\n@@ -2531,13 +2553,27 @@\n                 }\n             }\n         }\n-        if response.status == 200 && delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login()) {\n+        if response.status == 200\n+            && delivery\n+                .jwt_owner\n+                .as_ref()\n+                .is_some_and(|owner| owner.is_login())\n+        {\n             let bound = (|| -> Result<(), Response> {\n                 let lifetime = jwt_lifetime.take().ok_or_else(rejected)?;\n                 let time = delivery.time(&delivery.source_auth)?;\n-                delivery.jwt_owner.as_mut().ok_or_else(rejected)?\n-                    .bind_successful_login(&delivery.source_auth, &candidate.auth,\n-                        request.body, &response.body, lifetime, time)\n+                delivery\n+                    .jwt_owner\n+                    .as_mut()\n+                    .ok_or_else(rejected)?\n+                    .bind_successful_login(\n+                        &delivery.source_auth,\n+                        &candidate.auth,\n+                        request.body,\n+                        &response.body,\n+                        lifetime,\n+                        time,\n+                    )\n                     .map_err(|error| Response::error(error.status, &error.message))\n             })();\n             if let Err(error) = bound {\n@@ -2765,7 +2801,8 @@\n                 erase_json(&mut response.body);\n                 return rejected();\n             }\n-            let bound = owner.bind_response(response.status, &response.body)\n+            let bound = owner\n+                .bind_response(response.status, &response.body)\n                 .map_err(|error| Response::error(error.status, &error.message))\n                 .and_then(|()| transit_reply_digest(response.status, &response.body, deadline));\n             match bound {\n@@ -2777,7 +2814,12 @@\n             }\n         }\n         #[cfg(test)]\n-        if delivery.jwt_owner.as_ref().is_some_and(|owner| owner.is_login()) && response.status == 200 {\n+        if delivery\n+            .jwt_owner\n+            .as_ref()\n+            .is_some_and(|owner| owner.is_login())\n+            && response.status == 200\n+        {\n             jwt_tests::before_actual_jwt_publication();\n         }\n         // A catalog read cannot acquire a writer merely to normalize schema.\n@@ -2803,7 +2845,8 @@\n                     .map_err(|error| Response::error(error.status, &error.message))?;\n             }\n             if let Some(owner) = delivery.jwt_owner.as_ref() {\n-                owner.admit_candidate(&delivery.source_auth, &candidate.auth)\n+                owner\n+                    .admit_candidate(&delivery.source_auth, &candidate.auth)\n                     .map_err(|error| Response::error(error.status, &error.message))?;\n             }\n             if let Some(owner) = delivery.batch_lifecycle_owner.as_mut() {\n@@ -3320,9 +3363,12 @@\n                 return Err(rejected());\n             }\n             if delivery.jwt_owner.is_some()\n-                && delivery.jwt_reply != Some(transit_reply_digest(\n-                    response.status, &response.body, delivery.deadline,\n-                )?)\n+                && delivery.jwt_reply\n+                    != Some(transit_reply_digest(\n+                        response.status,\n+                        &response.body,\n+                        delivery.deadline,\n+                    )?)\n             {\n                 return Err(rejected());\n             }\n"
+    },
+    {
+      "after_bytes": 37377,
+      "after_sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb",
+      "before_bytes": 33059,
+      "before_sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b",
+      "canonical_candidate_blob": "89f3ce081c94e08446a15b11fdc76a1d724ab09e",
+      "changed": true,
+      "diff_bytes": 48342,
+      "diff_sha256": "aa96ab14671d45dd432551c64abda4b0f825a4ae63c56c9be95949a0c76bc25b",
+      "name": "service_native_jwt_tests.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": "--- a/service_native_jwt_tests.rs\n+++ b/service_native_jwt_tests.rs\n@@ -6,7 +6,10 @@\n use base64::engine::general_purpose::URL_SAFE_NO_PAD;\n use ring::signature::{Ed25519KeyPair, KeyPair};\n use std::cell::RefCell;\n-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};\n+use std::sync::{\n+    Arc,\n+    atomic::{AtomicBool, Ordering},\n+};\n \n type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;\n const LOGIN: &str = \"auth/native-jwt/login\";\n@@ -36,7 +39,9 @@\n }\n impl Drop for PublicationPause {\n     fn drop(&mut self) {\n-        BEFORE_PUBLICATION.with(|slot| { slot.borrow_mut().take(); });\n+        BEFORE_PUBLICATION.with(|slot| {\n+            slot.borrow_mut().take();\n+        });\n     }\n }\n \n@@ -50,11 +55,21 @@\n }\n \n fn status(response: &Response, expected: u16) {\n-    assert_eq!(response.status, expected, \"JWT error shape={:?}\", response.body.get(\"errors\"));\n+    assert_eq!(\n+        response.status,\n+        expected,\n+        \"JWT error shape={:?}\",\n+        response.body.get(\"errors\")\n+    );\n }\n fn text(response: &Response, pointer: &str) -> TestResult<String> {\n-    response.body.pointer(pointer).and_then(Value::as_str)\n-        .filter(|v| !v.is_empty()).map(str::to_owned).ok_or_else(|| \"synthetic JWT field missing\".into())\n+    response\n+        .body\n+        .pointer(pointer)\n+        .and_then(Value::as_str)\n+        .filter(|v| !v.is_empty())\n+        .map(str::to_owned)\n+        .ok_or_else(|| \"synthetic JWT field missing\".into())\n }\n fn secret(response: &mut Response, pointer: &str) -> TestResult<Zeroizing<String>> {\n     let value = Zeroizing::new(text(response, pointer)?);\n@@ -69,17 +84,35 @@\n     assert!(response.unwrapped_json.is_none() && response.consistency_index.is_none());\n }\n \n-fn call(service: &mut Service, now: &mut u64, token: &str,\n-        method: &str, path: &str, body: Value) -> TestResult<Response> {\n+fn call(\n+    service: &mut Service,\n+    now: &mut u64,\n+    token: &str,\n+    method: &str,\n+    path: &str,\n+    body: Value,\n+) -> TestResult<Response> {\n     *now += 1;\n     let started = Instant::now();\n     let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;\n-    let _scope = crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));\n-    let execution = service.begin_at_mode_precise(RequestDispatch {\n-        method, path, namespace: \"\", token, body, now: *now,\n-        allow_forward: true, enforce_namespace: true, wrap_ttl_seconds: None,\n-        origin_peer: None, client_certificates: None,\n-    }, clock);\n+    let _scope =\n+        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));\n+    let execution = service.begin_at_mode_precise(\n+        RequestDispatch {\n+            method,\n+            path,\n+            namespace: \"\",\n+            token,\n+            body,\n+            now: *now,\n+            allow_forward: true,\n+            enforce_namespace: true,\n+            wrap_ttl_seconds: None,\n+            origin_peer: None,\n+            client_certificates: None,\n+        },\n+        clock,\n+    );\n     // Local JWT must not acquire a remote issuer/provider execution capsule.\n     let RequestExecution::Complete(response) = execution else {\n         return Err(\"local native JWT escaped to external execution\".into());\n@@ -102,28 +135,96 @@\n         let mut service = files.service()?;\n         service.configure_native_v6_storage(NativeStorageProfile::File)?;\n         let mut now = 100;\n-        let mut init = call(&mut service, &mut now, \"\", \"POST\", \"sys/init\",\n-                            json!({\"secret_shares\":1,\"secret_threshold\":1}))?;\n+        let mut init = call(\n+            &mut service,\n+            &mut now,\n+            \"\",\n+            \"POST\",\n+            \"sys/init\",\n+            json!({\"secret_shares\":1,\"secret_threshold\":1}),\n+        )?;\n         status(&init, 200);\n         let key = Zeroizing::new(text(&init, \"/keys/0\")?);\n         let admin = secret(&mut init, \"/root_token\")?;\n-        status(&call(&mut service, &mut now, \"\", \"POST\", \"sys/unseal\", json!({\"key\":key.as_str()}))?,200);\n-        status(&call(&mut service, &mut now, &admin, \"POST\", \"sys/init/ack\", json!({}))?,204);\n-        let pair = Ed25519KeyPair::from_seed_unchecked(&[67;32]).map_err(|_| \"synthetic signing key\")?;\n-        let mut f = Self { files, service, key, admin, now, pair };\n-        status(&f.admin(\"POST\", native_storage::ACTIVATE_PATH, json!({}))?,204);\n+        status(\n+            &call(\n+                &mut service,\n+                &mut now,\n+                \"\",\n+                \"POST\",\n+                \"sys/unseal\",\n+                json!({\"key\":key.as_str()}),\n+            )?,\n+            200,\n+        );\n+        status(\n+            &call(\n+                &mut service,\n+                &mut now,\n+                &admin,\n+                \"POST\",\n+                \"sys/init/ack\",\n+                json!({}),\n+            )?,\n+            204,\n+        );\n+        let pair =\n+            Ed25519KeyPair::from_seed_unchecked(&[67; 32]).map_err(|_| \"synthetic signing key\")?;\n+        let mut f = Self {\n+            files,\n+            service,\n+            key,\n+            admin,\n+            now,\n+            pair,\n+        };\n+        status(\n+            &f.admin(\"POST\", native_storage::ACTIVATE_PATH, json!({}))?,\n+            204,\n+        );\n         assert!(f.service.native_root.is_some() && f.service.record_root.is_none());\n-        status(&f.admin(\"POST\", \"sys/mounts/jwt-kv\", json!({\"type\":\"kv\",\"options\":{\"version\":\"2\"}}))?,204);\n-        status(&f.admin(\"POST\", \"jwt-kv/data/value\", json!({\"options\":{\"cas\":0},\"data\":{\"value\":\"jwt-preserved\"}}))?,200);\n-        status(&f.admin(\"PUT\", \"sys/policies/acl/native-jwt\", json!({\"policy\":POLICY}))?,204);\n+        status(\n+            &f.admin(\n+                \"POST\",\n+                \"sys/mounts/jwt-kv\",\n+                json!({\"type\":\"kv\",\"options\":{\"version\":\"2\"}}),\n+            )?,\n+            204,\n+        );\n+        status(\n+            &f.admin(\n+                \"POST\",\n+                \"jwt-kv/data/value\",\n+                json!({\"options\":{\"cas\":0},\"data\":{\"value\":\"jwt-preserved\"}}),\n+            )?,\n+            200,\n+        );\n+        status(\n+            &f.admin(\n+                \"PUT\",\n+                \"sys/policies/acl/native-jwt\",\n+                json!({\"policy\":POLICY}),\n+            )?,\n+            204,\n+        );\n         // Base 4e808 rejects this actual native mount. Merely exercising the\n         // pre-existing legacy JWT handler cannot make this regression pass.\n-        status(&f.admin(\"POST\", \"sys/auth/native-jwt\", json!({\"type\":\"jwt\"}))?,204);\n+        status(\n+            &f.admin(\"POST\", \"sys/auth/native-jwt\", json!({\"type\":\"jwt\"}))?,\n+            204,\n+        );\n         let config = f.config(&f.pair);\n-        status(&f.admin(\"POST\", CONFIG, config)?,204);\n-        status(&f.admin(\"POST\", ROLE, json!({\"role_type\":\"jwt\",\"user_claim\":\"sub\",\n+        status(&f.admin(\"POST\", CONFIG, config)?, 204);\n+        status(\n+            &f.admin(\n+                \"POST\",\n+                ROLE,\n+                json!({\"role_type\":\"jwt\",\"user_claim\":\"sub\",\n             \"bound_audiences\":[\"native\"],\"token_policies\":[\"native-jwt\"],\n-            \"token_ttl\":300,\"token_max_ttl\":600,\"token_type\":\"service\"}))?,204);\n+            \"token_ttl\":300,\"token_max_ttl\":600,\"token_type\":\"service\"}),\n+            )?,\n+            204,\n+        );\n         Ok(f)\n     }\n     fn config(&self, pair: &Ed25519KeyPair) -> Value {\n@@ -135,28 +236,49 @@\n         let header = URL_SAFE_NO_PAD.encode(br#\"{\"alg\":\"EdDSA\",\"kid\":\"key\"}\"#);\n         let claims = json!({\"iss\":\"https://native-jwt.example\",\"aud\":\"native\",\"sub\":\"alice\",\n             \"iat\":self.now,\"exp\":expires,\"jti\":\"reusable-not-a-nonce\"});\n-        let signing = format!(\"{header}.{}\",URL_SAFE_NO_PAD.encode(claims.to_string()));\n-        Zeroizing::new(format!(\"{signing}.{}\",URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())))\n+        let signing = format!(\"{header}.{}\", URL_SAFE_NO_PAD.encode(claims.to_string()));\n+        Zeroizing::new(format!(\n+            \"{signing}.{}\",\n+            URL_SAFE_NO_PAD.encode(self.pair.sign(signing.as_bytes()).as_ref())\n+        ))\n     }\n     fn admin(&mut self, method: &str, path: &str, body: Value) -> TestResult<Response> {\n-        call(&mut self.service, &mut self.now, &self.admin, method, path, body)\n-    }\n-    fn actor(&mut self, token: &str, method: &str, path: &str, body: Value) -> TestResult<Response> {\n+        call(\n+            &mut self.service,\n+            &mut self.now,\n+            &self.admin,\n+            method,\n+            path,\n+            body,\n+        )\n+    }\n+    fn actor(\n+        &mut self,\n+        token: &str,\n+        method: &str,\n+        path: &str,\n+        body: Value,\n+    ) -> TestResult<Response> {\n         call(&mut self.service, &mut self.now, token, method, path, body)\n     }\n-    fn login(&mut self, assertion: &str) -> TestResult<(Zeroizing<String>,String)> {\n-        let mut response = self.actor(\"\", \"POST\", LOGIN, json!({\"role\":\"client\",\"jwt\":assertion}))?;\n-        status(&response,200);\n-        assert_eq!(response.body[\"auth\"][\"token_type\"],\"service\");\n-        assert_eq!(response.body[\"auth\"][\"renewable\"],true);\n-        let entity = text(&response,\"/auth/entity_id\")?;\n-        let token = secret(&mut response,\"/auth/client_token\")?;\n-        Ok((token,entity))\n+    fn login(&mut self, assertion: &str) -> TestResult<(Zeroizing<String>, String)> {\n+        let mut response =\n+            self.actor(\"\", \"POST\", LOGIN, json!({\"role\":\"client\",\"jwt\":assertion}))?;\n+        status(&response, 200);\n+        assert_eq!(response.body[\"auth\"][\"token_type\"], \"service\");\n+        assert_eq!(response.body[\"auth\"][\"renewable\"], true);\n+        let entity = text(&response, \"/auth/entity_id\")?;\n+        let token = secret(&mut response, \"/auth/client_token\")?;\n+        Ok((token, entity))\n     }\n     fn token(&mut self, policy: &str) -> TestResult<Zeroizing<String>> {\n-        let mut response = self.admin(\"POST\", \"auth/token/create\", json!({\n-            \"policies\":[policy],\"no_default_policy\":true,\"ttl\":\"600s\"\n-        }))?;\n+        let mut response = self.admin(\n+            \"POST\",\n+            \"auth/token/create\",\n+            json!({\n+                \"policies\":[policy],\"no_default_policy\":true,\"ttl\":\"600s\"\n+            }),\n+        )?;\n         status(&response, 200);\n         secret(&mut response, \"/auth/client_token\")\n     }\n@@ -164,7 +286,17 @@\n         drop(self.service);\n         let mut service = self.files.service()?;\n         service.configure_native_v6_storage(NativeStorageProfile::File)?;\n-        status(&call(&mut service,&mut self.now,\"\",\"POST\",\"sys/unseal\",json!({\"key\":self.key.as_str()}))?,200);\n+        status(\n+            &call(\n+                &mut service,\n+                &mut self.now,\n+                \"\",\n+                \"POST\",\n+                \"sys/unseal\",\n+                json!({\"key\":self.key.as_str()}),\n+            )?,\n+            200,\n+        );\n         assert!(service.native_root.is_some() && service.record_root.is_none());\n         assert!(!service.recovery_required);\n         self.service = service;\n@@ -172,8 +304,10 @@\n     }\n     fn snapshot(&self) -> TestResult<Zeroizing<Vec<u8>>> {\n         let state = self.service.state.as_ref().ok_or(\"native state\")?;\n-        let auth_bytes = owner_store::serialize_owner(&state.auth).map_err(|_| \"Auth projection\")?;\n-        let engine_bytes = owner_store::serialize_owner(&state.engines).map_err(|_| \"Identity projection\")?;\n+        let auth_bytes =\n+            owner_store::serialize_owner(&state.auth).map_err(|_| \"Auth projection\")?;\n+        let engine_bytes =\n+            owner_store::serialize_owner(&state.engines).map_err(|_| \"Identity projection\")?;\n         let mut auth: Value = serde_json::from_slice(&auth_bytes)?;\n         let mut engines: Value = serde_json::from_slice(&engine_bytes)?;\n         assert!(auth[\"auth_mounts\"].is_object());\n@@ -186,83 +320,140 @@\n             \"jwt\":auth[\"jwt_mounts\"].take(),\"tokens\":auth[\"tokens\"].take(),\n             \"identity\":engines[\"namespaces\"][\"\"][\"identity\"].take()});\n         let bytes = Zeroizing::new(serde_json::to_vec(&projection)?);\n-        erase_json(&mut projection);erase_json(&mut auth);erase_json(&mut engines);\n+        erase_json(&mut projection);\n+        erase_json(&mut auth);\n+        erase_json(&mut engines);\n         Ok(bytes)\n     }\n-    fn begin_login(&mut self, assertion: &str, budget: Duration) -> TestResult<(Response,RequestClock,Instant)> {\n+    fn begin_login(\n+        &mut self,\n+        assertion: &str,\n+        budget: Duration,\n+    ) -> TestResult<(Response, RequestClock, Instant)> {\n         self.now += 1;\n-        let started = Instant::now();let until = started + budget;\n-        let clock = RequestClock::anchored(Duration::from_secs(self.now),started)?;\n+        let started = Instant::now();\n+        let until = started + budget;\n+        let clock = RequestClock::anchored(Duration::from_secs(self.now), started)?;\n         let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);\n         let body = json!({\"role\":\"client\",\"jwt\":assertion});\n         let response = self.service.handle_inner(RequestView {\n-            method:\"POST\",path:LOGIN,namespace:\"\",token:\"\",body:&body,now:self.now,\n-            admission_started:started,token_clock:Some(clock),allow_forward:true,enforce_namespace:true,\n-            wrap_ttl_seconds:None,origin_peer:None,client_certificates:None,\n+            method: \"POST\",\n+            path: LOGIN,\n+            namespace: \"\",\n+            token: \"\",\n+            body: &body,\n+            now: self.now,\n+            admission_started: started,\n+            token_clock: Some(clock),\n+            allow_forward: true,\n+            enforce_namespace: true,\n+            wrap_ttl_seconds: None,\n+            origin_peer: None,\n+            client_certificates: None,\n         });\n-        let delivery = self.service.pending_native_auth_delivery.as_ref().ok_or(\"actual JWT owner\")?;\n+        let delivery = self\n+            .service\n+            .pending_native_auth_delivery\n+            .as_ref()\n+            .ok_or(\"actual JWT owner\")?;\n         assert!(delivery.jwt_owner.is_some());\n         assert!(delivery.requires_local_proof() && delivery.tracks_terminal_checkpoint());\n         assert!(delivery.proof.is_none() && delivery.delivery_checkpoint.is_some());\n-        assert_eq!(delivery.deadline.instant(),until);\n-        Ok((response,clock,until))\n+        assert_eq!(delivery.deadline.instant(), until);\n+        Ok((response, clock, until))\n     }\n }\n \n #[test]\n fn native_jwt_local_service_token_identity_renewal_and_cold_reopen() -> TestResult {\n-    let mut f=Fixture::new()?;\n-    let expires=f.now+30;\n-    let assertion=f.assertion(expires);\n-    let (first,entity)=f.login(&assertion)?;\n-    let (second,same_entity)=f.login(&assertion)?;\n-    assert!(first.as_str()!=second.as_str());\n-    assert_eq!(entity,same_entity);\n-    let mut f=f.restart()?;\n-    let read=f.actor(&first,\"GET\",\"jwt-kv/data/value\",json!({}))?;\n-    status(&read,200);assert_eq!(read.body[\"data\"][\"data\"][\"value\"],\"jwt-preserved\");\n-    f.now=expires+1;\n+    let mut f = Fixture::new()?;\n+    let expires = f.now + 30;\n+    let assertion = f.assertion(expires);\n+    let (first, entity) = f.login(&assertion)?;\n+    let (second, same_entity) = f.login(&assertion)?;\n+    assert!(first.as_str() != second.as_str());\n+    assert_eq!(entity, same_entity);\n+    let mut f = f.restart()?;\n+    let read = f.actor(&first, \"GET\", \"jwt-kv/data/value\", json!({}))?;\n+    status(&read, 200);\n+    assert_eq!(read.body[\"data\"][\"data\"][\"value\"], \"jwt-preserved\");\n+    f.now = expires + 1;\n     // Renewal follows the issuing role and issued token, not the expired JWT\n     // or the role's later trust keys. No remote issuer execution is permitted.\n-    let rotated=Ed25519KeyPair::from_seed_unchecked(&[68;32]).map_err(|_|\"rotation key\")?;\n-    let config=f.config(&rotated);\n-    status(&f.admin(\"POST\",CONFIG,config)?,204);\n-    let mut renewed=f.actor(&first,\"POST\",\"auth/token/renew-self\",json!({\"increment\":120}))?;\n-    status(&renewed,200);assert_eq!(renewed.body[\"auth\"][\"entity_id\"],entity);\n-    let echoed=secret(&mut renewed,\"/auth/client_token\")?;assert!(echoed.as_str()==first.as_str());\n-    let mut f=f.restart()?;\n-    status(&f.actor(&first,\"POST\",\"auth/token/revoke-self\",json!({}))?,204);\n-    status(&f.actor(&first,\"GET\",\"auth/token/lookup-self\",json!({}))?,403);\n-    status(&f.actor(&second,\"GET\",\"auth/token/lookup-self\",json!({}))?,200);\n-    status(&f.admin(\"DELETE\",ROLE,json!({}))?,204);\n-    let missing_role=f.actor(&second,\"POST\",\"auth/token/renew-self\",json!({}))?;\n-    status(&missing_role,500);no_credential(&missing_role);\n-    status(&f.admin(\"DELETE\",\"sys/auth/native-jwt\",json!({}))?,204);\n-    let mut f=f.restart()?;\n-    status(&f.actor(&second,\"GET\",\"auth/token/lookup-self\",json!({}))?,403);\n+    let rotated = Ed25519KeyPair::from_seed_unchecked(&[68; 32]).map_err(|_| \"rotation key\")?;\n+    let config = f.config(&rotated);\n+    status(&f.admin(\"POST\", CONFIG, config)?, 204);\n+    let mut renewed = f.actor(\n+        &first,\n+        \"POST\",\n+        \"auth/token/renew-self\",\n+        json!({\"increment\":120}),\n+    )?;\n+    status(&renewed, 200);\n+    assert_eq!(renewed.body[\"auth\"][\"entity_id\"], entity);\n+    let echoed = secret(&mut renewed, \"/auth/client_token\")?;\n+    assert!(echoed.as_str() == first.as_str());\n+    let mut f = f.restart()?;\n+    status(\n+        &f.actor(&first, \"POST\", \"auth/token/revoke-self\", json!({}))?,\n+        204,\n+    );\n+    status(\n+        &f.actor(&first, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    status(\n+        &f.actor(&second, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        200,\n+    );\n+    status(&f.admin(\"DELETE\", ROLE, json!({}))?, 204);\n+    let missing_role = f.actor(&second, \"POST\", \"auth/token/renew-self\", json!({}))?;\n+    status(&missing_role, 500);\n+    no_credential(&missing_role);\n+    status(&f.admin(\"DELETE\", \"sys/auth/native-jwt\", json!({}))?, 204);\n+    let mut f = f.restart()?;\n+    status(\n+        &f.actor(&second, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n     Ok(())\n }\n \n #[test]\n fn native_jwt_rejects_remote_batch_and_bad_signature_without_candidate_delta() -> TestResult {\n-    let mut f=Fixture::new()?;\n-    for (path,body) in [(CONFIG,json!({\"issuer\":\"https://native-jwt.example\",\"audiences\":[\"native\"],\n-        \"jwks_url\":\"https://remote-issuer.invalid/keys\"})),\n-        (ROLE,json!({\"token_type\":\"batch\"})),\n-        (\"sys/auth/native-jwt/tune\",json!({\"token_type\":\"default_batch\"}))] {\n-        let before=f.snapshot()?;\n-        let response=f.admin(\"POST\",path,body)?;\n-        status(&response,501);no_credential(&response);\n-        assert!(before.as_slice()==f.snapshot()?.as_slice());\n-    }\n-    let assertion=f.assertion(f.now+60);\n-    let mut segments=assertion.split('.').map(str::to_owned).collect::<Vec<_>>();\n-    segments[2]=URL_SAFE_NO_PAD.encode([0;64]);\n-    let bad=Zeroizing::new(segments.join(\".\"));\n-    let before=f.snapshot()?;\n-    let response=f.actor(\"\",\"POST\",LOGIN,json!({\"role\":\"client\",\"jwt\":bad.as_str()}))?;\n-    status(&response,400);no_credential(&response);\n-    assert!(before.as_slice()==f.snapshot()?.as_slice());\n+    let mut f = Fixture::new()?;\n+    for (path, body) in [\n+        (\n+            CONFIG,\n+            json!({\"issuer\":\"https://native-jwt.example\",\"audiences\":[\"native\"],\n+        \"jwks_url\":\"https://remote-issuer.invalid/keys\"}),\n+        ),\n+        (ROLE, json!({\"token_type\":\"batch\"})),\n+        (\n+            \"sys/auth/native-jwt/tune\",\n+            json!({\"token_type\":\"default_batch\"}),\n+        ),\n+    ] {\n+        let before = f.snapshot()?;\n+        let response = f.admin(\"POST\", path, body)?;\n+        status(&response, 501);\n+        no_credential(&response);\n+        assert!(before.as_slice() == f.snapshot()?.as_slice());\n+    }\n+    let assertion = f.assertion(f.now + 60);\n+    let mut segments = assertion.split('.').map(str::to_owned).collect::<Vec<_>>();\n+    segments[2] = URL_SAFE_NO_PAD.encode([0; 64]);\n+    let bad = Zeroizing::new(segments.join(\".\"));\n+    let before = f.snapshot()?;\n+    let response = f.actor(\n+        \"\",\n+        \"POST\",\n+        LOGIN,\n+        json!({\"role\":\"client\",\"jwt\":bad.as_str()}),\n+    )?;\n+    status(&response, 400);\n+    no_credential(&response);\n+    assert!(before.as_slice() == f.snapshot()?.as_slice());\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     Ok(())\n }\n@@ -275,9 +466,16 @@\n     status(&f.admin(\"PUT\", \"sys/policies/acl/jwt-role-manager\", json!({\"policy\":\n         \"path \\\"auth/native-jwt/role\\\" { capabilities = [\\\"list\\\"] } path \\\"auth/native-jwt/role/client\\\" { capabilities = [\\\"read\\\",\\\"update\\\",\\\"sudo\\\"] }\"\n     }))?, 204);\n-    status(&f.admin(\"PUT\", \"sys/policies/acl/jwt-role-no-sudo\", json!({\"policy\":\n-        \"path \\\"auth/native-jwt/role/client\\\" { capabilities = [\\\"read\\\",\\\"update\\\"] }\"\n-    }))?, 204);\n+    status(\n+        &f.admin(\n+            \"PUT\",\n+            \"sys/policies/acl/jwt-role-no-sudo\",\n+            json!({\"policy\":\n+                \"path \\\"auth/native-jwt/role/client\\\" { capabilities = [\\\"read\\\",\\\"update\\\"] }\"\n+            }),\n+        )?,\n+        204,\n+    );\n     let manager = f.token(\"jwt-role-manager\")?;\n     let no_sudo = f.token(\"jwt-role-no-sudo\")?;\n     let listed = f.actor(&manager, \"GET\", \"auth/native-jwt/role\", json!({}))?;\n@@ -285,9 +483,13 @@\n     assert_eq!(listed.body[\"data\"][\"keys\"], json!([\"client\"]));\n     let before = f.snapshot()?;\n     let denied = f.actor(&no_sudo, \"POST\", ROLE, json!({\"token_ttl\":301}))?;\n-    status(&denied, 403);no_credential(&denied);\n+    status(&denied, 403);\n+    no_credential(&denied);\n     assert!(before.as_slice() == f.snapshot()?.as_slice());\n-    status(&f.actor(&manager, \"POST\", ROLE, json!({\"token_ttl\":301}))?, 204);\n+    status(\n+        &f.actor(&manager, \"POST\", ROLE, json!({\"token_ttl\":301}))?,\n+        204,\n+    );\n     // No delete capability: the existing named DELETE uses update + sudo.\n     status(&f.actor(&manager, \"DELETE\", ROLE, json!({}))?, 204);\n     status(&f.admin(\"GET\", ROLE, json!({}))?, 404);\n@@ -295,33 +497,52 @@\n }\n \n #[test]\n-fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh() -> TestResult {\n-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);\n-    let (_,entity)=f.login(&assertion)?;\n-    let route=format!(\"identity/entity/id/{entity}\");\n-    status(&f.admin(\"PATCH\",&route,json!({\"disabled\":true}))?,204);\n-    let before=f.snapshot()?;\n-    let denied=f.actor(\"\",\"POST\",LOGIN,json!({\"role\":\"client\",\"jwt\":assertion.as_str()}))?;\n-    status(&denied,403);no_credential(&denied);\n-    assert!(before.as_slice()==f.snapshot()?.as_slice());\n+fn native_jwt_identity_failure_does_not_export_witness_or_token_and_next_login_is_fresh()\n+-> TestResult {\n+    let mut f = Fixture::new()?;\n+    let assertion = f.assertion(f.now + 60);\n+    let (_, entity) = f.login(&assertion)?;\n+    let route = format!(\"identity/entity/id/{entity}\");\n+    status(&f.admin(\"PATCH\", &route, json!({\"disabled\":true}))?, 204);\n+    let before = f.snapshot()?;\n+    let denied = f.actor(\n+        \"\",\n+        \"POST\",\n+        LOGIN,\n+        json!({\"role\":\"client\",\"jwt\":assertion.as_str()}),\n+    )?;\n+    status(&denied, 403);\n+    no_credential(&denied);\n+    assert!(before.as_slice() == f.snapshot()?.as_slice());\n     assert!(f.service.pending_native_auth_delivery.is_none());\n-    status(&f.admin(\"PATCH\",&route,json!({\"disabled\":false}))?,204);\n-    let (_,again)=f.login(&assertion)?;assert_eq!(again,entity);\n-    Ok(())\n-}\n-\n-#[test]\n-fn native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic() -> TestResult {\n-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);\n-    let before=f.snapshot()?;\n-    let pause=PublicationPause::once(Duration::from_millis(2100));\n-    let response=f.actor(\"\",\"POST\",LOGIN,json!({\"role\":\"client\",\"jwt\":assertion.as_str()}))?;\n-    assert!(pause.0.load(Ordering::Acquire));drop(pause);\n-    status(&response,503);no_credential(&response);\n-    assert!(before.as_slice()==f.snapshot()?.as_slice());\n+    status(&f.admin(\"PATCH\", &route, json!({\"disabled\":false}))?, 204);\n+    let (_, again) = f.login(&assertion)?;\n+    assert_eq!(again, entity);\n+    Ok(())\n+}\n+\n+#[test]\n+fn native_jwt_original_assertion_expiry_before_publication_keeps_auth_identity_atomic() -> TestResult\n+{\n+    let mut f = Fixture::new()?;\n+    let assertion = f.assertion(f.now + 2);\n+    let before = f.snapshot()?;\n+    let pause = PublicationPause::once(Duration::from_millis(2100));\n+    let response = f.actor(\n+        \"\",\n+        \"POST\",\n+        LOGIN,\n+        json!({\"role\":\"client\",\"jwt\":assertion.as_str()}),\n+    )?;\n+    assert!(pause.0.load(Ordering::Acquire));\n+    drop(pause);\n+    status(&response, 503);\n+    no_credential(&response);\n+    assert!(before.as_slice() == f.snapshot()?.as_slice());\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     assert!(!f.service.recovery_required);\n-    let f=f.restart()?;assert!(before.as_slice()==f.snapshot()?.as_slice());\n+    let f = f.restart()?;\n+    assert!(before.as_slice() == f.snapshot()?.as_slice());\n     Ok(())\n }\n \n@@ -331,18 +552,27 @@\n     let assertion = f.assertion(f.now + 60);\n     let before = f.snapshot()?;\n     let root = f.service.native_root.as_ref().ok_or(\"native root\")?;\n-    let bytes = root.owners.iter().try_fold(0u64, |sum, owner| {\n-        sum.checked_add(owner.owner.total_bytes)\n-    }).ok_or(\"native owner bytes\")?;\n+    let bytes = root\n+        .owners\n+        .iter()\n+        .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))\n+        .ok_or(\"native owner bytes\")?;\n     let original_capacity = f.service.opaque_owner_capacity;\n     f.service.opaque_owner_capacity = usize::try_from(bytes)?;\n     // The original root fits; a real newly issued token and Identity require\n     // more opaque-owner space. The existing writer's capacity gate must veto\n     // publication after real authentication, without a partial root or grant.\n     let reached = PublicationPause::once(Duration::ZERO);\n-    let response = f.actor(\"\", \"POST\", LOGIN, json!({\"role\":\"client\",\"jwt\":assertion.as_str()}))?;\n-    assert!(reached.0.load(Ordering::Acquire));drop(reached);\n-    status(&response, 507);no_credential(&response);\n+    let response = f.actor(\n+        \"\",\n+        \"POST\",\n+        LOGIN,\n+        json!({\"role\":\"client\",\"jwt\":assertion.as_str()}),\n+    )?;\n+    assert!(reached.0.load(Ordering::Acquire));\n+    drop(reached);\n+    status(&response, 507);\n+    no_credential(&response);\n     assert!(before.as_slice() == f.snapshot()?.as_slice());\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     assert!(!f.service.recovery_required);\n@@ -353,61 +583,104 @@\n }\n \n #[test]\n-fn native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback() -> TestResult {\n-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+2);\n-    let before=f.snapshot()?;\n-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;\n-    status(&response,200);let issued=Zeroizing::new(text(&response,\"/auth/client_token\")?);\n-    let committed=f.snapshot()?;assert!(before.as_slice()!=committed.as_slice());\n-    let response=f.service.audit_completed_response_with_receipt(\n-        \"native-jwt-expiry-after-commit\",f.now,Some(clock),response,\n-        || std::thread::sleep(Duration::from_millis(2100)));\n-    status(&response,200);\n-    let response=f.service.complete_native_auth_delivery(true,response,\"native-jwt-expiry-after-commit\");\n-    status(&response,503);no_credential(&response);\n+fn native_jwt_original_assertion_expiry_after_commit_withholds_reply_without_rollback() -> TestResult\n+{\n+    let mut f = Fixture::new()?;\n+    let assertion = f.assertion(f.now + 2);\n+    let before = f.snapshot()?;\n+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;\n+    status(&response, 200);\n+    let issued = Zeroizing::new(text(&response, \"/auth/client_token\")?);\n+    let committed = f.snapshot()?;\n+    assert!(before.as_slice() != committed.as_slice());\n+    let response = f.service.audit_completed_response_with_receipt(\n+        \"native-jwt-expiry-after-commit\",\n+        f.now,\n+        Some(clock),\n+        response,\n+        || std::thread::sleep(Duration::from_millis(2100)),\n+    );\n+    status(&response, 200);\n+    let response =\n+        f.service\n+            .complete_native_auth_delivery(true, response, \"native-jwt-expiry-after-commit\");\n+    status(&response, 503);\n+    no_credential(&response);\n     assert!(f.service.pending_native_auth_delivery.is_none());\n-    assert!(committed.as_slice()==f.snapshot()?.as_slice());\n-    let mut f=f.restart()?;\n-    status(&f.actor(&issued,\"GET\",\"auth/token/lookup-self\",json!({}))?,200);\n+    assert!(committed.as_slice() == f.snapshot()?.as_slice());\n+    let mut f = f.restart()?;\n+    status(\n+        &f.actor(&issued, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        200,\n+    );\n     Ok(())\n }\n \n #[test]\n fn native_jwt_post_commit_audit_failure_keeps_whole_root_and_recovery_required() -> TestResult {\n-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);\n-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;\n-    status(&response,200);let committed=f.snapshot()?;\n+    let mut f = Fixture::new()?;\n+    let assertion = f.assertion(f.now + 60);\n+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;\n+    status(&response, 200);\n+    let committed = f.snapshot()?;\n     // Existing cfg(test) audit I/O capacity injection: exercise the actual\n     // mandatory audit failure, not a fabricated Response or forged receipt.\n-    f.service.audit_capacity=f.service.audit.metadata()?.len();\n-    let response=f.service.audit_completed_response_with_receipt(\n-        \"native-jwt-audit-failure\",f.now,Some(clock),response,||{});\n-    status(&response,503);no_credential(&response);\n+    f.service.audit_capacity = f.service.audit.metadata()?.len();\n+    let response = f.service.audit_completed_response_with_receipt(\n+        \"native-jwt-audit-failure\",\n+        f.now,\n+        Some(clock),\n+        response,\n+        || {},\n+    );\n+    status(&response, 503);\n+    no_credential(&response);\n     assert!(f.service.recovery_required);\n-    let response=f.service.complete_native_auth_delivery(true,response,\"native-jwt-audit-failure\");\n-    status(&response,503);no_credential(&response);\n+    let response =\n+        f.service\n+            .complete_native_auth_delivery(true, response, \"native-jwt-audit-failure\");\n+    status(&response, 503);\n+    no_credential(&response);\n     assert!(f.service.pending_native_auth_delivery.is_none());\n-    assert!(committed.as_slice()==f.snapshot()?.as_slice());\n+    assert!(committed.as_slice() == f.snapshot()?.as_slice());\n     // No retry, replacement token or attempt to erase this committed root.\n     Ok(())\n }\n \n #[test]\n fn native_jwt_post_audit_response_and_original_deadline_cannot_be_rebound() -> TestResult {\n-    let mut f=Fixture::new()?;let assertion=f.assertion(f.now+60);\n-    let (response,clock,_)=f.begin_login(&assertion,Duration::from_secs(15))?;\n-    let mut response=f.service.audit_completed_response_with_receipt(\n-        \"native-jwt-status-custody\",f.now,Some(clock),response,||{});\n-    status(&response,200);response.status=403;\n-    let response=f.service.complete_native_auth_delivery(true,response,\"native-jwt-status-custody\");\n-    status(&response,503);no_credential(&response);\n-    let (response,clock,until)=f.begin_login(&assertion,Duration::from_millis(1500))?;\n-    let response=f.service.audit_completed_response_with_receipt(\n-        \"native-jwt-original-deadline\",f.now,Some(clock),response,||{});\n-    status(&response,200);\n-    std::thread::sleep(until.saturating_duration_since(Instant::now())+Duration::from_millis(2));\n-    let response=f.service.complete_native_auth_delivery(true,response,\"native-jwt-original-deadline\");\n-    status(&response,503);no_credential(&response);\n+    let mut f = Fixture::new()?;\n+    let assertion = f.assertion(f.now + 60);\n+    let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;\n+    let mut response = f.service.audit_completed_response_with_receipt(\n+        \"native-jwt-status-custody\",\n+        f.now,\n+        Some(clock),\n+        response,\n+        || {},\n+    );\n+    status(&response, 200);\n+    response.status = 403;\n+    let response =\n+        f.service\n+            .complete_native_auth_delivery(true, response, \"native-jwt-status-custody\");\n+    status(&response, 503);\n+    no_credential(&response);\n+    let (response, clock, until) = f.begin_login(&assertion, Duration::from_millis(1500))?;\n+    let response = f.service.audit_completed_response_with_receipt(\n+        \"native-jwt-original-deadline\",\n+        f.now,\n+        Some(clock),\n+        response,\n+        || {},\n+    );\n+    status(&response, 200);\n+    std::thread::sleep(until.saturating_duration_since(Instant::now()) + Duration::from_millis(2));\n+    let response =\n+        f.service\n+            .complete_native_auth_delivery(true, response, \"native-jwt-original-deadline\");\n+    status(&response, 503);\n+    no_credential(&response);\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     Ok(())\n }\n@@ -418,22 +691,47 @@\n     let assertion = f.assertion(f.now + 60);\n     let (response, clock, _) = f.begin_login(&assertion, Duration::from_secs(15))?;\n     let response = f.service.audit_completed_response_with_receipt(\n-        \"native-jwt-original-publication\", f.now, Some(clock), response, || {});\n+        \"native-jwt-original-publication\",\n+        f.now,\n+        Some(clock),\n+        response,\n+        || {},\n+    );\n     status(&response, 200);\n     let issued = Zeroizing::new(text(&response, \"/auth/client_token\")?);\n     // Retain the actual affine owner and proof. The intervening mutation is a\n     // separately authorized real request, not a fabricated checkpoint/token.\n-    let original = f.service.pending_native_auth_delivery.take().ok_or(\"original JWT delivery\")?;\n-    assert!(matches!(original.proof.as_ref(), Some(native_v6_reader::NativeProof::Single(_))));\n-    status(&f.admin(\"POST\", \"auth/token/revoke\", json!({\"token\":issued.as_str()}))?, 204);\n+    let original = f\n+        .service\n+        .pending_native_auth_delivery\n+        .take()\n+        .ok_or(\"original JWT delivery\")?;\n+    assert!(matches!(\n+        original.proof.as_ref(),\n+        Some(native_v6_reader::NativeProof::Single(_))\n+    ));\n+    status(\n+        &f.admin(\n+            \"POST\",\n+            \"auth/token/revoke\",\n+            json!({\"token\":issued.as_str()}),\n+        )?,\n+        204,\n+    );\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     f.service.pending_native_auth_delivery = Some(original);\n-    let response = f.service.complete_native_auth_delivery(true, response, \"native-jwt-stale-publication\");\n-    status(&response, 503);no_credential(&response);\n+    let response =\n+        f.service\n+            .complete_native_auth_delivery(true, response, \"native-jwt-stale-publication\");\n+    status(&response, 503);\n+    no_credential(&response);\n     assert!(!response.body.to_string().contains(issued.as_str()));\n     assert!(f.service.pending_native_auth_delivery.is_none());\n     let mut f = f.restart()?;\n-    status(&f.actor(&issued, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n+    status(\n+        &f.actor(&issued, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n     Ok(())\n }\n \n@@ -451,15 +749,26 @@\n \"#;\n \n fn allow_delegation(f: &mut Fixture) -> TestResult {\n-    status(&f.admin(\"PUT\", \"sys/policies/acl/native-jwt\",\n-        json!({\"policy\":DELEGATION_POLICY}))?, 204);\n+    status(\n+        &f.admin(\n+            \"PUT\",\n+            \"sys/policies/acl/native-jwt\",\n+            json!({\"policy\":DELEGATION_POLICY}),\n+        )?,\n+        204,\n+    );\n     Ok(())\n }\n \n fn create_service_child(f: &mut Fixture, parent: &str, ttl: u64) -> TestResult<Zeroizing<String>> {\n-    let mut response = f.actor(parent, \"POST\", \"auth/token/create\", json!({\n-        \"policies\":[\"native-jwt\"],\"no_default_policy\":true,\"ttl\":ttl\n-    }))?;\n+    let mut response = f.actor(\n+        parent,\n+        \"POST\",\n+        \"auth/token/create\",\n+        json!({\n+            \"policies\":[\"native-jwt\"],\"no_default_policy\":true,\"ttl\":ttl\n+        }),\n+    )?;\n     status(&response, 200);\n     assert_eq!(response.body[\"auth\"][\"token_type\"], \"service\");\n     assert_eq!(response.body[\"auth\"][\"orphan\"], false);\n@@ -486,26 +795,44 @@\n     f.now = assertion_expires + 1;\n     // The old assertion and issuing JWT role are no longer usable. The real\n     // child's renewal must use Token API provenance, not its inherited mount.\n-    let mut renewed = f.actor(&child, \"POST\", \"auth/token/renew-self\",\n-        json!({\"increment\":120}))?;\n+    let mut renewed = f.actor(\n+        &child,\n+        \"POST\",\n+        \"auth/token/renew-self\",\n+        json!({\"increment\":120}),\n+    )?;\n     status(&renewed, 200);\n     let echo = secret(&mut renewed, \"/auth/client_token\")?;\n     assert!(echo.as_str() == child.as_str());\n     let parent_renew = f.actor(&parent, \"POST\", \"auth/token/renew-self\", json!({}))?;\n-    status(&parent_renew, 500);no_credential(&parent_renew);\n-    let mut f = f.restart()?;\n-    status(&f.actor(&child, \"GET\", \"jwt-kv/data/value\", json!({}))?, 200);\n-    status(&f.actor(&grandchild, \"GET\", \"auth/token/lookup-self\", json!({}))?, 200);\n-    status(&f.actor(&parent, \"POST\", \"auth/token/revoke-self\", json!({}))?, 204);\n+    status(&parent_renew, 500);\n+    no_credential(&parent_renew);\n+    let mut f = f.restart()?;\n+    status(\n+        &f.actor(&child, \"GET\", \"jwt-kv/data/value\", json!({}))?,\n+        200,\n+    );\n+    status(\n+        &f.actor(&grandchild, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        200,\n+    );\n+    status(\n+        &f.actor(&parent, \"POST\", \"auth/token/revoke-self\", json!({}))?,\n+        204,\n+    );\n     let mut f = f.restart()?;\n     for token in [&parent, &child, &grandchild] {\n-        status(&f.actor(token, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    }\n-    Ok(())\n-}\n-\n-#[test]\n-fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen() -> TestResult {\n+        status(\n+            &f.actor(token, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+            403,\n+        );\n+    }\n+    Ok(())\n+}\n+\n+#[test]\n+fn native_jwt_token_api_batch_owner_preserves_real_parent_binding_across_cold_reopen() -> TestResult\n+{\n     let mut f = Fixture::new()?;\n     allow_delegation(&mut f)?;\n     let assertion = f.assertion(f.now + 60);\n@@ -513,9 +840,14 @@\n     let child = create_service_child(&mut f, &parent, 250)?;\n     let mut batches = Vec::new();\n     for issuer in [&parent, &child] {\n-        let mut response = f.actor(issuer, \"POST\", \"auth/token/create\", json!({\n-            \"type\":\"batch\",\"policies\":[\"native-jwt\"],\"no_default_policy\":true,\"ttl\":150\n-        }))?;\n+        let mut response = f.actor(\n+            issuer,\n+            \"POST\",\n+            \"auth/token/create\",\n+            json!({\n+                \"type\":\"batch\",\"policies\":[\"native-jwt\"],\"no_default_policy\":true,\"ttl\":150\n+            }),\n+        )?;\n         status(&response, 200);\n         assert_eq!(response.body[\"auth\"][\"token_type\"], \"batch\");\n         assert_eq!(response.body[\"auth\"][\"renewable\"], false);\n@@ -528,81 +860,158 @@\n     for batch in &batches {\n         status(&f.actor(batch, \"GET\", \"jwt-kv/data/value\", json!({}))?, 200);\n         let renewal = f.actor(batch, \"POST\", \"auth/token/renew-self\", json!({}))?;\n-        status(&renewal, 400);no_credential(&renewal);\n-    }\n-    status(&f.actor(&parent, \"POST\", \"auth/token/revoke-self\", json!({}))?, 204);\n+        status(&renewal, 400);\n+        no_credential(&renewal);\n+    }\n+    status(\n+        &f.actor(&parent, \"POST\", \"auth/token/revoke-self\", json!({}))?,\n+        204,\n+    );\n     let mut f = f.restart()?;\n     for batch in &batches {\n         status(&f.actor(batch, \"GET\", \"jwt-kv/data/value\", json!({}))?, 403);\n     }\n-    status(&f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    Ok(())\n-}\n-\n-#[test]\n-fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes() -> TestResult {\n+    status(\n+        &f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    Ok(())\n+}\n+\n+#[test]\n+fn native_jwt_token_api_revoke_orphan_keeps_own_issuer_but_mount_retirement_still_revokes()\n+-> TestResult {\n     let mut f = Fixture::new()?;\n     allow_delegation(&mut f)?;\n     let assertion = f.assertion(f.now + 60);\n     let (parent, _) = f.login(&assertion)?;\n     let child = create_service_child(&mut f, &parent, 250)?;\n-    status(&f.admin(\"POST\", \"auth/token/revoke-orphan\", json!({\"token\":parent.as_str()}))?, 204);\n+    status(\n+        &f.admin(\n+            \"POST\",\n+            \"auth/token/revoke-orphan\",\n+            json!({\"token\":parent.as_str()}),\n+        )?,\n+        204,\n+    );\n     status(&f.admin(\"DELETE\", ROLE, json!({}))?, 204);\n     let mut f = f.restart()?;\n-    status(&f.actor(&parent, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n+    status(\n+        &f.actor(&parent, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n     let lookup = f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?;\n     status(&lookup, 200);\n     assert_eq!(lookup.body[\"data\"][\"orphan\"], true);\n-    let mut renewed = f.actor(&child, \"POST\", \"auth/token/renew-self\", json!({\"increment\":120}))?;\n+    let mut renewed = f.actor(\n+        &child,\n+        \"POST\",\n+        \"auth/token/renew-self\",\n+        json!({\"increment\":120}),\n+    )?;\n     status(&renewed, 200);\n     let echo = secret(&mut renewed, \"/auth/client_token\")?;\n     assert!(echo.as_str() == child.as_str());\n     status(&f.admin(\"DELETE\", \"sys/auth/native-jwt\", json!({}))?, 204);\n     let mut f = f.restart()?;\n-    status(&f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    Ok(())\n-}\n-\n-#[test]\n-fn native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions() -> TestResult {\n+    status(\n+        &f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    Ok(())\n+}\n+\n+#[test]\n+fn native_jwt_and_userpass_token_api_targets_keep_real_owner_and_renewal_in_both_directions()\n+-> TestResult {\n     let mut f = Fixture::new()?;\n     allow_delegation(&mut f)?;\n-    status(&f.admin(\"POST\", \"sys/auth/native-up\", json!({\"type\":\"userpass\"}))?, 204);\n-    status(&f.admin(\"POST\", \"auth/native-up/users/bob\", json!({\n-        \"password\":\"native-jwt-cross-owner-synthetic\",\"token_policies\":[\"native-jwt\"],\n-        \"token_ttl\":300,\"token_max_ttl\":600\n-    }))?, 204);\n-    let mut response = f.actor(\"\", \"POST\", \"auth/native-up/login/bob\",\n-        json!({\"password\":\"native-jwt-cross-owner-synthetic\"}))?;\n+    status(\n+        &f.admin(\"POST\", \"sys/auth/native-up\", json!({\"type\":\"userpass\"}))?,\n+        204,\n+    );\n+    status(\n+        &f.admin(\n+            \"POST\",\n+            \"auth/native-up/users/bob\",\n+            json!({\n+                \"password\":\"native-jwt-cross-owner-synthetic\",\"token_policies\":[\"native-jwt\"],\n+                \"token_ttl\":300,\"token_max_ttl\":600\n+            }),\n+        )?,\n+        204,\n+    );\n+    let mut response = f.actor(\n+        \"\",\n+        \"POST\",\n+        \"auth/native-up/login/bob\",\n+        json!({\"password\":\"native-jwt-cross-owner-synthetic\"}),\n+    )?;\n     status(&response, 200);\n     let userpass = secret(&mut response, \"/auth/client_token\")?;\n     let assertion = f.assertion(f.now + 60);\n     let (jwt, _) = f.login(&assertion)?;\n     let (other_jwt, _) = f.login(&assertion)?;\n-    let mut first = f.actor(&jwt, \"POST\", \"auth/token/renew\",\n-        json!({\"token\":userpass.as_str(),\"increment\":120}))?;\n+    let mut first = f.actor(\n+        &jwt,\n+        \"POST\",\n+        \"auth/token/renew\",\n+        json!({\"token\":userpass.as_str(),\"increment\":120}),\n+    )?;\n     status(&first, 200);\n     let echo = secret(&mut first, \"/auth/client_token\")?;\n     assert!(echo.as_str() == userpass.as_str());\n-    let mut second = f.actor(&userpass, \"POST\", \"auth/token/renew\",\n-        json!({\"token\":jwt.as_str(),\"increment\":120}))?;\n+    let mut second = f.actor(\n+        &userpass,\n+        \"POST\",\n+        \"auth/token/renew\",\n+        json!({\"token\":jwt.as_str(),\"increment\":120}),\n+    )?;\n     status(&second, 200);\n     let echo = secret(&mut second, \"/auth/client_token\")?;\n     assert!(echo.as_str() == jwt.as_str());\n     let mut f = f.restart()?;\n-    status(&f.actor(&userpass, \"POST\", \"auth/token/revoke\", json!({\"token\":jwt.as_str()}))?, 204);\n-    status(&f.actor(&jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    status(&f.actor(&other_jwt, \"POST\", \"auth/token/revoke\",\n-        json!({\"token\":userpass.as_str()}))?, 204);\n-    let mut f = f.restart()?;\n-    status(&f.actor(&userpass, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    status(&f.actor(&jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?, 403);\n-    status(&f.actor(&other_jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?, 200);\n-    Ok(())\n-}\n-\n-#[test]\n-fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph() -> TestResult {\n+    status(\n+        &f.actor(\n+            &userpass,\n+            \"POST\",\n+            \"auth/token/revoke\",\n+            json!({\"token\":jwt.as_str()}),\n+        )?,\n+        204,\n+    );\n+    status(\n+        &f.actor(&jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    status(\n+        &f.actor(\n+            &other_jwt,\n+            \"POST\",\n+            \"auth/token/revoke\",\n+            json!({\"token\":userpass.as_str()}),\n+        )?,\n+        204,\n+    );\n+    let mut f = f.restart()?;\n+    status(\n+        &f.actor(&userpass, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    status(\n+        &f.actor(&jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        403,\n+    );\n+    status(\n+        &f.actor(&other_jwt, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        200,\n+    );\n+    Ok(())\n+}\n+\n+#[test]\n+fn native_jwt_token_api_profile_rejects_mount_label_without_real_issuer_or_parent_graph()\n+-> TestResult {\n     let mut f = Fixture::new()?;\n     allow_delegation(&mut f)?;\n     let assertion = f.assertion(f.now + 60);\n@@ -613,10 +1022,15 @@\n     assert!(auth.native_v6_jwt_state_supported());\n     let bytes = owner_store::serialize_owner(auth).map_err(|_| \"actual Auth bytes\")?;\n     let mut value: Value = serde_json::from_slice(&bytes)?;\n-    let child_id = value[\"tokens\"].as_object().ok_or(\"actual token map\")?.iter()\n-        .find(|(_, token)| token[\"auth_mount\"] == \"native-jwt\"\n-            && token[\"auth_provenance\"][\"kind\"] == \"token_api\")\n-        .map(|(id, _)| id.clone()).ok_or(\"actual Token API child\")?;\n+    let child_id = value[\"tokens\"]\n+        .as_object()\n+        .ok_or(\"actual token map\")?\n+        .iter()\n+        .find(|(_, token)| {\n+            token[\"auth_mount\"] == \"native-jwt\" && token[\"auth_provenance\"][\"kind\"] == \"token_api\"\n+        })\n+        .map(|(id, _)| id.clone())\n+        .ok_or(\"actual Token API child\")?;\n     // Negative format/profile probes operate on detached values only. They\n     // never install a forged token, mutate the fixture or grant a Principal.\n     for mutation in 0..7 {\n@@ -639,6 +1053,9 @@\n     }\n     erase_json(&mut value);\n     assert!(original.as_slice() == f.snapshot()?.as_slice());\n-    status(&f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?, 200);\n-    Ok(())\n-}\n+    status(\n+        &f.actor(&child, \"GET\", \"auth/token/lookup-self\", json!({}))?,\n+        200,\n+    );\n+    Ok(())\n+}\n"
+    },
+    {
+      "after_bytes": 25592,
+      "after_sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "before_bytes": 25592,
+      "before_sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "canonical_candidate_blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+      "changed": false,
+      "diff_bytes": 0,
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "service_native_userpass_tests.rs",
+      "stderr_empty": true,
+      "stdout_byte_equal": true,
+      "strict_forward_equal": true,
+      "strict_reverse_equal": true,
+      "unified_diff": ""
+    }
+  ],
+  "directories_after_inputs": {
+    "candidate": {
+      "held": [
+        "66306",
+        "30539830",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480595144756",
+        "1793937480595144756"
+      ],
+      "named": [
+        "66306",
+        "30539830",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480595144756",
+        "1793937480595144756"
+      ]
+    },
+    "formatted": {
+      "held": [
+        "66306",
+        "30539934",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480608144715",
+        "1793937480608144715"
+      ],
+      "named": [
+        "66306",
+        "30539934",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480608144715",
+        "1793937480608144715"
+      ]
+    },
+    "home": {
+      "held": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ],
+      "named": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ]
+    },
+    "input": {
+      "held": [
+        "66306",
+        "30539800",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793937480615144693",
+        "1793937480615144693"
+      ],
+      "named": [
+        "66306",
+        "30539800",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793937480615144693",
+        "1793937480615144693"
+      ]
+    },
+    "root": {
+      "held": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ],
+      "named": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ]
+    },
+    "user": {
+      "held": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "488",
+        "49152",
+        "1793940144966212102",
+        "1793940144966212102"
+      ],
+      "named": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "488",
+        "49152",
+        "1793940144966212102",
+        "1793940144966212102"
+      ]
+    }
+  },
+  "directories_before": {
+    "candidate": {
+      "full9": [
+        "66306",
+        "30539830",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480595144756",
+        "1793937480595144756"
+      ],
+      "shared_identity_only": false
+    },
+    "formatted": {
+      "full9": [
+        "66306",
+        "30539934",
+        "1000",
+        "1000",
+        "16832",
+        "2",
+        "4096",
+        "1793937480608144715",
+        "1793937480608144715"
+      ],
+      "shared_identity_only": false
+    },
+    "home": {
+      "full9": [
+        "66306",
+        "27000833",
+        "0",
+        "0",
+        "16877",
+        "4",
+        "4096",
+        "1784453401668797886",
+        "1784453401668797886"
+      ],
+      "shared_identity_only": true
+    },
+    "input": {
+      "full9": [
+        "66306",
+        "30539800",
+        "1000",
+        "1000",
+        "16832",
+        "4",
+        "4096",
+        "1793937480615144693",
+        "1793937480615144693"
+      ],
+      "shared_identity_only": false
+    },
+    "root": {
+      "full9": [
+        "66306",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "21",
+        "4096",
+        "1793920622621283887",
+        "1793920622621283887"
+      ],
+      "shared_identity_only": true
+    },
+    "user": {
+      "full9": [
+        "66306",
+        "27000834",
+        "1000",
+        "1000",
+        "16877",
+        "488",
+        "49152",
+        "1793940144966212102",
+        "1793940144966212102"
+      ],
+      "shared_identity_only": true
+    }
+  },
+  "directory_listings": 0,
+  "elapsed_seconds_before_publication": 0.0579493900295347,
+  "formatted_bytes": 1228699,
+  "formatter_receipt": {
+    "compile_executed": false,
+    "direct_children_reaped": 9,
+    "independent_group_empty_observed": false,
+    "job_id": "1a1af017fae-fc05-64f1",
+    "receipt_blob": "58827993343d76b96fc92b0bae47432710ffbedd",
+    "receipt_sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+    "same_supervisor_pgid": true,
+    "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b"
+  },
+  "formatter_source_blob": "1266e75033bee0962b0d77d3c35ee19ec53086db",
+  "identity_fields": [
+    "dev",
+    "ino",
+    "uid",
+    "gid",
+    "full_mode",
+    "nlink",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "identity_numbers": "decimal strings",
+  "input_bytes": 3701083,
+  "input_count": 38,
+  "input_fds_closed_before_report_publication": true,
+  "input_files": [
+    {
+      "before_full9": [
+        "66306",
+        "30540114",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "397709",
+        "1793937480155146132",
+        "1793937480155146132"
+      ],
+      "bytes": 397709,
+      "canonical_blob": "19646b7848e5588d72f5514400d607696549611d",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540114",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "397709",
+          "1793937480155146132",
+          "1793937480155146132"
+        ],
+        "named": [
+          "66306",
+          "30540114",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "397709",
+          "1793937480155146132",
+          "1793937480155146132"
+        ]
+      },
+      "index": 0,
+      "name": "auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540114",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "397709",
+        "1793937480155146132",
+        "1793937480155146132"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 397709,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540114",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "397709",
+          "1793937480155146132",
+          "1793937480155146132"
+        ],
+        "named": [
+          "66306",
+          "30540114",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "397709",
+          "1793937480155146132",
+          "1793937480155146132"
+        ]
+      },
+      "read_bytes": 397709,
+      "read_calls": 8,
+      "role": "candidate",
+      "sha256": "6fe0c3a8af3af126be3217143c85519e9b6d9abf7fcbc33f08e6b553ba5a7c97",
+      "version": "66306:30540114:397709:1793937480155146132:1793937480155146132"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540367",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "398266",
+        "1793937480337145563",
+        "1793937480337145563"
+      ],
+      "bytes": 398266,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540367",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480337145563",
+          "1793937480337145563"
+        ],
+        "named": [
+          "66306",
+          "30540367",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480337145563",
+          "1793937480337145563"
+        ]
+      },
+      "index": 1,
+      "name": "auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540367",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "398266",
+        "1793937480337145563",
+        "1793937480337145563"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 524288,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540367",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480337145563",
+          "1793937480337145563"
+        ],
+        "named": [
+          "66306",
+          "30540367",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480337145563",
+          "1793937480337145563"
+        ]
+      },
+      "read_bytes": 398266,
+      "read_calls": 8,
+      "role": "formatted",
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f",
+      "version": "66306:30540367:398266:1793937480337145563:1793937480337145563"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540160",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "398266",
+        "1793937480335145569",
+        "1793937480335145569"
+      ],
+      "bytes": 398266,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540160",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480335145569",
+          "1793937480335145569"
+        ],
+        "named": [
+          "66306",
+          "30540160",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480335145569",
+          "1793937480335145569"
+        ]
+      },
+      "index": 2,
+      "name": "auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540160",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "398266",
+        "1793937480335145569",
+        "1793937480335145569"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 524288,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540160",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480335145569",
+          "1793937480335145569"
+        ],
+        "named": [
+          "66306",
+          "30540160",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "398266",
+          "1793937480335145569",
+          "1793937480335145569"
+        ]
+      },
+      "read_bytes": 398266,
+      "read_calls": 8,
+      "role": "stdout",
+      "sha256": "9f366e631019e55aca61717a324bf13c1995797ed088b5b9d8b80c4a11914f7f",
+      "version": "66306:30540160:398266:1793937480335145569:1793937480335145569"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540124",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480334145572",
+        "1793937480334145572"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540124",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480334145572",
+          "1793937480334145572"
+        ],
+        "named": [
+          "66306",
+          "30540124",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480334145572",
+          "1793937480334145572"
+        ]
+      },
+      "index": 3,
+      "name": "auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540124",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480334145572",
+        "1793937480334145572"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540124",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480334145572",
+          "1793937480334145572"
+        ],
+        "named": [
+          "66306",
+          "30540124",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480334145572",
+          "1793937480334145572"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540124:0:1793937480334145572:1793937480334145572"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540402",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17391",
+        "1793937480339145557",
+        "1793937480339145557"
+      ],
+      "bytes": 17391,
+      "canonical_blob": "2e76f906edefb92406328459fd6c5711dfa7ad2b",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540402",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17391",
+          "1793937480339145557",
+          "1793937480339145557"
+        ],
+        "named": [
+          "66306",
+          "30540402",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17391",
+          "1793937480339145557",
+          "1793937480339145557"
+        ]
+      },
+      "index": 4,
+      "name": "auth_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540402",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17391",
+        "1793937480339145557",
+        "1793937480339145557"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 17391,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth_native_jwt.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540402",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17391",
+          "1793937480339145557",
+          "1793937480339145557"
+        ],
+        "named": [
+          "66306",
+          "30540402",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17391",
+          "1793937480339145557",
+          "1793937480339145557"
+        ]
+      },
+      "read_bytes": 17391,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "d28cc6af7a1ef30fecb704ac9d3917a2c54ad8d6f8ac1cb77e6f75eca9de5042",
+      "version": "66306:30540402:17391:1793937480339145557:1793937480339145557"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540800",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "18771",
+        "1793937480369145463",
+        "1793937480369145463"
+      ],
+      "bytes": 18771,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540800",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480369145463",
+          "1793937480369145463"
+        ],
+        "named": [
+          "66306",
+          "30540800",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480369145463",
+          "1793937480369145463"
+        ]
+      },
+      "index": 5,
+      "name": "auth_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540800",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "18771",
+        "1793937480369145463",
+        "1793937480369145463"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth_native_jwt.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540800",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480369145463",
+          "1793937480369145463"
+        ],
+        "named": [
+          "66306",
+          "30540800",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480369145463",
+          "1793937480369145463"
+        ]
+      },
+      "read_bytes": 18771,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641",
+      "version": "66306:30540800:18771:1793937480369145463:1793937480369145463"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540651",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "18771",
+        "1793937480368145466",
+        "1793937480368145466"
+      ],
+      "bytes": 18771,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540651",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480368145466",
+          "1793937480368145466"
+        ],
+        "named": [
+          "66306",
+          "30540651",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480368145466",
+          "1793937480368145466"
+        ]
+      },
+      "index": 6,
+      "name": "auth_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540651",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "18771",
+        "1793937480368145466",
+        "1793937480368145466"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_jwt.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540651",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480368145466",
+          "1793937480368145466"
+        ],
+        "named": [
+          "66306",
+          "30540651",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "18771",
+          "1793937480368145466",
+          "1793937480368145466"
+        ]
+      },
+      "read_bytes": 18771,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "ca4325e8c853816855a332b85e1ae87fe24ccecdea375c3422cd25451fc49641",
+      "version": "66306:30540651:18771:1793937480368145466:1793937480368145466"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540535",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480367145469",
+        "1793937480367145469"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540535",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480367145469",
+          "1793937480367145469"
+        ],
+        "named": [
+          "66306",
+          "30540535",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480367145469",
+          "1793937480367145469"
+        ]
+      },
+      "index": 7,
+      "name": "auth_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540535",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480367145469",
+        "1793937480367145469"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_jwt.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540535",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480367145469",
+          "1793937480367145469"
+        ],
+        "named": [
+          "66306",
+          "30540535",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480367145469",
+          "1793937480367145469"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540535:0:1793937480367145469:1793937480367145469"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540808",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480370145460",
+        "1793937480370145460"
+      ],
+      "bytes": 21959,
+      "canonical_blob": "6bb16ad15f43d0ca908438b4fb26d44d625f476b",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540808",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480370145460",
+          "1793937480370145460"
+        ],
+        "named": [
+          "66306",
+          "30540808",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480370145460",
+          "1793937480370145460"
+        ]
+      },
+      "index": 8,
+      "name": "auth_native_v6_routes.rs",
+      "named_before_full9": [
+        "66306",
+        "30540808",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480370145460",
+        "1793937480370145460"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 21959,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/auth_native_v6_routes.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540808",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480370145460",
+          "1793937480370145460"
+        ],
+        "named": [
+          "66306",
+          "30540808",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480370145460",
+          "1793937480370145460"
+        ]
+      },
+      "read_bytes": 21959,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "version": "66306:30540808:21959:1793937480370145460:1793937480370145460"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540832",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480412145328",
+        "1793937480412145328"
+      ],
+      "bytes": 21959,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540832",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480412145328",
+          "1793937480412145328"
+        ],
+        "named": [
+          "66306",
+          "30540832",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480412145328",
+          "1793937480412145328"
+        ]
+      },
+      "index": 9,
+      "name": "auth_native_v6_routes.rs",
+      "named_before_full9": [
+        "66306",
+        "30540832",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480412145328",
+        "1793937480412145328"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/auth_native_v6_routes.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540832",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480412145328",
+          "1793937480412145328"
+        ],
+        "named": [
+          "66306",
+          "30540832",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480412145328",
+          "1793937480412145328"
+        ]
+      },
+      "read_bytes": 21959,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "version": "66306:30540832:21959:1793937480412145328:1793937480412145328"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540831",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480410145334",
+        "1793937480410145334"
+      ],
+      "bytes": 21959,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540831",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480410145334",
+          "1793937480410145334"
+        ],
+        "named": [
+          "66306",
+          "30540831",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480410145334",
+          "1793937480410145334"
+        ]
+      },
+      "index": 10,
+      "name": "auth_native_v6_routes.rs",
+      "named_before_full9": [
+        "66306",
+        "30540831",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "21959",
+        "1793937480410145334",
+        "1793937480410145334"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_v6_routes.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540831",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480410145334",
+          "1793937480410145334"
+        ],
+        "named": [
+          "66306",
+          "30540831",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "21959",
+          "1793937480410145334",
+          "1793937480410145334"
+        ]
+      },
+      "read_bytes": 21959,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "9114c08a472dfde56837f6bbccf565e471ee2b5286980efb906c3121c71d1761",
+      "version": "66306:30540831:21959:1793937480410145334:1793937480410145334"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540823",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480409145338",
+        "1793937480409145338"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540823",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480409145338",
+          "1793937480409145338"
+        ],
+        "named": [
+          "66306",
+          "30540823",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480409145338",
+          "1793937480409145338"
+        ]
+      },
+      "index": 11,
+      "name": "auth_native_v6_routes.rs",
+      "named_before_full9": [
+        "66306",
+        "30540823",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480409145338",
+        "1793937480409145338"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/auth_native_v6_routes.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540823",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480409145338",
+          "1793937480409145338"
+        ],
+        "named": [
+          "66306",
+          "30540823",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480409145338",
+          "1793937480409145338"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540823:0:1793937480409145338:1793937480409145338"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540853",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480413145325",
+        "1793937480413145325"
+      ],
+      "bytes": 56677,
+      "canonical_blob": "21c48f7d50d30076d1aae82d51ce2b782a9739dc",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540853",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480413145325",
+          "1793937480413145325"
+        ],
+        "named": [
+          "66306",
+          "30540853",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480413145325",
+          "1793937480413145325"
+        ]
+      },
+      "index": 12,
+      "name": "federated_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540853",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480413145325",
+        "1793937480413145325"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 56677,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/federated_auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540853",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480413145325",
+          "1793937480413145325"
+        ],
+        "named": [
+          "66306",
+          "30540853",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480413145325",
+          "1793937480413145325"
+        ]
+      },
+      "read_bytes": 56677,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "version": "66306:30540853:56677:1793937480413145325:1793937480413145325"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540864",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480428145278",
+        "1793937480428145278"
+      ],
+      "bytes": 56677,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540864",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480428145278",
+          "1793937480428145278"
+        ],
+        "named": [
+          "66306",
+          "30540864",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480428145278",
+          "1793937480428145278"
+        ]
+      },
+      "index": 13,
+      "name": "federated_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540864",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480428145278",
+        "1793937480428145278"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/federated_auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540864",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480428145278",
+          "1793937480428145278"
+        ],
+        "named": [
+          "66306",
+          "30540864",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480428145278",
+          "1793937480428145278"
+        ]
+      },
+      "read_bytes": 56677,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "version": "66306:30540864:56677:1793937480428145278:1793937480428145278"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540863",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480427145281",
+        "1793937480427145281"
+      ],
+      "bytes": 56677,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540863",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480427145281",
+          "1793937480427145281"
+        ],
+        "named": [
+          "66306",
+          "30540863",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480427145281",
+          "1793937480427145281"
+        ]
+      },
+      "index": 14,
+      "name": "federated_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540863",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "56677",
+        "1793937480427145281",
+        "1793937480427145281"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_auth.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540863",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480427145281",
+          "1793937480427145281"
+        ],
+        "named": [
+          "66306",
+          "30540863",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "56677",
+          "1793937480427145281",
+          "1793937480427145281"
+        ]
+      },
+      "read_bytes": 56677,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "8ac92cf16e18ceccb479322103228142fea413f6ce7ecbcfd9e908ed07bd1cdb",
+      "version": "66306:30540863:56677:1793937480427145281:1793937480427145281"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540862",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480426145284",
+        "1793937480426145284"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540862",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480426145284",
+          "1793937480426145284"
+        ],
+        "named": [
+          "66306",
+          "30540862",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480426145284",
+          "1793937480426145284"
+        ]
+      },
+      "index": 15,
+      "name": "federated_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540862",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480426145284",
+        "1793937480426145284"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_auth.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540862",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480426145284",
+          "1793937480426145284"
+        ],
+        "named": [
+          "66306",
+          "30540862",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480426145284",
+          "1793937480426145284"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540862:0:1793937480426145284:1793937480426145284"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540866",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7709",
+        "1793937480429145275",
+        "1793937480429145275"
+      ],
+      "bytes": 7709,
+      "canonical_blob": "0b4f4b18be19951e6744e1202f2fb1561351add2",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540866",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7709",
+          "1793937480429145275",
+          "1793937480429145275"
+        ],
+        "named": [
+          "66306",
+          "30540866",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7709",
+          "1793937480429145275",
+          "1793937480429145275"
+        ]
+      },
+      "index": 16,
+      "name": "federated_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540866",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7709",
+        "1793937480429145275",
+        "1793937480429145275"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 7709,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/federated_native_jwt.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540866",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7709",
+          "1793937480429145275",
+          "1793937480429145275"
+        ],
+        "named": [
+          "66306",
+          "30540866",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7709",
+          "1793937480429145275",
+          "1793937480429145275"
+        ]
+      },
+      "read_bytes": 7709,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "255ec883fbb055fdfaea3d8f771fb723a4bb5b524d87f846dcc197dd5e46e92e",
+      "version": "66306:30540866:7709:1793937480429145275:1793937480429145275"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540898",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7772",
+        "1793937480438145247",
+        "1793937480438145247"
+      ],
+      "bytes": 7772,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540898",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480438145247",
+          "1793937480438145247"
+        ],
+        "named": [
+          "66306",
+          "30540898",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480438145247",
+          "1793937480438145247"
+        ]
+      },
+      "index": 17,
+      "name": "federated_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540898",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7772",
+        "1793937480438145247",
+        "1793937480438145247"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/federated_native_jwt.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540898",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480438145247",
+          "1793937480438145247"
+        ],
+        "named": [
+          "66306",
+          "30540898",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480438145247",
+          "1793937480438145247"
+        ]
+      },
+      "read_bytes": 7772,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547",
+      "version": "66306:30540898:7772:1793937480438145247:1793937480438145247"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540872",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7772",
+        "1793937480436145253",
+        "1793937480436145253"
+      ],
+      "bytes": 7772,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540872",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480436145253",
+          "1793937480436145253"
+        ],
+        "named": [
+          "66306",
+          "30540872",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480436145253",
+          "1793937480436145253"
+        ]
+      },
+      "index": 18,
+      "name": "federated_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540872",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "7772",
+        "1793937480436145253",
+        "1793937480436145253"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_native_jwt.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540872",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480436145253",
+          "1793937480436145253"
+        ],
+        "named": [
+          "66306",
+          "30540872",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "7772",
+          "1793937480436145253",
+          "1793937480436145253"
+        ]
+      },
+      "read_bytes": 7772,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "beed7767f9d0784fc023af725e38b4390fe9df7a68c5639e087f6f493dfe9547",
+      "version": "66306:30540872:7772:1793937480436145253:1793937480436145253"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540869",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480436145253",
+        "1793937480436145253"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540869",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480436145253",
+          "1793937480436145253"
+        ],
+        "named": [
+          "66306",
+          "30540869",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480436145253",
+          "1793937480436145253"
+        ]
+      },
+      "index": 19,
+      "name": "federated_native_jwt.rs",
+      "named_before_full9": [
+        "66306",
+        "30540869",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480436145253",
+        "1793937480436145253"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/federated_native_jwt.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540869",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480436145253",
+          "1793937480436145253"
+        ],
+        "named": [
+          "66306",
+          "30540869",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480436145253",
+          "1793937480436145253"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540869:0:1793937480436145253:1793937480436145253"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540899",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519054",
+        "1793937480439145244",
+        "1793937480439145244"
+      ],
+      "bytes": 519054,
+      "canonical_blob": "c75adfe47637c5b2b559e515a754521e93238445",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540899",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519054",
+          "1793937480439145244",
+          "1793937480439145244"
+        ],
+        "named": [
+          "66306",
+          "30540899",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519054",
+          "1793937480439145244",
+          "1793937480439145244"
+        ]
+      },
+      "index": 20,
+      "name": "service.rs",
+      "named_before_full9": [
+        "66306",
+        "30540899",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519054",
+        "1793937480439145244",
+        "1793937480439145244"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 519054,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540899",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519054",
+          "1793937480439145244",
+          "1793937480439145244"
+        ],
+        "named": [
+          "66306",
+          "30540899",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519054",
+          "1793937480439145244",
+          "1793937480439145244"
+        ]
+      },
+      "read_bytes": 519054,
+      "read_calls": 9,
+      "role": "candidate",
+      "sha256": "5953adcb817a2210cc2b5266ec145632e7a263d39b7c61b2811e4c9d1ece289a",
+      "version": "66306:30540899:519054:1793937480439145244:1793937480439145244"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540904",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519132",
+        "1793937480536144940",
+        "1793937480536144940"
+      ],
+      "bytes": 519132,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540904",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480536144940",
+          "1793937480536144940"
+        ],
+        "named": [
+          "66306",
+          "30540904",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480536144940",
+          "1793937480536144940"
+        ]
+      },
+      "index": 21,
+      "name": "service.rs",
+      "named_before_full9": [
+        "66306",
+        "30540904",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519132",
+        "1793937480536144940",
+        "1793937480536144940"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 655360,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540904",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480536144940",
+          "1793937480536144940"
+        ],
+        "named": [
+          "66306",
+          "30540904",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480536144940",
+          "1793937480536144940"
+        ]
+      },
+      "read_bytes": 519132,
+      "read_calls": 9,
+      "role": "formatted",
+      "sha256": "6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d",
+      "version": "66306:30540904:519132:1793937480536144940:1793937480536144940"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540903",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519132",
+        "1793937480533144950",
+        "1793937480533144950"
+      ],
+      "bytes": 519132,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540903",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480533144950",
+          "1793937480533144950"
+        ],
+        "named": [
+          "66306",
+          "30540903",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480533144950",
+          "1793937480533144950"
+        ]
+      },
+      "index": 22,
+      "name": "service.rs",
+      "named_before_full9": [
+        "66306",
+        "30540903",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "519132",
+        "1793937480533144950",
+        "1793937480533144950"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 655360,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540903",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480533144950",
+          "1793937480533144950"
+        ],
+        "named": [
+          "66306",
+          "30540903",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "519132",
+          "1793937480533144950",
+          "1793937480533144950"
+        ]
+      },
+      "read_bytes": 519132,
+      "read_calls": 9,
+      "role": "stdout",
+      "sha256": "6df7278a7b90363fe25a563e10e29db35f47868a2d1d1ea225c91c1b9b6add7d",
+      "version": "66306:30540903:519132:1793937480533144950:1793937480533144950"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540900",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480531144956",
+        "1793937480531144956"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540900",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480531144956",
+          "1793937480531144956"
+        ],
+        "named": [
+          "66306",
+          "30540900",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480531144956",
+          "1793937480531144956"
+        ]
+      },
+      "index": 23,
+      "name": "service.rs",
+      "named_before_full9": [
+        "66306",
+        "30540900",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480531144956",
+        "1793937480531144956"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540900",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480531144956",
+          "1793937480531144956"
+        ],
+        "named": [
+          "66306",
+          "30540900",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480531144956",
+          "1793937480531144956"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540900:0:1793937480531144956:1793937480531144956"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540911",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "142316",
+        "1793937480539144931",
+        "1793937480539144931"
+      ],
+      "bytes": 142316,
+      "canonical_blob": "c4b356de7c082b396e7e26024f567fb5337a55bb",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540911",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "142316",
+          "1793937480539144931",
+          "1793937480539144931"
+        ],
+        "named": [
+          "66306",
+          "30540911",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "142316",
+          "1793937480539144931",
+          "1793937480539144931"
+        ]
+      },
+      "index": 24,
+      "name": "service_native_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540911",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "142316",
+        "1793937480539144931",
+        "1793937480539144931"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 142316,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540911",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "142316",
+          "1793937480539144931",
+          "1793937480539144931"
+        ],
+        "named": [
+          "66306",
+          "30540911",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "142316",
+          "1793937480539144931",
+          "1793937480539144931"
+        ]
+      },
+      "read_bytes": 142316,
+      "read_calls": 4,
+      "role": "candidate",
+      "sha256": "877d158852e1e47dea0f65e3207592db1226fd92ba50d51f698f2f31d657c1a2",
+      "version": "66306:30540911:142316:1793937480539144931:1793937480539144931"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540968",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "143153",
+        "1793937480579144806",
+        "1793937480579144806"
+      ],
+      "bytes": 143153,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540968",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480579144806",
+          "1793937480579144806"
+        ],
+        "named": [
+          "66306",
+          "30540968",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480579144806",
+          "1793937480579144806"
+        ]
+      },
+      "index": 25,
+      "name": "service_native_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540968",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "143153",
+        "1793937480579144806",
+        "1793937480579144806"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_auth.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540968",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480579144806",
+          "1793937480579144806"
+        ],
+        "named": [
+          "66306",
+          "30540968",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480579144806",
+          "1793937480579144806"
+        ]
+      },
+      "read_bytes": 143153,
+      "read_calls": 4,
+      "role": "formatted",
+      "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165",
+      "version": "66306:30540968:143153:1793937480579144806:1793937480579144806"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540937",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "143153",
+        "1793937480578144809",
+        "1793937480578144809"
+      ],
+      "bytes": 143153,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540937",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480578144809",
+          "1793937480578144809"
+        ],
+        "named": [
+          "66306",
+          "30540937",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480578144809",
+          "1793937480578144809"
+        ]
+      },
+      "index": 26,
+      "name": "service_native_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540937",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "143153",
+        "1793937480578144809",
+        "1793937480578144809"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_auth.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540937",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480578144809",
+          "1793937480578144809"
+        ],
+        "named": [
+          "66306",
+          "30540937",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "143153",
+          "1793937480578144809",
+          "1793937480578144809"
+        ]
+      },
+      "read_bytes": 143153,
+      "read_calls": 4,
+      "role": "stdout",
+      "sha256": "42a3080d030e6bc22318bf574e47209666f47aa7f336d91fef2c81f0c6b7e165",
+      "version": "66306:30540937:143153:1793937480578144809:1793937480578144809"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540932",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480577144812",
+        "1793937480577144812"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540932",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480577144812",
+          "1793937480577144812"
+        ],
+        "named": [
+          "66306",
+          "30540932",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480577144812",
+          "1793937480577144812"
+        ]
+      },
+      "index": 27,
+      "name": "service_native_auth.rs",
+      "named_before_full9": [
+        "66306",
+        "30540932",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480577144812",
+        "1793937480577144812"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_auth.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540932",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480577144812",
+          "1793937480577144812"
+        ],
+        "named": [
+          "66306",
+          "30540932",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480577144812",
+          "1793937480577144812"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540932:0:1793937480577144812:1793937480577144812"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540988",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "33059",
+        "1793937480580144802",
+        "1793937480580144802"
+      ],
+      "bytes": 33059,
+      "canonical_blob": "89f3ce081c94e08446a15b11fdc76a1d724ab09e",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540988",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "33059",
+          "1793937480580144802",
+          "1793937480580144802"
+        ],
+        "named": [
+          "66306",
+          "30540988",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "33059",
+          "1793937480580144802",
+          "1793937480580144802"
+        ]
+      },
+      "index": 28,
+      "name": "service_native_jwt_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30540988",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "33059",
+        "1793937480580144802",
+        "1793937480580144802"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 33059,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_jwt_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540988",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "33059",
+          "1793937480580144802",
+          "1793937480580144802"
+        ],
+        "named": [
+          "66306",
+          "30540988",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "33059",
+          "1793937480580144802",
+          "1793937480580144802"
+        ]
+      },
+      "read_bytes": 33059,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "f7ca5c2c6e67717287887d31d5d8d40459f5ed6fb40524e5d026c95ee07fa48b",
+      "version": "66306:30540988:33059:1793937480580144802:1793937480580144802"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540991",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "37377",
+        "1793937480594144759",
+        "1793937480594144759"
+      ],
+      "bytes": 37377,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540991",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480594144759",
+          "1793937480594144759"
+        ],
+        "named": [
+          "66306",
+          "30540991",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480594144759",
+          "1793937480594144759"
+        ]
+      },
+      "index": 29,
+      "name": "service_native_jwt_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30540991",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "37377",
+        "1793937480594144759",
+        "1793937480594144759"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_jwt_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540991",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480594144759",
+          "1793937480594144759"
+        ],
+        "named": [
+          "66306",
+          "30540991",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480594144759",
+          "1793937480594144759"
+        ]
+      },
+      "read_bytes": 37377,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb",
+      "version": "66306:30540991:37377:1793937480594144759:1793937480594144759"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540990",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "37377",
+        "1793937480592144765",
+        "1793937480592144765"
+      ],
+      "bytes": 37377,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540990",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480592144765",
+          "1793937480592144765"
+        ],
+        "named": [
+          "66306",
+          "30540990",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480592144765",
+          "1793937480592144765"
+        ]
+      },
+      "index": 30,
+      "name": "service_native_jwt_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30540990",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "37377",
+        "1793937480592144765",
+        "1793937480592144765"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_jwt_tests.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540990",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480592144765",
+          "1793937480592144765"
+        ],
+        "named": [
+          "66306",
+          "30540990",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "37377",
+          "1793937480592144765",
+          "1793937480592144765"
+        ]
+      },
+      "read_bytes": 37377,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "d16659cdb309644e8cf2ee2dcc6384671f034f49325152573f9d384076ab6feb",
+      "version": "66306:30540990:37377:1793937480592144765:1793937480592144765"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540989",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480592144765",
+        "1793937480592144765"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540989",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480592144765",
+          "1793937480592144765"
+        ],
+        "named": [
+          "66306",
+          "30540989",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480592144765",
+          "1793937480592144765"
+        ]
+      },
+      "index": 31,
+      "name": "service_native_jwt_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30540989",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480592144765",
+        "1793937480592144765"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_jwt_tests.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540989",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480592144765",
+          "1793937480592144765"
+        ],
+        "named": [
+          "66306",
+          "30540989",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480592144765",
+          "1793937480592144765"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30540989:0:1793937480592144765:1793937480592144765"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30540997",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480595144756",
+        "1793937480595144756"
+      ],
+      "bytes": 25592,
+      "canonical_blob": "0aafabbd9af4d381808f73efd2cba76e6eef3558",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30540997",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480595144756",
+          "1793937480595144756"
+        ],
+        "named": [
+          "66306",
+          "30540997",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480595144756",
+          "1793937480595144756"
+        ]
+      },
+      "index": 32,
+      "name": "service_native_userpass_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30540997",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480595144756",
+        "1793937480595144756"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 25592,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/candidate/service_native_userpass_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30540997",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480595144756",
+          "1793937480595144756"
+        ],
+        "named": [
+          "66306",
+          "30540997",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480595144756",
+          "1793937480595144756"
+        ]
+      },
+      "read_bytes": 25592,
+      "read_calls": 2,
+      "role": "candidate",
+      "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "version": "66306:30540997:25592:1793937480595144756:1793937480595144756"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30541011",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480608144715",
+        "1793937480608144715"
+      ],
+      "bytes": 25592,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30541011",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480608144715",
+          "1793937480608144715"
+        ],
+        "named": [
+          "66306",
+          "30541011",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480608144715",
+          "1793937480608144715"
+        ]
+      },
+      "index": 33,
+      "name": "service_native_userpass_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30541011",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480608144715",
+        "1793937480608144715"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/formatted/service_native_userpass_tests.rs",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30541011",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480608144715",
+          "1793937480608144715"
+        ],
+        "named": [
+          "66306",
+          "30541011",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480608144715",
+          "1793937480608144715"
+        ]
+      },
+      "read_bytes": 25592,
+      "read_calls": 2,
+      "role": "formatted",
+      "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "version": "66306:30541011:25592:1793937480608144715:1793937480608144715"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30541005",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480607144718",
+        "1793937480607144718"
+      ],
+      "bytes": 25592,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30541005",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480607144718",
+          "1793937480607144718"
+        ],
+        "named": [
+          "66306",
+          "30541005",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480607144718",
+          "1793937480607144718"
+        ]
+      },
+      "index": 34,
+      "name": "service_native_userpass_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30541005",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25592",
+        "1793937480607144718",
+        "1793937480607144718"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 262144,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_userpass_tests.rs.rustfmt.stdout",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30541005",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480607144718",
+          "1793937480607144718"
+        ],
+        "named": [
+          "66306",
+          "30541005",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "25592",
+          "1793937480607144718",
+          "1793937480607144718"
+        ]
+      },
+      "read_bytes": 25592,
+      "read_calls": 2,
+      "role": "stdout",
+      "sha256": "750574f862d135829036f08badaaf2fdb55bbc2790a244599e6dd4533a827fea",
+      "version": "66306:30541005:25592:1793937480607144718:1793937480607144718"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30541003",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480606144721",
+        "1793937480606144721"
+      ],
+      "bytes": 0,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30541003",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480606144721",
+          "1793937480606144721"
+        ],
+        "named": [
+          "66306",
+          "30541003",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480606144721",
+          "1793937480606144721"
+        ]
+      },
+      "index": 35,
+      "name": "service_native_userpass_tests.rs",
+      "named_before_full9": [
+        "66306",
+        "30541003",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "0",
+        "1793937480606144721",
+        "1793937480606144721"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/service_native_userpass_tests.rs.rustfmt.stderr",
+      "prior_full9": null,
+      "read_after": {
+        "held": [
+          "66306",
+          "30541003",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480606144721",
+          "1793937480606144721"
+        ],
+        "named": [
+          "66306",
+          "30541003",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "0",
+          "1793937480606144721",
+          "1793937480606144721"
+        ]
+      },
+      "read_bytes": 0,
+      "read_calls": 1,
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:30541003:0:1793937480606144721:1793937480606144721"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30539974",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793937480154146135",
+        "1793937480154146135"
+      ],
+      "bytes": 17,
+      "canonical_blob": null,
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30539974",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793937480154146135",
+          "1793937480154146135"
+        ],
+        "named": [
+          "66306",
+          "30539974",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793937480154146135",
+          "1793937480154146135"
+        ]
+      },
+      "index": 36,
+      "name": "rustfmt.toml",
+      "named_before_full9": [
+        "66306",
+        "30539974",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793937480154146135",
+        "1793937480154146135"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 17,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/rustfmt.toml",
+      "prior_full9": [
+        "66306",
+        "30539974",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "17",
+        "1793937480154146135",
+        "1793937480154146135"
+      ],
+      "read_after": {
+        "held": [
+          "66306",
+          "30539974",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793937480154146135",
+          "1793937480154146135"
+        ],
+        "named": [
+          "66306",
+          "30539974",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "17",
+          "1793937480154146135",
+          "1793937480154146135"
+        ]
+      },
+      "read_bytes": 17,
+      "read_calls": 2,
+      "role": "config",
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "version": "66306:30539974:17:1793937480154146135:1793937480154146135"
+    },
+    {
+      "before_full9": [
+        "66306",
+        "30541013",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "22202",
+        "1793937480615144693",
+        "1793937480615144693"
+      ],
+      "bytes": 22202,
+      "canonical_blob": "58827993343d76b96fc92b0bae47432710ffbedd",
+      "close_error": null,
+      "eof": true,
+      "final_after": {
+        "held": [
+          "66306",
+          "30541013",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "22202",
+          "1793937480615144693",
+          "1793937480615144693"
+        ],
+        "named": [
+          "66306",
+          "30541013",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "22202",
+          "1793937480615144693",
+          "1793937480615144693"
+        ]
+      },
+      "index": 37,
+      "name": "result.public.json",
+      "named_before_full9": [
+        "66306",
+        "30541013",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "22202",
+        "1793937480615144693",
+        "1793937480615144693"
+      ],
+      "once_close_attempted": true,
+      "once_close_completed": true,
+      "original_file_cap": 65536,
+      "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+      "prior_full9": [
+        "66306",
+        "30541013",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "22202",
+        "1793937480615144693",
+        "1793937480615144693"
+      ],
+      "read_after": {
+        "held": [
+          "66306",
+          "30541013",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "22202",
+          "1793937480615144693",
+          "1793937480615144693"
+        ],
+        "named": [
+          "66306",
+          "30541013",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "22202",
+          "1793937480615144693",
+          "1793937480615144693"
+        ]
+      },
+      "read_bytes": 22202,
+      "read_calls": 2,
+      "role": "receipt",
+      "sha256": "60776056ee93fa1fdb557233626ee392385bfe69c8335cd9bc8d236fb0974874",
+      "version": "66306:30541013:22202:1793937480615144693:1793937480615144693"
+    }
+  ],
+  "input_observation_complete": true,
+  "input_observations_are_sequential": true,
+  "input_root": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1",
+  "limits": {
+    "diff_bytes": 786432,
+    "fd_acquisitions": 46,
+    "metadata_calls": 320,
+    "outer_seconds": 60,
+    "peak_owned_fds": 44,
+    "per_read_bytes": 65536,
+    "read_bytes": 7906155,
+    "read_calls": 256,
+    "report_bytes": 1048576,
+    "shared_seconds": 50,
+    "stdout_bytes": 16384
+  },
+  "network_calls": 0,
+  "original_input_writes": 0,
+  "original_read_cap": 7906155,
+  "output_and_directory_fd_closure_requires_final_stdout_and_authority": true,
+  "output_root": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1",
+  "product_executed": false,
+  "reconstruction": {
+    "candidates": "nine exact canonical e3af blobs",
+    "config": "configuration_utf8 encoded as UTF-8",
+    "formatted": "strict bidirectional unified diffs against those candidate bytes",
+    "receipt": "exact already archived receipt blob 58827993343d76b96fc92b0bae47432710ffbedd",
+    "stderr": "nine empty byte strings",
+    "stdout": "byte equal to corresponding actual formatted file"
+  },
+  "schema": "heptabao.native-jwt-formatter38-observation.v1",
+  "source_bytes": 1221466,
+  "source_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "source_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "unchanged_files": 3
+}

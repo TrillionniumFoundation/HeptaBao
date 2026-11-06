@@ -1,0 +1,215 @@
+{
+  "schema": "heptabao.root-qualification.Mac-fixed-log-query-known-failure.v1",
+  "evidence_qualified": true,
+  "projection_qualified": false,
+  "status": "KNOWN_PROJECTION_FAILURE",
+  "check_count": 40,
+  "checks": [
+    {
+      "name": "whole59_original_fixed_query_packet",
+      "passed": true
+    },
+    {
+      "name": "exact_GO_source_journal",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_call_fixed-log-query-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_armed_tree_fixed-log-query-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_observer_f477101741cebdd0d47cbe0be3d74c89258fc5fa53e46568fdf30a4f83fd41db",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_page_f477101741cebdd0d47cbe0be3d74c89258fc5fa53e46568fdf30a4f83fd41db_0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_payload_f477101741cebdd0d47cbe0be3d74c89258fc5fa53e46568fdf30a4f83fd41db",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_observer_59f71c6619e45b0b254490577a7dd71b39ed324bc7bf1f802ceb19f51a4f4b97",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_page_59f71c6619e45b0b254490577a7dd71b39ed324bc7bf1f802ceb19f51a4f4b97_0",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_page_59f71c6619e45b0b254490577a7dd71b39ed324bc7bf1f802ceb19f51a4f4b97_8192",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_payload_59f71c6619e45b0b254490577a7dd71b39ed324bc7bf1f802ceb19f51a4f4b97",
+      "passed": true
+    },
+    {
+      "name": "fixedQuery_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "eight_calls_one_START_two_observers_three_pages",
+      "passed": true
+    },
+    {
+      "name": "unique_original_START_binding",
+      "passed": true
+    },
+    {
+      "name": "observers_only_original_mac_job",
+      "passed": true
+    },
+    {
+      "name": "parent_known_exit1_full_durable",
+      "passed": true
+    },
+    {
+      "name": "whole3534_stdout_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "known_projection_failure_no_inferred_content",
+      "passed": true
+    },
+    {
+      "name": "one_query_child_actually_exit0_complete817_stdout",
+      "passed": true
+    },
+    {
+      "name": "actual_child_reaped_and_group_empty",
+      "passed": true
+    },
+    {
+      "name": "four_FDs_and_handlers_closed",
+      "passed": true
+    },
+    {
+      "name": "exact_tool_full9_wholeSHA_and_original_budgets",
+      "passed": true
+    },
+    {
+      "name": "all_original_observers_and_lane_closed",
+      "passed": true
+    },
+    {
+      "name": "old_registration_cause_and_lineage_not_qualified",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+    "files": 59,
+    "bytes": 349811,
+    "merkle": {
+      "root_sha": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+      "trees_verified": 1,
+      "leaf_count": 59
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1af3333c8-fc05-66b3",
+  "authority": {
+    "blob": "77792bd85dda01678e940bc622393a84cffff93b",
+    "bytes": 728,
+    "sha256": "a81983d0d2dc9a9f92b8386b8af521588182fbece9dfff53eccad41d4e52ffdd"
+  },
+  "stdout": {
+    "blob": "9192b9104866148e823721ff5ca3e7a639419e49",
+    "bytes": 3534,
+    "sha256": "00002e40048299fa117f95424a8e326ba776139ff5c79e800d6323fbd1361370"
+  },
+  "observed": {
+    "parent_exit": 1,
+    "child_exit": 0,
+    "child_stdout_bytes": 817,
+    "child_stderr_bytes": 0,
+    "outer_stderr_bytes": 0,
+    "error_code": "one_log_message_semantics",
+    "raw_log_content_known": false,
+    "message_presence_type_conflict_distinguished": false,
+    "owned_child_and_four_FDs_closed": true,
+    "original_calls": 8,
+    "observers": 2,
+    "immutable_pages": 3
+  },
+  "limits": [
+    "The failed projection means at least one required fixed message-field condition failed; it does not identify which condition or any message content.",
+    "Neither raw 817-byte log output nor its hash was exported. Do not reconstruct it or infer header/event structure.",
+    "The query executed once under the original exact label/process/three-second scope; no re-query is authorized by this qualification.",
+    "The original AuthBus label registration, lineage and startup cause remain unqualified."
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

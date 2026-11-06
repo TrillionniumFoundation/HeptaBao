@@ -1,0 +1,378 @@
+{
+  "schema": "heptabao.mac-owned-fixed-log-schema.actual-release.r1",
+  "scope": "known fixed-key schema observation only",
+  "source": {
+    "blob": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+    "bytes": 54747,
+    "sha256": "9e7f2f718b07c1918c000281e24b650725f6f7e2c66b99b889a440d135791a0d"
+  },
+  "request": {
+    "blob": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+    "bytes": 55681,
+    "sha256": "6186d6b597d06876315f6f2b06be9332506f08f1ec57d2ca1c5f89dea653bda3"
+  },
+  "rootGo": {
+    "blob": "dcc22251299cd6cf05b59fed525633d6ff7fe22c",
+    "bytes": 18538,
+    "sha256": "aae70f855d85b961517553d0d418e49a5cc1dd31e51833e2922f55cb0f5357ef"
+  },
+  "job": {
+    "host": "mac",
+    "id": "1a1af4ef4af-fc05-6789"
+  },
+  "start": {
+    "request": {
+      "blob": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+      "bytes": 55681,
+      "sha256": "6186d6b597d06876315f6f2b06be9332506f08f1ec57d2ca1c5f89dea653bda3"
+    },
+    "armedTree": "fbc991f134a45283c113338a10cfc525fe8f4763",
+    "sdk": {
+      "blob": "6e6164b9a03c0cdaa857cf751633d471c0bb14bb",
+      "bytes": 1425,
+      "sha256": "7e6ece15f0bf5d159f5741fa12c37093ff2fe0935e95f1b01a27cf9997e073e0"
+    },
+    "sdkTree": "0f0279b6e1693cd8744792961a15fe37450fcc47",
+    "native": {
+      "blob": "00ddb0eb930c374bee12984ec1e316a4c05d0449",
+      "bytes": 1177,
+      "sha256": "8f70b74669ac9c131eb7a4fa385073a4d24d9a707271f08b162d8bdfdc9f79f3"
+    }
+  },
+  "authority": {
+    "blob": "7da9c936624430f49a433f0eba94c9d89f03b568",
+    "bytes": 731,
+    "sha256": "bfd223aac6862314a510b3db8532fa8a410a3627de12aee8c6288255223717cb"
+  },
+  "stdout": {
+    "blob": "3c99b7ee81f3a12052eb6a94e47f4804a317ca92",
+    "bytes": 6408,
+    "sha256": "12d03c24790ded3b38bc9fc56edc69764839325a554519d4120b20e0d33b25fa"
+  },
+  "stderr": {
+    "bytes": 0
+  },
+  "observations": [
+    {
+      "id": "8b18835f3adc99647fc0e25531f32704c9a6d19e0e20d116260328dac3dd24fe",
+      "tool": "process_status",
+      "payload": {
+        "blob": "41b9a56ac7844772b7770294e162a2a6c8499a5c",
+        "bytes": 910,
+        "sha256": "d57a35027aa5cdfbcf076cfab800319b8e442a07c9a8d205c5ecd0dd8a197b8f"
+      },
+      "payloadTree": "60efb348e1808818e4c095846b638d73b02f89d6",
+      "nativeText": {
+        "blob": "7da9c936624430f49a433f0eba94c9d89f03b568",
+        "bytes": 731,
+        "sha256": "bfd223aac6862314a510b3db8532fa8a410a3627de12aee8c6288255223717cb"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee",
+      "tool": "process_read",
+      "payload": {
+        "blob": "373b9e97fcec055214e6ce8ecd0aae126c893705",
+        "bytes": 21735,
+        "sha256": "fd8ff7e8b1293c085b72b16178f85951ef8acd192ddaf74fe803dac1f97cf5b7"
+      },
+      "payloadTree": "691e4a7b62b7a4f7f0446575c7996d96480363c1",
+      "nativeText": {
+        "blob": "b351d064733bf815fd1ab1c782fed560f24bc50f",
+        "bytes": 20230,
+        "sha256": "e97cb365ff887d7b24b7aca350ef2d0dcaa9d8ee68a79d4bca56e642b9444c59"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "nativeCalls": 9,
+  "observerCount": 2,
+  "pages": 4,
+  "allOriginalObserversCompletedInactive": true,
+  "noRuntimeCallInFlight": true,
+  "noNativeFuture": true,
+  "noPending": true,
+  "replayOrRetry": false,
+  "newChild": {
+    "pid": 73478,
+    "exitCode": 0,
+    "stdoutBytes": 817,
+    "stderrBytes": 0,
+    "reaped": true,
+    "groupsEmpty": true,
+    "streamsClosed": true,
+    "signals": []
+  },
+  "fds": {
+    "count": 4,
+    "allClosed": true,
+    "closeErrors": []
+  },
+  "budget": {
+    "codeBytesReturned": 807536,
+    "codeReadCalls": 14,
+    "metadata": 40
+  },
+  "elapsedSeconds": 2.125129833817482,
+  "deadlineMetAfterClosure": true,
+  "outcomeUnknown": false,
+  "result": "PASS_SCHEMA_OBSERVATION_AND_NEW_OWNED_CLOSURE_ONLY",
+  "actualSchema": {
+    "anyFieldLengthPublished": false,
+    "anyFieldValuePublished": false,
+    "argv": [
+      "/usr/bin/log",
+      "show",
+      "--start",
+      "2026-11-06 00:45:18+0000",
+      "--end",
+      "2026-11-06 00:45:21+0000",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+      "--info",
+      "--debug",
+      "--no-pager"
+    ],
+    "classificationIsLexicalEvidenceNotRootCauseProof": true,
+    "eventProjectionQualified": false,
+    "freshObservationNotOriginal817ByteRecovery": true,
+    "noMatchesDoesNotProveAbsence": true,
+    "observedObjectCount": 2,
+    "originalClassifierPassed": false,
+    "originalWindowMilliseconds": 3000,
+    "rawLogTextExported": false,
+    "rawOrUnknownLogHashExported": false,
+    "rows": [
+      {
+        "knownFields": {
+          "composedMessage": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "eventMessage": {
+            "jsonType": "string",
+            "present": true
+          },
+          "eventType": {
+            "jsonType": "string",
+            "present": true
+          },
+          "message": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "process": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "processImagePath": {
+            "jsonType": "string",
+            "present": true
+          },
+          "timestamp": {
+            "jsonType": "string",
+            "present": true
+          },
+          "type": {
+            "jsonType": "absent",
+            "present": false
+          }
+        },
+        "messageCandidates": {
+          "allPresentStringsEqual": true,
+          "allPresentValuesAreStrings": true,
+          "anyPresent": true,
+          "originalComposite": true
+        },
+        "messageFlags": {
+          "composedMessage": {
+            "emptyString": null,
+            "exactOriginalLabelPresent": null
+          },
+          "eventMessage": {
+            "emptyString": false,
+            "exactOriginalLabelPresent": true
+          },
+          "message": {
+            "emptyString": null,
+            "exactOriginalLabelPresent": null
+          }
+        },
+        "ordinal": 0,
+        "processEqualsLaunchd": null,
+        "processImageBasenameEqualsLaunchd": true,
+        "stringCandidateEqualities": {
+          "eventMessageEqualscomposedMessage": null,
+          "eventMessageEqualsmessage": null,
+          "messageEqualscomposedMessage": null
+        },
+        "timestampParsed": true,
+        "timestampWithinOriginalWindow": true,
+        "typeStringEqualsEventTypeString": null
+      },
+      {
+        "knownFields": {
+          "composedMessage": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "eventMessage": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "eventType": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "message": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "process": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "processImagePath": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "timestamp": {
+            "jsonType": "absent",
+            "present": false
+          },
+          "type": {
+            "jsonType": "absent",
+            "present": false
+          }
+        },
+        "messageCandidates": {
+          "allPresentStringsEqual": false,
+          "allPresentValuesAreStrings": true,
+          "anyPresent": false,
+          "originalComposite": false
+        },
+        "messageFlags": {
+          "composedMessage": {
+            "emptyString": null,
+            "exactOriginalLabelPresent": null
+          },
+          "eventMessage": {
+            "emptyString": null,
+            "exactOriginalLabelPresent": null
+          },
+          "message": {
+            "emptyString": null,
+            "exactOriginalLabelPresent": null
+          }
+        },
+        "ordinal": 1,
+        "processEqualsLaunchd": null,
+        "processImageBasenameEqualsLaunchd": null,
+        "stringCandidateEqualities": {
+          "eventMessageEqualscomposedMessage": null,
+          "eventMessageEqualsmessage": null,
+          "messageEqualscomposedMessage": null
+        },
+        "timestampParsed": false,
+        "timestampWithinOriginalWindow": null,
+        "typeStringEqualsEventTypeString": null
+      }
+    ],
+    "schemaOnlyObservation": true,
+    "unknownKeyNamesPublished": false
+  },
+  "oldQueryFailureUnchanged": true,
+  "original817BodyRecovered": false,
+  "startupCauseQualified": false,
+  "historicalRegistrationClosed": false,
+  "historicalLineageQualified": false,
+  "oldGit8916": "UNKNOWN",
+  "laneAReleased": true,
+  "independentAuthorReleaseChecks": [
+    {
+      "check": "no_call_pending_or_future",
+      "passed": true
+    },
+    {
+      "check": "all_called_once_and_sdk_whole_accepted",
+      "passed": true
+    },
+    {
+      "check": "known_authority0_full_durable",
+      "passed": true
+    },
+    {
+      "check": "authority_extents",
+      "passed": true
+    },
+    {
+      "check": "whole_stream_double_EOF",
+      "passed": true
+    },
+    {
+      "check": "whole_public_report_known_success",
+      "passed": true
+    },
+    {
+      "check": "original_total_deadline",
+      "passed": true
+    },
+    {
+      "check": "all_four_fd_once_closed",
+      "passed": true
+    },
+    {
+      "check": "new_owned_closure",
+      "passed": true
+    },
+    {
+      "check": "one_known_complete_log_child",
+      "passed": true
+    },
+    {
+      "check": "child_reaped_group_empty_no_signals",
+      "passed": true
+    },
+    {
+      "check": "original_fixed_argv",
+      "passed": true
+    },
+    {
+      "check": "fixed_whole_tool",
+      "passed": true
+    },
+    {
+      "check": "fixed_tool_full9",
+      "passed": true
+    },
+    {
+      "check": "actual_budget",
+      "passed": true
+    },
+    {
+      "check": "schema_only_not_old_query_recovery",
+      "passed": true
+    },
+    {
+      "check": "two_bounded_objects",
+      "passed": true
+    },
+    {
+      "check": "public_projection_only",
+      "passed": true
+    },
+    {
+      "check": "cause_and_old_closure_not_claimed",
+      "passed": true
+    },
+    {
+      "check": "no_excluded_scope",
+      "passed": true
+    }
+  ]
+}

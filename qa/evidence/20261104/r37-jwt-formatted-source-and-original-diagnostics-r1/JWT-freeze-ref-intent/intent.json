@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.JWT-formatted-source-branch-CAS-intent.v1",
+  "exact_request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-native-jwt-r2-source-20261106",
+    "sha": "808e45d690f177ecb922e13d1ed19f7877156094",
+    "expected_sha": "e3afc157447d35c861f275a761b29da3e42aff8e",
+    "force": false
+  },
+  "verified_commit": "808e45d690f177ecb922e13d1ed19f7877156094",
+  "verified_tree": "0506d30b02f5a2a2dc7d6364299365ae8d1d7cc7",
+  "verified_sole_parent": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "root_qualification": "f0d3b1c86ecb637f076936824f82a3345bd7a702",
+  "branch_role": "uncompiled source candidate only",
+  "validation_branch_unchanged": true,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "not_yet_called": true,
+  "unknown_recovery": "Read same branch and original result; no blind retry or force."
+}

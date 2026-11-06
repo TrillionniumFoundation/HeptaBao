@@ -1,0 +1,247 @@
+{
+  "schema": "heptabao.fixed-log-schema-source-purechecks.r1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "original_failed_query_source",
+      "passed": true
+    },
+    {
+      "name": "source_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "source_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:need",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:sha",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:identity",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:remaining",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:public_error",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:load_helpers",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:metadata",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:admit_binding",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:open_fixed",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:verify_all",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:hash_tool",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:unique_log_object",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:log_timestamp_us",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:log_projection",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:command_public",
+      "passed": true
+    },
+    {
+      "name": "original_function_exact:close_rows",
+      "passed": true
+    },
+    {
+      "name": "main_only_schema_and_projection_call",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:BINDING_READY = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:LOG_BINDING = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:QUERY_ARGV = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:FIXED_LABEL = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:WINDOW_START_US = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:WINDOW_END_US = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_LOG_ROWS = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_LOG_LINE = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:KNOWN_MESSAGE_PATHS = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:PYTHON = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MODULES = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:UNTIL = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_CODE_BYTES = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_READ_CALLS = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_METADATA = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_FD_ROWS = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_LOG_STREAM = ",
+      "passed": true
+    },
+    {
+      "name": "same_fixed_binding:MAX_PUBLIC_OUTPUT = ",
+      "passed": true
+    },
+    {
+      "name": "request_source_exact",
+      "passed": true
+    },
+    {
+      "name": "request_only_new_source_key",
+      "passed": true
+    },
+    {
+      "name": "request_pin_key",
+      "passed": true
+    },
+    {
+      "name": "journal_forward_whole",
+      "passed": true
+    },
+    {
+      "name": "journal_inverse_whole",
+      "passed": true
+    },
+    {
+      "name": "journal_only_binding_literals",
+      "passed": true
+    },
+    {
+      "name": "exact_eight_known_keys",
+      "passed": true
+    },
+    {
+      "name": "same_stream_row_line_hard_guards",
+      "passed": true
+    },
+    {
+      "name": "same_known_child_zero_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "same_duplicate_nonfinite_object_guards",
+      "passed": true
+    },
+    {
+      "name": "no_unknown_key_names_or_values_output",
+      "passed": true
+    },
+    {
+      "name": "no_unknown_hash_or_817_recovery",
+      "passed": true
+    },
+    {
+      "name": "not_original_classifier_qualification",
+      "passed": true
+    },
+    {
+      "name": "original_composite_equivalence_source",
+      "passed": true
+    },
+    {
+      "name": "known_original_failure_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_original_unknown_body_file",
+      "passed": true
+    }
+  ],
+  "checkCount": 54,
+  "unchangedPythonDefinitions": [
+    "need",
+    "sha",
+    "identity",
+    "remaining",
+    "public_error",
+    "load_helpers",
+    "metadata",
+    "admit_binding",
+    "open_fixed",
+    "verify_all",
+    "hash_tool",
+    "unique_log_object",
+    "log_timestamp_us",
+    "log_projection",
+    "command_public",
+    "close_rows"
+  ],
+  "sourceHunks": 4,
+  "journalHunks": 2,
+  "pythonCompiled": false,
+  "pythonOrComponentExecuted": false,
+  "runtimeCalls": 0,
+  "originalClassifierQualified": false
+}

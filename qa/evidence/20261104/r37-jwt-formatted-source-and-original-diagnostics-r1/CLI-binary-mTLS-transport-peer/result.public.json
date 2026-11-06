@@ -1,0 +1,219 @@
+{
+  "schema": "heptabao.snapshot-peer.independent-limited-source-checks.r1",
+  "passed": true,
+  "checkCount": 50,
+  "checks": [
+    {
+      "name": "whole:README.md",
+      "passed": true
+    },
+    {
+      "name": "whole:after-authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:candidate-native_snapshot_peer.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:authenticated_peer_frame.diff",
+      "passed": true
+    },
+    {
+      "name": "whole:candidate-native_snapshot_peer_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:lib.diff",
+      "passed": true
+    },
+    {
+      "name": "whole:after-lib.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:MANIFEST.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-rustls-common_state.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:before-authenticated_peer_frame.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-rustls-stream.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-rustls-conn.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-rustls-tag.json",
+      "passed": true
+    },
+    {
+      "name": "whole:COMPLETE-PATCH.diff",
+      "passed": true
+    },
+    {
+      "name": "whole:before-lib.rs",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "whole:reference-Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "whole:dependency-native_snapshot_body.rs",
+      "passed": true
+    },
+    {
+      "name": "strict-one-hunk:authenticated_peer_frame.diff",
+      "passed": true
+    },
+    {
+      "name": "strict-one-hunk:lib.diff",
+      "passed": true
+    },
+    {
+      "name": "complete-patch-four-files",
+      "passed": true
+    },
+    {
+      "name": "complete-patch-integration-deltas",
+      "passed": true
+    },
+    {
+      "name": "new-file-strict:candidate-native_snapshot_peer.rs",
+      "passed": true
+    },
+    {
+      "name": "new-file-strict:candidate-native_snapshot_peer_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "original-authenticated-prefix-whole",
+      "passed": true
+    },
+    {
+      "name": "native-feature-gates",
+      "passed": true
+    },
+    {
+      "name": "one-client-connect",
+      "passed": true
+    },
+    {
+      "name": "client-leaf-before-token-metadata",
+      "passed": true
+    },
+    {
+      "name": "client-close-before-reverse-read",
+      "passed": true
+    },
+    {
+      "name": "client-body-finish-before-response",
+      "passed": true
+    },
+    {
+      "name": "client-final-deadline-and-sink-flush",
+      "passed": true
+    },
+    {
+      "name": "receiver-ready-failedio-before-wire",
+      "passed": true
+    },
+    {
+      "name": "receiver-witness-after-finish",
+      "passed": true
+    },
+    {
+      "name": "receiver-data-not-result-authority",
+      "passed": true
+    },
+    {
+      "name": "complete-body-state-check",
+      "passed": true
+    },
+    {
+      "name": "complete-terminal-after-flush",
+      "passed": true
+    },
+    {
+      "name": "receiver-original-budget-clamp",
+      "passed": true
+    },
+    {
+      "name": "snapshot-strict-alpn",
+      "passed": true
+    },
+    {
+      "name": "body-END-before-positive-tail-read",
+      "passed": true
+    },
+    {
+      "name": "body-EOF-before-witness",
+      "passed": true
+    },
+    {
+      "name": "body-finish-no-drain",
+      "passed": true
+    },
+    {
+      "name": "body-existing-caps",
+      "passed": true
+    },
+    {
+      "name": "rustls-close-or-unexpected-eof",
+      "passed": true
+    },
+    {
+      "name": "rustls-send-receive-independent",
+      "passed": true
+    },
+    {
+      "name": "rustls-explicit-flush-propagates",
+      "passed": true
+    },
+    {
+      "name": "exact-rustls-tag-commit",
+      "passed": true
+    },
+    {
+      "name": "exact-rustls-lock",
+      "passed": true
+    },
+    {
+      "name": "six-test-sources",
+      "passed": true
+    },
+    {
+      "name": "actual-TCP-half-close-negative-source",
+      "passed": true
+    },
+    {
+      "name": "wrong-pin-does-not-read-upload-source",
+      "passed": true
+    }
+  ],
+  "testsPresentNotExecuted": [
+    "snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+    "snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+    "snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+    "snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+    "snapshot_peer_original_frame_still_uses_only_old_callback",
+    "snapshot_peer_expired_deadline_refuses_before_connect"
+  ],
+  "executedRust": false,
+  "executedComponents": false,
+  "RuntimeCalls": 0,
+  "ServiceIntegrationQualified": false
+}

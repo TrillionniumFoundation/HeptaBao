@@ -1,0 +1,3 @@
+# Snapshot binary forwarding integration checkpoint
+
+This immutable checkpoint preserves current SOURCE drafts before final HA and HTTP wiring. It is not a candidate build, test result, or execution approval. The frozen body and transport packets remain unchanged. The `service-begin-*` excerpts are a precise minimal edit against the recorded original service source; a later JWT source must be merged by exact context and must not be overwritten by the historical whole file. The new source methods retain the actual SnapshotTransferPlan, original Auth owner, original Actor admission and original clock. Remaining integration and error-path issues are recorded in PLAN.json.

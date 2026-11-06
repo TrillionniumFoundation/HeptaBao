@@ -1,0 +1,680 @@
+{
+  "rootGoWhole": true,
+  "goRaw": "{\n  \"schema\": \"heptabao.root-GO.Mac-individually-admitted-log-events.v1\",\n  \"authorization\": \"GO\",\n  \"agent\": \"/root/authbus_migration\",\n  \"purpose\": \"Fresh same-tool/same-argv observation applying the original classifier separately to every strict NDJSON object. Only individually admitted event vocabulary is published; every semantic rejection remains an explicit unknown object.\",\n  \"source_packet\": \"86dcbd5d5f3342b4cf588ff9b73742e770964204\",\n  \"source_review\": {\n    \"blob\": \"280681189e3a632a3d15589ff87caf63525603de\",\n    \"bytes\": 2963,\n    \"sha256\": \"e1d77b63efb9d518f639deef60fd3d4e8586227d222e019f1775aed900701676\"\n  },\n  \"prior_schema_qualification\": {\n    \"blob\": \"eff0c4c39997278c6cd258535651f1348dff8373\",\n    \"bytes\": 7027,\n    \"sha256\": \"f405f569631b65c12a3f75343a2c3a97d9b11204c7bb36d0f6c8d09396fc66c6\"\n  },\n  \"original_failed_query_qualification\": {\n    \"blob\": \"3052edd4796424a82b909e75c295fd5530836714\",\n    \"bytes\": 6066,\n    \"sha256\": \"6424d64e4bd5524c26df21f6ee10f682b2964fb358bbb1938e42d8bd5cb0f0a1\"\n  },\n  \"source\": {\n    \"blob\": \"300246fcfb141255e312239c19e1dad3e5dfd362\",\n    \"bytes\": 58545,\n    \"sha256\": \"398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6\"\n  },\n  \"exact_request\": {\n    \"blob\": \"7c6fddb23926a3bd5a0b73156d65ee04f536f560\",\n    \"bytes\": 59546,\n    \"sha256\": \"f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92\"\n  },\n  \"native_binding\": {\n    \"sha256\": \"dff9bc8fbb8037323551ca59b83975e815708bf9d176835dbb3c3b53b4de3986\",\n    \"native_fingerprint\": \"16139138065170970418\",\n    \"typed_stdin_field\": \"stdin\"\n  },\n  \"helpers\": {\n    \"native\": {\n      \"blob\": \"136e0f14bb66f0c5538a3dd904d03bc116e14db6\",\n      \"bytes\": 19040,\n      \"sha256\": \"0e2720e60701bcde62d491ee1c27a0290343502368fe072dae4b98f0025d78d4\"\n    },\n    \"archive\": {\n      \"blob\": \"b093fdbf655511f7db94be2d95555606141bbb42\",\n      \"bytes\": 5957,\n      \"sha256\": \"8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397\"\n    },\n    \"pure\": {\n      \"blob\": \"b6890e8b7217c546bec073dcb04988fc37652721\",\n      \"bytes\": 6685,\n      \"sha256\": \"44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432\"\n    }\n  },\n  \"slot\": \"owner_launchd_log_events_gitfirst_r1\",\n  \"start\": {\n    \"host\": \"mac\",\n    \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-\"\n    ],\n    \"cwd\": \"/Users/qianqi\",\n    \"timeout_seconds\": 60,\n    \"idempotency_key\": \"heptabao-mac-owned-launchd-log-events-398136a3-20261106-r1\",\n    \"stdin_source\": {\n      \"blob\": \"300246fcfb141255e312239c19e1dad3e5dfd362\",\n      \"bytes\": 58545,\n      \"sha256\": \"398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6\"\n    },\n    \"maximum_START_count\": 1\n  },\n  \"actual_tool_binding\": {\n    \"path\": \"/usr/bin/log\",\n    \"version\": \"16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000\",\n    \"size\": 807536,\n    \"sha256\": \"2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974\",\n    \"identity\": [\n      \"16777233\",\n      \"1152921500312572288\",\n      \"0\",\n      \"0\",\n      \"33261\",\n      \"1\",\n      \"807536\",\n      \"1786589515000000000\",\n      \"1786589515000000000\"\n    ],\n    \"metadataOriginal\": {\n      \"blob\": \"d3cefcb531f3deea5a156189d381b11f8c70fa7b\",\n      \"bytes\": 411,\n      \"sha256\": \"8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4\"\n    }\n  },\n  \"scope\": {\n    \"exact_child_argv\": [\n      \"/usr/bin/log\",\n      \"show\",\n      \"--start\",\n      \"2026-11-06 00:45:18+0000\",\n      \"--end\",\n      \"2026-11-06 00:45:21+0000\",\n      \"--style\",\n      \"ndjson\",\n      \"--predicate\",\n      \"process = \\\"launchd\\\" AND message CONTAINS \\\"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\\\"\",\n      \"--info\",\n      \"--debug\",\n      \"--no-pager\"\n    ],\n    \"original_job\": \"1a1ae51309d-fc05-5ef8\",\n    \"original_label\": \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\",\n    \"window_start_unix_ms\": 1793925918000,\n    \"window_end_unix_ms\": 1793925921000,\n    \"maximum_window_ms\": 3000,\n    \"original_time_evidence\": {\n      \"schema\": \"heptabao.original-owned-bootstrap-time-window.source.r1\",\n      \"originalJob\": \"1a1ae51309d-fc05-5ef8\",\n      \"ack\": {\n        \"blob\": \"5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2\",\n        \"bytes\": 6200,\n        \"sha256\": \"eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86\"\n      },\n      \"authority\": {\n        \"blob\": \"0e29e80053b2ad291101f53c8ffcc24f485680ac\",\n        \"bytes\": 732,\n        \"sha256\": \"f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6\"\n      },\n      \"stdout\": {\n        \"blob\": \"99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1\",\n        \"bytes\": 132132,\n        \"sha256\": \"feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748\"\n      },\n      \"jobCreatedUnixMs\": 1793925918877,\n      \"terminalPublicationUnixMs\": 1793925920735,\n      \"rawJobWindowMilliseconds\": 1858,\n      \"conservativeRoundedStartUnixMs\": 1793925918000,\n      \"conservativeRoundedEndUnixMs\": 1793925921000,\n      \"utcStart\": \"2026-11-06T00:45:18.000Z\",\n      \"utcEnd\": \"2026-11-06T00:45:21.000Z\",\n      \"maximumWindowMilliseconds\": 3000,\n      \"bootstrapIntentFileMtimeNs\": \"1793925920565520047\",\n      \"bootstrapCommand\": {\n        \"argv\": [\n          \"/bin/launchctl\",\n          \"bootstrap\",\n          \"gui/501\",\n          \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist\"\n        ],\n        \"pid\": 82492,\n        \"commandDeadlineMonotonic\": 2811777.446800166,\n        \"elapsedSeconds\": 0.04866733402013779,\n        \"exitCode\": 0\n      },\n      \"qualification\": \"Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion.\"\n    },\n    \"maximum_records\": 64,\n    \"maximum_UTF8_line_bytes\": 8192,\n    \"maximum_accepted_combined_stream_bytes\": 65536,\n    \"individually_admitted_projection\": {\n      \"name\": \"log_projection\",\n      \"wholeFunctionByteExact\": true,\n      \"originalSource\": \"7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6\",\n      \"input\": \"The original full line encoded in UTF8 plus one LF; not reconstructed JSON. The original child row and empty actual stderr are supplied.\",\n      \"gates\": \"Original nonempty/equal string message candidates, exact label token, typed process/basename launchd, exact timestamp parsing and original three-second bounds.\",\n      \"admittedOutput\": \"The entire original classifier row with only ordinal replaced by its actual original object ordinal. Category/errno/path vocabulary remains identical.\"\n    },\n    \"explicit_unknown_rejections\": {\n      \"closedHelpRefusedCodes\": [\n        \"one_log_message_semantics\",\n        \"exact_original_label_in_message\",\n        \"typed_log_process\",\n        \"typed_log_process_path\",\n        \"exact_launchd_process\",\n        \"typed_log_timestamp\",\n        \"log_timestamp_timezone_required\",\n        \"original_three_second_log_window\"\n      ],\n      \"timestampValueError\": \"invalid_log_timestamp_value\",\n      \"timestampRationale\": \"Strict duplicate/nonfinite-constant/object JSON parsing happens before the semantic catch, on the identical immutable line. ValueError/OverflowError in the original classifier's datetime path becomes this fixed reason; no exception string/value is published.\",\n      \"notCaught\": \"All nonlisted HelpRefused (including deadline/cancellation), Unicode/JSON structural errors, unexpected exceptions, hard bounds and closure errors remain whole-observer failure.\",\n      \"disposition\": \"Every object is in exactly one of events or rejectedObjects; ordinal and fixed reason are preserved. No rejected object is omitted or described as known harmless.\"\n    },\n    \"output_semantics\": {\n      \"observedObjects\": \"all complete nonblank strict object lines\",\n      \"admittedEvents\": \"only rows returned by the original whole classifier\",\n      \"rejectedUnknownObjects\": \"semantic refusals with unqualified meaning\",\n      \"events\": \"original closed vocabulary booleans only\",\n      \"rejectedObjects\": \"ordinal, one fixed rejectionReason, fixed meaning unknown_object_not_admitted\",\n      \"allObservedObjectsAdmitted\": \"derived only from rejected count, never source-of-truth root-cause authority\",\n      \"wholeLogFullyClassified\": false,\n      \"unknownObjectSemanticsQualified\": false,\n      \"startupCauseQualified\": false,\n      \"topLevelOk\": \"Only bounded observation, disposition and owned closure completed. It does not assert all objects classified or cause known; those explicit flags remain false even when event count is positive.\",\n      \"rawOrUnknownHashes\": false,\n      \"rawUnknownValues\": false,\n      \"arbitraryKeys\": false,\n      \"noMatchesDoesNotProveAbsence\": true,\n      \"freshObservationNotOriginal817ByteRecovery\": true,\n      \"originalWholeQueryFailureUnchanged\": true\n    }\n  },\n  \"budgets\": {\n    \"shared_seconds\": 45,\n    \"child_seconds\": 10,\n    \"outer_seconds\": 60,\n    \"original_cleanup\": {\n      \"term\": 1,\n      \"wait\": 5,\n      \"group\": 3,\n      \"psMax\": 4\n    },\n    \"application_FDs\": 4,\n    \"metadata_calls_cap\": 64,\n    \"code_read_calls_cap\": 129,\n    \"code_hash_bytes\": 807536,\n    \"code_read_cap\": 8388608,\n    \"maximum_public_stdout\": 131072,\n    \"command_chunk\": 65536,\n    \"original_pipe_return_before_per_stream_bound_rejection\": 131072\n  },\n  \"limits\": {\n    \"max_Runtime_lanes\": 2,\n    \"max_native_call_or_future_per_lane\": 1,\n    \"process_stream_limit\": 16384,\n    \"immutable_page_bytes\": 8192,\n    \"original_payload_cap\": 1048576\n  },\n  \"sequence\": [\n    \"Whole exact GO and dedicated fresh slot with the exact typed-stdin digest/fingerprint.\",\n    \"Publish exact request/intent/armed whole; independent boundary; one unique process_start only.\",\n    \"Archive full original SDK externally before parse/isError; UNKNOWN preserves original identity, no replay/re-key.\",\n    \"Only the returned original mac job status/streams with original observer IDs and contiguous next8192 immutable pages under original1MiB cap.\",\n    \"Close full durable original streams/observers and prove actual child reaped/owned group empty/fourFDs/unchanged tool/fullSHA/shared45 before assessing per-object observations.\"\n  ],\n  \"lane_activation\": \"A may activate one lane now; C0 after independent report INFO closure and may use one lane under separate body GO. B0/root0; maximum2 globally, one Native call/future each.\",\n  \"requires_actual\": [\n    \"Known parent outcome, complete durable original streams and inactive observers.\",\n    \"Every complete nonblank object has exactly one original ordinal in admitted events or explicit unknown rejections; strict malformed/duplicate/nonfinite/nonobject or hard bound failures still fail the observation.\",\n    \"An admitted event must pass the unchanged original label/process/timestamp gates and exposes only original closed category/errno/known-path vocabulary.\",\n    \"Unknown objects retain unknown meaning; no implicit header/statistics/harmless classification.\",\n    \"One log child owned/reaped/group empty/streams closed, four FDs closed and original45/10/60 bounds unchanged.\"\n  ],\n  \"interpretation\": {\n    \"success\": \"Only bounded per-object observation and owned cleanup completed. Positive event count does not qualify whole log or startup cause.\",\n    \"unknown_rows\": \"Explicit rejectedUnknownObjects with closed reason and original ordinal; never silently omitted.\",\n    \"event_mentions\": \"Lexical evidence only; a path or errno mention does not by itself prove causality.\",\n    \"fresh_not_recovered\": \"A fresh query of same historical interval, never recovery/equality proof for old817 bytes.\",\n    \"old_failure\": \"Original query exit1 remains a known failed projection.\",\n    \"limits\": \"Accepted-byte caps do not trace log datastore scanning; unchanged pipe helper may receive one crossing block before rejection.\"\n  },\n  \"excluded\": [\n    \"private capsule and credential reads\",\n    \"service/configuration/permissions/TCC or environment changes\",\n    \"old-label cleanup or old PID signalling\",\n    \"SDK/provider/business operations\",\n    \"other labels/windows/processes/paths or arbitrary fields\",\n    \"replaying failed query or assuming new output equals prior817 bytes\",\n    \"new-key retry or expanded deadlines/caps\"\n  ],\n  \"historical_unknowns\": {\n    \"oldRegistration\": \"NOT_CLOSED\",\n    \"lineage\": \"NOT_QUALIFIED\",\n    \"oldGit8916\": \"UNKNOWN\"\n  },\n  \"full_replacement\": false,\n  \"production_cutover\": false,\n  \"legacy_cleanup\": false,\n  \"root_Runtime_calls\": 0\n}\n",
+  "goPin": {
+    "blob": "7187b111b16686ec95da572d7d7adde925e256db",
+    "bytes": 12652,
+    "sha256": "99f1d7795f574b9d3b7f0ca23e44caee73d57e3759ed5c1e09922d9b8c2d085d"
+  },
+  "digest": "dff9bc8fbb8037323551ca59b83975e815708bf9d176835dbb3c3b53b4de3986",
+  "fingerprint": "16139138065170970418",
+  "job": "1a1af5c959e-fc05-67ee",
+  "startCalled": true,
+  "pending": null,
+  "activeObserver": null,
+  "nativeCallInFlight": false,
+  "paused": false,
+  "calls": {
+    "log-events-r1-start": {
+      "kind": "process_start",
+      "requestRaw": "{\n  \"host\": \"mac\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"-\"\n  ],\n  \"cwd\": \"/Users/qianqi\",\n  \"timeout_seconds\": 60,\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-log-events-398136a3-20261106-r1\",\n  \"stdin\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"SOURCE proposal: per-object original event admission for the fixed label/time log query.\\nThe fixed tool metadata is observed; query execution still requires separate exact GO.\\nThe child uses the unchanged retained WNOWAIT owner/Commands contract.\\nUnknown raw log text and hashes are never included in the public projection.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\nimport base64, datetime, hashlib, json, os, re, signal, stat, sys, time, types\\n\\nBINDING_READY = True\\nLOG_BINDING = {\\\"path\\\":\\\"/usr/bin/log\\\",\\\"version\\\":\\\"16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000\\\",\\\"size\\\":807536,\\\"sha256\\\":\\\"2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974\\\",\\\"identity\\\":[\\\"16777233\\\",\\\"1152921500312572288\\\",\\\"0\\\",\\\"0\\\",\\\"33261\\\",\\\"1\\\",\\\"807536\\\",\\\"1786589515000000000\\\",\\\"1786589515000000000\\\"],\\\"metadataOriginal\\\":{\\\"blob\\\":\\\"d3cefcb531f3deea5a156189d381b11f8c70fa7b\\\",\\\"bytes\\\":411,\\\"sha256\\\":\\\"8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4\\\"}}\\nLOG_PATH = '/usr/bin/log'\\nQUERY_ARGV = [\\\"/usr/bin/log\\\",\\\"show\\\",\\\"--start\\\",\\\"2026-11-06 00:45:18+0000\\\",\\\"--end\\\",\\\"2026-11-06 00:45:21+0000\\\",\\\"--style\\\",\\\"ndjson\\\",\\\"--predicate\\\",\\\"process = \\\\\\\"launchd\\\\\\\" AND message CONTAINS \\\\\\\"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\\\\\\\"\\\",\\\"--info\\\",\\\"--debug\\\",\\\"--no-pager\\\"]\\nFIXED_LABEL = \\\"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\\\"\\nWINDOW_START_US = 1793925918000000\\nWINDOW_END_US = 1793925921000000\\nMAX_LOG_ROWS = 64\\nMAX_LOG_LINE = 8192\\nKNOWN_MESSAGE_PATHS = {\\\"python_alias\\\":\\\"/opt/homebrew/bin/python3\\\",\\\"regular_python\\\":\\\"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\\\",\\\"wrapper\\\":\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/qa/mac_current_server_owner_r1.py\\\",\\\"working_directory\\\":\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1\\\",\\\"plist\\\":\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist\\\",\\\"stdout\\\":\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stdout.private\\\",\\\"stderr\\\":\\\"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.stderr.private\\\"}\\nPYTHON = '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14'\\nMODULES = json.loads(base64.b64decode('W3sibmFtZSI6Im1hY19vd25lZF91bnJlYXBlZF9yMSIsImJsb2IiOiI1M2NkZGQ5MjQzZjlmODkwZDlhMWI5OTc1YjQzNTI4MGZmNThhYjc3Iiwic2hhMjU2IjoiYTE0M2JhMzM0MTU5OTMxZDUzMGI0OWE1NWMyNDQ3MWY1NmZhMWI2MmYxZTEwMTJlMTJjNzVlMjFmM2MyMmIxZCIsImJ5dGVzIjoxMDk5MCwiYmFzZTY0IjoiSXlFdmRYTnlMMkpwYmk5bGJuWWdjSGwwYUc5dU13b2lJaUpTWlhSaGFXNWxaQ0JrYVhKbFkzUXRZMmhwYkdRZ1kzVnpkRzlrZVNCbWIzSWdUV0ZqSUhCb1lYTmxJSGR2Y210bGNuTXVDZ3BFWlhKcGRtVmtJR1p5YjIwZ1kyRnViMjVwWTJGc0lHNWhkR2wyWlY5b1lWOW1iM0psWjNKdmRXNWtYM2RoZEdOb1pHOW5MbkI1SURjME9USTFORFE1TGlCT2J5QmphR2xzWkNCcGN3cHpkR0Z5ZEdWa0lHaGxjbVV1SUZkT1QxZEJTVlFnYjJKelpYSjJaWE1nWlhocGREc2dhWFFnYm1WMlpYSWdiV0ZyWlhNZ2RHaGxJRzUxYldWeWFXTWdVRWRKUkNCeVpYVnpZV0pzWlFwaVpXWnZjbVVnYzJsbmJtRnNhVzVuTGlCRGJHVmhiblZ3SUd0bFpYQnpJSFJvWlNCd2NtVjJhVzkxY3lCM2NtRndjR1Z5SjNNZ1ZFVlNUVEVnTHlCM1lXbDBOU0F2Q21keWIzVndNeUJzYVcxcGRITWdZVzVrSUZCVE5DQnRZWGhwYlhWdExpQk9ieUJ6ZEdGblpTQm5jbUZ1ZEhNZ1luVnphVzVsYzNNZ2JXOXlaU0IwYUdGdUlIQm9ZWE5sTVRJd0xnb2lJaUlLYVcxd2IzSjBJRzl6TENCemFXZHVZV3dzSUhOMVluQnliMk5sYzNNc0lIUnBiV1VLQ2sxSlFqMHhNREkwS2pFd01qUUtZMnhoYzNNZ1VtVm1kWE5oYkNoU2RXNTBhVzFsUlhKeWIzSXBPaUJ3WVhOekNtUmxaaUJ1WldWa0tIWmhiSFZsTEdOdlpHVXBPZ29nSUNBZ2FXWWdibTkwSUhaaGJIVmxPbkpoYVhObElGSmxablZ6WVd3b1kyOWtaU2tLQ21SbFppQnlaWEYxYVhKbFgzZGhhWFJwWkNncE9nb2dJQ0FnYm1WbFpDaGhiR3dvYUdGellYUjBjaWh2Y3l3Z2JtRnRaU2tnWm05eUlHNWhiV1VnYVc0Z0tDSjNZV2wwYVdRaUxDQWlVRjlRU1VRaUxDQWlWMFZZU1ZSRlJDSXNJQ0pYVGs5SVFVNUhJaXdnSWxkT1QxZEJTVlFpTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FpUTB4RVgwVllTVlJGUkNJc0lDSkRURVJmUzBsTVRFVkVJaXdnSWtOTVJGOUVWVTFRUlVRaUtTa3NDaUFnSUNBZ0lDQWdJQ0ozYm05M1lXbDBYM0psY1hWcGNtVmtYMjV2WDJOb2FXeGtYM04wWVhKMFpXUWlLUW9nSUNBZ2JtVmxaQ2h6YVdkdVlXd3VaMlYwYzJsbmJtRnNLSE5wWjI1aGJDNVRTVWREU0V4RUtTQTlQU0J6YVdkdVlXd3VVMGxIWDBSR1RDd0tJQ0FnSUNBZ0lDQWdJbVJwY21WamRGOWphR2xzWkY5eVpXRndhVzVuWDNCdmJHbGplVjlqYUdGdVoyVmtJaWtLQ21SbFppQmxlR2wwWDI5aWMyVnlkbUYwYVc5dUtHTm9hV3hrS1RvS0lDQWdJQ0lpSWxSb2FYTWdhWE1nWVc0Z2IySnpaWEoyWVhScGIyNHNJRzVsZG1WeUlGQnZjR1Z1TG5CdmJHd3ZkMkZwZEM5amIyMXRkVzVwWTJGMFpTNGlJaUlLSUNBZ0lHNWxaV1FvWTJocGJHUXVjbVYwZFhKdVkyOWtaU0JwY3lCT2IyNWxMQ0FpWTJocGJHUmZZV3h5WldGa2VWOXlaV0Z3WldSZmJtOWZjMmxuYm1Gc0lpa0tJQ0FnSUdWMlpXNTBJRDBnYjNNdWQyRnBkR2xrS0c5ekxsQmZVRWxFTENCamFHbHNaQzV3YVdRc0lHOXpMbGRGV0VsVVJVUWdmQ0J2Y3k1WFRrOUlRVTVISUh3Z2IzTXVWMDVQVjBGSlZDa0tJQ0FnSUdsbUlHVjJaVzUwSUdseklFNXZibVU2Q2lBZ0lDQWdJQ0FnY21WMGRYSnVJRTV2Ym1VS0lDQWdJRzVsWldRb1pYWmxiblF1YzJsZmNHbGtJRDA5SUdOb2FXeGtMbkJwWkNCaGJtUWdaWFpsYm5RdWMybGZjMmxuYm04Z1BUMGdjMmxuYm1Gc0xsTkpSME5JVEVRS0lDQWdJQ0FnSUNBZ1lXNWtJR1YyWlc1MExuTnBYMk52WkdVZ2FXNGdLRzl6TGtOTVJGOUZXRWxVUlVRc0lHOXpMa05NUkY5TFNVeE1SVVFzSUc5ekxrTk1SRjlFVlUxUVJVUXBMQW9nSUNBZ0lDQWdJQ0FpWTJocGJHUmZaWGhwZEY5cFpHVnVkR2wwZVY5amFHRnVaMlZrSWlrS0lDQWdJQ01nUkdGeWQybHVJSEpsY0c5eWRITWdjMmxmZFdsa1BUQWdaWFpsYmlCbWIzSWdZVzRnYjJKelpYSjJaV1FnZFdsa05UQXhJR05vYVd4a0xpQkJZM1IxWVd3Z1ZVbEVJR2x6Q2lBZ0lDQWpJR0p2ZFc1a0lHbHVaR1Z3Wlc1a1pXNTBiSGtnWW5rZ2NITTdJSE5wWDNWcFpDQnVaWFpsY2lCbmNtRnVkSE1nYjNkdVpYSnphR2x3SUdobGNtVXVDaUFnSUNCeVpYUjFjbTRnZXlKd2FXUWlPaUJsZG1WdWRDNXphVjl3YVdRc0lDSnphV2R1YnlJNklHVjJaVzUwTG5OcFgzTnBaMjV2TENBaVkyOWtaU0k2SUdWMlpXNTBMbk5wWDJOdlpHVXNJQ0p6ZEdGMGRYTWlPaUJsZG1WdWRDNXphVjl6ZEdGMGRYTjlDZ3BrWldZZ2MzUmhZbXhsS0hKdmR5azZDaUFnSUNCeVpYUjFjbTRnZTJ0bGVUb2djbTkzVzJ0bGVWMGdabTl5SUd0bGVTQnBiaUFvSW5CcFpDSXNJQ0p3Y0dsa0lpd2dJbkJuYVdRaUxDQWlkV2xrSWl3Z0luTjBZWEowSWlsOUNncGtaV1lnY0hOZmNtOTNjeWh3YVdROVRtOXVaU3dnS2l3Z2MyVmpiMjVrY3owMExqQXNJSFZ1ZEdsc1BVNXZibVVwT2dvZ0lDQWdhV1lnZFc1MGFXd2dhWE1nYm05MElFNXZibVU2Q2lBZ0lDQWdJQ0FnY21WdFlXbHVhVzVuSUQwZ2RXNTBhV3dnTFNCMGFXMWxMbTF2Ym05MGIyNXBZeWdwQ2lBZ0lDQWdJQ0FnYm1WbFpDaHlaVzFoYVc1cGJtY2dQaUF3TENBaWIzSnBaMmx1WVd4ZmMzUnZjRjlrWldGa2JHbHVaVjlsZUhCcGNtVmtJaWtLSUNBZ0lDQWdJQ0J6WldOdmJtUnpJRDBnYldsdUtITmxZMjl1WkhNc0lISmxiV0ZwYm1sdVp5a0tJQ0FnSUdGeVozWWdQU0JiSWk5aWFXNHZjSE1pWFFvZ0lDQWdZWEpuZGlBclBTQmJJaTF3SWl3Z2MzUnlLSEJwWkNsZElHbG1JSEJwWkNCcGN5QnViM1FnVG05dVpTQmxiSE5sSUZzaUxXRjRJbDBLSUNBZ0lHRnlaM1lnS3owZ1d5SXRieUlzSUNKd2FXUTlMSEJ3YVdROUxIQm5hV1E5TEhWcFpEMHNjM1JoZEQwc2JITjBZWEowUFNKZENpQWdJQ0IwY25rNkNpQWdJQ0FnSUNBZ2NtVnpkV3gwSUQwZ2MzVmljSEp2WTJWemN5NXlkVzRvWVhKbmRpd2djM1JrYVc0OWMzVmljSEp2WTJWemN5NUVSVlpPVlV4TUxDQnpkR1J2ZFhROWMzVmljSEp2WTJWemN5NVFTVkJGTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSE4wWkdWeWNqMXpkV0p3Y205alpYTnpMbEJKVUVVc0lHVnVkajFrYVdOMEtHOXpMbVZ1ZG1seWIyNHNJRXhEWDBGTVREMGlReUlwTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSFJwYldWdmRYUTljMlZqYjI1a2N5a0tJQ0FnSUdWNFkyVndkQ0J6ZFdKd2NtOWpaWE56TGxScGJXVnZkWFJGZUhCcGNtVmtJR0Z6SUdWeWNtOXlPZ29nSUNBZ0lDQWdJR052WkdVZ1BTQW9JbTl5YVdkcGJtRnNYM04wYjNCZlpHVmhaR3hwYm1WZlpYaHdhWEpsWkNJZ2FXWWdkVzUwYVd3Z2FYTWdibTkwSUU1dmJtVWdZVzVrSUhScGJXVXViVzl1YjNSdmJtbGpLQ2tnUGowZ2RXNTBhV3dLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJR1ZzYzJVZ0luQnliMk5sYzNOZmNISnZhbVZqZEdsdmJsOWtaV0ZrYkdsdVpWOWxlSEJwY21Wa0lpa0tJQ0FnSUNBZ0lDQnlZV2x6WlNCU1pXWjFjMkZzS0dOdlpHVXBJR1p5YjIwZ1pYSnliM0lLSUNBZ0lHbG1JSFZ1ZEdsc0lHbHpJRzV2ZENCT2IyNWxPZ29nSUNBZ0lDQWdJRzVsWldRb2RHbHRaUzV0YjI1dmRHOXVhV01vS1NBOElIVnVkR2xzTENBaWIzSnBaMmx1WVd4ZmMzUnZjRjlrWldGa2JHbHVaVjlsZUhCcGNtVmtJaWtLSUNBZ0lHNWxaV1FvYkdWdUtISmxjM1ZzZEM1emRHUnZkWFFwSUR3OUlESWdLaUJOU1VJZ1lXNWtJR3hsYmloeVpYTjFiSFF1YzNSa1pYSnlLU0E4UFNBMk5UVXpOaXdLSUNBZ0lDQWdJQ0FnSW5CeWIyTmxjM05mY0hKdmFtVmpkR2x2Ymw5aWIzVnVaQ0lwQ2lBZ0lDQnBaaUJ3YVdRZ2FYTWdibTkwSUU1dmJtVWdZVzVrSUhKbGMzVnNkQzV5WlhSMWNtNWpiMlJsSUQwOUlERWdZVzVrSUc1dmRDQnlaWE4xYkhRdWMzUmtiM1YwTG5OMGNtbHdLQ2s2Q2lBZ0lDQWdJQ0FnY21WMGRYSnVJRnRkQ2lBZ0lDQnVaV1ZrS0hKbGMzVnNkQzV5WlhSMWNtNWpiMlJsSUQwOUlEQXNJQ0p3Y205alpYTnpYM0J5YjJwbFkzUnBiMjVmZFc1aGRtRnBiR0ZpYkdVaUtRb2dJQ0FnY205M2N5QTlJRnRkQ2lBZ0lDQm1iM0lnYkdsdVpTQnBiaUJ5WlhOMWJIUXVjM1JrYjNWMExtUmxZMjlrWlNnaVlYTmphV2tpS1M1emNHeHBkR3hwYm1WektDazZDaUFnSUNBZ0lDQWdabWxsYkdSeklEMGdiR2x1WlM1emNHeHBkQ2hPYjI1bExDQTFLUW9nSUNBZ0lDQWdJRzVsWldRb2JHVnVLR1pwWld4a2N5a2dQVDBnTml3Z0luQnliMk5sYzNOZmNISnZhbVZqZEdsdmJsOXRZV3htYjNKdFpXUWlLUW9nSUNBZ0lDQWdJSEp2ZDNNdVlYQndaVzVrS0hzaWNHbGtJam9nYVc1MEtHWnBaV3hrYzFzd1hTa3NJQ0p3Y0dsa0lqb2dhVzUwS0dacFpXeGtjMXN4WFNrc0NpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0p3WjJsa0lqb2dhVzUwS0dacFpXeGtjMXN5WFNrc0lDSjFhV1FpT2lCcGJuUW9abWxsYkdSeld6TmRLU3dLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0luTjBZWFJsSWpvZ1ptbGxiR1J6V3pSZExDQWljM1JoY25RaU9pQm1hV1ZzWkhOYk5WMTlLUW9nSUNBZ2FXWWdjR2xrSUdseklHNXZkQ0JPYjI1bE9nb2dJQ0FnSUNBZ0lHNWxaV1FvYkdWdUtISnZkM01wSUQwOUlERWdZVzVrSUhKdmQzTmJNRjFiSW5CcFpDSmRJRDA5SUhCcFpDd2dJbkJ5YjJObGMzTmZjSEp2YW1WamRHbHZibDloYldKcFozVnZkWE1pS1FvZ0lDQWdjbVYwZFhKdUlISnZkM01LQ21SbFppQmpZWEIwZFhKbFgyTm9hV3hrS0dOb2FXeGtMQ0FxTENCMWJuUnBiQ2s2Q2lBZ0lDQnlaWEYxYVhKbFgzZGhhWFJwWkNncENpQWdJQ0J5YjNkeklEMGdjSE5mY205M2N5aGphR2xzWkM1d2FXUXNJSFZ1ZEdsc1BYVnVkR2xzS1FvZ0lDQWdibVZsWkNoc1pXNG9jbTkzY3lrZ1BUMGdNU3dnSW05M2JtVmtYMk5vYVd4a1gybGtaVzUwYVhSNVgyMXBjM05wYm1jaUtRb2dJQ0FnY205M0lEMGdjbTkzYzFzd1hRb2dJQ0FnYm1WbFpDaHliM2RiSW5Cd2FXUWlYU0E5UFNCdmN5NW5aWFJ3YVdRb0tTQmhibVFnY205M1d5SndaMmxrSWwwZ1BUMGdZMmhwYkdRdWNHbGtDaUFnSUNBZ0lDQWdJR0Z1WkNCeWIzZGJJblZwWkNKZElEMDlJRzl6TG1kbGRHVjFhV1FvS1N3Z0ltOTNibVZrWDJOb2FXeGtYM05qYjNCbFgyMXBjMjFoZEdOb0lpa0tJQ0FnSUNNZ1JHRnlkMmx1SUd0bFpYQnpJR0Z1SUhWdWNtVmhjR1ZrSUhwdmJXSnBaU0JwYmlCd2N5QmlkWFFnWjJWMGNHZHBaQzluWlhSemFXUWdjbVYwZFhKdUlFVlRVa05JTGdvZ0lDQWdJeUJWYzJVZ2RHaGxJSEpsWVd3Z2JHbDJaU0JCVUVseklHOXViSGtnWm05eUlHRWdjM1JwYkd3dGJHbDJaU0JqYUdsc1pEc2diM1JvWlhKM2FYTmxJR2x1WkdWd1pXNWtaVzUwYkhrS0lDQWdJQ01nY21Wd1pXRjBJRmRPVDFkQlNWUWdZVzVrSUhKbGRHRnBiaUJ3Y3lCd2JIVnpJRkJ2Y0dWdUlHUnBjbVZqZEMxd1lYSmxiblFnWTNWemRHOWtlUzRLSUNBZ0lHVjJaVzUwTENCc2FYWmxYM05wWkNBOUlHVjRhWFJmYjJKelpYSjJZWFJwYjI0b1kyaHBiR1FwTENCT2IyNWxDaUFnSUNCcFppQmxkbVZ1ZENCcGN5Qk9iMjVsSUdGdVpDQnViM1FnY205M1d5SnpkR0YwWlNKZExuTjBZWEowYzNkcGRHZ29JbG9pS1RvS0lDQWdJQ0FnSUNCMGNuazZDaUFnSUNBZ0lDQWdJQ0FnSUc1bFpXUW9iM011WjJWMGNHZHBaQ2hqYUdsc1pDNXdhV1FwSUQwOUlHTm9hV3hrTG5CcFpDQmhibVFnYjNNdVoyVjBjMmxrS0dOb2FXeGtMbkJwWkNrZ1BUMGdZMmhwYkdRdWNHbGtMQW9nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0p2ZDI1bFpGOXNhWFpsWDNObGMzTnBiMjVmYldsemJXRjBZMmdpS1FvZ0lDQWdJQ0FnSUNBZ0lDQnNhWFpsWDNOcFpDQTlJR05vYVd4a0xuQnBaQW9nSUNBZ0lDQWdJR1Y0WTJWd2RDQlFjbTlqWlhOelRHOXZhM1Z3UlhKeWIzSTZDaUFnSUNBZ0lDQWdJQ0FnSUNNZ1FTQm1ZWE4wSUdWNGFYUWdZbVYwZDJWbGJpQjBhR1VnWm1seWMzUWdjSE12ZDJGcGRHbGtJR0Z1WkNCaElHeHBkbVVnUVZCSklHTmhiR3dnYVhNS0lDQWdJQ0FnSUNBZ0lDQWdJeUJ1YjNRZ2JHOXpjeUJ2WmlCUWIzQmxiaUJqZFhOMGIyUjVMQ0J1YjNJZ2NISnZiMllnZEdoaGRDQjBhR1VnWjNKdmRYQWdhWE1nWlcxd2RIa3VDaUFnSUNBZ0lDQWdJQ0FnSUdWMlpXNTBJRDBnWlhocGRGOXZZbk5sY25aaGRHbHZiaWhqYUdsc1pDa0tJQ0FnSUNBZ0lDQWdJQ0FnYm1WbFpDaGxkbVZ1ZENCcGN5QnViM1FnVG05dVpTd2dJbTkzYm1Wa1gyeHBkbVZmWVhCcFgyWmhhV3hsWkY5M2FYUm9iM1YwWDNKbGRHRnBibVZrWDJWNGFYUWlLUW9nSUNBZ2FXWWdaWFpsYm5RZ2FYTWdibTkwSUU1dmJtVWdiM0lnY205M1d5SnpkR0YwWlNKZExuTjBZWEowYzNkcGRHZ29JbG9pS1RvS0lDQWdJQ0FnSUNCbGRtVnVkQ0E5SUdWNGFYUmZiMkp6WlhKMllYUnBiMjRvWTJocGJHUXBDaUFnSUNBZ0lDQWdabkpsYzJnZ1BTQndjMTl5YjNkektHTm9hV3hrTG5CcFpDd2dkVzUwYVd3OWRXNTBhV3dwQ2lBZ0lDQWdJQ0FnYm1WbFpDaGxkbVZ1ZENCcGN5QnViM1FnVG05dVpTQmhibVFnYkdWdUtHWnlaWE5vS1NBOVBTQXhJR0Z1WkNCemRHRmliR1VvWm5KbGMyaGJNRjBwSUQwOUlITjBZV0pzWlNoeWIzY3BDaUFnSUNBZ0lDQWdJQ0FnSUNCaGJtUWdabkpsYzJoYk1GMWJJbk4wWVhSbElsMHVjM1JoY25SemQybDBhQ2dpV2lJcElHRnVaQ0JsZUdsMFgyOWljMlZ5ZG1GMGFXOXVLR05vYVd4a0tTQTlQU0JsZG1WdWRDd0tJQ0FnSUNBZ0lDQWdJQ0FnSUNKdmQyNWxaRjlsZUdsMFgyNXZkRjl5WlhSaGFXNWxaQ0lwQ2lBZ0lDQWdJQ0FnY205M0lEMGdabkpsYzJoYk1GMEtJQ0FnSUhKbGRIVnliaUI3SW5Ceklqb2djM1JoWW14bEtISnZkeWtzSUNKemFXUmZiMkp6WlhKMlpXUmZkMmhwYkdWZmJHbDJaU0k2SUd4cGRtVmZjMmxrTEFvZ0lDQWdJQ0FnSUNBZ0lDQWlZMkZ3ZEhWeVpXUmZaWGhwZENJNklHVjJaVzUwZlFvS1pHVm1JSFpsY21sbWVWOTFibkpsWVhCbFpDaGphR2xzWkN3Z2IzZHVaWElzSUNvc0lIVnVkR2xzUFU1dmJtVXBPZ29nSUNBZ1pYWmxiblFnUFNCbGVHbDBYMjlpYzJWeWRtRjBhVzl1S0dOb2FXeGtLUW9nSUNBZ2NtOTNjeUE5SUhCelgzSnZkM01vWTJocGJHUXVjR2xrTENCMWJuUnBiRDExYm5ScGJDa0tJQ0FnSUc1bFpXUW9iR1Z1S0hKdmQzTXBJRDA5SURFZ1lXNWtJSE4wWVdKc1pTaHliM2R6V3pCZEtTQTlQU0J2ZDI1bGNsc2ljSE1pWFFvZ0lDQWdJQ0FnSUNCaGJtUWdjbTkzYzFzd1hWc2ljSEJwWkNKZElEMDlJRzl6TG1kbGRIQnBaQ2dwTENBaWIzZHVaV1JmWTJocGJHUmZhV1JsYm5ScGRIbGZZMmhoYm1kbFpGOXViMTl6YVdkdVlXd2lLUW9nSUNBZ2FXWWdaWFpsYm5RZ2FYTWdUbTl1WlNCaGJtUWdibTkwSUhKdmQzTmJNRjFiSW5OMFlYUmxJbDB1YzNSaGNuUnpkMmwwYUNnaVdpSXBPZ29nSUNBZ0lDQWdJQ01nUlhoaFkzUWdjSE1nVUVkSlJDOXpkR0Z5ZENCd2JIVnpJR1JwY21WamRDQlFiM0JsYmk5WFRrOVhRVWxVSUdOMWMzUnZaSGtnYTJWbGNITWdkR2hsQ2lBZ0lDQWdJQ0FnSXlCdmNtbG5hVzVoYkd4NUlHOWljMlZ5ZG1Wa0lITmxjM05wYjI0Z2JHVmhaR1Z5SUhKbGMyVnlkbVZrTGlCRWJ5QnViM1FnY21GalpTQmhJRzV2Y20xaGJBb2dJQ0FnSUNBZ0lDTWdaWGhwZENCaWVTQmpiMjV6ZFd4MGFXNW5JRVJoY25kcGJpZHpJSHB2YldKcFpTMTFibk4xY0hCdmNuUmxaQ0JuWlhSd1oybGtMMmRsZEhOcFpDQm9aWEpsTGdvZ0lDQWdJQ0FnSUc1bFpXUW9iM2R1WlhKYkluQnpJbDFiSW5CbmFXUWlYU0E5UFNCamFHbHNaQzV3YVdRc0lDSnZkMjVsWkY5c2FYWmxYM05sYzNOcGIyNWZZMmhoYm1kbFpGOXViMTl6YVdkdVlXd2lLUW9nSUNBZ1pXeHpaVG9LSUNBZ0lDQWdJQ0JsZG1WdWRDQTlJR1Y0YVhSZmIySnpaWEoyWVhScGIyNG9ZMmhwYkdRcENpQWdJQ0FnSUNBZ2JtVmxaQ2hsZG1WdWRDQnBjeUJ1YjNRZ1RtOXVaU0JoYm1RZ2NtOTNjMXN3WFZzaWMzUmhkR1VpWFM1emRHRnlkSE4zYVhSb0tDSmFJaWtnWVc1a0lHVjRhWFJmYjJKelpYSjJZWFJwYjI0b1kyaHBiR1FwSUQwOUlHVjJaVzUwTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJbTkzYm1Wa1gzcHZiV0pwWlY5cFpHVnVkR2wwZVY5amFHRnVaMlZrWDI1dlgzTnBaMjVoYkNJcENpQWdJQ0J5WlhSMWNtNGdaWFpsYm5RS0NtUmxaaUJzYVhabFgyZHliM1Z3S0dOb2FXeGtMQ0J2ZDI1bGNpd2dLaXdnZFc1MGFXd3BPZ29nSUNBZ2JtVmxaQ2gwYVcxbExtMXZibTkwYjI1cFl5Z3BJRHdnZFc1MGFXd3NJQ0p2Y21sbmFXNWhiRjl6ZEc5d1gyUmxZV1JzYVc1bFgyVjRjR2x5WldRaUtRb2dJQ0FnZG1WeWFXWjVYM1Z1Y21WaGNHVmtLR05vYVd4a0xDQnZkMjVsY2l3Z2RXNTBhV3c5ZFc1MGFXd3BDaUFnSUNCeWIzZHpJRDBnY0hOZmNtOTNjeWgxYm5ScGJEMTFiblJwYkNrS0lDQWdJSE5sYkdWamRHVmtJRDBnVzNKdmR5Qm1iM0lnY205M0lHbHVJSEp2ZDNNZ2FXWWdjbTkzV3lKd1oybGtJbDBnUFQwZ1kyaHBiR1F1Y0dsa0lHRnVaQ0J1YjNRZ2NtOTNXeUp6ZEdGMFpTSmRMbk4wWVhKMGMzZHBkR2dvSWxvaUtWMEtJQ0FnSUc1bFpXUW9ZV3hzS0hKdmQxc2lkV2xrSWwwZ1BUMGdiM011WjJWMFpYVnBaQ2dwSUdadmNpQnliM2NnYVc0Z2MyVnNaV04wWldRcExDQWliM2R1WldSZlozSnZkWEJmZFdsa1gyTm9ZVzVuWldSZmJtOWZjMmxuYm1Gc0lpa0tJQ0FnSUc1bFpXUW9kR2x0WlM1dGIyNXZkRzl1YVdNb0tTQThJSFZ1ZEdsc0xDQWliM0pwWjJsdVlXeGZjM1J2Y0Y5a1pXRmtiR2x1WlY5bGVIQnBjbVZrSWlrS0lDQWdJSEpsZEhWeWJpQmJjM1JoWW14bEtISnZkeWtnWm05eUlISnZkeUJwYmlCelpXeGxZM1JsWkYwS0NtUmxaaUJ2WW5ObGNuWmxaRjl5WlhSMWNtNWpiMlJsS0dWMlpXNTBLVG9LSUNBZ0lHbG1JR1YyWlc1MElHbHpJRTV2Ym1VNmNtVjBkWEp1SUU1dmJtVUtJQ0FnSUhKbGRIVnliaUJsZG1WdWRGc25jM1JoZEhWekoxMGdhV1lnWlhabGJuUmJKMk52WkdVblhUMDliM011UTB4RVgwVllTVlJGUkNCbGJITmxJQzFsZG1WdWRGc25jM1JoZEhWekoxMEtDbVJsWmlCemRHOXdYMjl1WTJWZmRXNXlaV0Z3WldRb1kyaHBiR1FzSUc5M2JtVnlLVG9LSUNBZ0lDSWlJa05oYkd4bFpDQnZibU5sSUdKNUlIUm9aU0IzY21Gd2NHVnlKM01nY0hKdmRHVmpkR1ZrSUd4bFpHZGxjanNnYm1WMlpYSWdZMkZzYkhNZ1VHOXdaVzR1Y0c5c2JDNGlJaUlLSUNBZ0lISmxjWFZwY21WZmQyRnBkR2xrS0NrS0lDQWdJSE4wWVhKMFpXUTlkR2x0WlM1dGIyNXZkRzl1YVdNb0tRb2dJQ0FnY21WalpXbHdkRDE3SjNCcFpDYzZZMmhwYkdRdWNHbGtMQ2R3WjJsa0p6cGphR2xzWkM1d2FXUXNKM04wYjNCQmRIUmxiWEIwWldRbk9sUnlkV1VzSjNOcFoyNWhiSE1uT2x0ZExBb2dJQ0FnSUNBZ0lDQWdJQ0FnSjJScGNtVmpkRU5vYVd4a1VtVmhjR1ZrSnpwR1lXeHpaU3duYjNkdVpXUk1hWFpsUjNKdmRYQkZiWEIwZVVKbFptOXlaVkpsWVhBbk9rWmhiSE5sTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdKMkZzYkVkeWIzVndVbTkzYzBWdGNIUjVRV1owWlhKU1pXRndKenBHWVd4elpTd25ZMnhsWVc1MWNFTmhjSE1uT25zbmRHVnliU2M2TVN3bmQyRnBkQ2M2TlN3blozSnZkWEFuT2pNc0ozQnpUV0Y0SnpvMGZTd0tJQ0FnSUNBZ0lDQWdJQ0FnSUNkd2IzTjBVbVZoY0ZOcFoyNWhiRk5sYm5Rbk9rWmhiSE5sTENkamRYTjBiMlI1SnpwdmQyNWxjbjBLSUNBZ0lIUnllVG9LSUNBZ0lDQWdJQ0J1WldWa0tHTm9hV3hrTG5KbGRIVnlibU52WkdVZ2FYTWdUbTl1WlN3bllXeHlaV0ZrZVY5eVpXRndaV1JmYm05ZlozSnZkWEJmYzJsbmJtRnNKeWtLSUNBZ0lDQWdJQ0IwWlhKdFgzVnVkR2xzUFhScGJXVXViVzl1YjNSdmJtbGpLQ2tyTVM0d0NpQWdJQ0FnSUNBZ2FXWWdiM2R1WlhJZ2FYTWdUbTl1WlRvS0lDQWdJQ0FnSUNBZ0lDQWdiM2R1WlhJOVkyRndkSFZ5WlY5amFHbHNaQ2hqYUdsc1pDeDFiblJwYkQxMFpYSnRYM1Z1ZEdsc0tRb2dJQ0FnSUNBZ0lDQWdJQ0J5WldObGFYQjBXeWRqZFhOMGIyUjVKMTA5YjNkdVpYSUtJQ0FnSUNBZ0lDQnRaVzFpWlhKelBXeHBkbVZmWjNKdmRYQW9ZMmhwYkdRc2IzZHVaWElzZFc1MGFXdzlkR1Z5YlY5MWJuUnBiQ2tLSUNBZ0lDQWdJQ0J5WldObGFYQjBXeWRwYm1sMGFXRnNUR2wyWlVkeWIzVndKMTA5YldWdFltVnljd29nSUNBZ0lDQWdJR2xtSUcxbGJXSmxjbk02Q2lBZ0lDQWdJQ0FnSUNBZ0lIWmxjbWxtZVY5MWJuSmxZWEJsWkNoamFHbHNaQ3h2ZDI1bGNpeDFiblJwYkQxMFpYSnRYM1Z1ZEdsc0tRb2dJQ0FnSUNBZ0lDQWdJQ0J1WldWa0tIUnBiV1V1Ylc5dWIzUnZibWxqS0NrOGRHVnliVjkxYm5ScGJDd25iM0pwWjJsdVlXeGZjM1J2Y0Y5a1pXRmtiR2x1WlY5bGVIQnBjbVZrSnlrS0lDQWdJQ0FnSUNBZ0lDQWdiM011YTJsc2JIQm5LR05vYVd4a0xuQnBaQ3h6YVdkdVlXd3VVMGxIVkVWU1RTazdjbVZqWldsd2RGc25jMmxuYm1Gc2N5ZGRMbUZ3Y0dWdVpDZ25VMGxIVkVWU1RTY3BDaUFnSUNBZ0lDQWdJQ0FnSUhkb2FXeGxJSFJwYldVdWJXOXViM1J2Ym1saktDazhkR1Z5YlY5MWJuUnBiRG9LSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSFJ5ZVRvS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQnRaVzFpWlhKelBXeHBkbVZmWjNKdmRYQW9ZMmhwYkdRc2IzZHVaWElzZFc1MGFXdzlkR1Z5YlY5MWJuUnBiQ2tLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCcFppQnViM1FnYldWdFltVnljenBpY21WaGF3b2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ1pYaGpaWEIwSUZKbFpuVnpZV3dnWVhNZ1pYSnliM0k2Q2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ2FXWWdjM1J5S0dWeWNtOXlLU0U5SjI5eWFXZHBibUZzWDNOMGIzQmZaR1ZoWkd4cGJtVmZaWGh3YVhKbFpDY2diM0lnZEdsdFpTNXRiMjV2ZEc5dWFXTW9LVHgwWlhKdFgzVnVkR2xzT2dvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0J5WVdselpRb2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJR0p5WldGckNpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCMGFXMWxMbk5zWldWd0tHMXBiaWd3TGpBeUxHMWhlQ2d3TEhSbGNtMWZkVzUwYVd3dGRHbHRaUzV0YjI1dmRHOXVhV01vS1NrcEtRb2dJQ0FnSUNBZ0lIZGhhWFJmZFc1MGFXdzlkR2x0WlM1dGIyNXZkRzl1YVdNb0tTczFMakFLSUNBZ0lDQWdJQ0J0WlcxaVpYSnpQV3hwZG1WZlozSnZkWEFvWTJocGJHUXNiM2R1WlhJc2RXNTBhV3c5ZDJGcGRGOTFiblJwYkNrS0lDQWdJQ0FnSUNCcFppQnRaVzFpWlhKek9nb2dJQ0FnSUNBZ0lDQWdJQ0IyWlhKcFpubGZkVzV5WldGd1pXUW9ZMmhwYkdRc2IzZHVaWElzZFc1MGFXdzlkMkZwZEY5MWJuUnBiQ2tLSUNBZ0lDQWdJQ0FnSUNBZ2JtVmxaQ2gwYVcxbExtMXZibTkwYjI1cFl5Z3BQSGRoYVhSZmRXNTBhV3dzSjI5eWFXZHBibUZzWDNOMGIzQmZaR1ZoWkd4cGJtVmZaWGh3YVhKbFpDY3BDaUFnSUNBZ0lDQWdJQ0FnSUc5ekxtdHBiR3h3WnloamFHbHNaQzV3YVdRc2MybG5ibUZzTGxOSlIwdEpURXdwTzNKbFkyVnBjSFJiSjNOcFoyNWhiSE1uWFM1aGNIQmxibVFvSjFOSlIwdEpURXduS1FvZ0lDQWdJQ0FnSUdWMlpXNTBQV1Y0YVhSZmIySnpaWEoyWVhScGIyNG9ZMmhwYkdRcENpQWdJQ0FnSUNBZ2QyaHBiR1VnWlhabGJuUWdhWE1nVG05dVpUb0tJQ0FnSUNBZ0lDQWdJQ0FnZG1WeWFXWjVYM1Z1Y21WaGNHVmtLR05vYVd4a0xHOTNibVZ5TEhWdWRHbHNQWGRoYVhSZmRXNTBhV3dwQ2lBZ0lDQWdJQ0FnSUNBZ0lHNWxaV1FvZEdsdFpTNXRiMjV2ZEc5dWFXTW9LVHgzWVdsMFgzVnVkR2xzTENkdmNtbG5hVzVoYkY5emRHOXdYMlJsWVdSc2FXNWxYMlY0Y0dseVpXUW5LUW9nSUNBZ0lDQWdJQ0FnSUNCMGFXMWxMbk5zWldWd0tHMXBiaWd3TGpBeUxHMWhlQ2d3TEhkaGFYUmZkVzUwYVd3dGRHbHRaUzV0YjI1dmRHOXVhV01vS1NrcEtRb2dJQ0FnSUNBZ0lDQWdJQ0JsZG1WdWREMWxlR2wwWDI5aWMyVnlkbUYwYVc5dUtHTm9hV3hrS1FvZ0lDQWdJQ0FnSUc1bFpXUW9kR2x0WlM1dGIyNXZkRzl1YVdNb0tUeDNZV2wwWDNWdWRHbHNMQ2R2Y21sbmFXNWhiRjl6ZEc5d1gyUmxZV1JzYVc1bFgyVjRjR2x5WldRbktRb2dJQ0FnSUNBZ0lISmxZMlZwY0hSYkozSmxkR0ZwYm1Wa1JYaHBkQ2RkUFdWMlpXNTBDaUFnSUNBZ0lDQWdJeUJVYUdVZ2IyeGtJSEJ2YzNRdFpYaHBkQ0JuY205MWNETWdhVzUwWlhKMllXd2dibTkzSUhCeVpXTmxaR1Z6SUhSb1pTQm1hWEp6ZENCeVpXRndMZ29nSUNBZ0lDQWdJQ01nVkdocGN5QnlaWFJoYVc1eklHRmpkSFZoYkNCUWIzQmxiaUJRU1VRZ1kzVnpkRzlrZVNCM2FHbHNaU0J2ZEdobGNpQnNhWFpsSUcxbGJXSmxjbk1nYkdWaGRtVXVDaUFnSUNBZ0lDQWdaM0p2ZFhCZmRXNTBhV3c5ZEdsdFpTNXRiMjV2ZEc5dWFXTW9LU3N6TGpBS0lDQWdJQ0FnSUNCM2FHbHNaU0JVY25WbE9nb2dJQ0FnSUNBZ0lDQWdJQ0J0WlcxaVpYSnpQV3hwZG1WZlozSnZkWEFvWTJocGJHUXNiM2R1WlhJc2RXNTBhV3c5WjNKdmRYQmZkVzUwYVd3cENpQWdJQ0FnSUNBZ0lDQWdJR2xtSUc1dmRDQnRaVzFpWlhKeklHRnVaQ0JsZUdsMFgyOWljMlZ5ZG1GMGFXOXVLR05vYVd4a0tUMDlaWFpsYm5RNlluSmxZV3NLSUNBZ0lDQWdJQ0FnSUNBZ2JtVmxaQ2gwYVcxbExtMXZibTkwYjI1cFl5Z3BQR2R5YjNWd1gzVnVkR2xzTENkdmNtbG5hVzVoYkY5emRHOXdYMlJsWVdSc2FXNWxYMlY0Y0dseVpXUW5LUW9nSUNBZ0lDQWdJQ0FnSUNCMGFXMWxMbk5zWldWd0tHMXBiaWd3TGpBeUxHMWhlQ2d3TEdkeWIzVndYM1Z1ZEdsc0xYUnBiV1V1Ylc5dWIzUnZibWxqS0NrcEtTa0tJQ0FnSUNBZ0lDQnlaV05sYVhCMFd5ZHZkMjVsWkV4cGRtVkhjbTkxY0VWdGNIUjVRbVZtYjNKbFVtVmhjQ2RkUFZSeWRXVUtJQ0FnSUNBZ0lDQnVaV1ZrS0hScGJXVXViVzl1YjNSdmJtbGpLQ2s4WjNKdmRYQmZkVzUwYVd3c0oyOXlhV2RwYm1Gc1gzTjBiM0JmWkdWaFpHeHBibVZmWlhod2FYSmxaQ2NwQ2lBZ0lDQWdJQ0FnWTJocGJHUXVkMkZwZENoMGFXMWxiM1YwUFdkeWIzVndYM1Z1ZEdsc0xYUnBiV1V1Ylc5dWIzUnZibWxqS0NrcENpQWdJQ0FnSUNBZ2NtVmpaV2x3ZEZzblpHbHlaV04wUTJocGJHUlNaV0Z3WldRblhUMVVjblZsQ2lBZ0lDQWdJQ0FnY21WalpXbHdkRnNuWlhocGRFTnZaR1VuWFQxamFHbHNaQzV5WlhSMWNtNWpiMlJsQ2lBZ0lDQWdJQ0FnYm1WbFpDaGphR2xzWkM1eVpYUjFjbTVqYjJSbFBUMXZZbk5sY25abFpGOXlaWFIxY201amIyUmxLR1YyWlc1MEtTd25ZV04wZFdGc1gzSmxZWEJmYldGMFkyaGxjMTl5WlhSaGFXNWxaRjlsZUdsMEp5a0tJQ0FnSUNBZ0lDQWpJRUZtZEdWeUlIUm9aU0JtYVhKemRDQnlaV0Z3TENCdmJteDVJRzlpYzJWeWRtVXVJRTV2SUhOcFoyNWhiQ0J2Y2lCdmQyNWxjbk5vYVhBZ1kyeGhhVzBnYVhNS0lDQWdJQ0FnSUNBaklHUmxjbWwyWldRZ1puSnZiU0IwYUdseklHNXZkeTF5WlhWellXSnNaU0J1ZFcxbGNtbGpJRkJIU1VRdUNpQWdJQ0FnSUNBZ2QyaHBiR1VnVkhKMVpUb0tJQ0FnSUNBZ0lDQWdJQ0FnY205M2N6MWJjbTkzSUdadmNpQnliM2NnYVc0Z2NITmZjbTkzY3loMWJuUnBiRDFuY205MWNGOTFiblJwYkNrZ2FXWWdjbTkzV3lkd1oybGtKMTA5UFdOb2FXeGtMbkJwWkYwS0lDQWdJQ0FnSUNBZ0lDQWdjbVZqWldsd2RGc25jbVZ0WVdsdWFXNW5SM0p2ZFhCU2IzZHpKMTA5Y205M2N3b2dJQ0FnSUNBZ0lDQWdJQ0JwWmlCdWIzUWdjbTkzY3pwaWNtVmhhd29nSUNBZ0lDQWdJQ0FnSUNCdVpXVmtLSFJwYldVdWJXOXViM1J2Ym1saktDazhaM0p2ZFhCZmRXNTBhV3dzSjI5eWFXZHBibUZzWDNOMGIzQmZaR1ZoWkd4cGJtVmZaWGh3YVhKbFpDY3BDaUFnSUNBZ0lDQWdJQ0FnSUhScGJXVXVjMnhsWlhBb2JXbHVLREF1TURJc2JXRjRLREFzWjNKdmRYQmZkVzUwYVd3dGRHbHRaUzV0YjI1dmRHOXVhV01vS1NrcEtRb2dJQ0FnSUNBZ0lISmxZMlZwY0hSYkoyRnNiRWR5YjNWd1VtOTNjMFZ0Y0hSNVFXWjBaWEpTWldGd0oxMDlWSEoxWlFvZ0lDQWdJQ0FnSUc1bFpXUW9kR2x0WlM1dGIyNXZkRzl1YVdNb0tUeG5jbTkxY0Y5MWJuUnBiQ3duYjNKcFoybHVZV3hmYzNSdmNGOWtaV0ZrYkdsdVpWOWxlSEJwY21Wa0p5a0tJQ0FnSUNBZ0lDQnlaV05sYVhCMFd5ZHZheWRkUFZSeWRXVUtJQ0FnSUdWNFkyVndkQ0JDWVhObFJYaGpaWEIwYVc5dUlHRnpJR1Z5Y205eU9nb2dJQ0FnSUNBZ0lISmxZMlZwY0hSYkoyOXJKMTA5Um1Gc2MyVUtJQ0FnSUNBZ0lDQnlaV05sYVhCMFd5ZGxjbkp2Y2xSNWNHVW5YVDEwZVhCbEtHVnljbTl5S1M1ZlgyNWhiV1ZmWHdvZ0lDQWdJQ0FnSUhKbFkyVnBjSFJiSjJWeWNtOXlRMjlrWlNkZFBYTjBjaWhsY25KdmNpa2dhV1lnYVhOcGJuTjBZVzVqWlNobGNuSnZjaXhTWldaMWMyRnNLU0JsYkhObElFNXZibVVLSUNBZ0lDQWdJQ0J5WldObGFYQjBXeWRrYVhKbFkzUkRhR2xzWkZKbFlYQmxaQ2RkUFdOb2FXeGtMbkpsZEhWeWJtTnZaR1VnYVhNZ2JtOTBJRTV2Ym1VS0lDQWdJQ0FnSUNCeVpXTmxhWEIwV3lkbGVHbDBRMjlrWlNkZFBXTm9hV3hrTG5KbGRIVnlibU52WkdVS0lDQWdJQ0FnSUNBaklFNXZJSE5sWTI5dVpDQnphV2R1WVd3Z2MyVnhkV1Z1WTJVc0lHNXZJSEpsYm1WM1pXUWdaR1ZoWkd4cGJtVXNJRzV2SUdGMWRHOXRZWFJwWXlCeVpYUnllUzRLSUNBZ0lISmxZMlZwY0hSYkoyVnNZWEJ6WldSVFpXTnZibVJ6SjEwOWRHbHRaUzV0YjI1dmRHOXVhV01vS1MxemRHRnlkR1ZrQ2lBZ0lDQnlaV05sYVhCMFd5ZHZkWFJqYjIxbFZXNXJibTkzYmlkZFBXNXZkQ2h5WldObGFYQjBMbWRsZENnbmIyc25LU0JwY3lCVWNuVmxDaUFnSUNBZ0lDQmhibVFnY21WalpXbHdkRnNuWkdseVpXTjBRMmhwYkdSU1pXRndaV1FuWFNCaGJtUWdjbVZqWldsd2RGc25ZV3hzUjNKdmRYQlNiM2R6Ulcxd2RIbEJablJsY2xKbFlYQW5YU2tLSUNBZ0lISmxkSFZ5YmlCeVpXTmxhWEIwQ2c9PSJ9LHsibmFtZSI6Im1hY19vd25lZF9jb21tYW5kc19yMSIsImJsb2IiOiJjMTAyZGZkYzU2NTQ4NDQyMWJmN2RiYmIwNGI3YzhiOWU0Y2Q1NTExIiwic2hhMjU2IjoiZWI2NzZlNmRlZGI2ZDU5NGQ5NDRlOTIxNzM4Y2Y5YjM4NGYyYTk4YTM3ZWUyYmQxZmE1NDMzYjg0OGEzNjg2NyIsImJ5dGVzIjo1OTY1LCJiYXNlNjQiOiJJeUV2ZFhOeUwySnBiaTlsYm5ZZ2NIbDBhRzl1TXdvaUlpSkNiM1Z1WkdWa0lHWnZjbVZuY205MWJtUWdZMjl0YldGdVpITWdkMmwwYUNCeVpYUmhhVzVsWkNCa2FYSmxZM1F0WTJocGJHUWdZM1Z6ZEc5a2VTNEtDazV2SUdsdGNHOXlkQzEwYVcxbElFa3ZUeTRnVkdobElHTmhiR3hsY2lCemRYQndiR2xsY3lCbGVHRmpkQ0J5WlhacFpYZGxaQ0JoY21kMklHRnVaQ0JoYmlCaFluTnZiSFYwWlFwamIyMXRZVzVrSUdSbFlXUnNhVzVsTGlCUWFYQmxJSEpsWVdSekxDQmxlR2wwSUc5aWMyVnlkbUYwYVc5dUlHRnVaQ0J0WlhSaFpHRjBZU0JqWVhCMGRYSmxJSE5vWVhKbElHbDBMZ3BEYkdWaGJuVndJSFZ6WlhNZ2RHaGxJSE5sY0dGeVlYUmxJRzl1WTJVdGIyNXNlU0JVUlZKTk1TOTNZV2wwTlM5bmNtOTFjRE1nWTNWemRHOWtlU0JqYjI1MGNtRmpkQzRLSWlJaUNtWnliMjBnWDE5bWRYUjFjbVZmWHlCcGJYQnZjblFnWVc1dWIzUmhkR2x2Ym5NS1puSnZiU0JqYjI1MFpYaDBiR2xpSUdsdGNHOXlkQ0JqYjI1MFpYaDBiV0Z1WVdkbGNncHBiWEJ2Y25RZ2FHRnphR3hwWWl3Z2IzTXNJSE5sYkdWamRDd2djMmxuYm1Gc0xDQnpkV0p3Y205alpYTnpMQ0IwYVcxbENtWnliMjBnYldGalgyOTNibVZrWDNWdWNtVmhjR1ZrWDNJeElHbHRjRzl5ZENCeVpYRjFhWEpsWDNkaGFYUnBaQ3dnWTJGd2RIVnlaVjlqYUdsc1pDd2daWGhwZEY5dlluTmxjblpoZEdsdmJpd2diMkp6WlhKMlpXUmZjbVYwZFhKdVkyOWtaU3dnYzNSdmNGOXZibU5sWDNWdWNtVmhjR1ZrQ2dwamJHRnpjeUJEYjIxdFlXNWtVbVZtZFhObFpDaFNkVzUwYVcxbFJYSnliM0lwT25CaGMzTUtaR1ZtSUc1bFpXUW9kbUZzZFdVc1kyOWtaU2s2Q2lBZ0lDQnBaaUJ1YjNRZ2RtRnNkV1U2Y21GcGMyVWdRMjl0YldGdVpGSmxablZ6WldRb1kyOWtaU2tLWkdWbUlITm9ZU2h5WVhjcE9uSmxkSFZ5YmlCb1lYTm9iR2xpTG5Ob1lUSTFOaWh5WVhjcExtaGxlR1JwWjJWemRDZ3BDZ3BqYkdGemN5QlRhV2R1WVd4ek9nb2dJQ0FnWkdWbUlGOWZhVzVwZEY5ZktITmxiR1lwT2dvZ0lDQWdJQ0FnSUhObGJHWXVjSEp2ZEdWamRHVmtQVEE3YzJWc1ppNXdaVzVrYVc1blBVNXZibVVLSUNBZ0lHUmxaaUJ5WldObGFYWmxLSE5sYkdZc2MybG5iblZ0TEY5bWNtRnRaU2s2Q2lBZ0lDQWdJQ0FnYzJWc1ppNXdaVzVrYVc1blBYTnBaMjUxYlFvZ0lDQWdJQ0FnSUdsbUlHNXZkQ0J6Wld4bUxuQnliM1JsWTNSbFpEcHlZV2x6WlNCTFpYbGliMkZ5WkVsdWRHVnljblZ3ZENncENpQWdJQ0JrWldZZ2FXNXpkR0ZzYkNoelpXeG1LVG9LSUNBZ0lDQWdJQ0J6YVdkdVlXd3VjMmxuYm1Gc0tITnBaMjVoYkM1VFNVZFVSVkpOTEhObGJHWXVjbVZqWldsMlpTazdjMmxuYm1Gc0xuTnBaMjVoYkNoemFXZHVZV3d1VTBsSFNVNVVMSE5sYkdZdWNtVmpaV2wyWlNrS0lDQWdJRUJqYjI1MFpYaDBiV0Z1WVdkbGNnb2dJQ0FnWkdWbUlHTnlhWFJwWTJGc0tITmxiR1lwT2dvZ0lDQWdJQ0FnSUhObGJHWXVjSEp2ZEdWamRHVmtLejB4Q2lBZ0lDQWdJQ0FnZEhKNU9ubHBaV3hrQ2lBZ0lDQWdJQ0FnWm1sdVlXeHNlVHB6Wld4bUxuQnliM1JsWTNSbFpDMDlNUW9LWTJ4aGMzTWdRMjl0YldGdVpITTZDaUFnSUNCa1pXWWdYMTlwYm1sMFgxOG9jMlZzWml4emFXZHVZV3h6S1RvS0lDQWdJQ0FnSUNCelpXeG1Mbk5wWjI1aGJITTljMmxuYm1Gc2N6dHpaV3htTG5KdmQzTTlXMTBLSUNBZ0lHUmxaaUJ5ZFc0b2MyVnNaaXhzWVdKbGJDeGhjbWQyTENvc2RXNTBhV3dzWVd4c2IzZGZZMkZ1WTJWc2JHVmtYMk5zWldGdWRYQTlSbUZzYzJVc2JXRjRhVzExYlQweUtqRXdNalFxTVRBeU5DazZDaUFnSUNBZ0lDQWdibVZsWkNocGMybHVjM1JoYm1ObEtHeGhZbVZzTEhOMGNpa2dZVzVrSUd4aFltVnNMbkpsY0d4aFkyVW9KeTBuTENjbktTNXlaWEJzWVdObEtDZGZKeXduSnlrdWFYTmhiRzUxYlNncExDZHpZV1psWDJOdmJXMWhibVJmYkdGaVpXd25LUW9nSUNBZ0lDQWdJRzVsWldRb2RIbHdaU2h0WVhocGJYVnRLU0JwY3lCcGJuUWdZVzVrSURBOGJXRjRhVzExYlR3OU1pb3hNREkwS2pFd01qUXNKMlpwZUdWa1gyTnZiVzFoYm1SZmIzVjBjSFYwWDJKdmRXNWtKeWtLSUNBZ0lDQWdJQ0J1WldWa0tHbHphVzV6ZEdGdVkyVW9ZWEpuZGl4c2FYTjBLU0JoYm1RZ1lYSm5kaUJoYm1RZ1lXeHNLR2x6YVc1emRHRnVZMlVvZUN4emRISXBJR1p2Y2lCNElHbHVJR0Z5WjNZcExDZGxlSEJzYVdOcGRGOWhjbWQySnlrS0lDQWdJQ0FnSUNCa1pXWWdjbVZ0WVdsdWFXNW5LQ2s2Q2lBZ0lDQWdJQ0FnSUNBZ0lHbG1JRzV2ZENCaGJHeHZkMTlqWVc1alpXeHNaV1JmWTJ4bFlXNTFjRHB1WldWa0tITmxiR1l1YzJsbmJtRnNjeTV3Wlc1a2FXNW5JR2x6SUU1dmJtVXNKMk52YlcxaGJtUmZZMkZ1WTJWc2JHVmtKeWtLSUNBZ0lDQWdJQ0FnSUNBZ2JqMTFiblJwYkMxMGFXMWxMbTF2Ym05MGIyNXBZeWdwTzI1bFpXUW9iajR3TENkdmNtbG5hVzVoYkY5amIyMXRZVzVrWDJSbFlXUnNhVzVsWDJWNGFHRjFjM1JsWkNjcE8zSmxkSFZ5YmlCdUNpQWdJQ0FnSUNBZ2NtVnhkV2x5WlY5M1lXbDBhV1FvS1R0eVpXMWhhVzVwYm1jb0tRb2dJQ0FnSUNBZ0lITjBZWEowWldROWRHbHRaUzV0YjI1dmRHOXVhV01vS1R0eWIzYzlUbTl1WlR0dmRYUTlZbmwwWldGeWNtRjVLQ2s3WlhKeVBXSjVkR1ZoY25KaGVTZ3BDaUFnSUNBZ0lDQWdkSEo1T2dvZ0lDQWdJQ0FnSUNBZ0lDQjNhWFJvSUhObGJHWXVjMmxuYm1Gc2N5NWpjbWwwYVdOaGJDZ3BPZ29nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdjbVZ0WVdsdWFXNW5LQ2tLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSEE5YzNWaWNISnZZMlZ6Y3k1UWIzQmxiaWhoY21kMkxITjBaR2x1UFhOMVluQnliMk5sYzNNdVJFVldUbFZNVEN4emRHUnZkWFE5YzNWaWNISnZZMlZ6Y3k1UVNWQkZMSE4wWkdWeWNqMXpkV0p3Y205alpYTnpMbEJKVUVVc0NpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdaVzUyUFhzblVFRlVTQ2M2Snk5dmNIUXZhRzl0WldKeVpYY3ZZbWx1T2k5MWMzSXZZbWx1T2k5aWFXNDZMM1Z6Y2k5elltbHVPaTl6WW1sdUp5d25URUZPUnljNkowTW5MQ2RNUTE5QlRFd25PaWRESjMwc0NpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdjM1JoY25SZmJtVjNYM05sYzNOcGIyNDlWSEoxWlN4amJHOXpaVjltWkhNOVZISjFaU2tLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSEp2ZHoxN0oyeGhZbVZzSnpwc1lXSmxiQ3duWVhKbmRpYzZiR2x6ZENoaGNtZDJLU3duY0hKdlkyVnpjeWM2Y0N3blkzVnpkRzlrZVNjNlRtOXVaU3dLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0ozTjBiM0JCZEhSbGJYQjBaV1FuT2taaGJITmxMQ2R6ZEhKbFlXMXpRMnh2YzJWQmRIUmxiWEIwWldRbk9rWmhiSE5sTENkemRISmxZVzF6UTJ4dmMyVmtKenBHWVd4elpTd0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSjJOdmJYQnNaWFJsUW1WbWIzSmxSR1ZoWkd4cGJtVW5Pa1poYkhObExDZGxjbkp2Y2xSNWNHVW5PazV2Ym1Vc0oyVnljbTl5UTI5a1pTYzZUbTl1WlgwS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUhObGJHWXVjbTkzY3k1aGNIQmxibVFvY205M0tRb2dJQ0FnSUNBZ0lDQWdJQ0J5YjNkYkoyTjFjM1J2WkhrblhUMWpZWEIwZFhKbFgyTm9hV3hrS0hBc2RXNTBhV3c5ZFc1MGFXd3BDaUFnSUNBZ0lDQWdJQ0FnSUhOMGNtVmhiWE05ZTNBdWMzUmtiM1YwTG1acGJHVnVieWdwT205MWRDeHdMbk4wWkdWeWNpNW1hV3hsYm04b0tUcGxjbko5Q2lBZ0lDQWdJQ0FnSUNBZ0lHWnZjaUJtWkNCcGJpQnpkSEpsWVcxek9tOXpMbk5sZEY5aWJHOWphMmx1WnlobVpDeEdZV3h6WlNrS0lDQWdJQ0FnSUNBZ0lDQWdaWFpsYm5ROVRtOXVaUW9nSUNBZ0lDQWdJQ0FnSUNCM2FHbHNaU0J6ZEhKbFlXMXpJRzl5SUdWMlpXNTBJR2x6SUU1dmJtVTZDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQnNaV1owUFhKbGJXRnBibWx1WnlncENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCeVpXRmtlU3hmTEY4OWMyVnNaV04wTG5ObGJHVmpkQ2hzYVhOMEtITjBjbVZoYlhNcExGdGRMRnRkTEcxcGJpaHNaV1owTERBdU1ESTFLU2tLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJR1p2Y2lCbVpDQnBiaUJ5WldGa2VUb0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JrWVhSaFBXOXpMbkpsWVdRb1ptUXNOalUxTXpZcENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdhV1lnYm05MElHUmhkR0U2WkdWc0lITjBjbVZoYlhOYlptUmRDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnWld4elpUb0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ2RHRnlaMlYwUFhOMGNtVmhiWE5iWm1SZE8zUmhjbWRsZEM1bGVIUmxibVFvWkdGMFlTa0tJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ2JtVmxaQ2hzWlc0b2RHRnlaMlYwS1R3OWJXRjRhVzExYlN3blkyOXRiV0Z1WkY5dmRYUndkWFJmWW05MWJtUW5LUW9nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdaWFpsYm5ROVpYaHBkRjl2WW5ObGNuWmhkR2x2Ymlod0tRb2dJQ0FnSUNBZ0lDQWdJQ0J5WlcxaGFXNXBibWNvS1FvZ0lDQWdJQ0FnSUNBZ0lDQnliM2RiSjJOdmJYQnNaWFJsUW1WbWIzSmxSR1ZoWkd4cGJtVW5YVDFVY25WbENpQWdJQ0FnSUNBZ0lDQWdJSEp2ZDFzbmIySnpaWEoyWldSRmVHbDBKMTA5WlhabGJuUUtJQ0FnSUNBZ0lDQWdJQ0FnY205M1d5ZHZZbk5sY25abFpFVjRhWFJEYjJSbEoxMDliMkp6WlhKMlpXUmZjbVYwZFhKdVkyOWtaU2hsZG1WdWRDa0tJQ0FnSUNBZ0lDQmxlR05sY0hRZ1FtRnpaVVY0WTJWd2RHbHZiaUJoY3lCbGNuSnZjam9LSUNBZ0lDQWdJQ0FnSUNBZ2FXWWdjbTkzSUdseklFNXZibVU2Y21GcGMyVUtJQ0FnSUNBZ0lDQWdJQ0FnY205M1d5ZGxjbkp2Y2xSNWNHVW5YVDEwZVhCbEtHVnljbTl5S1M1ZlgyNWhiV1ZmWHdvZ0lDQWdJQ0FnSUNBZ0lDQnliM2RiSjJWeWNtOXlRMjlrWlNkZFBYTjBjaWhsY25KdmNpa2dhV1lnYVhOcGJuTjBZVzVqWlNobGNuSnZjaXhEYjIxdFlXNWtVbVZtZFhObFpDa2daV3h6WlNCT2IyNWxDaUFnSUNBZ0lDQWdabWx1WVd4c2VUb0tJQ0FnSUNBZ0lDQWdJQ0FnYVdZZ2NtOTNJR2x6SUc1dmRDQk9iMjVsT2dvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnZDJsMGFDQnpaV3htTG5OcFoyNWhiSE11WTNKcGRHbGpZV3dvS1RvS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQnliM2RiSjNOMGIzQkJkSFJsYlhCMFpXUW5YVDFVY25WbENpQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdkSEo1T25KdmQxc25ZMnhsWVc1MWNDZGRQWE4wYjNCZmIyNWpaVjkxYm5KbFlYQmxaQ2h5YjNkYkozQnliMk5sYzNNblhTeHliM2RiSjJOMWMzUnZaSGtuWFNrS0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQmxlR05sY0hRZ1FtRnpaVVY0WTJWd2RHbHZiaUJoY3lCbGNuSnZjam9LSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdjbTkzV3lkamJHVmhiblZ3SjEwOWV5ZHZheWM2Um1Gc2MyVXNKMjkxZEdOdmJXVlZibXR1YjNkdUp6cFVjblZsTEFvZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0oyVnljbTl5Vkhsd1pTYzZkSGx3WlNobGNuSnZjaWt1WDE5dVlXMWxYMThzSjJScGNtVmpkRU5vYVd4a1VtVmhjR1ZrSnpweWIzZGJKM0J5YjJObGMzTW5YUzV5WlhSMWNtNWpiMlJsSUdseklHNXZkQ0JPYjI1bExBb2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdKMkZzYkVkeWIzVndVbTkzYzBWdGNIUjVRV1owWlhKU1pXRndKenBHWVd4elpYMEtJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0J5YjNkYkozTjBjbVZoYlhORGJHOXpaVUYwZEdWdGNIUmxaQ2RkUFZSeWRXVUtJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JsY25KdmNuTTlXMTBLSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCbWIzSWdjM1J5WldGdElHbHVJQ2h5YjNkYkozQnliMk5sYzNNblhTNXpkR1J2ZFhRc2NtOTNXeWR3Y205alpYTnpKMTB1YzNSa1pYSnlLVG9LSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdkSEo1T25OMGNtVmhiUzVqYkc5elpTZ3BDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lHVjRZMlZ3ZENCQ1lYTmxSWGhqWlhCMGFXOXVJR0Z6SUdWeWNtOXlPbVZ5Y205eWN5NWhjSEJsYm1Rb2RIbHdaU2hsY25KdmNpa3VYMTl1WVcxbFgxOHBDaUFnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnY205M1d5ZHpkSEpsWVcxelEyeHZjMlZrSjEwOWJtOTBJR1Z5Y205eWN3b2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJSEp2ZDFzbmMzUnlaV0Z0UTJ4dmMyVkZjbkp2Y25NblhUMWxjbkp2Y25NS0lDQWdJQ0FnSUNCd1BYSnZkMXNuY0hKdlkyVnpjeWRkTzJOc1pXRnVkWEE5Y205M1d5ZGpiR1ZoYm5Wd0oxMEtJQ0FnSUNBZ0lDQndkV0pzYVdNOWV5ZHNZV0psYkNjNmJHRmlaV3dzSjJGeVozWW5PbXhwYzNRb1lYSm5kaWtzSjNCcFpDYzZjQzV3YVdRc0oyVjRhWFJEYjJSbEp6cHdMbkpsZEhWeWJtTnZaR1VzQ2lBZ0lDQWdJQ0FnSUNBZ0lDZGpiMjF3YkdWMFpVSmxabTl5WlVSbFlXUnNhVzVsSnpweWIzZGJKMk52YlhCc1pYUmxRbVZtYjNKbFJHVmhaR3hwYm1VblhTd0tJQ0FnSUNBZ0lDQWdJQ0FnSjJOdmJXMWhibVJFWldGa2JHbHVaVTF2Ym05MGIyNXBZeWM2ZFc1MGFXd3NKMlZzWVhCelpXUlRaV052Ym1Sekp6cDBhVzFsTG0xdmJtOTBiMjVwWXlncExYTjBZWEowWldRc0NpQWdJQ0FnSUNBZ0lDQWdJQ2RsY25KdmNsUjVjR1VuT25KdmQxc25aWEp5YjNKVWVYQmxKMTBzSjJWeWNtOXlRMjlrWlNjNmNtOTNXeWRsY25KdmNrTnZaR1VuWFN3blkyeGxZVzUxY0NjNlkyeGxZVzUxY0N3S0lDQWdJQ0FnSUNBZ0lDQWdKM04wWkc5MWRFSjVkR1Z6Snpwc1pXNG9iM1YwS1N3bmMzUmtiM1YwVTJoaE1qVTJKenB6YUdFb2IzVjBLU3duYzNSa1pYSnlRbmwwWlhNbk9teGxiaWhsY25JcExDZHpkR1JsY25KVGFHRXlOVFluT25Ob1lTaGxjbklwTEFvZ0lDQWdJQ0FnSUNBZ0lDQW5jM1J5WldGdGMwTnNiM05sWkNjNmNtOTNXeWR6ZEhKbFlXMXpRMnh2YzJWa0oxMHNDaUFnSUNBZ0lDQWdJQ0FnSUNkdmRYUmpiMjFsVlc1cmJtOTNiaWM2Ym05MEtISnZkMXNuWTI5dGNHeGxkR1ZDWldadmNtVkVaV0ZrYkdsdVpTZGRJR0Z1WkNCamJHVmhiblZ3TG1kbGRDZ25iMnNuS1NCcGN5QlVjblZsQ2lBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0JoYm1RZ1kyeGxZVzUxY0M1blpYUW9KMlJwY21WamRFTm9hV3hrVW1WaGNHVmtKeWtnYVhNZ1ZISjFaU0JoYm1RZ1kyeGxZVzUxY0M1blpYUW9KMkZzYkVkeWIzVndVbTkzYzBWdGNIUjVRV1owWlhKU1pXRndKeWtnYVhNZ1ZISjFaUW9nSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdZVzVrSUhKdmQxc25jM1J5WldGdGMwTnNiM05sWkNkZElHRnVaQ0J5YjNkYkoyVnljbTl5Vkhsd1pTZGRJR2x6SUU1dmJtVXBmUW9nSUNBZ0lDQWdJSEp2ZDFzbmNIVmliR2xqSjEwOWNIVmliR2xqQ2lBZ0lDQWdJQ0FnY21WMGRYSnVJSEIxWW14cFl5eGllWFJsY3lodmRYUXBMR0o1ZEdWektHVnljaWtLSUNBZ0lHUmxaaUJ3ZFdKc2FXTW9jMlZzWmlrNkNpQWdJQ0FnSUNBZ2RtRnNkV1Z6UFZ0eUxtZGxkQ2duY0hWaWJHbGpKeWtnWm05eUlISWdhVzRnYzJWc1ppNXliM2R6WFFvZ0lDQWdJQ0FnSUhKbGRIVnliaUI3SjJOdmJXMWhibVJ6SnpwMllXeDFaWE1zSjJGc2JFOTNibVZrUTI5dGJXRnVaSE5UZEc5d2NHVmtKenBoYkd3b2RpQnBjeUJ1YjNRZ1RtOXVaUW9nSUNBZ0lDQWdJQ0FnSUNCaGJtUWdkbHNuWTJ4bFlXNTFjQ2RkTG1kbGRDZ25aR2x5WldOMFEyaHBiR1JTWldGd1pXUW5LU0JwY3lCVWNuVmxDaUFnSUNBZ0lDQWdJQ0FnSUdGdVpDQjJXeWRqYkdWaGJuVndKMTB1WjJWMEtDZGhiR3hIY205MWNGSnZkM05GYlhCMGVVRm1kR1Z5VW1WaGNDY3BJR2x6SUZSeWRXVUtJQ0FnSUNBZ0lDQWdJQ0FnWVc1a0lIWmJKM04wY21WaGJYTkRiRzl6WldRblhTQm1iM0lnZGlCcGJpQjJZV3gxWlhNcExBb2dJQ0FnSUNBZ0lDQWdJQ0FuZFc1cmJtOTNia052YlcxaGJtUkRiM1Z1ZENjNmMzVnRLSFlnYVhNZ1RtOXVaU0J2Y2lCMld5ZHZkWFJqYjIxbFZXNXJibTkzYmlkZElHWnZjaUIySUdsdUlIWmhiSFZsY3lsOUNnPT0ifV0=', validate=True))\\nSTART = time.monotonic()\\nUNTIL = START + 45.0\\nMAX_CODE_BYTES = 8 * 1024 * 1024\\nMAX_READ_CALLS = 129\\nMAX_METADATA = 64\\nMAX_FD_ROWS = 4\\nMAX_LOG_STREAM = 65536\\nMAX_PUBLIC_OUTPUT = 131072\\nsignals = None\\nfile_rows = []\\nbudget = {'metadata': 0, 'codeBytesReturned': 0, 'codeReadCalls': 0}\\n\\nclass HelpRefused(RuntimeError):\\n    pass\\n\\ndef need(value, code):\\n    if not value:\\n        raise HelpRefused(code)\\n\\ndef sha(raw):\\n    return hashlib.sha256(raw).hexdigest()\\n\\ndef identity(info):\\n    return tuple(str(x) for x in (info.st_dev, info.st_ino, info.st_uid, info.st_gid,\\n        info.st_mode, info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns))\\n\\ndef remaining():\\n    need(signals is None or signals.pending is None, 'log_help_cancelled')\\n    left = UNTIL - time.monotonic()\\n    need(left > 0, 'log_help_original_deadline')\\n    return left\\n\\ndef public_error(error):\\n    value = {'type': type(error).__name__ if re.fullmatch(r'[A-Za-z_][A-Za-z_0-9]{0,63}',\\n             type(error).__name__) else 'unlisted_type'}\\n    if isinstance(error, HelpRefused):\\n        value['code'] = str(error)\\n    number = getattr(error, 'errno', None)\\n    if type(number) is int and -100000 <= number <= 100000:\\n        value['errno'] = number\\n    return value\\n\\ndef load_helpers():\\n    expected = ('mac_owned_unreaped_r1', 'mac_owned_commands_r1')\\n    need(tuple(item['name'] for item in MODULES) == expected, 'fixed_helper_order')\\n    for item in MODULES:\\n        remaining()\\n        raw = base64.b64decode(item['base64'], validate=True)\\n        need(len(raw) == item['bytes'] and sha(raw) == item['sha256'],\\n             'whole_original_embedded_helper')\\n        need(item['name'] not in sys.modules, 'fresh_helper_namespace')\\n        module = types.ModuleType(item['name'])\\n        module.__file__ = '<embedded/' + item['name'] + '>'\\n        sys.modules[item['name']] = module\\n        exec(compile(raw, module.__file__, 'exec'), module.__dict__)\\n    return sys.modules[expected[1]].Signals, sys.modules[expected[1]].Commands\\n\\ndef metadata(kind, target, parent=None):\\n    remaining()\\n    need(budget['metadata'] < MAX_METADATA, 'fixed_metadata_cap')\\n    budget['metadata'] += 1\\n    if kind == 'fd':\\n        result = os.fstat(target)\\n    else:\\n        result = os.stat(target, dir_fd=parent, follow_symlinks=False)\\n    remaining()\\n    return result\\n\\ndef admit_binding():\\n    need(BINDING_READY is True and type(LOG_BINDING) is dict, 'actual_log_metadata_not_bound')\\n    need(set(LOG_BINDING) == {'path', 'version', 'size', 'sha256', 'identity',\\n                             'metadataOriginal'}, 'exact_log_binding_fields')\\n    need(LOG_BINDING['path'] == LOG_PATH and type(LOG_BINDING['size']) is int\\n         and 0 < LOG_BINDING['size'] <= MAX_CODE_BYTES, 'fixed_log_path_and_size')\\n    need(type(LOG_BINDING['sha256']) is str\\n         and re.fullmatch(r'[a-f0-9]{64}', LOG_BINDING['sha256']), 'actual_log_whole_sha')\\n    values = LOG_BINDING['identity']\\n    need(type(values) is list and len(values) == 9\\n         and all(type(x) is str and re.fullmatch(r'[0-9]{1,24}', x) for x in values),\\n         'actual_log_full9_strings')\\n    numbers = [int(x) for x in values]\\n    need(numbers[2] == 0 and stat.S_ISREG(numbers[4]) and not numbers[4] & 0o7022\\n         and numbers[4] & 0o111 and numbers[5] >= 1\\n         and numbers[6] == LOG_BINDING['size'], 'actual_root_regular_executable')\\n    need(LOG_BINDING['version'] == ':'.join(values[i] for i in (0, 1, 6, 7, 8)),\\n         'actual_log_version_full9')\\n    origin = LOG_BINDING['metadataOriginal']\\n    need(type(origin) is dict and set(origin) == {'blob', 'bytes', 'sha256'}\\n         and re.fullmatch(r'[a-f0-9]{40}', origin['blob'])\\n         and type(origin['bytes']) is int and 0 < origin['bytes'] <= 8192\\n         and re.fullmatch(r'[a-f0-9]{64}', origin['sha256']), 'whole_actual_metadata_origin')\\n\\ndef open_fixed(path, name, parent, directory):\\n    remaining()\\n    need(len(file_rows) < MAX_FD_ROWS, 'fixed_descriptor_cap')\\n    row = {'path': path, 'name': name, 'parent': parent, 'directory': directory,\\n           'fd': None, 'openAttempted': False, 'closeAttempted': False, 'closed': False,\\n           'created': False, 'beforeIdentity': None}\\n    file_rows.append(row)  # Ledger exists before the only open of this fixed path.\\n    named = metadata('name', name, parent)\\n    if directory:\\n        need(stat.S_ISDIR(named.st_mode) and named.st_uid == 0\\n             and not stat.S_IMODE(named.st_mode) & 0o022, 'fixed_system_parent')\\n    else:\\n        need(identity(named) == tuple(LOG_BINDING['identity']), 'log_named_matches_binding')\\n    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK\\n    if directory:\\n        flags |= os.O_DIRECTORY\\n    with signals.critical():\\n        remaining()\\n        row['openAttempted'] = True\\n        row['fd'] = os.open(name, flags, dir_fd=parent)\\n        row['created'] = True\\n    actual = metadata('fd', row['fd'])\\n    row['beforeIdentity'] = list(identity(actual))\\n    need(identity(actual) == identity(named), 'fixed_named_and_held_full9')\\n    return row\\n\\ndef verify_all():\\n    for row in file_rows:\\n        need(row['created'] and not row['closeAttempted'], 'held_descriptor_before_use')\\n        held = metadata('fd', row['fd'])\\n        named = metadata('name', row['name'], row['parent'])\\n        need(tuple(row['beforeIdentity']) == identity(held) == identity(named),\\n             'same_fixed_full9_around_help')\\n\\ndef hash_tool(row):\\n    maximum = LOG_BINDING['size']\\n    digest = hashlib.sha256()\\n    total = 0\\n    while True:\\n        remaining()\\n        need(budget['codeReadCalls'] < MAX_READ_CALLS, 'fixed_code_read_cap')\\n        count = min(65536, maximum + 1 - total)\\n        need(count > 0, 'bounded_code_remaining')\\n        budget['codeReadCalls'] += 1\\n        block = os.read(row['fd'], count)\\n        budget['codeBytesReturned'] += len(block)\\n        total += len(block)\\n        need(total <= maximum and budget['codeBytesReturned'] <= MAX_CODE_BYTES + 1,\\n             'actual_log_code_returned_bound')\\n        remaining()\\n        if not block:\\n            break\\n        digest.update(block)\\n    need(total == maximum and digest.hexdigest() == LOG_BINDING['sha256'],\\n         'actual_log_whole_code_before_help')\\n    return {'bytes': total, 'sha256': digest.hexdigest(), 'wholeCurrentFileObserved': True,\\n            'sameHeldFileRetainedThroughChildCleanup': True,\\n            'execByPathIsNotAtomicExecByFd': True}\\n\\ndef unique_log_object(pairs):\\n    value = {}\\n    for key, item in pairs:\\n        need(key not in value, 'duplicate_log_json_key')\\n        value[key] = item\\n    return value\\n\\ndef log_timestamp_us(value):\\n    need(type(value) is str and re.fullmatch(\\n        r'[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\\\.[0-9]{1,6})?(?:Z|[+-][0-9]{2}:?[0-9]{2})',\\n        value) is not None, 'typed_log_timestamp')\\n    parsed = datetime.datetime.fromisoformat(value.replace('Z', '+00:00'))\\n    need(parsed.tzinfo is not None, 'log_timestamp_timezone_required')\\n    delta = parsed.astimezone(datetime.timezone.utc) - datetime.datetime(1970, 1, 1,\\n                                                                       tzinfo=datetime.timezone.utc)\\n    return (delta.days * 86400 + delta.seconds) * 1000000 + delta.microseconds\\n\\ndef log_projection(out, err, row):\\n    need(len(out) + len(err) <= MAX_LOG_STREAM, 'bounded_log_combined_streams')\\n    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']\\n         and row['exitCode'] == 0 and not err, 'log_query_known_zero_complete')\\n    need(len(out) <= MAX_LOG_STREAM, 'bounded_log_stdout')\\n    value = out.decode('utf-8', 'strict')\\n    lines = [line for line in value.splitlines() if line.strip()]\\n    need(len(lines) <= MAX_LOG_ROWS, 'bounded_log_record_count')\\n    label_pattern = r'(?<![A-Za-z0-9_.-])' + re.escape(FIXED_LABEL) + r'(?![A-Za-z0-9_.-])'\\n    patterns = {\\n        'spawn_or_exec_mentioned': r'\\\\b(?:posix_spawn|posix_spawnp|spawn|spawnp|execv|execve|execvp)\\\\b',\\n        'working_directory_mentioned': r'\\\\b(?:chdir|working directory|WorkingDirectory)\\\\b',\\n        'stdio_mentioned': r'\\\\b(?:stdout|stderr|StandardOutPath|StandardErrorPath|file actions?)\\\\b',\\n        'permission_error_mentioned': r'\\\\b(?:Permission denied|Operation not permitted|EACCES|EPERM)\\\\b',\\n        'missing_path_error_mentioned': r'\\\\b(?:No such file or directory|ENOENT)\\\\b',\\n        'configuration_error_mentioned': r'\\\\b(?:EX_CONFIG|invalid configuration|invalid property list|malformed property list)\\\\b',\\n        'privacy_or_sandbox_mentioned': r'\\\\b(?:sandbox|TCC|privacy)\\\\b',\\n    }\\n    rows = []\\n    for ordinal, line in enumerate(lines):\\n        remaining()\\n        need(len(line.encode('utf-8')) <= MAX_LOG_LINE, 'bounded_log_json_line')\\n        item = json.loads(line, object_pairs_hook=unique_log_object,\\n                          parse_constant=lambda _value: need(False, 'finite_log_json'))\\n        need(type(item) is dict, 'log_record_object')\\n        messages = [item[key] for key in ('eventMessage', 'message', 'composedMessage')\\n                    if key in item]\\n        need(messages and all(type(msg) is str for msg in messages)\\n             and all(msg == messages[0] for msg in messages), 'one_log_message_semantics')\\n        message = messages[0]\\n        need(re.search(label_pattern, message) is not None, 'exact_original_label_in_message')\\n        process_values = []\\n        if 'process' in item:\\n            need(type(item['process']) is str, 'typed_log_process')\\n            process_values.append(item['process'])\\n        if 'processImagePath' in item:\\n            need(type(item['processImagePath']) is str, 'typed_log_process_path')\\n            process_values.append(item['processImagePath'].rsplit('/', 1)[-1])\\n        need(process_values and all(name == 'launchd' for name in process_values),\\n             'exact_launchd_process')\\n        instant = log_timestamp_us(item.get('timestamp'))\\n        need(WINDOW_START_US <= instant <= WINDOW_END_US, 'original_three_second_log_window')\\n        categories = {name: re.search(pattern, message, re.IGNORECASE) is not None\\n                      for name, pattern in patterns.items()}\\n        errno_symbols = {name: re.search(r'\\\\b' + name + r'\\\\b', message) is not None\\n                         for name in ('EPERM', 'ENOENT', 'EIO', 'ENOEXEC',\\n                                      'EACCES', 'ENOTDIR', 'EINVAL')}\\n        errno_numbers = {str(number): re.search(\\n            r'\\\\berrno\\\\s*(?:=|:)?\\\\s*' + str(number) + r'\\\\b', message, re.IGNORECASE) is not None\\n            for number in (1, 2, 5, 8, 13, 20, 22)}\\n        paths = {name: path in message for name, path in KNOWN_MESSAGE_PATHS.items()}\\n        rows.append({'ordinal': ordinal, 'exactOriginalLabel': True, 'processIsLaunchd': True,\\n                     'withinOriginalWindow': True, 'categoryMentions': categories,\\n                     'errnoSymbolMentions': errno_symbols, 'explicitErrnoNumberMentions': errno_numbers,\\n                     'knownPathMentions': paths,\\n                     'recognizedErrorVocabulary': any(categories.values())\\n                         or any(errno_symbols.values()) or any(errno_numbers.values())})\\n        remaining()\\n    return {'argv': QUERY_ARGV, 'matchedRows': len(rows), 'rows': rows,\\n            'rawLogTextExported': False, 'rawOrUnknownLogHashExported': False,\\n            'onlyClosedVocabularyProjection': True, 'originalWindowMilliseconds': 3000,\\n            'noMatchesDoesNotProveAbsence': True, 'queryCompleteBeforeDeadline': True,\\n            'classificationIsLexicalEvidenceNotRootCauseProof': True}\\n\\ndef known_json_type(value):\\n    if value is None:\\n        return 'null'\\n    if type(value) is bool:\\n        return 'boolean'\\n    if type(value) is str:\\n        return 'string'\\n    if type(value) in (int, float):\\n        return 'number'\\n    if type(value) is list:\\n        return 'array'\\n    if type(value) is dict:\\n        return 'object'\\n    return 'unlisted'\\n\\ndef log_schema_projection(out, err, row):\\n    need(len(out) + len(err) <= MAX_LOG_STREAM, 'bounded_log_combined_streams')\\n    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']\\n         and row['exitCode'] == 0 and not err, 'log_query_known_zero_complete')\\n    value = out.decode('utf-8', 'strict')\\n    lines = [line for line in value.splitlines() if line.strip()]\\n    need(len(lines) <= MAX_LOG_ROWS, 'bounded_log_record_count')\\n    known_keys = ('eventMessage', 'message', 'composedMessage', 'process',\\n                  'processImagePath', 'timestamp', 'type', 'eventType')\\n    message_keys = known_keys[:3]\\n    label_pattern = r'(?<![A-Za-z0-9_.-])' + re.escape(FIXED_LABEL) + r'(?![A-Za-z0-9_.-])'\\n    rows = []\\n    for ordinal, line in enumerate(lines):\\n        remaining()\\n        need(len(line.encode('utf-8')) <= MAX_LOG_LINE, 'bounded_log_json_line')\\n        item = json.loads(line, object_pairs_hook=unique_log_object,\\n                          parse_constant=lambda _value: need(False, 'finite_log_json'))\\n        need(type(item) is dict, 'log_record_object')\\n        fields = {key: {'present': key in item,\\n                        'jsonType': known_json_type(item[key]) if key in item else 'absent'}\\n                  for key in known_keys}\\n        messages = [item[key] for key in message_keys if key in item]\\n        has_messages = bool(messages)\\n        all_strings = all(type(msg) is str for msg in messages)\\n        equal_strings = bool(has_messages and all_strings\\n                             and all(msg == messages[0] for msg in messages))\\n        message_flags = {key: {\\n            'emptyString': item[key] == '' if type(item.get(key)) is str else None,\\n            'exactOriginalLabelPresent': bool(re.search(label_pattern, item[key]))\\n                if type(item.get(key)) is str else None} for key in message_keys}\\n        pairs = {}\\n        for left, right in (('eventMessage', 'message'), ('eventMessage', 'composedMessage'),\\n                            ('message', 'composedMessage')):\\n            pairs[left + 'Equals' + right] = item[left] == item[right] \\\\\\n                if type(item.get(left)) is str and type(item.get(right)) is str else None\\n        process_name_matches = item['process'] == 'launchd' \\\\\\n            if type(item.get('process')) is str else None\\n        process_path_matches = item['processImagePath'].rsplit('/', 1)[-1] == 'launchd' \\\\\\n            if type(item.get('processImagePath')) is str else None\\n        timestamp_parsed = False\\n        timestamp_in_window = None\\n        if type(item.get('timestamp')) is str:\\n            try:\\n                instant = log_timestamp_us(item['timestamp'])\\n            except (HelpRefused, ValueError, OverflowError):\\n                pass\\n            else:\\n                timestamp_parsed = True\\n                timestamp_in_window = WINDOW_START_US <= instant <= WINDOW_END_US\\n        type_equal_event_type = item['type'] == item['eventType'] \\\\\\n            if type(item.get('type')) is str and type(item.get('eventType')) is str else None\\n        rows.append({'ordinal': ordinal, 'knownFields': fields,\\n                     'messageCandidates': {'anyPresent': has_messages,\\n                         'allPresentValuesAreStrings': all_strings,\\n                         'allPresentStringsEqual': equal_strings,\\n                         'originalComposite': bool(has_messages and all_strings and equal_strings)},\\n                     'messageFlags': message_flags, 'stringCandidateEqualities': pairs,\\n                     'processEqualsLaunchd': process_name_matches,\\n                     'processImageBasenameEqualsLaunchd': process_path_matches,\\n                     'timestampParsed': timestamp_parsed, 'timestampWithinOriginalWindow': timestamp_in_window,\\n                     'typeStringEqualsEventTypeString': type_equal_event_type})\\n        remaining()\\n    return {'argv': QUERY_ARGV, 'observedObjectCount': len(rows), 'rows': rows,\\n            'schemaOnlyObservation': True, 'eventProjectionQualified': False,\\n            'originalClassifierPassed': False, 'unknownKeyNamesPublished': False,\\n            'anyFieldValuePublished': False, 'anyFieldLengthPublished': False,\\n            'rawLogTextExported': False, 'rawOrUnknownLogHashExported': False,\\n            'originalWindowMilliseconds': 3000, 'noMatchesDoesNotProveAbsence': True,\\n            'freshObservationNotOriginal817ByteRecovery': True,\\n            'classificationIsLexicalEvidenceNotRootCauseProof': True}\\n\\ndef log_admitted_event_projection(out, err, row):\\n    need(len(out) + len(err) <= MAX_LOG_STREAM, 'bounded_log_combined_streams')\\n    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']\\n         and row['exitCode'] == 0 and not err, 'log_query_known_zero_complete')\\n    value = out.decode('utf-8', 'strict')\\n    lines = [line for line in value.splitlines() if line.strip()]\\n    need(len(lines) <= MAX_LOG_ROWS, 'bounded_log_record_count')\\n    semantic_refusals = frozenset((\\n        'one_log_message_semantics', 'exact_original_label_in_message',\\n        'typed_log_process', 'typed_log_process_path', 'exact_launchd_process',\\n        'typed_log_timestamp', 'log_timestamp_timezone_required',\\n        'original_three_second_log_window'))\\n    events = []\\n    rejected = []\\n    for ordinal, line in enumerate(lines):\\n        remaining()\\n        line_bytes = line.encode('utf-8')\\n        need(len(line_bytes) <= MAX_LOG_LINE, 'bounded_log_json_line')\\n        # Parse the original line strictly before the semantic-only catch.\\n        # Malformed/duplicate/nonfinite constants/non-object data still fails the observer.\\n        item = json.loads(line, object_pairs_hook=unique_log_object,\\n                          parse_constant=lambda _value: need(False, 'finite_log_json'))\\n        need(type(item) is dict, 'log_record_object')\\n        rejection = None\\n        try:\\n            # Reuse the unchanged classifier on this original complete line.\\n            # This changes neither its message/process/time gates nor vocabulary.\\n            projected = log_projection(line_bytes + b'\\\\n', err, row)\\n        except HelpRefused as error:\\n            if len(error.args) != 1 or error.args[0] not in semantic_refusals:\\n                raise\\n            rejection = error.args[0]\\n        except (ValueError, OverflowError):\\n            # The identical line was already valid JSON above. The original\\n            # timestamp parser's invalid calendar/offset value is not exported.\\n            rejection = 'invalid_log_timestamp_value'\\n        if rejection is not None:\\n            rejected.append({'ordinal': ordinal, 'rejectionReason': rejection,\\n                             'meaning': 'unknown_object_not_admitted'})\\n        else:\\n            need(projected['matchedRows'] == 1 and len(projected['rows']) == 1,\\n                 'one_original_classifier_event')\\n            event = dict(projected['rows'][0])\\n            event['ordinal'] = ordinal\\n            events.append(event)\\n        remaining()\\n    need(len(events) + len(rejected) == len(lines), 'every_object_disposition')\\n    return {'argv': QUERY_ARGV, 'observedObjects': len(lines),\\n            'admittedEvents': len(events), 'rejectedUnknownObjects': len(rejected),\\n            'events': events, 'rejectedObjects': rejected,\\n            'allObservedObjectsAdmitted': not rejected,\\n            'atLeastOneAdmittedEvent': bool(events),\\n            'perEventAdmissionUsesOriginalClassifier': True,\\n            'originalClassifierFunctionUnchanged': True,\\n            'wholeLogFullyClassified': False,\\n            'unknownObjectSemanticsQualified': False,\\n            'startupCauseQualified': False,\\n            'observationScope': 'individually_admitted_events_and_explicit_unknown_rejections',\\n            'originalWholeQueryFailureUnchanged': True,\\n            'freshObservationNotOriginal817ByteRecovery': True,\\n            'rawLogTextExported': False, 'rawOrUnknownLogHashExported': False,\\n            'unknownKeyNamesPublished': False, 'arbitraryFieldValuesPublished': False,\\n            'onlyClosedVocabularyProjection': True, 'originalWindowMilliseconds': 3000,\\n            'noMatchesDoesNotProveAbsence': True, 'queryCompleteBeforeDeadline': True,\\n            'classificationIsLexicalEvidenceNotRootCauseProof': True}\\n\\ndef command_public(commands):\\n    value = commands.public()\\n    # Unexpected child bytes are neither copied nor hashed into the outer public report.\\n    for row in value['commands']:\\n        if row is not None:\\n            row.pop('stdoutSha256', None)\\n            row.pop('stderrSha256', None)\\n    return value\\n\\ndef close_rows():\\n    errors = []\\n    for row in reversed(file_rows):\\n        if not row['created'] or row['closeAttempted']:\\n            continue\\n        try:\\n            with signals.critical():\\n                row['closeAttempted'] = True\\n                os.close(row['fd'])\\n                row['closed'] = True\\n        except BaseException as error:\\n            errors.append(public_error(error))\\n    return errors\\n\\ndef main():\\n    global signals\\n    commands = None\\n    original_handlers = {}\\n    installed = False\\n    complete = False\\n    result = {'schema': 'heptabao.mac-owned-launchd-admitted-log-events.r1',\\n        'ok': False, 'outcomeUnknown': False, 'newSharedSeconds': 45, 'outerSeconds': 60,\\n        'exactLogQueryArgv': QUERY_ARGV, 'logQueryExecuted': False, 'logQueryAttempted': False, 'directoryEnumeration': False,\\n        'directApplicationPrivateFileOrCapsuleRead': False, 'serviceMutationAttempted': False,\\n        'sdkOrProviderExecuted': False, 'oldLabelCleanupAttempted': False,\\n        'historicalLineageClosureQualified': False, 'startupCauseQualified': False,\\n        'applicationFileDescriptorScopeOnly': True, 'toolInternalIoNotSyscallTraced': True}\\n    try:\\n        need(sys.platform == 'darwin' and os.getuid() == 501 and os.geteuid() == 501,\\n             'fixed_mac_uid')\\n        need(os.path.normpath(sys.executable) == PYTHON, 'fixed_regular_python')\\n        admit_binding()\\n        Signals, Commands = load_helpers()\\n        signals = Signals()\\n        original_handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}\\n        installed = True\\n        signals.install()\\n        commands = Commands(signals)\\n        root = open_fixed('/', '/', None, True)\\n        usr = open_fixed('/usr', 'usr', root['fd'], True)\\n        directory = open_fixed('/usr/bin', 'bin', usr['fd'], True)\\n        tool = open_fixed(LOG_PATH, 'log', directory['fd'], False)\\n        verify_all()\\n        result['toolCode'] = hash_tool(tool)\\n        verify_all()\\n        result['logQueryAttempted'] = True\\n        row, out, err = commands.run('fixed-owned-label-three-second-log', list(QUERY_ARGV),\\n            until=min(UNTIL, time.monotonic() + 10.0), maximum=MAX_LOG_STREAM)\\n        result['logEventObservation'] = log_admitted_event_projection(out, err, row)\\n        verify_all()\\n        remaining()\\n        complete = True\\n    except BaseException as error:\\n        result['error'] = public_error(error)\\n    finally:\\n        if file_rows and all(row['created'] and not row['closeAttempted'] for row in file_rows):\\n            try:\\n                verify_all()\\n            except BaseException as error:\\n                result['finalIdentityError'] = public_error(error)\\n        result['closeErrors'] = close_rows()\\n        result['fileDescriptors'] = [{k: row[k] for k in ('path', 'directory', 'created',\\n            'openAttempted', 'closeAttempted', 'closed', 'beforeIdentity')} for row in file_rows]\\n        if commands is not None:\\n            result['commands'] = command_public(commands)\\n            result['logQueryExecuted'] = bool(result['commands']['commands'])\\n        restore_errors = []\\n        if installed:\\n            for sig, old in original_handlers.items():\\n                try:\\n                    signal.signal(sig, old)\\n                except BaseException as error:\\n                    restore_errors.append(public_error(error))\\n        result['signalRestoreErrors'] = restore_errors\\n        result['pendingSignalAfterRestore'] = None if signals is None else signals.pending\\n        descriptors_closed = all(not row['created'] or row['closed'] for row in file_rows)\\n        state = result.get('commands')\\n        helpers_closed = commands is None or (state['allOwnedCommandsStopped']\\n                                               and state['unknownCommandCount'] == 0)\\n        final_clock = time.monotonic()\\n        result['elapsedSeconds'] = final_clock - START\\n        result['deadlineMetAfterClosure'] = final_clock < UNTIL\\n        result['allApplicationDescriptorsClosed'] = descriptors_closed\\n        result['allOwnedLogChildrenClosed'] = helpers_closed\\n        result['budget'] = dict(budget)\\n        result['outcomeUnknown'] = bool(not descriptors_closed or not helpers_closed\\n            or result['closeErrors'] or restore_errors\\n            or (signals is not None and signals.pending is not None))\\n        result['ok'] = bool(complete and not result['outcomeUnknown']\\n            and final_clock < UNTIL and 'error' not in result and 'finalIdentityError' not in result)\\n    encoded = (json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False)\\n               + '\\\\n').encode()\\n    if len(encoded) > MAX_PUBLIC_OUTPUT:\\n        return 1\\n    sys.stdout.buffer.write(encoded)\\n    sys.stdout.buffer.flush()\\n    if time.monotonic() >= UNTIL or (signals is not None and signals.pending is not None):\\n        return 1\\n    return 0 if result['ok'] else 1\\n\\nif __name__ == '__main__':\\n    raise SystemExit(main())\\n\"\n}\n",
+      "requestPin": {
+        "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+        "bytes": 59546,
+        "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "28742ace2997700a22c45869e7bbdbd99f86fe8a",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "99ddbd0edaf79e563d6b6b8e329afdbc0732c1ab",
+            "bytes": 828,
+            "sha256": "80e68dd63f911d1f65246479e908fce6a5fb30c4d21a7d307546b0c20df6c284",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "55c1d625cb726dc97307247cc3491d074cb49254",
+            "bytes": 691,
+            "sha256": "0015989968b0c7da118f266d23b866aded6b797986acbd1d7343f3e54113bbf5",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+            "bytes": 59546,
+            "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 61065,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "c5e4ab18cb828eb74b1f09d42f2d8dfaa5f8dd96",
+        "bytes": 1425,
+        "sha256": "58496df5173264c3793e4f76eb344c2f132261b1675ccdea1e3f4a7cb435f5b2"
+      },
+      "sdkArchive": {
+        "tree": "6c7e6f56629da424009804e93e8f43a8b4fe1bea",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "c5e4ab18cb828eb74b1f09d42f2d8dfaa5f8dd96",
+            "bytes": 1425,
+            "sha256": "58496df5173264c3793e4f76eb344c2f132261b1675ccdea1e3f4a7cb435f5b2",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 1425,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "9d888130127f7d2ab3d9ede015b2b46aaf4fd0a9",
+        "bytes": 1177,
+        "sha256": "2f1747188602d0c92dc6f81f25e45b13ac5041dabcabcd17a3887d69ad182157"
+      }
+    },
+    "log-events-r1-authority-start": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-log-events-398136a3-authority-r1\",\n  \"operation\": {\n    \"tool\": \"process_status\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1af5c959e-fc05-67ee\"\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "9e660b202dab5f857460c94eb4ff2a9079e7d3c8",
+        "bytes": 225,
+        "sha256": "cc115588558fa5bd0fb6096f6bf0fb5f99d02f1e17492027b4821b0960096415"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "52be634d5d5270da3ba463a13a1ed393aa20a081",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "b100de0216d908bbb52e5406b933b8240a5b6a46",
+            "bytes": 857,
+            "sha256": "5b354d987ab04ec33a6eee267dea3c0dfe1eb63689d14afa9f7af3a3076f7cc0",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "525350acbdab98bd7784b221fae9b1503d318484",
+            "bytes": 720,
+            "sha256": "b392554d57ec595aa68f0b944f66df02c09c82433dd8aff30ded2b6937f939e6",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "9e660b202dab5f857460c94eb4ff2a9079e7d3c8",
+            "bytes": 225,
+            "sha256": "cc115588558fa5bd0fb6096f6bf0fb5f99d02f1e17492027b4821b0960096415",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1802,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "2c7d86bf4ee92579a8f8677893a1cc7b58ae3983",
+        "bytes": 709,
+        "sha256": "8fcbc663288683d1dfb5ddb2264c21ebc37f36c2527ec34bf6a76f1ef0cb1e8c"
+      },
+      "sdkArchive": {
+        "tree": "2c1ae400c1899b70349c809ba4f37479a7f8d0be",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "2c7d86bf4ee92579a8f8677893a1cc7b58ae3983",
+            "bytes": 709,
+            "sha256": "8fcbc663288683d1dfb5ddb2264c21ebc37f36c2527ec34bf6a76f1ef0cb1e8c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 709,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "635027e540c6f56e5387bfd6228b7bed7665aa5c",
+        "bytes": 548,
+        "sha256": "a694d3f263980010c1353feb8ab46f7f7dad66efe360a61724970c96075a7a6f"
+      }
+    },
+    "log-events-r1-authority-status-0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a\"\n}\n",
+      "requestPin": {
+        "blob": "5bd6a9ea2cf7cc188d5a3314b746761fe8a9a47a",
+        "bytes": 89,
+        "sha256": "8cdc87ba60ba5629cfb1c3f97c350e35f192781ef46b34ce978f0ae539c76ae4"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "f7c7ce3849114b824a51bed9a30243d43207333f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "4a2f5999587ec48f13319ed7d8755b981ec5c043",
+            "bytes": 922,
+            "sha256": "0f1db0d91bd39147b0f79143a000d130d8ae6c86a67de9d60cbfd72c387b712b",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "8133a99eb58ee1ccb803e33d6f75339e7e3f647b",
+            "bytes": 785,
+            "sha256": "1ec35a182043597c260e1e14c768711f6c84597ed0d7d4cc926a21fae55d69ea",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "5bd6a9ea2cf7cc188d5a3314b746761fe8a9a47a",
+            "bytes": 89,
+            "sha256": "8cdc87ba60ba5629cfb1c3f97c350e35f192781ef46b34ce978f0ae539c76ae4",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1796,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "791eeaf480e06dae8d7e819d47903c9c98848b20",
+        "bytes": 980,
+        "sha256": "95511889c4955e0e8ce2b3f7df0c529446150f8a3e3ac6230a66f5ca416b4089"
+      },
+      "sdkArchive": {
+        "tree": "9a808014f71847a56b2a9a05094420e1df3c0523",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "791eeaf480e06dae8d7e819d47903c9c98848b20",
+            "bytes": 980,
+            "sha256": "95511889c4955e0e8ce2b3f7df0c529446150f8a3e3ac6230a66f5ca416b4089",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 980,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "35795c8f52da186851c1e6138921e1cf9e56f90e",
+        "bytes": 805,
+        "sha256": "2d1d1d791b93874693d493aea872f92126aed6d4aed703e86376a146325fea52"
+      }
+    },
+    "log-events-r1-authority-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "dfad0fc2968be8f6662d652641c17a17a7ab7b04",
+        "bytes": 121,
+        "sha256": "b73e6f8bfcfca51ce9f1f5094f2f0ba1377060d00c5603a25c3b77e981492920"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "7d0fe8b13805b64a543a80a56f70ac371495dbc2",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a5310c86f4fde0c6105e759bf8f2b97c6babdb74",
+            "bytes": 926,
+            "sha256": "8fd512539bff6277be0c2a2533d12dad0ab5ced566092e28a41183a9f41493a9",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9e94056f596f447c9eac08867e08d3143c05fe79",
+            "bytes": 789,
+            "sha256": "539e48075a9245a6a9a66eecf124a161687b85c2a157da96c0648ffdf2360326",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "dfad0fc2968be8f6662d652641c17a17a7ab7b04",
+            "bytes": 121,
+            "sha256": "b73e6f8bfcfca51ce9f1f5094f2f0ba1377060d00c5603a25c3b77e981492920",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1836,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "da6f48d0d7b60aadf73c7c9e4fad8b03fba18efd",
+        "bytes": 2068,
+        "sha256": "bc2ceb2ca568421a1f205e267dd4b88a680e74a679dd161bb7065897b9be4998"
+      },
+      "sdkArchive": {
+        "tree": "671bdf6f44acb0bea5e17067bc24e45962e54dd4",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "da6f48d0d7b60aadf73c7c9e4fad8b03fba18efd",
+            "bytes": 2068,
+            "sha256": "bc2ceb2ca568421a1f205e267dd4b88a680e74a679dd161bb7065897b9be4998",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 2068,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "3d0c5f172578e1b452896ced39f9cf22b96898d5",
+        "bytes": 1897,
+        "sha256": "0984bb422721f202247371d921de1881bef44f75edccf1ef0bb3db17fb63e9e1"
+      }
+    },
+    "log-events-r1-streams-start": {
+      "kind": "operation_start",
+      "requestRaw": "{\n  \"idempotency_key\": \"heptabao-mac-owned-launchd-log-events-398136a3-streams-r1\",\n  \"operation\": {\n    \"tool\": \"process_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"job_id\": \"1a1af5c959e-fc05-67ee\",\n      \"stdout_offset\": 0,\n      \"stderr_offset\": 0,\n      \"limit\": 16384\n    }\n  }\n}\n",
+      "requestPin": {
+        "blob": "d14364c3a1c299707a7b54165fbc1353893486ac",
+        "bytes": 295,
+        "sha256": "ddf6a0b815d94f1f2316cb01a37865ac60571afe530b413be1e562713cbb246f"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "6cad80a2cfeae508cfd8a608b9abc771bfc882ad",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "a0d3b3ca3985ce362b0e46d36c18428c53bd1a43",
+            "bytes": 855,
+            "sha256": "6faa9e3379b29cf4698323c7137c21a9d169c15aa771e42d2f86c8d8c7ae51dc",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "146992fd1e610ed9f6cf51a6ab280d49409f20d8",
+            "bytes": 718,
+            "sha256": "fd286852a1ef7f6d21707b1a3934560b6f541666a4cd2546e1b74c95291c2119",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "d14364c3a1c299707a7b54165fbc1353893486ac",
+            "bytes": 295,
+            "sha256": "ddf6a0b815d94f1f2316cb01a37865ac60571afe530b413be1e562713cbb246f",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1868,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "76d266b8c07e491750ff1050ae36547911f5f9a6",
+        "bytes": 707,
+        "sha256": "8def2a00f1755f36efc609f705fbca0074a1258cacc8716abcc06d326ad14c95"
+      },
+      "sdkArchive": {
+        "tree": "bd9c5bb3a4fd5e35710b2aa6e069c78a49a2e4b6",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "76d266b8c07e491750ff1050ae36547911f5f9a6",
+            "bytes": 707,
+            "sha256": "8def2a00f1755f36efc609f705fbca0074a1258cacc8716abcc06d326ad14c95",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 707,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "c80de3335cc2de1b8cdd9e4e0773711aac29e6b8",
+        "bytes": 546,
+        "sha256": "95dc9bbd60e94ab602dff30253ef678ed4b93daef1fd8a53d3985a19ceb48807"
+      }
+    },
+    "log-events-r1-streams-status-0": {
+      "kind": "operation_status",
+      "requestRaw": "{\n  \"operation_id\": \"5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733\"\n}\n",
+      "requestPin": {
+        "blob": "776d69d5e72f2ab5bc2f18afafe805d5ac033f85",
+        "bytes": 89,
+        "sha256": "f5809576291350f55b256aac2ab0a98192674e16d2ac49746458963067008122"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "18437bf8251edc5e050d98bebc032e683010f95c",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "0b68e083c7bb971a23f78787729f333b0de8edfe",
+            "bytes": 920,
+            "sha256": "94937ca90ad81e307b2718c4e7b4f63b748e6827d81629255dabdc9a2924fa28",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "06dfccce6bb3902f8476892eb92f2bf75543d778",
+            "bytes": 783,
+            "sha256": "188721ac36ec06bffb9e13038432b2088048111f2ce9cc27e9d223caaecd25fe",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "776d69d5e72f2ab5bc2f18afafe805d5ac033f85",
+            "bytes": 89,
+            "sha256": "f5809576291350f55b256aac2ab0a98192674e16d2ac49746458963067008122",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1792,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "a7b2eff1fefe36c990c335421e19b4091cd2a945",
+        "bytes": 978,
+        "sha256": "3d8022219e630d30de7ded2823c240a34fe5a9d8eb3b70e8a0c353af38c0fda0"
+      },
+      "sdkArchive": {
+        "tree": "86e27db8a1f1af53bf9f2b5ccf65835b18b06a57",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "a7b2eff1fefe36c990c335421e19b4091cd2a945",
+            "bytes": 978,
+            "sha256": "3d8022219e630d30de7ded2823c240a34fe5a9d8eb3b70e8a0c353af38c0fda0",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 978,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "050351f387bb458ad12499f74ed21c46de8c7656",
+        "bytes": 803,
+        "sha256": "6a97aafd49babcfe4e8640fb8aa9762cc061489a4bfde114becccda99da31cf2"
+      }
+    },
+    "log-events-r1-streams-page-000000": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733\",\n  \"offset\": 0,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "a23e02008ff058e386a683fe2d8b1902b8ee4f44",
+        "bytes": 121,
+        "sha256": "f21af717f90b98e2a8aee03f23de39770260a1ae44fe0c42ef4aba460ee50daa"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "0b5bcb910d7b30308fd477f94a2ac2210bc3a7af",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "e23c2a741416de21668e3e4e50930d97031a76d5",
+            "bytes": 924,
+            "sha256": "6c3df59bee94844b8b821a83cdc64e603a1c01c2b0e3d3dbaaf6fba0fd5ed099",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "0de749694acfbf8645e4915f8a9cd49124599143",
+            "bytes": 787,
+            "sha256": "fa2cbdb902c2756744351d571d09e7600161dbf151aa37682bd9cf0e02a5b772",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "a23e02008ff058e386a683fe2d8b1902b8ee4f44",
+            "bytes": 121,
+            "sha256": "f21af717f90b98e2a8aee03f23de39770260a1ae44fe0c42ef4aba460ee50daa",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1832,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "18521c0aacf8ee5488370dde2da17f9cda1d4525",
+        "bytes": 11780,
+        "sha256": "2d69a5c06644a227ebc9322690f8317376b26792a64d172ff0ef62a5807e3177"
+      },
+      "sdkArchive": {
+        "tree": "6e82ea9cfabab9550296016ff8cd4da662cc6b20",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "18521c0aacf8ee5488370dde2da17f9cda1d4525",
+            "bytes": 11780,
+            "sha256": "2d69a5c06644a227ebc9322690f8317376b26792a64d172ff0ef62a5807e3177",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11780,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "461a0a69dd07263235bac5e0f503f178d4da3f7c",
+        "bytes": 11609,
+        "sha256": "56df0595843c744f36453be96e3513bb34bdf0d28c5947cdd0062a636b95a03f"
+      }
+    },
+    "log-events-r1-streams-page-008192": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733\",\n  \"offset\": 8192,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "cc4a79a967654b00f11c29c9ff92eaf078a06f9a",
+        "bytes": 124,
+        "sha256": "334ee32720e234130e32f9235501ead2c0dbb7d72b6ad342e8324b9866cb6119"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "e5549c4628aeb4a20fe2486307419c031bed438d",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "628143e9f25d1897b3380b010487f3660d6cfe92",
+            "bytes": 924,
+            "sha256": "1827a13072f82ad2682fafab8c986ddd99cfa85503b893869cf49563ac806211",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "3882c8db98e100439f3b946dab974bfde1b895b1",
+            "bytes": 787,
+            "sha256": "0b6d302ac8e73ebcc7bd8bc3c3e7d14657860fec7ab5636ae688df756220ed88",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "cc4a79a967654b00f11c29c9ff92eaf078a06f9a",
+            "bytes": 124,
+            "sha256": "334ee32720e234130e32f9235501ead2c0dbb7d72b6ad342e8324b9866cb6119",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1835,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "737120c6c6565b0a4a87a56faf893f53a8b6890a",
+        "bytes": 11784,
+        "sha256": "d189850aaac43cbd2b9ebea343837d8262545e3e69295317d6ffbec2522dce1c"
+      },
+      "sdkArchive": {
+        "tree": "3a534b2259b8f9ce87f4fd3abd02f8adef8c76ac",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "737120c6c6565b0a4a87a56faf893f53a8b6890a",
+            "bytes": 11784,
+            "sha256": "d189850aaac43cbd2b9ebea343837d8262545e3e69295317d6ffbec2522dce1c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 11784,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "ffd77c7fe372699895e41b4feae2c062a7f3d094",
+        "bytes": 11613,
+        "sha256": "8a613124605603bfa52ee032408f6685834f3123389d8a99486cf05baec0cd55"
+      }
+    },
+    "log-events-r1-streams-page-016384": {
+      "kind": "operation_result",
+      "requestRaw": "{\n  \"operation_id\": \"5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733\",\n  \"offset\": 16384,\n  \"limit\": 8192\n}\n",
+      "requestPin": {
+        "blob": "28558e54058a110238265f6af0ca11e13da0fdd9",
+        "bytes": 125,
+        "sha256": "b72675e8e27e71fa1d2d1815f9d02bab23886c287ed1d3030f876530f0d789d6"
+      },
+      "phase": "accepted",
+      "called": true,
+      "armed": {
+        "tree": "1dca233f295ef18ba69f2265da0a39fb2812c43f",
+        "entries": [
+          {
+            "path": "armed.json",
+            "blob": "90545865478fe0ead77ee6fc74548884f036aa62",
+            "bytes": 924,
+            "sha256": "9e2fd7ae4a22752899d688fa91dc42591d5514ab55a67c20849a34afc1534c19",
+            "whole": true
+          },
+          {
+            "path": "intent.json",
+            "blob": "9b162256a21696266384aad6b348ae056186e4e7",
+            "bytes": 787,
+            "sha256": "ee0c437e2c7f55024f308da837a8845790264f99806f20facd41e1736bfb2560",
+            "whole": true
+          },
+          {
+            "path": "request.json",
+            "blob": "28558e54058a110238265f6af0ca11e13da0fdd9",
+            "bytes": 125,
+            "sha256": "b72675e8e27e71fa1d2d1815f9d02bab23886c287ed1d3030f876530f0d789d6",
+            "whole": true
+          }
+        ],
+        "count": 3,
+        "bytes": 1836,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "sdkPin": {
+        "blob": "ab5339461f35e2d1c273a8622ec927a9e8190ce1",
+        "bytes": 3808,
+        "sha256": "70b65fcbb84c47aae60890cb630459673e2fef31e85c1bf8ea4c4e11f19fc31c"
+      },
+      "sdkArchive": {
+        "tree": "ddcf8faf514b6470424e0a6441a205ffca3f9e1a",
+        "entries": [
+          {
+            "path": "original.sdk.json",
+            "blob": "ab5339461f35e2d1c273a8622ec927a9e8190ce1",
+            "bytes": 3808,
+            "sha256": "70b65fcbb84c47aae60890cb630459673e2fef31e85c1bf8ea4c4e11f19fc31c",
+            "whole": true
+          }
+        ],
+        "count": 1,
+        "bytes": 3808,
+        "whole": true,
+        "localDurableJournal": false,
+        "runtimeAuthorized": false
+      },
+      "nativePin": {
+        "blob": "bb8bde9b68e52a3458a8aa4cb26a31a93a3a7e93",
+        "bytes": 3637,
+        "sha256": "3e397b251be7ae812a2aa2ee82dc0f3cc47b219e377b42acb4f9f08dfaf33954"
+      }
+    }
+  },
+  "completedObservers": [
+    {
+      "id": "5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a",
+      "tool": "process_status",
+      "payload": {
+        "blob": "8ae5d3d63b23983b16503798c794ef418be764a2",
+        "bytes": 910,
+        "sha256": "88e47b66cc40703ce038346fe110106ba2d5f201cd61d3f3b721e293ef88e5b4"
+      },
+      "payloadTree": "132e075c781620c45678833ad7a2d55f0b74c960",
+      "nativeText": {
+        "blob": "ba5eadca5478057a6e2ae3c2c8d32c5905fee02e",
+        "bytes": 731,
+        "sha256": "7581f52cfd051bcdf152eaba3afb19b2e624ab4c0c6d8887c54a95ac6aaf96c9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733",
+      "tool": "process_read",
+      "payload": {
+        "blob": "e20f3e9bf926adf4a1c6aea1272ffd701643bd54",
+        "bytes": 18594,
+        "sha256": "9efeee4d5fe35dcce5d0158d3a4f91e78616a2315c9d8854d01e1522e96c598e"
+      },
+      "payloadTree": "39827044197204f208ba5a58677803d25739217a",
+      "nativeText": {
+        "blob": "5627b57675b8a56534ad0ffd3fda6fe179a7e1fd",
+        "bytes": 17341,
+        "sha256": "d1f166cc7405622e0a2f9f96328bfcb45b67e28a353cd10d570a256271b45c55"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "nextStdout": 5487,
+  "nextStderr": 0,
+  "localJournalAvailable": false,
+  "gitFirstExplicitlyRequiredByThisRootGO": true
+}

@@ -1,0 +1,616 @@
+{
+  "schema": "heptabao.jwt-r2-build-source.selected-checks.v1",
+  "checks": [
+    {
+      "name": "runner single forward purpose",
+      "pass": true
+    },
+    {
+      "name": "runner single forward inactive admission",
+      "pass": true
+    },
+    {
+      "name": "runner single forward final formatted identity unresolved",
+      "pass": true
+    },
+    {
+      "name": "runner single forward six current retained fences",
+      "pass": true
+    },
+    {
+      "name": "runner single forward exact four family source gate",
+      "pass": true
+    },
+    {
+      "name": "runner single forward new independent denominators and bounds",
+      "pass": true
+    },
+    {
+      "name": "runner single forward release clipped original outer",
+      "pass": true
+    },
+    {
+      "name": "runner single forward shared compile gate and exact profile runs",
+      "pass": true
+    },
+    {
+      "name": "runner whole forward",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse shared compile gate and exact profile runs",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse release clipped original outer",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse new independent denominators and bounds",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse exact four family source gate",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse six current retained fences",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse final formatted identity unresolved",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse inactive admission",
+      "pass": true
+    },
+    {
+      "name": "runner single reverse purpose",
+      "pass": true
+    },
+    {
+      "name": "runner whole reverse",
+      "pass": true
+    },
+    {
+      "name": "runner inert draft precedes first OS call",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward purpose",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward inactive source admission",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward controls receipt argument",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward final source identity unresolved",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward new exact controls receipt hash argument",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward fresh isolated build controls root",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward current runner name",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward separate exact final source and controls",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward owned build output",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward failed observer remains in original source controls",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward current launcher exact name",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward source stage receipt separate path",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward final independent source schema",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward source closure qualification",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward new exact groups filename",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward new independent controls and 147-162 denominators",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward new admission schema",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward actual source and controls receipt in admission",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward groups same-PID argv",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward independent admitted counts",
+      "pass": true
+    },
+    {
+      "name": "launcher single forward independent stdout counts",
+      "pass": true
+    },
+    {
+      "name": "launcher whole forward",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse independent stdout counts",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse independent admitted counts",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse groups same-PID argv",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse actual source and controls receipt in admission",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse new admission schema",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse new independent controls and 147-162 denominators",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse new exact groups filename",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse source closure qualification",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse final independent source schema",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse source stage receipt separate path",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse current launcher exact name",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse failed observer remains in original source controls",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse owned build output",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse separate exact final source and controls",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse current runner name",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse fresh isolated build controls root",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse new exact controls receipt hash argument",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse final source identity unresolved",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse controls receipt argument",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse inactive source admission",
+      "pass": true
+    },
+    {
+      "name": "launcher single reverse purpose",
+      "pass": true
+    },
+    {
+      "name": "launcher whole reverse",
+      "pass": true
+    },
+    {
+      "name": "launcher inert draft precedes first OS call",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward purpose",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward inactive source draft",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward fixed parent",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward owned fresh controls root",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward exact three reviewed payloads",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward new receipt schema",
+      "pass": true
+    },
+    {
+      "name": "publisher single forward new input schema",
+      "pass": true
+    },
+    {
+      "name": "publisher whole forward",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse new input schema",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse new receipt schema",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse exact three reviewed payloads",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse owned fresh controls root",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse fixed parent",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse inactive source draft",
+      "pass": true
+    },
+    {
+      "name": "publisher single reverse purpose",
+      "pass": true
+    },
+    {
+      "name": "publisher whole reverse",
+      "pass": true
+    },
+    {
+      "name": "publisher inert draft precedes first OS call",
+      "pass": true
+    },
+    {
+      "name": "runner10 definitions",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper signal_received",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper sha",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper preserve_prior_df026",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper write",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper git",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper freeze",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper group_members",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper terminate_owned",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper bounded_remaining",
+      "pass": true
+    },
+    {
+      "name": "runner whole original helper owned",
+      "pass": true
+    },
+    {
+      "name": "launcher10 definitions",
+      "pass": true
+    },
+    {
+      "name": "launcher helper identity",
+      "pass": true
+    },
+    {
+      "name": "launcher helper read_bound",
+      "pass": true
+    },
+    {
+      "name": "launcher helper freeze",
+      "pass": true
+    },
+    {
+      "name": "launcher helper public",
+      "pass": true
+    },
+    {
+      "name": "launcher helper preserve_r9",
+      "pass": true
+    },
+    {
+      "name": "launcher helper preserve_r10",
+      "pass": true
+    },
+    {
+      "name": "launcher helper preserve_successful_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher helper preserve_failed_observer",
+      "pass": true
+    },
+    {
+      "name": "launcher helper preserve_current_early_failure",
+      "pass": true
+    },
+    {
+      "name": "launcher helper holders",
+      "pass": true
+    },
+    {
+      "name": "publisher5 definitions",
+      "pass": true
+    },
+    {
+      "name": "publisher whole original helper sha",
+      "pass": true
+    },
+    {
+      "name": "publisher whole original helper ident",
+      "pass": true
+    },
+    {
+      "name": "publisher whole original helper sync_dir",
+      "pass": true
+    },
+    {
+      "name": "publisher whole original helper exact",
+      "pass": true
+    },
+    {
+      "name": "publisher whole original helper publish",
+      "pass": true
+    },
+    {
+      "name": "runner entire failure cleanup and terminal tail unchanged",
+      "pass": true
+    },
+    {
+      "name": "launcher failure lock close refusal tail unchanged",
+      "pass": true
+    },
+    {
+      "name": "same-PID final deadline and exec unchanged",
+      "pass": true
+    },
+    {
+      "name": "final source identities unresolved",
+      "pass": true
+    },
+    {
+      "name": "same target and first5",
+      "pass": true
+    },
+    {
+      "name": "target missing remains refusal",
+      "pass": true
+    },
+    {
+      "name": "original nonblocking flock probe",
+      "pass": true
+    },
+    {
+      "name": "same12000 outer runner and launcher",
+      "pass": true
+    },
+    {
+      "name": "one shared3600 compile deadline",
+      "pass": true
+    },
+    {
+      "name": "ordinary no-default compile",
+      "pass": true
+    },
+    {
+      "name": "file-only profile",
+      "pass": true
+    },
+    {
+      "name": "default profile explicit",
+      "pass": true
+    },
+    {
+      "name": "build finished observed",
+      "pass": true
+    },
+    {
+      "name": "release original1800 clipped",
+      "pass": true
+    },
+    {
+      "name": "families clipped original outer",
+      "pass": true
+    },
+    {
+      "name": "exact listing and actual one pass",
+      "pass": true
+    },
+    {
+      "name": "default does not claim distributed JWT HA",
+      "pass": true
+    },
+    {
+      "name": "old qualified business denominator not rerun",
+      "pass": true
+    },
+    {
+      "name": "four exact groups",
+      "pass": true
+    },
+    {
+      "name": "162 profile instances",
+      "pass": true
+    },
+    {
+      "name": "147 unique names",
+      "pass": true
+    },
+    {
+      "name": "same15 in both profiles",
+      "pass": true
+    },
+    {
+      "name": "unique family native-jwt-file15",
+      "pass": true
+    },
+    {
+      "name": "unique family native-jwt-default15",
+      "pass": true
+    },
+    {
+      "name": "unique family legacy-jwt-default63",
+      "pass": true
+    },
+    {
+      "name": "unique family native-auth-identity-default69",
+      "pass": true
+    },
+    {
+      "name": "exact groups wholeSHA",
+      "pass": true
+    },
+    {
+      "name": "groups cap retained",
+      "pass": true
+    },
+    {
+      "name": "runner cap retained",
+      "pass": true
+    },
+    {
+      "name": "launcher cap retained",
+      "pass": true
+    },
+    {
+      "name": "publisher input fixed three",
+      "pass": true
+    },
+    {
+      "name": "payload exact native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload exact launch_native_jwt_build.py",
+      "pass": true
+    },
+    {
+      "name": "payload exact jwt-test-groups.public.json",
+      "pass": true
+    },
+    {
+      "name": "payload within original262144",
+      "pass": true
+    },
+    {
+      "name": "new owned controls root exactly",
+      "pass": true
+    },
+    {
+      "name": "new own directory create only",
+      "pass": true
+    },
+    {
+      "name": "source no longer publisher root",
+      "pass": true
+    },
+    {
+      "name": "receipt exact three identity comparison",
+      "pass": true
+    },
+    {
+      "name": "no execute historical source-stage controls",
+      "pass": true
+    },
+    {
+      "name": "six current pins exactly bound",
+      "pass": true
+    },
+    {
+      "name": "all twelve retained pins outside cache",
+      "pass": true
+    }
+  ],
+  "passed": 151,
+  "Runtime": 0,
+  "PythonCompile": 0,
+  "RustCompile": 0,
+  "fullModuleExecuted": false,
+  "finalSourceBound": false,
+  "testResult": false
+}

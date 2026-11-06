@@ -1,0 +1,196 @@
+--- a/journal.info.before.js
++++ b/journal.body.after.js
+@@ -65,6 +65,79 @@
+    maximumFileInfoStarts:1,binaryReadAuthorized:false};
+ }
+ 
++/* Three fixed binary ranges; SOURCE unbound until the independent info closes.
++ * Only these new binary_read observers use 16384-byte immutable pages. */
++const GF_COLLECTOR_REPORT_BODY_BOUND = true;
++const GF_COLLECTOR_REPORT_BODY_EXPECTED = {"path":"/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json","bytes":167436,"sha256":"2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa","version":"66306:30541032:167436:1793941397394515427:1793941397394515427","full9":["66306","30541032","1000","1000","33152","1","167436","1793941397394515427","1793941397394515427"],"infoOperation":"d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19","infoNative":{"blob":"a8865610dc4024f4473a7e64935fcd064fa0d23c","bytes":483,"sha256":"828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"}};
++const GF_COLLECTOR_REPORT_BODY_RANGES = [
++  {
++    "offset": 0,
++    "limit": 65536,
++    "request": {
++      "blob": "b819a29f416b682c8b95367c9121d4b4e2954f98",
++      "bytes": 426,
++      "sha256": "883c876f3a7436005d789c9a0448756d15280353ca1dad454663cbc283360a01"
++    }
++  },
++  {
++    "offset": 65536,
++    "limit": 65536,
++    "request": {
++      "blob": "aee10e1f429ae160a3a132360ee4cfd935f04473",
++      "bytes": 430,
++      "sha256": "1cf4feca6b049079f5f0e9d50b95c758adfee77173b11584dbb0aa066a8dd0c7"
++    }
++  },
++  {
++    "offset": 131072,
++    "limit": 36364,
++    "request": {
++      "blob": "3182034f4f957e0f64b9ea1a0c2294f2f41f142d",
++      "bytes": 431,
++      "sha256": "16fd7c5d8dd3c1ff0fcfeabf2ddfdd68022a3331f476f56f1661883df6eeb454"
++    }
++  }
++];
++const GF_COLLECTOR_REPORT_BODY_PAGE_BYTES = 16384;
++
++function gfAuthorizeCollectorReportBodyOnly({goRaw,goPin,goWholeReadback}) {
++ const s=gfState(),need=GF_COLLECTOR_REPORT_BODY_EXPECTED,info=s.collectorReportInfo;
++ gfNeed(GF_COLLECTOR_REPORT_BODY_BOUND===true,"actual_info_binding_required");
++ gfNeed(!s.paused && !s.nativeCallInFlight && s.pending===null
++   && s.activeObserver===null && s.job==="1a1af3d52ee-fc05-6701"
++   && s.collectorReportInfoGO?.whole===true && s.collectorReportInfoStarted===true
++   && s.collectorReportBodyGO===undefined && s.collectorReportBodyStarted===undefined
++   && s.collectorReportBodyRanges===undefined,"closed_current_info_before_exact_body_GO");
++ gfNeed(goWholeReadback===true && gfMetaEquals(goRaw,goPin)
++   && goPin.blob!==s.goPin.blob && goPin.blob!==s.collectorReportInfoGO.pin.blob,
++   "separate_whole_collector_report_body_GO");
++ const g=JSON.parse(goRaw);
++ gfNeed(g.authorization==="GO" && g.scope==="collector_report_binary_read_ranges_only"
++   && g.original_job===s.job && g.info_operation===need.infoOperation
++   && g.maximum_binary_read_starts===3 && g.immutable_body_page_bytes===GF_COLLECTOR_REPORT_BODY_PAGE_BYTES
++   && g.fixed_report?.path===need.path && g.fixed_report?.bytes===need.bytes
++   && g.fixed_report?.sha256===need.sha256 && g.fixed_report?.version===need.version
++   && Array.isArray(g.exact_requests) && g.exact_requests.length===GF_COLLECTOR_REPORT_BODY_RANGES.length
++   && GF_COLLECTOR_REPORT_BODY_RANGES.every((x,i)=>g.exact_requests[i]?.blob===x.request.blob
++     && g.exact_requests[i]?.bytes===x.request.bytes
++     && g.exact_requests[i]?.sha256===x.request.sha256),"exact_new_root_three_range_scope");
++ const prior=s.completedObservers.find(o=>o.id===need.infoOperation);
++ gfNeed(prior?.completedInactive===true && prior.tool==="file_info"
++   && prior.nativeText.blob===need.infoNative.blob
++   && gfMetaEquals(load(GF_SLOT+":closed_native:"+need.infoOperation),need.infoNative)
++   && info?.path===need.path && info.size===need.bytes && info.sha256===need.sha256
++   && info.version===need.version && info.originalOperation===need.infoOperation
++   && need.bytes>0 && need.bytes<=GF_COLLECTOR_REPORT_EXPECTED.bytes,
++   "whole_current_info_exact_identity");
++ s.collectorReportBodyGO={pin:goPin,raw:goRaw,whole:true};
++ s.collectorReportBodyStarted=0;s.collectorReportBodyRanges=[];
++ gfSave(s);
++ return {originalJob:s.job,infoOperation:need.infoOperation,
++   exactRequests:GF_COLLECTOR_REPORT_BODY_RANGES,maximumBinaryReadStarts:3,
++   bodyPageBytes:GF_COLLECTOR_REPORT_BODY_PAGE_BYTES,wholeBytes:need.bytes};
++}
++
++
+ function gfNeed(value, code) { if(!value) throw new Error(code); }
+ function gfMetaEquals(raw,pin) {
+  const actual=gitBlobMeta(raw);
+@@ -107,7 +180,16 @@
+   const op=q.operation,a=op?.arguments;
+   gfNeed(op && Object.keys(op).sort().join(",")==="arguments,tool"
+     && a && a.host==="rog","same_original_host_only");
++  if(op.tool==="binary_read") {
++   const index=s.collectorReportBodyRanges?.length,range=GF_COLLECTOR_REPORT_BODY_RANGES[index];
++   gfNeed(s.collectorReportBodyGO?.whole===true && range
++     && s.collectorReportBodyStarted===index && gfMetaEquals(raw,range.request)
++     && Object.keys(a).sort().join(",")==="expected_version,host,limit,offset,path"
++     && a.path===GF_COLLECTOR_REPORT_BODY_EXPECTED.path && a.offset===range.offset
++     && a.limit===range.limit && a.limit>0 && a.limit<=65536
++     && a.expected_version===GF_COLLECTOR_REPORT_BODY_EXPECTED.version,
++     "one_exact_next_version_bound_collector_report_body_range");
++  } else if(op.tool==="file_info") {
+-  if(op.tool==="file_info") {
+    gfNeed(s.collectorReportInfoGO?.whole===true && s.collectorReportInfoStarted!==true
+      && gfMetaEquals(raw,GF_COLLECTOR_REPORT_INFO_REQUEST)
+      && Object.keys(a).sort().join(",")==="host,path"
+@@ -128,7 +210,8 @@
+  } else if(kind==="operation_result") {
+   gfNeed(s.activeObserver?.futureClosed===true
+    && Object.keys(q).sort().join(",")==="limit,offset,operation_id"
++   && q.operation_id===s.activeObserver.id
++   && q.limit===(s.activeObserver.tool==="binary_read"?GF_COLLECTOR_REPORT_BODY_PAGE_BYTES:8192)
+-   && q.operation_id===s.activeObserver.id && q.limit===8192
+    && q.offset===s.activeObserver.nextPageOffset && !s.activeObserver.eof,
+    "same_closed_original_operation_next_page");
+  } else throw new Error("closed_native_tool_set");
+@@ -141,8 +224,10 @@
+  const requestPin=gitBlobMeta(requestRaw);
+  const intent={schema:"heptabao.gitfirst.fixed-native-call-intent.r1",
+   callKey,kind,request:requestPin,
++  rootGo:((kind==="operation_start" && q.operation.tool==="binary_read")
++    || s.activeObserver?.tool==="binary_read") ? s.collectorReportBodyGO.pin
++    : ((kind==="operation_start" && q.operation.tool==="file_info")
++      || s.activeObserver?.tool==="file_info") ? s.collectorReportInfoGO.pin : s.goPin,
+-  rootGo:(kind==="operation_start" && q.operation.tool==="file_info")
+-    || s.activeObserver?.tool==="file_info" ? s.collectorReportInfoGO.pin : s.goPin,
+   originalJob:s.job,
+   originalOperation:s.activeObserver?.id??null,maximumNativeCalls:1,
+   nativeNotYetCalled:true,lossOfAcknowledgmentNeverGrantsReplay:true,
+@@ -174,6 +259,7 @@
+  c.called=true;c.phase="native_call_entered";s.nativeCallInFlight=true;
+  if(c.kind==="process_start")s.startCalled=true;
+  if(c.kind==="operation_start" && q.operation.tool==="file_info")s.collectorReportInfoStarted=true;
++ if(c.kind==="operation_start" && q.operation.tool==="binary_read")s.collectorReportBodyStarted++;
+  gfSave(s); // No await or second dispatch between this marker and the one call.
+  let sdk;
+  try {
+@@ -257,7 +343,8 @@
+     && Number.isSafeInteger(v.total_bytes) && v.total_bytes>=0 && v.total_bytes<=1048576
+     && /^[a-f0-9]{64}$/.test(v.result_sha256),"exact_original_immutable_payload");
+    const b=unb64(v.data_base64);
++   gfNeed(b.length<=(a.tool==="binary_read"?GF_COLLECTOR_REPORT_BODY_PAGE_BYTES:8192)
++     && v.next_offset===q.offset+b.length
+-   gfNeed(b.length<=8192 && v.next_offset===q.offset+b.length
+      && v.next_offset<=v.total_bytes && v.eof===(v.next_offset===v.total_bytes)
+      && (b.length>0||v.eof),"exact_original_page_extent");
+    gfNeed(a.total===null || (a.total===v.total_bytes && a.digest===v.result_sha256),
+@@ -299,7 +386,45 @@
+   gfNeed(p.resultType==="complete" && p.isError===false
+     && p.content?.length===1 && p.content[0].type==="text","original_native_result_success");
+   const nativeRaw=p.content[0].text,v=parseLosslessIntegers(nativeRaw);
++  if(a.tool==="binary_read") {
++   const need=GF_COLLECTOR_REPORT_BODY_EXPECTED,index=s.collectorReportBodyRanges.length,
++     range=GF_COLLECTOR_REPORT_BODY_RANGES[index],asked=a.request.operation.arguments;
++   gfNeed(range && s.collectorReportBodyStarted===index+1
++     && asked.offset===range.offset && asked.limit===range.limit
++     && v.path===need.path && v.version===need.version && v.size===need.bytes
++     && v.offset===range.offset && v.next_offset===range.offset+range.limit
++     && v.eof===(v.next_offset===need.bytes)
++     && typeof v.data_base64==="string" && /^[a-f0-9]{64}$/.test(v.chunk_sha256),
++     "exact_collector_report_body_original_range_extent");
++   const bodyBytes=unb64(v.data_base64);
++   gfNeed(bodyBytes.length===range.limit
++     && sha256Latin1(byteString(bodyBytes))===v.chunk_sha256,
++     "collector_report_body_actual_chunk_bytes_SHA");
++   const row={offset:range.offset,limit:range.limit,next:v.next_offset,
++     chunkSHA256:v.chunk_sha256,base64:v.data_base64,originalOperation:a.id,
++     originalPayload:pin,originalPayloadTree:archive.tree};
++   if(index+1===GF_COLLECTOR_REPORT_BODY_RANGES.length) {
++    const ranges=s.collectorReportBodyRanges.concat([row]);
++    let complete=[],at=0;
++    for(const part of ranges) {
++     gfNeed(part.offset===at,"collector_report_body_whole_continuity");
++     complete=complete.concat(unb64(part.base64));at=part.next;
++    }
++    gfNeed(at===need.bytes && complete.length===need.bytes
++      && sha256Latin1(byteString(complete))===need.sha256,"collector_report_body_whole_exact_SHA");
++    const wholeRaw=utf8Text(complete),wholePin=gitBlobMeta(wholeRaw);
++    gfNeed(wholePin.bytes===need.bytes && wholePin.sha256===need.sha256,
++      "collector_report_report_whole_UTF8_roundtrip");
++    store(GF_SLOT+":collector_report_body_original",wholeRaw);
++    const wholeArchive=await archiveFlatPublicTextsOnce({
++     key:"jwt-format38-collector-public-report-whole-r1",repository:"TrillionniumFoundation/HeptaBao",
++     texts:{"observation.public.json":wholeRaw}});
++    s.collectorReportBody={path:need.path,version:need.version,body:wholePin,
++      wholeTree:wholeArchive.tree,originalOperations:ranges.map(x=>x.originalOperation),
++      metadataOperation:need.infoOperation,semanticQualification:false};
++   }
++   s.collectorReportBodyRanges.push(row);
++  } else if(a.tool==="file_info") {
+-  if(a.tool==="file_info") {
+    const md=v.metadata,parts=typeof v.version==="string"?v.version.split(":"):[];
+    gfNeed(v.path===GF_COLLECTOR_REPORT_EXPECTED.path
+      && v.size===GF_COLLECTOR_REPORT_EXPECTED.bytes
+@@ -402,6 +527,7 @@
+   let value;
+   if(action==="initialize")value=gfInitializeOnlyAfterRootGO(args);
+   else if(action==="authorize_collector_report_info")value=gfAuthorizeCollectorReportInfoOnly(args);
++  else if(action==="authorize_collector_report_body")value=gfAuthorizeCollectorReportBodyOnly(args);
+   else if(action==="prepare")value=await gfPrepareOne(args);
+   else if(action==="invoke")value=await gfInvokePreparedOnce(args.callKey);
+   else if(action==="accept")value=gfAcceptArchivedSDK(args.callKey);

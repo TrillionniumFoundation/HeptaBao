@@ -1,0 +1,34 @@
+
+function reviewPkiTwoFileFormatter(){
+ const p=load("r34_packet_PKI-two-files-formatter-source"),r=p.raw,plan=JSON.parse(r["PLAN.public.json"]),before=r["formatter.before.py"],after=r["formatter.after.py"],q=JSON.parse(r["exact-request.REVIEW-ONLY.public.json"]),oq=JSON.parse(r["formatter.original-request.json"]),checks=[];
+ const ck=(name,v)=>{checks.push({name,passed:v===true});if(v!==true)throw Error(name);},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ ck("whole21_895557_bytes",p.audit.whole&&p.audit.files===21&&p.audit.bytes===895557);
+ ck("exact_original_controller_request",gitBlobMeta(before).blob==="81211c8129b8d219672f88e5d7a2f9a0e7c3dea2"&&gitBlobMeta(r["formatter.original-request.json"]).blob==="52fe787d5b68896d16156740f719c74118a12a0b"&&oq.args[4]===before);
+ ck("candidate_and_request_whole_pins",same(gitBlobMeta(after),plan.candidate)&&same(gitBlobMeta(r["exact-request.REVIEW-ONLY.public.json"]),plan.exact_request));
+ const f=strictApply(before,r["formatter.strict.diff"]),v=strictApply(after,r["formatter.strict.diff"],true);
+ ck("strict_two_controller_hunks_forward_inverse",f.text===after&&v.text===before&&f.hunks===2&&v.hunks===2);
+ let changed=before;const replacements=JSON.parse(r["formatter.replacements.public.json"]);
+ ck("only_five_exact_literal_replacements",replacements.length===5&&replacements.every(x=>{if(changed.split(x.before).length!==2)return false;changed=changed.replace(x.before,x.after);return true;})&&changed===after);
+ const defs=[...before.matchAll(/^def (\w+)\(/gm)].map(x=>x[1]);
+ ck("five_original_definitions_and_child_finally_bytes_unchanged",same(defs,["remain","sha","read_pin","write_new","sync_dir"])&&after.slice(after.indexOf("created=False;"))===before.slice(before.indexOf("created=False;")));
+ const nq={...q,args:[...q.args]},noq={...oq,args:[...oq.args]};delete nq.stdin;delete noq.stdin;delete nq.idempotency_key;delete noq.idempotency_key;nq.args[4]="SOURCE";noq.args[4]="SOURCE";
+ ck("only_new_source_payload_key_native_fields",same(nq,noq)&&q.args[4]===after&&q.stdin===r["candidate.payload.json"]&&q.host==="rog"&&q.executable==="/usr/bin/python3"&&same(q.args.slice(0,4),["-I","-S","-B","-c"])&&q.timeout_seconds===60);
+ const carrier=JSON.parse(q.stdin),expectedNames=["pki.rs","service_native_pki_tests.rs"];
+ ck("two_exact_payload_names_and_known_source_bytes",same(Object.keys(carrier).sort(),expectedNames.slice().sort())&&carrier["pki.rs"]===r["pki.candidate.rs"]&&carrier["service_native_pki_tests.rs"]===r["pki-tests.candidate.rs"]);
+ ck("root_owned_PKIfix_candidates_unchanged",gitBlobMeta(carrier["pki.rs"]).blob==="3c6fd86dcd641eb16af64b835d2252163dd1488e"&&gitBlobMeta(carrier["service_native_pki_tests.rs"]).blob==="352e581f5a901f21ee7c7af4c9bc5b3bed1a1439"&&gitBlobMeta(r["acceptance.candidate.py"]).blob==="8ffd4f530426968fa396ceb8cb3299e80f25a9d0");
+ ck("fixed187081_carrier_within_original262144",gitBlobMeta(q.stdin).bytes===187081&&same(gitBlobMeta(q.stdin),plan.input_carrier)&&plan.input_file_bytes===179535&&after.includes("raw=sys.stdin.buffer.read(262145)")&&after.includes("if len(raw)>262144:"));
+ const expected=JSON.parse(after.match(/^EXPECTED=(.*)$/m)[1]);
+ ck("actual_before_and_candidate_hashes_root_known",plan.candidate_files.every(x=>expected[x.name][0]===x.before.sha256&&expected[x.name][1]===x.candidate.sha256&&same(gitBlobMeta(carrier[x.name]),x.candidate)));
+ ck("original_fifty_ten_sixty_and_no_new_group",after.includes("START=time.monotonic(); LIMIT=50.0")&&after.includes("timeout=min(10.0,remain())")&&after.includes("p.wait(timeout=min(5.0,remain()))")&&after.includes("start_new_session=False")&&after.includes("'internalSeconds':50,'newRemoteSupervisorSeconds':60"));
+ ck("original_explicit_tool_and_config",after.includes("FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'")&&after.includes("FORMAT_CONFIG=b'edition = \"2024\"\\n'")&&after.includes("'--config-path',str(ROOT/'rustfmt.toml')")&&after.includes("'repositoryRustfmtConfigPresent']=False"));
+ ck("new_owned_root_and_only_base_identity",after.includes("ROOT=Path('/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1')")&&after.includes("ROOT.mkdir(mode=0o700)")&&after.includes("'sourceIdentityIsBaseOnly':True")&&after.includes("'uncommittedCandidateInputs':True")&&after.includes("original host repository is not read or written"));
+ const jb=r["journal.before.js"],ja=r["journal.after.js"],jf=strictApply(jb,r["journal.strict.diff"]),jr=strictApply(ja,r["journal.strict.diff"],true);
+ ck("two_strict_journal_hunks_and_original_base",jb===load("r34_packet_JWT-fixed38-collector-source").raw["journal.native.js"]||gitBlobMeta(jb).blob==="01360ba6d3026a67e9be2ffc11ccc40a53eaf7b8");
+ ck("journal_exact_forward_inverse",jf.text===ja&&jr.text===jb&&jf.hunks===2&&jr.hunks===2&&same(gitBlobMeta(ja),plan.journal));
+ let j=jb;const rs=JSON.parse(r["journal.replacements.public.json"]);
+ ck("only_three_journal_literals",rs.length===3&&rs.every(x=>{if(j.split(x.before).length!==2)return false;j=j.replace(x.before,x.after);return true;})&&j===ja);
+ ck("ten_future_paths_metadata_unobserved_fixed_caps",plan.future_outputs.length===10&&new Set(plan.future_outputs.map(x=>x.path)).size===10&&plan.future_outputs.every(x=>x.path.startsWith(plan.isolated_owned_root+"/")&&x.actual_metadata===null)&&plan.future_outputs.reduce((n,x)=>n+x.body_cap,0)===1424736&&plan.future_output_observation_authorized===false);
+ ck("acceptance_separate_from_rustfmt",plan.acceptance_source.rustfmt_applies===false&&same(gitBlobMeta(r["acceptance.candidate.py"]),{blob:plan.acceptance_source.blob,bytes:plan.acceptance_source.bytes,sha256:plan.acceptance_source.sha256})&&!Object.keys(carrier).includes("acceptance.py"));
+ const binding=processStartBinding(q);
+ return {schema:"heptabao.root-PKI-two-file-formatter-source-review.v1",status:"PASS_SOURCE_ONLY",source_packet:p.audit.tree,checks_passed:checks.length,checks,candidate:plan.candidate,exact_request:plan.exact_request,journal:plan.journal,carrier:plan.input_carrier,native_binding:{sha256:binding.sha256,native_fingerprint:binding.native_fingerprint,typed_stdin_field:"stdin"},old_helper_definitions:5,independent_child_process_groups:false,known_limits:["The unchanged formatter uses communicate with a10-second deadline; stdout/error production is not a hard pipe-byte cap. Actual accepted files must meet later fixed output caps.","No claim of two separate empty process groups; actual two direct children must be reaped/stopped in their supervisor group.","Source commit/tree identifies the base only. Candidate PKI files are independently pinned uncommitted inputs.","Future10 output metadata and bodies are unobserved; this review does not authorize collection or qualification."],Python_compiled:false,Rust_formatted:false,Rust_compiled:false,root_Runtime_calls:0};
+}

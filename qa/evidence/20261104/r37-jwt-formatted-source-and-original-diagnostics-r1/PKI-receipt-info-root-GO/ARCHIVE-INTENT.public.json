@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-pki-receipt-info-root-source-review-and-GO-r1",
+  "records": [
+    {
+      "name": "source-review.json",
+      "blob": "f81d7fbfccd01d9acb6179b6991099541398e574",
+      "bytes": 2780,
+      "sha256": "bb3fccda11f90e6e37b067ef858cd7baf98cb5c7d497ebf950cfc2d0bc2a0642"
+    },
+    {
+      "name": "root-GO.json",
+      "blob": "090ce0baed6701bdac7a40ac23408ec960de150f",
+      "bytes": 4615,
+      "sha256": "375805a98d6ce9ddccb11d6e5826d2be6b5390067b3025761a28137aab44ca72"
+    },
+    {
+      "name": "source-verification.js",
+      "blob": "c3b20128c0b07bf11efb8915286160c0518720c3",
+      "bytes": 5952,
+      "sha256": "8238a979cdb8f18db09e04da5bfdb86e9156636d3b859e309671fcdad7733975"
+    },
+    {
+      "name": "pure-recheck.json",
+      "blob": "db6f8ee05022417f8bc84228ac28102d28a04357",
+      "bytes": 2324,
+      "sha256": "81a72f24b7bb71bf777feeb2ca1bd52968745651de15f90b7584dda6e90793b2"
+    }
+  ],
+  "expected_data_tree": "294cad758c6b5764533c22d2b2fb3c4fe92f9e75",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

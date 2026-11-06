@@ -1,0 +1,330 @@
+{
+  "schema": "heptabao.root-Mac-fixed-log-schema-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "checks_passed": 30,
+  "checks": [
+    {
+      "name": "whole21_all_bytes_and_merkle",
+      "passed": true
+    },
+    {
+      "name": "exact_original_source",
+      "passed": true
+    },
+    {
+      "name": "source_pin",
+      "passed": true
+    },
+    {
+      "name": "strict_four_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "all16_original_python_functions_exact",
+      "passed": true
+    },
+    {
+      "name": "only_two_new_python_definitions",
+      "passed": true
+    },
+    {
+      "name": "main_only_new_schema_and_projection",
+      "passed": true
+    },
+    {
+      "name": "all18_fixed_original_bindings_exact",
+      "passed": true
+    },
+    {
+      "name": "request_pin",
+      "passed": true
+    },
+    {
+      "name": "typed_stdin_exact",
+      "passed": true
+    },
+    {
+      "name": "request_other_fields_unchanged",
+      "passed": true
+    },
+    {
+      "name": "fresh_fixed_key_slot",
+      "passed": true
+    },
+    {
+      "name": "source_sha_key_binding",
+      "passed": true
+    },
+    {
+      "name": "old_journal_original",
+      "passed": true
+    },
+    {
+      "name": "strict_two_journal_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "journal_only_three_bindings_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_eight_key_vocabulary",
+      "passed": true
+    },
+    {
+      "name": "closed_json_type_vocabulary",
+      "passed": true
+    },
+    {
+      "name": "field_summary_presence_type_only",
+      "passed": true
+    },
+    {
+      "name": "three_original_message_guards_separately_observed",
+      "passed": true
+    },
+    {
+      "name": "message_flags_only_fixed_equality_label_empty",
+      "passed": true
+    },
+    {
+      "name": "process_booleans_only",
+      "passed": true
+    },
+    {
+      "name": "timestamp_parse_window_boolean_only",
+      "passed": true
+    },
+    {
+      "name": "no_nested_follow_or_raw_copy",
+      "passed": true
+    },
+    {
+      "name": "same_strict_json_guards",
+      "passed": true
+    },
+    {
+      "name": "same_output_caps_and_child_outcome",
+      "passed": true
+    },
+    {
+      "name": "not_classifier_or_cause_or_old_bytes_qualification",
+      "passed": true
+    },
+    {
+      "name": "scope_argv_time_tool_unchanged",
+      "passed": true
+    },
+    {
+      "name": "original_known_failure_retained",
+      "passed": true
+    },
+    {
+      "name": "new_correct_native_binding",
+      "passed": true
+    }
+  ],
+  "source_packet": {
+    "sha": "ebc92bfecb2dd673df459b9b48160a3331954173",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/ebc92bfecb2dd673df459b9b48160a3331954173",
+    "tree": [
+      {
+        "path": "CONTRACT.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c87edae5f780d686f2292d7825fadba69e46e1f",
+        "size": 8806,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/1c87edae5f780d686f2292d7825fadba69e46e1f"
+      },
+      {
+        "path": "MANIFEST.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d680795c5717cd5e2007e4e73788c321bd8f78cc",
+        "size": 4361,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d680795c5717cd5e2007e4e73788c321bd8f78cc"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "311112a26cef1dd08e88b01b45568c2d41e8f456",
+        "size": 1174,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/311112a26cef1dd08e88b01b45568c2d41e8f456"
+      },
+      {
+        "path": "git-archive-once-r2.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b093fdbf655511f7db94be2d95555606141bbb42",
+        "size": 5957,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b093fdbf655511f7db94be2d95555606141bbb42"
+      },
+      {
+        "path": "journal.after.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fb20bf927d78f056bf97b8b73001becf96857dbd",
+        "size": 19040,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/fb20bf927d78f056bf97b8b73001becf96857dbd"
+      },
+      {
+        "path": "journal.before.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8d81fc234877a0a38e7207c2127d277e5db82b3",
+        "size": 19049,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/e8d81fc234877a0a38e7207c2127d277e5db82b3"
+      },
+      {
+        "path": "journal.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "37bf1ef277137d1eb93d15117eee8d626cb120f5",
+        "size": 1339,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/37bf1ef277137d1eb93d15117eee8d626cb120f5"
+      },
+      {
+        "path": "journal.inverse.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a5b1520829b3013db3fb6369b5c2395f7b4a533",
+        "size": 1339,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/3a5b1520829b3013db3fb6369b5c2395f7b4a533"
+      },
+      {
+        "path": "original-query.authority.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "77792bd85dda01678e940bc622393a84cffff93b",
+        "size": 728,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/77792bd85dda01678e940bc622393a84cffff93b"
+      },
+      {
+        "path": "original-query.release.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2d9ebac75b4a3c1fe873d9a6be68e114254de498",
+        "size": 6200,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/2d9ebac75b4a3c1fe873d9a6be68e114254de498"
+      },
+      {
+        "path": "original-query.stdout.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9192b9104866148e823721ff5ca3e7a639419e49",
+        "size": 3534,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/9192b9104866148e823721ff5ca3e7a639419e49"
+      },
+      {
+        "path": "pure-helpers.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6890e8b7217c546bec073dcb04988fc37652721",
+        "size": 6685,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b6890e8b7217c546bec073dcb04988fc37652721"
+      },
+      {
+        "path": "request.before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a0afddfc2f44a180ccacb3c2fdd4114784717da",
+        "size": 50735,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/3a0afddfc2f44a180ccacb3c2fdd4114784717da"
+      },
+      {
+        "path": "request.exact.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+        "size": 55681,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/88bc6a1452b4603374221a63da4f392a0fa2c8ab"
+      },
+      {
+        "path": "source-checks.actual.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b14794e003c35413e5e42a60d2906cfdf8d5803b",
+        "size": 5162,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b14794e003c35413e5e42a60d2906cfdf8d5803b"
+      },
+      {
+        "path": "source-unified-helpers.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b7bf282bd4029dd599946752a9ad544a28ce14d6",
+        "size": 2034,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b7bf282bd4029dd599946752a9ad544a28ce14d6"
+      },
+      {
+        "path": "source.after.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+        "size": 54747,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/ee549c6a17d60d37e2ae083c30495aff0e02f65a"
+      },
+      {
+        "path": "source.before.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6",
+        "size": 49892,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6"
+      },
+      {
+        "path": "source.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6fe3b8225ea418501ff1390d181c2b9ad2c9173",
+        "size": 6802,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/e6fe3b8225ea418501ff1390d181c2b9ad2c9173"
+      },
+      {
+        "path": "source.inverse.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c2319f268c1db28b97def753b84d3860b6321b9b",
+        "size": 6802,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c2319f268c1db28b97def753b84d3860b6321b9b"
+      },
+      {
+        "path": "verify-source.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "268df49f158c89996b475dee8eb9b22925c6d47b",
+        "size": 6157,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/268df49f158c89996b475dee8eb9b22925c6d47b"
+      }
+    ],
+    "truncated": false
+  },
+  "source": {
+    "blob": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+    "bytes": 54747,
+    "sha256": "9e7f2f718b07c1918c000281e24b650725f6f7e2c66b99b889a440d135791a0d"
+  },
+  "request": {
+    "blob": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+    "bytes": 55681,
+    "sha256": "6186d6b597d06876315f6f2b06be9332506f08f1ec57d2ca1c5f89dea653bda3"
+  },
+  "journal": {
+    "blob": "fb20bf927d78f056bf97b8b73001becf96857dbd",
+    "bytes": 19040,
+    "sha256": "5aafef5e189ec8849ea566071123bdaf524ad0f9e0888e94145c0bbd8ff2d79d"
+  },
+  "native_binding": {
+    "sha256": "92a27496cb5f6242289d29c7891b887036bb968e57c3a20964c14fe989cc6d43",
+    "native_fingerprint": "10566135866770547266",
+    "typed_stdin_field": "stdin"
+  },
+  "scope": "One fresh bounded schema observation only; no original classifier, event, startup cause or withheld817-byte qualification.",
+  "new_python_definitions": 2,
+  "unchanged_python_definitions": 16,
+  "source_hunks": 4,
+  "journal_hunks": 2,
+  "python_compiled": false,
+  "component_executed": false,
+  "root_Runtime_calls": 0
+}

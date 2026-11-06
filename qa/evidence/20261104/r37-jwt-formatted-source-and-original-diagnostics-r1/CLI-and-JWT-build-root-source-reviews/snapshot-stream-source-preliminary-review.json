@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.root-snapshot-stream-source-preliminary-review.v1",
+  "status": "SOURCE_SLICES_READ_INTEGRATION_AND_RUNTIME_PENDING",
+  "body_packet": {
+    "tree": "7de62910e72d95f8d4506437906dde6552662aae",
+    "files": 8,
+    "bytes": 225446,
+    "merkle": {
+      "root_sha": "7de62910e72d95f8d4506437906dde6552662aae",
+      "trees_verified": 1,
+      "leaf_count": 8
+    },
+    "whole": true
+  },
+  "transport_packet": {
+    "tree": "cd697d0d4315132fdcb8f2bca8eae6f22e349918",
+    "files": 17,
+    "bytes": 476384,
+    "merkle": {
+      "root_sha": "cd697d0d4315132fdcb8f2bca8eae6f22e349918",
+      "trees_verified": 1,
+      "leaf_count": 17
+    },
+    "whole": true
+  },
+  "body_data_witness": "END/count/length/SHA plus actual underlying EOF; data witness does not grant Actor/storage/publication authority.",
+  "wire_read": "Selected enrolled server leaf checked after actual CA/name/strict Raft ALPN before metadata; client upload END then close_notify and flush; server completion metadata precedes response body END and close_notify. One selected connection and original deadline.",
+  "old_source_prefix_preserved": true,
+  "primary_rustls_basis": {
+    "version": "0.23.44",
+    "commit": "64ad386785c718c74262b79e6893813db381adfe",
+    "whole_files": [
+      {
+        "path": "rustls/src/common_state.rs",
+        "pin": {
+          "path": "reference-rustls-common_state.rs",
+          "blob": "8b1d499a6ffcc3e165d9d74d8295084c50bddef0",
+          "bytes": 37241,
+          "sha256": "6b784b195653cefe0eb42e9e1beb7bf25b35991c1da484a57c1549dd2237072b"
+        },
+        "root_direct_fetch_exact": true
+      },
+      {
+        "path": "rustls/src/conn.rs",
+        "pin": {
+          "path": "reference-rustls-conn.rs",
+          "blob": "4ea90e7e051935f913c1dbb4b2a40f998c4e7303",
+          "bytes": 49932,
+          "sha256": "ec079b9e98de995942f95981e4913e1abec530cbc69130bce75d9b00cad7f66c"
+        },
+        "root_direct_fetch_exact": true
+      },
+      {
+        "path": "rustls/src/stream.rs",
+        "pin": {
+          "path": "reference-rustls-stream.rs",
+          "blob": "ee57862b2fe847e9892245c6e7503303fd6b83ea",
+          "bytes": 7673,
+          "sha256": "25758eff9f145099e127fe74b30d27347c13bfa87351749e90a0bb8a0d02a443"
+        },
+        "root_direct_fetch_exact": true
+      }
+    ],
+    "conclusion": "Static source distinguishes authenticated close_notify EOF from unnotified TCP EOF and permits opposite-direction application reads after local close_notify. This does not replace real transport execution."
+  },
+  "test_SOURCE_inventory": {
+    "body_names": [
+      "snapshot_stream_roundtrip_crosses_ordinary_frame_limit_once",
+      "snapshot_stream_empty_body_requires_explicit_end_and_eof",
+      "snapshot_stream_exact_payload_without_end_is_not_complete",
+      "snapshot_stream_end_digest_and_trailing_wire_bytes_are_rejected",
+      "snapshot_stream_declared_oversize_is_rejected_before_payload",
+      "snapshot_stream_short_chunk_cannot_be_followed_by_data",
+      "snapshot_stream_consumer_cannot_finish_with_unread_archive_bytes",
+      "snapshot_stream_tls_eof_error_after_valid_end_cannot_mint_binding",
+      "snapshot_stream_original_expired_deadline_precedes_io",
+      "snapshot_stream_encoder_checks_one_rejecting_eof_byte_at_exact_cap"
+    ],
+    "transport_names": [
+      "snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+      "snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+      "snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+      "snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+      "snapshot_peer_original_frame_still_uses_only_old_callback",
+      "snapshot_peer_expired_deadline_refuses_before_connect"
+    ],
+    "body_count": 10,
+    "transport_count": 6,
+    "transport_actual_socket_source_count": 5,
+    "expired_constructor_only_count": 1,
+    "tests_executed": 0
+  },
+  "integration_requirements": [
+    "Response sink must be a private held/spooled file; never release bytes directly to external HTTP before completion/body/audit checks.",
+    "Consumer T can itself be Err even when body transport completes. Service must reject its error before native finalize/complete.",
+    "Encoded upload description must match server Verified body and authenticated completion metadata.",
+    "Retain actual original SnapshotTransferPlan/Principal, original historical Auth/identity and clock; no duplicate consume-use and no restored-Auth substitution.",
+    "Recheck actual current publication root/epoch and bind exact response descriptor with MAC; request metadata remains untrusted until actual Service admission.",
+    "Preserve original ordinary listener diagnostics and error classification in its eventual replacement branch."
+  ],
+  "integration_complete": false,
+  "Rust_formatted": false,
+  "Rust_compiled": false,
+  "real_mtls_tests_run": false,
+  "B04_B05_failures_unchanged": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "root_Runtime_calls": 0
+}

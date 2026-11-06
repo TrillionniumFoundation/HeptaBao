@@ -1,0 +1,74 @@
+[
+  {
+    "name": "stdout.hex-text",
+    "pass": true
+  },
+  {
+    "name": "stdout.whole-range",
+    "pass": true
+  },
+  {
+    "name": "stderr.hex-text",
+    "pass": true
+  },
+  {
+    "name": "stderr.whole-range",
+    "pass": true
+  },
+  {
+    "name": "streams.authority-sizes",
+    "pass": true
+  },
+  {
+    "name": "job.unique-identity",
+    "pass": true
+  },
+  {
+    "name": "authority.success-durable",
+    "pass": true
+  },
+  {
+    "name": "summary.schema-source",
+    "pass": true
+  },
+  {
+    "name": "summary.post-finally",
+    "pass": true
+  },
+  {
+    "name": "summary.deadline",
+    "pass": true
+  },
+  {
+    "name": "summary.all46-ledger",
+    "pass": true
+  },
+  {
+    "name": "summary.count38-scope",
+    "pass": true
+  },
+  {
+    "name": "report.fixed-identity",
+    "pass": true
+  },
+  {
+    "name": "report.version",
+    "pass": true
+  },
+  {
+    "name": "resources.actual",
+    "pass": true
+  },
+  {
+    "name": "resources.shared-byte-budget",
+    "pass": true
+  },
+  {
+    "name": "observers.closed",
+    "pass": true
+  },
+  {
+    "name": "lane.quiescent",
+    "pass": true
+  }
+]

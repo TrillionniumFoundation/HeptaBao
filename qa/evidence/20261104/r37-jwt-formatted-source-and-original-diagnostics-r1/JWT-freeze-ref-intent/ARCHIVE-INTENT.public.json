@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-jwt-formatted-source-ref-CAS-intent-r1",
+  "records": [
+    {
+      "name": "intent.json",
+      "blob": "7683b86967a101194cefcf1e6274dc25180e4cf4",
+      "bytes": 893,
+      "sha256": "0e5bcf903ac55e8004a3861e4967cdece37c12008ac0822df04b7945fc04018d"
+    },
+    {
+      "name": "commit-readback.original-SDK.json",
+      "blob": "76b292a9f9ee6e9154e51c00b48564ff64455bd2",
+      "bytes": 4667,
+      "sha256": "fa28c67098e41a4ed4c020391ea9958c05a00154ca0fb80e29dee6d74c5c746d"
+    }
+  ],
+  "expected_data_tree": "90a9b920ebe604a18288da1cdc116ebb31dfc2ae",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

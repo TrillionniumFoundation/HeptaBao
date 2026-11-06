@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.snapshot-peer.pure-source-execution.r1",
+  "verifier": {
+    "blob": "582c19583ec546d9af763cc1ed9f5d306c2a4fa0",
+    "bytes": 6095,
+    "sha256": "1288f4b96623deca3bd8d9211f6bc2fcf298261ac91054bb81b94996ebb42cbf"
+  },
+  "inputs": {
+    "blob": "ee2d90fb7f06e624653d19a164dbc5d09a82911b",
+    "bytes": 4349,
+    "sha256": "af2c9694e25bd948a857f258f6ccf4cd709a6806b55de76b61f326335e7fd48a"
+  },
+  "result": {
+    "blob": "77e3009399b987177839f8678f602c81bd79c94b",
+    "bytes": 4798,
+    "sha256": "22315e40dcc7e6f1d7bc429680cdc27ef643e28b0c566f40b4cb0e5612249cdf"
+  },
+  "interface": "verifyTransportPeer(texts, expected, gitBlobMeta, strictApplySource)",
+  "executor": "functions.exec V8 pure string/JSON/hash only",
+  "actualPassed": true,
+  "actualCheckCount": 50,
+  "RustExecution": false,
+  "authorVerifierExecuted": false,
+  "RuntimeCalls": 0
+}

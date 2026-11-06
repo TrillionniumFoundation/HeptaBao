@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.root-qualification.JWT-fixed38-report-file-info.v1",
+  "status": "PASS_INDEPENDENT_REPORT_METADATA",
+  "evidence_qualified": true,
+  "check_count": 22,
+  "checks": [
+    {
+      "name": "whole23_172622_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_new_GO_and_executed_helper",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_call_jwt-e3af-format38-report-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_armed_tree_jwt-e3af-format38-report-info-start-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_call_jwt-e3af-format38-report-info-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_armed_tree_jwt-e3af-format38-report-info-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_call_jwt-e3af-format38-report-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_armed_tree_jwt-e3af-format38-report-info-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_observer_d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_page_d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19_0",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_payload_d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+      "passed": true
+    },
+    {
+      "name": "collectorReportInfo_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "only_three_calls_one_file_info_one_page",
+      "passed": true
+    },
+    {
+      "name": "exact_original_file_info_request",
+      "passed": true
+    },
+    {
+      "name": "independent167436_wholeSHA_version_matches_stdout",
+      "passed": true
+    },
+    {
+      "name": "independent_private_linux_uid_gid_mode_single_link",
+      "passed": true
+    },
+    {
+      "name": "lossless_full9_exact_original_identity",
+      "passed": true
+    },
+    {
+      "name": "readback_state_binds_same_native_original",
+      "passed": true
+    },
+    {
+      "name": "closed_original_history_no_replay_or_new_process",
+      "passed": true
+    },
+    {
+      "name": "body_not_authorized_or_read",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "007607722df64d2a6188ac76d652747ed1ebcf1c",
+    "files": 23,
+    "bytes": 172622,
+    "merkle": {
+      "root_sha": "007607722df64d2a6188ac76d652747ed1ebcf1c",
+      "trees_verified": 1,
+      "leaf_count": 23
+    },
+    "whole": true
+  },
+  "original_observer": {
+    "id": "d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+    "tool": "file_info",
+    "payload": {
+      "blob": "98296ad7a5b3969e8d74a879de797e0543a5467c",
+      "bytes": 600,
+      "sha256": "9d521ba9879dbec3eeb0e307df5ea4b2f2dfd593fde05becb7eef08ec0063f29"
+    },
+    "payloadTree": "17d9d3c007be1edbaaf820af533cb3ab6e7cc3b1",
+    "nativeText": {
+      "blob": "a8865610dc4024f4473a7e64935fcd064fa0d23c",
+      "bytes": 483,
+      "sha256": "828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "actual_report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "size": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "full9Strings": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ],
+    "nativeText": {
+      "blob": "a8865610dc4024f4473a7e64935fcd064fa0d23c",
+      "bytes": 483,
+      "sha256": "828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"
+    },
+    "regularFileType": "Derived from Native file_info regular-file contract and mode; original collector actually held full_mode33152."
+  },
+  "original_collector": "rog/1a1af3d52ee-fc05-6701",
+  "body_independently_read": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

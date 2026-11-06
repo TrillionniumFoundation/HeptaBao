@@ -1,0 +1,479 @@
+{
+  "schema": "heptabao.root-GO.Mac-fixed-known-key-log-schema.v1",
+  "authorization": "GO",
+  "as_of_UTC": "2026-11-06 05:20:40 UTC",
+  "agent": "/root/authbus_migration",
+  "purpose": "One fresh read-only fixed eight-key JSON schema observation of the original QA label and three-second window; no raw unknown values or recovery of old817 bytes.",
+  "source_packet": {
+    "sha": "ebc92bfecb2dd673df459b9b48160a3331954173",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/ebc92bfecb2dd673df459b9b48160a3331954173",
+    "tree": [
+      {
+        "path": "CONTRACT.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c87edae5f780d686f2292d7825fadba69e46e1f",
+        "size": 8806,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/1c87edae5f780d686f2292d7825fadba69e46e1f"
+      },
+      {
+        "path": "MANIFEST.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d680795c5717cd5e2007e4e73788c321bd8f78cc",
+        "size": 4361,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d680795c5717cd5e2007e4e73788c321bd8f78cc"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "311112a26cef1dd08e88b01b45568c2d41e8f456",
+        "size": 1174,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/311112a26cef1dd08e88b01b45568c2d41e8f456"
+      },
+      {
+        "path": "git-archive-once-r2.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b093fdbf655511f7db94be2d95555606141bbb42",
+        "size": 5957,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b093fdbf655511f7db94be2d95555606141bbb42"
+      },
+      {
+        "path": "journal.after.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fb20bf927d78f056bf97b8b73001becf96857dbd",
+        "size": 19040,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/fb20bf927d78f056bf97b8b73001becf96857dbd"
+      },
+      {
+        "path": "journal.before.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8d81fc234877a0a38e7207c2127d277e5db82b3",
+        "size": 19049,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/e8d81fc234877a0a38e7207c2127d277e5db82b3"
+      },
+      {
+        "path": "journal.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "37bf1ef277137d1eb93d15117eee8d626cb120f5",
+        "size": 1339,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/37bf1ef277137d1eb93d15117eee8d626cb120f5"
+      },
+      {
+        "path": "journal.inverse.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a5b1520829b3013db3fb6369b5c2395f7b4a533",
+        "size": 1339,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/3a5b1520829b3013db3fb6369b5c2395f7b4a533"
+      },
+      {
+        "path": "original-query.authority.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "77792bd85dda01678e940bc622393a84cffff93b",
+        "size": 728,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/77792bd85dda01678e940bc622393a84cffff93b"
+      },
+      {
+        "path": "original-query.release.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2d9ebac75b4a3c1fe873d9a6be68e114254de498",
+        "size": 6200,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/2d9ebac75b4a3c1fe873d9a6be68e114254de498"
+      },
+      {
+        "path": "original-query.stdout.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9192b9104866148e823721ff5ca3e7a639419e49",
+        "size": 3534,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/9192b9104866148e823721ff5ca3e7a639419e49"
+      },
+      {
+        "path": "pure-helpers.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b6890e8b7217c546bec073dcb04988fc37652721",
+        "size": 6685,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b6890e8b7217c546bec073dcb04988fc37652721"
+      },
+      {
+        "path": "request.before.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a0afddfc2f44a180ccacb3c2fdd4114784717da",
+        "size": 50735,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/3a0afddfc2f44a180ccacb3c2fdd4114784717da"
+      },
+      {
+        "path": "request.exact.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+        "size": 55681,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/88bc6a1452b4603374221a63da4f392a0fa2c8ab"
+      },
+      {
+        "path": "source-checks.actual.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b14794e003c35413e5e42a60d2906cfdf8d5803b",
+        "size": 5162,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b14794e003c35413e5e42a60d2906cfdf8d5803b"
+      },
+      {
+        "path": "source-unified-helpers.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b7bf282bd4029dd599946752a9ad544a28ce14d6",
+        "size": 2034,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/b7bf282bd4029dd599946752a9ad544a28ce14d6"
+      },
+      {
+        "path": "source.after.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+        "size": 54747,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/ee549c6a17d60d37e2ae083c30495aff0e02f65a"
+      },
+      {
+        "path": "source.before.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6",
+        "size": 49892,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/7f4821ab3e5de33849e0c92e63bdf9d1d54b44d6"
+      },
+      {
+        "path": "source.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6fe3b8225ea418501ff1390d181c2b9ad2c9173",
+        "size": 6802,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/e6fe3b8225ea418501ff1390d181c2b9ad2c9173"
+      },
+      {
+        "path": "source.inverse.diff",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c2319f268c1db28b97def753b84d3860b6321b9b",
+        "size": 6802,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/c2319f268c1db28b97def753b84d3860b6321b9b"
+      },
+      {
+        "path": "verify-source.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "268df49f158c89996b475dee8eb9b22925c6d47b",
+        "size": 6157,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/268df49f158c89996b475dee8eb9b22925c6d47b"
+      }
+    ],
+    "truncated": false
+  },
+  "source_review": {
+    "blob": "9b6164c593986c874091145a8976209cb32bcf93",
+    "bytes": 10529,
+    "sha256": "6c6a30c93eabdee6e4f09560c81895d7f1fd0157ab9ddd5cbe711fcb304decc4"
+  },
+  "prior_known_failed_query_qualification": {
+    "blob": "3052edd4796424a82b909e75c295fd5530836714",
+    "bytes": 6066,
+    "sha256": "6424d64e4bd5524c26df21f6ee10f682b2964fb358bbb1938e42d8bd5cb0f0a1"
+  },
+  "source": {
+    "blob": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+    "bytes": 54747,
+    "sha256": "9e7f2f718b07c1918c000281e24b650725f6f7e2c66b99b889a440d135791a0d"
+  },
+  "exact_request": {
+    "blob": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+    "bytes": 55681,
+    "sha256": "6186d6b597d06876315f6f2b06be9332506f08f1ec57d2ca1c5f89dea653bda3"
+  },
+  "native_binding": {
+    "sha256": "92a27496cb5f6242289d29c7891b887036bb968e57c3a20964c14fe989cc6d43",
+    "native_fingerprint": "10566135866770547266",
+    "typed_stdin_field": "stdin"
+  },
+  "helpers": {
+    "native": {
+      "blob": "fb20bf927d78f056bf97b8b73001becf96857dbd",
+      "bytes": 19040,
+      "sha256": "5aafef5e189ec8849ea566071123bdaf524ad0f9e0888e94145c0bbd8ff2d79d"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "slot": "owner_launchd_log_schema_gitfirst_r1",
+  "start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "cwd": "/Users/qianqi",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-owned-launchd-log-schema-9e7f2f71-20261106-r1",
+    "stdin_source": {
+      "blob": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+      "bytes": 54747,
+      "sha256": "9e7f2f718b07c1918c000281e24b650725f6f7e2c66b99b889a440d135791a0d"
+    },
+    "maximum_START_count": 1
+  },
+  "actual_tool_binding": {
+    "path": "/usr/bin/log",
+    "version": "16777233:1152921500312572288:807536:1786589515000000000:1786589515000000000",
+    "size": 807536,
+    "sha256": "2fa7b04615546f0964dd1ddedab04a07e3e026f76959e7f44cbd30bfa48a5974",
+    "identity": [
+      "16777233",
+      "1152921500312572288",
+      "0",
+      "0",
+      "33261",
+      "1",
+      "807536",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "metadataOriginal": {
+      "blob": "d3cefcb531f3deea5a156189d381b11f8c70fa7b",
+      "bytes": 411,
+      "sha256": "8b1ed8e54007466045ebf6527ed102d709c54f8a3e10dd8e7b5f5b41b791efe4"
+    }
+  },
+  "scope": {
+    "exact_child_argv": [
+      "/usr/bin/log",
+      "show",
+      "--start",
+      "2026-11-06 00:45:18+0000",
+      "--end",
+      "2026-11-06 00:45:21+0000",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+      "--info",
+      "--debug",
+      "--no-pager"
+    ],
+    "original_job": "1a1ae51309d-fc05-5ef8",
+    "original_label": "org.heptabao.qa.mac-authbus-4e808-owner-r1.server",
+    "window_start_unix_ms": 1793925918000,
+    "window_end_unix_ms": 1793925921000,
+    "maximum_window_ms": 3000,
+    "original_time_evidence": {
+      "schema": "heptabao.original-owned-bootstrap-time-window.source.r1",
+      "originalJob": "1a1ae51309d-fc05-5ef8",
+      "ack": {
+        "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+        "bytes": 6200,
+        "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+      },
+      "authority": {
+        "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+        "bytes": 732,
+        "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+      },
+      "stdout": {
+        "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+        "bytes": 132132,
+        "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+      },
+      "jobCreatedUnixMs": 1793925918877,
+      "terminalPublicationUnixMs": 1793925920735,
+      "rawJobWindowMilliseconds": 1858,
+      "conservativeRoundedStartUnixMs": 1793925918000,
+      "conservativeRoundedEndUnixMs": 1793925921000,
+      "utcStart": "2026-11-06T00:45:18.000Z",
+      "utcEnd": "2026-11-06T00:45:21.000Z",
+      "maximumWindowMilliseconds": 3000,
+      "bootstrapIntentFileMtimeNs": "1793925920565520047",
+      "bootstrapCommand": {
+        "argv": [
+          "/bin/launchctl",
+          "bootstrap",
+          "gui/501",
+          "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+        ],
+        "pid": 82492,
+        "commandDeadlineMonotonic": 2811777.446800166,
+        "elapsedSeconds": 0.04866733402013779,
+        "exitCode": 0
+      },
+      "qualification": "Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion."
+    },
+    "known_keys": [
+      "eventMessage",
+      "message",
+      "composedMessage",
+      "process",
+      "processImagePath",
+      "timestamp",
+      "type",
+      "eventType"
+    ],
+    "output_allowlist": {
+      "fieldSummary": {
+        "keys": [
+          "eventMessage",
+          "message",
+          "composedMessage",
+          "process",
+          "processImagePath",
+          "timestamp",
+          "type",
+          "eventType"
+        ],
+        "properties": [
+          "present",
+          "jsonType"
+        ],
+        "typeVocabulary": [
+          "absent",
+          "null",
+          "boolean",
+          "string",
+          "number",
+          "array",
+          "object",
+          "unlisted"
+        ],
+        "valuesOrLengths": false
+      },
+      "messageCandidates": {
+        "keys": [
+          "anyPresent",
+          "allPresentValuesAreStrings",
+          "allPresentStringsEqual",
+          "originalComposite"
+        ],
+        "type": "boolean"
+      },
+      "messageFlags": {
+        "keys": [
+          "eventMessage",
+          "message",
+          "composedMessage"
+        ],
+        "properties": [
+          "emptyString",
+          "exactOriginalLabelPresent"
+        ],
+        "type": "boolean or null when not a string"
+      },
+      "equalities": [
+        "eventMessageEqualsmessage",
+        "eventMessageEqualscomposedMessage",
+        "messageEqualscomposedMessage"
+      ],
+      "otherBooleans": [
+        "processEqualsLaunchd",
+        "processImageBasenameEqualsLaunchd",
+        "timestampParsed",
+        "timestampWithinOriginalWindow",
+        "typeStringEqualsEventTypeString"
+      ],
+      "otherType": "boolean or null for unobserved/inapplicable string inputs; no raw type/eventType or timestamp/path value is published.",
+      "rawText": false,
+      "unknownKeyNames": false,
+      "rawOrUnknownHash": false,
+      "arbitraryFieldValues": false,
+      "fieldLengths": false,
+      "nestedFieldTraversal": false,
+      "standardReport": "Original tool identity/hash, fixed argv, child exit/timing/actual stream byte counts, custody, FD and deadline facts remain."
+    },
+    "maximum_records": 64,
+    "maximum_UTF8_line_bytes": 8192,
+    "maximum_accepted_combined_stream_bytes": 65536
+  },
+  "budgets": {
+    "shared_seconds": 45,
+    "child_seconds": 10,
+    "outer_seconds": 60,
+    "original_cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "application_FDs": 4,
+    "metadata_calls_cap": 64,
+    "code_read_calls_cap": 129,
+    "code_hash_bytes": 807536,
+    "code_read_cap": 8388608,
+    "maximum_public_stdout": 131072,
+    "command_chunk": 65536,
+    "original_pipe_return_before_per_stream_bound_rejection": 131072
+  },
+  "sequence": [
+    "Whole exact GO and dedicated fresh context with the supplied typed-stdin binding.",
+    "Whole exact request/intent/armed; independent boundary; one unique process_start only.",
+    "Externally whole original SDK before parse/isError. Unknown preserves original identities without replay or re-key.",
+    "Only actual original mac job status and streams using its original observer IDs; next8192 immutable pages and original1MiB payload cap.",
+    "Close original observers and prove complete durable stdout/stderr, reaped child/empty owned group, four FDs, held log full9/SHA, and shared45/child10/outer60 before schema-result qualification."
+  ],
+  "limits": {
+    "max_Runtime_lanes": 2,
+    "max_native_call_or_future_per_lane": 1,
+    "process_stream_limit": 16384,
+    "immutable_page_bytes": 8192,
+    "original_payload_cap": 1048576
+  },
+  "lane_activation": "A may use one lane now; C currently0 and may independently activate only under its later exact GO. B0/root0. Global maximum2 Runtime lanes, one Native call/future each.",
+  "requires_actual": [
+    "Known terminal outcome, full durable untruncated original streams and inactive original observers.",
+    "Child exit0, empty stderr and strict bounded NDJSON; success grants only the fixed-key schema observation plus cleanup.",
+    "Four application FDs closed; actual log child reaped, owned group empty and both streams closed.",
+    "Original45-second shared bound including closure,10-second child bound and60-second outer bound; unchanged fixed executable full9 and whole SHA."
+  ],
+  "interpretation": {
+    "new_success": "Schema-only observation and closure, never old classifier, event admission, startup cause or old817-byte recovery.",
+    "original_failure": "Original parent exit1 at one_log_message_semantics remains unchanged.",
+    "observed_fields": "Only the eight fixed keys: presence/closed JSON type and fixed equality/empty/label/process/window booleans. No arbitrary key names, raw values, lengths, hashes or nested lookup.",
+    "zero_rows": "Does not prove absence, event validity or launch failure cause.",
+    "data_limit": "Accepted stream bound is not a datastore scan/syscall limit; the unchanged helper can receive one crossing block before rejection.",
+    "timing": "Fresh observation of the unchanged historical3-second window; not the original817 bytes."
+  },
+  "excluded": [
+    "private capsule and credential reads",
+    "service/configuration/permissions/TCC or environment changes",
+    "old-label cleanup or old PID signalling",
+    "SDK/provider/business operations",
+    "other labels/windows/processes/paths or arbitrary fields",
+    "replaying failed query or assuming new output equals prior817 bytes",
+    "new-key retry or expanded deadlines/caps"
+  ],
+  "historical_unknowns": {
+    "oldRegistration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "oldGit8916": "UNKNOWN"
+  },
+  "source_checker_correction": "R1 root comparator wrongly accessed .pin.blob on an already-flat root qualification object. Corrected to .blob; both verifier versions/error preserved. Candidate and exact request unchanged.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

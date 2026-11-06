@@ -1,0 +1,673 @@
+{
+  "schema": "heptabao.mac-owned-launchd-admitted-events.actual-release.r1",
+  "scope": "Fresh bounded individually admitted event observation and new owned closure only",
+  "job": {
+    "host": "mac",
+    "id": "1a1af5c959e-fc05-67ee"
+  },
+  "go": {
+    "blob": "7187b111b16686ec95da572d7d7adde925e256db",
+    "bytes": 12652,
+    "sha256": "99f1d7795f574b9d3b7f0ca23e44caee73d57e3759ed5c1e09922d9b8c2d085d"
+  },
+  "source": {
+    "blob": "300246fcfb141255e312239c19e1dad3e5dfd362",
+    "bytes": 58545,
+    "sha256": "398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6"
+  },
+  "request": {
+    "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+    "bytes": 59546,
+    "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92"
+  },
+  "journal": {
+    "blob": "136e0f14bb66f0c5538a3dd904d03bc116e14db6",
+    "bytes": 19040,
+    "sha256": "0e2720e60701bcde62d491ee1c27a0290343502368fe072dae4b98f0025d78d4"
+  },
+  "start": {
+    "armedTree": "28742ace2997700a22c45869e7bbdbd99f86fe8a",
+    "sdk": {
+      "blob": "c5e4ab18cb828eb74b1f09d42f2d8dfaa5f8dd96",
+      "bytes": 1425,
+      "sha256": "58496df5173264c3793e4f76eb344c2f132261b1675ccdea1e3f4a7cb435f5b2"
+    },
+    "native": {
+      "blob": "9d888130127f7d2ab3d9ede015b2b46aaf4fd0a9",
+      "bytes": 1177,
+      "sha256": "2f1747188602d0c92dc6f81f25e45b13ac5041dabcabcd17a3887d69ad182157"
+    },
+    "sdkTree": "6c7e6f56629da424009804e93e8f43a8b4fe1bea",
+    "digest": "dff9bc8fbb8037323551ca59b83975e815708bf9d176835dbb3c3b53b4de3986",
+    "fingerprint": "16139138065170970418",
+    "reused": false
+  },
+  "authority": {
+    "blob": "ba5eadca5478057a6e2ae3c2c8d32c5905fee02e",
+    "bytes": 731,
+    "sha256": "7581f52cfd051bcdf152eaba3afb19b2e624ab4c0c6d8887c54a95ac6aaf96c9"
+  },
+  "stdout": {
+    "blob": "5472a4c6bb22f63a64c9ec18ad1615cf203fa499",
+    "bytes": 5487,
+    "sha256": "78d38b1f0e8ca4cd69d17e3801cda26ea7977c488470eb162897c1e6e6897f87"
+  },
+  "streamsNative": {
+    "blob": "5627b57675b8a56534ad0ffd3fda6fe179a7e1fd",
+    "bytes": 17341,
+    "sha256": "d1f166cc7405622e0a2f9f96328bfcb45b67e28a353cd10d570a256271b45c55"
+  },
+  "actualObservation": {
+    "admittedEvents": 1,
+    "allObservedObjectsAdmitted": false,
+    "arbitraryFieldValuesPublished": false,
+    "argv": [
+      "/usr/bin/log",
+      "show",
+      "--start",
+      "2026-11-06 00:45:18+0000",
+      "--end",
+      "2026-11-06 00:45:21+0000",
+      "--style",
+      "ndjson",
+      "--predicate",
+      "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+      "--info",
+      "--debug",
+      "--no-pager"
+    ],
+    "atLeastOneAdmittedEvent": true,
+    "classificationIsLexicalEvidenceNotRootCauseProof": true,
+    "events": [
+      {
+        "categoryMentions": {
+          "configuration_error_mentioned": false,
+          "missing_path_error_mentioned": false,
+          "permission_error_mentioned": false,
+          "privacy_or_sandbox_mentioned": false,
+          "spawn_or_exec_mentioned": false,
+          "stdio_mentioned": false,
+          "working_directory_mentioned": false
+        },
+        "errnoSymbolMentions": {
+          "EACCES": false,
+          "EINVAL": false,
+          "EIO": false,
+          "ENOENT": false,
+          "ENOEXEC": false,
+          "ENOTDIR": false,
+          "EPERM": false
+        },
+        "exactOriginalLabel": true,
+        "explicitErrnoNumberMentions": {
+          "1": false,
+          "2": false,
+          "5": false,
+          "8": false,
+          "13": false,
+          "20": false,
+          "22": false
+        },
+        "knownPathMentions": {
+          "plist": false,
+          "python_alias": false,
+          "regular_python": false,
+          "stderr": false,
+          "stdout": false,
+          "working_directory": false,
+          "wrapper": false
+        },
+        "ordinal": 0,
+        "processIsLaunchd": true,
+        "recognizedErrorVocabulary": false,
+        "withinOriginalWindow": true
+      }
+    ],
+    "freshObservationNotOriginal817ByteRecovery": true,
+    "noMatchesDoesNotProveAbsence": true,
+    "observationScope": "individually_admitted_events_and_explicit_unknown_rejections",
+    "observedObjects": 2,
+    "onlyClosedVocabularyProjection": true,
+    "originalClassifierFunctionUnchanged": true,
+    "originalWholeQueryFailureUnchanged": true,
+    "originalWindowMilliseconds": 3000,
+    "perEventAdmissionUsesOriginalClassifier": true,
+    "queryCompleteBeforeDeadline": true,
+    "rawLogTextExported": false,
+    "rawOrUnknownLogHashExported": false,
+    "rejectedObjects": [
+      {
+        "meaning": "unknown_object_not_admitted",
+        "ordinal": 1,
+        "rejectionReason": "one_log_message_semantics"
+      }
+    ],
+    "rejectedUnknownObjects": 1,
+    "startupCauseQualified": false,
+    "unknownKeyNamesPublished": false,
+    "unknownObjectSemanticsQualified": false,
+    "wholeLogFullyClassified": false
+  },
+  "commands": {
+    "allOwnedCommandsStopped": true,
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/log",
+          "show",
+          "--start",
+          "2026-11-06 00:45:18+0000",
+          "--end",
+          "2026-11-06 00:45:21+0000",
+          "--style",
+          "ndjson",
+          "--predicate",
+          "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+          "--info",
+          "--debug",
+          "--no-pager"
+        ],
+        "cleanup": {
+          "allGroupRowsEmptyAfterReap": true,
+          "cleanupCaps": {
+            "group": 3,
+            "psMax": 4,
+            "term": 1,
+            "wait": 5
+          },
+          "custody": {
+            "captured_exit": null,
+            "ps": {
+              "pgid": 82629,
+              "pid": 82629,
+              "ppid": 82627,
+              "start": "Fri Nov  6 13:37:29 2026    ",
+              "uid": 501
+            },
+            "sid_observed_while_live": 82629
+          },
+          "directChildReaped": true,
+          "elapsedSeconds": 0.04411041596904397,
+          "exitCode": 0,
+          "initialLiveGroup": [],
+          "ok": true,
+          "outcomeUnknown": false,
+          "ownedLiveGroupEmptyBeforeReap": true,
+          "pgid": 82629,
+          "pid": 82629,
+          "postReapSignalSent": false,
+          "remainingGroupRows": [],
+          "retainedExit": {
+            "code": 1,
+            "pid": 82629,
+            "signo": 20,
+            "status": 0
+          },
+          "signals": [],
+          "stopAttempted": true
+        },
+        "commandDeadlineMonotonic": 2829306.100951916,
+        "completeBeforeDeadline": true,
+        "elapsedSeconds": 2.129496875219047,
+        "errorCode": null,
+        "errorType": null,
+        "exitCode": 0,
+        "label": "fixed-owned-label-three-second-log",
+        "outcomeUnknown": false,
+        "pid": 82629,
+        "stderrBytes": 0,
+        "stdoutBytes": 817,
+        "streamsClosed": true
+      }
+    ],
+    "unknownCommandCount": 0
+  },
+  "descriptors": [
+    {
+      "beforeIdentity": [
+        "16777233",
+        "2",
+        "0",
+        "0",
+        "16877",
+        "22",
+        "704",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "closeAttempted": true,
+      "closed": true,
+      "created": true,
+      "directory": true,
+      "openAttempted": true,
+      "path": "/"
+    },
+    {
+      "beforeIdentity": [
+        "16777233",
+        "1152921500312571552",
+        "0",
+        "0",
+        "16877",
+        "11",
+        "352",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "closeAttempted": true,
+      "closed": true,
+      "created": true,
+      "directory": true,
+      "openAttempted": true,
+      "path": "/usr"
+    },
+    {
+      "beforeIdentity": [
+        "16777233",
+        "1152921500312571555",
+        "0",
+        "0",
+        "16877",
+        "926",
+        "29632",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "closeAttempted": true,
+      "closed": true,
+      "created": true,
+      "directory": true,
+      "openAttempted": true,
+      "path": "/usr/bin"
+    },
+    {
+      "beforeIdentity": [
+        "16777233",
+        "1152921500312572288",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "807536",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "closeAttempted": true,
+      "closed": true,
+      "created": true,
+      "directory": false,
+      "openAttempted": true,
+      "path": "/usr/bin/log"
+    }
+  ],
+  "closure": {
+    "allApplicationDescriptorsClosed": true,
+    "allOwnedLogChildrenClosed": true,
+    "deadlineMetAfterClosure": true,
+    "elapsedSeconds": 2.1372835002839565,
+    "closeErrors": [],
+    "signalRestoreErrors": [],
+    "pendingSignalAfterRestore": null,
+    "budget": {
+      "codeBytesReturned": 807536,
+      "codeReadCalls": 14,
+      "metadata": 40
+    }
+  },
+  "originalObservers": [
+    {
+      "id": "5445c6dbf7a250ff80a7248a709c565153421a2ef7bc7ea56ae549e38ed3116a",
+      "tool": "process_status",
+      "payload": {
+        "blob": "8ae5d3d63b23983b16503798c794ef418be764a2",
+        "bytes": 910,
+        "sha256": "88e47b66cc40703ce038346fe110106ba2d5f201cd61d3f3b721e293ef88e5b4"
+      },
+      "payloadTree": "132e075c781620c45678833ad7a2d55f0b74c960",
+      "nativeText": {
+        "blob": "ba5eadca5478057a6e2ae3c2c8d32c5905fee02e",
+        "bytes": 731,
+        "sha256": "7581f52cfd051bcdf152eaba3afb19b2e624ab4c0c6d8887c54a95ac6aaf96c9"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "5bc77caa7cd8347bc6291722d31fb9775c52c9501585a951dbac73710e7e9733",
+      "tool": "process_read",
+      "payload": {
+        "blob": "e20f3e9bf926adf4a1c6aea1272ffd701643bd54",
+        "bytes": 18594,
+        "sha256": "9efeee4d5fe35dcce5d0158d3a4f91e78616a2315c9d8854d01e1522e96c598e"
+      },
+      "payloadTree": "39827044197204f208ba5a58677803d25739217a",
+      "nativeText": {
+        "blob": "5627b57675b8a56534ad0ffd3fda6fe179a7e1fd",
+        "bytes": 17341,
+        "sha256": "d1f166cc7405622e0a2f9f96328bfcb45b67e28a353cd10d570a256271b45c55"
+      },
+      "pages": 3,
+      "completedInactive": true
+    }
+  ],
+  "originalNativeCalls": [
+    {
+      "callKey": "log-events-r1-start",
+      "kind": "process_start",
+      "request": {
+        "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+        "bytes": 59546,
+        "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92"
+      },
+      "armedTree": "28742ace2997700a22c45869e7bbdbd99f86fe8a",
+      "sdk": {
+        "blob": "c5e4ab18cb828eb74b1f09d42f2d8dfaa5f8dd96",
+        "bytes": 1425,
+        "sha256": "58496df5173264c3793e4f76eb344c2f132261b1675ccdea1e3f4a7cb435f5b2"
+      },
+      "sdkTree": "6c7e6f56629da424009804e93e8f43a8b4fe1bea",
+      "native": {
+        "blob": "9d888130127f7d2ab3d9ede015b2b46aaf4fd0a9",
+        "bytes": 1177,
+        "sha256": "2f1747188602d0c92dc6f81f25e45b13ac5041dabcabcd17a3887d69ad182157"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-authority-start",
+      "kind": "operation_start",
+      "request": {
+        "blob": "9e660b202dab5f857460c94eb4ff2a9079e7d3c8",
+        "bytes": 225,
+        "sha256": "cc115588558fa5bd0fb6096f6bf0fb5f99d02f1e17492027b4821b0960096415"
+      },
+      "armedTree": "52be634d5d5270da3ba463a13a1ed393aa20a081",
+      "sdk": {
+        "blob": "2c7d86bf4ee92579a8f8677893a1cc7b58ae3983",
+        "bytes": 709,
+        "sha256": "8fcbc663288683d1dfb5ddb2264c21ebc37f36c2527ec34bf6a76f1ef0cb1e8c"
+      },
+      "sdkTree": "2c1ae400c1899b70349c809ba4f37479a7f8d0be",
+      "native": {
+        "blob": "635027e540c6f56e5387bfd6228b7bed7665aa5c",
+        "bytes": 548,
+        "sha256": "a694d3f263980010c1353feb8ab46f7f7dad66efe360a61724970c96075a7a6f"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-authority-status-0",
+      "kind": "operation_status",
+      "request": {
+        "blob": "5bd6a9ea2cf7cc188d5a3314b746761fe8a9a47a",
+        "bytes": 89,
+        "sha256": "8cdc87ba60ba5629cfb1c3f97c350e35f192781ef46b34ce978f0ae539c76ae4"
+      },
+      "armedTree": "f7c7ce3849114b824a51bed9a30243d43207333f",
+      "sdk": {
+        "blob": "791eeaf480e06dae8d7e819d47903c9c98848b20",
+        "bytes": 980,
+        "sha256": "95511889c4955e0e8ce2b3f7df0c529446150f8a3e3ac6230a66f5ca416b4089"
+      },
+      "sdkTree": "9a808014f71847a56b2a9a05094420e1df3c0523",
+      "native": {
+        "blob": "35795c8f52da186851c1e6138921e1cf9e56f90e",
+        "bytes": 805,
+        "sha256": "2d1d1d791b93874693d493aea872f92126aed6d4aed703e86376a146325fea52"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-authority-page-000000",
+      "kind": "operation_result",
+      "request": {
+        "blob": "dfad0fc2968be8f6662d652641c17a17a7ab7b04",
+        "bytes": 121,
+        "sha256": "b73e6f8bfcfca51ce9f1f5094f2f0ba1377060d00c5603a25c3b77e981492920"
+      },
+      "armedTree": "7d0fe8b13805b64a543a80a56f70ac371495dbc2",
+      "sdk": {
+        "blob": "da6f48d0d7b60aadf73c7c9e4fad8b03fba18efd",
+        "bytes": 2068,
+        "sha256": "bc2ceb2ca568421a1f205e267dd4b88a680e74a679dd161bb7065897b9be4998"
+      },
+      "sdkTree": "671bdf6f44acb0bea5e17067bc24e45962e54dd4",
+      "native": {
+        "blob": "3d0c5f172578e1b452896ced39f9cf22b96898d5",
+        "bytes": 1897,
+        "sha256": "0984bb422721f202247371d921de1881bef44f75edccf1ef0bb3db17fb63e9e1"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-streams-start",
+      "kind": "operation_start",
+      "request": {
+        "blob": "d14364c3a1c299707a7b54165fbc1353893486ac",
+        "bytes": 295,
+        "sha256": "ddf6a0b815d94f1f2316cb01a37865ac60571afe530b413be1e562713cbb246f"
+      },
+      "armedTree": "6cad80a2cfeae508cfd8a608b9abc771bfc882ad",
+      "sdk": {
+        "blob": "76d266b8c07e491750ff1050ae36547911f5f9a6",
+        "bytes": 707,
+        "sha256": "8def2a00f1755f36efc609f705fbca0074a1258cacc8716abcc06d326ad14c95"
+      },
+      "sdkTree": "bd9c5bb3a4fd5e35710b2aa6e069c78a49a2e4b6",
+      "native": {
+        "blob": "c80de3335cc2de1b8cdd9e4e0773711aac29e6b8",
+        "bytes": 546,
+        "sha256": "95dc9bbd60e94ab602dff30253ef678ed4b93daef1fd8a53d3985a19ceb48807"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-streams-status-0",
+      "kind": "operation_status",
+      "request": {
+        "blob": "776d69d5e72f2ab5bc2f18afafe805d5ac033f85",
+        "bytes": 89,
+        "sha256": "f5809576291350f55b256aac2ab0a98192674e16d2ac49746458963067008122"
+      },
+      "armedTree": "18437bf8251edc5e050d98bebc032e683010f95c",
+      "sdk": {
+        "blob": "a7b2eff1fefe36c990c335421e19b4091cd2a945",
+        "bytes": 978,
+        "sha256": "3d8022219e630d30de7ded2823c240a34fe5a9d8eb3b70e8a0c353af38c0fda0"
+      },
+      "sdkTree": "86e27db8a1f1af53bf9f2b5ccf65835b18b06a57",
+      "native": {
+        "blob": "050351f387bb458ad12499f74ed21c46de8c7656",
+        "bytes": 803,
+        "sha256": "6a97aafd49babcfe4e8640fb8aa9762cc061489a4bfde114becccda99da31cf2"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-streams-page-000000",
+      "kind": "operation_result",
+      "request": {
+        "blob": "a23e02008ff058e386a683fe2d8b1902b8ee4f44",
+        "bytes": 121,
+        "sha256": "f21af717f90b98e2a8aee03f23de39770260a1ae44fe0c42ef4aba460ee50daa"
+      },
+      "armedTree": "0b5bcb910d7b30308fd477f94a2ac2210bc3a7af",
+      "sdk": {
+        "blob": "18521c0aacf8ee5488370dde2da17f9cda1d4525",
+        "bytes": 11780,
+        "sha256": "2d69a5c06644a227ebc9322690f8317376b26792a64d172ff0ef62a5807e3177"
+      },
+      "sdkTree": "6e82ea9cfabab9550296016ff8cd4da662cc6b20",
+      "native": {
+        "blob": "461a0a69dd07263235bac5e0f503f178d4da3f7c",
+        "bytes": 11609,
+        "sha256": "56df0595843c744f36453be96e3513bb34bdf0d28c5947cdd0062a636b95a03f"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-streams-page-008192",
+      "kind": "operation_result",
+      "request": {
+        "blob": "cc4a79a967654b00f11c29c9ff92eaf078a06f9a",
+        "bytes": 124,
+        "sha256": "334ee32720e234130e32f9235501ead2c0dbb7d72b6ad342e8324b9866cb6119"
+      },
+      "armedTree": "e5549c4628aeb4a20fe2486307419c031bed438d",
+      "sdk": {
+        "blob": "737120c6c6565b0a4a87a56faf893f53a8b6890a",
+        "bytes": 11784,
+        "sha256": "d189850aaac43cbd2b9ebea343837d8262545e3e69295317d6ffbec2522dce1c"
+      },
+      "sdkTree": "3a534b2259b8f9ce87f4fd3abd02f8adef8c76ac",
+      "native": {
+        "blob": "ffd77c7fe372699895e41b4feae2c062a7f3d094",
+        "bytes": 11613,
+        "sha256": "8a613124605603bfa52ee032408f6685834f3123389d8a99486cf05baec0cd55"
+      },
+      "phase": "accepted",
+      "called": true
+    },
+    {
+      "callKey": "log-events-r1-streams-page-016384",
+      "kind": "operation_result",
+      "request": {
+        "blob": "28558e54058a110238265f6af0ca11e13da0fdd9",
+        "bytes": 125,
+        "sha256": "b72675e8e27e71fa1d2d1815f9d02bab23886c287ed1d3030f876530f0d789d6"
+      },
+      "armedTree": "1dca233f295ef18ba69f2265da0a39fb2812c43f",
+      "sdk": {
+        "blob": "ab5339461f35e2d1c273a8622ec927a9e8190ce1",
+        "bytes": 3808,
+        "sha256": "70b65fcbb84c47aae60890cb630459673e2fef31e85c1bf8ea4c4e11f19fc31c"
+      },
+      "sdkTree": "ddcf8faf514b6470424e0a6441a205ffca3f9e1a",
+      "native": {
+        "blob": "bb8bde9b68e52a3458a8aa4cb26a31a93a3a7e93",
+        "bytes": 3637,
+        "sha256": "3e397b251be7ae812a2aa2ee82dc0f3cc47b219e377b42acb4f9f08dfaf33954"
+      },
+      "phase": "accepted",
+      "called": true
+    }
+  ],
+  "originalNativeCallCount": 9,
+  "returnedObservers": 2,
+  "immutablePages": 4,
+  "runtimeCallInFlight": 0,
+  "ownedNativeFutureActive": 0,
+  "pending": null,
+  "laneAReleased": true,
+  "checks": [
+    {
+      "name": "one_start_exact_job",
+      "passed": true
+    },
+    {
+      "name": "native_calls_9_all_accepted",
+      "passed": true
+    },
+    {
+      "name": "two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "authority_known_exit_zero",
+      "passed": true
+    },
+    {
+      "name": "stdout_exact_5487",
+      "passed": true
+    },
+    {
+      "name": "stdout_hex_text_exact",
+      "passed": true
+    },
+    {
+      "name": "both_eof_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "report_known_ok",
+      "passed": true
+    },
+    {
+      "name": "single_child_exit0",
+      "passed": true
+    },
+    {
+      "name": "child_reaped_groupempty_streamsclosed",
+      "passed": true
+    },
+    {
+      "name": "four_fds_once_closed",
+      "passed": true
+    },
+    {
+      "name": "deadline_final",
+      "passed": true
+    },
+    {
+      "name": "fixed_argv",
+      "passed": true
+    },
+    {
+      "name": "tool_exact",
+      "passed": true
+    },
+    {
+      "name": "observed_disposition_counts",
+      "passed": true
+    },
+    {
+      "name": "ordinal0_original_admission",
+      "passed": true
+    },
+    {
+      "name": "ordinal0_no_error_vocabulary",
+      "passed": true
+    },
+    {
+      "name": "ordinal1_explicit_unknown",
+      "passed": true
+    },
+    {
+      "name": "no_cause_or_complete_log_qualification",
+      "passed": true
+    },
+    {
+      "name": "old_failure_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_private_sdk_mutation_cleanup",
+      "passed": true
+    },
+    {
+      "name": "current_lane_zero",
+      "passed": true
+    }
+  ],
+  "checkCount": 22,
+  "limits": {
+    "wholeLogQualified": false,
+    "startupCauseQualified": false,
+    "historicalLineageClosureQualified": false,
+    "oldLabelRegistrationClosed": false,
+    "originalQueryFailureUnchanged": true,
+    "original817Recovered": false,
+    "oldGit8916": "UNKNOWN",
+    "sdkExecution": false,
+    "provider": false,
+    "privateCapsuleRead": false,
+    "productionCutover": false
+  }
+}

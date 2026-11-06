@@ -1,0 +1,261 @@
+{
+  "schema": "heptabao.root-qualification.Mac-fixed-known-key-log-schema.v1",
+  "status": "PASS_NEW_SCHEMA_OBSERVATION_AND_CLOSURE_ONLY",
+  "evidence_qualified": true,
+  "check_count": 50,
+  "checks": [
+    {
+      "name": "whole65_all498385_bytes",
+      "passed": true
+    },
+    {
+      "name": "executed_exact_GO_source_journal_request",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-authority-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-authority-status-0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-authority-page-000000",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-streams-start",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-streams-status-0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-streams-page-000000",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-streams-page-008192",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_call_log-schema-r1-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_armed_tree_log-schema-r1-streams-page-016384",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_observer_8b18835f3adc99647fc0e25531f32704c9a6d19e0e20d116260328dac3dd24fe",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_page_8b18835f3adc99647fc0e25531f32704c9a6d19e0e20d116260328dac3dd24fe_0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_payload_8b18835f3adc99647fc0e25531f32704c9a6d19e0e20d116260328dac3dd24fe",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_observer_b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_page_b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee_0",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_page_b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee_8192",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_page_b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee_16384",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_payload_b5df6e607a4e522e1f941dc5fb9013f2c12b510563c2c7ff54ee71d430c665ee",
+      "passed": true
+    },
+    {
+      "name": "schemaLog_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "nine_calls_one_START_two_observers_four_pages",
+      "passed": true
+    },
+    {
+      "name": "unique_original_START_typed_stdin_lossless_fingerprint",
+      "passed": true
+    },
+    {
+      "name": "only_original_job_observers",
+      "passed": true
+    },
+    {
+      "name": "known_parent_zero_full_durable",
+      "passed": true
+    },
+    {
+      "name": "authority_stream_sizes_no_errors_truncation",
+      "passed": true
+    },
+    {
+      "name": "whole6408_stdout_exact_hex_empty_stderr",
+      "passed": true
+    },
+    {
+      "name": "new_schema_only_known_success",
+      "passed": true
+    },
+    {
+      "name": "two_objects_fixed_original_query_scope",
+      "passed": true
+    },
+    {
+      "name": "fixed_eight_fields_types_only",
+      "passed": true
+    },
+    {
+      "name": "first_object_actual_four_known_strings",
+      "passed": true
+    },
+    {
+      "name": "first_object_original_message_process_window_booleans",
+      "passed": true
+    },
+    {
+      "name": "second_object_all_eight_absent_semantics_unknown",
+      "passed": true
+    },
+    {
+      "name": "no_raw_unknown_values_hash_lengths_or_field_names",
+      "passed": true
+    },
+    {
+      "name": "one_actual_exact_query_child0_817bytes",
+      "passed": true
+    },
+    {
+      "name": "child_reaped_owned_group_empty_streams_closed",
+      "passed": true
+    },
+    {
+      "name": "all_four_FDs_handlers_closed",
+      "passed": true
+    },
+    {
+      "name": "same_log_full9_wholeSHA_and_unchanged_budgets",
+      "passed": true
+    },
+    {
+      "name": "quiescent_original_observers_and_lane",
+      "passed": true
+    },
+    {
+      "name": "old_FAILURE_and_817_not_recovered_no_cause",
+      "passed": true
+    }
+  ],
+  "packet": {
+    "tree": "540792fc8def3f40fe63fdcef82a134ff76afddd",
+    "files": 65,
+    "bytes": 498385,
+    "merkle": {
+      "root_sha": "540792fc8def3f40fe63fdcef82a134ff76afddd",
+      "trees_verified": 1,
+      "leaf_count": 65
+    },
+    "whole": true
+  },
+  "original_job": "mac/1a1af4ef4af-fc05-6789",
+  "authority": {
+    "blob": "7da9c936624430f49a433f0eba94c9d89f03b568",
+    "bytes": 731,
+    "sha256": "bfd223aac6862314a510b3db8532fa8a410a3627de12aee8c6288255223717cb"
+  },
+  "stdout": {
+    "blob": "3c99b7ee81f3a12052eb6a94e47f4804a317ca92",
+    "bytes": 6408,
+    "sha256": "12d03c24790ded3b38bc9fc56edc69764839325a554519d4120b20e0d33b25fa"
+  },
+  "observed": {
+    "parent_exit": 0,
+    "child_exit": 0,
+    "child_stdout_bytes": 817,
+    "objects": 2,
+    "ordinal0_known_strings": [
+      "eventMessage",
+      "eventType",
+      "processImagePath",
+      "timestamp"
+    ],
+    "ordinal0_label_process_window_booleans": true,
+    "ordinal1_all_eight_absent": true,
+    "ordinal1_semantic_type": "UNKNOWN",
+    "actual_elapsed_seconds": 2.125129833817482,
+    "original_calls": 9,
+    "observers": 2,
+    "immutable_pages": 4
+  },
+  "limitations": [
+    "A new observation of the same historical window does not recover or prove equality with the old817 bytes.",
+    "Ordinal1 is not classified as a header, summary, event or error and is not harmless by assumption.",
+    "The original classifier was not run. No whole-log classification, event text, startup cause, service recovery or AuthBus business qualification is granted."
+  ],
+  "event_projection_qualified": false,
+  "startup_cause_qualified": false,
+  "old_query_failure_unchanged": true,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

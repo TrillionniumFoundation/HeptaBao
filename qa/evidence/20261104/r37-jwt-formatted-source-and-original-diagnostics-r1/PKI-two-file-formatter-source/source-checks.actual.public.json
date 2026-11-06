@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.native-pki-two-file-rustfmt-source-verification.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "reverse_literal_0",
+      "pass": true
+    },
+    {
+      "name": "reverse_literal_1",
+      "pass": true
+    },
+    {
+      "name": "reverse_literal_2",
+      "pass": true
+    },
+    {
+      "name": "reverse_literal_3",
+      "pass": true
+    },
+    {
+      "name": "reverse_literal_4",
+      "pass": true
+    },
+    {
+      "name": "original_formatter_whole_after_reverse_literals",
+      "pass": true
+    },
+    {
+      "name": "original_inline_shape",
+      "pass": true
+    },
+    {
+      "name": "original_request_host",
+      "pass": true
+    },
+    {
+      "name": "original_request_executable",
+      "pass": true
+    },
+    {
+      "name": "original_request_cwd",
+      "pass": true
+    },
+    {
+      "name": "original_request_timeout_seconds",
+      "pass": true
+    },
+    {
+      "name": "original_stdin_byte_cap",
+      "pass": true
+    },
+    {
+      "name": "two_exact_names",
+      "pass": true
+    },
+    {
+      "name": "exact_candidate_pki.rs",
+      "pass": true
+    },
+    {
+      "name": "stable_header_pki.rs",
+      "pass": true
+    },
+    {
+      "name": "exact_candidate_service_native_pki_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "stable_header_service_native_pki_tests.rs",
+      "pass": true
+    },
+    {
+      "name": "original_50_10_60",
+      "pass": true
+    },
+    {
+      "name": "original_carrier_reader_cap",
+      "pass": true
+    },
+    {
+      "name": "original_per_formatted_output_cap",
+      "pass": true
+    },
+    {
+      "name": "all_functions_child_loop_finally_and_terminal_exact",
+      "pass": true
+    },
+    {
+      "name": "journal_reverse_whole",
+      "pass": true
+    },
+    {
+      "name": "fixed_ten_future_outputs",
+      "pass": true
+    }
+  ],
+  "checks_count": 23,
+  "Native": 0,
+  "Python": 0,
+  "Rust": 0,
+  "no_module_executed": true
+}

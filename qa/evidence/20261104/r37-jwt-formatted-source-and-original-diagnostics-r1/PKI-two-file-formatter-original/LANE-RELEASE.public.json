@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.pki-two-file-formatter-runtime-release.r1",
+  "job": "1a1af6d62a1-fc05-686a",
+  "root_go": {
+    "blob": "fb19cc66b84b047d66973f416baac83b88262ad4",
+    "bytes": 10982,
+    "sha256": "9c48e8301a29b849585dae8748a95689be2d375c5b8d6baaf3bf7ce92149b25c"
+  },
+  "original_start_count": 1,
+  "original_calls": 7,
+  "observers": [
+    {
+      "id": "4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56",
+      "tool": "process_status",
+      "pages": 1,
+      "payload": {
+        "blob": "a824a07e7db9805ef43e60b2bcbe5964866be1d3",
+        "bytes": 908,
+        "sha256": "3a3300897b5b07ef7a42dc22e8ecac75b4863bda636c486809093f2300ae4ac8"
+      },
+      "payload_tree": "3169dd784fac15f38a88b4ee533738af0e855487",
+      "native": {
+        "blob": "b7e422c999778102955f448c499e406e6bf90e1a",
+        "bytes": 729,
+        "sha256": "bb718ef5bbb3f5cbac1ccab023cd6f85cb741d781b57e4e61627a9b03f3652e7"
+      },
+      "completed_inactive": true
+    },
+    {
+      "id": "4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1",
+      "tool": "process_read",
+      "pages": 1,
+      "payload": {
+        "blob": "71f4cc75eb12dcbbe164af8f8f5560395bb00680",
+        "bytes": 3418,
+        "sha256": "c2c34a07563ad455e95afd9a178ea54d8dac88016d1f35cc12a02f59772a4238"
+      },
+      "payload_tree": "6d007c2a57a253bf19836abfc7753834073e5e8c",
+      "native": {
+        "blob": "210c764bdc9aa67c2630232a79f30f5648c5b67d",
+        "bytes": 3149,
+        "sha256": "4b805e3d42c76a09b8c4e259d426b5d602a2dd2c83e777316848484ffcb812a9"
+      },
+      "completed_inactive": true
+    }
+  ],
+  "immutable_pages": 2,
+  "authority": {
+    "blob": "b7e422c999778102955f448c499e406e6bf90e1a",
+    "bytes": 729,
+    "sha256": "bb718ef5bbb3f5cbac1ccab023cd6f85cb741d781b57e4e61627a9b03f3652e7"
+  },
+  "stdout": {
+    "blob": "7023ffee74b6c57fb971f292c9af0b44f0a40cca",
+    "bytes": 921,
+    "sha256": "7bb4288a8d90717c68892b44b3a54015bde7ff5521d947e5981434311d7817ee"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "summary": {
+    "allOwnedStopped": true,
+    "elapsedSeconds": 0.07698889001039788,
+    "error": null,
+    "files": [
+      {
+        "afterBytes": 136672,
+        "afterSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+        "beforeBytes": 136672,
+        "beforeSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+        "name": "pki.rs",
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "afterBytes": 42909,
+        "afterSha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+        "beforeBytes": 42863,
+        "beforeSha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+        "name": "service_native_pki_tests.rs",
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "publicationError": null,
+    "root": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+    "status": "passed",
+    "withinDeadline": true
+  },
+  "source_outputs_independently_observed": false,
+  "fd_and_child_qualification": "Summary reports allOwnedStopped; complete receipt and ten fixed outputs require separate authorization. Two direct children share supervisor group; no independent process-group-empty claim.",
+  "runtime_calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "active_observer": null,
+  "cargo_executed": false,
+  "product_executed": false
+}

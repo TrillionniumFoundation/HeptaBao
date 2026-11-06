@@ -1,0 +1,37 @@
+[package]
+name = "heptabao-ha-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = []
+# Only private synthetic fault cells enable fixed-label transport diagnostics.
+# The default transport reports identical errors and emits no stage trace.
+private-forward-stage-diagnostic = ["heptabao-raft-runtime?/private-native-admission-diagnostic"]
+# Authenticated native transport implementation. The server must still install
+# actual runtime custody and reserved peer workers before accepting these frames.
+native-v6-peer-ingress = ["dep:heptabao-raft-runtime", "dep:tokio", "dep:tokio-rustls", "heptabao-raft-runtime/native-v6-raft-objects"]
+# Compatibility entry for the existing isolated transport/fault fixtures.
+experimental-v6-peer-ingress = ["native-v6-peer-ingress", "heptabao-raft-runtime/experimental-v6-raft-objects"]
+
+[dependencies]
+zeroize = "=1.8.1"
+rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
+ring = "0.17.14"
+heptabao-raft-runtime = { path = "../heptabao-raft-runtime", optional = true }
+tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util"], optional = true }
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring", "tls12"], optional = true }
+
+[dev-dependencies]
+rustls-pemfile = "=2.2.0"
+futures = "=0.3.34"
+
+[[example]]
+name = "v6_replica_multihost_private"
+required-features = ["experimental-v6-peer-ingress"]
+
+[[example]]
+name = "v6_replica_two_peers_private"
+required-features = ["experimental-v6-peer-ingress"]

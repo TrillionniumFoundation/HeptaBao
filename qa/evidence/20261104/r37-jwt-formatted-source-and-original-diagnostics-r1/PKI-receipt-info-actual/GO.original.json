@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.root-GO.PKI-formatter-receipt-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "formatter_receipt_file_info_only",
+  "original_job": "1a1af6d62a1-fc05-686a",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "source_packet": "177e870f20d89ad96e5abe76c3e2e76fb6dcaae5",
+  "source_review": {
+    "blob": "f81d7fbfccd01d9acb6179b6991099541398e574",
+    "bytes": 2780,
+    "sha256": "bb3fccda11f90e6e37b067ef858cd7baf98cb5c7d497ebf950cfc2d0bc2a0642"
+  },
+  "candidate": {
+    "blob": "ac1fb502a13c1ba99c1dbf525d46501558eca95b",
+    "bytes": 24274,
+    "sha256": "889f580035d12faeb7bb247e1f4e37079fab6e8ce35e31dd23f3a426939e668a"
+  },
+  "exact_request": {
+    "blob": "1fe1ca6b2a2469499b777f40d2d051c5af260c5d",
+    "bytes": 281,
+    "sha256": "fb11514e938b63a3ad45de5e4f2ab65768346559a89fe0be578d2b51a406e2ad"
+  },
+  "existing_context": "native_pki_lease400_formatter_gitfirst_r1",
+  "initialize_allowed": false,
+  "original_job_host": "rog",
+  "original_formatter_transport_qualification": {
+    "blob": "a4c078efabb47db683ae570752d47f466326bdf2",
+    "bytes": 7224,
+    "sha256": "7103d4d13ea82cf045957cd408b5f946e7b5c114a489a25dbc03ed88c86999ab"
+  },
+  "request": {
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json"
+      }
+    },
+    "idempotency_key": "heptabao-native-pki-lease400-formatter-observe-r1-receipt-info0"
+  },
+  "helpers": {
+    "native": {
+      "blob": "ac1fb502a13c1ba99c1dbf525d46501558eca95b",
+      "bytes": 24274,
+      "sha256": "889f580035d12faeb7bb247e1f4e37079fab6e8ce35e31dd23f3a426939e668a"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "prerequisites": [
+    {
+      "id": "4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56",
+      "tool": "process_status",
+      "nativeText": {
+        "blob": "b7e422c999778102955f448c499e406e6bf90e1a",
+        "bytes": 729,
+        "sha256": "bb718ef5bbb3f5cbac1ccab023cd6f85cb741d781b57e4e61627a9b03f3652e7"
+      }
+    },
+    {
+      "id": "4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1",
+      "tool": "process_read",
+      "nativeText": {
+        "blob": "210c764bdc9aa67c2630232a79f30f5648c5b67d",
+        "bytes": 3149,
+        "sha256": "4b805e3d42c76a09b8c4e259d426b5d602a2dd2c83e777316848484ffcb812a9"
+      }
+    }
+  ],
+  "admission": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "whole_file_admission_cap": 65536,
+    "cap_is_observation_refusal_not_runtime_writer_cap": true,
+    "linux_uid": 1000,
+    "linux_gid": 1000,
+    "mode": 384,
+    "nlink": 1,
+    "actual_size": null,
+    "actual_sha256": null,
+    "actual_version": null
+  },
+  "sequence": [
+    "Use existing original fully closed PKI formatter context; no initialize and no formatter replay.",
+    "Attach this whole-read GO through authorize_formatter_receipt_info; retain both actual original closed observers.",
+    "Archive exact request/intent/armed before independent boundary and one unique file_info operation_start.",
+    "Store and externally whole original SDK before parse/isError; original returned operation ID status/next8192 immutable pages only.",
+    "Close full original payload SHA/EOF and inactive future, then bind actual path/size/SHA/version/full9 for a separate receipt-body SOURCE and GO."
+  ],
+  "limits": {
+    "maximum_Runtime_lanes": 2,
+    "maximum_native_call_or_future_per_lane": 1,
+    "immutable_page_bytes": 8192,
+    "maximum_original_payload_bytes": 1048576,
+    "new_binary_reads": 0,
+    "new_process_starts": 0
+  },
+  "lane_activation": "C may activate its empty lane now. A has only its separately reviewed exact scopes; B/root0. Global maximum2 lanes.",
+  "excluded": [
+    "new process_start, formatter replay or state reinitialization",
+    "binary_read or other formatter output paths",
+    "directory enumeration and source/production writes",
+    "Cargo, component, HTTP product or provider operations",
+    "new-key retry or automatic replay after unknown"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

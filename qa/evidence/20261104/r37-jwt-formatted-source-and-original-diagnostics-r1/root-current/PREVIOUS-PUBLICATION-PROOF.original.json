@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.evidence.publication_proof.v1",
+  "status": "PUBLISHED_AND_READ_BACK",
+  "request": {
+    "repository_full_name": "TrillionniumFoundation/HeptaBao",
+    "branch_name": "codex/heptabao-validation-20261104",
+    "sha": "b3113cd09cfba131dc7339e2c2267ad87a87d283",
+    "expected_sha": "3fad6ab8d3eda6cad1c7e95458f8eba026c1c524",
+    "force": false
+  },
+  "commit_verified": true,
+  "tree_layers": {
+    "prefix": true,
+    "ancestors": [
+      {
+        "name": "day",
+        "sha": "879d84d48c8a2d4af7a877a60e3f2eac89e4196e",
+        "entries": 113,
+        "whole_immediate_merkle": true
+      },
+      {
+        "name": "evidence",
+        "sha": "046a25c752c5771355b93e33d9ab2e3f04ff7ea4",
+        "entries": 1,
+        "whole_immediate_merkle": true
+      },
+      {
+        "name": "qa",
+        "sha": "b6d19bab11c75ecec28c78065b4df5ab1b7c4e05",
+        "entries": 3,
+        "whole_immediate_merkle": true
+      },
+      {
+        "name": "root",
+        "sha": "7fa284511a78f65e16d6a3c6cf2e42b920224665",
+        "entries": 26,
+        "whole_immediate_merkle": true
+      }
+    ],
+    "prior_paths_unchanged": true
+  },
+  "intent_archive": "7a771217d4a981933e3b35c3de7d44c77e06fd11",
+  "ref_readback": {
+    "ref": "refs/heads/codex/heptabao-validation-20261104",
+    "node_id": "REF_kwDOUGncwNoALXJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tdmFsaWRhdGlvbi0yMDI2MTEwNA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-validation-20261104",
+    "object": {
+      "sha": "b3113cd09cfba131dc7339e2c2267ad87a87d283",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/b3113cd09cfba131dc7339e2c2267ad87a87d283"
+    }
+  },
+  "mounts": 32,
+  "files": 1463,
+  "bytes": 17744925,
+  "facts_frozen_utc": "2026-11-06 05:10:30 UTC",
+  "full_replacement_qualified": false,
+  "production_cutover": false,
+  "all_clients_and_backups_migrated": false,
+  "cleanup_qualified": false
+}

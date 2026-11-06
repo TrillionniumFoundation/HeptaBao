@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-pki-receipt-info-actual-root-qualification-r1",
+  "records": [
+    {
+      "name": "qualification.json",
+      "blob": "ec2678e7c4c813e34e2b66ae3b6405f5e16ac754",
+      "bytes": 4259,
+      "sha256": "6d077e0ef8d272baea13c1f1e39b4e3dd7a0f48d30b66f1e6631a9cbd8d8b432"
+    },
+    {
+      "name": "verification.js",
+      "blob": "883ddc556303da6b92fd568696d9fc1f8b4cce5c",
+      "bytes": 4454,
+      "sha256": "bb9576a39eaa0eb35212e93b984e4eac359bdf191821e7cfb19df4bb7e22e21d"
+    },
+    {
+      "name": "journal-verification-common.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "b13da46ac25ac763349b1d903ddba4febd85d54d",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

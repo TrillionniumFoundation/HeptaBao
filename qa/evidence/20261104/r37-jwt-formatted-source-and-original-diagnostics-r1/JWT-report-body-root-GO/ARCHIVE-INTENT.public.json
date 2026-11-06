@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-jwt-fixed38-report-three-ranges-GO-r1",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "69b2f1fbc12fbc92f163326281d21bec03885949",
+      "bytes": 5473,
+      "sha256": "3466344cf228664d648184f5d926f0cfbeb845b4c0ded3e5cbb1b47b5ace5950"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "16fb87ef1bc094b584394119acd1fdc333986a1f",
+      "bytes": 2433,
+      "sha256": "376fcb436b7a4ab572e65deb4c2ec51110b8219247ea28105c8ff6aebd955b75"
+    },
+    {
+      "name": "pure-source-recheck.actual.json",
+      "blob": "234ae829ad434a8a15931a107c2d06c3d275f591",
+      "bytes": 3108,
+      "sha256": "e5fbcadf637a241082a9179587f8a60c1ded4da3e736fd11472a4739d4ccaec5"
+    },
+    {
+      "name": "pure-source-verifier.js",
+      "blob": "4e92a12ab203f68aa51d9756c999660a51d4cc5c",
+      "bytes": 4818,
+      "sha256": "4448b2e707ee56d673b43d421ea9e9ecf8d57ed93d6125ec78c1e6b386f3f11a"
+    },
+    {
+      "name": "prior-info-root-qualification.json",
+      "blob": "2088ecc70e593b27614ba8eac06c8f41b2e522da",
+      "bytes": 4504,
+      "sha256": "96ab9e9c5077998f3d085030f7533925fd06e531f645d692f345b93b793907b6"
+    },
+    {
+      "name": "strict-diff-functions.js",
+      "blob": "91382750ef2e93f2e18db45390322e934c0f470d",
+      "bytes": 2239,
+      "sha256": "ba2a9bcdbf46163947e8302c95a4dce78464b905317a6ca90ec4accb4668a032"
+    }
+  ],
+  "expected_data_tree": "a154239853137bc4c6e1669f78cf0febeef793db",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

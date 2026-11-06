@@ -1,0 +1,22 @@
+[
+  {
+    "before": "ROOT=Path('/home/qian-qi/heptabao-same-root-publication-format-20261105-r1')",
+    "after": "ROOT=Path('/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1')"
+  },
+  {
+    "before": "EXPECTED={\"service_native_v6_ha_read.rs\":[\"b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf\",\"186c6dbc959695283a0d16471e8ac3e9598ac4393e381dd53a1c71a5e77c9477\"],\"service_native_v6_ha_install.rs\":[\"ff4edb6448044625bb542ac560e4dfa7b334b8684700e87b142554fc27076426\",\"7ca52073cce6a6a9914f6d774dde83d8b8db18a5eb6cdbe41c6816c947747607\"],\"service_native_v6_ha_install_tests.rs\":[\"4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c\",\"32f4964cec82959269ed131ef248894802bdfc6a8b663aea258e6d1b7bf44929\"],\"service_native_v6_ha_same_root_republication_tests.rs\":[None,\"7d6828980d6fed39a95ef6afc2c624f94ba8b0e98c8ef4a1f923b601fb3a99ca\"]}",
+    "after": "EXPECTED={\"pki.rs\":[\"c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9\",\"3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba\"],\"service_native_pki_tests.rs\":[\"b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b\",\"3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208\"]}"
+  },
+  {
+    "before": "'schema':'heptabao.same-root-publication-input-rustfmt.v1'",
+    "after": "'schema':'heptabao.native-pki-lease-status-input-rustfmt.v1'"
+  },
+  {
+    "before": "'sourceCommit':'6d02ceca629163e1c07480fa1f21520434407143'",
+    "after": "'sourceCommit':'e3afc157447d35c861f275a761b29da3e42aff8e'"
+  },
+  {
+    "before": "'sourceTree':'09aa45b9439741780961c2af76680c27e0773d08'",
+    "after": "'sourceTree':'5497775d9d473541e13e1603be8c893a3e27681b'"
+  }
+]

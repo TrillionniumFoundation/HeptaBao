@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.root-JWT-collector-report-three-ranges-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "source_packet": "1b818fe15ad091ac1737005d53f76f1539534fd0",
+  "checks_passed": 13,
+  "checks": [
+    {
+      "name": "whole22_444986_bytes",
+      "passed": true
+    },
+    {
+      "name": "base_is_original_executed_info_journal",
+      "passed": true
+    },
+    {
+      "name": "strict_eight_hunks_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "candidate_pin_exact",
+      "passed": true
+    },
+    {
+      "name": "pure_input_uses_exact_actual_state_and_sources",
+      "passed": true
+    },
+    {
+      "name": "rerun38_pure_checks_zero_Runtime",
+      "passed": true
+    },
+    {
+      "name": "original_slot_three_exact_bound_ranges",
+      "passed": true
+    },
+    {
+      "name": "root22_info_closed_original_native_binding",
+      "passed": true
+    },
+    {
+      "name": "range_request_pins_whole_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_contiguous167436_without_widening",
+      "passed": true
+    },
+    {
+      "name": "once_marker_before_Native_call",
+      "passed": true
+    },
+    {
+      "name": "old8K_new16K_original_payload_cap",
+      "passed": true
+    },
+    {
+      "name": "chunk_whole_SHA_EOF_UTF8_guards",
+      "passed": true
+    }
+  ],
+  "additional_pure_checks_reexecuted": 38,
+  "candidate": {
+    "blob": "e67a6034ff37401b9c0d9bdf6f40749f3c4eb407",
+    "bytes": 32939,
+    "sha256": "295b223e6d9cfc5f0a5661407e2a653f3a9637f3c1fcedd7c72fdc775c4ce4ea"
+  },
+  "exact_ranges": [
+    {
+      "offset": 0,
+      "limit": 65536,
+      "request": {
+        "blob": "b819a29f416b682c8b95367c9121d4b4e2954f98",
+        "bytes": 426,
+        "sha256": "883c876f3a7436005d789c9a0448756d15280353ca1dad454663cbc283360a01"
+      }
+    },
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "request": {
+        "blob": "aee10e1f429ae160a3a132360ee4cfd935f04473",
+        "bytes": 430,
+        "sha256": "1cf4feca6b049079f5f0e9d50b95c758adfee77173b11584dbb0aa066a8dd0c7"
+      }
+    },
+    {
+      "offset": 131072,
+      "limit": 36364,
+      "request": {
+        "blob": "3182034f4f957e0f64b9ea1a0c2294f2f41f142d",
+        "bytes": 431,
+        "sha256": "16fd7c5d8dd3c1ff0fcfeabf2ddfdd68022a3331f476f56f1661883df6eeb454"
+      }
+    }
+  ],
+  "actual_info_root_qualification": "2088ecc70e593b27614ba8eac06c8f41b2e522da",
+  "root_Runtime_calls": 0
+}

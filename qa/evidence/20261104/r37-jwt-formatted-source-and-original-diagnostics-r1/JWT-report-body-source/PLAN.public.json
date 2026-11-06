@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.collector-report-three-ranges-source-plan.v1",
+  "runtime_authorized": false,
+  "action": "authorize_collector_report_body",
+  "scope": "collector_report_binary_read_ranges_only",
+  "original_slot": "jwt_e3af_rog_format38_collector_gitfirst_r1",
+  "original_job": "1a1af3d52ee-fc05-6701",
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "base_journal": {
+    "blob": "af433566033040ecec7971ba30af9997f1073ef4",
+    "bytes": 25305,
+    "sha256": "2a7f51809a1617d2026de3d3c6524f6974fb272614dd19e51725397865f5329a"
+  },
+  "candidate": {
+    "blob": "e67a6034ff37401b9c0d9bdf6f40749f3c4eb407",
+    "bytes": 32939,
+    "sha256": "295b223e6d9cfc5f0a5661407e2a653f3a9637f3c1fcedd7c72fdc775c4ce4ea"
+  },
+  "reference_finite_range_journal": {
+    "blob": "bfb93119d9e3bd6840f73023f605fa14e9f26790",
+    "bytes": 33512,
+    "sha256": "ee56cf9516ae2dfbfa9c7115bcd70c9a70a451173c0279f537f953c1accae0d7"
+  },
+  "reference_only_not_scope_or_identity_inheritance": true,
+  "actual_info_packet": "007607722df64d2a6188ac76d652747ed1ebcf1c",
+  "actual_info": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "size": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "nativeText": {
+      "blob": "a8865610dc4024f4473a7e64935fcd064fa0d23c",
+      "bytes": 483,
+      "sha256": "828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"
+    },
+    "originalOperation": "d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+    "full9Strings": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "maximum_binary_read_starts": 3,
+  "immutable_body_page_bytes": 16384,
+  "original_status_and_info_pages": 8192,
+  "maximum_original_payload_bytes": 1048576,
+  "exact_ranges": [
+    {
+      "offset": 0,
+      "limit": 65536,
+      "request": {
+        "blob": "b819a29f416b682c8b95367c9121d4b4e2954f98",
+        "bytes": 426,
+        "sha256": "883c876f3a7436005d789c9a0448756d15280353ca1dad454663cbc283360a01"
+      }
+    },
+    {
+      "offset": 65536,
+      "limit": 65536,
+      "request": {
+        "blob": "aee10e1f429ae160a3a132360ee4cfd935f04473",
+        "bytes": 430,
+        "sha256": "1cf4feca6b049079f5f0e9d50b95c758adfee77173b11584dbb0aa066a8dd0c7"
+      }
+    },
+    {
+      "offset": 131072,
+      "limit": 36364,
+      "request": {
+        "blob": "3182034f4f957e0f64b9ea1a0c2294f2f41f142d",
+        "bytes": 431,
+        "sha256": "16fd7c5d8dd3c1ff0fcfeabf2ddfdd68022a3331f476f56f1661883df6eeb454"
+      }
+    }
+  ],
+  "total_data_bytes": 167436,
+  "body_reads_submitted": 0,
+  "requires_separate_whole_root_go": true,
+  "sequence": [
+    "Use the existing fully closed collector slot and actual independent info; never initialize.",
+    "Attach separately whole-read root GO which fixes all three requests, original job and actual info operation.",
+    "For each range individually: exact request + external intent + armed whole, independent dispatch boundary, one operation_start, full original SDK archived before parse.",
+    "Read same operation status and next immutable pages only. Close full original payload and validate actual binary path/version/size/range/chunk SHA before the next range.",
+    "After final range, enforce contiguous 167436-byte reconstruction, original whole SHA and exact UTF8 bytes; archive whole public report once. Any unknown/error pauses, without retry or new key."
+  ],
+  "report_semantic_qualification": false,
+  "unchanged": [
+    "collector/formatter source and already closed observations",
+    "original 8192-page observations",
+    "one future and SDK-before-parse",
+    "1MiB payload cap",
+    "all product/Cargo/formatter/PKI runtime exclusions"
+  ]
+}

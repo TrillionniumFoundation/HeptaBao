@@ -1,0 +1,22 @@
+
+function qualifyJwtReportInfoActual(){
+ const p=load("r34_packet_JWT-fixed38-report-info-actual"),r=p.raw,idx=JSON.parse(r["CALL-INDEX.public.json"]),rel=JSON.parse(r["RELEASE.public.json"]),st=JSON.parse(r["RECOVERY.state.public.json"]),go=load("r37_jwt_report_info_GO"),checks=[];
+ const ck=(name,v)=>{checks.push({name,passed:v===true});if(v!==true)throw Error(name);},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),eq=(s,p)=>{const m=gitBlobMeta(s);return m.blob===p.blob&&m.bytes===p.bytes&&m.sha256===p.sha256;};
+ ck("whole23_172622_bytes",p.audit.whole&&p.audit.files===23&&p.audit.bytes===172622);
+ ck("exact_new_GO_and_executed_helper",eq(r["ROOT-GO.original.json"],go)&&eq(r["journal.native.js"],go.value.candidate));
+ const bm=Object.fromEntries(p.pins.map(x=>[x.blob,r[x.path]])),obs=rel.original_observer;
+ const calls=idx.map(c=>({key:c.key,kind:c.kind,phase:st.calls[c.key].phase,requestPin:c.request,sdkPin:c.sdk,nativePin:c.native,requestText:r[c.packet_prefix+".request.json"],sdkText:r[c.packet_prefix+".original.sdk.json"],nativeText:r[c.packet_prefix+".original.native.json"],armedText:r[c.packet_prefix+".armed.json"],intentText:r[c.packet_prefix+".intent.json"],armedTree:c.armed_tree}));
+ const cs=verifyOriginalJournal({label:"collectorReportInfo",calls,observers:[obs],blob:s=>bm[s],goPins:[go],pageLimit:()=>8192,ck});
+ ck("only_three_calls_one_file_info_one_page",cs.length===3&&cs.every(x=>x.c.kind!=="process_start")&&cs.filter(x=>x.c.kind==="operation_start").length===1&&obs.tool==="file_info"&&obs.pages===1&&obs.payload.bytes===600);
+ const start=cs.find(x=>x.c.kind==="operation_start"),expected=go.value.expected_report_from_original_stdout;
+ ck("exact_original_file_info_request",eq(start.c.requestText,go.value.exact_request)&&start.q.operation.tool==="file_info"&&start.q.operation.arguments.host==="rog"&&start.q.operation.arguments.path===expected.path&&Object.keys(start.q.operation.arguments).sort().join(",")==="host,path"&&start.n.reused===false&&start.n.operation_id==="d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19");
+ const v=parseLosslessIntegers(r["file-info.native.original.json"]),parts=v.version.split(":"),md=v.metadata;
+ ck("independent167436_wholeSHA_version_matches_stdout",v.path===expected.path&&v.size===expected.bytes&&v.size===167436&&v.sha256===expected.sha256&&v.version===expected.version);
+ ck("independent_private_linux_uid_gid_mode_single_link",v.mode===384&&md.metadata_platform==="linux"&&md.mode===384&&md.uid===1000&&md.gid===1000&&md.link_count===1);
+ const full9=[parts[0],parts[1],String(md.uid),String(md.gid),String(32768|v.mode),String(md.link_count),String(v.size),parts[3],parts[4]];
+ ck("lossless_full9_exact_original_identity",parts.length===5&&parts.every(x=>/^[0-9]+$/.test(x))&&parts[2]===String(v.size)&&same(full9,expected.full9)&&same(full9,load("r37_jwt_fixed38_terminal_qualification").value.reported_public_report.full9));
+ ck("readback_state_binds_same_native_original",eq(r["file-info.native.original.json"],st.collectorReportInfo.nativeText)&&st.collectorReportInfo.originalOperation===obs.id&&same(st.collectorReportInfo.full9Strings,full9)&&st.collectorReportInfo.binaryReadAuthorized===false);
+ ck("closed_original_history_no_replay_or_new_process",st.job==="1a1af3d52ee-fc05-6701"&&st.startCalled===true&&st.collectorReportInfoStarted===true&&st.completedObservers.length===3&&st.pending===null&&st.activeObserver===null&&st.nativeCallInFlight===false&&st.paused===false&&rel.calls_in_flight===0&&rel.native_futures_active===0&&rel.lane_released===true&&rel.no_collector_or_formatter_replay===true);
+ ck("body_not_authorized_or_read",rel.body_read_calls===0&&rel.body_authorized===false&&go.value.binary_read_authorized===false);
+ return {schema:"heptabao.root-qualification.JWT-fixed38-report-file-info.v1",status:"PASS_INDEPENDENT_REPORT_METADATA",evidence_qualified:true,check_count:checks.length,checks,packet:p.audit,original_observer:obs,actual_report:{path:v.path,size:v.size,sha256:v.sha256,version:v.version,full9Strings:full9,nativeText:gitBlobMeta(r["file-info.native.original.json"]),regularFileType:"Derived from Native file_info regular-file contract and mode; original collector actually held full_mode33152."},original_collector:"rog/1a1af3d52ee-fc05-6701",body_independently_read:false,formatted_source_reconstructed:false,compile_or_product_qualified:false,full_replacement:false,production_cutover:false,legacy_cleanup:false,root_Runtime_calls:0};
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.collector-report-info-source-plan.v1",
+  "scope": "collector_report_file_info_only",
+  "runtime_authorized": false,
+  "original_slot": "jwt_e3af_rog_format38_collector_gitfirst_r1",
+  "original_job": "1a1af3d52ee-fc05-6701",
+  "host": "rog",
+  "base_source": {
+    "blob": "01360ba6d3026a67e9be2ffc11ccc40a53eaf7b8",
+    "bytes": 19049,
+    "sha256": "d4b51619a8481826e298af4461c28055edfe6fd37760d36c5aefac7b95341bf1"
+  },
+  "candidate": {
+    "blob": "af433566033040ecec7971ba30af9997f1073ef4",
+    "bytes": 25305,
+    "sha256": "2a7f51809a1617d2026de3d3c6524f6974fb272614dd19e51725397865f5329a"
+  },
+  "exact_request": {
+    "blob": "cecc9ee03180321a5867ea7e9aaac8fc06b68aec",
+    "bytes": 291,
+    "sha256": "9bcd3860f0268161d35beb670736c8592f9f009a73bf4fe93c6c97798f18ce43"
+  },
+  "separate_root_go_required": true,
+  "action": "authorize_collector_report_info",
+  "no_reinitialize": true,
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "existing_process_start_replay_authorized": false,
+  "immutable_page_bytes": 8192,
+  "maximum_immutable_payload_bytes": 1048576,
+  "expected_report_from_original_stdout": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "bytes": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "full9": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ]
+  },
+  "required_old_observers": [
+    {
+      "id": "fa417c7d89b787c75c2192fb7a02f1c57aa20ff31bd8b1dccbfef1fbc6594e21",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9c5d779281e4703583812a8363fb50d2cf76c478",
+        "bytes": 910,
+        "sha256": "235e1bd302b768309435d7d4cd9704ce149a2dd180caf26913681ab0540289fa"
+      },
+      "payloadTree": "45c8cfd0a46829849f0c396e0a1ca6314c54a4a5",
+      "nativeText": {
+        "blob": "79c6fda4266a1251acfcc4aefce67d86465d51cc",
+        "bytes": 731,
+        "sha256": "425e4753e0332b30f708a33b3f218f040b4ffe40e1b7d7592c5aae88cb4c8873"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "a414ab36d0a899e17287cef0a06a5205f54ff9ed29ea8259648fd4eb236232ee",
+      "tool": "process_read",
+      "payload": {
+        "blob": "d52d7b2609c4507613d1b39d6707771b34cee9e1",
+        "bytes": 27666,
+        "sha256": "0921d55e97447c2b742fb7a0855b3fd8bc90fdad08d52b6732310d718583845d"
+      },
+      "payloadTree": "bcde0e310107b556c1f90a8f1c0dc1b70cf23640",
+      "nativeText": {
+        "blob": "3d4770874f51fa8523288041d6ec09ef67d8a5c3",
+        "bytes": 25285,
+        "sha256": "7b429620a084297dd71c85a32827d4db6fee1c8771514b5f162c50c0bb4c2ff8"
+      },
+      "pages": 4,
+      "completedInactive": true
+    }
+  ],
+  "actual_packet": "4f58a732e69ad4a33ee3b3c858dbe7c7bbd88ba4",
+  "root_actual_qualification": "75d61db6321b5a680ef7b5a84d0079c6f9360f38",
+  "proposed_body_scope": {
+    "submitted": 0,
+    "runtime_authorized": false,
+    "journal_authorization_implemented": false,
+    "requires_independent_info_closed_exact": true,
+    "requires_new_root_body_go": true,
+    "bytes": 167436,
+    "binary_chunk_max": 65536,
+    "immutable_page_bytes_proposed": 16384,
+    "ranges": [
+      {
+        "offset": 0,
+        "limit": 65536
+      },
+      {
+        "offset": 65536,
+        "limit": 65536
+      },
+      {
+        "offset": 131072,
+        "limit": 36364
+      }
+    ]
+  },
+  "failure": "Preserve SDK before inspection; any mismatch or unknown pauses this line. No automatic retry, path change, new native key, process replay or directory scan."
+}

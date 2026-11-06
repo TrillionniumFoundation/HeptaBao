@@ -1,0 +1,9 @@
+# Fixed original classifier per-object observation — SOURCE only
+
+The known prior query failure and its unrecovered 817 bytes remain unchanged. The next proposed query retains the exact original /usr/bin/log identity, argv, label and three-second interval, 45/10/60 bounds and owner cleanup. It is a fresh observation, not a recovery or replay of the failed request.
+
+The full original log_projection classifier remains byte exact. A new pure wrapper first validates the complete bounded NDJSON stream, then applies the unchanged classifier to each original line. Successful rows keep the original message/process/time gates and closed category/errno/path vocabulary. Semantic refusals preserve their original ordinal and a closed rejection reason. The complete object count equals admitted plus rejected unknown counts; malformed JSON, duplicate keys, nonfinite constants, non-object rows, deadline/cancellation and all hard bounds remain observer failure. No unknown row is named a header, statistics or harmless data.
+
+An observer exit 0 means this partial classification and owned cleanup completed. wholeLogFullyClassified, unknownObjectSemanticsQualified and startupCauseQualified remain explicitly false. Rejected-object meanings, raw keys/values, unknown hashes and original source log contents are not published. No service, private capsule, SDK or provider action is added.
+
+Four source hunks, two journal hunks and 39 pure V8 text/binding checks are included; strict forward/reverse reconstruction passes. All 18 old non-main definitions remain exact, and main differs only in the public schema literal and projection call. No Python compile, fake/component run, host call or new slot initialization occurred. Root must independently bind the typed stdin digest and issue a separate exact GO before execution.

@@ -1,0 +1,185 @@
+{
+  "schema": "heptabao.admitted-events.source-checks.r1",
+  "passed": true,
+  "checkCount": 39,
+  "checks": [
+    {
+      "name": "source_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "source_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_forward",
+      "passed": true
+    },
+    {
+      "name": "journal_strict_reverse",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_need",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_sha",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_identity",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_remaining",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_public_error",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_load_helpers",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_metadata",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_admit_binding",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_open_fixed",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_verify_all",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_hash_tool",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_unique_log_object",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_log_timestamp_us",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_log_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_known_json_type",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_log_schema_projection",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_command_public",
+      "passed": true
+    },
+    {
+      "name": "unchanged_definition_close_rows",
+      "passed": true
+    },
+    {
+      "name": "main_only_schema_and_projection_call",
+      "passed": true
+    },
+    {
+      "name": "all_original_globals_embedded_helpers_caps_same",
+      "passed": true
+    },
+    {
+      "name": "stdin_exact_source",
+      "passed": true
+    },
+    {
+      "name": "request_only_source_and_key",
+      "passed": true
+    },
+    {
+      "name": "whole_candidate_pins",
+      "passed": true
+    },
+    {
+      "name": "original_line_bytes_to_unchanged_classifier",
+      "passed": true
+    },
+    {
+      "name": "strict_json_outside_semantic_catch",
+      "passed": true
+    },
+    {
+      "name": "only_closed_semantic_codes_caught",
+      "passed": true
+    },
+    {
+      "name": "cancellation_deadline_not_caught_as_unknown_row",
+      "passed": true
+    },
+    {
+      "name": "timestamp_value_error_fixed_projection",
+      "passed": true
+    },
+    {
+      "name": "three_distinct_observation_counts",
+      "passed": true
+    },
+    {
+      "name": "every_original_ordinal_preserved",
+      "passed": true
+    },
+    {
+      "name": "no_complete_classification_or_cause",
+      "passed": true
+    },
+    {
+      "name": "no_raw_unknown_projection",
+      "passed": true
+    },
+    {
+      "name": "old_failure_not_rewritten",
+      "passed": true
+    },
+    {
+      "name": "new_function_no_io_or_process",
+      "passed": true
+    },
+    {
+      "name": "hard_caps_not_slicing",
+      "passed": true
+    }
+  ],
+  "source": {
+    "blob": "300246fcfb141255e312239c19e1dad3e5dfd362",
+    "bytes": 58545,
+    "sha256": "398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6"
+  },
+  "request": {
+    "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+    "bytes": 59546,
+    "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92"
+  },
+  "journal": {
+    "blob": "136e0f14bb66f0c5538a3dd904d03bc116e14db6",
+    "bytes": 19040,
+    "sha256": "0e2720e60701bcde62d491ee1c27a0290343502368fe072dae4b98f0025d78d4"
+  },
+  "diffHunks": 4,
+  "journalHunks": 2,
+  "scope": "pure_V8_source_strings_only",
+  "pythonCompiled": false,
+  "pythonExecuted": false,
+  "componentsExecuted": false,
+  "runtimeCalls": 0
+}

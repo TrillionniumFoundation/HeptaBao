@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.root-PKI-formatter-receipt-info-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "source_packet": "177e870f20d89ad96e5abe76c3e2e76fb6dcaae5",
+  "checks": [
+    {
+      "name": "whole19_and_exact_plan_pins",
+      "passed": true
+    },
+    {
+      "name": "previously_whole_reviewed_original_info_journal",
+      "passed": true
+    },
+    {
+      "name": "current_process_journal_actual_exact",
+      "passed": true
+    },
+    {
+      "name": "three_reference_and_six_current_strict_hunks",
+      "passed": true
+    },
+    {
+      "name": "literal_count_4",
+      "passed": true
+    },
+    {
+      "name": "literal_count_5",
+      "passed": true
+    },
+    {
+      "name": "literal_count_6",
+      "passed": true
+    },
+    {
+      "name": "literal_count_7",
+      "passed": true
+    },
+    {
+      "name": "literal_count_8",
+      "passed": true
+    },
+    {
+      "name": "literal_count_9",
+      "passed": true
+    },
+    {
+      "name": "literal_count_10",
+      "passed": true
+    },
+    {
+      "name": "literal_count_11",
+      "passed": true
+    },
+    {
+      "name": "literal_count_12",
+      "passed": true
+    },
+    {
+      "name": "only9_replacements10_literal_slots",
+      "passed": true
+    },
+    {
+      "name": "one_exact_metadata_request",
+      "passed": true
+    },
+    {
+      "name": "exact_root_qualified_prior",
+      "passed": true
+    },
+    {
+      "name": "two_actual_original_observer_pins",
+      "passed": true
+    },
+    {
+      "name": "preserved_original_helpers",
+      "passed": true
+    },
+    {
+      "name": "fixed_original_limits_and_unobserved_metadata",
+      "passed": true
+    },
+    {
+      "name": "existing_slot_only_no_process_or_binary",
+      "passed": true
+    },
+    {
+      "name": "pure_check_input_matches_originals",
+      "passed": true
+    },
+    {
+      "name": "independent25_pure_data_checks_equal",
+      "passed": true
+    }
+  ],
+  "check_count": 22,
+  "pure_data_checks": 25,
+  "candidate": {
+    "blob": "ac1fb502a13c1ba99c1dbf525d46501558eca95b",
+    "bytes": 24274,
+    "sha256": "889f580035d12faeb7bb247e1f4e37079fab6e8ce35e31dd23f3a426939e668a"
+  },
+  "exact_request": {
+    "blob": "1fe1ca6b2a2469499b777f40d2d051c5af260c5d",
+    "bytes": 281,
+    "sha256": "fb11514e938b63a3ad45de5e4f2ab65768346559a89fe0be578d2b51a406e2ad"
+  },
+  "prior_transport_qualification": {
+    "blob": "a4c078efabb47db683ae570752d47f466326bdf2",
+    "bytes": 7224,
+    "sha256": "7103d4d13ea82cf045957cd408b5f946e7b5c114a489a25dbc03ed88c86999ab"
+  },
+  "reference_hunks": 3,
+  "current_hunks": 6,
+  "literal_replacements": 9,
+  "literal_slots": 10,
+  "scope": "One file_info of original PKI formatter receipt; no body read or process replay.",
+  "metadata_unobserved": true,
+  "root_Runtime_calls": 0
+}

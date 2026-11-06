@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-pki-two-file-formatter-source-GO-r1",
+  "records": [
+    {
+      "name": "GO.public.json",
+      "blob": "fb19cc66b84b047d66973f416baac83b88262ad4",
+      "bytes": 10982,
+      "sha256": "9c48e8301a29b849585dae8748a95689be2d375c5b8d6baaf3bf7ce92149b25c"
+    },
+    {
+      "name": "ROOT-SOURCE-REVIEW.public.json",
+      "blob": "7ab8bd3082884455848b727d2c155d78daeb050a",
+      "bytes": 3585,
+      "sha256": "829e93d8069562b8bc0e2b31de9ad4b89a4e4f932d8e8e2221c58a32a1cdeeed"
+    },
+    {
+      "name": "root-verifier.js",
+      "blob": "5e9971dc46f8e035befed55b8f58a25e5da7704e",
+      "bytes": 6842,
+      "sha256": "28667846dadc3eeccd0924a49890211ee56874bf6ede2a8fc2cc7b7b25af9890"
+    },
+    {
+      "name": "root-PKI-source-plan.original.json",
+      "blob": "a1766c93c840c7739e75315f0a662f5f2ae7c780",
+      "bytes": 5908,
+      "sha256": "77440659a163880ee31bd7143e6750263fb2efab3156782dcdba487e59f05f26"
+    },
+    {
+      "name": "typed-stdin-binding.js",
+      "blob": "82e81aef13d858c865ea05dd762056553a3d1cc6",
+      "bytes": 659,
+      "sha256": "e98c61fceb6eecdd55e6244ad43939320114809163afee67a6b8657235dae042"
+    },
+    {
+      "name": "strict-diff-functions.js",
+      "blob": "91382750ef2e93f2e18db45390322e934c0f470d",
+      "bytes": 2239,
+      "sha256": "ba2a9bcdbf46163947e8302c95a4dce78464b905317a6ca90ec4accb4668a032"
+    }
+  ],
+  "expected_data_tree": "a849c00bbc97f83af57ea682b80eb31b4a35072f",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

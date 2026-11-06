@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.native-snapshot-peer-transport-code-slice.source.v1",
+  "baselineCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "baselineTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "bodySlice": "7de62910e72d95f8d4506437906dde6552662aae",
+  "architecture": "bcde44a90cb096361dd9f4edb61e5d9228893a68",
+  "productionModule": {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_peer.rs",
+    "blob": "a5cbd1487eab920ccf00376197e63e6e0ca69e21",
+    "bytes": 20662,
+    "sha256": "4ead5f27c8d14e0113ebcae7188aa1c4448cdc2e3d5827d02a7aa0c1b242ecff"
+  },
+  "testModule": {
+    "path": "crates/heptabao-ha-service/src/native_snapshot_peer_tests.rs",
+    "blob": "684b7d85a4e50fceae4d2027bd8880749d8118db",
+    "bytes": 20411,
+    "sha256": "bd4e24bd13be47a6b4b30393fb1343c3336fa2482d9cddc32549bf91a3fde81f",
+    "tests": [
+      "snapshot_peer_actual_mtls_upload_close_notify_allows_opposite_download",
+      "snapshot_peer_actual_mtls_bare_tcp_eof_cannot_finalize_upload",
+      "snapshot_peer_actual_mtls_wrong_selected_leaf_never_admits_body",
+      "snapshot_peer_actual_mtls_terminal_rejection_consumes_no_upload",
+      "snapshot_peer_original_frame_still_uses_only_old_callback",
+      "snapshot_peer_expired_deadline_refuses_before_connect"
+    ],
+    "executed": 0
+  },
+  "registration": [
+    {
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "before": {
+        "blob": "2abb0190d59f0385b378355a8f3d9573575ac988",
+        "bytes": 5927,
+        "sha256": "02b1f11284b1463a3bbd2f35b2f7173a7a4d42758214b4cb73db7f497964caab"
+      },
+      "after": {
+        "blob": "8edc95536e36540a0cf160cb904e4844a80f98fc",
+        "bytes": 6204,
+        "sha256": "cd3c37ffaaaada293f3ab31727cfcd99206f551d9851fbfc6ab5ef06ccb4fac4"
+      },
+      "diff": {
+        "blob": "dd26f3be6e1192a5a682b0f8c1cf3da9e79db685",
+        "bytes": 565,
+        "sha256": "ec07ae579c4736db2948cd09b038e5ecfef5d09c3f3014adeea68a9ebd0b78dc"
+      },
+      "originalBytesUnchangedPrefix": true
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "before": {
+        "blob": "5d719d0c2e7a6fe23cec58f71ca5b78883a3f03a",
+        "bytes": 85208,
+        "sha256": "325ab34c1aeb4993402067cfaa0b28acb96aebc8a59cedb7d1ab521beac92ed5"
+      },
+      "after": {
+        "blob": "504b1b18757bdd4bf013e7ee27029c0cc9044d37",
+        "bytes": 85408,
+        "sha256": "9719e910990ebabe8d4d84e940ec942d1a92f13cec6f1a776934ae66f0d61521"
+      },
+      "diff": {
+        "blob": "c0d270f5ec464d80ff870c38b71065a45fa3dda9",
+        "bytes": 467,
+        "sha256": "cd450738aec57c21e30d3a4a5076b0df4e8af0f246dae62d0e86bba489dee3a9"
+      },
+      "base": "first body slice; original canonical lib unchanged except its already frozen insertion"
+    }
+  ],
+  "patch": {
+    "blob": "e089bb97eccc3404e7cbdc35ed37e8ff01de3294",
+    "bytes": 43415,
+    "sha256": "9c1045f6789bb719dce193fc245441ad5d29da590a492eab43d19f4200deb4da"
+  },
+  "rustls": {
+    "version": "0.23.44",
+    "tag": "v/0.23.44",
+    "tagObject": "a57a70efd63a6b9644e30f9dc4adb6bd494bbf3c",
+    "commit": "64ad386785c718c74262b79e6893813db381adfe",
+    "checksum": "6725596c3f2c3a0aef021139e145d4eafe314a6623e4680ca83852b2c67ab2ba",
+    "files": [
+      {
+        "name": "stream.rs",
+        "blob": "ee57862b2fe847e9892245c6e7503303fd6b83ea",
+        "bytes": 7673,
+        "sha256": "25758eff9f145099e127fe74b30d27347c13bfa87351749e90a0bb8a0d02a443",
+        "tagBytesEqual": true
+      },
+      {
+        "name": "conn.rs",
+        "blob": "4ea90e7e051935f913c1dbb4b2a40f998c4e7303",
+        "bytes": 49932,
+        "sha256": "ec079b9e98de995942f95981e4913e1abec530cbc69130bce75d9b00cad7f66c",
+        "tagBytesEqual": true
+      },
+      {
+        "name": "common_state.rs",
+        "blob": "8b1d499a6ffcc3e165d9d74d8295084c50bddef0",
+        "bytes": 37241,
+        "sha256": "6b784b195653cefe0eb42e9e1beb7bf25b35991c1da484a57c1549dd2237072b",
+        "tagBytesEqual": true
+      }
+    ]
+  },
+  "stage": "SOURCE_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "runtimeCalls": 0,
+  "productionRefChanges": 0,
+  "connectedToProductHandler": false,
+  "authority": "This module proves only authenticated transport identity and complete body framing. It never mints an Actor, native read capability or publication/completion authority.",
+  "remaining": [
+    "wire the actual HA listener with existing forwarding permit and target/cluster/source/hop gates",
+    "actual native Service lifecycle with original Actor and actual native completion",
+    "binary descriptor in dedicated response/publication MAC and delivery validation",
+    "historical restore original_auth/original identity/activation and new root/epoch validation",
+    "run exact actual mTLS components under separate normal compile/test authorization",
+    "fresh official CLI B01-B05 qualification"
+  ]
+}

@@ -1,0 +1,3 @@
+# JWT formatter fixed38: full report observation
+
+Exactly three root-authorized binary range reads recovered the immutable 167,436-byte collector report. All 21 original native calls, three completed/inactive observers, 15 original immutable payload pages, complete payload/native values and exact whole report are preserved. No collector, formatter or product task was repeated. Independent metadata source remains actual23 tree007607722df64d2a6188ac76d652747ed1ebcf1c and root qualification2088ecc70e593b27614ba8eac06c8f41b2e522da. This raw chain does not itself confer Rust compile, test or product qualification.

@@ -1,0 +1,265 @@
+{
+  "schema": "heptabao.fixed-known-key-log-schema.source.r1",
+  "status": "SOURCE_ONLY_NEW_EXACT_GO_REQUIRED",
+  "source": {
+    "blob": "ee549c6a17d60d37e2ae083c30495aff0e02f65a",
+    "bytes": 54747,
+    "sha256": "9e7f2f718b07c1918c000281e24b650725f6f7e2c66b99b889a440d135791a0d"
+  },
+  "request": {
+    "blob": "88bc6a1452b4603374221a63da4f392a0fa2c8ab",
+    "bytes": 55681,
+    "sha256": "6186d6b597d06876315f6f2b06be9332506f08f1ec57d2ca1c5f89dea653bda3"
+  },
+  "journal": {
+    "blob": "fb20bf927d78f056bf97b8b73001becf96857dbd",
+    "bytes": 19040,
+    "sha256": "5aafef5e189ec8849ea566071123bdaf524ad0f9e0888e94145c0bbd8ff2d79d"
+  },
+  "slot": "owner_launchd_log_schema_gitfirst_r1",
+  "key": "heptabao-mac-owned-launchd-log-schema-9e7f2f71-20261106-r1",
+  "purpose": "Differentiate only the fixed predicate inputs that caused the prior known one_log_message_semantics refusal. This is a fresh bounded observation of the same old interval, not recovery of the old withheld817 bytes.",
+  "originalFailure": {
+    "job": "1a1af3333c8-fc05-66b3",
+    "packet": "0626ebdfe63188ea215f97fe4c596f4765e9fe3c",
+    "stdout": {
+      "blob": "9192b9104866148e823721ff5ca3e7a639419e49",
+      "bytes": 3534,
+      "sha256": "00002e40048299fa117f95424a8e326ba776139ff5c79e800d6323fbd1361370"
+    },
+    "authority": {
+      "blob": "77792bd85dda01678e940bc622393a84cffff93b",
+      "bytes": 728,
+      "sha256": "a81983d0d2dc9a9f92b8386b8af521588182fbece9dfff53eccad41d4e52ffdd"
+    },
+    "rootQualification": {
+      "blob": "3052edd4796424a82b909e75c295fd5530836714",
+      "bytes": 6066,
+      "sha256": "6424d64e4bd5524c26df21f6ee10f682b2964fb358bbb1938e42d8bd5cb0f0a1"
+    },
+    "error": "one_log_message_semantics",
+    "parentExit": 1,
+    "childExit": 0,
+    "childStdoutBytes": 817,
+    "childStderrBytes": 0,
+    "subcondition": "Unobserved: no message candidate, nonstring candidate, or disagreeing strings. No assumption of header/event or actual cause."
+  },
+  "exactArgv": [
+    "/usr/bin/log",
+    "show",
+    "--start",
+    "2026-11-06 00:45:18+0000",
+    "--end",
+    "2026-11-06 00:45:21+0000",
+    "--style",
+    "ndjson",
+    "--predicate",
+    "process = \"launchd\" AND message CONTAINS \"org.heptabao.qa.mac-authbus-4e808-owner-r1.server\"",
+    "--info",
+    "--debug",
+    "--no-pager"
+  ],
+  "timeWindow": {
+    "schema": "heptabao.original-owned-bootstrap-time-window.source.r1",
+    "originalJob": "1a1ae51309d-fc05-5ef8",
+    "ack": {
+      "blob": "5d76fca8fcedb3abc4765ad9c9f3c5a4678280e2",
+      "bytes": 6200,
+      "sha256": "eb1da610a70177b87161fda4c37fd80d984b135d5715d04128eaa00fa48b5b86"
+    },
+    "authority": {
+      "blob": "0e29e80053b2ad291101f53c8ffcc24f485680ac",
+      "bytes": 732,
+      "sha256": "f402631c37f87c2e8928f321682a0a8d03d9efcb0d005eb0151c48b6c2429df6"
+    },
+    "stdout": {
+      "blob": "99f88a10ed877dcf23aaafc56fd3e69c31a5a2d1",
+      "bytes": 132132,
+      "sha256": "feae46e33bc62427b8317780cf38ca73acd80124b1ad157caa20cbb0f3677748"
+    },
+    "jobCreatedUnixMs": 1793925918877,
+    "terminalPublicationUnixMs": 1793925920735,
+    "rawJobWindowMilliseconds": 1858,
+    "conservativeRoundedStartUnixMs": 1793925918000,
+    "conservativeRoundedEndUnixMs": 1793925921000,
+    "utcStart": "2026-11-06T00:45:18.000Z",
+    "utcEnd": "2026-11-06T00:45:21.000Z",
+    "maximumWindowMilliseconds": 3000,
+    "bootstrapIntentFileMtimeNs": "1793925920565520047",
+    "bootstrapCommand": {
+      "argv": [
+        "/bin/launchctl",
+        "bootstrap",
+        "gui/501",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-owner-bind-r1/launchd/server-initial.plist"
+      ],
+      "pid": 82492,
+      "commandDeadlineMonotonic": 2811777.446800166,
+      "elapsedSeconds": 0.04866733402013779,
+      "exitCode": 0
+    },
+    "qualification": "Conservative wall-clock envelope from same original job ACK creation and terminal publication, supported by bootstrap-intent record; not an exact wall-clock timestamp for posix_spawn. No timezone inferred from ps lstart and no guessed monotonic-to-epoch conversion."
+  },
+  "knownKeys": [
+    "eventMessage",
+    "message",
+    "composedMessage",
+    "process",
+    "processImagePath",
+    "timestamp",
+    "type",
+    "eventType"
+  ],
+  "outputAllowlist": {
+    "fieldSummary": {
+      "keys": [
+        "eventMessage",
+        "message",
+        "composedMessage",
+        "process",
+        "processImagePath",
+        "timestamp",
+        "type",
+        "eventType"
+      ],
+      "properties": [
+        "present",
+        "jsonType"
+      ],
+      "typeVocabulary": [
+        "absent",
+        "null",
+        "boolean",
+        "string",
+        "number",
+        "array",
+        "object",
+        "unlisted"
+      ],
+      "valuesOrLengths": false
+    },
+    "messageCandidates": {
+      "keys": [
+        "anyPresent",
+        "allPresentValuesAreStrings",
+        "allPresentStringsEqual",
+        "originalComposite"
+      ],
+      "type": "boolean"
+    },
+    "messageFlags": {
+      "keys": [
+        "eventMessage",
+        "message",
+        "composedMessage"
+      ],
+      "properties": [
+        "emptyString",
+        "exactOriginalLabelPresent"
+      ],
+      "type": "boolean or null when not a string"
+    },
+    "equalities": [
+      "eventMessageEqualsmessage",
+      "eventMessageEqualscomposedMessage",
+      "messageEqualscomposedMessage"
+    ],
+    "otherBooleans": [
+      "processEqualsLaunchd",
+      "processImageBasenameEqualsLaunchd",
+      "timestampParsed",
+      "timestampWithinOriginalWindow",
+      "typeStringEqualsEventTypeString"
+    ],
+    "otherType": "boolean or null for unobserved/inapplicable string inputs; no raw type/eventType or timestamp/path value is published.",
+    "rawText": false,
+    "unknownKeyNames": false,
+    "rawOrUnknownHash": false,
+    "arbitraryFieldValues": false,
+    "fieldLengths": false,
+    "nestedFieldTraversal": false,
+    "standardReport": "Original tool identity/hash, fixed argv, child exit/timing/actual stream byte counts, custody, FD and deadline facts remain."
+  },
+  "semantics": {
+    "originalClassifierPreserved": "The full original log_projection function remains byte-exact and is not executed by this new schema-only main.",
+    "newParentSuccess": "Only says the bounded known-key schema observation and owned cleanup completed; it grants no event projection, matched-label/process/time admission or root-cause qualification.",
+    "originalSubguards": "Presence/string/equality are separately reported using the original truth conditions. Known process/timestamp checks become diagnostic booleans, not admission to old classifier.",
+    "noFallback": "Unknown fields are not published or followed. Duplicate JSON keys, nonfinite constants, non-object rows, invalid UTF8 and all existing caps fail closed.",
+    "noRecords": "Zero observed objects does not prove absence or original startup cause."
+  },
+  "unchanged": {
+    "requestOtherThanStdinAndKey": true,
+    "toolPathVersionFull9Sha": true,
+    "regularPython": true,
+    "queryArgv": true,
+    "timeInterval": true,
+    "originalLabel": true,
+    "sourceFunctions": [
+      "need",
+      "sha",
+      "identity",
+      "remaining",
+      "public_error",
+      "load_helpers",
+      "metadata",
+      "admit_binding",
+      "open_fixed",
+      "verify_all",
+      "hash_tool",
+      "unique_log_object",
+      "log_timestamp_us",
+      "log_projection",
+      "command_public",
+      "close_rows"
+    ],
+    "embeddedOwnerHelpers": true,
+    "sharedSeconds": 45,
+    "childSeconds": 10,
+    "outerSeconds": 60,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "psMax": 4
+    },
+    "applicationFds": 4,
+    "metadata": 64,
+    "codeReads": 129,
+    "codeReadCap": 8388608,
+    "toolBytes": 807536,
+    "combinedAcceptedStreams": 65536,
+    "records": 64,
+    "lineBytes": 8192,
+    "publicReportBytes": 131072,
+    "immutablePages": 8192,
+    "pipeReturn": "Original per-stream post-read check may observe one crossing65536-byte block before rejecting; no truncation or stronger syscall-read cap is claimed.",
+    "journalChangesOnly": [
+      "fresh slot",
+      "exact new request pin",
+      "observer-key prefix"
+    ]
+  },
+  "noAuthority": {
+    "runtime": false,
+    "newQuery": false,
+    "oldJobReplay": false,
+    "cleanup": false,
+    "configuration": false,
+    "permissionOrTccChange": false,
+    "sdk": false,
+    "provider": false,
+    "privateCapsule": false,
+    "credentials": false
+  },
+  "historicalUnknowns": {
+    "oldRegistration": "NOT_CLOSED",
+    "lineage": "NOT_QUALIFIED",
+    "oldGit8916": "UNKNOWN"
+  },
+  "validation": {
+    "pureSourceOnly": true,
+    "pythonCompiled": false,
+    "pythonOrComponentExecuted": false,
+    "rootMustIndependentlyBindNativeDigest": true
+  }
+}

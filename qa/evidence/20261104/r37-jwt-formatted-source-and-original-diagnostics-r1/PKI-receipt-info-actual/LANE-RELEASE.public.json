@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.pki-formatter-receipt-info-actual-release.r1",
+  "job": "1a1af6d62a1-fc05-686a",
+  "metadata": {
+    "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+    "size": 4907,
+    "sha256": "7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776",
+    "version": "66306:28071628:4907:1793944550782366173:1793944550782366173",
+    "nativeText": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "originalOperation": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "full9Strings": [
+      "66306",
+      "28071628",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "4907",
+      "1793944550782366173",
+      "1793944550782366173"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "observer": {
+    "id": "d20c3dc1bb81c7f2ada4ea0ff79b48a59a03e4d943adf6ec90dd8da584166ff6",
+    "tool": "file_info",
+    "pages": 1,
+    "payload": {
+      "blob": "0827f014c31e7ca061aaa5ade6f04f27b7406f5e",
+      "bytes": 583,
+      "sha256": "8d3371e47de712d1f95494bde77313a99c1093a16324fc32bafdcbc73edda1f2"
+    },
+    "payload_tree": "32a05555eecc9985b72f266e079d7d17cf9a03c0",
+    "native": {
+      "blob": "87e770a58b2d4cbe9d6ab71d8c61d5d3634a9556",
+      "bytes": 466,
+      "sha256": "9bdc226bd5fecc495a4a4b17c4593324f01bd7f95b3e5315052c90cc9a4ac2f1"
+    },
+    "completed_inactive": true
+  },
+  "original_calls": 3,
+  "immutable_pages": 1,
+  "runtime_calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "active_observer": null,
+  "binary_reads_submitted": 0,
+  "source_packet": "177e870f20d89ad96e5abe76c3e2e76fb6dcaae5",
+  "root_go": {
+    "blob": "090ce0baed6701bdac7a40ac23408ec960de150f",
+    "bytes": 4615,
+    "sha256": "375805a98d6ce9ddccb11d6e5826d2be6b5390067b3025761a28137aab44ca72"
+  }
+}

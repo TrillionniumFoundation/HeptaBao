@@ -1,0 +1,71 @@
+[
+  {
+    "ordinal": 0,
+    "call_key": "pki-lease400-formatter-receipt-info0-start-r1",
+    "kind": "operation_start",
+    "request": {
+      "blob": "1fe1ca6b2a2469499b777f40d2d051c5af260c5d",
+      "bytes": 281,
+      "sha256": "fb11514e938b63a3ad45de5e4f2ab65768346559a89fe0be578d2b51a406e2ad"
+    },
+    "sdk": {
+      "blob": "f7ed3da406fc14db7f5112d135176b5433fe3205",
+      "bytes": 704,
+      "sha256": "2c3a77583040b0d1e4cc1fec5242c64ea65755574c72a5d3ae3acc6a6ef87f64"
+    },
+    "native": {
+      "blob": "12a840804a7bf3b1328d2bcd11fe56d53b8e2825",
+      "bytes": 543,
+      "sha256": "caf54eede7ee0ccbaa353fb29527fcfd306fe432501ba8c316787a11749b435d"
+    },
+    "arm_tree": "dfa18a5deee04dcb18cc2d1b7757e900921fa598",
+    "sdk_tree": "7f6b058bf51059e31928e1c32b2c3545fe9c8428",
+    "files_prefix": "call-00"
+  },
+  {
+    "ordinal": 1,
+    "call_key": "pki-lease400-formatter-receipt-info0-status0-r1",
+    "kind": "operation_status",
+    "request": {
+      "blob": "aa7447534e04631149379836a5c1856c25b8b6c8",
+      "bytes": 89,
+      "sha256": "c5ac6d0d31700a2597b8489113c4431721308f3a05977f0df127302a6a72f610"
+    },
+    "sdk": {
+      "blob": "c43e242058cad317bee3a7d1a9dde6d9e6fb9e49",
+      "bytes": 975,
+      "sha256": "7fc597461aeb0adeece489e5646ebd967f5915700fd3beded9161ac89882fb27"
+    },
+    "native": {
+      "blob": "125e18c2f569074b7aa2eaf4a29cbe899bcc2f0c",
+      "bytes": 800,
+      "sha256": "19d3ad0a612555ba55490e8b2bc02109dbc39256cc5b3897ce95c011d6ae2c53"
+    },
+    "arm_tree": "c111617bed4e549e4dc85a1c9499403e8ca81f4a",
+    "sdk_tree": "aa3eacf4f8601464983fc39b2e4b13fc94d452b2",
+    "files_prefix": "call-01"
+  },
+  {
+    "ordinal": 2,
+    "call_key": "pki-lease400-formatter-receipt-info0-page0-r1",
+    "kind": "operation_result",
+    "request": {
+      "blob": "b4b04a4eb743a3e504ab792199a05a913b19df00",
+      "bytes": 121,
+      "sha256": "794b351483259d471a8bed90d7617156833af38c11ae16ff738ebe1d52c02ef7"
+    },
+    "sdk": {
+      "blob": "d404502e02657884788c1b5af537f91e5e9c19c6",
+      "bytes": 1632,
+      "sha256": "9c242c6501906db5f6bace6fde017bce2357ad8885fc10286abe02b378bad459"
+    },
+    "native": {
+      "blob": "573cb484d28fef40d286cdf6983a3472eaea9a26",
+      "bytes": 1461,
+      "sha256": "a046cdd2ed8691a2c1450f561c429c1f495b891963dfd3e0c1915e7529a50926"
+    },
+    "arm_tree": "413c071b694f91e9fce6e8861eb710e1941a1016",
+    "sdk_tree": "6d811c3de4794568a4aaf2ec5391c43df0c30f95",
+    "files_prefix": "call-02"
+  }
+]

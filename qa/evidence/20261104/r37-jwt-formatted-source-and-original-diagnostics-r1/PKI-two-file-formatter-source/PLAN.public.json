@@ -1,0 +1,198 @@
+{
+  "schema": "heptabao.native-pki-two-file-rustfmt.SOURCE.v1",
+  "status": "SOURCE_ONLY",
+  "runtime_authorized": false,
+  "base_commit": "e3afc157447d35c861f275a761b29da3e42aff8e",
+  "base_tree": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "candidate_source_tree": "6e4bf23de8f7fdac6dd9b152232a905bedb87744",
+  "isolated_owned_root": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1",
+  "candidate": {
+    "blob": "4bea36c9c2c80c280429a90d2f22523fd80e95d5",
+    "bytes": 7255,
+    "sha256": "b35be61fa3191cd0814b31f47526b9771b9d55f4cc408cad41c6bbf8c2675875"
+  },
+  "original_formatter": {
+    "source": {
+      "blob": "81211c8129b8d219672f88e5d7a2f9a0e7c3dea2",
+      "bytes": 7587,
+      "sha256": "c3b33a6a69a973d3c3e15e25054692593cc075a239e55dc0c3f2a7fb16f0f695"
+    },
+    "request": {
+      "blob": "52fe787d5b68896d16156740f719c74118a12a0b",
+      "bytes": 194996,
+      "sha256": "bbc87b30ce08277a35129dd987b310bced6dbb1a422b2b75de558ecc86addaad"
+    }
+  },
+  "source_replacements": 5,
+  "source_hunks": 2,
+  "all_original_functions_child_loop_finally_and_terminal_unchanged": true,
+  "candidate_files": [
+    {
+      "name": "pki.rs",
+      "canonical_path": "crates/heptabao-server/src/engines/pki.rs",
+      "before": {
+        "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+        "bytes": 136453,
+        "sha256": "c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9"
+      },
+      "candidate": {
+        "blob": "3c6fd86dcd641eb16af64b835d2252163dd1488e",
+        "bytes": 136672,
+        "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba"
+      }
+    },
+    {
+      "name": "service_native_pki_tests.rs",
+      "canonical_path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "before": {
+        "blob": "47fc159b1d32b259c784b40f16a463b0739227be",
+        "bytes": 40170,
+        "sha256": "b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b"
+      },
+      "candidate": {
+        "blob": "352e581f5a901f21ee7c7af4c9bc5b3bed1a1439",
+        "bytes": 42863,
+        "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208"
+      }
+    }
+  ],
+  "input_file_bytes": 179535,
+  "input_carrier": {
+    "blob": "7dd4f26ae61c7e29083972650b377643b22a498d",
+    "bytes": 187081,
+    "sha256": "b04208ff4a3787e229b8cd7a86316ef6b0d90fdb941ebd5ef166b14cb06e1489"
+  },
+  "original_input_carrier_cap": 262144,
+  "exact_request": {
+    "blob": "c9805c31d29bdb19f9d51e5826950d92afbc15b0",
+    "bytes": 204933,
+    "sha256": "1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a"
+  },
+  "journal": {
+    "blob": "3f6bb9e67890d08af99adb01c29054869fff75c3",
+    "bytes": 19053,
+    "sha256": "4ae9e6ad844350e9fd182f8208e7b8bda91589b83e8d8e0cd9ee7b6e01ac84e6"
+  },
+  "journal_original_function_bodies_unchanged": true,
+  "slot": "native_pki_lease400_formatter_gitfirst_r1",
+  "timing": {
+    "shared_internal_seconds": 50,
+    "each_rustfmt_seconds": 10,
+    "outer_seconds": 60,
+    "cleanup_clipped_to_original_remaining": true
+  },
+  "format_config": {
+    "bytes": 17,
+    "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+    "content": "edition = \"2024\"\n",
+    "repository_config_present": false
+  },
+  "tool": {
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "bytes": 5255144,
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+    "before_after_actual_required": true
+  },
+  "ownership": {
+    "new_root_create_only": true,
+    "candidate_checkout_writes": false,
+    "cargo": false,
+    "product": false,
+    "network": false,
+    "child_count": 2,
+    "start_new_session": false,
+    "claim": "Two direct children must each exit0/reap in the supervisor group; independent process-group-empty is not asserted."
+  },
+  "future_outputs": [
+    {
+      "role": "candidate",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/pki.rs",
+      "bytes": 136672,
+      "sha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+      "body_cap": 136672,
+      "actual_metadata": null
+    },
+    {
+      "role": "formatted",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/pki.rs",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 262144,
+      "actual_metadata": null
+    },
+    {
+      "role": "stdout",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stdout",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 262144,
+      "actual_metadata": null
+    },
+    {
+      "role": "stderr",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/pki.rs.rustfmt.stderr",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 65536,
+      "actual_metadata": null
+    },
+    {
+      "role": "candidate",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/candidate/service_native_pki_tests.rs",
+      "bytes": 42863,
+      "sha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+      "body_cap": 42863,
+      "actual_metadata": null
+    },
+    {
+      "role": "formatted",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/formatted/service_native_pki_tests.rs",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 262144,
+      "actual_metadata": null
+    },
+    {
+      "role": "stdout",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stdout",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 262144,
+      "actual_metadata": null
+    },
+    {
+      "role": "stderr",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/service_native_pki_tests.rs.rustfmt.stderr",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 65536,
+      "actual_metadata": null
+    },
+    {
+      "role": "config",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/rustfmt.toml",
+      "bytes": 17,
+      "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+      "body_cap": 17,
+      "actual_metadata": null
+    },
+    {
+      "role": "receipt",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "body_cap": 65536,
+      "actual_metadata": null
+    }
+  ],
+  "future_output_body_cap": 1424736,
+  "future_output_observation_authorized": false,
+  "acceptance_source": {
+    "path": "qa/openbao-acceptance/acceptance.py",
+    "blob": "8ffd4f530426968fa396ceb8cb3299e80f25a9d0",
+    "bytes": 36333,
+    "sha256": "c10e3e009dfd3273a26c2b313f26e616de5a9b28c874dfd191bdffc208a79042",
+    "rustfmt_applies": false
+  },
+  "integration": "PKI formatter is independent from the nine JWT formatter. Actual formatted bytes must be frozen before any integrated source commit and newly explicit149/166 build gate. Existing BUILD26/147/162 remains immutable; no actual compile or runtime qualification transfers."
+}

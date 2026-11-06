@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.format38-collector-report-info-actual-release.v1",
+  "host": "rog",
+  "original_job": "1a1af3d52ee-fc05-6701",
+  "prior_actual_packet": "4f58a732e69ad4a33ee3b3c858dbe7c7bbd88ba4",
+  "new_original_calls": 3,
+  "new_original_observers": 1,
+  "new_immutable_pages": 1,
+  "original_observer": {
+    "id": "d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+    "tool": "file_info",
+    "payload": {
+      "blob": "98296ad7a5b3969e8d74a879de797e0543a5467c",
+      "bytes": 600,
+      "sha256": "9d521ba9879dbec3eeb0e307df5ea4b2f2dfd593fde05becb7eef08ec0063f29"
+    },
+    "payloadTree": "17d9d3c007be1edbaaf820af533cb3ab6e7cc3b1",
+    "nativeText": {
+      "blob": "a8865610dc4024f4473a7e64935fcd064fa0d23c",
+      "bytes": 483,
+      "sha256": "828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"
+    },
+    "pages": 1,
+    "completedInactive": true
+  },
+  "status_sdk": {
+    "blob": "4283341dc2d0b9b764753d93fec658a89be97ffd",
+    "bytes": 975,
+    "sha256": "1e1c999ee16806a4604900ad2c23faf3cc8be9fadd3858b719f3732a0075c52e"
+  },
+  "actual_report_info": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "size": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "nativeText": {
+      "blob": "a8865610dc4024f4473a7e64935fcd064fa0d23c",
+      "bytes": 483,
+      "sha256": "828af125b8d6791fea9f2595277c6380cb729333e01fb9712238c5384d278ea8"
+    },
+    "originalOperation": "d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+    "full9Strings": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ],
+    "regularFileFromNativeFileInfoContract": true,
+    "binaryReadAuthorized": false
+  },
+  "original_stdout_expected": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "bytes": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "full9": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ]
+  },
+  "all_exact_match": true,
+  "calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "lane_released": true,
+  "body_read_calls": 0,
+  "body_authorized": false,
+  "no_collector_or_formatter_replay": true,
+  "original_8192_page_cap_unchanged": true
+}

@@ -1,0 +1,9 @@
+{
+  "engine": "functions.exec pure V8",
+  "scope": "selected JavaScript journal guards and strict replacement reconstruction",
+  "checks": 37,
+  "native_calls": 0,
+  "python_executed": false,
+  "original_collector_not_rerun": true,
+  "synthetic_go_not_authorization": true
+}

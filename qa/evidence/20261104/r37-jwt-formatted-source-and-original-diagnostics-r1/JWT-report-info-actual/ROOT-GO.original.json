@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.root-GO.JWT-collector-report-one-file-info.v1",
+  "authorization": "GO",
+  "agent": "/root/ha_validation",
+  "scope": "collector_report_file_info_only",
+  "original_job": "1a1af3d52ee-fc05-6701",
+  "source_packet": "5d19ea2bfc983cf665ea3b97b87bf35114bd0681",
+  "source_review": {
+    "blob": "4a050247baf6aad558edc88440d1d2fe1dde72b6",
+    "bytes": 1955,
+    "sha256": "169e2583ead1b7a31b24c92ffe0f9d690bcca42e518a470ab2eccf3a62ac9b5c"
+  },
+  "candidate": {
+    "blob": "af433566033040ecec7971ba30af9997f1073ef4",
+    "bytes": 25305,
+    "sha256": "2a7f51809a1617d2026de3d3c6524f6974fb272614dd19e51725397865f5329a"
+  },
+  "exact_request": {
+    "blob": "cecc9ee03180321a5867ea7e9aaac8fc06b68aec",
+    "bytes": 291,
+    "sha256": "9bcd3860f0268161d35beb670736c8592f9f009a73bf4fe93c6c97798f18ce43"
+  },
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "prior_terminal_qualification": {
+    "blob": "75d61db6321b5a680ef7b5a84d0079c6f9360f38",
+    "bytes": 8520,
+    "sha256": "1284b835a3eae51dfa0a50036e3a93e6aa521a044b443d82e5003a57cf45e0d6"
+  },
+  "original_slot": "jwt_e3af_rog_format38_collector_gitfirst_r1",
+  "action": "authorize_collector_report_info",
+  "no_reinitialize": true,
+  "no_process_start": true,
+  "expected_report_from_original_stdout": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "bytes": 167436,
+    "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "full9": [
+      "66306",
+      "30541032",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "167436",
+      "1793941397394515427",
+      "1793941397394515427"
+    ]
+  },
+  "required_old_observers": [
+    {
+      "id": "fa417c7d89b787c75c2192fb7a02f1c57aa20ff31bd8b1dccbfef1fbc6594e21",
+      "tool": "process_status",
+      "payload": {
+        "blob": "9c5d779281e4703583812a8363fb50d2cf76c478",
+        "bytes": 910,
+        "sha256": "235e1bd302b768309435d7d4cd9704ce149a2dd180caf26913681ab0540289fa"
+      },
+      "payloadTree": "45c8cfd0a46829849f0c396e0a1ca6314c54a4a5",
+      "nativeText": {
+        "blob": "79c6fda4266a1251acfcc4aefce67d86465d51cc",
+        "bytes": 731,
+        "sha256": "425e4753e0332b30f708a33b3f218f040b4ffe40e1b7d7592c5aae88cb4c8873"
+      },
+      "pages": 1,
+      "completedInactive": true
+    },
+    {
+      "id": "a414ab36d0a899e17287cef0a06a5205f54ff9ed29ea8259648fd4eb236232ee",
+      "tool": "process_read",
+      "payload": {
+        "blob": "d52d7b2609c4507613d1b39d6707771b34cee9e1",
+        "bytes": 27666,
+        "sha256": "0921d55e97447c2b742fb7a0855b3fd8bc90fdad08d52b6732310d718583845d"
+      },
+      "payloadTree": "bcde0e310107b556c1f90a8f1c0dc1b70cf23640",
+      "nativeText": {
+        "blob": "3d4770874f51fa8523288041d6ec09ef67d8a5c3",
+        "bytes": 25285,
+        "sha256": "7b429620a084297dd71c85a32827d4db6fee1c8771514b5f162c50c0bb4c2ff8"
+      },
+      "pages": 4,
+      "completedInactive": true
+    }
+  ],
+  "limits": {
+    "Runtime_lanes_maximum": 2,
+    "native_call_or_future_per_lane": 1,
+    "immutable_pages": 8192,
+    "original_payload_cap": 1048576
+  },
+  "sequence": [
+    "Whole new GO, attach it to the existing closed collector slot via authorize_collector_report_info.",
+    "Exact pinned request/intent/armed published whole before independent dispatch boundary.",
+    "One original file_info operation start only, preserving exact returned observer identity.",
+    "Whole original SDK externally before isError/native inspection; same original observer status and contiguous next8192 payload pages only.",
+    "Whole original immutable payload and inactive future, exact path167436/SHA/full9/version agreement before closing INFO. A mismatch is a recorded failure with no replay, path changes or re-key."
+  ],
+  "lane": "C may use one lane now. A currently0 after schema closure, B0/root0. Maximum two globally.",
+  "purpose": "Independent metadata and content digest observation of the one already-created public formatter report, preparing separately authorized body reads.",
+  "excluded": [
+    "binary_read despite three proposed requests included in SOURCE",
+    "new process or collector/formatter replay",
+    "directory scan, file write, replacement or cleanup",
+    "Cargo, product, credentials or provider calls",
+    "automatic retries, alternate path, wider timeout or payload cap"
+  ],
+  "qualification_boundary": "file_info alone does not independently reconstruct report body, actual38 diffs or formatted source. Body requires separately reviewed journal and exact GO.",
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

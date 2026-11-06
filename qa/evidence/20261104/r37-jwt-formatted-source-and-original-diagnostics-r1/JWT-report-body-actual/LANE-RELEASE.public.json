@@ -1,0 +1,107 @@
+{
+  "schema": "heptabao.jwt-format38-report-three-bodies-release.r1",
+  "runtime_calls_in_flight": 0,
+  "native_futures_active": 0,
+  "pending": null,
+  "active_observer": null,
+  "original_calls": 21,
+  "returned_observers": 3,
+  "immutable_pages": 15,
+  "whole_report": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-observe-20261106-r1/observation.public.json",
+    "version": "66306:30541032:167436:1793941397394515427:1793941397394515427",
+    "body": {
+      "blob": "440710a38a76bc46aacb717446817c278e971812",
+      "bytes": 167436,
+      "sha256": "2efcc4836976bd55b0bf3119733c854b80740258717c001fa3aacda27f813baa"
+    },
+    "wholeTree": "b81e3592093b6c01cd6927e47a54a84e253eccd8",
+    "originalOperations": [
+      "ac7d6ef9cd3b901d57aff68c660e25b9c0a82d2e04765dacbbef382511e539ef",
+      "a4f36746f42120c7b44b9c2b8a81688d29014d8f44cfa2ab8d08a12861c6e4e3",
+      "b7aff971d44f450265bbb955d386e66394108e1d1eb47a4d8505104d239a2baa"
+    ],
+    "metadataOperation": "d5869c4fcb19ca32d91dcf574dace73d6b9b1c23f421e5524900c24031d33a19",
+    "semanticQualification": false
+  },
+  "observations": [
+    {
+      "operation_id": "ac7d6ef9cd3b901d57aff68c660e25b9c0a82d2e04765dacbbef382511e539ef",
+      "status_sdk": {
+        "blob": "bbb3fdbff0bf583f540ffa5495eba9a96062f11f",
+        "bytes": 977,
+        "sha256": "c5b4583abc0dcf0084b50bc4f3b93c9acc4d167794b3d60c70f4227211679503"
+      },
+      "status_native": {
+        "blob": "32d5f7008fb101286c4c805f709324a3c83f4cfc",
+        "bytes": 802,
+        "sha256": "81b74fee078d2701180e17d02b24f984f33e311ed5696945590dc6eedbd26913"
+      },
+      "pages": 6,
+      "payload": {
+        "blob": "f8cdcd5f5ee182005796b96758185ba7dafd09ff",
+        "bytes": 87821,
+        "sha256": "4a8c6fc2a9a9907198a0f8fb8c89b5904b3539503154d9e55f30b0c22874840b"
+      },
+      "payload_tree": "f3b7ea23eb5f5716e199fd23da9dac166662d368",
+      "native": {
+        "blob": "a2e4354db4ead7e83d8145c0f3d70047affd19cd",
+        "bytes": 87718,
+        "sha256": "f6d954557fce234e9ee9079bc2023cc1f7442757098d5691cac91740aa062439"
+      }
+    },
+    {
+      "operation_id": "a4f36746f42120c7b44b9c2b8a81688d29014d8f44cfa2ab8d08a12861c6e4e3",
+      "status_sdk": {
+        "blob": "214b8c5fede3d9bf028324760234d58bfafca15c",
+        "bytes": 977,
+        "sha256": "d44898fad08e49b8d2ae1dd84720e4863030519509982e2258b05317fbf11070"
+      },
+      "status_native": {
+        "blob": "51594bec1e43bf368a8c280ea20d290047dfc89e",
+        "bytes": 802,
+        "sha256": "75475b139546696862a51e997be9bfad9f80b45394b6c0819d2cd09a4f3b0fdb"
+      },
+      "pages": 6,
+      "payload": {
+        "blob": "7bdfa956b8f6a26dac521e251df4508266a3e280",
+        "bytes": 87826,
+        "sha256": "e5cc769284984bb05e5a0a81bef709bfe367ca7446b2bddd7361a9d1768c3ba1"
+      },
+      "payload_tree": "1ec4662eeec31556e61823c0b04ad274a06b301f",
+      "native": {
+        "blob": "072ec6bba7f2a212fb6d0c1892acd474519a3afd",
+        "bytes": 87723,
+        "sha256": "d5dd21b1052a3170de39e197ac9d340c5de2abf2795317faf5e5793c9e41003e"
+      }
+    },
+    {
+      "operation_id": "b7aff971d44f450265bbb955d386e66394108e1d1eb47a4d8505104d239a2baa",
+      "status_sdk": {
+        "blob": "b923580b186232b56d63759fc77e23c92c25266b",
+        "bytes": 977,
+        "sha256": "7e414fe6f555bb395296d6209ee8e3a650aca956c17fbb81553ab345c85ebfb4"
+      },
+      "status_native": {
+        "blob": "45cc5a7672a677e9cf39cace48a254cfdceccdf1",
+        "bytes": 802,
+        "sha256": "a0a3a8e27cdfb27c77dcae3faf927479dd86fa27d5a45f8ea067d058675233f6"
+      },
+      "pages": 3,
+      "payload": {
+        "blob": "ea52b9a517ddaa32e3560c830af0f663cf235f51",
+        "bytes": 48930,
+        "sha256": "979fbcdf1b1901eee561cc60115be6ebb63f39dd7d9bb4ecc402f4697670ed2a"
+      },
+      "payload_tree": "5580e6e35c9fc61766cb3ddf30eeeaf21a91b1ce",
+      "native": {
+        "blob": "89740d4c90a7a3fa7b91651868791e63b9f661bb",
+        "bytes": 48827,
+        "sha256": "0a17880aed9a8af5759239ae4788c2a928a21b9607a0baa0e5ff14fff6e68a35"
+      }
+    }
+  ],
+  "errors": [],
+  "semantic_qualification": false,
+  "next_pki_formatter_requires_separate_root_go": "fb19cc66b84b047d66973f416baac83b88262ad4"
+}

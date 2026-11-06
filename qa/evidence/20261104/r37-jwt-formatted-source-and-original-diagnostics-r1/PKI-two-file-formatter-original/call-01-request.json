@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1af6d62a1-fc05-686a"
+    }
+  },
+  "idempotency_key": "heptabao-native-pki-lease400-formatter-observe-r1-authority0"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-pki-formatter-transport-root-qualification-r1",
+  "records": [
+    {
+      "name": "qualification.json",
+      "blob": "a4c078efabb47db683ae570752d47f466326bdf2",
+      "bytes": 7224,
+      "sha256": "7103d4d13ea82cf045957cd408b5f946e7b5c114a489a25dbc03ed88c86999ab"
+    },
+    {
+      "name": "verification.js",
+      "blob": "0c00a9d0bbec388f61bc299b67da839fd19149fe",
+      "bytes": 7602,
+      "sha256": "d795ca445af2612fc898b0fe92d223382aca0a55a67930cebd2ddf65c7d82c04"
+    },
+    {
+      "name": "journal-verification-common.js",
+      "blob": "3c0ef26c0193c7e39724add83657466d88f560bb",
+      "bytes": 3404,
+      "sha256": "600711669602a25a77f41b713b51409130853ba1918af398aea928c01c5c6e01"
+    }
+  ],
+  "expected_data_tree": "7c9077239070e070886cae667d70221ce5062393",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

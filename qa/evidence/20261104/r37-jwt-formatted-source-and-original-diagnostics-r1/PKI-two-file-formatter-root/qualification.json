@@ -1,0 +1,240 @@
+{
+  "schema": "heptabao.root-qualification.PKI-two-file-formatter-original-transport.v1",
+  "status": "PASS_ORIGINAL_TRANSPORT_AND_SUMMARY_ONLY",
+  "evidence_qualified": true,
+  "checks": [
+    {
+      "name": "whole52_all779389_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_ROOT_GO_source_carrier_helpers",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_unique_calls",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-authority0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-authority0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-authority0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-streams0-start-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-streams0-status0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_call_pki-lease400-formatter-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_armed_tree_pki-lease400-formatter-streams0-page0-r1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_observer_unique",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_observer_4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_page_4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56_0",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_payload_4a49de3450bb2a2d01a3e35ade4a224d80ad912a968f1fcfec56b5b1580d7e56",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_observer_4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_page_4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1_0",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_payload_4529161f5952eea0baae8a3547d96c61ccc8e9e72131a6b48098c69b647db6f1",
+      "passed": true
+    },
+    {
+      "name": "PKI_formatter_all_observer_calls_accounted",
+      "passed": true
+    },
+    {
+      "name": "seven_calls_one_START_two_observers_two_pages",
+      "passed": true
+    },
+    {
+      "name": "exact_unique_START_original_typed_stdin",
+      "passed": true
+    },
+    {
+      "name": "lossless_original_ACK_bound_launched_once",
+      "passed": true
+    },
+    {
+      "name": "original_job_only_two_observers",
+      "passed": true
+    },
+    {
+      "name": "known_terminal0_full_durable_confirmed",
+      "passed": true
+    },
+    {
+      "name": "both_logs_complete_synced_untruncated",
+      "passed": true
+    },
+    {
+      "name": "original_streams_same_job_audited",
+      "passed": true
+    },
+    {
+      "name": "full_stdout_bytes_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "full_stderr_bytes_hex_text_EOF",
+      "passed": true
+    },
+    {
+      "name": "exact_summary_root_and_original_deadline",
+      "passed": true
+    },
+    {
+      "name": "exact_two_candidate_names_and_reported_hashes",
+      "passed": true
+    },
+    {
+      "name": "reported_one_changed_one_same",
+      "passed": true
+    },
+    {
+      "name": "original_lane_and_observers_closed",
+      "passed": true
+    },
+    {
+      "name": "no_actual_outputs_or_children_overclaim",
+      "passed": true
+    }
+  ],
+  "check_count": 39,
+  "packet": {
+    "tree": "3bb5db7fbe55a5007b5d24ee0efdd14fd2d7972a",
+    "files": 52,
+    "bytes": 779389,
+    "merkle": {
+      "root_sha": "3bb5db7fbe55a5007b5d24ee0efdd14fd2d7972a",
+      "trees_verified": 1,
+      "leaf_count": 52
+    },
+    "whole": true
+  },
+  "original_job": "rog/1a1af6d62a1-fc05-686a",
+  "original_authority": {
+    "blob": "b7e422c999778102955f448c499e406e6bf90e1a",
+    "bytes": 729,
+    "sha256": "bb718ef5bbb3f5cbac1ccab023cd6f85cb741d781b57e4e61627a9b03f3652e7"
+  },
+  "stdout": {
+    "blob": "7023ffee74b6c57fb971f292c9af0b44f0a40cca",
+    "bytes": 921,
+    "sha256": "7bb4288a8d90717c68892b44b3a54015bde7ff5521d947e5981434311d7817ee"
+  },
+  "stderr": {
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "native_binding": {
+    "sha256": "62b5f93a4c4e008df66cc2ce953bcaf26bdad3aa4a1baa5e3392ae6d82518abb",
+    "native_fingerprint": "7112865215285166221",
+    "integer_comparison": "lossless exact decimal"
+  },
+  "reported_actual": {
+    "files": [
+      {
+        "afterBytes": 136672,
+        "afterSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+        "beforeBytes": 136672,
+        "beforeSha256": "3236b3a297bda793f756be4f95aa2dc5bb1202eb6a846164ce38ee01597850ba",
+        "name": "pki.rs",
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "afterBytes": 42909,
+        "afterSha256": "6a1fd1fbaf6caa1c206844e8d97414ea231a1cba663ebb704d26cdff42417d56",
+        "beforeBytes": 42863,
+        "beforeSha256": "3dfea1dccd78187517f3cb9ca04ed036073eb7ed6b7c604815aa745f4402f208",
+        "name": "service_native_pki_tests.rs",
+        "stderrBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "elapsed_seconds": 0.07698889001039788,
+    "allOwnedStopped_reported": true
+  },
+  "actual": {
+    "original_START_count": 1,
+    "original_calls": 7,
+    "original_observers": 2,
+    "immutable_pages": 2
+  },
+  "limitations": [
+    "The complete formatter receipt and10 fixed files have not been independently observed; two child identities/reaping and tool/config full9 remain receipt/output gates.",
+    "Summary allOwnedStopped is preserved as a report, not independently qualified child process evidence.",
+    "Two direct formatter children share the supervisor process group; independent per-child group emptiness is not claimed.",
+    "No compiler, component, HTTP product or production execution is qualified."
+  ],
+  "ten_outputs_qualified": false,
+  "formatter_receipt_qualified": false,
+  "formatted_source_reconstructed": false,
+  "compile_or_product_qualified": false,
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

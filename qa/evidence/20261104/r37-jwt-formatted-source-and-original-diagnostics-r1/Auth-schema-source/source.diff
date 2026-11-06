@@ -1,0 +1,120 @@
+--- a/fixed-log-query-r1.py
++++ b/fixed-log-schema-r1.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
++"""SOURCE proposal: fixed known-key shape diagnostic for the original label/time log query.
+-"""SOURCE proposal: one identity-bound /usr/bin/log query for one original label/time window.
+ The fixed tool metadata is observed; query execution still requires separate exact GO.
+ The child uses the unchanged retained WNOWAIT owner/Commands contract.
+ Unknown raw log text and hashes are never included in the public projection.
+@@ -251,6 +251,92 @@
+             'noMatchesDoesNotProveAbsence': True, 'queryCompleteBeforeDeadline': True,
+             'classificationIsLexicalEvidenceNotRootCauseProof': True}
+ 
++def known_json_type(value):
++    if value is None:
++        return 'null'
++    if type(value) is bool:
++        return 'boolean'
++    if type(value) is str:
++        return 'string'
++    if type(value) in (int, float):
++        return 'number'
++    if type(value) is list:
++        return 'array'
++    if type(value) is dict:
++        return 'object'
++    return 'unlisted'
++
++def log_schema_projection(out, err, row):
++    need(len(out) + len(err) <= MAX_LOG_STREAM, 'bounded_log_combined_streams')
++    need(not row['outcomeUnknown'] and row['completeBeforeDeadline']
++         and row['exitCode'] == 0 and not err, 'log_query_known_zero_complete')
++    value = out.decode('utf-8', 'strict')
++    lines = [line for line in value.splitlines() if line.strip()]
++    need(len(lines) <= MAX_LOG_ROWS, 'bounded_log_record_count')
++    known_keys = ('eventMessage', 'message', 'composedMessage', 'process',
++                  'processImagePath', 'timestamp', 'type', 'eventType')
++    message_keys = known_keys[:3]
++    label_pattern = r'(?<![A-Za-z0-9_.-])' + re.escape(FIXED_LABEL) + r'(?![A-Za-z0-9_.-])'
++    rows = []
++    for ordinal, line in enumerate(lines):
++        remaining()
++        need(len(line.encode('utf-8')) <= MAX_LOG_LINE, 'bounded_log_json_line')
++        item = json.loads(line, object_pairs_hook=unique_log_object,
++                          parse_constant=lambda _value: need(False, 'finite_log_json'))
++        need(type(item) is dict, 'log_record_object')
++        fields = {key: {'present': key in item,
++                        'jsonType': known_json_type(item[key]) if key in item else 'absent'}
++                  for key in known_keys}
++        messages = [item[key] for key in message_keys if key in item]
++        has_messages = bool(messages)
++        all_strings = all(type(msg) is str for msg in messages)
++        equal_strings = bool(has_messages and all_strings
++                             and all(msg == messages[0] for msg in messages))
++        message_flags = {key: {
++            'emptyString': item[key] == '' if type(item.get(key)) is str else None,
++            'exactOriginalLabelPresent': bool(re.search(label_pattern, item[key]))
++                if type(item.get(key)) is str else None} for key in message_keys}
++        pairs = {}
++        for left, right in (('eventMessage', 'message'), ('eventMessage', 'composedMessage'),
++                            ('message', 'composedMessage')):
++            pairs[left + 'Equals' + right] = item[left] == item[right] \
++                if type(item.get(left)) is str and type(item.get(right)) is str else None
++        process_name_matches = item['process'] == 'launchd' \
++            if type(item.get('process')) is str else None
++        process_path_matches = item['processImagePath'].rsplit('/', 1)[-1] == 'launchd' \
++            if type(item.get('processImagePath')) is str else None
++        timestamp_parsed = False
++        timestamp_in_window = None
++        if type(item.get('timestamp')) is str:
++            try:
++                instant = log_timestamp_us(item['timestamp'])
++            except (HelpRefused, ValueError, OverflowError):
++                pass
++            else:
++                timestamp_parsed = True
++                timestamp_in_window = WINDOW_START_US <= instant <= WINDOW_END_US
++        type_equal_event_type = item['type'] == item['eventType'] \
++            if type(item.get('type')) is str and type(item.get('eventType')) is str else None
++        rows.append({'ordinal': ordinal, 'knownFields': fields,
++                     'messageCandidates': {'anyPresent': has_messages,
++                         'allPresentValuesAreStrings': all_strings,
++                         'allPresentStringsEqual': equal_strings,
++                         'originalComposite': bool(has_messages and all_strings and equal_strings)},
++                     'messageFlags': message_flags, 'stringCandidateEqualities': pairs,
++                     'processEqualsLaunchd': process_name_matches,
++                     'processImageBasenameEqualsLaunchd': process_path_matches,
++                     'timestampParsed': timestamp_parsed, 'timestampWithinOriginalWindow': timestamp_in_window,
++                     'typeStringEqualsEventTypeString': type_equal_event_type})
++        remaining()
++    return {'argv': QUERY_ARGV, 'observedObjectCount': len(rows), 'rows': rows,
++            'schemaOnlyObservation': True, 'eventProjectionQualified': False,
++            'originalClassifierPassed': False, 'unknownKeyNamesPublished': False,
++            'anyFieldValuePublished': False, 'anyFieldLengthPublished': False,
++            'rawLogTextExported': False, 'rawOrUnknownLogHashExported': False,
++            'originalWindowMilliseconds': 3000, 'noMatchesDoesNotProveAbsence': True,
++            'freshObservationNotOriginal817ByteRecovery': True,
++            'classificationIsLexicalEvidenceNotRootCauseProof': True}
++
+ def command_public(commands):
+     value = commands.public()
+     # Unexpected child bytes are neither copied nor hashed into the outer public report.
+@@ -280,7 +366,7 @@
+     original_handlers = {}
+     installed = False
+     complete = False
++    result = {'schema': 'heptabao.mac-owned-launchd-fixed-log-schema.r1',
+-    result = {'schema': 'heptabao.mac-owned-launchd-fixed-log-projection.r1',
+         'ok': False, 'outcomeUnknown': False, 'newSharedSeconds': 45, 'outerSeconds': 60,
+         'exactLogQueryArgv': QUERY_ARGV, 'logQueryExecuted': False, 'logQueryAttempted': False, 'directoryEnumeration': False,
+         'directApplicationPrivateFileOrCapsuleRead': False, 'serviceMutationAttempted': False,
+@@ -308,7 +394,7 @@
+         result['logQueryAttempted'] = True
+         row, out, err = commands.run('fixed-owned-label-three-second-log', list(QUERY_ARGV),
+             until=min(UNTIL, time.monotonic() + 10.0), maximum=MAX_LOG_STREAM)
++        result['logSchemaObservation'] = log_schema_projection(out, err, row)
+-        result['logProjection'] = log_projection(out, err, row)
+         verify_all()
+         remaining()
+         complete = True

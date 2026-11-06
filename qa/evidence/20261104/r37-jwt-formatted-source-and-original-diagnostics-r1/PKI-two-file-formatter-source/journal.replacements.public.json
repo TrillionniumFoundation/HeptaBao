@@ -1,0 +1,14 @@
+[
+  {
+    "before": "const GF_SLOT = \"jwt_e3af_rog_format38_collector_gitfirst_r1\";",
+    "after": "const GF_SLOT = \"native_pki_lease400_formatter_gitfirst_r1\";"
+  },
+  {
+    "before": "const GF_REQUEST = {blob:\"0b31393bf3cdef056561fa1a57860083c628f16e\",\n bytes:45052,sha256:\"b40a06b2b598e8e5b3e6c4505bbf130fd63ab0da26d8f7c9fc5d8c6c6c93a7c3\"};",
+    "after": "const GF_REQUEST = {\"blob\":\"c9805c31d29bdb19f9d51e5826950d92afbc15b0\",\"bytes\":204933,\"sha256\":\"1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a\"};"
+  },
+  {
+    "before": "^heptabao-native-jwt-e3afc157-format38-observe-r1-",
+    "after": "^heptabao-native-pki-lease400-formatter-observe-r1-"
+  }
+]

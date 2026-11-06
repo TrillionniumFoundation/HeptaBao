@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.root-PKI-two-file-formatter-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "source_packet": "2ef7595be9addd5242ff34a853424f7d78d7a799",
+  "checks_passed": 19,
+  "checks": [
+    {
+      "name": "whole21_895557_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_original_controller_request",
+      "passed": true
+    },
+    {
+      "name": "candidate_and_request_whole_pins",
+      "passed": true
+    },
+    {
+      "name": "strict_two_controller_hunks_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "only_five_exact_literal_replacements",
+      "passed": true
+    },
+    {
+      "name": "five_original_definitions_and_child_finally_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "name": "only_new_source_payload_key_native_fields",
+      "passed": true
+    },
+    {
+      "name": "two_exact_payload_names_and_known_source_bytes",
+      "passed": true
+    },
+    {
+      "name": "root_owned_PKIfix_candidates_unchanged",
+      "passed": true
+    },
+    {
+      "name": "fixed187081_carrier_within_original262144",
+      "passed": true
+    },
+    {
+      "name": "actual_before_and_candidate_hashes_root_known",
+      "passed": true
+    },
+    {
+      "name": "original_fifty_ten_sixty_and_no_new_group",
+      "passed": true
+    },
+    {
+      "name": "original_explicit_tool_and_config",
+      "passed": true
+    },
+    {
+      "name": "new_owned_root_and_only_base_identity",
+      "passed": true
+    },
+    {
+      "name": "two_strict_journal_hunks_and_original_base",
+      "passed": true
+    },
+    {
+      "name": "journal_exact_forward_inverse",
+      "passed": true
+    },
+    {
+      "name": "only_three_journal_literals",
+      "passed": true
+    },
+    {
+      "name": "ten_future_paths_metadata_unobserved_fixed_caps",
+      "passed": true
+    },
+    {
+      "name": "acceptance_separate_from_rustfmt",
+      "passed": true
+    }
+  ],
+  "candidate": {
+    "blob": "4bea36c9c2c80c280429a90d2f22523fd80e95d5",
+    "bytes": 7255,
+    "sha256": "b35be61fa3191cd0814b31f47526b9771b9d55f4cc408cad41c6bbf8c2675875"
+  },
+  "exact_request": {
+    "blob": "c9805c31d29bdb19f9d51e5826950d92afbc15b0",
+    "bytes": 204933,
+    "sha256": "1f0a94e2a91e15faa61781a1de9ae4ed4f175ec523a446b80d52c9f993360e1a"
+  },
+  "journal": {
+    "blob": "3f6bb9e67890d08af99adb01c29054869fff75c3",
+    "bytes": 19053,
+    "sha256": "4ae9e6ad844350e9fd182f8208e7b8bda91589b83e8d8e0cd9ee7b6e01ac84e6"
+  },
+  "carrier": {
+    "blob": "7dd4f26ae61c7e29083972650b377643b22a498d",
+    "bytes": 187081,
+    "sha256": "b04208ff4a3787e229b8cd7a86316ef6b0d90fdb941ebd5ef166b14cb06e1489"
+  },
+  "native_binding": {
+    "sha256": "62b5f93a4c4e008df66cc2ce953bcaf26bdad3aa4a1baa5e3392ae6d82518abb",
+    "native_fingerprint": "7112865215285166221",
+    "typed_stdin_field": "stdin"
+  },
+  "old_helper_definitions": 5,
+  "independent_child_process_groups": false,
+  "known_limits": [
+    "The unchanged formatter uses communicate with a10-second deadline; stdout/error production is not a hard pipe-byte cap. Actual accepted files must meet later fixed output caps.",
+    "No claim of two separate empty process groups; actual two direct children must be reaped/stopped in their supervisor group.",
+    "Source commit/tree identifies the base only. Candidate PKI files are independently pinned uncommitted inputs.",
+    "Future10 output metadata and bodies are unobserved; this review does not authorize collection or qualification."
+  ],
+  "Python_compiled": false,
+  "Rust_formatted": false,
+  "Rust_compiled": false,
+  "root_Runtime_calls": 0
+}

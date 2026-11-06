@@ -1,0 +1,22 @@
+
+function verifyPkiReceiptInfoActual(){
+ const p=load("r34_packet_PKI-formatter-receipt-info-actual"),g=load("r37_pki_receipt_info_GO"),go=g.value,ix=JSON.parse(p.raw["CALL-INDEX.public.json"]),s=JSON.parse(p.raw["recovery.state.public.json"]),rel=JSON.parse(p.raw["LANE-RELEASE.public.json"]),checks=[];
+ const ck=(name,ok)=>{checks.push({name,passed:!!ok});if(!ok)throw Error(name);},eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b),match=(t,p)=>{const m=gitBlobMeta(t);return m.blob===p.blob&&m.bytes===p.bytes&&m.sha256===p.sha256;};
+ ck("whole23_all298102_bytes",p.audit.whole===true&&p.audit.files===23&&p.audit.bytes===298102);
+ ck("exact_new_GO_and_prior_qualified_scope",match(p.raw["GO.original.json"],g)&&load("r37_pki_formatter_transport_qualification").value.evidence_qualified===true&&go.original_job===rel.job&&go.binary_read_authorized===false);
+ const obs=s.completedObservers.filter(o=>o.id===rel.observer.id),map=Object.fromEntries(p.pins.map(x=>[x.blob,p.raw[x.path]]));
+ const calls=ix.map(x=>({key:x.call_key,kind:x.kind,phase:s.calls[x.call_key].phase,requestPin:x.request,sdkPin:x.sdk,nativePin:x.native,requestText:p.raw[x.files_prefix+"-request.json"],sdkText:p.raw[x.files_prefix+"-original.sdk.json"],nativeText:p.raw[x.files_prefix+"-native.original.json"],armedText:p.raw[x.files_prefix+"-armed.json"],intentText:p.raw[x.files_prefix+"-intent.json"],armedTree:x.arm_tree}));
+ const cs=verifyOriginalJournal({label:"PKI_receipt_info",calls,observers:obs,blob:sha=>map[sha],goPins:[g],pageLimit:()=>8192,ck});
+ ck("three_calls_one_file_info_one_page",cs.length===3&&obs.length===1&&obs[0].tool==="file_info"&&obs[0].pages===1&&rel.original_calls===3&&rel.immutable_pages===1);
+ const start=cs.find(x=>x.c.kind==="operation_start"),info=JSON.parse(p.raw["file-info.native.original.json"]),md=info.metadata,version=info.version.split(":");
+ ck("exact_file_info_original_request",match(start.c.requestText,go.exact_request)&&eq(start.q,go.request)&&start.a.originalJob===go.original_job&&start.n.operation_id===rel.observer.id);
+ ck("actual_path_size_SHA_original_version",info.path===go.admission.path&&info.size===4907&&info.size>0&&info.size<=65536&&info.sha256==="7b2560af593a62c7de4b8ca3a8cb7c2fffaed1408b2f1b356a302a38a7617776"&&info.version==="66306:28071628:4907:1793944550782366173:1793944550782366173"&&version.length===5&&version.every(x=>/^\d+$/.test(x)));
+ ck("actual_private_Linux_metadata",info.mode===384&&md.metadata_platform==="linux"&&md.mode===384&&md.uid===1000&&md.gid===1000&&md.link_count===1&&md.xattr_names.length===0&&Object.keys(md.xattr_sha256).length===0);
+ const full9=[version[0],version[1],"1000","1000","33152","1","4907",version[3],version[4]];
+ ck("lossless_full9_and_original_native_match",eq(full9,rel.metadata.full9Strings)&&eq(s.formatterReceiptInfo,rel.metadata)&&match(p.raw["file-info.native.original.json"],rel.metadata.nativeText)&&eq(obs[0].nativeText,rel.metadata.nativeText)&&rel.metadata.originalOperation===obs[0].id&&rel.metadata.regularFileFromNativeFileInfoContract===true);
+ ck("existing_lane_closed_no_body",s.job===go.original_job&&s.pending===null&&s.activeObserver===null&&s.nativeCallInFlight===false&&s.formatterReceiptInfoStarted===true&&rel.pending===null&&rel.active_observer===null&&rel.runtime_calls_in_flight===0&&rel.native_futures_active===0&&rel.binary_reads_submitted===0&&rel.metadata.binaryReadAuthorized===false);
+ ck("original_two_observers_retained",go.prerequisites.every(x=>s.completedObservers.some(o=>o.id===x.id&&o.tool===x.tool&&o.completedInactive===true&&eq(o.nativeText,x.nativeText))));
+ const value={schema:"heptabao.root-qualification.PKI-formatter-receipt-original-file-info.v1",status:"PASS_ORIGINAL_METADATA_ONLY",evidence_qualified:true,checks,check_count:checks.length,packet:p.audit,original_job:"rog/"+go.original_job,original_operation:obs[0].id,native_metadata:rel.metadata.nativeText,actual_metadata:rel.metadata,original_calls:3,immutable_pages:1,full9_caveat:"Regular file type comes from the Native file_info contract; no independent held-file fstat is claimed by this metadata observation.",receipt_body_independently_read:false,ten_outputs_qualified:false,compile_or_product_qualified:false,full_replacement:false,production_cutover:false,legacy_cleanup:false,root_Runtime_calls:0};
+ store("r37_pki_receipt_info_actual_qualification_value",value);
+ return {status:value.status,checks:value.check_count,metadata:rel.metadata};
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-jwt-formatted-source-freeze-proof-r1",
+  "records": [
+    {
+      "name": "proof.json",
+      "blob": "1f7a613dd12be0d7ce9b7f778b7befe642628c8d",
+      "bytes": 1786,
+      "sha256": "efe201811866267450e49a5a182cd777f8c83850690c4ea577482ac5b7285ebb"
+    },
+    {
+      "name": "ref-readback.original-SDK.json",
+      "blob": "d0a36d59d676a327cbc59186d77818ffec0459c7",
+      "bytes": 1879,
+      "sha256": "9a053c0a05a76615b5307b18a34723fdf0635e53dceb439e57dd3f5f191fae8f"
+    }
+  ],
+  "expected_data_tree": "0f3f46ba798e8e25e08a8663da8f35db1552da1b",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

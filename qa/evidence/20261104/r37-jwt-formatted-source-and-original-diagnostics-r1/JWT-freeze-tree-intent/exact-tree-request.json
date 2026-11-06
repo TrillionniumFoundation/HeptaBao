@@ -1,0 +1,42 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "base_tree_sha": "5497775d9d473541e13e1603be8c893a3e27681b",
+  "tree_elements": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c407b40741a5660b77e2342871888e2a61ac29da"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_jwt.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4856333932541f0da1b02cf1065b22532ee3fe96"
+    },
+    {
+      "path": "crates/heptabao-server/src/federated_native_jwt.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44410caa76f98530bfea834dcd799d5ab9daba60"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "671bb42fa71e7a29b78b7e48355c9024c1ec7d73"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "449f263ff0a911842f9e69ad18a92de6a8d4638c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_jwt_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2f9097b9715b535ba1c4ef49d95fc46f0482a63"
+    }
+  ]
+}

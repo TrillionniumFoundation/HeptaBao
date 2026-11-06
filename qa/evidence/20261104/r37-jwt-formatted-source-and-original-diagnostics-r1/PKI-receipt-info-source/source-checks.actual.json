@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.pki-formatter-receipt-info-source-checks.r1",
+  "passed": true,
+  "count": 25,
+  "checks": [
+    {
+      "name": "reviewed_before_whole",
+      "passed": true
+    },
+    {
+      "name": "current_pki_process_journal",
+      "passed": true
+    },
+    {
+      "name": "literal_count:\"jwt_e3af_rog_formatter_gitfirst_r1\"",
+      "passed": true
+    },
+    {
+      "name": "literal_count:const GF_REQUEST = {\"blob\":\"0ec62f939a62a2a23c73e33d25f",
+      "passed": true
+    },
+    {
+      "name": "literal_count:/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261",
+      "passed": true
+    },
+    {
+      "name": "literal_count:const GF_FORMATTER_RECEIPT_INFO_REQUEST = {\"blob\":\"2faa",
+      "passed": true
+    },
+    {
+      "name": "literal_count:const GF_FORMATTER_RECEIPT_INFO_PREREQUISITES = [{\"id\":",
+      "passed": true
+    },
+    {
+      "name": "literal_count:s.job===\"1a1af017fae-fc05-64f1\"",
+      "passed": true
+    },
+    {
+      "name": "literal_count:s.nextStdout===3352",
+      "passed": true
+    },
+    {
+      "name": "literal_count:terminal.files.length===9",
+      "passed": true
+    },
+    {
+      "name": "literal_count:^heptabao-native-jwt-e3afc157-formatter-observe-r1-",
+      "passed": true
+    },
+    {
+      "name": "forward_exact",
+      "passed": true
+    },
+    {
+      "name": "reverse_exact",
+      "passed": true
+    },
+    {
+      "name": "one_fixed_file_info",
+      "passed": true
+    },
+    {
+      "name": "host_path_exact",
+      "passed": true
+    },
+    {
+      "name": "exact_key",
+      "passed": true
+    },
+    {
+      "name": "request_constant",
+      "passed": true
+    },
+    {
+      "name": "original_process_constant",
+      "passed": true
+    },
+    {
+      "name": "prerequisites_constant",
+      "passed": true
+    },
+    {
+      "name": "receipt_cap_original",
+      "passed": true
+    },
+    {
+      "name": "actual_job_guard",
+      "passed": true
+    },
+    {
+      "name": "prior_authority_exact",
+      "passed": true
+    },
+    {
+      "name": "prior_streams_exact",
+      "passed": true
+    },
+    {
+      "name": "two_file_summary",
+      "passed": true
+    },
+    {
+      "name": "original_state_closed",
+      "passed": true
+    }
+  ],
+  "runtime_executed": false,
+  "journal_executed": false,
+  "formatter_replayed": false
+}

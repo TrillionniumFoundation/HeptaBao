@@ -1,0 +1,10 @@
+{
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-native-pki-lease400-format-20261106-r1/result.public.json"
+    }
+  },
+  "idempotency_key": "heptabao-native-pki-lease400-formatter-observe-r1-receipt-info0"
+}

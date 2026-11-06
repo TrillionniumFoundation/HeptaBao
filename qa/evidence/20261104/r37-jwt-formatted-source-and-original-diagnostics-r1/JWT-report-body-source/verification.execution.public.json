@@ -1,0 +1,8 @@
+{
+  "engine": "functions.exec pure V8",
+  "checks": 38,
+  "scope": "finite replacements, unchanged definitions and selected journal admission/page guards",
+  "Native": 0,
+  "Python": 0,
+  "synthetic_go_not_authorization": true
+}

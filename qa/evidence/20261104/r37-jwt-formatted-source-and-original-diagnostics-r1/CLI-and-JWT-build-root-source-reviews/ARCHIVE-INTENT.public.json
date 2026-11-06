@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.public-Git-first-archive-intent.v1",
+  "label": "r37-source-review-followups-r1",
+  "records": [
+    {
+      "name": "snapshot-stream-source-preliminary-review.json",
+      "blob": "70c4fc4a086263185cff21f79492cac40b9e2fae",
+      "bytes": 5048,
+      "sha256": "0bcebfdbb3b115a5e0f598294797560b0a8bebe6faedc5323261f563798e9680"
+    },
+    {
+      "name": "jwt-build26-unbound-source-review.json",
+      "blob": "787654f3fddec7e7cd4c5ce34e1de2c742278e23",
+      "bytes": 3185,
+      "sha256": "ef44fa7027d286abd11f82d6a5b028c90a0eeb236c900c3cc2fe6ad7c2dbf46d"
+    },
+    {
+      "name": "jwt-build26-pure-recheck.actual.json",
+      "blob": "d694c3646c22c4017ec4f06de3adc4c15a7a6e10",
+      "bytes": 13976,
+      "sha256": "bcf0e2c6650c5b8edcb36fefb3f46b08d1b23f8db80b525eb92ae4d915e353bf"
+    }
+  ],
+  "expected_data_tree": "ba554ee85cd58e8ac1f265cc5997b0942b8b4abc",
+  "executor_filesystem_used": false,
+  "Runtime_calls": 0,
+  "mutation_replay_allowed": false
+}

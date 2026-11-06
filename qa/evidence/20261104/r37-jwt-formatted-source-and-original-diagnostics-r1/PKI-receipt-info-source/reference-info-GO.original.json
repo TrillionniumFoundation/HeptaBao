@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.root-GO.JWT-formatter-receipt-file-info.v1",
+  "authorization": "GO",
+  "scope": "formatter_receipt_file_info_only",
+  "original_job": "1a1af017fae-fc05-64f1",
+  "maximum_file_info_starts": 1,
+  "binary_read_authorized": false,
+  "exact_request": {
+    "blob": "2faaeb3baee3581a5161fff11f8f5d60318ff9c4",
+    "bytes": 236,
+    "sha256": "5b1a7d40e76cf7fc6be383528fdfd523fc7df189d78f3fbeac33b77c6876d8d8"
+  },
+  "as_of_UTC": "2026-11-06 04:14:14 UTC",
+  "agent": "/root/ha_validation",
+  "source_packet": "dd438efc4e28ea6f708453946f15a20123a131e8",
+  "source_review": {
+    "blob": "9bde54a29eab7cdfe0f8534ffd60633a5931a73b",
+    "bytes": 2422,
+    "sha256": "b11f437b4c178b587551e23f7d6bc2f51be3a12930065d2b369082c1dff6c5b3"
+  },
+  "candidate": {
+    "blob": "d8d792caa494c8c2e084db5cea908d0833ce309f",
+    "bytes": 24268,
+    "sha256": "00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b"
+  },
+  "existing_context": "jwt_e3af_rog_formatter_gitfirst_r1",
+  "initialize_allowed": false,
+  "original_job_host": "rog",
+  "original_formatter_transport_qualification": {
+    "blob": "fa9e8030d8f5e5e460cf7b73c603c11d41d17ec8",
+    "bytes": 5806,
+    "sha256": "e63cf09b8662e82d04fc203c1b0ea86fe79e3ba62a0aed032e481c45e23568a1"
+  },
+  "request": {
+    "idempotency_key": "heptabao-native-jwt-e3afc157-formatter-observe-r1-receipt-info0",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "rog",
+        "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json"
+      }
+    }
+  },
+  "helpers": {
+    "native": {
+      "blob": "d8d792caa494c8c2e084db5cea908d0833ce309f",
+      "bytes": 24268,
+      "sha256": "00917a449fcbed60a9c8fcdd98de18f956eccf692153ebb9709af220bbcf156b"
+    },
+    "archive": {
+      "blob": "b093fdbf655511f7db94be2d95555606141bbb42",
+      "bytes": 5957,
+      "sha256": "8153be93b7e737fb22ae010611ebd9c09d555e9663ce867e766f899563276397"
+    },
+    "pure": {
+      "blob": "b6890e8b7217c546bec073dcb04988fc37652721",
+      "bytes": 6685,
+      "sha256": "44becefac5fb2ee5018a9044c4b32cf0f44f9ed4b59f9d4c0fb2d62ca5c93432"
+    }
+  },
+  "admission": {
+    "path": "/home/qian-qi/heptabao-native-jwt-e3afc157-format-20261106-r1/result.public.json",
+    "whole_file_admission_cap": 65536,
+    "cap_is_observation_refusal_not_runtime_writer_cap": true,
+    "linux_uid": 1000,
+    "linux_gid": 1000,
+    "mode": 384,
+    "nlink": 1
+  },
+  "sequence": [
+    "Use existing original closed formatter context; do not initialize or repeat START",
+    "Call only separate authorize_formatter_receipt_info with this whole GO",
+    "Whole exact request/intent/armed before independent boundary and unique file_info operation_start",
+    "Original SDK externally whole before parse; original returned ID status/next8192 pages only",
+    "Whole payload SHA/EOF and inactive closure; actual version/size/SHA then require separate body SOURCE and GO"
+  ],
+  "limits": {
+    "max_Runtime_lanes": 2,
+    "max_native_call_or_future_per_lane": 1,
+    "immutable_page_bytes": 8192,
+    "original_payload_bytes": 1048576,
+    "new_binary_reads": 0
+  },
+  "lane_activation": "C may activate now; A log-tool-info originals closed; B one CLI body lane; root0Runtime",
+  "A_release_qualification": {
+    "blob": "64bffd85bc096a61c32931c0f29e18e33673f1e9",
+    "bytes": 2553,
+    "sha256": "7922206aa8bcd2604e2461010ab8bcdb2693f178719b6e7004abd260145a4efa"
+  },
+  "excluded": [
+    "new process_start",
+    "binary_read",
+    "other37 formatter output reads",
+    "Cargo or Rust tests",
+    "production changes",
+    "Native replay or re-key"
+  ],
+  "full_replacement": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "root_Runtime_calls": 0
+}

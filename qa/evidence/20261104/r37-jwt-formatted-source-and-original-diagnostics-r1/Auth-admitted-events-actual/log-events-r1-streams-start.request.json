@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-owned-launchd-log-events-398136a3-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "mac",
+      "job_id": "1a1af5c959e-fc05-67ee",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

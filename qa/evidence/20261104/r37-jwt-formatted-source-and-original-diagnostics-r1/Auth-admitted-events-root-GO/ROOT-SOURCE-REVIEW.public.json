@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.root-Mac-individually-admitted-log-events-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "source_packet": "86dcbd5d5f3342b4cf588ff9b73742e770964204",
+  "checks_passed": 18,
+  "checks": [
+    {
+      "name": "whole21_338559_bytes",
+      "passed": true
+    },
+    {
+      "name": "exact_prior_source_and_new_pins",
+      "passed": true
+    },
+    {
+      "name": "strict_four_source_hunks_both_directions",
+      "passed": true
+    },
+    {
+      "name": "all18_old_nonmain_definitions_exact",
+      "passed": true
+    },
+    {
+      "name": "all_original_globals_embedded_helpers_budgets_exact",
+      "passed": true
+    },
+    {
+      "name": "main_only_public_schema_and_projection_call",
+      "passed": true
+    },
+    {
+      "name": "request_same_outer_regular_python_new_exact_stdin_key",
+      "passed": true
+    },
+    {
+      "name": "strict_two_journal_hunks_exact_previous",
+      "passed": true
+    },
+    {
+      "name": "journal_only_new_slot_pin_prefix",
+      "passed": true
+    },
+    {
+      "name": "strict_complete_object_parse_before_semantic_catch",
+      "passed": true
+    },
+    {
+      "name": "original_complete_line_classifier_only",
+      "passed": true
+    },
+    {
+      "name": "only_eight_original_semantic_refusals",
+      "passed": true
+    },
+    {
+      "name": "finite_timestamp_failure_no_raw_exception",
+      "passed": true
+    },
+    {
+      "name": "hard_caps_deadline_cancellation_not_changed",
+      "passed": true
+    },
+    {
+      "name": "every_ordinal_explicit_disposition",
+      "passed": true
+    },
+    {
+      "name": "no_whole_log_or_cause_qualification",
+      "passed": true
+    },
+    {
+      "name": "no_new_IO_or_raw_projection",
+      "passed": true
+    },
+    {
+      "name": "qualified_prior_schema_and_exact_scope",
+      "passed": true
+    }
+  ],
+  "source": {
+    "blob": "300246fcfb141255e312239c19e1dad3e5dfd362",
+    "bytes": 58545,
+    "sha256": "398136a36d7d0a7842fa5ee7618a6f922038ba96c03179835efbd9859cc371d6"
+  },
+  "request": {
+    "blob": "7c6fddb23926a3bd5a0b73156d65ee04f536f560",
+    "bytes": 59546,
+    "sha256": "f0aa9392d4c501f4d033465ca2efa2fc3dc6c8c574a3a6c4e10f5906b827df92"
+  },
+  "journal": {
+    "blob": "136e0f14bb66f0c5538a3dd904d03bc116e14db6",
+    "bytes": 19040,
+    "sha256": "0e2720e60701bcde62d491ee1c27a0290343502368fe072dae4b98f0025d78d4"
+  },
+  "native_binding": {
+    "sha256": "dff9bc8fbb8037323551ca59b83975e815708bf9d176835dbb3c3b53b4de3986",
+    "native_fingerprint": "16139138065170970418",
+    "typed_stdin_field": "stdin"
+  },
+  "manual_exception_review": "The same original line passes strict JSON parsing before the catch. In the unchanged classifier the remaining ValueError/OverflowError path is datetime parsing/conversion; only its fixed reason is exposed. Deadline/cancellation are unlisted HelpRefused and propagate.",
+  "python_compiled": false,
+  "python_or_component_executed": false,
+  "root_Runtime_calls": 0
+}
